@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Sauvegarde inutilisable</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Réessayez plus tard</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Fichier trop volumineux</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Limite de sauvegardes atteinte : attendez la vérification de l'opérateur</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Les envois sont suspendus pour le moment, réessayez plus tard</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Déconnecté</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Indisponible ici</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Supprimer mes données</value></data>

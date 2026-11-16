@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Geen bruikbare back-up</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Probeer het later opnieuw</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Bestand te groot</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Back-uplimiet bereikt: wacht op de controle van de operator</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Uploaden is voorlopig gepauzeerd, probeer het later opnieuw</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Uitgelogd</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Hier niet beschikbaar</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>

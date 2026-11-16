@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Nieprawidłowa kopia zapasowa</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Spróbuj ponownie później</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Plik jest za duży</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Osiągnięto limit kopii zapasowych: poczekaj na sprawdzenie przez operatora</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Przesyłanie jest na razie wstrzymane, spróbuj później</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Wylogowano</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Niedostępne tutaj</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Usuń moje dane</value></data>

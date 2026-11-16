@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Neuporabna varnostna kopija</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Poskusite znova pozneje</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Datoteka je prevelika</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Dosežena omejitev varnostnih kopij: počakajte na pregled operaterja</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Nalaganje je za zdaj začasno ustavljeno, poskusite znova pozneje</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odjavljeni ste</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Tukaj ni na voljo</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Izbriši moje podatke</value></data>

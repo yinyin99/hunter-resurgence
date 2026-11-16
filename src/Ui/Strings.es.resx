@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>No es una copia de seguridad válida</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Inténtalo más tarde</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Archivo demasiado grande</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Límite de copias alcanzado: espera la revisión del operador</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Las subidas están en pausa por ahora, inténtalo más tarde</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Sesión cerrada</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>No disponible aquí</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Eliminar mis datos</value></data>

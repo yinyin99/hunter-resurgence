@@ -132,6 +132,7 @@ public static class AccountApi
         group.MapPost("/restore", Task<Reply> (HttpContext ctx) => Upload(ctx, async account =>
             {
                 if (Oversized(ctx)) return Logged(account, new(413, "too_large", TooLarge));
+                if (uploads.Full(account) is { } full) return Logged(account, full);
                 if (uploads.Start(account) is not { } id) return Logged(account, new(429, "busy", Busy));
                 try
                 {
@@ -146,11 +147,12 @@ public static class AccountApi
             .WithName("AccountRestore").WithSummary("Upload a backup zip in one request (raw body)")
             .WithDescription("The zip is the request body (at most 90 MiB; a larger zip is sent in parts, below), one upload at a time per account. A readable zip is kept for an operator "
                              + "and never restored automatically (`server review approve <id>`). "
-                             + "Answers `{status, message}`: status `review`, `already`, `taken`, `invalid`, `busy` or `too_large`.")
+                             + "Answers `{status, message}`: status `review`, `already`, `taken`, `invalid`, `busy`, `quota` (too many zips or bytes already stored for the operator), `paused` (the server takes no uploads for now) or `too_large`.")
             .Produces(200, contentType: "application/json");
 
-        group.MapPost("/restore/start", Task<Reply> (HttpContext ctx) => Upload(ctx, account => Task.FromResult(uploads.Start(account) is { } id
-                ? Json(200, new JsonObject { ["status"] = "started", ["id"] = id, ["partBytes"] = Uploads.MaxPartBytes })
+        group.MapPost("/restore/start", Task<Reply> (HttpContext ctx) => Upload(ctx, account => Task.FromResult(
+                uploads.Full(account) is { } full ? Logged(account, full)
+                : uploads.Start(account) is { } id ? Json(200, new JsonObject { ["status"] = "started", ["id"] = id, ["partBytes"] = Uploads.MaxPartBytes })
                 : Logged(account, new(429, "busy", Busy)))))
             .WithName("AccountRestoreStart").WithSummary("Start an upload of a backup zip in parts")
             .WithDescription("Answers `{status: started, id, partBytes}`: send the zip in parts of at most `partBytes` to `POST /account/restore/<id>/<part>`, "

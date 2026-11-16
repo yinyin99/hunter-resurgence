@@ -19,9 +19,9 @@ static class Send
     /// <summary>Tries of one part before the send gives up: a part that fails on the way is sent again.</summary>
     const int Tries = 3;
 
-    static readonly HashSet<string> Kinds = ["review", "already", "taken", "invalid", "busy", "too_large", "signed_out"];
+    static readonly HashSet<string> Kinds = ["review", "already", "taken", "invalid", "busy", "quota", "paused", "too_large", "signed_out"];
 
-    /// <summary>Kind: the server's status (review, already, taken, invalid, busy, too_large, signed_out) or the tool's own: timeout, error. Message: the server's reason, English, or the network error.</summary>
+    /// <summary>Kind: the server's status (review, already, taken, invalid, busy, quota, paused, too_large, signed_out) or the tool's own: timeout, error. Message: the server's reason, English, or the network error.</summary>
     public sealed record Result(string Kind, string Message = "");
 
     /// <summary>open gets the address to open in the player's browser (the sign-in), giveUp is how long the player has to sign in there (5 minutes); sending gets the part being sent and the number of parts, from 1.

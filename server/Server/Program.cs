@@ -39,9 +39,10 @@ const string ReviewUsage = """
     The backup zips and the archive claims players sent: every one is kept for an operator and never restored automatically.
 
     Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> [--keep-handle] | review reject <id> [reason]
-    An id is a number for a zip, or c<number> for a claim (c12).
+    An id is a number for a zip, c<number> for a claim (c12), or r<account>-<8 hex> for a refused zip (r2000000001-1a2b3c4d).
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note.
+    A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
     approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
     its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
     --keep-handle leaves the account its own name instead of the backup's.
@@ -210,9 +211,11 @@ void Review(string[] a)
 {
     long id = 0;
     var isClaim = false;
+    string? refusedId = null;
     var reason = "";
-    bool Id(string s)  // 12 is a kept zip, c12 a claim
+    bool Id(string s)  // 12 is a kept zip, c12 a claim, r2000000001-1a2b3c4d a refused zip
     {
+        if (s.Length > 1 && s[0] is 'r' or 'R' && s.Contains('-')) { refusedId = s.ToLowerInvariant(); return true; }
         isClaim = s.Length > 1 && (s[0] is 'c' or 'C');
         return long.TryParse(isClaim ? s[1..] : s, out id);
     }
@@ -230,11 +233,15 @@ void Review(string[] a)
             foreach (var p in kept)
                 Console.WriteLine($"{p.Id}\taccount {p.Account}\tuser id {p.UserId}\thandle {p.Handle ?? "(unreadable)"}\t{DateTimeOffset.FromUnixTimeSeconds(p.Ts):u}\t{(p.SteamMatch ? "steam id matches" : "steam id does not match")}\t{p.Note}");
             var waiting = claims.Waiting();
+            var refusedZips = uploads.ListRefused();
+            foreach (var z in refusedZips)
+                Console.WriteLine($"{z.Id}\trefused\taccount {z.Account}\thandle {z.Handle ?? "(deleted)"}\t{DateTimeOffset.FromUnixTimeSeconds(z.Ts):u}\t{z.Size} bytes\t{z.Reason}");
             foreach (var c in waiting)
                 Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{c.Note}");
-            if (kept.Count + waiting.Count == 0) Console.WriteLine("nothing waits for review");
+            if (kept.Count + waiting.Count + refusedZips.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":
+            if (refusedId is not null) Die("a refused zip cannot be approved: reject it to delete it");
             var keep = a is [_, _, "--keep-handle"];
             if (isClaim)
             {
@@ -249,6 +256,12 @@ void Review(string[] a)
             Console.Write(done.Report);
             break;
         default:
+            if (refusedId is not null)
+            {
+                if (!uploads.RejectRefused(refusedId)) Die($"no refused zip {refusedId}");
+                Console.WriteLine($"rejected {refusedId}: the refused zip is deleted");
+                break;
+            }
             if (isClaim)
             {
                 if (!claims.Reject(id, reason)) Die($"no waiting claim c{id}");

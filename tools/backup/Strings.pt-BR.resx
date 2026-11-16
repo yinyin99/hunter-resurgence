@@ -503,13 +503,25 @@
     <value>O servidor não pode aceitar agora</value>
   </data>
   <data name="Send_busy_Text" xml:space="preserve">
-    <value>Um envio seu ainda está sendo processado, você já tem 3 aguardando revisão, ou o servidor está ocupado. Tente mais tarde.</value>
+    <value>Um envio seu ainda está sendo processado, ou o servidor está ocupado. Tente mais tarde.</value>
   </data>
   <data name="Send_too_large_Title" xml:space="preserve">
     <value>Recusado: grande demais</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
     <value>Um zip de backup tem no máximo 1 GiB. Nada foi enviado.</value>
+  </data>
+  <data name="Send_quota_Title" xml:space="preserve">
+    <value>Recusado: limite atingido</value>
+  </data>
+  <data name="Send_quota_Text" xml:space="preserve">
+    <value>Você tem backups demais aguardando o operador, ou eles já usam a sua parte do espaço. Você poderá enviar de novo quando o operador os revisar.</value>
+  </data>
+  <data name="Send_paused_Title" xml:space="preserve">
+    <value>Envios pausados</value>
+  </data>
+  <data name="Send_paused_Text" xml:space="preserve">
+    <value>Os envios estão pausados por enquanto, tente mais tarde.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Sessão encerrada</value>

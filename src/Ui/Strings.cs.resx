@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Nepoužitelná záloha</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Zkuste to později</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Soubor je příliš velký</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Dosažen limit záloh: počkejte na kontrolu operátora</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Nahrávání je prozatím pozastaveno, zkuste to později</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Odhlášeno</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Zde není k dispozici</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Smazat mé údaje</value></data>

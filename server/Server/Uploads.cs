@@ -21,8 +21,18 @@ public sealed class Uploads(State state, string dataDir)
     public const int MaxPartBytes = 90 << 20;
     /// <summary>An open upload that gets no part for this long is deleted and frees its slots.</summary>
     public const double AbandonedSeconds = 30 * 60;
-    /// <summary>Zips one account may have waiting for review.</summary>
-    public const int MaxReview = 3;
+    /// <summary>The settings `upload_account_files` ... `upload_min_free_bytes` (docs/server.md#upload-a-backup-zip) count the zips stored for the operator:
+    /// the ones waiting for review and the refused ones kept under refused/. Restored zips do not count.</summary>
+    public const int AccountFilesDefault = 3;
+    public const long AccountBytesDefault = 1L << 30, TotalBytesDefault = 5L << 30, MinFreeBytesDefault = 10L << 30;
+    public int AccountFiles { get; init; } = AccountFilesDefault;
+    public long AccountBytes { get; init; } = AccountBytesDefault;
+    public long TotalBytes { get; init; } = TotalBytesDefault;
+    public long MinFreeBytes { get; init; } = MinFreeBytesDefault;
+
+
+    /// <summary>Free bytes of the data disk; a test replaces it.</summary>
+    public Func<long> FreeBytes { get; init; } = () => new DriveInfo(Path.GetFullPath(dataDir)).AvailableFreeSpace;
     /// <summary>Uploads open at once on the whole server (each is a file of uploads-tmp, read from disk at its finish).</summary>
     const int MaxAtOnce = 4;
 
@@ -35,35 +45,120 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>The links of a save's gallery pictures the zip lacks are fetched at upload time and kept with the zip (<see cref="Restorer.PicturesZip"/>); null: none are.</summary>
     public PictureLinks? Pictures { get; init; }
 
-    /// <summary>Days an unreadable upload is kept under refused/ for the operator; 0 keeps none.</summary>
-    public int RefusedDays { get; init; } = 7;
+    static readonly UploadOutcome Paused = new(429, "paused", "Uploads are paused for now, try again later.");
+    UploadOutcome QuotaFiles => new(429, "quota", $"You have {AccountFiles} backups waiting for the operator. You can upload again once the operator has reviewed them.");
+    UploadOutcome QuotaBytes => new(429, "quota", $"Your backups waiting for the operator already use {Size(AccountBytes)}.");
 
-    /// <summary>Delete the files of refused/ older than <see cref="RefusedDays"/> (at the next refusal and at server start).</summary>
-    public void PruneRefused()
+    static string Size(long bytes) => bytes >= 1 << 30 ? $"{bytes >> 30} GB" : $"{bytes >> 20} MB";
+
+    string RefusedDir(long account) => Path.Combine(dataDir, "refused", account.ToString());
+
+    /// <summary>What the account stores for the operator: waiting zips (with their pictures) and refused ones.</summary>
+    (int Files, long Bytes) Stored(long account)
     {
-        var dir = Path.Combine(dataDir, "refused");
-        if (!Directory.Exists(dir)) return;
-        var limit = DateTime.UtcNow.AddDays(-RefusedDays);
-        foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
-            if (File.GetLastWriteTimeUtc(f) < limit) File.Delete(f);
+        int files = 0;
+        long bytes = 0;
+        using (var con = Store.Open(account))
+            foreach (var r in con.Rows("SELECT zip_sha256 FROM uploads WHERE account_id = $a"))
+            {
+                files++;
+                var kept = Path.Combine(dataDir, "restores", account.ToString(), (string)r[0] + ".zip");
+                foreach (var f in new[] { kept, Restorer.PicturesZip(kept) })
+                    if (File.Exists(f)) bytes += new FileInfo(f).Length;
+            }
+        if (Directory.Exists(RefusedDir(account)))
+            foreach (var f in Directory.EnumerateFiles(RefusedDir(account), "*.zip"))
+            {
+                files++;
+                bytes += new FileInfo(f).Length;
+            }
+        return (files, bytes);
     }
 
-    /// <summary>A zip that arrived whole but is no backup: one `refused` row for the player's restore page, the file moved to refused/&lt;account&gt;/ for the operator, one alert.</summary>
-    UploadOutcome Refuse(long account, string path, string message)
+    /// <summary>Bytes stored for the operator on the whole server: the accounts that have a restores/ or refused/ folder (not every account).</summary>
+    long StoredTotal() =>
+        new[] { "restores", "refused" }.SelectMany(d => Directory.Exists(Path.Combine(dataDir, d)) ? Directory.EnumerateDirectories(Path.Combine(dataDir, d)) : [])
+            .Select(d => long.TryParse(Path.GetFileName(d), out var a) && Store.AccountExists(a) ? a : (long?)null).Where(a => a is not null).Distinct()
+            .Sum(a => Stored(a!.Value).Bytes);
+
+    /// <summary>The refusal when the account or the server cannot store `add` more bytes (a new zip of that size), else null.</summary>
+    public UploadOutcome? Full(long account, long add = 1)
+    {
+        var (files, bytes) = Stored(account);
+        if (files >= AccountFiles) return QuotaFiles;
+        if (bytes + add > AccountBytes) return QuotaBytes;
+        return StoredTotal() + add > TotalBytes || FreeBytes() - add < MinFreeBytes ? Paused : null;
+    }
+
+    /// <summary>The most bytes an upload's file may hold (its first `own` bytes are already on disk) and the answer when it crosses that.</summary>
+    (long Cap, UploadOutcome Why) Cap(long account, long own) =>
+        new[] { (MaxZip, TooLarge), (AccountBytes - Stored(account).Bytes, QuotaBytes), (TotalBytes - StoredTotal(), Paused), (own + FreeBytes() - MinFreeBytes, Paused) }
+            .MinBy(x => x.Item1);
+
+    /// <summary>A zip that arrived whole but is no backup: one `refused` row for the player's restore page, the file kept as refused/&lt;account&gt;/&lt;sha&gt;.zip
+    /// (the same bytes twice are kept once) with its reason beside it, for the operator, who deletes it (`review reject`), one alert.
+    /// A quota keeps no file and sends no alert.</summary>
+    UploadOutcome Refuse(long account, string path, string sha, string message)
     {
         string? kept = null;
-        if (RefusedDays > 0)
+        var quota = false;
+        lock (decide)
         {
-            kept = Path.Combine("refused", account.ToString(), $"{DateTime.UtcNow:yyyyMMddTHHmmssZ}.zip");
-            Directory.CreateDirectory(Path.Combine(dataDir, Path.GetDirectoryName(kept)!));
-            File.Move(path, Path.Combine(dataDir, kept), overwrite: true);
+            var file = Path.Combine(RefusedDir(account), sha + ".zip");
+            if (File.Exists(file)) kept = file;
+            else if (Full(account, new FileInfo(path).Length) is null)
+            {
+                Directory.CreateDirectory(RefusedDir(account));
+                File.Move(path, file, overwrite: true);
+                File.SetLastWriteTimeUtc(file, DateTime.UtcNow);
+                kept = file;
+            }
+            else quota = true;
+            if (kept is not null) File.WriteAllText(Path.ChangeExtension(kept, ".reason"), message);
         }
         using (var con = Store.Open(account))
             con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'refused', NULL, NULL, 0, ?)", Store.Now(), message);
-        PruneRefused();
-        var handle = Alerts.Name((string)Store.AccountJson(account)["handle"]!);
-        Alert($"Upload refused: account {account}, {handle}, {Alerts.Steam(Store.SteamId64(account))}, {message}" + (kept is null ? "" : $". Kept for {RefusedDays} days: {kept.Replace('\\', '/')}"));
+        if (!quota)
+            Alert($"Upload refused: account {account}, {Alerts.Name((string)Store.AccountJson(account)["handle"]!)}, {Alerts.Steam(Store.SteamId64(account))}, {message}. Kept: {RefusedId(account, sha)}");
         return new(400, "invalid", message);
+    }
+
+    static string RefusedId(long account, string sha) => $"r{account}-{sha[..8]}";
+
+    /// <summary>A refused zip kept for the operator (id `r&lt;account&gt;-&lt;first 8 of its sha&gt;`).</summary>
+    public sealed record RefusedZip(string Id, long Account, string? Handle, long Ts, long Size, string Reason);
+
+    /// <summary>The refused zips of every account, oldest first.</summary>
+    public List<RefusedZip> ListRefused()
+    {
+        var root = Path.Combine(dataDir, "refused");
+        var list = new List<(DateTime At, RefusedZip Zip)>();
+        if (Directory.Exists(root))
+            foreach (var dir in Directory.EnumerateDirectories(root))
+                if (long.TryParse(Path.GetFileName(dir), out var account))
+                    foreach (var f in Directory.EnumerateFiles(dir, "*.zip"))
+                    {
+                        var info = new FileInfo(f);
+                        var why = Path.ChangeExtension(f, ".reason");
+                        var handle = Store.AccountExists(account) ? (string)Store.AccountJson(account)["handle"]! : null;
+                        list.Add((info.LastWriteTimeUtc, new(RefusedId(account, Path.GetFileNameWithoutExtension(f)), account, handle,
+                                  new DateTimeOffset(info.LastWriteTimeUtc).ToUnixTimeSeconds(), info.Length, File.Exists(why) ? File.ReadAllText(why) : "")));
+                    }
+        return [.. list.OrderBy(x => x.At).Select(x => x.Zip)];
+    }
+
+    /// <summary>The operator's reject of a refused zip: delete it. False: no such id.</summary>
+    public bool RejectRefused(string id)
+    {
+        lock (decide)
+            foreach (var z in ListRefused().Where(z => z.Id == id))
+            {
+                var file = Directory.EnumerateFiles(RefusedDir(z.Account), z.Id[(z.Id.IndexOf('-') + 1)..] + "*.zip").First();
+                File.Delete(file);
+                File.Delete(Path.ChangeExtension(file, ".reason"));
+                return true;
+            }
+        return false;
     }
 
     internal static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
@@ -158,7 +253,7 @@ public sealed class Uploads(State state, string dataDir)
     public async Task<UploadOutcome> Part(long account, string id, int index, Stream body)
     {
         if (Claim(account, id, out var u) is { } no) return no;
-        var over = false;
+        UploadOutcome? over = null;
         try
         {
             if (index != u.Next && index != u.Next - 1) return new(409, "invalid", $"Part {index} is out of order: the server expects part {u.Next}.");
@@ -168,19 +263,20 @@ public sealed class Uploads(State state, string dataDir)
                 file.SetLength(start);
                 file.Position = start;
                 var buf = new byte[81920];
+                var (cap, why) = Cap(account, start);
                 int n;
                 while ((n = await body.ReadAsync(buf)) > 0)
                 {
-                    if (file.Position + n > MaxZip) { over = true; break; }
+                    if (file.Position + n > cap) { over = why; break; }
                     await file.WriteAsync(buf.AsMemory(0, n));
                 }
-                if (!over) (u.Before, u.Length, u.Next) = (start, file.Position, index + 1);
+                if (over is null) (u.Before, u.Length, u.Next) = (start, file.Position, index + 1);
             }
-            return over ? TooLarge : new(200, "received", $"Part {index} was received.");
+            return over ?? new(200, "received", $"Part {index} was received.");
         }
         catch (BadHttpRequestException e) when (e.StatusCode == 413)  // a chunked body over the request's limit
         {
-            over = true;
+            over = TooLarge;
             return new(413, "too_large", "This request is too large: a request is at most 90 MiB, and a larger zip is sent in parts.");
         }
         catch (IOException)
@@ -189,7 +285,7 @@ public sealed class Uploads(State state, string dataDir)
         }
         finally
         {
-            if (over) Drop(id);
+            if (over is not null) Drop(id);
             else
                 lock (u)
                 {
@@ -246,7 +342,7 @@ public sealed class Uploads(State state, string dataDir)
         }
         catch (Exception e) when (e is RestoreException or InvalidDataException)
         {
-            return Refuse(account, path, $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
+            return Refuse(account, path, sha, $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
         }
         var uid = long.Parse(read.Model.Identity.Uid);
         // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
@@ -255,12 +351,10 @@ public sealed class Uploads(State state, string dataDir)
             lock (decide) return Refusal(account, uid) is { Kind: "already" or "taken" } refused ? refused : null;
         }
         if (Refused() is { } early) return early;
-        bool known;
+        var known = false;
         using (var con = Store.Open(account))  // the refusals of Review that are cheap to know, before a fetch that may take a minute
-        {
             known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
-            if (!known && (long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview) return Crowded;
-        }
+        if (!known && Full(account, new FileInfo(path).Length) is { } full) return full;
         // the pictures the zip lists by link and does not hold: fetched now, so that a wait for review does not lose them (not inside the lock: a photo host may be slow); a zip already waiting has its own
         string? links = path + ".pictures";
         try
@@ -275,7 +369,6 @@ public sealed class Uploads(State state, string dataDir)
         }
     }
 
-    static readonly UploadOutcome Crowded = new(429, "busy", $"{MaxReview} backups of yours already wait for review, so this one was not kept. Wait for the operator, or delete your data.");
 
     /// <summary>The rules of a restore (the operator's approve runs them again): once per game user id, no user id another
     /// account holds. Uploading is the player's consent to replace the profile, so an account that has played is restored too
@@ -301,8 +394,8 @@ public sealed class Uploads(State state, string dataDir)
             var known = con.Scalar("SELECT 1 FROM uploads WHERE account_id = $a AND zip_sha256 = ?", sha) is not null;
             if (!known)
             {
-                if ((long)con.Scalar("SELECT COUNT(*) FROM uploads WHERE account_id = $a")! >= MaxReview)
-                    return Crowded;
+                if (Full(account, new FileInfo(path).Length + (links is null ? 0 : new FileInfo(links).Length)) is { } full)
+                    return full;
                 var kept = Path.Combine(dataDir, "restores", account.ToString(), sha + ".zip");
                 Directory.CreateDirectory(Path.GetDirectoryName(kept)!);
                 File.Copy(path, kept, overwrite: true);

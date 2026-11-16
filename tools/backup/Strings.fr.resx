@@ -503,13 +503,25 @@
     <value>Le serveur ne peut pas la prendre maintenant</value>
   </data>
   <data name="Send_busy_Text" xml:space="preserve">
-    <value>Un de tes envois est encore en cours de traitement, tu en as déjà 3 en attente de vérification, ou le serveur est occupé. Réessaie plus tard.</value>
+    <value>Un de tes envois est encore en cours de traitement, ou le serveur est occupé. Réessaie plus tard.</value>
   </data>
   <data name="Send_too_large_Title" xml:space="preserve">
     <value>Refusée : trop volumineuse</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
     <value>Un zip de sauvegarde fait au plus 1 Gio. Rien n'a été envoyé.</value>
+  </data>
+  <data name="Send_quota_Title" xml:space="preserve">
+    <value>Refusée : limite atteinte</value>
+  </data>
+  <data name="Send_quota_Text" xml:space="preserve">
+    <value>Tu as trop de sauvegardes en attente de l'opérateur, ou elles occupent déjà ta part de l'espace. Tu pourras envoyer à nouveau quand l'opérateur les aura vérifiées.</value>
+  </data>
+  <data name="Send_paused_Title" xml:space="preserve">
+    <value>Envois suspendus</value>
+  </data>
+  <data name="Send_paused_Text" xml:space="preserve">
+    <value>Les envois sont suspendus pour le moment, réessaie plus tard.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Déconnecté</value>

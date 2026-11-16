@@ -503,13 +503,25 @@
     <value>Der Server kann sie jetzt nicht annehmen</value>
   </data>
   <data name="Send_busy_Text" xml:space="preserve">
-    <value>Ein Upload von dir wird noch verarbeitet, du hast schon 3 zur Prüfung wartend, oder der Server ist ausgelastet. Versuche es später erneut.</value>
+    <value>Ein Upload von dir wird noch verarbeitet, oder der Server ist ausgelastet. Versuche es später erneut.</value>
   </data>
   <data name="Send_too_large_Title" xml:space="preserve">
     <value>Abgelehnt: zu groß</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
     <value>Eine Sicherungs-ZIP ist höchstens 1 GiB groß. Nichts wurde gesendet.</value>
+  </data>
+  <data name="Send_quota_Title" xml:space="preserve">
+    <value>Abgelehnt: Limit erreicht</value>
+  </data>
+  <data name="Send_quota_Text" xml:space="preserve">
+    <value>Du hast zu viele Sicherungen, die auf den Betreiber warten, oder sie belegen schon deinen Speicheranteil. Du kannst erneut senden, sobald der Betreiber sie geprüft hat.</value>
+  </data>
+  <data name="Send_paused_Title" xml:space="preserve">
+    <value>Uploads pausiert</value>
+  </data>
+  <data name="Send_paused_Text" xml:space="preserve">
+    <value>Uploads sind vorerst pausiert, versuche es später erneut.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Abgemeldet</value>

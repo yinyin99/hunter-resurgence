@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Backup non utilizzabile</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Riprova più tardi</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>File troppo grande</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Limite di backup raggiunto: attendi la verifica dell'operatore</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>I caricamenti sono sospesi per ora, riprova più tardi</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Disconnesso</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Non disponibile qui</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Elimina i miei dati</value></data>

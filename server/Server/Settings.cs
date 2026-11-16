@@ -84,12 +84,11 @@ public sealed class Settings
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
-        cfg["refused_days"] = root["refused_days"] switch  // days an unreadable upload is kept for the operator (Uploads.cs); 0: none
-        {
-            null => 7,
-            JsonValue n when n.TryGetValue<int>(out var days) && days >= 0 => days,
-            _ => throw new InvalidDataException("refused_days: a whole number, at least 0"),
-        };
+        // what the server stores for the operator (Uploads.cs): zips and bytes an account may have waiting or refused, bytes on the whole server, and the data disk's free bytes below which uploads stop
+        cfg["upload_account_files"] = Whole(root, "upload_account_files", Uploads.AccountFilesDefault, 1);
+        cfg["upload_account_bytes"] = Whole(root, "upload_account_bytes", Uploads.AccountBytesDefault, 1);
+        cfg["upload_total_bytes"] = Whole(root, "upload_total_bytes", Uploads.TotalBytesDefault, 1);
+        cfg["upload_min_free_bytes"] = Whole(root, "upload_min_free_bytes", Uploads.MinFreeBytesDefault, 0);
         cfg["picture_link_hosts"] = PictureHosts(root["picture_link_hosts"]);  // the hosts a backup's gallery links are fetched from (PictureLinks.cs); none: nothing is fetched
         cfg["avatar_uploads"] = AvatarUploads(root);  // where a player's uploaded avatar is fetched from by user id (State.AvatarFetchUrl); unset: the avatar list's own base
 
@@ -145,6 +144,13 @@ public sealed class Settings
         Text(o, "avatar_uploads") is not { } s ? null
         : Uri.TryCreate(s, UriKind.Absolute, out var u) && u.Scheme == Uri.UriSchemeHttps && u.UserInfo.Length == 0 && u.Query.Length == 0 && u.Fragment.Length == 0 ? s.TrimEnd('/')
         : throw new InvalidDataException("avatar_uploads: an https URL (no credentials, query or fragment)");
+
+    static long Whole(JsonObject o, string key, long fallback, long min) => o[key] switch
+    {
+        null => fallback,
+        JsonValue n when n.TryGetValue<long>(out var v) && v >= min => v,
+        _ => throw new InvalidDataException($"{key}: a whole number, at least {min}"),
+    };
 
     static string? Text(JsonObject o, string key) =>
         o[key] is JsonValue v && v.TryGetValue<string>(out var s) && s.Length > 0 ? s : null;

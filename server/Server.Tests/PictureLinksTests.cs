@@ -165,7 +165,7 @@ public class PictureLinksTests : StateTestBase
     public async Task AnUploadFetchesTheListedPicturesAtOnceKeepsThemWithTheZipAndAnApproveRestoresThem()
     {
         var host = new Fake();
-        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks([Host], host) };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks([Host], host) };
         var player = state.Store.NextServerId();
         state.CreateAccount(player, "player", "76561190000000000");
         var zip = Zip().Write(tmp, "links.zip");
@@ -199,7 +199,7 @@ public class PictureLinksTests : StateTestBase
         var player = state.Store.NextServerId();
         state.CreateAccount(player, "player", "76561190000000000");
         var zip = Zip().Write(tmp, "links.zip");
-        var plain = new Uploads(state, tmp);
+        var plain = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var id = plain.Start(player)!;
         await plain.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)));
         Assert.Equal("review", (await plain.Finish(player, id)).Kind);
@@ -208,7 +208,7 @@ public class PictureLinksTests : StateTestBase
         Assert.True(plain.Reject(Row(player)));
 
         var host = new Fake();
-        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks([Host], host) };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks([Host], host) };
         id = uploads.Start(player)!;
         await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)));
         Assert.Equal("review", (await uploads.Finish(player, id)).Kind);
