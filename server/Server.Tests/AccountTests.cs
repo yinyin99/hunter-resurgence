@@ -303,16 +303,23 @@ public class AccountIsolationTests : StateTestBase
         Assert.Throws<SqliteException>(() => state.CreateAccount(B, "again"));
     }
 
+    string Clone(long account, int slot) => Py.Str(Reply(state.MoveMultiple2Reply(account, Form(
+        JsonNode.Parse($$"""[{"item_guid": "new_item_1", "slot_id": {{slot}}}]""")!,
+        JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 10}]"""))))["new_item_1"]);
+
     [Fact]
-    public void TestInventoryMovesAndGuidsStayInTheirAccount()
+    public void TestInventoryMovesClonesAndGuidsStayInTheirAccount()
     {
         Unlimited();
         state.MoveMultiple2Reply(B, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!));
         Eq("0", Inventory(A)["100"]!["slot"]);
         Eq("12", Inventory(B)["100"]!["slot"]);
+        Assert.Equal("201", Clone(B, 13));
         // a guid that only the other account has is unknown here
         Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(A, Form(JsonNode.Parse("""[{"item_guid": 201, "slot_id": 5}]""")!)));
         Assert.DoesNotContain("201", Inventory(A).Select(kv => kv.Key));
+        Assert.Equal("201", Clone(A, 14));  // each account allocates its own guids, and the same placeholder is a new box in each
+        Eq("[13, 14]", T(Inventory(B)["201"]!["slot"], Inventory(A)["201"]!["slot"]));
         // a consumed item and an item metadata event change one account's row only
         Hb(B, O("""{"event": 6, "item": "200", "parent_item": "300", "quantity": 4}"""),
            O("""{"event": 23, "item": "100", "metadata": {"dog_name": "Rex"}}"""));

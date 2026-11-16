@@ -4,7 +4,7 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-/// <summary>`unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition full, no box is cloned by the inventory page (the game would not know it),
+/// <summary>`unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition full, a cloned box is full with a guid of its own (never past its stack size, never twice for a placeholder),
 /// and no ammunition is sold. Off: ammunition is an item like any other. Item 77 is an ammunition (a box of 10) that is not the free kit's; 19 is a lure.</summary>
 public class UnlimitedAmmoTests : StateTestBase
 {
@@ -77,12 +77,68 @@ public class UnlimitedAmmoTests : StateTestBase
     byte[] Clone(string entries) => state.MoveMultiple2Reply(ME, Form(new JsonArray(), JsonNode.Parse(entries)));
 
     [Fact]
-    public void AClonedEntryCreatesNothingAndTheReplyIsNull()
+    public void AClonedBoxIsFullWithANewIntegerGuidWhateverTheRequestSaysAndOnlyOfAnAmmunitionTheAccountOwns()
+    {
+        Make(true);
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""));  // an ammunition it does not own yet
+        SetStacks(3);
+        var reply = Reply(Clone("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}]"""));
+        Assert.Equal(["new_item_1", "new_item_2"], reply.AsObject().Select(kv => kv.Key));
+        var guids = reply.AsObject().Select(kv => kv.Value is JsonValue v && v.TryGetValue<long>(out var g) ? g : -1).ToArray();  // numbers: the page keeps a text as a placeholder and copies it again
+        Assert.Equal(2, guids.Distinct().Count());
+        Assert.All(guids, g => Assert.Contains(g.ToString(), Items().Select(kv => kv.Key)));
+        Assert.Equal("3 10 10", Stacks());
+        // an item that is no ammunition (a lure it does not own, a bullet the catalogue does not class) is never created
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_3", "item_id": 19}, {"item_guid": "new_item_4", "item_id": 10}]"""));
+        Assert.DoesNotContain(19L, state.Inventory(ME).Select(i => (long)i!["item_id"]!));
+        // a name that is no placeholder of the page creates nothing
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "x", "item_id": 77}, {"item_guid": 5, "item_id": 77}, {"item_guid": "new_item_", "item_id": 77}]"""));
+        Assert.Equal("3 10 10", Stacks());
+    }
+
+    [Fact]
+    public void ARepeatedPlaceholderCreatesNothingAgainAndItsSlotIsStillApplied()
     {
         Make(true);
         SetStacks(3);
-        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77, "units": 9999}, {"item_guid": "new_item_2", "item_id": 77}]"""));
-        Assert.Equal("3", Stacks());
+        var guid = Py.Str(Reply(Clone("""[{"item_guid": "new_item_5", "item_id": 77}]"""))["new_item_5"]);
+        // a tab change and a close overlap: the page asks again before it has the answer
+        Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(
+            JsonNode.Parse("""[{"item_guid": "new_item_5", "slot_id": 9}]""")!, JsonNode.Parse("""[{"item_guid": "new_item_5", "item_id": 77}]"""))));
+        Assert.Equal("3 10", Stacks());
+        Eq("9", Items()[guid]!["slot"]);
+        // and the answered placeholder is a guid from then on
+        state.MoveMultiple2Reply(ME, Form(JsonNode.Parse($$"""[{"item_guid": {{guid}}, "slot_id": 1}]""")!));
+        Eq("1", Items()[guid]!["slot"]);
+    }
+
+    [Fact]
+    public void AnAmmunitionHasAtMostAHundredRowsAndAGuidNeverPassesTheGamesNumber()
+    {
+        Make(true);
+        SetStacks(3);
+        var entries = string.Join(", ", Enumerable.Range(1, 150).Select(i => $$"""{"item_guid": "new_item_{{i}}", "item_id": 77}"""));
+        Assert.Equal(99, Reply(Clone($"[{entries}]")).AsObject().Count);
+        Assert.Equal(100, Stacks().Split(' ').Length);
+        using (var con = state.Store.Open(ME))
+            con.Exec("DELETE FROM items WHERE account_id = $a AND item_id = 77 AND guid > (SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = 77)");
+        using (var con = state.Store.Open(ME))
+            con.Exec("UPDATE items SET guid = ? WHERE account_id = $a AND item_id = 77", (long)int.MaxValue);
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_200", "item_id": 77}]"""));
+    }
+
+    [Fact]
+    public void AMarkedBoxLeftInTheLodgeGoesAtTheNextLaunchAndTheGameIsNeverShownTheMark()
+    {
+        Make(true);
+        SetStacks(3, 4);
+        var reply = Reply(state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": "new_item_1", "slot_id": 1}]""")!,
+            JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 77}, {"item_guid": "new_item_2", "item_id": 77}, {"item_guid": "new_item_3", "item_id": 77}]"""))));
+        Assert.Equal("3 4 10 10 10", Stacks());  // the first went to the backpack, the others stayed in the lodge
+        Assert.All(Items().Where(i => (long)i.Value!["item_id"]! == Ammo), i => Eq("{}", i.Value!["metadata"]));
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("10 10 10", Stacks());  // the two stacks it owns stay, and the box in the backpack
+        Eq("1", Items()[Py.Str(reply["new_item_1"])]!["slot"]);
     }
 
     [Fact]

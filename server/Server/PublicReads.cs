@@ -452,6 +452,7 @@ public sealed partial class State
             static JsonNode? Scaled(JsonNode? v) => v is JsonObject o
                 ? new JsonObject { ["x"] = Py.D(o["x"]) / 1000, ["y"] = Py.D(o["y"]) / 1000, ["z"] = Py.D(o["z"]) / 1000 } : null;
             var (pos, dir, reserve) = (Take(POSITION), Take(DIRECTION), Take(RESERVE));
+            Take(CLONE);
             JsonNode? location = null;
             if (r[2] is PLACED_SLOT && pos is not null)
             {
