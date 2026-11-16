@@ -228,7 +228,7 @@ public static class Replay
         catch (ArgumentException) { return null; }
     }
 
-    static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/lodges/[a-z0-9_]{1,40}\.png)\z", RegexOptions.ECMAScript);
+    static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/(?:animals|skulls|weapons|slots|styles|layouts|lodges)/[a-z0-9][\w.-]{0,79})\z", RegexOptions.ECMAScript);
 
     /// <summary>The in-game app's trophy lodge editor page: the lodge editor frame (`client#lodge_edit`) loads `/static/app/<version>/webgui/index.html`, and that page loads `/dist/main.js`. Both are the app pages of the install's archives (`webguiv2/`).</summary>
     static readonly Regex AppPage = new(@"\A/(?:static/app/[^/]+/webgui/(index\.html)|dist/main\.js)\z", RegexOptions.ECMAScript);
@@ -405,22 +405,38 @@ public static class Replay
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
         static int warned, warnedApp, warnedFrame;
 
-        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page asks for the script under a new `?t=` token and, before it, wraps `fetch` to add the player's token to this origin's requests that have none.</summary>
+        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
-        public const string AppVersion = "urls1";
         public static readonly (string From, string To)[] AppUrls =
             [("'https://api.' + getObj().getServer() + '/v1'", "window.location.origin + '/v1'"),
              ("'https://apiv2.' + getObj().getServer()", "window.location.origin + '/v1'"),
              ("'https://static.' + getObj().getServer()", "window.location.origin")];
-        // the page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included): before the script runs,
-        // `fetch` is wrapped so that each request to this origin that has none gets the game's own token (read at each call, so a missing bridge only skips it)
-        const string TokenScript = "<script>(function(){var f=window.fetch;if(!f)return;window.fetch=function(r,o){try{var u=typeof r===\"string\"?r:r.url,"
-            + "t=window.hunter&&typeof hunter.getAuthToken===\"function\"&&hunter.getAuthToken();"
-            + "if(t&&(u.indexOf(location.origin+\"/\")===0||(u.charAt(0)===\"/\"&&u.charAt(1)!==\"/\"))){"
-            + "if(typeof r===\"string\"){o=o||{};var h=new Headers(o.headers||{});if(!h.has(\"Authorization\"))h.set(\"Authorization\",\"Bearer \"+t);o.headers=h;}"
-            + "else if(!r.headers.has(\"Authorization\"))r.headers.set(\"Authorization\",\"Bearer \"+t);}}catch(e){}return f.call(this,r,o);};})();</script>";
+        /// <summary>The one picture address the script builds on a fixed host (the gun racks' icons), without the page's own address builder.</summary>
+        static readonly Regex FixedPictureHost = new(@"'https://static\.[\w.-]+/static/img/", RegexOptions.ECMAScript);
+        // The page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included), and the page calls the game's
+        // functions (`window.hunter`) as if each answered at once, while in this build each answers with a promise (the locale then fails on `.split`, a label on `.replace`, and the page stays empty).
+        // Before the script runs, the frame page therefore: wraps `fetch` so each request to this origin that has no token gets the game's own (asked at each call; a missing bridge only skips it);
+        // when `getLocale()` answers with a promise, waits for the answers the page reads at once (`getServer`, `getActiveLodgeId`, `getHostPlayerGuid`, `getLocalPlayerGuid`, `isStaff`, `isSinglePlayer`,
+        // `getInventory`, `getLocale`) and for the locale script of that language, then replaces `window.hunter` by an object whose functions of that list return the kept answer, whose `getLocalizedString`
+        // reads the locale script (the label key without its brackets, the key itself when unknown, as the game does), and whose other functions pass on to the game and return its promise
+        // (`getAuthToken` too: the page wraps it in a promise); only then is the script added. A build whose `getLocale()` answers at once gets the script as it was.
+        // The page's other calls (`getSelectedPlatformId`, the mounted and unmounted trophy deltas, `getWeaponPlatformTypeID`, `selectTrophyMount`, `selectWeaponMount`: the trophy and weapon menus' own routes;
+        // `getLoggedInUserID`, `confirmBuy`: only when the page sits in the website) are not on the game's object and not made up here.
+        const string FrameScript = """
+<script>(function(){var n=window.hunter,f=window.fetch;
+if(f)window.fetch=function(r,o){var u=typeof r==="string"?r:r.url,s=this;if(!n||typeof n.getAuthToken!=="function"||!(u.indexOf(location.origin+"/")===0||(u.charAt(0)==="/"&&u.charAt(1)!=="/")))return f.call(s,r,o);
+return Promise.resolve(n.getAuthToken()).then(function(t){if(t){if(typeof r==="string"){o=o||{};var h=new Headers(o.headers||{});if(!h.has("Authorization"))h.set("Authorization","Bearer "+t);o.headers=h;}else if(!r.headers.has("Authorization"))r.headers.set("Authorization","Bearer "+t);}return f.call(s,r,o);},function(){return f.call(s,r,o);});};
+function go(){var s=document.createElement("script");s.src="/dist/main.js?t=urls2";document.body.appendChild(s);}
+var v=n&&typeof n.getLocale==="function"&&n.getLocale();if(!v||typeof v.then!=="function")return go();
+var keep=["getServer","getActiveLodgeId","getHostPlayerGuid","getLocalPlayerGuid","isStaff","isSinglePlayer","getInventory"],c={},S={};
+Promise.all(keep.map(function(k){return Promise.resolve(n[k]()).then(function(x){c[k]=x;});}).concat(v.then(function(l){c.getLocale=l;return new Promise(function(ok){window.hunterSetLocale=function(o){S=o;};var s=document.createElement("script");s.src=location.pathname.replace(/webgui\/[^\/]*$/,"locale/")+l+".js";s.onload=s.onerror=ok;document.head.appendChild(s);});}))).then(function(){
+var w={};Object.keys(n).forEach(function(k){w[k]=function(){return n[k].apply(n,arguments);};});
+keep.concat("getLocale").forEach(function(k){w[k]=function(){return c[k];};});
+w.getLocalizedString=function(k){var s=S[k.slice(1,-1)];return s===undefined?k:s;};
+window.hunter=w;go();},go);})();</script>
+""";
         const string AppScriptTag = "<script src=\"/dist/main.js\"></script>";
-        static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, TokenScript + "<script src=\"/dist/main.js?t=" + AppVersion + "\"></script>")];
+        static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, FrameScript)];
 
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
@@ -449,7 +465,7 @@ public static class Replay
             if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
             // Latin1 keeps every byte of the rest of a file as it was
             if (AppScript.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppUrls, ref warnedApp, "the lodge editor's server addresses") is { } app)
-                return NoCache(reply, Encoding.Latin1.GetBytes(app));
+                return NoCache(reply, Encoding.Latin1.GetBytes(FixedPictureHost.Replace(app, "'/content/").Replace("/static/img/", "/content/", StringComparison.Ordinal)));  // the pictures: the game answers `/static/img/...` from its archives alone (a request for a picture they lack never reaches the server), and `/content/...` from this server
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
@@ -522,12 +538,9 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        static readonly Regex LodgeStatic = new(@"\A/static/img/lodge/(?:animals|skulls|weapons|slots|styles|layouts|lodges)/[\w.-]{1,80}\z", RegexOptions.ECMAScript);
-
-        /// <summary>The kill screen's organ pictures and the lodge pictures, and the lodge editor's own (`/static/img/lodge/...`), when the archive lacks one: the static host's folder of the mirror.</summary>
-        string? PictureMirror(Req r) => r.Host != GameWeb ? null
-            : PictureUrl.Match(r.Path) is { Success: true } m ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value)
-            : LodgeStatic.IsMatch(r.Path) ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), r.Path) : null;
+        /// <summary>The kill screen's organ pictures and the lodge pictures (the lodge editor's own too), when the archive lacks one: the static host's folder of the mirror.</summary>
+        string? PictureMirror(Req r) => r.Host == GameWeb && PictureUrl.Match(r.Path) is { Success: true } m
+            ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
 
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 
