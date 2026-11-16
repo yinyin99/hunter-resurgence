@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Yükleniyor…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>{0} kullanıcı id'li yedeğiniz bu hesaba geri yüklendi.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Operatörün incelemesi için saklanan yedekler: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>{0} tarihinde saklandı</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>{0} tarihinde geri yüklendi: kullanıcı id'niz {1} ve adınız {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Ad, yedeğinizdeki addır.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Adınız korundu: yedekteki ad izinli değil ya da başka bir oyuncuya ait.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Yüklemeler şimdilik duraklatıldı, daha sonra tekrar deneyin</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Oturum kapatıldı</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Burada kullanılamıyor</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Elinizdeki</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Yükleme</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Talep</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Sonra ne olur</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Elinizde ne var?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Yedek zip'im var</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Yedekleme aracımızla veya başka bir kayıt aracıyla yapılmış. Olduğu gibi yükleyin, açmayın.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Yedeğim yok</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Bu sunucunun sakladığı profiller arasında eski avcı adınızı bulun ve talep edin.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Zip'inizi yükleyin</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Yedekleme aracınızın yaptığı zip, olduğu gibi: aracımızın zip'i veya başka bir aracın dışa aktarımı (örneğin bir _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>En fazla 1 GiB'lık tek bir zip. Yalnızca bir kez geri yüklenebilir ve buradaki profilinizin yerini alır.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Bir operatör elle kontrol eder: hiçbir şey otomatik geri yüklenmez.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Tüm kurallar</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Geri</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Sonraki:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Yüklemeleriniz</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Henüz yok.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Tarih</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Ne</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Sonuç</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Eski profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>İnceleme bekliyor</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Okunamadı</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Operatör tarafından reddedildi</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Yedekleme aracımızla yapıldı</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Başka bir araçla yapıldı</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Kullanıcı id'si {0}, ad {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Alındı: başka bir araçtan bir yedek. Bir operatör kontrol edecek.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Henüz yedek yüklenmedi</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Başka bir yedek yükle</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Şu an başka bir yedek yükleyemezsiniz: operatör için saklanan zip sınırına ulaşıldı veya yüklemeler duraklatıldı. Bir operatör inceledikten sonra tekrar deneyin.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Şimdilik yapılacak bir şey yok. Bir operatör her zip'i elle kontrol eder, bu yüzden biraz sürebilir.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Yapılacak başka bir şey yok: profiliniz bu hesapta. Bir yedek yalnızca bir kez geri yüklenebilir.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Yedekleme aracınızın yaptığı zip'i olduğu gibi yükleyin. Hiç yoksa önce yeni bir yedek alın.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Nedeni okuyun, sonra başka bir yedek yükleyin.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Bekleyen zip'lerden biri bir operatör tarafından incelenene kadar bekleyin, sonra tekrar yükleyin.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Hiçbir şey kaybolmadı. Daha sonra tekrar deneyin.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Bir zip en fazla 1 GiB olabilir. Daha küçük bir yedek alın.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Oturum açın, sonra tekrar yükleyin.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Mesajı kontrol edin, sonra tekrar yükleyin.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Şimdilik yapılacak bir şey yok. Bir operatör talebinizi kontrol eder ve gelen kutunuza bir ileti gelir.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Yalnızca bir profil talep edebilirsiniz. Yedek zip'iniz varsa onu yükleyin.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Yedek zip'inizi seçin ve yükleyin.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Verilerimi sil</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Bu işlem bu sunucudaki hesabınızı ve onunla saklanan her şeyi siler: Steam id'nizi, adınızı, oyun verilerinizi, saklanan yedek zip dosyalarını ve fotoğraflarınızı. Oturumunuz kapatılır ve başlatıcıdaki oturum açma çalışmaz. Geri alınamaz.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Anlıyorum, her şeyi sil</value></data>

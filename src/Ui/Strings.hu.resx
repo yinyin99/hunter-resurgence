@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Feltöltés…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>A(z) {0} azonosítójú felhasználó mentése vissza lett állítva ezen a fiókon.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Az üzemeltető általi ellenőrzésre váró mentések: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Elmentve: {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Visszaállítva: {0}. A felhasználói azonosítód {1}, a neved pedig {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>A név a mentésedben szereplő név.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>A neved megmaradt: a mentésben szereplő név nem engedélyezett, vagy egy másik játékosé.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>A feltöltések egyelőre szünetelnek, próbáld újra később</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Kijelentkeztél</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Itt nem érhető el</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Mid van</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Feltöltés</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Igénylés</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Mi következik</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Mid van?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Van mentési zipem</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>A mentőeszközünkkel vagy másik mentőeszközzel készült. Töltsd fel úgy, ahogy van, kicsomagolás nélkül.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Nincs mentésem</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Keresd meg a régi vadásznevedet a szerver által megőrzött profilok között, és igényeld.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Töltsd fel a zipet</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>A mentőeszközöd által készített zip úgy, ahogy van: a mi eszközünk zipje vagy másik eszköz exportja (például egy _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Egy zip legfeljebb 1 GiB lehet. Egyszer állítható vissza, és lecseréli a profilodat itt.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Egy üzemeltető kézzel ellenőrzi: semmi sem áll vissza automatikusan.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Az összes szabály</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Vissza</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Következő:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Feltöltéseid</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Még nincs semmi.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Dátum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Mi</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Eredmény</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Régi profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Ellenőrzésre vár</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Nem sikerült beolvasni</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Az üzemeltető elutasította</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>A mentőeszközünkkel készült</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Másik eszközzel készült</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Felhasználói azonosító: {0}, név: {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Megkaptuk: másik eszközzel készült mentés. Egy üzemeltető ellenőrzi.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Még nem töltöttél fel mentést</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Másik mentés feltöltése</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Most nem tölthetsz fel másik mentést: elérted az üzemeltetőnek megőrzött zipek korlátját, vagy a feltöltések szünetelnek. Próbáld újra, miután egy üzemeltető átnézte őket.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Most nincs teendőd. Egy üzemeltető kézzel ellenőrzi a zipeket, ezért ez eltarthat egy ideig.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nincs több teendőd: a profilod ezen a fiókon van. Egy mentés csak egyszer állítható vissza.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Töltsd fel a mentőeszközöd által készített zipet úgy, ahogy van. Ha nincs, előbb készíts új mentést.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Olvasd el az indoklást, majd tölts fel egy másik mentést.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Várj, amíg egy üzemeltető átnéz egyet a várakozó zipek közül, aztán tölts fel újra.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Semmi sem veszett el. Próbáld újra később.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Egy zip legfeljebb 1 GiB lehet. Készíts kisebb mentést.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Jelentkezz be, aztán tölts fel újra.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Nézd meg az üzenetet, aztán tölts fel újra.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Most nincs teendőd. Egy üzemeltető ellenőrzi az igénylésedet, és üzenetet kapsz a postaládádba.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Csak egy profilt igényelhetsz. Ha van mentési zipod, inkább azt töltsd fel.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Válaszd ki a mentési zipet, és töltsd fel.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Adataim törlése</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Ez törli a fiókodat ezen a szerveren és mindent, ami hozzá tartozik: a Steam-azonosítódat, a nevedet, a játékadataidat, a megőrzött mentési zipeket és a fotóidat. Kijelentkeztetünk, és a launcher bejelentkezése nem fog működni. Ez nem vonható vissza.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Megértettem, töröljön mindent</value></data>

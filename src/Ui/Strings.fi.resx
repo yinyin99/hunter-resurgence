@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Lähetetään…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Varmuuskopiosi käyttäjätunnukselle {0} on palautettu tälle tilille.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Operaattorin tarkistettavina olevat varmuuskopiot: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Tallennettu {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Palautettu {0}: käyttäjätunnuksesi on {1} ja nimesi on {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Nimi on varmuuskopiosi nimi.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Nimesi säilytettiin: varmuuskopion nimi ei ole sallittu tai kuuluu toiselle pelaajalle.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Lataukset on toistaiseksi keskeytetty, yritä myöhemmin uudelleen</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Kirjauduttu ulos</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Ei saatavilla täällä</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Mitä sinulla on</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Lähetys</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Lunastus</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Mitä seuraavaksi tapahtuu</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Mitä sinulla on?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Minulla on varmuuskopio-zip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Tehty meidän varmuuskopiotyökalullamme tai toisella tallennustyökalulla. Lähetä se sellaisenaan purkamatta.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Minulla ei ole varmuuskopiota</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Etsi vanha metsästäjänimesi tämän palvelimen säilyttämistä profiileista ja lunasta se.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Lähetä zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Varmuuskopiotyökalusi tekemä zip sellaisenaan: meidän työkalumme zip tai toisen työkalun vienti (esimerkiksi _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Yksi zip, enintään 1 GiB. Sen voi palauttaa kerran, ja se korvaa profiilisi täällä.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Operaattori tarkistaa sen käsin: mitään ei palauteta automaattisesti.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Kaikki säännöt</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Takaisin</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Seuraavaksi:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Lähetyksesi</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Ei vielä mitään.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Päivä</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Mitä</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Tulos</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Vanha profiili</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Odottaa tarkistusta</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Ei voitu lukea</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Operaattorin hylkäämä</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Tehty meidän varmuuskopiotyökalullamme</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Tehty toisella työkalulla</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Käyttäjätunnus {0}, nimi {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Vastaanotettu: varmuuskopio toisesta työkalusta. Operaattori tarkistaa sen.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Varmuuskopiota ei ole vielä lähetetty</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Lähetä toinen varmuuskopio</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Et voi nyt lähettää toista varmuuskopiota: operaattorille säilytettävien zippien raja on täynnä, tai lähetykset on keskeytetty. Yritä uudelleen, kun operaattori on tarkistanut ne.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nyt ei tarvitse tehdä mitään. Operaattori tarkistaa jokaisen zipin käsin, joten se voi viedä hetken.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Ei tarvitse tehdä enempää: profiilisi on tällä tilillä. Varmuuskopion voi palauttaa vain kerran.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Lähetä varmuuskopiotyökalusi tekemä zip sellaisenaan. Jos sinulla ei ole sellaista, tee ensin uusi varmuuskopio.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Lue syy ja lähetä sitten toinen varmuuskopio.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Odota, kunnes operaattori on tarkistanut jonkin odottavista zipeistä, ja lähetä sitten uudelleen.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Mitään ei ole menetetty. Yritä myöhemmin uudelleen.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Zip saa olla enintään 1 GiB. Tee pienempi varmuuskopio.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Kirjaudu sisään ja lähetä sitten uudelleen.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Tarkista viesti ja lähetä sitten uudelleen.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nyt ei tarvitse tehdä mitään. Operaattori tarkistaa lunastuksesi, ja saat viestin saapuneisiin.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Voit lunastaa vain yhden profiilin. Jos sinulla on varmuuskopio-zip, lähetä se sen sijaan.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Valitse varmuuskopio-zip ja lähetä se.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Poista tietoni</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Tämä poistaa tilisi tältä palvelimelta ja kaiken siihen tallennetun: Steam-tunnuksesi, nimesi, pelitietosi, säilytetyt varmuuskopio-zipit ja valokuvasi. Sinut kirjataan ulos, eikä käynnistäjän sisäänkirjautuminen enää toimi. Tätä ei voi perua.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ymmärrän, poista kaikki</value></data>

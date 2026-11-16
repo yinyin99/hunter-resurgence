@@ -7,7 +7,8 @@ public sealed record RestoreResult(string Status, string Message, string? Report
 
 /// <param name="Ts">Unix seconds the zip was kept.</param>
 /// <param name="Note">Where it stands, in the server's English: "waiting for the operator", or the reason the operator's approve was refused.</param>
-public sealed record KeptZip(long Ts, string Note);
+/// <param name="Format"><c>ours</c> (our backup tool's zip) or <c>other</c> (another tool's), by the reader that parsed it.</param>
+public sealed record KeptZip(long Ts, string Note, string Format = "ours");
 
 /// <param name="Ts">Unix seconds of the decision.</param>
 /// <param name="Kind"><c>restored</c> or <c>rejected</c>.</param>
@@ -20,7 +21,8 @@ public sealed record RestoreDecision(long Ts, string Kind, long? UserId, string?
 /// <param name="RestoredUserId">The backup's user id this account restored (once), or null.</param>
 /// <param name="Review">The zips kept for the operator, oldest first.</param>
 /// <param name="Decisions">What the operator decided about the others, oldest first.</param>
-public sealed record RestoreStatus(long? RestoredUserId, IReadOnlyList<KeptZip> Review, IReadOnlyList<RestoreDecision> Decisions);
+/// <param name="Room">The account can store one more zip (false at its limits).</param>
+public sealed record RestoreStatus(long? RestoredUserId, IReadOnlyList<KeptZip> Review, IReadOnlyList<RestoreDecision> Decisions, bool Room = true);
 
 /// <param name="State"><c>waiting</c>, <c>restored</c> or <c>rejected</c>.</param>
 /// <param name="Ts">Unix seconds of the claim.</param>
@@ -42,8 +44,8 @@ public interface IRestoreService
     /// <summary>Null: signed out, or the server did not answer.</summary>
     Task<RestoreStatus?> StatusAsync();
 
-    /// <summary>Send the backup zip. Never throws for a refusal or a network failure: the result says.</summary>
-    Task<RestoreResult> UploadAsync(Stream zip, long length);
+    /// <summary>Send the backup zip. Never throws for a refusal or a network failure: the result says. <paramref name="progress"/> gets the bytes of the zip sent so far.</summary>
+    Task<RestoreResult> UploadAsync(Stream zip, long length, IProgress<long>? progress = null);
 
     /// <summary>Delete the account and all its data. True when the server did.</summary>
     Task<bool> DeleteAsync();

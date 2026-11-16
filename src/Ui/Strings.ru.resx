@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Загрузка…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Ваша резервная копия с ID пользователя {0} восстановлена в этом аккаунте.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Резервных копий, ожидающих проверки оператором: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Сохранена {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Восстановлено {0}: ваш ID пользователя — {1}, ваше имя — {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Имя взято из вашей резервной копии.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ваше имя сохранено: имя из резервной копии недопустимо или принадлежит другому игроку.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Загрузки пока приостановлены, попробуйте позже</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Вы вышли</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Здесь недоступно</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Что у вас есть</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Загрузка</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Заявка</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Что дальше</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Что у вас есть?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>У меня есть zip с резервной копией</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Создан нашим инструментом резервного копирования или другим инструментом сохранения. Загрузите его как есть, не распаковывая.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>У меня нет резервной копии</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Найдите своё старое имя охотника среди профилей, сохранённых этим сервером, и подайте заявку на него.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Загрузите zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Zip, созданный вашим инструментом резервного копирования, как есть: zip нашего инструмента или экспорт другого инструмента (например, _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Один zip до 1 GiB. Его можно восстановить один раз, он заменит ваш профиль здесь.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Оператор проверяет его вручную: ничего не восстанавливается автоматически.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Все правила</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Назад</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Далее:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Ваши загрузки</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Пока ничего.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Дата</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Что</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Результат</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Старый профиль</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Ожидает проверки</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Не удалось прочитать</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Отклонено оператором</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Создано нашим инструментом резервного копирования</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Создано другим инструментом</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>ID пользователя {0}, имя {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Получено: резервная копия из другого инструмента. Оператор её проверит.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Резервных копий ещё не загружено</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Загрузить другую резервную копию</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Сейчас нельзя загрузить другую резервную копию: достигнут лимит zip-файлов, хранимых для оператора, или загрузки приостановлены. Попробуйте снова, когда оператор их проверит.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Сейчас ничего делать не нужно. Оператор проверяет каждый zip вручную, поэтому это может занять время.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Больше ничего делать не нужно: ваш профиль уже в этой учётной записи. Резервную копию можно восстановить только один раз.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Загрузите zip, созданный вашим инструментом резервного копирования, как есть. Если его нет, сначала создайте новую резервную копию.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Прочитайте причину, затем загрузите другую резервную копию.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Дождитесь, пока оператор проверит один из ожидающих zip-файлов, затем загрузите снова.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Ничего не потеряно. Попробуйте позже.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Размер zip не больше 1 GiB. Создайте резервную копию поменьше.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Войдите в аккаунт, затем загрузите снова.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Проверьте сообщение, затем загрузите снова.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Сейчас ничего делать не нужно. Оператор проверяет вашу заявку, и вы получите сообщение во входящих.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Можно подать заявку только на один профиль. Если у вас есть zip с резервной копией, загрузите его.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Выберите zip с резервной копией и загрузите его.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Удалить мои данные</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Это удалит ваш аккаунт на этом сервере и всё, что с ним хранится: ваш Steam ID, ваше имя, игровые данные, сохранённые zip-архивы резервных копий и ваши фотографии. Вы выйдете из аккаунта, а вход через лаунчер перестанет работать. Это нельзя отменить.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Я понимаю, удалить всё</value></data>

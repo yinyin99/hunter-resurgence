@@ -145,6 +145,32 @@ public class ServerRestoreServiceTests
     }
 
     [Fact]
+    public async Task UploadReportsTheBytesSentSoFarAcrossTheParts()
+    {
+        var zip = new byte[ServerAccountApi.PartBytes + 3];
+        var seen = new List<long>();
+        await Make(new Fake(Parts) { KeepBodies = false }).UploadAsync(new MemoryStream(zip), zip.Length, new Sync(seen.Add));
+        Assert.NotEmpty(seen);
+        Assert.Equal(seen.Order(), seen);  // never goes back
+        Assert.Equal(zip.Length, seen[^1]);
+        Assert.Contains(ServerAccountApi.PartBytes, seen);  // the first part's end, then the second's bytes on top of it
+    }
+
+    sealed class Sync(Action<long> report) : IProgress<long>
+    {
+        public void Report(long value) => report(value);
+    }
+
+    [Fact]
+    public async Task TheStatusCarriesEachZipsFormatAndWhetherThereIsRoom()
+    {
+        var json = """{"restoredUserId":null,"review":[{"ts":1,"note":"waiting for the operator","format":"other"},{"ts":2,"note":"x"}],"decisions":[],"room":false}""";
+        var status = await Make(new Fake(_ => Json(HttpStatusCode.OK, json))).StatusAsync();
+        Assert.Equal(["other", "ours"], status!.Review.Select(k => k.Format));  // an older server names no format
+        Assert.False(status.Room);
+    }
+
+    [Fact]
     public async Task TheMockSaysThereIsNoServer()
     {
         var mock = new Resurgence.Services.Mocks.MockRestoreService();

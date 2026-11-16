@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Enviando…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Seu backup do id de usuário {0} foi restaurado nesta conta.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backups guardados para o operador conferir: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Guardado em {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Restaurado em {0}: seu id de usuário é {1} e seu nome é {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>O nome é o do seu backup.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Seu nome foi mantido: o nome do backup não é permitido ou pertence a outro jogador.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Os envios estão pausados por enquanto, tente mais tarde</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Sessão encerrada</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Indisponível aqui</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>O que você tem</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Reivindicar</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>O que acontece depois</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>O que você tem?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Tenho um zip de backup</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Feito com nossa ferramenta de backup ou outra ferramenta de salvamento. Envie como está, sem descompactar.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Não tenho backup</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Encontre seu antigo nome de caçador entre os perfis que este servidor guardou e reivindique-o.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Envie seu zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>O zip que sua ferramenta de backup criou, como está: o zip da nossa ferramenta ou a exportação de outra ferramenta (por exemplo, um _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Um zip de até 1 GiB. Ele pode ser restaurado uma vez e substitui o seu perfil aqui.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Um operador confere manualmente: nada é restaurado automaticamente.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Todas as regras</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Voltar</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Próximo:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Seus envios</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Nada ainda.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>O quê</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Resultado</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Perfil antigo</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Aguardando revisão</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Não foi possível ler</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Rejeitado pelo operador</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Feito com nossa ferramenta de backup</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Feito com outra ferramenta</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Id de usuário {0}, nome {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Recebido: um backup de outra ferramenta. Um operador vai conferir.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Nenhum backup enviado ainda</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Enviar outro backup</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Você não pode enviar outro backup agora: o limite de zips guardados para o operador foi atingido, ou os envios estão pausados. Tente de novo depois que um operador revisar.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nada a fazer agora. Um operador confere cada zip manualmente, então pode demorar.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nada mais a fazer: seu perfil está nesta conta. Um backup só pode ser restaurado uma vez.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Envie o zip que sua ferramenta de backup criou, como está. Se não tiver nenhum, faça um novo backup primeiro.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Leia o motivo e depois envie um backup diferente.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Espere um operador revisar um dos zips na fila e depois envie de novo.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nada foi perdido. Tente novamente mais tarde.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Um zip tem no máximo 1 GiB. Faça um backup menor.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Entre na sua conta e depois envie de novo.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Confira a mensagem e depois envie de novo.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nada a fazer agora. Um operador confere sua solicitação e você recebe uma mensagem na caixa de entrada.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Você só pode reivindicar um perfil. Se tiver um zip de backup, envie-o no lugar.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Escolha seu zip de backup e envie.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Excluir meus dados</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto exclui sua conta neste servidor e tudo o que está guardado com ela: seu id da Steam, seu nome, seus dados de jogo, os zips de backup guardados e suas fotos. Você sai da conta e o login do launcher deixa de funcionar. Não é possível desfazer.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Entendo, excluir tudo</value></data>

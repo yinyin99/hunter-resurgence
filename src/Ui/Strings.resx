@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Uploading…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Your backup of user id {0} is restored on this account.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backups kept for the operator to review: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Kept on {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Restored on {0}: your user id is {1} and your name is {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>The name is the one from your backup.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Your name was kept: the name in the backup is not allowed or belongs to another player.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Uploads are paused for now, try again later</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Signed out</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Not available here</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>What you have</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Upload</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Claim</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>What happens next</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>What do you have?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>I have a backup zip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Made with our backup tool or another save tool. Upload it as it is, without unzipping it.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>I have no backup</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Find your old hunter name in the profiles this server kept, and claim it.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Upload your zip</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>The zip your backup tool made, as it is: our tool's zip or another tool's export (for example a _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>One zip up to 1 GiB. It can be restored once and replaces your profile here.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>An operator checks it by hand: nothing is restored automatically.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>All the rules</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Next:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Your uploads</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Nothing yet.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>What</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Result</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Old profile</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Waiting for review</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Could not be read</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Rejected by the operator</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Made with our backup tool</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Made with another tool</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>User id {0}, name {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Received: a backup from another tool. An operator will check it.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>No backup uploaded yet</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Upload another backup</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>You cannot upload another backup now: the limit of zips kept for the operator is reached, or uploads are paused. Try again once an operator has reviewed them.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Nothing to do now. An operator checks each zip by hand, so it can take a while.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nothing more to do: your profile is on this account. A backup can be restored only once.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Upload the zip your backup tool made, as it is. If you have none, make a new backup first.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Read the reason, then upload a different backup.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Wait until an operator has reviewed one of the zips waiting, then upload again.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nothing is lost. Try again later.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>A zip is at most 1 GiB. Make a smaller backup.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Sign in, then upload again.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Check the message, then upload again.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Nothing to do now. An operator checks your claim, and you get a message in your inbox.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>You can claim only one profile. If you have a backup zip, upload it instead.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Choose your backup zip and upload it.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>

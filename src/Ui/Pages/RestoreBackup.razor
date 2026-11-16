@@ -7,99 +7,149 @@
 
 <div class="page-min">
     <h2 class="page-title">@L["Restore.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
-    @if (archive is { Enabled: true })
+    @if (step > 0)
     {
-        <section class="panel box">
-            <h3>@L["Claim.Title"]</h3>
-            @if (archive.Claimed is { } claimed)
-            {
-                <p class="alert @(claimed.State == "restored" ? "ok" : claimed.State == "rejected" ? "bad" : "")">@L["Claim.State." + claimed.State, claimed.Handle, At(claimed.Ts)]</p>
-            }
-            else
-            {
-                <div class="pick">
-                    <label for="oldname">@L["Claim.Name"]</label>
-                    <input id="oldname" type="text" maxlength="64" @bind="oldName" @bind:event="oninput" disabled="@busy" />
-                    <button type="button" class="btn btn-primary" disabled="@(busy || oldName.Trim().Length == 0)" @onclick="Find">@L["Claim.Find"]</button>
-                </div>
-                @if (found is { Status: not "found" })
+        <div class="wizard">
+            <ol class="steps">
+                @foreach (var (n, label) in Steps)
                 {
-                    <p class="alert @(found.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + found.Status]</p>
+                    <li class="@(n == step ? "cur" : n < step ? "done" : "")">
+                        <button type="button" disabled="@busy" aria-current="@(n == step ? "step" : null)" @onclick="() => step = n">
+                            <span class="num">@if (n < step) { <Icon Name="check" /> } else { @n }</span>
+                            <span class="lab">@label</span>
+                        </button>
+                    </li>
                 }
-                @if (found?.Profile is { } p)
+            </ol>
+
+            <section class="stage panel">
+                @if (step == 1)
                 {
-                    <div class="alert">
-                        <b>@p.Handle</b> · @L["Claim.Score", p.Hunterscore]<br />
-                        @L["Claim.Counts", p.Items, p.Trophies, p.Lodges]<br />
-                        @L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]
+                    <h3>@L["Restore.Pick.Title"]</h3>
+                    <div class="choices">
+                        <button type="button" class="choice" @onclick="() => Choose(false)">
+                            <span class="ci"><Icon Name="download" /></span>
+                            <span class="ct"><b>@L["Restore.Pick.Zip"]</b><small>@L["Restore.Pick.ZipText"]</small></span>
+                            <span class="go"><Icon Name="angle-right" /></span>
+                        </button>
+                        @if (archive is { Enabled: true, Claimed: null })
+                        {
+                            <button type="button" class="choice" @onclick="() => Choose(true)">
+                                <span class="ci"><Icon Name="user" /></span>
+                                <span class="ct"><b>@L["Restore.Pick.None"]</b><small>@L["Restore.Pick.NoneText"]</small></span>
+                                <span class="go"><Icon Name="angle-right" /></span>
+                            </button>
+                        }
                     </div>
-                    <p><label><input type="checkbox" class="tick" @bind="useOldName" disabled="@(!p.NameFree || busy)" /> @L["Claim.UseName"]</label></p>
-                    <p class="alert bad">@L["Claim.Warning"]</p>
-                    <button type="button" class="btn btn-danger" disabled="@busy" @onclick="Claim">@L["Claim.Button"]</button>
                 }
-            }
-            @if (claimResult is not null)
-            {
-                <div class="alert @(claimResult.Status == "restored" ? "ok" : claimResult.Status == "review" ? "" : "bad")" role="alert">
-                    @if (claimResult.Status is "restored" or "review") { <b>@L["Claim.Result." + claimResult.Status]</b> }
-                    else { @claimResult.Message }
-                </div>
-            }
-        </section>
-    }
-    <section class="panel box">
-        <p>@L["Restore.Intro"]</p>
-        <p>@L["Restore.Hint"]</p>
-        <ul>
-            <li>@L["Restore.Rule1"]</li>
-            <li>@L["Restore.Rule2"]</li>
-            <li>@L["Restore.Rule3"]</li>
-            <li>@L["Restore.Rule4"]</li>
-        </ul>
-        @if (status?.RestoredUserId is { } restored) { <p class="alert ok">@L["Restore.Restored", restored]</p> }
-        @if (status?.Review.Count > 0)
-        {
-            <p class="alert">@L["Restore.Waiting", status.Review.Count]</p>
-            <ul class="kept">
-                @foreach (var kept in status.Review)
+                else if (step == 2 && claiming)
                 {
-                    <li><b>@L["Restore.Kept", At(kept.Ts)]</b><br />@kept.Note</li>
-                }
-            </ul>
-        }
-        @if (status is not null)
-        {
-            foreach (var done in status.Decisions)
-            {
-                <div class="alert @(done.Kind == "restored" ? "ok" : "bad")">
-                    @if (done.Kind == "restored")
+                    <h3>@L["Claim.Title"]</h3>
+                    <label for="oldname">@L["Claim.Name"]</label>
+                    <div class="row">
+                        <input id="oldname" class="field" type="text" maxlength="64" @bind="oldName" @bind:event="oninput" disabled="@busy" />
+                        <button type="button" class="btn btn-primary" disabled="@(busy || oldName.Trim().Length == 0)" @onclick="Find">@L["Claim.Find"]</button>
+                    </div>
+                    @if (found is { Status: not "found" })
                     {
-                        <b>@L["Restore.Done.restored", At(done.Ts), done.UserId ?? 0, done.Handle ?? ""]</b><br />
-                        @L[done.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"]
+                        <p class="note @(found.Status == "notfound" ? "" : "bad")" role="alert">@L["Claim.Find." + found.Status]</p>
+                    }
+                    @if (found?.Profile is { } p)
+                    {
+                        <div class="prof">
+                            <b>@p.Handle</b>
+                            <span>@L["Claim.Score", p.Hunterscore]</span>
+                            <span>@L["Claim.Counts", p.Items, p.Trophies, p.Lodges]</span>
+                            <span>@L["Claim.Flags", L[p.Skills ? "Claim.Yes" : "Claim.No"], L[p.Statistics ? "Claim.Yes" : "Claim.No"], L[p.Achievements ? "Claim.Yes" : "Claim.No"]]</span>
+                        </div>
+                        <label class="use"><input type="checkbox" class="tick" @bind="useOldName" disabled="@(!p.NameFree || busy)" /> @L["Claim.UseName"]</label>
+                        <p class="note warn">@L["Claim.Warning"]</p>
+                        <button type="button" class="btn btn-danger" disabled="@busy" @onclick="Claim">@L["Claim.Button"]</button>
+                    }
+                    @if (claimResult is { } cr)
+                    {
+                        <p class="note bad" role="alert">@cr.Message</p>
+                    }
+                    <p class="actions"><button type="button" class="btn btn-inverse" disabled="@busy" @onclick="() => step = 1">@L["Restore.Back"]</button></p>
+                }
+                else if (step == 2)
+                {
+                    <h3>@L["Restore.Upload.Title"]</h3>
+                    <ul class="rules">
+                        <li><Icon Name="check" /> <span>@L["Restore.Check1"]</span></li>
+                        <li><Icon Name="check" /> <span>@L["Restore.Check2"]</span></li>
+                        <li><Icon Name="check" /> <span>@L["Restore.Check3"]</span></li>
+                    </ul>
+                    <details class="more">
+                        <summary>@L["Restore.AllRules"]</summary>
+                        <p>@L["Restore.Intro"]</p>
+                        <p>@L["Restore.Hint"]</p>
+                        <ul><li>@L["Restore.Rule1"]</li><li>@L["Restore.Rule2"]</li><li>@L["Restore.Rule3"]</li><li>@L["Restore.Rule4"]</li></ul>
+                    </details>
+                    <label for="zip">@L["Restore.Choose"]</label>
+                    <div class="row">
+                        <InputFile id="zip" class="file" OnChange="Picked" accept=".zip,application/zip" disabled="@busy" />
+                        <button type="button" class="btn btn-primary" disabled="@(busy || file is null)" @onclick="Send">@L[busy ? "Restore.Working" : "Restore.Upload"]</button>
+                    </div>
+                    @if (busy && file is not null)
+                    {
+                        var percent = file.Size == 0 ? 0 : (int)(sent * 100 / file.Size);
+                        <div class="bar" role="progressbar" aria-label="@L["Restore.Working"]" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@percent"><i style="width:@(percent)%"></i></div>
+                        <p class="sub">@file.Name (@L.Size(file.Size)) · @percent %</p>
+                    }
+                    <p class="actions"><button type="button" class="btn btn-inverse" disabled="@busy" @onclick="() => step = 1">@L["Restore.Back"]</button></p>
+                }
+                else
+                {
+                    var now = Now();
+                    <h3>@L["Restore.Step.next"]</h3>
+                    <div class="now" data-tone="@now.Tone" aria-live="polite">
+                        <span class="ico"><Icon Name="@now.Icon" /></span>
+                        <div class="txt">
+                            <b class="t">@now.Title</b>
+                            @if (now.Detail.Length > 0) { <p class="detail">@now.Detail</p> }
+                            <p class="next"><strong>@L["Restore.NextLabel"]</strong> @now.Next</p>
+                        </div>
+                    </div>
+                    @if (result?.Report is { Length: > 0 } report)
+                    {
+                        <details class="more"><summary>@L["Restore.Details"]</summary><pre>@report</pre></details>
+                    }
+                    <h4>@L["Restore.Uploads"]</h4>
+                    @if (Entries().ToList() is { Count: > 0 } entries)
+                    {
+                        <table class="tbl">
+                            <thead><tr><th scope="col">@L["Restore.Col.Date"]</th><th scope="col">@L["Restore.Col.What"]</th><th scope="col">@L["Restore.Col.Result"]</th><th scope="col">@L["Restore.Details"]</th></tr></thead>
+                            <tbody>
+                                @foreach (var e in entries)
+                                {
+                                    <tr data-tone="@e.Tone">
+                                        <td data-label="@L["Restore.Col.Date"]">@At(e.Ts)</td>
+                                        <td data-label="@L["Restore.Col.What"]">@e.What</td>
+                                        <td data-label="@L["Restore.Col.Result"]"><span class="badge"><Icon Name="@e.Icon" /> @e.Label</span></td>
+                                        <td data-label="@L["Restore.Details"]">@string.Join(" · ", new[] { e.Short, e.Detail }.Where(x => x.Length > 0))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     }
                     else
                     {
-                        <b>@L[done.Kind == "refused" ? "Restore.Done.refused" : "Restore.Done.rejected", At(done.Ts)]</b>
-                        if (done.Reason.Length > 0) { <br />@done.Reason }
+                        <p class="muted">@L["Restore.NoUploads"]</p>
                     }
-                </div>
-            }
-        }
-        <div class="pick">
-            <label for="zip">@L["Restore.Choose"]</label>
-            <InputFile id="zip" OnChange="Picked" accept=".zip,application/zip" disabled="@busy" />
-            <button type="button" class="btn btn-primary" disabled="@(busy || file is null)" @onclick="Send">@L[busy ? "Restore.Working" : "Restore.Upload"]</button>
+                    @if (CanUpload)
+                    {
+                        <p class="actions"><button type="button" class="btn btn-primary" @onclick="() => step = 1">@L["Restore.UploadAnother"]</button></p>
+                    }
+                    else
+                    {
+                        <p class="muted actions">@L["Restore.NoRoom"]</p>
+                    }
+                }
+                <p class="data"><a href="/your-data">@L["Restore.DataLink"]</a></p>
+            </section>
         </div>
-        @if (result is not null)
-        {
-            <div class="alert @(result.Status == "restored" ? "ok" : result.Status == "review" ? "" : "bad")" role="alert">
-                <b>@L["Restore.Result." + result.Status]</b>
-                @if (result.Message.Length > 0) { <p>@result.Message</p> }
-                @if (result.Report is { Length: > 0 }) { <details><summary>@L["Restore.Details"]</summary><pre>@result.Report</pre></details> }
-            </div>
-        }
-        <p><a href="/your-data">@L["Restore.DataLink"]</a></p>
-    </section>
+    }
     <section class="panel box">
         <h3>@L["Restore.Delete.Title"]</h3>
         <p>@L["Restore.Delete.Text"]</p>
@@ -110,10 +160,16 @@
 </div>
 
 @code {
+    /// <summary>The tone colours the card and the badge: ok (green), wait (blue), warn (amber), bad (red), idle.</summary>
+    sealed record Card(string Tone, string Icon, string Title, string Detail, string Next);
+
+    sealed record Entry(string Tone, string Icon, string What, string Label, long Ts, string Short, string Detail);
+
     RestoreStatus? status;
     RestoreResult? result;
     IBrowserFile? file;
     bool busy, confirmDelete, deleteFailed;
+    long sent;
 
     ArchiveStatus? archive;
     ArchiveFind? found;
@@ -121,11 +177,23 @@
     string oldName = "";
     bool useOldName;
 
+    /// <summary>0 while loading; 1 what you have, 2 upload or claim, 3 what happens next.</summary>
+    int step;
+    bool claiming;
+
+    IEnumerable<(int, string)> Steps => [(1, L["Restore.Step.what"].Value), (2, L[claiming ? "Restore.Step.claim" : "Restore.Step.upload"].Value), (3, L["Restore.Step.next"].Value)];
+
+    bool CanUpload => status?.Room != false && result?.Status is not ("quota" or "paused");
+
     protected override async Task OnInitializedAsync()
     {
         status = await Service.StatusAsync();
         archive = await Service.ArchiveStatusAsync();
+        // a player with a result or a waiting zip lands on what happens next
+        step = status is { RestoredUserId: not null } or { Review.Count: > 0 } or { Decisions.Count: > 0 } || archive?.Claimed is not null ? 3 : 1;
     }
+
+    void Choose(bool claim) => (claiming, step) = (claim, 2);
 
     async Task Find()
     {
@@ -143,9 +211,10 @@
         claimResult = await Service.ClaimArchivedAsync(p.Handle, useOldName);
         if (claimResult.Status is "restored" or "review")
         {
-            found = null;
+            (found, result, claimResult) = (null, null, null);
             archive = await Service.ArchiveStatusAsync();
             status = await Service.StatusAsync();
+            step = 3;
         }
         busy = false;
     }
@@ -161,18 +230,23 @@
     async Task Send()
     {
         if (file is null) return;
-        busy = true;
-        result = null;
+        (busy, result, sent) = (true, null, 0);
         if (file.Size > ServerAccountApi.MaxZipBytes)
             result = new("too_large", "");
         else
         {
+            // the bar moves when a whole percent is sent: a part goes out in small chunks
+            var shown = -1;
+            var progress = new Progress<long>(n =>
+            {
+                sent = n;
+                if ((int)(n * 100 / file.Size) is var p && p != shown) { shown = p; _ = InvokeAsync(StateHasChanged); }
+            });
             await using var zip = file.OpenReadStream(ServerAccountApi.MaxZipBytes);
-            result = await Service.UploadAsync(zip, file.Size);
+            result = await Service.UploadAsync(zip, file.Size, progress);
         }
         status = await Service.StatusAsync();
-        file = null;
-        busy = false;
+        (file, busy, step) = (null, false, 3);
     }
 
     async Task Delete()
@@ -182,5 +256,73 @@
         busy = false;
         // the account is gone: a full page load shows the public site
         if (!deleteFailed) Nav.NavigateTo("/feed", forceLoad: true);
+    }
+
+    /// <summary>The present: what became of the upload just sent, else what is going on with the account now.</summary>
+    Card Now()
+    {
+        if (result is { } r) return ForResult(r);
+        if (status?.RestoredUserId is { } id) return new("ok", "check", L["Restore.Restored", id], "", L["Restore.Next.restored"]);
+        if (status is { Review.Count: > 0 } s) return Waiting(s, "");
+        var last = status?.Decisions.LastOrDefault();
+        if (archive?.Claimed is { } c && (last is null || c.Ts >= last.Ts))
+            return c.State switch
+            {
+                "restored" => new("ok", "check", L["Claim.State.restored", c.Handle, At(c.Ts)], "", L["Restore.Next.restored"]),
+                "rejected" => new("bad", "xmark", L["Claim.State.rejected", c.Handle, At(c.Ts)], "", L["Restore.Next.claimRejected"]),
+                _ => new("wait", "clock", L["Claim.State.waiting", c.Handle, At(c.Ts)], "", L["Restore.Next.claimWaiting"]),
+            };
+        return last?.Kind switch
+        {
+            "restored" => new("ok", "check", L["Restore.Done.restored", At(last.Ts), last.UserId ?? 0, last.Handle ?? ""], L[last.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"], L["Restore.Next.restored"]),
+            "refused" => new("bad", "xmark", L["Restore.Done.refused", At(last.Ts)], last.Reason, L["Restore.Next.redo"]),
+            "rejected" => new("bad", "xmark", L["Restore.Done.rejected", At(last.Ts)], last.Reason, L["Restore.Next.rejected"]),
+            _ => new("idle", "download", L["Restore.Empty"], "", L["Restore.Next.empty"]),
+        };
+    }
+
+    Card Waiting(RestoreStatus s, string detail) => new("wait", "clock",
+        s.Review.Count > 1 ? L["Restore.Waiting", s.Review.Count] : L[s.Review[0].Format == "other" ? "Restore.WaitingOther" : "Restore.Result.review"], detail, L["Restore.Next.waiting"]);
+
+    Card ForResult(RestoreResult r)
+    {
+        var title = L["Restore.Result." + r.Status];
+        return r.Status switch
+        {
+            "restored" or "already" => new("ok", "check", title, "", L["Restore.Next.restored"]),
+            "review" when status is { Review.Count: > 0 } s => Waiting(s, ""),
+            "review" => new("wait", "clock", title, "", L["Restore.Next.waiting"]),
+            "quota" => new("warn", "clock", title, r.Message, L["Restore.Next.quota"]),
+            "paused" or "busy" or "unavailable" => new("warn", "clock", title, r.Message, L["Restore.Next.retry"]),
+            "too_large" => new("bad", "xmark", title, r.Message, L["Restore.Next.tooLarge"]),
+            // the server also records an unreadable upload as a decision: that one has the date the sentence needs
+            "invalid" => new("bad", "xmark", status?.Decisions.LastOrDefault(d => d.Kind == "refused") is { } d ? L["Restore.Done.refused", At(d.Ts)] : title, r.Message, L["Restore.Next.redo"]),
+            "signed_out" => new("bad", "xmark", title, r.Message, L["Restore.Next.signedOut"]),
+            _ => new("bad", "xmark", title, r.Message, L["Restore.Next.check"]),
+        };
+    }
+
+    /// <summary>Every upload and claim decision, newest first: the zips waiting, the operator's and the server's decisions, the claim.</summary>
+    IEnumerable<Entry> Entries()
+    {
+        var zip = L["Restore.Choose"].Value;
+        var list = new List<Entry>();
+        foreach (var k in status?.Review ?? [])
+            list.Add(new("wait", "clock", zip, L["Restore.Badge.waiting"], k.Ts, L[k.Format == "other" ? "Restore.Format.other" : "Restore.Format.ours"], k.Note == "waiting for the operator" ? "" : k.Note));
+        foreach (var d in status?.Decisions ?? [])
+            list.Add(d.Kind switch
+            {
+                "restored" => new("ok", "check", zip, L["Restore.Result.restored"], d.Ts, L["Restore.Detail.Restored", d.UserId ?? 0, d.Handle ?? ""], L[d.HandleKept ? "Restore.Done.nameKept" : "Restore.Done.nameBackup"]),
+                "refused" => new("bad", "xmark", zip, L["Restore.Badge.unreadable"], d.Ts, "", d.Reason),
+                _ => new("bad", "xmark", zip, L["Restore.Badge.rejected"], d.Ts, "", d.Reason),
+            });
+        if (archive?.Claimed is { } c)
+            list.Add(c.State switch
+            {
+                "restored" => new("ok", "check", L["Restore.What.claim"], L["Restore.Result.restored"], c.Ts, c.Handle, ""),
+                "rejected" => new("bad", "xmark", L["Restore.What.claim"], L["Restore.Badge.rejected"], c.Ts, c.Handle, ""),
+                _ => new("wait", "clock", L["Restore.What.claim"], L["Restore.Badge.waiting"], c.Ts, c.Handle, ""),
+            });
+        return list.OrderByDescending(e => e.Ts);
     }
 }

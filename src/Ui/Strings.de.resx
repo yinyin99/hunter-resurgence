@@ -1354,7 +1354,6 @@
   <data name="Restore.Working" xml:space="preserve"><value>Wird hochgeladen…</value></data>
   <data name="Restore.Restored" xml:space="preserve"><value>Ihr Backup der Benutzer-ID {0} wurde auf diesem Konto wiederhergestellt.</value></data>
   <data name="Restore.Waiting" xml:space="preserve"><value>Backups, die der Betreiber noch prüfen muss: {0}</value></data>
-  <data name="Restore.Kept" xml:space="preserve"><value>Aufbewahrt seit {0}</value></data>
   <data name="Restore.Done.restored" xml:space="preserve"><value>Wiederhergestellt am {0}: Ihre Benutzer-ID ist {1} und Ihr Name ist {2}.</value></data>
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Der Name ist der aus Ihrem Backup.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ihr Name wurde behalten: Der Name im Backup ist nicht erlaubt oder gehört einem anderen Spieler.</value></data>
@@ -1373,6 +1372,50 @@
   <data name="Restore.Result.paused" xml:space="preserve"><value>Uploads sind vorerst pausiert, bitte später erneut versuchen</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Abgemeldet</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Hier nicht verfügbar</value></data>
+  <data name="Restore.Step.what" xml:space="preserve"><value>Was Sie haben</value></data>
+  <data name="Restore.Step.upload" xml:space="preserve"><value>Hochladen</value></data>
+  <data name="Restore.Step.claim" xml:space="preserve"><value>Übernahme</value></data>
+  <data name="Restore.Step.next" xml:space="preserve"><value>Wie es weitergeht</value></data>
+  <data name="Restore.Pick.Title" xml:space="preserve"><value>Was haben Sie?</value></data>
+  <data name="Restore.Pick.Zip" xml:space="preserve"><value>Ich habe ein Backup-Zip</value></data>
+  <data name="Restore.Pick.ZipText" xml:space="preserve"><value>Erstellt mit unserem Backup-Tool oder einem anderen Sicherungstool. Laden Sie es unverändert hoch, ohne es zu entpacken.</value></data>
+  <data name="Restore.Pick.None" xml:space="preserve"><value>Ich habe kein Backup</value></data>
+  <data name="Restore.Pick.NoneText" xml:space="preserve"><value>Suchen Sie Ihren alten Jägernamen unter den Profilen, die dieser Server aufbewahrt hat, und übernehmen Sie ihn.</value></data>
+  <data name="Restore.Upload.Title" xml:space="preserve"><value>Zip hochladen</value></data>
+  <data name="Restore.Check1" xml:space="preserve"><value>Das Zip, das Ihr Backup-Tool erstellt hat, unverändert: das Zip unseres Tools oder der Export eines anderen Tools (zum Beispiel ein _PRIVATE.zip).</value></data>
+  <data name="Restore.Check2" xml:space="preserve"><value>Ein Zip bis 1 GiB. Es kann einmal wiederhergestellt werden und ersetzt hier Ihr Profil.</value></data>
+  <data name="Restore.Check3" xml:space="preserve"><value>Ein Betreiber prüft es von Hand: nichts wird automatisch wiederhergestellt.</value></data>
+  <data name="Restore.AllRules" xml:space="preserve"><value>Alle Regeln</value></data>
+  <data name="Restore.Back" xml:space="preserve"><value>Zurück</value></data>
+  <data name="Restore.NextLabel" xml:space="preserve"><value>Weiter:</value></data>
+  <data name="Restore.Uploads" xml:space="preserve"><value>Ihre Uploads</value></data>
+  <data name="Restore.NoUploads" xml:space="preserve"><value>Noch nichts.</value></data>
+  <data name="Restore.Col.Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Restore.Col.What" xml:space="preserve"><value>Was</value></data>
+  <data name="Restore.Col.Result" xml:space="preserve"><value>Ergebnis</value></data>
+  <data name="Restore.What.claim" xml:space="preserve"><value>Altes Profil</value></data>
+  <data name="Restore.Badge.waiting" xml:space="preserve"><value>Wartet auf Prüfung</value></data>
+  <data name="Restore.Badge.unreadable" xml:space="preserve"><value>Nicht lesbar</value></data>
+  <data name="Restore.Badge.rejected" xml:space="preserve"><value>Vom Betreiber abgelehnt</value></data>
+  <data name="Restore.Format.ours" xml:space="preserve"><value>Mit unserem Backup-Tool erstellt</value></data>
+  <data name="Restore.Format.other" xml:space="preserve"><value>Mit einem anderen Tool erstellt</value></data>
+  <data name="Restore.Detail.Restored" xml:space="preserve"><value>Benutzer-ID {0}, Name {1}</value></data>
+  <data name="Restore.WaitingOther" xml:space="preserve"><value>Erhalten: ein Backup eines anderen Tools. Ein Betreiber prüft es.</value></data>
+  <data name="Restore.Empty" xml:space="preserve"><value>Noch kein Backup hochgeladen</value></data>
+  <data name="Restore.UploadAnother" xml:space="preserve"><value>Weiteres Backup hochladen</value></data>
+  <data name="Restore.NoRoom" xml:space="preserve"><value>Sie können jetzt kein weiteres Backup hochladen: Das Limit der für den Betreiber aufbewahrten Zips ist erreicht, oder Uploads sind pausiert. Versuchen Sie es erneut, sobald ein Betreiber sie geprüft hat.</value></data>
+  <data name="Restore.Next.waiting" xml:space="preserve"><value>Jetzt ist nichts zu tun. Ein Betreiber prüft jedes Zip von Hand, daher kann es eine Weile dauern.</value></data>
+  <data name="Restore.Next.restored" xml:space="preserve"><value>Nichts weiter zu tun: Ihr Profil ist auf diesem Konto. Ein Backup kann nur einmal wiederhergestellt werden.</value></data>
+  <data name="Restore.Next.redo" xml:space="preserve"><value>Laden Sie das Zip, das Ihr Backup-Tool erstellt hat, unverändert hoch. Falls Sie keines haben, erstellen Sie zuerst ein neues Backup.</value></data>
+  <data name="Restore.Next.rejected" xml:space="preserve"><value>Lesen Sie den Grund und laden Sie dann ein anderes Backup hoch.</value></data>
+  <data name="Restore.Next.quota" xml:space="preserve"><value>Warten Sie, bis ein Betreiber eines der wartenden Zips geprüft hat, und laden Sie dann erneut hoch.</value></data>
+  <data name="Restore.Next.retry" xml:space="preserve"><value>Nichts ist verloren. Versuchen Sie es später erneut.</value></data>
+  <data name="Restore.Next.tooLarge" xml:space="preserve"><value>Ein Zip darf höchstens 1 GiB groß sein. Erstellen Sie ein kleineres Backup.</value></data>
+  <data name="Restore.Next.signedOut" xml:space="preserve"><value>Melden Sie sich an und laden Sie dann erneut hoch.</value></data>
+  <data name="Restore.Next.check" xml:space="preserve"><value>Prüfen Sie die Meldung und laden Sie dann erneut hoch.</value></data>
+  <data name="Restore.Next.claimWaiting" xml:space="preserve"><value>Jetzt ist nichts zu tun. Ein Betreiber prüft Ihre Übernahme, und Sie erhalten eine Nachricht in Ihrem Posteingang.</value></data>
+  <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Sie können nur ein Profil übernehmen. Wenn Sie ein Backup-Zip haben, laden Sie stattdessen dieses hoch.</value></data>
+  <data name="Restore.Next.empty" xml:space="preserve"><value>Wählen Sie Ihr Backup-Zip aus und laden Sie es hoch.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Meine Daten löschen</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dadurch werden Ihr Konto auf diesem Server und alles, was dazu gespeichert ist, gelöscht: Ihre Steam-ID, Ihr Name, Ihre Spieldaten, die aufbewahrten Backup-Zips und Ihre Fotos. Sie werden abgemeldet, und die Anmeldung des Launchers funktioniert nicht mehr. Das lässt sich nicht rückgängig machen.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ich habe verstanden, alles löschen</value></data>
