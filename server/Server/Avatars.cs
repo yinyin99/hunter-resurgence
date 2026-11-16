@@ -14,6 +14,10 @@ public sealed partial class State
     /// <summary>The ids of the game's avatars, in the order of the recorded list (empty without one).</summary>
     public List<long> AvatarIds => [.. avatars.OfType<JsonObject>().Select(a => a["id"]).Where(n => Py.IsNum(n)).Select(n => Py.L(n))];
 
+    /// <summary>The game's `gender` of a listed avatar (`m` is 1, `f` is 0); null for an avatar the list lacks or gives none.</summary>
+    long? AvatarGender(long id) => avatars.OfType<JsonObject>().FirstOrDefault(a => a["id"] is JsonValue v && v.TryGetValue<long>(out var n) && n == id)?["gender"] is JsonValue g
+        && g.TryGetValue<string>(out var s) ? s switch { "m" => 1, "f" => 0, _ => null } : null;
+
     bool IsListedAvatar(string? url) => new ItemCatalogue(items, avatars).AvatarId(url) is not null;
 
     string ListedAvatarUrl(long id) => $"{avatarBase}/256/{id}.png";
@@ -76,11 +80,11 @@ public sealed partial class State
     };
 
     /// <summary>`POST /account/avatar`: the player's avatar becomes the game's avatar `id`, or the imported picture for null. False, and nothing changed, for an id that is not in the list
-    /// or for no imported picture. It writes what a restore does: `avatar_url`, `face` (the default avatar for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
+    /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture leaves it. It writes what a restore does: `avatar_url`, `face` (the default avatar for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
     public bool SetAvatar(long account, long? id)
     {
         if (id is null ? !HasImportedAvatar(account) : !AvatarIds.Contains(id.Value)) return false;
-        Store.SetAvatar(account, id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar), id ?? DefaultAvatar);
+        Store.SetAvatar(account, id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar), id ?? DefaultAvatar, id is { } l ? AvatarGender(l) : null);
         return true;
     }
 
@@ -95,6 +99,14 @@ public sealed partial class State
                 File.Copy(file, Path.Combine(AccountPhotos(account), ImportedAvatar), overwrite: true);
                 Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), null);
             }
+    }
+
+    /// <summary>Once, at start: an account that never restored anything and whose `gender` disagrees with its listed avatar gets the avatar's gender. Idempotent: a second run finds none.</summary>
+    public void MigrateAvatarGenders()
+    {
+        foreach (var (account, url) in Store.AvatarUrls())
+            if (new ItemCatalogue(items, avatars).AvatarId(url) is { } id && AvatarGender(id) is { } gender)
+                Store.FixGenderUnlessRestored(account, gender);
     }
 
     /// <summary>The avatar links the account's restored data holds: `avatar` of its profile and of the saved Me/me and Public_user/getByHostname replies. Empty: the data names no avatar at all.</summary>

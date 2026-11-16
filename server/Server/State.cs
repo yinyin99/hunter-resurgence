@@ -754,7 +754,7 @@ public sealed partial class State
                  {
                      ("account_id", id), ("hostname", handle.ToLowerInvariant()), ("avatar_url", ListedAvatarUrl(DefaultAvatar)),
                      ("avatar", DefaultAvatar), ("avatar_id", DefaultAvatar), ("face", DefaultAvatar), ("fullbody_avatar", 0),
-                     ("gender", 0), ("membership", 0), ("hunterscore", 0),
+                     ("gender", AvatarGender(DefaultAvatar) ?? 0), ("membership", 0), ("hunterscore", 0),
                  })
             if (account.ContainsKey(key))
                 account[key] = value;
