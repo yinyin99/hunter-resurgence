@@ -245,12 +245,13 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<script>(function(){var n=window.hunter,f=window.fetch,g=0;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
+        Assert.StartsWith("<script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
         Assert.EndsWith(".then(go,go);})();</script>", page);
         Assert.DoesNotContain("<script src=\"/dist/main.js\">", page);  // the page's own tag is replaced: the script is added once the answers are in, under the new token
         Assert.Contains("s.src=\"/dist/main.js?t=urls2\"", page);
         Assert.Contains("window.hunter.getAuthToken()", page);
         Assert.Contains("hunterSetLocale", page);
+        Assert.Contains("window.setURL(u)", page);  // the game asks the frame for the editor's route as soon as it has loaded, before the script: a stand-in keeps it and hands it to the script's own
         Assert.Contains(("Cache-Control", "no-cache"), frame.Headers);
         Put("static/app/9.9.8/webgui/index.html", "<script src=\"/other.js\"></script>");
         Same(("<script src=\"/other.js\"></script>"u8.ToArray(), "mirror"), await own.SendAsync("GET", "game_web.test", "/static/app/9.9.8/webgui/index.html"));  // a page without the tag is served as it is

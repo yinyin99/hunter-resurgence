@@ -420,12 +420,13 @@ public static class Replay
         // `getInventory`, `getLocale`; one that fails is not kept) and for the locale script of that language, then replaces `window.hunter` by a proxy of the game's object whose kept answers are returned at once,
         // whose `getLocalizedString` reads the locale script (the label key without its brackets, the key itself when unknown, as the game does) and whose other members pass on to the game (functions bound to
         // it, returning its promise; `getAuthToken` too: the page wraps it in a promise); only then, or after 8 seconds, is the script added. A build whose `getLocale()` answers at once gets the script as it was.
+        // The game's page asks the frame to go to the editor's route (`setURL`) when the frame has loaded, which can be before the script is added: `setURL` is therefore defined at once, keeps the route, and the script's own is called with it when the script has loaded.
         // ponytail: the inventory is read once, when the page loads; the editor's later refreshes of it show that list.
         // The page's other calls (`getSelectedPlatformId`, the mounted and unmounted trophy deltas, `getWeaponPlatformTypeID`, `selectTrophyMount`, `selectWeaponMount`: the trophy and weapon menus' own routes;
         // `getLoggedInUserID`, `confirmBuy`: only when the page sits in the website) are not on the game's object and not made up here.
         const string FrameScript = """
-<script>(function(){var n=window.hunter,f=window.fetch,g=0;
-function go(){if(g)return;g=1;var s=document.createElement("script");s.src="/dist/main.js?t=urls2";document.body.appendChild(s);}
+<script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;
+function go(){if(g)return;g=1;var s=document.createElement("script");s.src="/dist/main.js?t=urls2";s.onload=function(){if(u!==undefined&&window.setURL!==z)window.setURL(u);};document.body.appendChild(s);}
 if(f)window.fetch=function(r,o){var s=this,u;try{u=typeof r==="string"?r:r.url;}catch(e){}
 var d=function(){return f.call(s,r,o);};if(typeof u!=="string"||!(u.indexOf(location.origin+"/")===0||(u.charAt(0)==="/"&&u.charAt(1)!=="/")))return d();
 return Promise.resolve().then(function(){return window.hunter.getAuthToken();}).then(function(t){try{if(t){if(typeof r==="string"){o=o||{};var h=new Headers(o.headers||{});if(!h.has("Authorization"))h.set("Authorization","Bearer "+t);o.headers=h;}else if(!r.headers.has("Authorization"))r.headers.set("Authorization","Bearer "+t);}}catch(e){}return d();},d);};
