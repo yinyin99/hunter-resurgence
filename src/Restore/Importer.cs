@@ -31,6 +31,7 @@ public static class Importer
     [
         (BackupReader.IsOne, BackupReader.Read),   // ours: manifest.json
         (SectionBackup.IsOne, SectionBackup.Read), // index.json + json_<section>.json
+        (ArchiveBackup.IsOne, ArchiveBackup.Read), // ARCHIVE_MANIFEST.json + authenticated/ + profile/resume/
     ];
 
     static BackupContent Content(Stream stream, Limits lim)
