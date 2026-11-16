@@ -430,10 +430,11 @@ if(f)window.fetch=function(r,o){var s=this,u;try{u=typeof r==="string"?r:r.url;}
 var d=function(){return f.call(s,r,o);};if(typeof u!=="string"||!(u.indexOf(location.origin+"/")===0||(u.charAt(0)==="/"&&u.charAt(1)!=="/")))return d();
 return Promise.resolve().then(function(){return window.hunter.getAuthToken();}).then(function(t){try{if(t){if(typeof r==="string"){o=o||{};var h=new Headers(o.headers||{});if(!h.has("Authorization"))h.set("Authorization","Bearer "+t);o.headers=h;}else if(!r.headers.has("Authorization"))r.headers.set("Authorization","Bearer "+t);}}catch(e){}return d();},d);};
 var v;try{v=n.getLocale();}catch(e){}if(!v||typeof v.then!=="function")return go();
-setTimeout(go,8000);
 var keep=["getServer","getActiveLodgeId","getHostPlayerGuid","getLocalPlayerGuid","isStaff","isSinglePlayer","getInventory"],c={},S={},H=Object.prototype.hasOwnProperty;
+function w(){window.hunter=new Proxy(Object.create(n),{get:function(t,k){if(k==="getLocalizedString")return function(l){var s=String(l).slice(1,-1);return H.call(S,s)?S[s]:l;};if(H.call(c,k))return function(){return c[k];};var x=n[k];return typeof x==="function"?x.bind(n):x;}});}
+setTimeout(function(){w();go();},8000);
 Promise.all(keep.map(function(k){return Promise.resolve().then(function(){return n[k]();}).then(function(x){c[k]=x;},function(){});}).concat(v.then(function(l){c.getLocale=l;return new Promise(function(ok){window.hunterSetLocale=function(o){S=o;};var s=document.createElement("script");s.src=location.pathname.replace(/webgui\/[^\/]*$/,"locale/")+encodeURIComponent(l)+".js";s.onload=s.onerror=ok;document.head.appendChild(s);});}).then(null,function(){}))).then(function(){
-window.hunter=new Proxy(n,{get:function(t,k){if(k==="getLocalizedString")return function(l){var s=String(l).slice(1,-1);return H.call(S,s)?S[s]:l;};if(H.call(c,k))return function(){return c[k];};var x=t[k];return typeof x==="function"?x.bind(t):x;}});}).then(go,go);})();</script>
+w();}).then(go,go);})();</script>
 """;
         const string AppScriptTag = "<script src=\"/dist/main.js\"></script>";
         static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, FrameScript)];
