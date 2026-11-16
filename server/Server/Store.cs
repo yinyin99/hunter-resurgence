@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 23;
+    public const int Version = 24;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -33,7 +33,7 @@ public sealed class Store
     // account restores a game user id once, so the id is the key of a table of its own (not per player: it is the check across players)
     const string Uploads = $"""
         CREATE TABLE uploads (
-            id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, zip_sha256 TEXT NOT NULL, user_id INTEGER, note TEXT NOT NULL);
+            id INTEGER PRIMARY KEY AUTOINCREMENT, {A}, ts INTEGER NOT NULL, zip_sha256 TEXT NOT NULL, user_id INTEGER, note TEXT NOT NULL);
         CREATE INDEX uploads_account ON uploads (account_id, id);
         CREATE TABLE restored_ids (
             user_id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, ts INTEGER NOT NULL);
@@ -328,6 +328,21 @@ public sealed class Store
                 con.Script("ALTER TABLE accounts ADD COLUMN start_kit INTEGER NOT NULL DEFAULT 0");
             if (version < 23 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'restore_offered'")! == 0)
                 con.Script("ALTER TABLE accounts ADD COLUMN restore_offered INTEGER NOT NULL DEFAULT 0");
+            if (version < 24)
+            {
+                // ids are never reused (approve and reject delete the row): an id in an old alert must not name another player's zip.
+                // The counter starts at 100 at least, above the small ids that earlier alerts and logs already showed.
+                con.Script($"""
+                    CREATE TABLE uploads_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT, {A}, ts INTEGER NOT NULL, zip_sha256 TEXT NOT NULL, user_id INTEGER, note TEXT NOT NULL);
+                    INSERT INTO uploads_new SELECT id, account_id, ts, zip_sha256, user_id, note FROM uploads;
+                    DROP TABLE uploads;
+                    ALTER TABLE uploads_new RENAME TO uploads;
+                    CREATE INDEX uploads_account ON uploads (account_id, id);
+                    DELETE FROM sqlite_sequence WHERE name = 'uploads';
+                    INSERT INTO sqlite_sequence (name, seq) VALUES ('uploads', MAX(100, (SELECT COALESCE(MAX(id), 0) FROM uploads)));
+                    """);
+            }
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

@@ -38,8 +38,9 @@ const string ImportUsage = """
 const string ReviewUsage = """
     The backup zips and the archive claims players sent: every one is kept for an operator and never restored automatically.
 
-    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> [--keep-handle] | review reject <id> [reason]
+    Usage (repo root): dotnet run --project server/Server -- review list | review approve <id> [--keep-handle] [--account <account id>] | review reject <id> [--account <account id>] [reason]
     An id is a number for a zip, c<number> for a claim (c12), or r<account>-<8 hex> for a refused zip (r2000000001-1a2b3c4d).
+    --account <account id> (zips only): refuse, and change nothing, when the waiting zip belongs to another account: copy it from the alert or from list.
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note.
     A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
@@ -210,6 +211,13 @@ void Import(string[] a)
 void Review(string[] a)
 {
     long id = 0;
+    long? onlyAccount = null;
+    if (Array.IndexOf(a, "--account") is var at and >= 0)
+    {
+        if (at + 1 >= a.Length || !long.TryParse(a[at + 1], out var acc)) { Die(ReviewUsage); return; }
+        onlyAccount = acc;
+        a = [.. a[..at], .. a[(at + 2)..]];
+    }
     var isClaim = false;
     string? refusedId = null;
     var reason = "";
@@ -226,6 +234,13 @@ void Review(string[] a)
     if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
     var uploads = new Uploads(state, settings.DataDir) { Pictures = PictureLinks.FromCfg(settings.Cfg) };
     var claims = OpenClaims(state);
+    long? zipAccount = null;
+    if (a[0] != "list" && !isClaim && refusedId is null)
+    {
+        zipAccount = uploads.AccountOf(id);
+        if (onlyAccount is { } want && uploads.WrongAccount(id, want) is { } wrong) Die($"refused: {wrong}");
+    }
+    else if (onlyAccount is not null) Die("--account is for kept zips, not for list, claims or refused zips");
     switch (a[0])
     {
         case "list":
@@ -252,6 +267,7 @@ void Review(string[] a)
             }
             var done = uploads.Approve(id, keepHandle: keep);
             if (done.Kind != "restored") Die($"refused: {done.Message}");
+            Console.WriteLine($"approved {id}, account {zipAccount}");
             Console.WriteLine(done.Message);
             Console.Write(done.Report);
             break;
@@ -269,7 +285,7 @@ void Review(string[] a)
                 break;
             }
             if (!uploads.Reject(id, reason)) Die($"no kept zip {id}");
-            Console.WriteLine($"rejected {id}: the zip and its row are deleted");
+            Console.WriteLine($"rejected {id}, account {zipAccount}: the zip and its row are deleted");
             break;
     }
 }
