@@ -727,8 +727,10 @@ Every outcome of an upload except a received part writes one console line, `uplo
 **Review.** The operator works the kept zips with the server's command line (no web page):
 
 ```
-dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> [--keep-handle] | reject <id> [reason]
+dotnet run --project server/Server -c Release -- [--settings <file>] review list | approve <id> [--keep-handle] [--account <account id>] | reject <id> [--account <account id>] [reason]
 ```
+
+Upload ids are never reused (`uploads.id` is AUTOINCREMENT, from 100 at least on a database migrated from before). `--account <account id>` (the account in the alert) makes `approve` and `reject` refuse, changing nothing, when the waiting zip belongs to another account; both print `approved|rejected <id>, account <account id>`.
 
 `list` prints, per kept zip: its id, the account, the zip's user id and handle, the time, the note, and whether the zip's Steam id equals the account's verified one (information only); then each refused zip as `r<account id>-<8 hex>`, `refused`, `account <id>`, `handle <handle>`, the time, `<n> bytes`, the reason (tab separated). `reject r<account id>-<8 hex>` deletes that refused file. `approve <id>` runs the restore with the rules below and prints the restore report or the reason it refused; with `--keep-handle` the account keeps its own name instead of taking the zip's (the player's notice says so). `reject <id> [reason]` deletes the kept zip and its `uploads` row and keeps the reason (the rest of the line) for the player. Like `import backup` it runs on its own and needs the recordings.
 

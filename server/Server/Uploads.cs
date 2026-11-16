@@ -438,6 +438,13 @@ public sealed class Uploads(State state, string dataDir)
     string Kept(Row r) => Path.Combine(dataDir, "restores", r.Account.ToString(), r.Sha + ".zip");
 
     /// <summary>The kept zips, oldest first, each with what the zip says of itself (handle null when the file cannot be read now).</summary>
+    /// <summary>The account a waiting upload belongs to, null: no such id.</summary>
+    public long? AccountOf(long id) => Rows(id).SingleOrDefault()?.Account;
+
+    /// <summary>The operator's `--account` check: the refusal when waiting upload `id` belongs to another account than `want`, else null (also for an unknown id: approve and reject say that).</summary>
+    public string? WrongAccount(long id, long want) =>
+        AccountOf(id) is { } have && have != want ? $"kept zip {id} belongs to account {have}, not {want}. Nothing was changed." : null;
+
     public List<Pending> List() => Rows().Select(r =>
     {
         PlayerModel? m = null;

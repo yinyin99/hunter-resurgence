@@ -189,6 +189,47 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestUploadIdsAreNotReusedAfterTheTableEmpties()
+    {
+        var first = await Keep(TestZip.Own(), "a.zip", player, cookie);
+        Assert.True(Operator.Reject(first));
+        var second = await Keep(TestZip.Own(), "b.zip", player, cookie);
+        Assert.True(second > first);
+    }
+
+    [Fact]
+    public async Task TestAccountGuardRefusesAnotherAccountAndAcceptsTheRightOne()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        Assert.Contains($"belongs to account {player}", Operator.WrongAccount(id, player + 1));
+        Assert.Equal(1L, Count(player, "uploads"));
+        Assert.Null(Operator.WrongAccount(id, player));
+        Assert.Equal("restored", Operator.Approve(id).Kind);
+    }
+
+    [Fact]
+    public async Task TestSchemaOfVersion23KeepsTheWaitingIdsAndNeverRestartsBelow100()
+    {
+        var file = Path.Combine(tmp, "v23.db");
+        var store = new Store(file);
+        const long account = 2000000001;
+        using (var con = store.Open(account))
+        {
+            con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, account) VALUES ($a, '76561190000000001', 'old', 0, '{}')");
+            con.Exec("DROP TABLE uploads");
+            con.Exec("CREATE TABLE uploads (id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, ts INTEGER NOT NULL, zip_sha256 TEXT NOT NULL, user_id INTEGER, note TEXT NOT NULL)");
+            con.Exec("INSERT INTO uploads (id, account_id, ts, zip_sha256, user_id, note) VALUES (1, $a, 0, 'a', 1, 'x')");
+            con.Exec("INSERT INTO uploads (id, account_id, ts, zip_sha256, user_id, note) VALUES (7, $a, 0, 'b', 2, 'y')");
+            con.Exec("PRAGMA user_version = 23");
+        }
+        using var check = new Store(file).Open(account);
+        Assert.Equal([1L, 7L], check.Rows("SELECT id FROM uploads WHERE account_id = $a ORDER BY id").Select(r => (long)r[0]));
+        check.Exec("INSERT INTO uploads (account_id, ts, zip_sha256, user_id, note) VALUES ($a, 0, 'c', 3, 'z')");
+        Assert.True((long)check.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")! >= 101);
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'uploads_account'"));
+    }
+
+    [Fact]
     public async Task TestRejectDeletesTheKeptZipAndTheRow()
     {
         var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
