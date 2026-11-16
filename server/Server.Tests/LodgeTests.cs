@@ -71,16 +71,19 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         """;
 
     [Fact]
-    public async Task TestLeavingALodgePostsItsNameAndStyleAsAForm()
+    public async Task TestLeavingALodgeSetsTheStyleAndKeepsTheName()
     {
         const string Form = "application/x-www-form-urlencoded";
         Assert.Equal((200, ""), await Call("POST", Web, "/v1/game/user/lodges/3", owner, "name=left+lodge&style_id=4", Form));
         var one = await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer);
-        Eq("""["left lodge", 4]""", T(one["name"], one["style_id"]));
+        Eq("""["lodge 3", 4]""", T(one["name"], one["style_id"]));
         Assert.Equal((200, """{"errorCode": 404}"""), await Call("POST", Web, "/v1/game/user/lodges/3", viewer, "name=x&style_id=1", Form));  // own lodges only
         Assert.Equal((200, """{"errorCode": 404}"""), await Call("POST", Web, "/v1/game/user/lodges/99", owner, "name=x", Form));
         Assert.Equal(200, (await Call("POST", Web, "/v1/game/user/lodges/3", null, "name=x", Form)).Status);  // the web API's token-expired answer
-        Assert.Equal("left lodge", (string)(await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer))["name"]!);
+        Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/lodges/3/settings", owner, """{"name": "renamed"}"""));
+        Assert.Equal((200, ""), await Call("POST", Web, "/v1/game/user/lodges/3", owner, "name=lodge+3&style_id=5", Form));  // the old name the game read on loading
+        var after = await Read(V2, $"/game/user/{OWNER}/lodges/3", viewer);
+        Eq("""["renamed", 5]""", T(after["name"], after["style_id"]));
     }
 
     [Fact]
