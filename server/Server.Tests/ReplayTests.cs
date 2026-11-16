@@ -185,6 +185,21 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestMissCarriesNoStoreButAMirrorHitDoesNot()
+    {
+        var f = Path.Combine(mirror, "static.test", "img", "n.png");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllBytes(f, Png);
+        var hit = await R("GET", "static.test", "/img/n.png");
+        Assert.DoesNotContain(hit.Headers, h => h.Name == "Cache-Control");
+        foreach (var miss in new[] { await R("GET", "static.test", "/img/none.png"), await R("OPTIONS", "api.test", "/v1/x"), await R("POST", "api.test", "/v1/nothing") })
+        {
+            Assert.Equal("miss", miss.Source);
+            Assert.Contains(("Cache-Control", "no-store"), miss.Headers);
+        }
+    }
+
+    [Fact]
     public async Task TestTeamsTimerReadAcceptsTheRecordAndStaysFailSafe()
     {
         void Put(string path, string text)
