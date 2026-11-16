@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 24;
+    public const int Version = 25;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -143,6 +143,9 @@ public sealed class Store
 
     /// <summary>The first user id the server gives to an account of its own. A user id that comes from a backup is
     /// never this high, so the two never collide; the last one is int.MaxValue (the game's ids are 32-bit).</summary>
+    // The highest server id ever handed out: an id in an old alert or log never names another player.
+    static readonly string IdCounter = $"CREATE TABLE IF NOT EXISTS id_counter (last INTEGER NOT NULL); INSERT INTO id_counter SELECT COALESCE((SELECT MAX(id) FROM accounts WHERE id >= {FirstServerId}), {FirstServerId - 1}) WHERE NOT EXISTS (SELECT 1 FROM id_counter);";
+
     public const long FirstServerId = 2_000_000_000;
 
     // Ids that come from outside (a restored zip's guid and kill_id) are keyed with the account; the ids the server
@@ -278,6 +281,7 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'items'")! > 0)
                 throw new InvalidOperationException("the database predates accounts: delete it and start again");
             con.Script(Schema);
+            con.Script(IdCounter);
         }
         else
         {
@@ -343,6 +347,8 @@ public sealed class Store
                     INSERT INTO sqlite_sequence (name, seq) VALUES ('uploads', MAX(100, (SELECT COALESCE(MAX(id), 0) FROM uploads)));
                     """);
             }
+            // The counter starts at the highest server id now in use: ids freed before this step (adopted or deleted) may be handed out once more.
+            if (version < 25) con.Script(IdCounter);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
@@ -374,8 +380,13 @@ public sealed class Store
     public long NextServerId()
     {
         using var con = Open();
-        var next = ((con.Scalar("SELECT MAX(id) FROM accounts WHERE id >= ?", FirstServerId) as long?) ?? FirstServerId - 1) + 1;
-        return next <= int.MaxValue ? next : throw new InvalidOperationException("the server's user ids are used up");
+        con.Begin();
+        var last = (long)con.Scalar("SELECT last FROM id_counter")!;
+        var next = Math.Max(last, (con.Scalar("SELECT MAX(id) FROM accounts WHERE id >= ?", FirstServerId) as long?) ?? 0) + 1;
+        if (next > int.MaxValue) throw new InvalidOperationException("the server's user ids are used up");
+        con.Exec("UPDATE id_counter SET last = ?", next);  // an insert that then fails burns the number: fine
+        con.Commit();
+        return next;
     }
 
     public string? HandleOf(long id)
