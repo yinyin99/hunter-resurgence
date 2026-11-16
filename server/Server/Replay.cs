@@ -391,19 +391,22 @@ public static class Replay
 
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
-    /// (the record's `time`). Each rewrite is an exact text replacement; when each text is not found exactly once the file is served
-    /// unchanged and one warning is logged. The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// (the record's `time`). Each rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The same class switches off the page's copy of an ammunition stack (<see cref="Clones"/>) and adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
         static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
-        public const string Version = "timer1";
+        public const string Version = "timer2";
         // the two places the script fills the Teams model's timer: the first read of the page and the refresh
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
-        static int warned, warnedApp, warnedFrame;
+        /// <summary>With the unlimited-ammunition service on, the page copies an ammunition stack dragged out of the lodge under a placeholder guid and expects the server to create it; it creates nothing,
+        /// and a placeholder in the page's update of the game's slots empties the slot. Served here, the page never copies a stack: the stack itself is moved.</summary>
+        public static readonly (string From, string To)[] Clones =
+            [("isItemClonable:function(e){return 3===e.get(\"cat\")&&1==this.unlimited_ammo", "isItemClonable:function(e){return!1&&1==this.unlimited_ammo")];
+        static int warned, warnedClone, warnedApp, warnedFrame;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
@@ -450,7 +453,7 @@ w();}).then(go,go);})();</script>
                 if (text.IndexOf(from, StringComparison.Ordinal) is var at && (at < 0 || text.IndexOf(from, at + 1, StringComparison.Ordinal) >= 0))
                 {
                     if (Interlocked.Exchange(ref warnedFlag, 1) == 0)
-                        Console.Error.WriteLine($"warning: {what} was not found; the file is served unchanged");
+                        Console.Error.WriteLine($"warning: {what} was not found; that rewrite is skipped");
                     return null;
                 }
                 text = text.Replace(from, to, StringComparison.Ordinal);
@@ -473,7 +476,10 @@ w();}).then(go,go);})();</script>
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
-            return ReplaceOnce(Encoding.Latin1.GetString(reply.Body), Reads, ref warned, "the in-game page's round timer read") is { } text ? NoCache(reply, Encoding.Latin1.GetBytes(text)) : reply;
+            var script = Encoding.Latin1.GetString(reply.Body);
+            var fixedScript = ReplaceOnce(script, Reads, ref warned, "the in-game page's round timer read") ?? script;
+            fixedScript = ReplaceOnce(fixedScript, Clones, ref warnedClone, "the in-game page's ammunition copy") ?? fixedScript;
+            return ReferenceEquals(fixedScript, script) ? reply : NoCache(reply, Encoding.Latin1.GetBytes(fixedScript));
         }
 
         static readonly Regex Locale = new(@"\A/static/app/[^/]+/locale/[a-z_]+\.js\z", RegexOptions.ECMAScript);

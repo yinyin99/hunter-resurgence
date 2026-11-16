@@ -222,7 +222,24 @@ public class ReplayTests : IAsyncLifetime
         Same(("a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.7/client.js"));
         Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
         var page = await R("GET", "game_web.test", "/client");
-        Assert.Contains("client.js?t=timer1", Encoding.UTF8.GetString(page.Body));
+        Assert.Contains("client.js?t=timer2", Encoding.UTF8.GetString(page.Body));
+    }
+
+    [Fact]
+    public async Task TestThePageNeverCopiesAnAmmunitionStackAndStaysFailSafe()
+    {
+        void Put(string path, string text)
+        {
+            var f = Path.Combine(mirror, "game_web.test", path);
+            Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+            File.WriteAllText(f, text);
+        }
+        const string Clonable = "isItemClonable:function(e){return 3===e.get(\"cat\")&&1==this.unlimited_ammo&&0==e.get(\"equippedSlot\")}";
+        Put("static/app/9.9.6/client.js", "x," + Clonable + ",y");
+        var served = await R("GET", "game_web.test", "/static/app/9.9.6/client.js");
+        Assert.Equal("x,isItemClonable:function(e){return!1&&1==this.unlimited_ammo&&0==e.get(\"equippedSlot\")},y", Encoding.UTF8.GetString(served.Body));
+        Put("static/app/9.9.5/client.js", Clonable + Clonable);  // not exactly once: served as it is
+        Same((Encoding.UTF8.GetBytes(Clonable + Clonable), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.5/client.js"));
     }
 
     [Fact]

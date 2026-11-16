@@ -247,7 +247,7 @@ public class AccountIsolationTests : StateTestBase
         Scoring.OwnLogo = "testlogo";
     }
 
-    /// <summary>The state with unlimited ammunition on and item 10 an ammunition: the only items a cloned entry may create.</summary>
+    /// <summary>The state with unlimited ammunition on and item 10 an ammunition.</summary>
     void Unlimited()
     {
         var app = APP;
@@ -270,10 +270,6 @@ public class AccountIsolationTests : StateTestBase
     JsonNode Numbers(long account) => Reply(state.SkillListReply(account, Encoding.ASCII.GetBytes($"user_id={account}"))!);
 
     JsonNode ExpeditionOf(long account) => Reply(state.ExpeditionReply(account, "{}"u8.ToArray()));
-
-    string Clone(long account, int slot) => Py.Str(Reply(state.MoveMultiple2Reply(account, Form(
-        JsonNode.Parse($$"""[{"item_guid": "new_item_1", "slot_id": {{slot}}}]""")!,
-        JsonNode.Parse("""[{"item_guid": "new_item_1", "item_id": 10}]"""))))["new_item_1"]);
 
     internal static JsonNode[] Harvest(int individual, int grams, bool hit = true)
     {
@@ -308,18 +304,15 @@ public class AccountIsolationTests : StateTestBase
     }
 
     [Fact]
-    public void TestInventoryMovesClonesAndGuidsStayInTheirAccount()
+    public void TestInventoryMovesAndGuidsStayInTheirAccount()
     {
         Unlimited();
         state.MoveMultiple2Reply(B, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!));
         Eq("0", Inventory(A)["100"]!["slot"]);
         Eq("12", Inventory(B)["100"]!["slot"]);
-        Assert.Equal("201", Clone(B, 13));
         // a guid that only the other account has is unknown here
         Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(A, Form(JsonNode.Parse("""[{"item_guid": 201, "slot_id": 5}]""")!)));
         Assert.DoesNotContain("201", Inventory(A).Select(kv => kv.Key));
-        Assert.Equal("201", Clone(A, 14));  // each account allocates its own guids
-        Eq("[13, 14]", T(Inventory(B)["201"]!["slot"], Inventory(A)["201"]!["slot"]));
         // a consumed item and an item metadata event change one account's row only
         Hb(B, O("""{"event": 6, "item": "200", "parent_item": "300", "quantity": 4}"""),
            O("""{"event": 23, "item": "100", "metadata": {"dog_name": "Rex"}}"""));
