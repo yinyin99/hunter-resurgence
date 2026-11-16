@@ -369,7 +369,7 @@ public static class Replay
                 UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false,
                 Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"] };
         state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
-        if (!offline) state.MigrateAvatars();  // a community server: the pictures its accounts imported before the avatars were served
+        if (!offline) { state.MigrateAvatars(); state.MigrateAvatarGenders(); }  // a community server: the pictures its accounts imported before the avatars were served
         return state;
     }
 

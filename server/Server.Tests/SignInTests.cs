@@ -166,7 +166,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     static readonly (string, string)[] Json = [("Content-Type", "application/json")];
     const string Default = "https://avatar.test/256/1000000.png";  // a new account's picture: the first of the list below, on the avatar base of the fixture's account
-    static JsonArray AvatarList() => (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png"}, {"id": 1000001, "url": "https://avatar.test/256/1000001.png"}]""")!;
+    static JsonArray AvatarList() => (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000001, "url": "https://avatar.test/256/1000001.png", "gender": "f"}]""")!;
     readonly FakeSteam fake = new();
     Loopback server = null!;
 
@@ -535,6 +535,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         foreach (var refused in new[] { "id=5", "id=imported", "id=", "id=-1000001", "" })  // none of the list; no imported picture
             Assert.Equal(404, (await ChooseAvatar(refused, xhr)).Status);
         Assert.Equal(Default, state.Store.AvatarUrl(me));  // nothing changed
+        Assert.Equal(1L, (long)state.Store.AccountJson(me)["gender"]!);  // a new account with the male default avatar is male
 
         var picked = await ChooseAvatar("id=1000001", xhr);
         Assert.Equal(200, picked.Status);
@@ -544,6 +545,45 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Eq($$"""["{{Picked}}", 1000001, 1000001, 1000001]""", T(account["avatar_url"], account["face"], account["avatar"], account["avatar_id"]));
         Assert.Equal(Picked, (string)JsonNode.Parse((await Get("web.test", "/hunters/one")).Body)!["avatar"]!);
         Assert.Equal(Picked, (string)(await Me(cookie))!["avatar"]!);
+        Assert.Equal(0L, (long)account["gender"]!);  // the female avatar gives a female body
+        Assert.Equal(200, (await ChooseAvatar("id=1000000", xhr)).Status);
+        Assert.Equal(1L, (long)state.Store.AccountJson(me)["gender"]!);  // and the male one a male body
+    }
+
+    [Fact]
+    public async Task TestTheImportedPictureKeepsTheGenderAndTheStartFixesOnlyAccountsThatNeverRestored()
+    {
+        var cookie = await SignIn("99999999999999991", "one");
+        var me = state.Store.Listed("one", null)!.Value;
+        Directory.CreateDirectory(Path.Combine(tmp, "photos", me.ToString()));
+        File.WriteAllBytes(Path.Combine(tmp, "photos", me.ToString(), State.ImportedAvatar), [1]);
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', 0) WHERE id = ?", me);
+        Assert.Equal(200, (await ChooseAvatar("id=imported", Ck("hr_session", cookie), ("X-Requested-With", "XMLHttpRequest"))).Status);
+        Assert.Equal(0L, (long)state.Store.AccountJson(me)["gender"]!);  // the imported picture leaves it
+
+        state.CreateAccount(61, "never");
+        state.CreateAccount(62, "restored");
+        foreach (var id in new long[] { 61, 62 })
+            using (var con = state.Store.Open())
+                con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', 0) WHERE id = ?", id);
+        using (var con = state.Store.Open(62))
+            con.Exec("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 0, 'x', 'import', '')");
+        state.CreateAccount(63, "ids");
+        state.CreateAccount(64, "claim");
+        using (var con = state.Store.Open())
+        {
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', 0) WHERE id IN (63, 64)");
+            con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (5, 63, 0)");
+            con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (64, 6, 'claim', 0, 'pending', 0, '', 0)");
+        }
+        state.MigrateAvatarGenders();
+        state.MigrateAvatarGenders();  // idempotent
+        Assert.Equal(1L, (long)state.Store.AccountJson(61)["gender"]!);  // the male default avatar
+        Assert.Equal(0L, (long)state.Store.AccountJson(62)["gender"]!);  // restored: its own
+        Assert.Equal(0L, (long)state.Store.AccountJson(63)["gender"]!);
+        Assert.Equal(0L, (long)state.Store.AccountJson(64)["gender"]!);
+        Assert.Equal(0L, (long)state.Store.AccountJson(me)["gender"]!);  // an imported picture is no listed avatar
     }
 
     [Fact]

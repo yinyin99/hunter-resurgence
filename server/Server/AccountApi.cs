@@ -357,7 +357,7 @@ public static class AccountApi
                     : Refuse(404, "invalid", "This is none of the avatars you can choose.");
             })
             .WithName("AccountAvatar").WithSummary("Choose the player's avatar (form `id`: a game avatar's id, or `imported`)")
-            .WithDescription("The game sees it at its next start (`avatar_url`, `face`, `avatar`, `avatar_id`). 200 like `GET /account/avatars`; 404 `invalid` for an id that is not in the game's list, or `imported` without an imported picture.")
+            .WithDescription("The game sees it at its next start (`avatar_url`, `face`, `avatar`, `avatar_id`, and for a listed avatar `gender`). 200 like `GET /account/avatars`; 404 `invalid` for an id that is not in the game's list, or `imported` without an imported picture.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/messages/thread", (HttpContext ctx) => Account(ctx) is not { } account
