@@ -50,15 +50,15 @@
   <data name="Settings.Account" xml:space="preserve"><value>Paramètres du compte</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionnaire du jeu</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Utiliser le bouton Jouer de Steam</value></data>
-  <data name="Steam.Help" xml:space="preserve"><value>Collez cette ligne dans les options de lancement du jeu dans Steam (Propriétés) pour le démarrer avec ce lanceur :</value></data>
+  <data name="Steam.Help" xml:space="preserve"><value>Collez cette ligne dans les options de lancement du jeu dans Steam (Propriétés) pour le démarrer avec ce launcher :</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copier</value></data>
   <data name="Steam.Title" xml:space="preserve"><value>Lancer le jeu depuis le bouton Jouer de Steam</value></data>
-  <data name="Steam.Why" xml:space="preserve"><value>Les serveurs officiels sont fermés. Le lanceur propre au jeu, que Steam ouvre quand vous appuyez sur Jouer, ne peut plus joindre de serveur seul : il a besoin de ce lanceur, qui porte votre connexion au serveur communautaire.</value></data>
-  <data name="Steam.What" xml:space="preserve"><value>Pour que Jouer continue de fonctionner, ce lanceur peut demander à Steam de l'ouvrir à la place.</value></data>
+  <data name="Steam.Why" xml:space="preserve"><value>Les serveurs officiels sont fermés. Le launcher propre au jeu, que Steam ouvre quand vous appuyez sur Jouer, ne peut plus joindre de serveur seul : il a besoin de ce launcher, qui porte votre connexion au serveur communautaire.</value></data>
+  <data name="Steam.What" xml:space="preserve"><value>Pour que Jouer continue de fonctionner, ce launcher peut demander à Steam de l'ouvrir à la place.</value></data>
   <data name="Steam.Changes" xml:space="preserve"><value>Il modifie un seul réglage de ce jeu dans Steam (ses options de lancement), rien d'autre : ni vos autres jeux, ni Steam lui-même, ni les fichiers du jeu.</value></data>
   <data name="Steam.Where" xml:space="preserve"><value>Vous pouvez le voir dans Steam : clic droit sur le jeu, Propriétés, Options de lancement.</value></data>
   <data name="Steam.Closed" xml:space="preserve"><value>Steam doit être fermé pendant l'écriture du réglage, car Steam enregistre sa propre copie en se fermant.</value></data>
-  <data name="Steam.Undo" xml:space="preserve"><value>La désinstallation de ce lanceur remet le réglage d'origine.</value></data>
+  <data name="Steam.Undo" xml:space="preserve"><value>La désinstallation de ce launcher remet le réglage d'origine.</value></data>
   <data name="Steam.Current" xml:space="preserve"><value>Votre option de lancement actuelle pour ce jeu est : {0}. Elle n'est remplacée que si vous choisissez le premier bouton.</value></data>
   <data name="Steam.Set" xml:space="preserve"><value>Fermer Steam et l'appliquer</value></data>
   <data name="Steam.CopyInstead" xml:space="preserve"><value>Copier plutôt la ligne</value></data>
@@ -70,15 +70,15 @@
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Avez-vous une sauvegarde de votre profil ?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Une sauvegarde est le zip créé par l’outil de sauvegarde, ou un enregistrement fait avec un autre outil de la communauté. Restaurez-la maintenant pour retrouver vos chasses, objets et trophées.</value></data>
   <data name="RestoreOffer.Go" xml:space="preserve"><value>Restaurer mon profil</value></data>
-  <data name="Steam.Done" xml:space="preserve"><value>Terminé. Le bouton Jouer de Steam ouvre maintenant ce lanceur.</value></data>
+  <data name="Steam.Done" xml:space="preserve"><value>Terminé. Le bouton Jouer de Steam ouvre maintenant ce launcher.</value></data>
   <data name="Steam.Restarted" xml:space="preserve"><value>Steam redémarre.</value></data>
-  <data name="Steam.NotInstalled" xml:space="preserve"><value>Ce lanceur n'a pas été installé avec le programme d'installation (copie de développement ou décompressée) : il ne peut donc pas définir l'option de lancement de Steam pour vous.</value></data>
-  <data name="Steam.Unreadable" xml:space="preserve"><value>Le lanceur n'a pas pu lire en toute sécurité le fichier de réglages de Steam pour ce jeu et l'a laissé inchangé.</value></data>
+  <data name="Steam.NotInstalled" xml:space="preserve"><value>Ce launcher n'a pas été installé avec le programme d'installation (copie de développement ou décompressée) : il ne peut donc pas définir l'option de lancement de Steam pour vous.</value></data>
+  <data name="Steam.Unreadable" xml:space="preserve"><value>Le launcher n'a pas pu lire en toute sécurité le fichier de réglages de Steam pour ce jeu et l'a laissé inchangé.</value></data>
   <data name="Steam.NoClose" xml:space="preserve"><value>Steam ne s'est pas fermé à temps. Fermez-le vous-même, puis réessayez.</value></data>
   <data name="Steam.UninstallClose" xml:space="preserve"><value>Steam doit être fermé pour remettre l'option de lancement du jeu. Fermer Steam maintenant ? Choisissez Non pour laisser l'option telle quelle.</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Settings.SeasonalEvents" xml:space="preserve"><value>Événements saisonniers</value></data>
-  <data name="Events.Info" xml:space="preserve"><value>Pendant un événement saisonnier, le serveur communautaire ajoute ses animaux au jeu et le lanceur affiche ses images. Désactivez cette option pour jouer sans l'événement. Le changement s'applique au prochain démarrage du jeu.</value></data>
+  <data name="Events.Info" xml:space="preserve"><value>Pendant un événement saisonnier, le serveur communautaire ajoute ses animaux au jeu et le launcher affiche ses images. Désactivez cette option pour jouer sans l'événement. Le changement s'applique au prochain démarrage du jeu.</value></data>
   <data name="Events.Play" xml:space="preserve"><value>Jouer les événements saisonniers</value></data>
   <data name="Events.Failed" xml:space="preserve"><value>Le paramètre n'a pas pu être enregistré. Réessayez.</value></data>
   <data name="Events.Community" xml:space="preserve"><value>Missions communautaires</value></data>
@@ -95,7 +95,7 @@
   <data name="Settings.Screenshots" xml:space="preserve"><value>Captures d’écran</value></data>
   <data name="Settings.Logfiles" xml:space="preserve"><value>Fichiers journaux</value></data>
   <data name="Settings.GameFolder" xml:space="preserve"><value>Répertoire du jeu</value></data>
-  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Vider le cache du lanceur</value></data>
+  <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Vider le cache du launcher</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Vider le cache du jeu</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Amis ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Trouver d’autres chasseurs…</value></data>
@@ -313,7 +313,7 @@
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Non configuré : settings.json n’a pas d’entrée pour ces fichiers.</value></data>
   <data name="GameSettings.Missing" xml:space="preserve"><value>Lancez le jeu une fois pour qu’il crée ses fichiers de paramètres.</value></data>
-  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un fichier de paramètres a un format inconnu du lanceur ; il est laissé intact.</value></data>
+  <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un fichier de paramètres a un format inconnu du launcher ; il est laissé intact.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Le jeu est en cours d’exécution. Fermez-le avant d’enregistrer : il réécrit lui-même ces fichiers.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Les paramètres n’ont pas pu être enregistrés.</value></data>
   <data name="Patch.GotIt" xml:space="preserve"><value>Compris !</value></data>
@@ -324,11 +324,11 @@
   <data name="Patch.ViewChangelog" xml:space="preserve"><value>Voir les modifications</value></data>
   <data name="Patch.FullTitle" xml:space="preserve"><value>Téléchargement de {game}</value></data>
   <data name="Patch.FullText" xml:space="preserve"><value>Une installation complète de {game} est en cours de téléchargement sur votre ordinateur. Vous pourrez commencer à jouer dès qu’elle sera terminée. En attendant, vous pouvez parcourir le site librement.</value></data>
-  <data name="Patch.LauncherTitle" xml:space="preserve"><value>Mise à jour du lanceur</value></data>
-  <data name="Patch.LauncherText" xml:space="preserve"><value>Le lanceur doit être mis à jour. La mise à jour sera téléchargée automatiquement. Une fois le lanceur mis à jour, il devra être redémarré.</value></data>
-  <data name="Patch.LauncherReady" xml:space="preserve"><value>Mise à jour effectuée. Le lanceur doit redémarrer.</value></data>
+  <data name="Patch.LauncherTitle" xml:space="preserve"><value>Mise à jour du launcher</value></data>
+  <data name="Patch.LauncherText" xml:space="preserve"><value>Le launcher doit être mis à jour. La mise à jour sera téléchargée automatiquement. Une fois le launcher mis à jour, il devra être redémarré.</value></data>
+  <data name="Patch.LauncherReady" xml:space="preserve"><value>Mise à jour effectuée. Le launcher doit redémarrer.</value></data>
   <data name="Patch.SteamUpdateTitle" xml:space="preserve"><value>Mise à jour du jeu requise</value></data>
-  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Une mise à jour de {game} est disponible. Vous devez mettre à jour {game} sur Steam avant de pouvoir jouer. Vous devez fermer le lanceur pour effectuer la mise à jour.</value></data>
+  <data name="Patch.SteamUpdateText" xml:space="preserve"><value>Une mise à jour de {game} est disponible. Vous devez mettre à jour {game} sur Steam avant de pouvoir jouer. Vous devez fermer le launcher pour effectuer la mise à jour.</value></data>
   <data name="Patch.SteamOnlyTitle" xml:space="preserve"><value>{game_full} est uniquement disponible sur Steam</value></data>
   <data name="Patch.SteamOnlyText" xml:space="preserve"><value>Désormais, vous devez jouer via la plateforme Steam !</value></data>
   <data name="Patch.GoToSteam" xml:space="preserve"><value>Aller sur Steam</value></data>
@@ -343,7 +343,7 @@
   <data name="Patch.Downloading" xml:space="preserve"><value>Téléchargement ({0}) : {1} ({2}). {3}/s</value></data>
   <data name="Patch.KindFull" xml:space="preserve"><value>installation complète</value></data>
   <data name="Patch.KindPatch" xml:space="preserve"><value>mise à jour</value></data>
-  <data name="Patch.KindLauncher" xml:space="preserve"><value>mise à jour du lanceur</value></data>
+  <data name="Patch.KindLauncher" xml:space="preserve"><value>mise à jour du launcher</value></data>
   <data name="Patch.Verifying" xml:space="preserve"><value>Veuillez patienter pendant la vérification des fichiers téléchargés.</value></data>
   <data name="Patch.Extracting" xml:space="preserve"><value>Veuillez patienter pendant l’exécution du programme d’installation.</value></data>
   <data name="Patch.Checksum" xml:space="preserve"><value>Vérification du fichier : {0} / {1} ({2})</value></data>
@@ -370,12 +370,12 @@
   <data name="Launcher.Error.9" xml:space="preserve"><value>Échec du téléchargement.</value></data>
   <data name="Launcher.Error.10" xml:space="preserve"><value>Échec du téléchargement des données du torrent.</value></data>
   <data name="Launcher.Error.11" xml:space="preserve"><value>Fichier .torrent non valide.</value></data>
-  <data name="Launcher.Error.12" xml:space="preserve"><value>Emplacement de fichier du lanceur non valide.</value></data>
+  <data name="Launcher.Error.12" xml:space="preserve"><value>Emplacement de fichier du launcher non valide.</value></data>
   <data name="Launcher.Error.13" xml:space="preserve"><value>Échec de l’extraction de l’archive auto-extractible NSIS.</value></data>
   <data name="Launcher.Error.14" xml:space="preserve"><value>Erreur de correctif.</value></data>
   <data name="Launcher.Error.15" xml:space="preserve"><value>Fichier manifeste manquant ou incorrect.</value></data>
-  <data name="Launcher.Error.16" xml:space="preserve"><value>Échec du lancement du lanceur mis à jour.</value></data>
-  <data name="Launcher.Error.17" xml:space="preserve"><value>Le lanceur ne répond plus.</value></data>
+  <data name="Launcher.Error.16" xml:space="preserve"><value>Échec du lancement du launcher mis à jour.</value></data>
+  <data name="Launcher.Error.17" xml:space="preserve"><value>Le launcher ne répond plus.</value></data>
   <data name="Launcher.Error.18" xml:space="preserve"><value>Impossible de créer le répertoire du jeu.</value></data>
   <data name="Launcher.Error.19" xml:space="preserve"><value>Impossible de créer le répertoire des torrents.</value></data>
   <data name="Launcher.Error.20" xml:space="preserve"><value>Impossible de créer le répertoire des correctifs.</value></data>
@@ -889,7 +889,7 @@
   <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
   <data name="Set.SteamText" xml:space="preserve"><value>Votre compte {game} {0} est connecté à votre compte Steam. Si vous souhaitez connecter ce compte {game} à un autre compte Steam, ou connecter ce compte Steam à un autre compte {game}, vous devez d’abord déconnecter les deux comptes actuellement connectés.</value></data>
   <data name="Set.Warning" xml:space="preserve"><value>Avertissement</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>La déconnexion de votre compte Steam vous déconnectera de {game} et fermera le lanceur. Vous ne pourrez plus jouer à {game} sur Steam tant que vous ne vous serez pas connecté à un autre compte.</value></data>
+  <data name="Set.SteamWarning" xml:space="preserve"><value>La déconnexion de votre compte Steam vous déconnectera de {game} et fermera le launcher. Vous ne pourrez plus jouer à {game} sur Steam tant que vous ne vous serez pas connecté à un autre compte.</value></data>
   <data name="Set.SteamDisconnect" xml:space="preserve"><value>Je comprends et souhaite déconnecter mon compte Steam</value></data>
   <data name="Set.SteamFailed" xml:space="preserve"><value>Une erreur est survenue et votre compte Steam n’a pas été déconnecté. Veuillez réessayer !</value></data>
   <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannière</value></data>
@@ -919,7 +919,7 @@
   <data name="GM.Refill" xml:space="preserve"><value>Réapprovisionner</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Bienvenue dans {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Félicitations {0}, votre tout nouveau compte {game} a bien été créé !</value></data>
-  <data name="Welcome.Intro" xml:space="preserve"><value>Si vous avez déjà téléchargé et installé le lanceur et le client du jeu, vous pouvez commencer à jouer ! Si vous découvrez {game}, nous vous recommandons de suivre les tutoriels avant de partir pour votre première vraie chasse. Ils vous apprendront tout ce qu’il faut savoir pour vous débrouiller par vous-même dans la réserve de chasse d’Evergreen. Commencez ci-dessous.</value></data>
+  <data name="Welcome.Intro" xml:space="preserve"><value>Si vous avez déjà téléchargé et installé le launcher et le client du jeu, vous pouvez commencer à jouer ! Si vous découvrez {game}, nous vous recommandons de suivre les tutoriels avant de partir pour votre première vraie chasse. Ils vous apprendront tout ce qu’il faut savoir pour vous débrouiller par vous-même dans la réserve de chasse d’Evergreen. Commencez ci-dessous.</value></data>
   <data name="Welcome.Retail" xml:space="preserve"><value>Vous possédez un code d’activation ?</value></data>
   <data name="Welcome.RetailText" xml:space="preserve"><value>Si vous avez acheté une version commerciale de {game}, {0}cliquez ici{1} pour utiliser votre code d’activation.</value></data>
   <data name="Welcome.Tutorials" xml:space="preserve"><value>Tutoriels</value></data>
@@ -929,7 +929,7 @@
   <data name="Welcome.HuntingText" xml:space="preserve"><value>Lancez une vraie chasse si vous connaissez déjà {game} ou si vous avez simplement hâte de partir.</value></data>
   <data name="Welcome.HuntingGo" xml:space="preserve"><value>Commencer une nouvelle partie</value></data>
   <data name="Welcome.Downloads" xml:space="preserve"><value>Téléchargement</value></data>
-  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si vous n’avez pas encore téléchargé le lanceur et le client du jeu, vous devez le faire avant de pouvoir commencer à chasser.</value></data>
+  <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si vous n’avez pas encore téléchargé le launcher et le client du jeu, vous devez le faire avant de pouvoir commencer à chasser.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Télécharger</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Paramètres</value></data>
   <data name="Welcome.SettingsText" xml:space="preserve"><value>Si vous souhaitez modifier votre adresse email, votre langue d’affichage ou votre avatar, vous pouvez le faire sur la page des paramètres.</value></data>
@@ -1078,7 +1078,7 @@
   <data name="Browser.Delay" xml:space="preserve"><value>Cela peut prendre quelques secondes…</value></data>
   <data name="Browser.EmailProgress" xml:space="preserve"><value>Confirmation de l’email en cours…</value></data>
   <data name="Browser.EmailDone" xml:space="preserve"><value>Confirmation de l’email terminée !</value></data>
-  <data name="Browser.ThankYou" xml:space="preserve"><value>Merci de nous avoir rejoints ! Poursuivez dans le lanceur de {game} pour commencer à jouer !</value></data>
+  <data name="Browser.ThankYou" xml:space="preserve"><value>Merci de nous avoir rejoints ! Poursuivez dans le launcher de {game} pour commencer à jouer !</value></data>
   <data name="Browser.Logout" xml:space="preserve"><value>Déconnexion terminée</value></data>
   <data name="Term.species.19" xml:space="preserve"><value>Bouquetin des Alpes</value></data>
   <data name="Term.species.28" xml:space="preserve"><value>Canard noir</value></data>
@@ -1264,7 +1264,7 @@
   <data name="DayHelp.Services.Title" xml:space="preserve"><value>Services des missions quotidiennes</value></data>
   <data name="DayHelp.Resume.Nav" xml:space="preserve"><value>Reprendre la série</value></data>
   <data name="DayHelp.Resume.Title" xml:space="preserve"><value>Reprendre une série</value></data>
-  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Les missions quotidiennes sont un tout nouvel ajout au système de missions de {game}. Vous les trouverez dans la {0}section Missions{1} du lanceur ou du site web.</value></data>
+  <data name="DayHelp.Intro.1" xml:space="preserve"><value>Les missions quotidiennes sont un tout nouvel ajout au système de missions de {game}. Vous les trouverez dans la {0}section Missions{1} du launcher ou du site web.</value></data>
   <data name="DayHelp.Intro.2" xml:space="preserve"><value>Conçues pour être accomplies en une journée, les missions quotidiennes sont plutôt simples et la plupart ne nécessitent ni arme ni équipement particulier. Les missions quotidiennes difficiles peuvent parfois faire exception, mais ne vous découragez pas ! Vous pouvez accomplir les missions quotidiennes en multijoueur si vous le souhaitez.</value></data>
   <data name="DayHelp.Intro.Cap" xml:space="preserve"><value>La nouvelle interface des missions quotidiennes</value></data>
   <data name="DayHelp.How.Title" xml:space="preserve"><value>Comment ça marche ?</value></data>
@@ -1329,16 +1329,16 @@
   <data name="DayHelp.Resume.6" xml:space="preserve"><value>Une fois acheté, vous pourrez utiliser ce service directement sur la page des MQ :</value></data>
   <data name="Download.Title" xml:space="preserve"><value>Comment jouer à {game} sur Hunter Resurgence</value></data>
   <data name="Download.Need.Title" xml:space="preserve"><value>Ce qu’il vous faut</value></data>
-  <data name="Download.Need.Text" xml:space="preserve"><value>Un PC sous Windows 10 ou 11, Steam et votre propre copie de {game}, installée depuis votre bibliothèque Steam. Hunter Resurgence ne contient aucun fichier du jeu : son lanceur relie votre copie au serveur communautaire.</value></data>
+  <data name="Download.Need.Text" xml:space="preserve"><value>Un PC sous Windows 10 ou 11, Steam et votre propre copie de {game}, installée depuis votre bibliothèque Steam. Hunter Resurgence ne contient aucun fichier du jeu : son launcher relie votre copie au serveur communautaire.</value></data>
   <data name="Download.Installed" xml:space="preserve"><value>Déjà installé ? Lancez Hunter Resurgence depuis le menu Démarrer.</value></data>
-  <data name="Download.Step1.Text" xml:space="preserve"><value>Téléchargez le lanceur Hunter Resurgence et lancez-le. Il s’installe pour votre utilisateur seulement (sans demande d’administrateur), ajoute un raccourci et se met à jour tout seul.</value></data>
+  <data name="Download.Step1.Text" xml:space="preserve"><value>Téléchargez le launcher Hunter Resurgence et lancez-le. Il s’installe pour votre utilisateur seulement (sans demande d’administrateur), ajoute un raccourci et se met à jour tout seul.</value></data>
   <data name="Download.Restore.Title" xml:space="preserve"><value>Vous jouiez déjà ? Récupérez votre profil</value></data>
   <data name="Download.Restore.Text" xml:space="preserve"><value>Connectez-vous sur ce site et ouvrez {0}Restaurer votre sauvegarde{1}. Vous avez un zip de sauvegarde ? Envoyez-le sur cette page : l’opérateur le vérifie à la main, puis le restaure. Pas de zip de sauvegarde ? Utilisez « Récupérez votre ancien profil » sur cette page avec votre ancien nom de chasseur.</value></data>
   <data name="Download.Trouble.Guide" xml:space="preserve"><value>Guide du joueur : chaque étape, et les solutions aux problèmes courants</value></data>
-  <data name="Download.Click" xml:space="preserve"><value>Télécharger le lanceur</value></data>
+  <data name="Download.Click" xml:space="preserve"><value>Télécharger le launcher</value></data>
   <data name="Download.Step" xml:space="preserve"><value>Étape {0}</value></data>
-  <data name="Download.Step2.Text" xml:space="preserve"><value>Au premier démarrage, le lanceur ouvre la fenêtre de configuration : choisissez Configurer, et répondez Oui quand Windows demande d’installer un certificat et de modifier le fichier hosts. La boîte de dialogue du bouton Jouer de Steam suit au démarrage suivant du lanceur (ou tout de suite après « Pas maintenant ») : choisissez « Fermer Steam et l'appliquer ». Steam redémarre tout seul. Les fichiers du jeu ne sont jamais modifiés.</value></data>
-  <data name="Download.Step3.Text" xml:space="preserve"><value>Appuyez sur « Se connecter avec Steam » dans le lanceur et connectez-vous dans le navigateur qui s’ouvre, avec le compte Steam avec lequel vous jouez. Choisissez une réserve et un point de départ, puis appuyez sur Démarrer la partie. La première fois, le pare-feu Windows pose une question sur le jeu : choisissez Autoriser. Gardez le lanceur ouvert pendant que vous jouez.</value></data>
+  <data name="Download.Step2.Text" xml:space="preserve"><value>Au premier démarrage, le launcher ouvre la fenêtre de configuration : choisissez Configurer, et répondez Oui quand Windows demande d’installer un certificat et de modifier le fichier hosts. La boîte de dialogue du bouton Jouer de Steam suit au démarrage suivant du launcher (ou tout de suite après « Pas maintenant ») : choisissez « Fermer Steam et l'appliquer ». Steam redémarre tout seul. Les fichiers du jeu ne sont jamais modifiés.</value></data>
+  <data name="Download.Step3.Text" xml:space="preserve"><value>Appuyez sur « Se connecter avec Steam » dans le launcher et connectez-vous dans le navigateur qui s’ouvre, avec le compte Steam avec lequel vous jouez. Choisissez une réserve et un point de départ, puis appuyez sur Démarrer la partie. La première fois, le pare-feu Windows pose une question sur le jeu : choisissez Autoriser. Gardez le launcher ouvert pendant que vous jouez.</value></data>
   <data name="Download.Trouble.Title" xml:space="preserve"><value>Dépannage</value></data>
   <data name="Settings.Restore" xml:space="preserve"><value>Restaurer votre sauvegarde</value></data>
   <data name="Footer.YourData" xml:space="preserve"><value>Vos données</value></data>
@@ -1371,7 +1371,7 @@
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Déconnecté</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Indisponible ici</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Supprimer mes données</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Cela supprime votre compte sur ce serveur et tout ce qui y est conservé : votre id Steam, votre nom, vos données de jeu, les zips de sauvegarde conservés et vos photos. Vous êtes déconnecté et la connexion du lanceur cesse de fonctionner. Cette action est irréversible.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Cela supprime votre compte sur ce serveur et tout ce qui y est conservé : votre id Steam, votre nom, vos données de jeu, les zips de sauvegarde conservés et vos photos. Vous êtes déconnecté et la connexion du launcher cesse de fonctionner. Cette action est irréversible.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Je comprends, tout supprimer</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Supprimer mes données</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Les données n’ont pas pu être supprimées. Réessayez.</value></data>
@@ -1424,13 +1424,13 @@ Les noms :</value></data>
   <data name="Kit.Trust" xml:space="preserve"><value>Windows va demander s'il faut faire confiance à l'autorité de certification. Choisissez Oui.</value></data>
   <data name="Kit.Elevate" xml:space="preserve"><value>Windows va ensuite demander l'autorisation administrateur pour modifier le fichier hosts (une fenêtre à part). Choisissez Oui. Seule cette modification s'exécute en administrateur.</value></data>
   <data name="Kit.HostsFailed" xml:space="preserve"><value>Le fichier hosts n'a pas été modifié (autorisation refusée, ou bloqué par un programme de sécurité). Configurez de nouveau pour réessayer ; Supprimer la configuration, dans les paramètres, annule ce qui a été fait.</value></data>
-  <data name="Kit.Done" xml:space="preserve"><value>Terminé. Laissez le lanceur ouvert pendant que vous jouez : il envoie le jeu vers le serveur communautaire. La première fois que le jeu démarre, le pare-feu Windows pose une question à son sujet : cliquez sur Autoriser.</value></data>
+  <data name="Kit.Done" xml:space="preserve"><value>Terminé. Laissez le launcher ouvert pendant que vous jouez : il envoie le jeu vers le serveur communautaire. La première fois que le jeu démarre, le pare-feu Windows pose une question à son sujet : cliquez sur Autoriser.</value></data>
   <data name="Kit.Removed" xml:space="preserve"><value>Bloc hosts, autorité de certification et certificat supprimés. Le jeu parle de nouveau à ses propres serveurs.</value></data>
   <data name="Kit.NoLeaf" xml:space="preserve"><value>Aucun certificat trouvé : ce PC n'est pas encore configuré.</value></data>
   <data name="Kit.LeafExpired" xml:space="preserve"><value>Le certificat a expiré. Configurez de nouveau : cela en crée un nouveau.</value></data>
   <data name="Kit.NoHosts" xml:space="preserve"><value>Le fichier hosts n'a pas le bloc de la configuration (non faite, ou supprimée) : le jeu parle donc toujours à ses propres serveurs.</value></data>
   <data name="Kit.PortBusy" xml:space="preserve"><value>Impossible d'écouter sur le port 80 ou 443 : {0}
-Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lanceur), puis relancez le lanceur.</value></data>
+Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du launcher), puis relancez le launcher.</value></data>
   <data name="Kit.SetUp" xml:space="preserve"><value>Configurer</value></data>
   <data name="Kit.NotNow" xml:space="preserve"><value>Pas maintenant</value></data>
   <data name="Kit.RemoveConfirm" xml:space="preserve"><value>Supprimer la configuration ? Le bloc hosts, l'autorité de certification et le certificat sont supprimés, et le jeu parle de nouveau à ses propres serveurs.</value></data>
@@ -1445,7 +1445,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lan
   <data name="Cleanup.KitKept" xml:space="preserve"><value>Une ancienne configuration du kit joueur est sur ce PC et convient encore : elle reste telle quelle.</value></data>
   <data name="Cleanup.KitReplace" xml:space="preserve"><value>Une ancienne configuration du kit joueur est sur ce PC mais ne convient pas : la fenêtre suivante la remplace en une étape.</value></data>
   <data name="Cleanup.Delete" xml:space="preserve"><value>Supprimer</value></data>
-  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Supprimer aussi les données du lanceur (langue, dossier du jeu et connexion enregistrée dans %APPDATA%\hunter-resurgence) ? Choisissez Non pour les garder.</value></data>
+  <data name="Uninstall.DeleteData" xml:space="preserve"><value>Supprimer aussi les données du launcher (langue, dossier du jeu et connexion enregistrée dans %APPDATA%\hunter-resurgence) ? Choisissez Non pour les garder.</value></data>
   <data name="SignInPage.Handle.Title" xml:space="preserve"><value>Choisissez votre nom</value></data>
   <data name="SignInPage.Handle.Intro" xml:space="preserve"><value>C’est le nom que voient les autres chasseurs.</value></data>
   <data name="SignInPage.Handle.Label" xml:space="preserve"><value>Votre nom</value></data>
