@@ -167,6 +167,30 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAFreedServerIdIsNotHandedOutAgain()
+    {
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        Assert.Equal("restored", Operator.Approve(id).Kind);  // the account left its server id for 1001
+        Assert.False(state.Store.AccountExists(player));
+        Assert.Equal(player + 1, state.Store.NextServerId());
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion24SeedsTheServerIdCounter()
+    {
+        var file = Path.Combine(tmp, "v24.db");
+        var store = new Store(file);
+        var top = store.NextServerId();
+        store.CreateAccount(top, "top", new System.Text.Json.Nodes.JsonObject());
+        using (var con = store.Open())
+        {
+            con.Exec("DROP TABLE id_counter");
+            con.Exec("PRAGMA user_version = 24");
+        }
+        Assert.Equal(top + 1, new Store(file).NextServerId());
+    }
+
+    [Fact]
     public async Task TestAUserIdIsRestoredOnceWhateverTheZipOrAccount()
     {
         var (other, otherCookie) = SignedIn("other", "76561190000000002");

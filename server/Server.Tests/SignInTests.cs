@@ -770,10 +770,10 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         await SignIn("99999999999999991", "one");
         await SignIn("99999999999999992", "two");
         Assert.Equal(Store.FirstServerId + 1, state.Store.AccountBySteam("99999999999999992"));
-        Assert.Equal(Store.FirstServerId + 2, state.Store.NextServerId());
+        Assert.Equal(Store.FirstServerId + 2, state.Store.NextServerId());  // handing a number out uses it up
         Assert.True(Store.FirstServerId + 1 < int.MaxValue && Fixtures.ME < Store.FirstServerId);  // the local account and a restored id sit below the range
         state.CreateAccount(1234567, "restored");  // an id from a backup does not move the allocator
-        Assert.Equal(Store.FirstServerId + 2, state.Store.NextServerId());
+        Assert.Equal(Store.FirstServerId + 3, state.Store.NextServerId());
     }
 
     [Fact]
