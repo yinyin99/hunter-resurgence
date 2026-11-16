@@ -403,21 +403,24 @@ public static class Replay
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
-        static int warned, warnedApp;
+        static int warned, warnedApp, warnedFrame;
 
-        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page asks for the script under a new `?t=` token and, after it, adds the player's token to the page's requests that have none.</summary>
+        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page asks for the script under a new `?t=` token and, before it, wraps `fetch` to add the player's token to this origin's requests that have none.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
         public const string AppVersion = "urls1";
         public static readonly (string From, string To)[] AppUrls =
             [("'https://api.' + getObj().getServer() + '/v1'", "window.location.origin + '/v1'"),
              ("'https://apiv2.' + getObj().getServer()", "window.location.origin + '/v1'"),
              ("'https://static.' + getObj().getServer()", "window.location.origin")];
-        // the page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included): once the script has run,
-        // each request that has none gets the game's own token
-        const string TokenScript = "<script>(function(){var f=window.fetch;if(!f||!window.hunter)return;window.fetch=function(r,o){var t=hunter.getAuthToken();"
-            + "if(t){if(typeof r===\"string\"){o=o||{};var h=new Headers(o.headers||{});if(!h.has(\"Authorization\"))h.set(\"Authorization\",\"Bearer \"+t);o.headers=h;}"
-            + "else if(!r.headers.has(\"Authorization\"))r.headers.set(\"Authorization\",\"Bearer \"+t);}return f.call(this,r,o);};})();</script>";
-        static readonly (string From, string To)[] AppFrameSrc = [("src=\"/dist/main.js\"></script>", "src=\"/dist/main.js?t=" + AppVersion + "\"></script>" + TokenScript)];
+        // the page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included): before the script runs,
+        // `fetch` is wrapped so that each request to this origin that has none gets the game's own token (read at each call, so a missing bridge only skips it)
+        const string TokenScript = "<script>(function(){var f=window.fetch;if(!f)return;window.fetch=function(r,o){try{var u=typeof r===\"string\"?r:r.url,"
+            + "t=window.hunter&&typeof hunter.getAuthToken===\"function\"&&hunter.getAuthToken();"
+            + "if(t&&(u.indexOf(location.origin+\"/\")===0||(u.charAt(0)===\"/\"&&u.charAt(1)!==\"/\"))){"
+            + "if(typeof r===\"string\"){o=o||{};var h=new Headers(o.headers||{});if(!h.has(\"Authorization\"))h.set(\"Authorization\",\"Bearer \"+t);o.headers=h;}"
+            + "else if(!r.headers.has(\"Authorization\"))r.headers.set(\"Authorization\",\"Bearer \"+t);}}catch(e){}return f.call(this,r,o);};})();</script>";
+        const string AppScriptTag = "<script src=\"/dist/main.js\"></script>";
+        static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, TokenScript + "<script src=\"/dist/main.js?t=" + AppVersion + "\"></script>")];
 
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
@@ -447,7 +450,7 @@ public static class Replay
             // Latin1 keeps every byte of the rest of a file as it was
             if (AppScript.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppUrls, ref warnedApp, "the lodge editor's server addresses") is { } app)
                 return NoCache(reply, Encoding.Latin1.GetBytes(app));
-            if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedApp, "the lodge editor's script tag") is { } frame)
+            if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
             return ReplaceOnce(Encoding.Latin1.GetString(reply.Body), Reads, ref warned, "the in-game page's round timer read") is { } text ? NoCache(reply, Encoding.Latin1.GetBytes(text)) : reply;

@@ -245,9 +245,12 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<script src=\"/dist/main.js?t=urls1\"></script><script>", page);
-        Assert.Contains("hunter.getAuthToken()", page);  // after the script: the requests that carry no token get the player's
+        Assert.StartsWith("<script>(function(){var f=window.fetch;", page);  // before the script runs: its requests that carry no token get the player's
+        Assert.EndsWith("<script src=\"/dist/main.js?t=urls1\"></script>", page);
+        Assert.Contains("hunter.getAuthToken()", page);
         Assert.Contains(("Cache-Control", "no-cache"), frame.Headers);
+        Put("static/app/9.9.8/webgui/index.html", "<script src=\"/other.js\"></script>");
+        Same(("<script src=\"/other.js\"></script>"u8.ToArray(), "mirror"), await own.SendAsync("GET", "game_web.test", "/static/app/9.9.8/webgui/index.html"));  // a page without the tag is served as it is
         Put("dist/main.js", "function b(){return 'https://apiv2.' + getObj().getServer();}");  // a script without all three texts is served as it is
         Same(("function b(){return 'https://apiv2.' + getObj().getServer();}"u8.ToArray(), "mirror"), await own.SendAsync("GET", "game_web.test", "/dist/main.js"));
     }
