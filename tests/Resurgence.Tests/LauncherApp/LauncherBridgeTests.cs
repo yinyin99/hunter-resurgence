@@ -33,6 +33,16 @@ public class LauncherBridgeTests
     }
 
     [Fact]
+    public void TheWindowStaysUpWhileTheGameRunsExceptAtShutdown()
+    {
+        Func<bool> no = () => false, yes = () => true;
+        Assert.Equal(MainWindow.CloseChoice.Exit, MainWindow.Decide(false, no, () => throw new InvalidOperationException("no question without a game")));
+        Assert.Equal(MainWindow.CloseChoice.KeepOpen, MainWindow.Decide(false, yes, yes));
+        Assert.Equal(MainWindow.CloseChoice.Minimize, MainWindow.Decide(false, yes, no));
+        Assert.Equal(MainWindow.CloseChoice.Exit, MainWindow.Decide(true, yes, () => throw new InvalidOperationException("shutdown is never held up")));
+    }
+
+    [Fact]
     public void StartsTheExeInItsFolderUnlessItAlreadyRuns()
     {
         var dir = Directory.CreateTempSubdirectory().FullName;

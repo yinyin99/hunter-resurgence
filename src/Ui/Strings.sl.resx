@@ -1521,4 +1521,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun se ne sme prijaviti.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Igra teče. Če zaprete launcher, se igra odklopi od skupnostnega strežnika. Naj ostane launcher odprt?&#10;&#10;Da: naj ostane odprt. Ne: minimiraj.</value></data>
 </root>

@@ -1521,4 +1521,5 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont nu se poate conecta.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Jocul rulează. Închiderea launcherului îl deconectează de la serverul comunității. Păstrezi launcherul deschis?&#10;&#10;Da: păstrează-l deschis. Nu: minimizează-l.</value></data>
 </root>

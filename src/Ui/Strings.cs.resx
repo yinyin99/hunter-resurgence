@@ -1521,4 +1521,5 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet se nesmí přihlásit.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tento formulář nepochází z tohoto serveru.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Toto přihlášení už bylo potvrzeno.</value></data>
+  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Hra běží. Zavřením launcheru se hra odpojí od komunitního serveru. Ponechat launcher otevřený?&#10;&#10;Ano: ponechat otevřený. Ne: minimalizovat.</value></data>
 </root>
