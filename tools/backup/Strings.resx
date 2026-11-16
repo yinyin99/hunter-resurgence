@@ -503,13 +503,25 @@
     <value>The server cannot take it now</value>
   </data>
   <data name="Send_busy_Text" xml:space="preserve">
-    <value>One of your uploads is still being processed, you already have 3 waiting for review, or the server is busy. Try again later.</value>
+    <value>One of your uploads is still being processed, or the server is busy. Try again later.</value>
   </data>
   <data name="Send_too_large_Title" xml:space="preserve">
     <value>Refused: too large</value>
   </data>
   <data name="Send_too_large_Text" xml:space="preserve">
     <value>A backup zip is at most 1 GiB. Nothing was sent.</value>
+  </data>
+  <data name="Send_quota_Title" xml:space="preserve">
+    <value>Refused: backup limit reached</value>
+  </data>
+  <data name="Send_quota_Text" xml:space="preserve">
+    <value>You have too many backups waiting for the operator, or they already use your share of the space. You can send again once the operator has reviewed them.</value>
+  </data>
+  <data name="Send_paused_Title" xml:space="preserve">
+    <value>Uploads are paused</value>
+  </data>
+  <data name="Send_paused_Text" xml:space="preserve">
+    <value>Uploads are paused for now, try again later.</value>
   </data>
   <data name="Send_signed_out_Title" xml:space="preserve">
     <value>Signed out</value>

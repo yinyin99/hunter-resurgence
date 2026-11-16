@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Nem használható mentés</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Próbáld újra később</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>A fájl túl nagy</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Elérted a biztonsági mentések korlátját: várj az üzemeltető ellenőrzésére</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>A feltöltések egyelőre szünetelnek, próbáld újra később</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Kijelentkeztél</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Itt nem érhető el</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Adataim törlése</value></data>

@@ -14,7 +14,7 @@ namespace Resurgence.Server.Tests;
 public class UploadTests : StateTestBase, IAsyncLifetime
 {
     const string Steam = "76561190000000000";  // the one TestZip.Own claims
-    static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+    static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test")))) { ["upload_min_free_bytes"] = 0L };
     Loopback server = null!;
     long player;
     string cookie = "";
@@ -89,7 +89,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     public async Task TestAKeptZipSendsOneReviewAlertOnlyWhenTheWebhookIsSet()
     {
         var texts = new List<string>();
-        var uploads = new Uploads(state, tmp) { Alert = texts.Add };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Alert = texts.Add };
         var zip = Zip(TestZip.Own(), "alert.zip");
         var id = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)))).Kind);
@@ -353,12 +353,17 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var status = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/restore", [("Cookie", "hr_session=" + cookie)])).Body)!;
         Assert.Null(status["restoredUserId"]);
         Assert.Equal(3, status["review"]!.AsArray().Count);
-        // the same bytes again are not kept twice (a rebuilt zip would carry a new timestamp, so another hash), and a fourth different one is more than may wait
-        Assert.Equal("review", Status((await Upload(File.ReadAllBytes(Path.Combine(tmp, "mismatch.zip")))).Body));
+        // with 3 stored, any upload is refused at the start, the same bytes again included (the start cannot know them), and nothing more is kept
+        Assert.Equal("quota", Status((await Upload(File.ReadAllBytes(Path.Combine(tmp, "mismatch.zip")))).Body));
         Assert.Equal(3L, Count(player, "uploads"));
         var fourth = await Upload(TestZip.Own(wallet: "\"ems\":9.0,\"gms\":9.0", steam: "76561190000000003"), "fourth.zip");
-        Assert.Equal((429, "busy"), (fourth.Reply.Status, Status(fourth.Body)));
+        Assert.Equal((429, "quota"), (fourth.Reply.Status, Status(fourth.Body)));
+        Assert.Equal("You have 3 backups waiting for the operator. You can upload again once the operator has reviewed them.", (string)fourth.Body["message"]!);
+        Assert.Equal("quota", Status((await Post("/account/restore/start")).Body));  // refused at the start, before any bytes
         Assert.Equal(3, Directory.GetFiles(Path.Combine(tmp, "restores", player.ToString())).Length);
+        // the operator rejects one: an upload works again
+        Assert.True(Operator.Reject(Waiting(player)));
+        Assert.Equal("started", Status((await Post("/account/restore/start")).Body));
     }
 
     [Fact]
@@ -480,7 +485,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public void TestOneUploadAtATimePerAccountAndFourOnTheServer()
     {
-        var uploads = new Uploads(state, tmp);
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var first = uploads.Begin(1);
         Assert.NotNull(first);
         Assert.Null(uploads.Begin(1));  // the same account has one running
@@ -549,7 +554,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestAZipOverTheCapInPartsEndsTheUpload()
     {
-        var uploads = new Uploads(state, tmp) { MaxZip = 10 };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, MaxZip = 10 };
         var id = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(new byte[6]))).Kind);
         var over = await uploads.Part(player, id, 1, new MemoryStream(new byte[6]));
@@ -564,7 +569,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     {
         var now = Py.Now();
         state.Clock = () => now;
-        var uploads = new Uploads(state, tmp);
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var held = new[] { uploads.Begin(2), uploads.Begin(3), uploads.Begin(4) };  // three of the server's four slots
         var id = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(new byte[6]))).Kind);
@@ -582,7 +587,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestAStartOverDropsTheAccountsUnfinishedUpload()
     {
-        var uploads = new Uploads(state, tmp);
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var first = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, first, 0, new MemoryStream(new byte[6]))).Kind);
         var second = uploads.Start(player);
@@ -817,7 +822,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     public async Task TestAFileThatIsNotABackupIsKeptRecordedAndAlertedOnce()
     {
         var texts = new List<string>();
-        var uploads = new Uploads(state, tmp) { Alert = texts.Add };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Alert = texts.Add };
         var id = uploads.Start(player)!;
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream("not a zip"u8.ToArray()))).Kind);
         var outcome = await uploads.Finish(player, id);
@@ -825,11 +830,12 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var row = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
         Assert.Equal("refused", (string)row["kind"]!);
         Assert.StartsWith("This file cannot be read as a backup", (string)row["reason"]!);
-        var kept = Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));
-        Assert.Matches(@"\d{8}T\d{6}Z\.zip$", kept);
+        var kept = Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.zip"));
+        var sha = Restorer.Sha256(kept);
+        Assert.Equal(sha + ".zip", Path.GetFileName(kept));
         Assert.Equal("not a zip", File.ReadAllText(kept));
         var text = Assert.Single(texts);
-        Assert.Equal($"Upload refused: account {player}, player, {Alerts.Steam(state.Store.SteamId64(player))}, {(string)row["reason"]!}. Kept for 7 days: refused/{player}/{Path.GetFileName(kept)}", text);
+        Assert.Equal($"Upload refused: account {player}, player, {Alerts.Steam(state.Store.SteamId64(player))}, {(string)row["reason"]!}. Kept: r{player}-{sha[..8]}", text);
         Assert.Empty(Notices(player));
         Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         Operator.Delete(player);
@@ -839,30 +845,99 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task TestAMissingPartWritesNoRefusalAndKeepsNothing()
     {
-        var uploads = new Uploads(state, tmp) { Alert = _ => Assert.Fail("no alert for a transport error") };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Alert = _ => Assert.Fail("no alert for a transport error") };
         var id = uploads.Start(player)!;
         Assert.Equal(409, (await uploads.Part(player, id, 1, new MemoryStream(new byte[3]))).Status);
         Assert.Equal(0L, Count(player, "upload_results"));
         Assert.False(Directory.Exists(Path.Combine(tmp, "refused")));
     }
 
-    [Fact]
-    public async Task TestRefusedFilesOlderThanTheLimitArePrunedAndZeroKeepsNone()
+    async Task<UploadOutcome> Send(Uploads uploads, long account, byte[] zip)
     {
-        var old = Path.Combine(tmp, "refused", "9", "old.zip");
-        Directory.CreateDirectory(Path.GetDirectoryName(old)!);
-        File.WriteAllText(old, "x");
-        File.SetLastWriteTimeUtc(old, DateTime.UtcNow.AddDays(-8));
-        var uploads = new Uploads(state, tmp);
-        var id = uploads.Start(player)!;
-        await uploads.Part(player, id, 0, new MemoryStream("nope"u8.ToArray()));
-        await uploads.Finish(player, id);
-        Assert.False(File.Exists(old));
-        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));
-        var none = new Uploads(state, tmp) { RefusedDays = 0, Alert = t => Assert.DoesNotContain("Kept for", t) };
-        id = none.Start(player)!;
-        await none.Part(player, id, 0, new MemoryStream("nope"u8.ToArray()));
-        await none.Finish(player, id);
-        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));  // the first one is gone too: 0 days keeps none
+        var id = uploads.Start(account)!;
+        var part = await uploads.Part(account, id, 0, new MemoryStream(zip));
+        return part.Kind == "received" ? await uploads.Finish(account, id) : part;
+    }
+
+    byte[] Own(string name, string wallet) => File.ReadAllBytes(Zip(TestZip.Own(wallet: $"\"ems\":{wallet},\"gms\":{wallet}"), name));
+
+    [Fact]
+    public async Task TestAnAccountCannotStoreMoreBytesThanItsShare()
+    {
+        var first = Own("a.zip", "1.0");
+        var next = Own("b.zip", "2.0");
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, AccountBytes = first.Length * 3 / 2 };  // room for 1.5 zips
+        Assert.Equal("review", (await Send(uploads, player, first)).Kind);
+        Assert.Null(uploads.Full(player));  // some room is left: a start is allowed
+        var over = await Send(uploads, player, next);  // but the zip passes what is left
+        Assert.Equal((429, "quota"), (over.Status, over.Kind));
+        Assert.StartsWith("Your backups waiting for the operator already use", over.Message);
+        Assert.Equal(1L, Count(player, "uploads"));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        Assert.Equal("quota", uploads.Full(player, next.Length)!.Kind);
+        var full = new Uploads(state, tmp) { MinFreeBytes = 0, AccountBytes = first.Length };  // nothing left at all: refused at the start
+        Assert.Equal("quota", full.Full(player)!.Kind);
+    }
+
+    [Fact]
+    public async Task TestTheServerWideCapAndTheFreeDiskFloorPauseUploads()
+    {
+        var first = Own("a.zip", "1.0");
+        var other = SignedIn("other", "76561190000000007").Id;
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, TotalBytes = first.Length + first.Length / 2 };
+        Assert.Equal("review", (await Send(uploads, player, first)).Kind);
+        var paused = await Send(uploads, other, Own("b.zip", "2.0"));  // another account: the server's room is used
+        Assert.Equal((429, "paused", "Uploads are paused for now, try again later."), (paused.Status, paused.Kind, paused.Message));
+        // the disk's floor: refused at the start, and during the upload when the free space is crossed
+        var low = new Uploads(state, tmp) { MinFreeBytes = 100, FreeBytes = () => 50 };
+        Assert.Equal("paused", low.Full(other)!.Kind);
+        var tight = new Uploads(state, tmp) { MinFreeBytes = 100, FreeBytes = () => 100 + first.Length / 2 };
+        Assert.Null(tight.Full(other));
+        Assert.Equal("paused", (await Send(tight, other, first)).Kind);
+        Assert.Equal(0L, Count(other, "uploads"));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        var roomy = new Uploads(state, tmp) { MinFreeBytes = 100, FreeBytes = () => 100 + first.Length * 10 };
+        Assert.Equal("review", (await Send(roomy, other, first)).Kind);
+    }
+
+    [Fact]
+    public async Task TestRefusedZipsAreListedAndRejectedByTheOperatorAndNeverPruned()
+    {
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
+        await Send(uploads, player, "nope"u8.ToArray());
+        var kept = Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.zip"));
+        File.SetLastWriteTimeUtc(kept, DateTime.UtcNow.AddDays(-400));
+        await Send(uploads, player, "nope too"u8.ToArray());  // another refusal: nothing is pruned by time
+        Assert.Equal(2, Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.zip").Length);
+        var list = uploads.ListRefused();
+        Assert.Equal(2, list.Count);
+        var old = list[0];
+        Assert.Equal($"r{player}-{Path.GetFileNameWithoutExtension(kept)[..8]}", old.Id);
+        Assert.Equal((player, "player", 4L), (old.Account, old.Handle, old.Size));
+        Assert.StartsWith("This file cannot be read as a backup", old.Reason);
+        Assert.True(uploads.RejectRefused(old.Id));
+        Assert.False(File.Exists(kept));
+        Assert.Single(uploads.ListRefused());
+        Assert.False(uploads.RejectRefused(old.Id));
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.reason"));  // the zip and its reason go together
+        // a waiting upload is still rejected by its number
+        var id = await Keep(TestZip.Own(), "mine.zip", player, cookie);
+        Assert.True(uploads.Reject(id));
+        Assert.Equal(0L, Count(player, "uploads"));
+    }
+
+    [Fact]
+    public async Task TestTheSameRefusedZipIsKeptOnceAndAQuotaKeepsNoFileAndSendsNoAlert()
+    {
+        var texts = new List<string>();
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, AccountFiles = 1, Alert = texts.Add };
+        await Send(uploads, player, "nope"u8.ToArray());
+        await Send(uploads, player, "nope"u8.ToArray());  // the same bytes: counted once, not a second copy
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.zip"));
+        Assert.Equal(2, texts.Count);
+        await Send(uploads, player, "another"u8.ToArray());  // the account stores its one file: no room for this one
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString()), "*.zip"));
+        Assert.Equal(2, texts.Count);
+        Assert.Equal(3L, Count(player, "upload_results"));  // the player is still told
     }
 }

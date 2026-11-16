@@ -1,6 +1,6 @@
 namespace Resurgence.Services;
 
-/// <param name="Status">What became of an upload: <c>restored</c>, <c>review</c> (kept for the operator, nothing restored), <c>already</c>, <c>taken</c>, <c>invalid</c>, <c>busy</c>, <c>too_large</c>, <c>signed_out</c>, or <c>unavailable</c> (no community server). The page shows a localised headline for it.</param>
+/// <param name="Status">What became of an upload: <c>restored</c>, <c>review</c> (kept for the operator, nothing restored), <c>already</c>, <c>taken</c>, <c>invalid</c>, <c>busy</c>, <c>quota</c> (the account stores as many zips for the operator as allowed), <c>paused</c> (the server takes no uploads for now), <c>too_large</c>, <c>signed_out</c>, or <c>unavailable</c> (no community server). The page shows a localised headline for it.</param>
 /// <param name="Message">The server's own plain words (English), shown under the headline.</param>
 /// <param name="Report">The technical report of a restore (what was read, stored and dropped), or null.</param>
 public sealed record RestoreResult(string Status, string Message, string? Report = null);

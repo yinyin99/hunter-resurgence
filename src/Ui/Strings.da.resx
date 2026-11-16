@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Ikke en brugbar backup</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Prøv igen senere</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Filen er for stor</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Grænsen for sikkerhedskopier er nået: vent på operatørens gennemgang</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Uploads er sat på pause i øjeblikket, prøv igen senere</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Logget ud</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Ikke tilgængelig her</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Slet mine data</value></data>

@@ -42,7 +42,7 @@ public class AvatarLinksTests : StateTestBase
     /// <summary>The zip uploaded by a player and approved; returns the restore's report.</summary>
     async Task<string> Approved(TestZip zip, PictureLinks? links)
     {
-        var uploads = new Uploads(state, tmp) { Pictures = links };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = links };
         var player = state.Store.NextServerId();
         state.CreateAccount(player, "player", $"7656119{++steam:D10}");
         var path = zip.Write(tmp, $"avatar{steam}.zip");
@@ -238,7 +238,7 @@ public class AvatarLinksTests : StateTestBase
     public async Task ASectionZipWithTheWebHostsAvatarLinkAndAGalleryGetsTheAvatarAtUploadAndAtApprove()
     {
         var host = new TwoHosts();
-        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], host) };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks(["avatar.test", "photos.test"], host) };
         AssertAvatarStored(await UploadedAndApproved(SectionZip(), uploads, uploads));
         Assert.Equal("avatar.test/uploads/thumb/242x242/12345.jpg", host.Asked[0]);  // the avatar is fetched first: a long gallery cannot use up the fetch's time before it
         Assert.Equal(7, host.Asked.Count);  // fetched once, at upload; approve found it in the kept pictures zip
@@ -249,8 +249,8 @@ public class AvatarLinksTests : StateTestBase
     public async Task AZipKeptWithoutAPicturesZipGetsEveryLinkFetchedAtApprove()
     {
         var host = new TwoHosts();
-        var kept = new Uploads(state, tmp);  // no pictures setting at upload: the kept zip has no pictures zip, as one kept before the fix
-        AssertAvatarStored(await UploadedAndApproved(SectionZip(), kept, new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], host) }));
+        var kept = new Uploads(state, tmp) { MinFreeBytes = 0 };  // no pictures setting at upload: the kept zip has no pictures zip, as one kept before the fix
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(), kept, new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks(["avatar.test", "photos.test"], host) }));
         Assert.Equal("avatar.test/uploads/thumb/242x242/12345.jpg", host.Asked[0]);  // the avatar first, then the gallery
         Assert.Equal(7, host.Asked.Count);
         Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
@@ -261,8 +261,8 @@ public class AvatarLinksTests : StateTestBase
     {
         var partial = new TwoHosts(gallery: 3, gate: false);  // the upload's budget ran out after the avatar and three pictures, or the host failed for the others
         var rest = new TwoHosts(gate: false);
-        AssertAvatarStored(await UploadedAndApproved(SectionZip(), new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], partial) },
-                                                     new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], rest) }));
+        AssertAvatarStored(await UploadedAndApproved(SectionZip(), new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks(["avatar.test", "photos.test"], partial) },
+                                                     new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks(["avatar.test", "photos.test"], rest) }));
         Assert.Equal(["photos.test/p/4.jpg", "photos.test/p/5.jpg", "photos.test/p/6.jpg"], rest.Asked.Order());  // only the three left
         Assert.Equal(6, JsonNode.Parse(state.GalleryListReply(1001, []))!["photos"]!.AsArray().Count);
     }
@@ -280,7 +280,7 @@ public class AvatarLinksTests : StateTestBase
     [Fact]
     public async Task AGalleryLargerThanTheUploadCapIsCompletedByTheApproveThatAdoptsTheZipsUserId()
     {
-        var uploads = new Uploads(state, tmp) { Pictures = new PictureLinks(["avatar.test", "photos.test"], new TwoHosts(gallery: 2100, gate: false)) };
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Pictures = new PictureLinks(["avatar.test", "photos.test"], new TwoHosts(gallery: 2100, gate: false)) };
         AssertAvatarStored(await UploadedAndApproved(SectionZip(2100), uploads, uploads));  // the never-played account takes the zip's user id 1001; approve fetches more than the cap
         using var con = state.Store.Open(1001);
         Assert.Equal(2100L, con.Scalar("SELECT count(*) FROM photos WHERE account_id = $a AND saved IS NOT NULL"));

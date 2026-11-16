@@ -14,7 +14,7 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
     const string Steam = "76561190000000000";  // the one TestZip.Own claims
     const long Restored = 1001;  // the user id and handle in that zip
     const string Handle = "sample";
-    static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+    static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test")))) { ["upload_min_free_bytes"] = 0L };
     static readonly (string, string)[] FormHeader = [("Content-Type", "application/x-www-form-urlencoded")];
 
     // species 1 and weapon item 5: one kill with each is worth 1 + 1

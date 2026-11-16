@@ -1369,6 +1369,8 @@
   <data name="Restore.Result.invalid" xml:space="preserve"><value>Cópia de segurança inutilizável</value></data>
   <data name="Restore.Result.busy" xml:space="preserve"><value>Tente novamente mais tarde</value></data>
   <data name="Restore.Result.too_large" xml:space="preserve"><value>Ficheiro demasiado grande</value></data>
+  <data name="Restore.Result.quota" xml:space="preserve"><value>Limite de cópias atingido: aguarde a revisão do operador</value></data>
+  <data name="Restore.Result.paused" xml:space="preserve"><value>Os envios estão em pausa por agora, tente mais tarde</value></data>
   <data name="Restore.Result.signed_out" xml:space="preserve"><value>Sessão terminada</value></data>
   <data name="Restore.Result.unavailable" xml:space="preserve"><value>Não disponível aqui</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Eliminar os meus dados</value></data>
