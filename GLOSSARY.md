@@ -97,6 +97,7 @@ The restored statistics of a profile, which play never changes; the statistics s
 
 **Launcher**:
 This project's Windows app that signs in, picks a server and starts the game.
+Translations keep the English word "launcher" (French: "le launcher", never "lanceur").
 _Avoid_: new launcher
 
 **Old launcher**:
