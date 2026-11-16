@@ -407,6 +407,38 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheGalleryPicturesOfAnArchiveExportAreStoredFromItsZipWithoutAFetch()
+    {
+        var files = new Dictionary<string, byte[]>
+        {
+            ["authenticated/account.json"] = """{"id":1001,"handle":"sample","hunterscore":10,"ems":1,"gms":2,"membershipType":"freeplay"}"""u8.ToArray(),
+            ["profile/resume/pages/gallery/000000000.json"] = """
+                {"total":2,"photos":[{"id":53,"type":2,"url":"https://photos.example/p/c.jpg","label":null,"animal":null},{"id":52,"type":2,"url":"https://photos.example/p/b.jpg","label":null,"animal":null}]}
+                """u8.ToArray(),
+            ["profile/media/gallery/53_full.jpg"] = TestZip.Jpeg("c"),
+            ["profile/media/gallery/52_full.jpg"] = TestZip.Jpeg("b"),
+        };
+        var manifest = new JsonObject
+        {
+            ["schema"] = "example-account-file-manifest-v1",
+            ["files"] = new JsonArray([.. files.Select(f => (JsonNode?)new JsonObject { ["path"] = f.Key, ["sha256"] = Convert.ToHexStringLower(SHA256.HashData(f.Value)) })]),
+        };
+        var path = Path.Combine(tmp, "archive.zip");
+        using (var z = ZipFile.Open(path, ZipArchiveMode.Create))
+            foreach (var (name, body) in files.Append(new("ARCHIVE_MANIFEST.json", Encoding.UTF8.GetBytes(manifest.ToJsonString()))))
+            {
+                using var s = z.CreateEntry(name).Open();
+                s.Write(body);
+            }
+        var result = Restorer.Import(state, path, null, tmp);
+        Assert.Contains("pictures stored: gallery 2", result.Report);
+        Assert.DoesNotContain("pictures from links", result.Report);
+        var gallery = Gallery(1001);
+        Assert.Equal(2, gallery.Count);
+        Assert.Equal(TestZip.Jpeg("c"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));  // the first of the page is the newest
+    }
+
+    [Fact]
     public void TestAGalleryEntryWhoseAnimalIsTextStillKeepsItsDetails()
     {
         var zip = TestZip.Own().Gallery("""[{"id":1,"type":2,"url":"https://photos.example/p/t.jpg","thumbnail":"","label":"9.5","animal":"Test Deer","kill_id":777}]""")
