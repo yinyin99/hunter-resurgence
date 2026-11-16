@@ -1359,6 +1359,7 @@
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Navnet er det fra din backup.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Dit navn blev beholdt: navnet i backuppen er ikke tilladt eller tilhører en anden spiller.</value></data>
   <data name="Restore.Done.rejected" xml:space="preserve"><value>Afvist af operatøren {0}</value></data>
+  <data name="Restore.Done.refused" xml:space="preserve"><value>Din upload fra {0} kunne ikke læses</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detaljer</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Hvad denne server gemmer om dig</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Gendannet</value></data>

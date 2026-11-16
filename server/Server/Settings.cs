@@ -84,6 +84,12 @@ public sealed class Settings
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
+        cfg["refused_days"] = root["refused_days"] switch  // days an unreadable upload is kept for the operator (Uploads.cs); 0: none
+        {
+            null => 7,
+            JsonValue n when n.TryGetValue<int>(out var days) && days >= 0 => days,
+            _ => throw new InvalidDataException("refused_days: a whole number, at least 0"),
+        };
         cfg["picture_link_hosts"] = PictureHosts(root["picture_link_hosts"]);  // the hosts a backup's gallery links are fetched from (PictureLinks.cs); none: nothing is fetched
         cfg["avatar_uploads"] = AvatarUploads(root);  // where a player's uploaded avatar is fetched from by user id (State.AvatarFetchUrl); unset: the avatar list's own base
 

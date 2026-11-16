@@ -69,7 +69,7 @@ public static class AccountApi
             })
             .WithName("AccountRestoreStatus").WithSummary("What became of the player's uploads")
             .WithDescription("`restoredUserId`: the backup's user id the account restored (once), or null; `review`: the zips kept for the operator, each with its time and note "
-                             + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected, userId, handle, handleKept, reason}`.");
+                             + "(the reason of a refused approve); `decisions`: what the operator decided, each `{ts, kind: restored|rejected|refused, userId, handle, handleKept, reason}`.");
 
         group.MapGet("/archive", (HttpContext ctx) =>
             {

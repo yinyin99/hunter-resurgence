@@ -1359,6 +1359,7 @@
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Navnet er det fra sikkerhetskopien din.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Navnet ditt ble beholdt: navnet i sikkerhetskopien er ikke tillatt eller tilhører en annen spiller.</value></data>
   <data name="Restore.Done.rejected" xml:space="preserve"><value>Avvist av operatøren {0}</value></data>
+  <data name="Restore.Done.refused" xml:space="preserve"><value>Opplastingen din fra {0} kunne ikke leses</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detaljer</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Hva denne serveren lagrer om deg</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Gjenopprettet</value></data>

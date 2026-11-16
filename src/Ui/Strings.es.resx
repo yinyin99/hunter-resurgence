@@ -1359,6 +1359,7 @@
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>El nombre es el de tu copia de seguridad.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Se conservó tu nombre: el nombre de la copia no está permitido o pertenece a otro jugador.</value></data>
   <data name="Restore.Done.rejected" xml:space="preserve"><value>Rechazada por el operador el {0}</value></data>
+  <data name="Restore.Done.refused" xml:space="preserve"><value>No se pudo leer tu subida del {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Detalles</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Qué guarda este servidor sobre ti</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurada</value></data>
