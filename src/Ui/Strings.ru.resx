@@ -1359,6 +1359,7 @@
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Имя взято из вашей резервной копии.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Ваше имя сохранено: имя из резервной копии недопустимо или принадлежит другому игроку.</value></data>
   <data name="Restore.Done.rejected" xml:space="preserve"><value>Отклонено оператором {0}</value></data>
+  <data name="Restore.Done.refused" xml:space="preserve"><value>Не удалось прочитать вашу загрузку от {0}</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Подробности</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Что этот сервер хранит о вас</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Восстановлено</value></data>

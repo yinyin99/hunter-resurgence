@@ -1359,6 +1359,7 @@
   <data name="Restore.Done.nameBackup" xml:space="preserve"><value>Le nom est celui de votre sauvegarde.</value></data>
   <data name="Restore.Done.nameKept" xml:space="preserve"><value>Votre nom a été conservé : celui de la sauvegarde n’est pas autorisé ou appartient à un autre joueur.</value></data>
   <data name="Restore.Done.rejected" xml:space="preserve"><value>Rejetée par l’opérateur le {0}</value></data>
+  <data name="Restore.Done.refused" xml:space="preserve"><value>Votre envoi du {0} n’a pas pu être lu</value></data>
   <data name="Restore.Details" xml:space="preserve"><value>Détails</value></data>
   <data name="Restore.DataLink" xml:space="preserve"><value>Ce que ce serveur conserve à votre sujet</value></data>
   <data name="Restore.Result.restored" xml:space="preserve"><value>Restaurée</value></data>

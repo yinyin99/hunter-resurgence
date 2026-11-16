@@ -812,4 +812,57 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM upload_results WHERE account_id = $a"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
     }
+
+    [Fact]
+    public async Task TestAFileThatIsNotABackupIsKeptRecordedAndAlertedOnce()
+    {
+        var texts = new List<string>();
+        var uploads = new Uploads(state, tmp) { Alert = texts.Add };
+        var id = uploads.Start(player)!;
+        Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream("not a zip"u8.ToArray()))).Kind);
+        var outcome = await uploads.Finish(player, id);
+        Assert.Equal((400, "invalid"), (outcome.Status, outcome.Kind));
+        var row = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
+        Assert.Equal("refused", (string)row["kind"]!);
+        Assert.StartsWith("This file cannot be read as a backup", (string)row["reason"]!);
+        var kept = Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));
+        Assert.Matches(@"\d{8}T\d{6}Z\.zip$", kept);
+        Assert.Equal("not a zip", File.ReadAllText(kept));
+        var text = Assert.Single(texts);
+        Assert.Equal($"Upload refused: account {player}, player, {Alerts.Steam(state.Store.SteamId64(player))}, {(string)row["reason"]!}. Kept for 7 days: refused/{player}/{Path.GetFileName(kept)}", text);
+        Assert.Empty(Notices(player));
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
+        Operator.Delete(player);
+        Assert.False(Directory.Exists(Path.Combine(tmp, "refused", player.ToString())));
+    }
+
+    [Fact]
+    public async Task TestAMissingPartWritesNoRefusalAndKeepsNothing()
+    {
+        var uploads = new Uploads(state, tmp) { Alert = _ => Assert.Fail("no alert for a transport error") };
+        var id = uploads.Start(player)!;
+        Assert.Equal(409, (await uploads.Part(player, id, 1, new MemoryStream(new byte[3]))).Status);
+        Assert.Equal(0L, Count(player, "upload_results"));
+        Assert.False(Directory.Exists(Path.Combine(tmp, "refused")));
+    }
+
+    [Fact]
+    public async Task TestRefusedFilesOlderThanTheLimitArePrunedAndZeroKeepsNone()
+    {
+        var old = Path.Combine(tmp, "refused", "9", "old.zip");
+        Directory.CreateDirectory(Path.GetDirectoryName(old)!);
+        File.WriteAllText(old, "x");
+        File.SetLastWriteTimeUtc(old, DateTime.UtcNow.AddDays(-8));
+        var uploads = new Uploads(state, tmp);
+        var id = uploads.Start(player)!;
+        await uploads.Part(player, id, 0, new MemoryStream("nope"u8.ToArray()));
+        await uploads.Finish(player, id);
+        Assert.False(File.Exists(old));
+        Assert.Single(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));
+        var none = new Uploads(state, tmp) { RefusedDays = 0, Alert = t => Assert.DoesNotContain("Kept for", t) };
+        id = none.Start(player)!;
+        await none.Part(player, id, 0, new MemoryStream("nope"u8.ToArray()));
+        await none.Finish(player, id);
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "refused", player.ToString())));  // the first one is gone too: 0 days keeps none
+    }
 }

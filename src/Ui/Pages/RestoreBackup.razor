@@ -79,7 +79,7 @@
                     }
                     else
                     {
-                        <b>@L["Restore.Done.rejected", At(done.Ts)]</b>
+                        <b>@L[done.Kind == "refused" ? "Restore.Done.refused" : "Restore.Done.rejected", At(done.Ts)]</b>
                         if (done.Reason.Length > 0) { <br />@done.Reason }
                     }
                 </div>

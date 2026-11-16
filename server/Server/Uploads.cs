@@ -35,6 +35,37 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>The links of a save's gallery pictures the zip lacks are fetched at upload time and kept with the zip (<see cref="Restorer.PicturesZip"/>); null: none are.</summary>
     public PictureLinks? Pictures { get; init; }
 
+    /// <summary>Days an unreadable upload is kept under refused/ for the operator; 0 keeps none.</summary>
+    public int RefusedDays { get; init; } = 7;
+
+    /// <summary>Delete the files of refused/ older than <see cref="RefusedDays"/> (at the next refusal and at server start).</summary>
+    public void PruneRefused()
+    {
+        var dir = Path.Combine(dataDir, "refused");
+        if (!Directory.Exists(dir)) return;
+        var limit = DateTime.UtcNow.AddDays(-RefusedDays);
+        foreach (var f in Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories))
+            if (File.GetLastWriteTimeUtc(f) < limit) File.Delete(f);
+    }
+
+    /// <summary>A zip that arrived whole but is no backup: one `refused` row for the player's restore page, the file moved to refused/&lt;account&gt;/ for the operator, one alert.</summary>
+    UploadOutcome Refuse(long account, string path, string message)
+    {
+        string? kept = null;
+        if (RefusedDays > 0)
+        {
+            kept = Path.Combine("refused", account.ToString(), $"{DateTime.UtcNow:yyyyMMddTHHmmssZ}.zip");
+            Directory.CreateDirectory(Path.Combine(dataDir, Path.GetDirectoryName(kept)!));
+            File.Move(path, Path.Combine(dataDir, kept), overwrite: true);
+        }
+        using (var con = Store.Open(account))
+            con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'refused', NULL, NULL, 0, ?)", Store.Now(), message);
+        PruneRefused();
+        var handle = Alerts.Name((string)Store.AccountJson(account)["handle"]!);
+        Alert($"Upload refused: account {account}, {handle}, {Alerts.Steam(Store.SteamId64(account))}, {message}" + (kept is null ? "" : $". Kept for {RefusedDays} days: {kept.Replace('\\', '/')}"));
+        return new(400, "invalid", message);
+    }
+
     internal static readonly Regex AdoptableHandle = new(@"\A[A-Za-z0-9][A-Za-z0-9_.-]{0,31}\z", RegexOptions.ECMAScript);
 
     readonly ConcurrentDictionary<long, bool> inFlight = new();
@@ -213,13 +244,9 @@ public sealed class Uploads(State state, string dataDir)
         {
             read = Importer.Read(path, state.Catalogue);
         }
-        catch (RestoreException e)
+        catch (Exception e) when (e is RestoreException or InvalidDataException)
         {
-            return new(400, "invalid", $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
-        }
-        catch (InvalidDataException e)
-        {
-            return new(400, "invalid", $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
+            return Refuse(account, path, $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
         }
         var uid = long.Parse(read.Model.Identity.Uid);
         // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
@@ -427,7 +454,7 @@ public sealed class Uploads(State state, string dataDir)
         return text;
     }
 
-    /// <summary>What the operator decided about a kept zip. Kind: restored (UserId, Handle, HandleKept: the account kept its own name) or rejected (UserId, Reason).</summary>
+    /// <summary>What the operator decided about a kept zip. Kind: restored (UserId, Handle, HandleKept: the account kept its own name), rejected (UserId, Reason) or refused (the server could not read the upload: Reason).</summary>
     public sealed record Decision(long Ts, string Kind, long? UserId, string? Handle, bool HandleKept, string Reason);
 
     /// <summary>What the account page shows: the user id restored (once), the zips waiting for review, and what was decided about the others.</summary>
@@ -448,7 +475,7 @@ public sealed class Uploads(State state, string dataDir)
         lock (decide)
         {
             Store.DeleteAccount(account);
-            foreach (var dir in new[] { "restores", "photos" })
+            foreach (var dir in new[] { "restores", "photos", "refused" })
             {
                 var path = Path.Combine(dataDir, dir, account.ToString());
                 if (Directory.Exists(path)) Directory.Delete(path, recursive: true);
