@@ -228,7 +228,7 @@ public static class Replay
         catch (ArgumentException) { return null; }
     }
 
-    static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/lodges/[a-z0-9_]{1,40}\.png)\z", RegexOptions.ECMAScript);
+    static readonly Regex PictureUrl = new(@"\A/content/(animal_organs/\d{1,4}/(?:male|female|\d{1,3})\.png|lodge/(?:animals|skulls|weapons|slots|styles|layouts|lodges)/[a-z0-9][\w.-]{0,79})\z", RegexOptions.ECMAScript);
 
     /// <summary>The in-game app's trophy lodge editor page: the lodge editor frame (`client#lodge_edit`) loads `/static/app/<version>/webgui/index.html`, and that page loads `/dist/main.js`. Both are the app pages of the install's archives (`webguiv2/`).</summary>
     static readonly Regex AppPage = new(@"\A/(?:static/app/[^/]+/webgui/(index\.html)|dist/main\.js)\z", RegexOptions.ECMAScript);
@@ -247,9 +247,9 @@ public static class Replay
             if (host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
             name = page.Groups[1].Success ? "webguiv2/index.html" : "webguiv2/dist/main.js";
         }
-        else if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures
+        else if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures (the layouts' names are in no other folder: the one archived file of that name is that layout)
         {
-            if (!exact || host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
+            if (host != S(cfg, "game_web_host").ToLowerInvariant() || (!exact && !o.Groups[1].Value.StartsWith("lodge/layouts/", StringComparison.Ordinal))) return null;
             name = "webgui/static/img/" + o.Groups[1].Value;
         }
         else if (url.Contains("static/img")) name = "webgui/" + url[url.IndexOf("static/img", StringComparison.Ordinal)..];
@@ -405,22 +405,39 @@ public static class Replay
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
         static int warned, warnedApp, warnedFrame;
 
-        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page asks for the script under a new `?t=` token and, before it, wraps `fetch` to add the player's token to this origin's requests that have none.</summary>
+        /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
-        public const string AppVersion = "urls1";
         public static readonly (string From, string To)[] AppUrls =
             [("'https://api.' + getObj().getServer() + '/v1'", "window.location.origin + '/v1'"),
              ("'https://apiv2.' + getObj().getServer()", "window.location.origin + '/v1'"),
              ("'https://static.' + getObj().getServer()", "window.location.origin")];
-        // the page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included): before the script runs,
-        // `fetch` is wrapped so that each request to this origin that has none gets the game's own token (read at each call, so a missing bridge only skips it)
-        const string TokenScript = "<script>(function(){var f=window.fetch;if(!f)return;window.fetch=function(r,o){try{var u=typeof r===\"string\"?r:r.url,"
-            + "t=window.hunter&&typeof hunter.getAuthToken===\"function\"&&hunter.getAuthToken();"
-            + "if(t&&(u.indexOf(location.origin+\"/\")===0||(u.charAt(0)===\"/\"&&u.charAt(1)!==\"/\"))){"
-            + "if(typeof r===\"string\"){o=o||{};var h=new Headers(o.headers||{});if(!h.has(\"Authorization\"))h.set(\"Authorization\",\"Bearer \"+t);o.headers=h;}"
-            + "else if(!r.headers.has(\"Authorization\"))r.headers.set(\"Authorization\",\"Bearer \"+t);}}catch(e){}return f.call(this,r,o);};})();</script>";
+        /// <summary>The picture addresses of the lodge editor and of the item pictures the script builds: the game answers `/static/img/...` from its archives alone, so they are asked for under `/content/` instead. The one on a fixed host (the gun racks' icons) has no address builder.</summary>
+        static readonly Regex FixedPictureHost = new(@"'https://static\.[\w.-]+/static/img/(?=lodge/)", RegexOptions.ECMAScript), PictureDir = new(@"/static/img/(?=lodge/|items/)", RegexOptions.ECMAScript);
+        // The page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included), and the page calls the game's
+        // functions (`window.hunter`) as if each answered at once, while in this build each answers with a promise (the locale then fails on `.split`, a label on `.replace`, and the page stays empty).
+        // Before the script runs, the frame page therefore: wraps `fetch` so each request to this origin that has no token gets the game's own (asked at each call; a missing or failing bridge only skips it);
+        // when `getLocale()` answers with a promise, waits for the answers the page reads at once (`getServer`, `getActiveLodgeId`, `getHostPlayerGuid`, `getLocalPlayerGuid`, `isStaff`, `isSinglePlayer`,
+        // `getInventory`, `getLocale`; one that fails is not kept) and for the locale script of that language, then replaces `window.hunter` by a proxy of the game's object whose kept answers are returned at once,
+        // whose `getLocalizedString` reads the locale script (the label key without its brackets, the key itself when unknown, as the game does) and whose other members pass on to the game (functions bound to
+        // it, returning its promise; `getAuthToken` too: the page wraps it in a promise); only then, or after 8 seconds, is the script added. A build whose `getLocale()` answers at once gets the script as it was.
+        // ponytail: the inventory is read once, when the page loads; the editor's later refreshes of it show that list.
+        // The page's other calls (`getSelectedPlatformId`, the mounted and unmounted trophy deltas, `getWeaponPlatformTypeID`, `selectTrophyMount`, `selectWeaponMount`: the trophy and weapon menus' own routes;
+        // `getLoggedInUserID`, `confirmBuy`: only when the page sits in the website) are not on the game's object and not made up here.
+        const string FrameScript = """
+<script>(function(){var n=window.hunter,f=window.fetch,g=0;
+function go(){if(g)return;g=1;var s=document.createElement("script");s.src="/dist/main.js?t=urls2";document.body.appendChild(s);}
+if(f)window.fetch=function(r,o){var s=this,u;try{u=typeof r==="string"?r:r.url;}catch(e){}
+var d=function(){return f.call(s,r,o);};if(typeof u!=="string"||!(u.indexOf(location.origin+"/")===0||(u.charAt(0)==="/"&&u.charAt(1)!=="/")))return d();
+return Promise.resolve().then(function(){return window.hunter.getAuthToken();}).then(function(t){try{if(t){if(typeof r==="string"){o=o||{};var h=new Headers(o.headers||{});if(!h.has("Authorization"))h.set("Authorization","Bearer "+t);o.headers=h;}else if(!r.headers.has("Authorization"))r.headers.set("Authorization","Bearer "+t);}}catch(e){}return d();},d);};
+var v;try{v=n.getLocale();}catch(e){}if(!v||typeof v.then!=="function")return go();
+var keep=["getServer","getActiveLodgeId","getHostPlayerGuid","getLocalPlayerGuid","isStaff","isSinglePlayer","getInventory"],c={},S={},H=Object.prototype.hasOwnProperty;
+function w(){window.hunter=new Proxy(Object.create(n),{get:function(t,k){if(k==="getLocalizedString")return function(l){var s=String(l).slice(1,-1);return H.call(S,s)?S[s]:l;};if(H.call(c,k))return function(){return c[k];};var x=n[k];return typeof x==="function"?x.bind(n):x;}});}
+setTimeout(function(){w();go();},8000);
+Promise.all(keep.map(function(k){return Promise.resolve().then(function(){return n[k]();}).then(function(x){c[k]=x;},function(){});}).concat(v.then(function(l){c.getLocale=l;return new Promise(function(ok){window.hunterSetLocale=function(o){S=o;};var s=document.createElement("script");s.src=location.pathname.replace(/webgui\/[^\/]*$/,"locale/")+encodeURIComponent(l)+".js";s.onload=s.onerror=ok;document.head.appendChild(s);});}).then(null,function(){}))).then(function(){
+w();}).then(go,go);})();</script>
+""";
         const string AppScriptTag = "<script src=\"/dist/main.js\"></script>";
-        static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, TokenScript + "<script src=\"/dist/main.js?t=" + AppVersion + "\"></script>")];
+        static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, FrameScript)];
 
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
@@ -449,7 +466,7 @@ public static class Replay
             if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
             // Latin1 keeps every byte of the rest of a file as it was
             if (AppScript.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppUrls, ref warnedApp, "the lodge editor's server addresses") is { } app)
-                return NoCache(reply, Encoding.Latin1.GetBytes(app));
+                return NoCache(reply, Encoding.Latin1.GetBytes(PictureDir.Replace(FixedPictureHost.Replace(app, "'/content/"), "/content/")));
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
@@ -522,12 +539,9 @@ public static class Replay
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        static readonly Regex LodgeStatic = new(@"\A/static/img/lodge/(?:animals|skulls|weapons|slots|styles|layouts|lodges)/[\w.-]{1,80}\z", RegexOptions.ECMAScript);
-
-        /// <summary>The kill screen's organ pictures and the lodge pictures, and the lodge editor's own (`/static/img/lodge/...`), when the archive lacks one: the static host's folder of the mirror.</summary>
-        string? PictureMirror(Req r) => r.Host != GameWeb ? null
-            : PictureUrl.Match(r.Path) is { Success: true } m ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value)
-            : LodgeStatic.IsMatch(r.Path) ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), r.Path) : null;
+        /// <summary>The kill screen's organ pictures and the lodge pictures (the lodge editor's own too), when the archive lacks one: the static host's folder of the mirror.</summary>
+        string? PictureMirror(Req r) => r.Host == GameWeb && PictureUrl.Match(r.Path) is { Success: true } m
+            ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
 
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 
