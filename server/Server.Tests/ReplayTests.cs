@@ -307,6 +307,7 @@ public class ReplayTests : IAsyncLifetime
             (ArcList.NameHash("5.png"), Array.Empty<byte>(), 1),  // an organ overlay name shared by species folders
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\animal_organs\24\5.png")), "organ"u8.ToArray(), 0),
             (ArcList.NameHash("classy.png"), Array.Empty<byte>(), 1),  // a picture name shared by folders (the lodge's layout has one too)
+            (ArcList.NameHash("only.svg"), "layout"u8.ToArray(), 0),  // a layout picture only the archive has: its name is in no other folder
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\static\img\lodge\lodges\classy.png")), "lodge"u8.ToArray(), 0),
             (ArcList.NameHash("index.html"), Array.Empty<byte>(), 1),  // two index.html pages: the classic page and the app's
             (ArcList.HashLittle(Encoding.ASCII.GetBytes(@"webgui\index.html")), "classic page"u8.ToArray(), 0),
@@ -347,6 +348,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/25/5.png")).Source);  // another species' overlay of that name is never served
         Assert.Equal("miss", (await Get("game_web.test", "/content/animal_organs/24/0.png")).Source);  // an unrelated archived 0.png is never the overlay
         Same(("lodge"u8.ToArray(), "archive"), await Get("game_web.test", "/content/lodge/lodges/classy.png"));
+        Same(("layout"u8.ToArray(), "archive"), await Get("game_web.test", "/content/lodge/layouts/only.svg"));
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/lodges/rustic.png"));
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern

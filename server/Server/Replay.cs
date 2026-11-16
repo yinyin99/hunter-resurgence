@@ -247,9 +247,9 @@ public static class Replay
             if (host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
             name = page.Groups[1].Success ? "webguiv2/index.html" : "webguiv2/dist/main.js";
         }
-        else if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures
+        else if (PictureUrl.Match(path) is { Success: true } o)  // the kill screen's organ pictures (only the species' own folder, never another species' picture of the same name) and the lodge pictures (a name only one archived file has is that file)
         {
-            if (!exact || host != S(cfg, "game_web_host").ToLowerInvariant()) return null;
+            if (host != S(cfg, "game_web_host").ToLowerInvariant() || (!exact && o.Groups[1].Value.StartsWith("animal_organs", StringComparison.Ordinal))) return null;
             name = "webgui/static/img/" + o.Groups[1].Value;
         }
         else if (url.Contains("static/img")) name = "webgui/" + url[url.IndexOf("static/img", StringComparison.Ordinal)..];
