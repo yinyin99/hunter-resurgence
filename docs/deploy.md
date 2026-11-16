@@ -316,10 +316,7 @@ Do not make your browser trust Caddy's local CA: the app's HSTS header would the
 
 **Maintainer step:** put the Discord thread link (`https://discord.com/channels/<guild id>/<thread id>`, "Copy link" on the post) in the **pull request's body**, or in the body of the issue the pull request closes (`Closes #<n>`). A body can hold several links. The thread is resolved when the release that ships the pull request is published. `Won't fix` and `Not planned` are set by hand in Discord.
 
-The script (`.github/scripts/discord-release-threads.mjs`, Node 20+, no packages) takes the commits from the previous stable release to the new tag (GitHub's compare), each commit's pull requests merged into the default branch, and the issues each of those closes. It reads the Discord links in:
-
-- the bodies of those pull requests (a maintainer merged them);
-- the bodies of those issues, only when the issue was opened by the owner, a member or a collaborator of the repository, so a link in a stranger's issue cannot make the bot post in other people's threads.
+The script (`.github/scripts/discord-release-threads.mjs`, Node 20+, no packages) takes the commits from the previous stable release to the new tag (GitHub's compare), each commit's pull requests merged into the default branch, and the issues each of those closes. It reads the Discord links in the bodies of those pull requests and issues, but only when the pull request or issue was opened by the owner, a member or a collaborator of the repository: anyone can edit their own body, also after a merge, so a link in a stranger's pull request or issue (a Dependabot body quotes third parties' text) cannot make the bot post in other people's threads. A pull request from a stranger can still resolve a thread through the maintainer's issue it closes.
 
 The links are deduplicated. For each one the script checks that the server is the secret's one and that the channel is a thread of a forum named exactly `bug-reports` or `ideas`; any other link (another server, `#announcements`, a normal channel) is logged and skipped. Then, unless the thread already has the tag (a re-run posts nothing twice):
 

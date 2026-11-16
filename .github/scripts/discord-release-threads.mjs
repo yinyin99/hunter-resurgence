@@ -1,6 +1,6 @@
 // After a release is published: resolve the Discord forum threads of what it ships (docs/deploy.md, "Discord threads at release").
 // The release is the commits from the previous stable release to TAG; each commit's merged pull requests and the issues they close hold the thread links.
-// Env: DISCORD_BOT_TOKEN, DISCORD_GUILD_ID (both missing: a notice and exit 0), GH_TOKEN, GITHUB_REPOSITORY, TAG (vX.Y.Z), FROM (optional: the range starts at this tag instead).
+// Env: DISCORD_BOT_TOKEN, DISCORD_GUILD_ID (either missing: a notice and exit 0), GH_TOKEN, GITHUB_REPOSITORY, TAG (vX.Y.Z), FROM (optional: the range starts at this tag instead).
 // Needs Node 20+ (fetch), no packages.
 import { setTimeout as sleep } from 'node:timers/promises';
 
@@ -76,7 +76,7 @@ async function commitsOf(base) {
   return shas;
 }
 
-// the bodies that may hold a thread link: merged pull requests' (the maintainer merged them), and their closed issues' when a maintainer opened them
+// the bodies that may hold a thread link: those of merged pull requests and of their closed issues, only when a maintainer opened them (anyone can edit their own body after the merge)
 async function bodies() {
   const [owner, name] = repo.split('/');
   const main = (await github(`/repos/${repo}`)).default_branch;
@@ -92,7 +92,7 @@ async function bodies() {
   const out = [];
   let issues = 0;
   for (const pr of prs.values()) {
-    out.push(pr.body ?? '');
+    if (TRUSTED.includes(pr.author_association)) out.push(pr.body ?? '');
     const q = 'query($o:String!,$n:String!,$p:Int!){repository(owner:$o,name:$n){pullRequest(number:$p){closingIssuesReferences(first:50){nodes{body authorAssociation repository{nameWithOwner}}}}}}';
     const { data, errors } = await github(`${GITHUB}/graphql`, { query: q, variables: { o: owner, n: name, p: pr.number } });
     if (errors) throw new Error(`GitHub GraphQL: ${JSON.stringify(errors).slice(0, 300)}`);
