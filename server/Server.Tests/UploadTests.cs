@@ -95,8 +95,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal("received", (await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(zip)))).Kind);
         Assert.Equal("review", (await uploads.Finish(player, id)).Kind);
         var text = Assert.Single(texts);
-        Assert.Equal($"Backup waiting for review: id {Waiting(player)}, account {player}, backup user id 1001, handle sample, {Alerts.Steam(state.Store.SteamId64(player))}. Run: review list", text);
-        Assert.Matches(@"steam id (\d{17}) <https://steamcommunity\.com/profiles/\1>", text);
+        Assert.Equal($"\U0001F4E6 **Backup waiting for review**\nid: {Waiting(player)}\nhandle: `sample`\naccount: {player}\nbackup user id: 1001\nsteam: {Alerts.Steam(state.Store.SteamId64(player))}\nrun: `review list`", text);
+        Assert.Matches(@"steam: \[profile\]\(<https://steamcommunity\.com/profiles/\d{17}>\)", text);
 
         var http = new Capture();
         Alerts.Review(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, text, new HttpClient(http));
@@ -108,6 +108,18 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var post = Assert.Single(http.Posts);
         Assert.Equal("https://hooks.test/w/1", post.Url!.ToString());
         Assert.Equal(text, (string)JsonNode.Parse(post.Body)!["content"]!);
+    }
+
+    [Fact]
+    public async Task TestAProblemReportAlertUsesTheSharedLayoutOnTheReviewWebhook()
+    {
+        var http = new Capture();
+        Alerts.ProblemReport(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, 2000000050, "some_name", "p2000000050-1a2b3c4d", "short", 1_572_864, new HttpClient(http));
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (DateTime.UtcNow < deadline && http.Posts.Count == 0) await Task.Delay(20);
+        await Task.Delay(100);
+        Assert.Equal("\U0001FA7A **Problem report**\nhandle: `some_name`\naccount: 2000000050\nreference: `p2000000050-1a2b3c4d`\ntrigger: short\nsize: 1.5 MiB",
+            (string)JsonNode.Parse(Assert.Single(http.Posts).Body)!["content"]!);
     }
 
     [Fact]
@@ -900,7 +912,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(sha + ".zip", Path.GetFileName(kept));
         Assert.Equal("not a zip", File.ReadAllText(kept));
         var text = Assert.Single(texts);
-        Assert.Equal($"Upload refused: account {player}, player, {Alerts.Steam(state.Store.SteamId64(player))}, {(string)row["reason"]!}. Kept: r{player}-{sha[..8]}", text);
+        Assert.Equal($"\u26D4 **Upload refused**\nhandle: `player`\naccount: {player}\nsteam: {Alerts.Steam(state.Store.SteamId64(player))}\nreason: {(string)row["reason"]!}\nkept: `r{player}-{sha[..8]}`", text);
         Assert.Empty(Notices(player));
         Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "uploads-tmp")));
         Operator.Delete(player);
