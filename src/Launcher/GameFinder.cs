@@ -5,7 +5,7 @@ namespace Resurgence.Launcher;
 /// <summary>An install folder in which the client exe exists, and the full path of that exe.</summary>
 public sealed record GameInstall(string Folder, string ClientExe);
 
-/// <summary>The install in use (null when none), how it was found and the other install folders seen.</summary>
+/// <summary>The install in use (null when none), how it was found and the other game folders seen.</summary>
 public sealed record GameSearch(GameInstall? Install, string? Source, IReadOnlyList<string> Others);
 
 /// <summary>Finds the game's install folder. Read-only: nothing is ever written to it.</summary>
@@ -15,7 +15,7 @@ public static partial class GameFinder
     public static GameInstall? Find(Settings s, string? chosenFolder, IEnumerable<string> args, string? steamPath) => Search(s, chosenFolder, args, steamPath).Install;
 
     /// <summary>
-    /// The install in use, how it was found (manual, steam-option, steam-library) and the other install folders seen (each once, existing only). Source is null when none was found,
+    /// The install in use, how it was found (manual, steam-option, steam-library) and the other game folders seen (each once, existing only). Source is null when none was found,
     /// and also when a folder chosen by hand no longer holds the client: the automatic install is used then.
     /// </summary>
     public static GameSearch Search(Settings s, string? chosenFolder, IEnumerable<string> args, string? steamPath)

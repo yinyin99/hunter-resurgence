@@ -28,9 +28,6 @@ public sealed class LauncherEnv
         Detect();
     }
 
-    /// <summary>The hand-chosen folder is in use (it still contains the client).</summary>
-    public bool ChosenFolderInUse => GameFinder.Check(Settings, Prefs.GameFolder) is not null;
-
     public void Detect()
     {
         SteamPath = Steam.InstallPath();
@@ -72,7 +69,7 @@ public sealed class LauncherEnv
     /// <summary>The folder the player picked, or null when cancelled; whether it holds the game is up to the caller.</summary>
     public string? PickFolder()
     {
-        // called from the Blazor circuit thread: the dialog belongs to the window's thread
+        // the bridge is called off the window's thread: the dialog belongs to it
         return Application.Current.Dispatcher.Invoke(() =>
         {
             var d = new OpenFolderDialog { InitialDirectory = Install?.Folder ?? "" };
