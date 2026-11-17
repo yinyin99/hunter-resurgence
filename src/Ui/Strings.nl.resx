@@ -1534,4 +1534,31 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dit formulier komt niet van deze server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>De game draait. Als je de launcher sluit, verbreekt de game de verbinding met de communityserver. De launcher open houden?&#10;&#10;Ja: open houden. Nee: minimaliseren.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs van het spel naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>De bestanden worden verzameld…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Het rapport bevat deze bestanden:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Deze konden niet worden gelezen en ontbreken:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Versturen</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Bezig met verzenden…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Opgeslagen als {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Verzonden. Referentie: {0} (geef die op Discord door)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Automatisch sturen na een mislukte start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Probleemrapport verzonden: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Het probleemrapport kon niet worden verzonden: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Is er iets misgegaan? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Probleemrapporten sturen?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs sturen zodat we het kunnen oplossen. Geen wachtwoorden.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Wat zit er in een rapport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Bestanden tonen</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch sturen</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Elke keer vragen</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Je bent niet aangemeld. Meld je opnieuw aan en probeer het nog eens.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>De communityserver heeft het rapport niet geaccepteerd.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Het rapport is te groot om te verzenden. Sla het in plaats daarvan op.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Er is al een rapport onderweg, of je hebt er de afgelopen 24 uur vijf verzonden. Probeer het later opnieuw.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>De communityserver heeft nu geen ruimte voor rapporten. Sla het rapport in plaats daarvan op.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Het rapport kon niet worden opgeslagen in Downloads. Stuur het in plaats daarvan.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>De communityserver was niet bereikbaar. Probeer het opnieuw of sla het rapport in plaats daarvan op.</value></data>
 </root>

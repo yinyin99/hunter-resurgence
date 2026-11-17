@@ -30,6 +30,11 @@ public class ServerServersServiceTests
         public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
+        public GameRun? LastRun => null;
+        public Task<ProblemReport> BuildReportAsync(string trigger) => Task.FromResult(new ProblemReport("", [], [], 0, trigger));
+        public Task<ReportSent> SendReportAsync(ProblemReport report) => Task.FromResult(new ReportSent(null, null));
+        public string SaveReport(ProblemReport report) => "";
+        public string ReportConsent { get; set; } = "unset";
     }
 
     // fictional values only

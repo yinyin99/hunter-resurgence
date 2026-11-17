@@ -1534,4 +1534,31 @@
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Игра запущена. Если закрыть лаунчер, игра отключится от сервера сообщества. Оставить лаунчер открытым?&#10;&#10;Да: оставить открытым. Нет: свернуть.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы игры на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Сбор файлов…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>В отчёте эти файлы:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Эти файлы не удалось прочитать, они не включены:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Отправить</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Отправка…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Сохранено как {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Отправлено. Номер обращения: {0} (назовите его в Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Отправлять автоматически после неудачного запуска</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Отчёт о проблеме отправлен: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Не удалось отправить отчёт о проблеме: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Что-то пошло не так? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Отправлять отчёты о проблемах?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы, чтобы мы это исправили. Без паролей.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Что в отчёте</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Показать файлы</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Отправлять автоматически</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Спрашивать каждый раз</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Вы не вошли в систему. Войдите снова и повторите попытку.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Сервер сообщества не принял отчёт.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Отчёт слишком велик для отправки. Сохраните его вместо этого.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Один отчёт уже отправляется, или за последние 24 часа вы отправили пять. Повторите попытку позже.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>На сервере сообщества сейчас нет места для отчётов. Сохраните отчёт вместо этого.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Не удалось сохранить отчёт в «Загрузки». Отправьте его вместо этого.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Не удалось связаться с сервером сообщества. Повторите попытку или сохраните отчёт вместо этого.</value></data>
 </root>

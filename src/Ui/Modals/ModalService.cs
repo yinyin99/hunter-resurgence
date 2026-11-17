@@ -85,16 +85,24 @@ public sealed class ModalService
     /// <summary>After the Discord invitation is closed, or at once when there is none: the one-time "Do you have a backup of your profile?" dialog, never over another dialog.</summary>
     public async Task OfferRestoreAsync(IRestoreOfferService offer)
     {
-        if (Type == typeof(DiscordInviteModal)) await WhenClosedAsync();
+        if (Type == typeof(DiscordInviteModal)) await WhenClosedAsync(() => Type != typeof(DiscordInviteModal));
         if (Type is null && await offer.FirstAsync() && Type is null) Show<RestoreOfferModal>();
     }
 
-    Task WhenClosedAsync()
+    /// <summary>After the other first-sign-in dialogs: the one-time "Send problem reports?" dialog (launcher only) while the player has not chosen yet. It waits for the dialog that is open, and never replaces one.</summary>
+    public async Task OfferReportConsentAsync(ILauncherBridge bridge)
     {
-        var closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        void Watch() { if (Type != typeof(DiscordInviteModal)) { Changed -= Watch; closed.TrySetResult(); } }
+        if (bridge.ReportConsent != "unset") return;
+        while (Type is not null) await WhenClosedAsync(() => Type is null);
+        Show<ReportConsentModal>();
+    }
+
+    Task WhenClosedAsync(Func<bool> closed)
+    {
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        void Watch() { if (closed()) { Changed -= Watch; done.TrySetResult(); } }
         Changed += Watch;
-        return closed.Task;
+        return done.Task;
     }
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");

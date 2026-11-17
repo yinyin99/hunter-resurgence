@@ -78,8 +78,12 @@ public static class ServerApp
             builder.Logging.AddProvider(new TlsFailureLog());
             builder.Logging.AddFilter<TlsFailureLog>(TlsFailureLog.Category, LogLevel.Debug);
         }
-        builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"),
-            o.WorkDir is null ? null : Path.Combine(o.WorkDir, "telemetry.jsonl")));
+        // a crash host with player state: its reports go to the account's rows, so they are not appended to telemetry.jsonl; the file of an older server is trimmed once
+        var crashHost = o.Game.State is null ? null : o.Game.CrashHost;
+        var telemetryFile = o.WorkDir is null ? null : Path.Combine(o.WorkDir, "telemetry.jsonl");
+        if (telemetryFile is not null && crashHost is not null)
+            CrashReports.TrimTelemetry(telemetryFile, crashHost, o.Game.State!.Store, Store.Now());
+        builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"), telemetryFile, crashHost));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
         // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
         if (o.Game.State is { Online: true } state && o.WorkDir is not null)
@@ -94,6 +98,11 @@ public static class ServerApp
                 MinFreeBytes = (long?)up["upload_min_free_bytes"] ?? Uploads.MinFreeBytesDefault,
             };
             builder.Services.AddSingleton(uploads);
+            builder.Services.AddSingleton(new ProblemReports(state, o.WorkDir)
+            {
+                Alert = (account, handle, reference, trigger, bytes) => Alerts.ProblemReport(up, account, handle, reference, trigger, bytes),
+                MinFreeBytes = uploads.MinFreeBytes, FreeBytes = uploads.FreeBytes,
+            });
             // the operator's archive of public profiles to claim (Settings sets archive_db; tests leave it out and put archive.db in the work folder)
             builder.Services.AddSingleton(new Claims(state, new Archive((string?)o.Game.Cfg["archive_db"] ?? Path.Combine(o.WorkDir, "archive.db")), o.WorkDir) { Alert = text => Alerts.Review(o.Game.Cfg, text), Signup = text => Alerts.Signup(o.Game.Cfg, text), Pictures = PictureLinks.FromCfg(o.Game.Cfg) });
         }
@@ -196,6 +205,30 @@ public static class ServerApp
                 }
                 catch (OperationCanceledException) { }
             }));
+        // crash reports and problem reports are kept 30 days: purged before the server serves and once a day
+        if (o.Game.State is { } kept)
+        {
+            void Purge()
+            {
+                try
+                {
+                    CrashReports.Purge(kept.Store, Store.Now());
+                    app.Services.GetService<ProblemReports>()?.Purge(Store.Now());
+                }
+                catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("purge of reports: " + e.Message); }  // retried the next day
+            }
+            Purge();
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(async () =>
+            {
+                using var daily = new PeriodicTimer(TimeSpan.FromDays(1));
+                try
+                {
+                    while (await daily.WaitForNextTickAsync(app.Lifetime.ApplicationStopping))
+                        Purge();
+                }
+                catch (OperationCanceledException) { }
+            }));
+        }
         return app;
     }
 

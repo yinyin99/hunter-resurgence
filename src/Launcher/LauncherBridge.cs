@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
@@ -6,18 +7,39 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Launcher;
 
 /// <summary>The launcher's bridge: StartGame is real, the rest is still the mock's.</summary>
-public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null) : ILauncherBridge
+public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
+    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string?>? openFolder = null) : ILauncherBridge
 {
-    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null) : this(() => env.Install, new MockLauncherBridge(log),
+    /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
+    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
-        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart)
+        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
+        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder)
     { }
+
+    static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
+    {
+        var history = new RunHistory(RunHistory.PathNextTo(env.PrefsPath));
+        // the graphics and options files the Game settings dialog edits (GameSettingsService)
+        var settings = new[] { env.Settings.GraphicsFile, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
+        var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
+        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load), env.Prefs, env.Save, http, cookie);
+    }
+
+    /// <summary>The last game start this watcher saw; null before any.</summary>
+    public GameRun? LastRun { get; private set; }
 
     /// <summary>The client's arguments: the server, a random number with bit 128 clear, and the Steam flag.</summary>
     public static string Arguments(string url, int param) => $"/connect:{url} /param:{param & int.MaxValue & ~128} /steam";
 
     public bool IsSteam => rest.IsSteam;
-    public void OpenFolder(string kind) => rest.OpenFolder(kind);
+    /// <summary>logs: the client's folder, where the game writes its logs (the exe's own folder).</summary>
+    public void OpenFolder(string kind)
+    {
+        if (kind == "logs" && openFolder is not null) openFolder(install() is { } g ? Path.GetDirectoryName(g.ClientExe) : null);
+        else rest.OpenFolder(kind);
+    }
+
     public void ClearCache(string kind) => rest.ClearCache(kind);
     public void OpenExternal(string url) => rest.OpenExternal(url);
     public void ToggleDevTools() => rest.ToggleDevTools();
@@ -38,15 +60,45 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     }
 
     /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
-    /// to a minute (false: it never appeared), then until it is gone (true). ponytail: polls every <c>poll</c> (1 s), a process handle would need the start to keep it.</summary>
+    /// to a minute (false: it never appeared), then until it is gone (true) or the process found has exited. It also records the run (<see cref="LastRun"/>). ponytail: polls every <c>poll</c> (1 s); Steam starts the game, so there is no start to keep a handle from, and the process is looked up by name.</summary>
     public async Task<bool> WhenGameExitsAsync()
     {
         if (install() is not { } g) return false;
         var step = poll ?? TimeSpan.FromSeconds(1);
         for (var waited = TimeSpan.Zero; !isRunning(g.ClientExe) && waited < (appearWithin ?? TimeSpan.FromMinutes(1)); waited += step) await Task.Delay(step);
         if (!isRunning(g.ClientExe)) return false;
-        while (isRunning(g.ClientExe)) await Task.Delay(step);
+        // the run: when it was seen, how long it ran, its exit code and whether it ever showed a window (the process is looked up again while it is not held yet)
+        var (start, ran) = (DateTimeOffset.Now, Stopwatch.StartNew());
+        GameProcess? game = null;
+        var window = false;
+        try
+        {
+            do
+            {
+                game ??= find?.Invoke(g.ClientExe);
+                window |= game?.WindowVisible() == true;
+            // the run ends when the exe is gone or the process held has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
+            } while (isRunning(g.ClientExe) && game?.ExitCode() is null && await Delay(step));
+            var run = LastRun = new GameRun(start, ran.Elapsed, game?.ExitCode(), window);
+            history?.Add(run);
+        }
+        finally { game?.Dispose(); }
         return true;
+    }
+
+    static async Task<bool> Delay(TimeSpan step)
+    {
+        await Task.Delay(step);
+        return true;
+    }
+
+    public Task<ProblemReport> BuildReportAsync(string trigger) => reports is null ? rest.BuildReportAsync(trigger) : reports.BuildAsync(trigger);
+    public Task<ReportSent> SendReportAsync(ProblemReport report) => reports is null ? rest.SendReportAsync(report) : reports.SendAsync(report);
+    public string SaveReport(ProblemReport report) => reports is null ? rest.SaveReport(report) : reports.Save(report);
+    public string ReportConsent
+    {
+        get => reports?.Consent ?? rest.ReportConsent;
+        set { if (reports is null) rest.ReportConsent = value; else reports.Consent = value; }
     }
 
     static bool Start(ProcessStartInfo i)

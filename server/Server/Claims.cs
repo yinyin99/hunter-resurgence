@@ -1,7 +1,6 @@
 // Archive claims: a signed-in player claims the public profile the operator's archive kept for them (docs/server.md#archive-claims, ADR 0008).
 // The archived replies are restored onto the claiming account with its own user id (it never changes); below hunterscore 10,000 at once, else the operator decides.
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 using Resurgence.Restore;
 
@@ -95,7 +94,8 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                     return Review(account, player, useOldName, "waiting for the operator: already claimed by another account");
             var done = Restore(account, player, useOldName);
             if (announce && done.Kind == "restored")
-                Signup($"Claim restored: account {account} {Alerts.Name((string)Store.AccountJson(account)["handle"]!)}, archived {Alerts.Name(player.Handle)} (hunterscore {player.Hunterscore}), {Alerts.Steam(Store.SteamId64(account))}.");
+                Signup(Alerts.Text("\u2705", "Claim restored", null, ("handle", Alerts.Handle((string)Store.AccountJson(account)["handle"]!)), ("account", account),
+                    ("archived handle", Alerts.Handle(player.Handle)), ("hunterscore", player.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account)))));
             return done;
         }
     }
@@ -112,8 +112,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             Uploads.Notify(con, "Your claim of an old profile waits for an operator. Nothing was restored yet.");
             con.Commit();
         }
-        var handle = Regex.Replace(p.Handle, @"[^A-Za-z0-9_.-]", "");  // the archive's own text: only plain name characters go into the alert
-        Alert($"Claim waiting for review: c{id}, account {account}, archived {p.Uid}, handle {(handle.Length > 32 ? handle[..32] : handle)}, hunterscore {p.Hunterscore}, {Alerts.Steam(Store.SteamId64(account))}. Run: review list");
+        // the archive's own text: Alerts.Handle keeps only plain name characters
+        Alert(Alerts.Text("\U0001F4DC", "Claim waiting for review", "review list", ("claim", $"c{id}"), ("handle", Alerts.Handle(p.Handle)), ("account", account),
+            ("archived id", p.Uid), ("hunterscore", p.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account)))));
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
 

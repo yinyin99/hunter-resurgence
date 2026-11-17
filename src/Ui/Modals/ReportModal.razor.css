@@ -1,0 +1,16 @@
+.report { position: absolute; top: 83px; left: calc(50% - 310px); box-sizing: border-box; width: var(--w-gamesettings); max-height: min(640px, calc(100vh - 103px)); padding: 20px; overflow-y: auto; }
+h1 { margin: 0 0 16px; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
+h2 { margin: 0 0 8px; font-size: 16px; line-height: 22px; font-weight: 700; color: var(--text-1); }
+p { margin: 0 0 16px; font-size: 16px; line-height: 22px; color: var(--text-2); }
+ul { margin: 0 0 16px; padding-left: 24px; font-size: 16px; line-height: 22px; color: var(--text-2); }
+.auto { display: flex; align-items: center; gap: 8px; margin: 0 0 20px; font-size: 16px; line-height: 22px; color: var(--text-2); cursor: pointer; }
+.error { color: var(--su-error); }
+.buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.btn { min-height: 42px; box-sizing: border-box; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }
+.btn-inverse { background-color: var(--surface-5); }
+@media (hover: hover) { .btn-inverse:hover:not(:disabled) { background-color: var(--surface-4); } }
+.auto .tick:not(:checked):not(:hover) { border-color: var(--text-4); }
+.files { margin: 0 0 16px; }
+summary { cursor: pointer; font-size: 14px; line-height: 22px; color: var(--text-2); }
+.files h2 { margin: 12px 0 8px; }
+.files ul { margin: 0 0 8px; }

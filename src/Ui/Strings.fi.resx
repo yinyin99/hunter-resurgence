@@ -1534,4 +1534,31 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Peli on käynnissä. Jos suljet launcherin, peli katkaisee yhteyden yhteisöpalvelimeen. Pidetäänkö launcher auki?&#10;&#10;Kyllä: pidä auki. Ei: pienennä.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin lokit yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Kootaan tiedostoja…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Raportti sisältää nämä tiedostot:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Näitä ei voitu lukea, ja ne jätettiin pois:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Tallenna</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Lähetä</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Lähetetään…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Tallennettu nimellä {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Lähetetty. Viite: {0} (kerro se Discordissa)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Lähetä automaattisesti epäonnistuneen käynnistyksen jälkeen</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Ongelmaraportti lähetetty: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa, jotta voimme korjata ongelman. Ei salasanoja.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Mitä raportissa on</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Et ole kirjautunut sisään. Kirjaudu uudelleen ja yritä uudestaan.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Yhteisöpalvelin ei hyväksynyt raporttia.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Raportti on liian suuri lähetettäväksi. Tallenna se sen sijaan.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Raportti on jo matkalla, tai olet lähettänyt viisi viimeisen 24 tunnin aikana. Yritä myöhemmin uudelleen.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Yhteisöpalvelimella ei ole nyt tilaa raporteille. Tallenna raportti sen sijaan.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Raporttia ei voitu tallentaa Latauksiin. Lähetä se sen sijaan.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Yhteisöpalvelimeen ei saatu yhteyttä. Yritä uudelleen tai tallenna raportti sen sijaan.</value></data>
 </root>

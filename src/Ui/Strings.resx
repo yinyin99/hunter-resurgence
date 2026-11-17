@@ -1534,4 +1534,31 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>The game is running. Closing the launcher disconnects it from the community server. Keep the launcher open?&#10;&#10;Yes: keep it open. No: minimize it.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Report a problem</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sends the game's logs to the community server so we can help. Kept 30 days.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Collecting the files…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>The report holds these files:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>These could not be read and are left out:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Sending…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Saved as {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sent. Reference: {0} (give it on Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatically after a failed start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Problem report sent: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>The problem report could not be sent: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Something went wrong? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problem reports?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>If the game fails to start, the launcher can send us its logs so we can fix it. No passwords.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>What's in a report</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Show files</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatically</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Ask me each time</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>You are not signed in. Sign in again and try once more.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>The community server did not accept the report.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>The report is too big to send. Save it instead.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>A report is already on its way, or you sent five in the last 24 hours. Try again later.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>The community server has no room for reports right now. Save the report instead.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>The report could not be saved to Downloads. Send it instead.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>The community server could not be reached. Try again, or save the report instead.</value></data>
 </root>

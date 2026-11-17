@@ -1534,4 +1534,31 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dieses Formular stammt nicht von diesem Server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Das Spiel läuft. Wenn du den Launcher schließt, wird das Spiel vom Community-Server getrennt. Launcher geöffnet lassen?&#10;&#10;Ja: geöffnet lassen. Nein: minimieren.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs des Spiels an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Die Dateien werden gesammelt …</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Der Bericht enthält diese Dateien:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Diese konnten nicht gelesen werden und fehlen:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Senden</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Wird gesendet …</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Gespeichert als {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Gesendet. Referenz: {0} (nenne sie auf Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Nach einem fehlgeschlagenen Start automatisch senden</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Problembericht gesendet: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Der Problembericht konnte nicht gesendet werden: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Ist etwas schiefgelaufen? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Problemberichte senden?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns seine Logs schicken, damit wir es beheben können. Keine Passwörter.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Was steht in einem Bericht</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Dateien anzeigen</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch senden</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Jedes Mal fragen</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Du bist nicht angemeldet. Melde dich erneut an und versuche es noch einmal.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Der Community-Server hat den Bericht nicht angenommen.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Der Bericht ist zu groß zum Senden. Speichere ihn stattdessen.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Ein Bericht ist bereits unterwegs, oder du hast in den letzten 24 Stunden fünf gesendet. Versuche es später erneut.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Der Community-Server hat gerade keinen Platz für Berichte. Speichere den Bericht stattdessen.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Der Bericht konnte nicht in Downloads gespeichert werden. Sende ihn stattdessen.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Der Community-Server war nicht erreichbar. Versuche es erneut oder speichere den Bericht stattdessen.</value></data>
 </root>

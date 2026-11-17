@@ -1534,4 +1534,31 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>O jogo está em execução. Fechar o launcher desconecta o jogo do servidor da comunidade. Manter o launcher aberto?&#10;&#10;Sim: manter aberto. Não: minimizar.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Relatar um problema</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envia os logs do jogo ao servidor da comunidade para que possamos ajudar. Guardados por 30 dias.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Reunindo os arquivos…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>O relatório contém estes arquivos:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Estes não puderam ser lidos e ficaram de fora:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Salvar</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Enviar</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Enviando…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Salvo como {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Enviado. Referência: {0} (informe no Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar automaticamente após uma inicialização com falha</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Relatório de problema enviado: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Algo deu errado? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar, o launcher pode nos enviar os logs dele para corrigirmos. Sem senhas.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>O que há em um relatório</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Mostrar arquivos</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar toda vez</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Você não está conectado. Entre novamente e tente de novo.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>O servidor da comunidade não aceitou o relatório.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>O relatório é grande demais para ser enviado. Salve-o em vez disso.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Um relatório já está a caminho, ou você enviou cinco nas últimas 24 horas. Tente novamente mais tarde.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>O servidor da comunidade está sem espaço para relatórios no momento. Salve o relatório em vez disso.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Não foi possível salvar o relatório em Downloads. Envie-o em vez disso.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Não foi possível acessar o servidor da comunidade. Tente de novo ou salve o relatório em vez disso.</value></data>
 </root>
