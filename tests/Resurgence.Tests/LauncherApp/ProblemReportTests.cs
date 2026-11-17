@@ -37,6 +37,27 @@ public class ProblemReportTests
         return z.Entries.ToDictionary(e => e.FullName, e => { using var r = new StreamReader(e.Open(), System.Text.Encoding.Latin1); return r.ReadToEnd(); });
     }
 
+    [Theory]
+    [InlineData(@"open C:\Users\Jane Doe\AppData\Local\x.log failed", @"open C:\Users\<user>\AppData\Local\x.log failed")]
+    [InlineData(@"\\pc\share\Users\jane\Desktop", @"\\pc\share\Users\<user>\Desktop")]
+    [InlineData("cwd C:\\Users\\Bob, size 3 (ok)", "cwd C:\\Users\\<user>, size 3 (ok)")]
+    [InlineData("D:/Users/jane/x", "D:/Users/<user>/x")]
+    public void TheProfileFolderNameIsReplacedAndTheRestOfTheLineStays(string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line));
+
+    [Theory]
+    [InlineData("Jane Doe", @"C:\Users\Jane Doe", "\"C:\\Users\\Jane Doe\", by Jane Doe <jane doe@x>", "\"C:\\Users\\<user>\", by <user> <<user>@x>")]
+    [InlineData("José", @"D:\Profiles\José", "José at D:\\Profiles\\José\\x, Joséphine", "<user> at D:\\Profiles\\<user>\\x, Joséphine")]
+    [InlineData("José", @"D:\Profiles\José", "Jos\u00c3\u00a9 started", "<user> started")]
+    [InlineData("user", @"C:\Users\user", "C:\\Users\\user\\a user", "C:\\Users\\<user>\\a <user>")]
+    public void TheOwnNameAndProfilePathAreReplaced(string name, string profile, string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line, Diagnostics.OwnNames(name, profile)));
+
+    [Fact]
+    public void TheEventQueryIsValidForWindows()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        _ = Diagnostics.ReadEvents("no-such-game.exe").ToList(); // must not throw "The specified query is invalid"
+    }
+
     [Fact]
     public void TheZipHasNoSignInAndNoJwtFile()
     {

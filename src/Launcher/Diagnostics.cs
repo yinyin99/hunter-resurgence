@@ -43,7 +43,28 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
     static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : l));
+    /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash): up to the next slash, or, at the end of the path, up to a space or punctuation.</summary>
+    static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])(?:[^\\/:*?""<>|\r\n]+(?=[\\/])|[^\s\\/:*?""<>|,;()'\[\]]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex? Own = OwnNames(Environment.UserName, Environment.GetEnvironmentVariable("USERPROFILE") ?? "");
+
+    /// <summary>The account name and the profile path, each also as the Latin-1 reading of its UTF-8 bytes (one-byte logs are read as Latin-1, so a non-ASCII name shows up that way).</summary>
+    internal static Regex? OwnNames(string userName, string profile)
+    {
+        static IEnumerable<string> Forms(string v) => v.Length == 0 ? [] : [v, Encoding.Latin1.GetString(Encoding.UTF8.GetBytes(v))];
+        profile = profile.TrimEnd('\\', '/');
+        var parts = Forms(userName).Select(n => $@"(?<!\w){Regex.Escape(n)}(?!\w)")
+            .Concat(profile.Length > 3 ? Forms(profile).Select(p => Regex.Escape(p) + @"(?![\w])") : []).Distinct().ToList();
+        return parts.Count == 0 ? null : new(string.Join('|', parts), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
+    /// <summary>Replaces credential lines as a whole, then the Windows user name (profile folder in a path, the profile path, the account name) by <c>&lt;user&gt;</c>, keeping the rest of the line.</summary>
+    public static string Scrub(string text) => Scrub(text, Own);
+
+    /// <summary>A name becomes <c>&lt;user&gt;</c>, a profile path keeps all but its last folder.</summary>
+    static string OwnReplacement(Match m) => m.Value.LastIndexOfAny(['\\', '/']) is >= 0 and var i ? m.Value[..(i + 1)] + "<user>" : "<user>";
+
+    /// <summary>The player's own name and profile path first (they may hold spaces), then any other profile folder.</summary>
+    internal static string Scrub(string text, Regex? own) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : ProfileName.Replace(own?.Replace(l, OwnReplacement) ?? l, "<user>")));
 
     /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)
@@ -202,10 +223,10 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     }
 
     /// <summary>The last <see cref="EventDays"/> days of Application Error (1000) and Windows Error Reporting (1001) events whose text names the exe, newest first, at most <see cref="EventsMax"/>.</summary>
-    static IEnumerable<string> ReadEvents(string exe)
+    internal static IEnumerable<string> ReadEvents(string exe)
     {
         var age = (long)TimeSpan.FromDays(EventDays).TotalMilliseconds;
-        using var reader = new EventLogReader(new EventLogQuery("Application", PathType.LogName, $"*[System[(EventID=1000 or EventID=1001) and TimeCreated[timeDiff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
+        using var reader = new EventLogReader(new EventLogQuery("Application", PathType.LogName, $"*[System[(EventID=1000 or EventID=1001) and TimeCreated[timediff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
         var found = new List<string>();
         while (found.Count < EventsMax && reader.ReadEvent() is { } e)
             using (e)
