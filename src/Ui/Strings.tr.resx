@@ -31,7 +31,6 @@
   <data name="Menu.Label" xml:space="preserve"><value>Ana menü</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>MAĞAZA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>YARDIM</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>İNDİRMELER</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Panel</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Tek oyunculu mod</value></data>
@@ -277,9 +276,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Çok oyunculu modda arkadaşlarınıza bağlanırken sorun mu yaşıyorsunuz? Bunun birçok nedeni olabilir ve hepsi doğrudan oyunla ilgili olmayabilir. Daha fazla bilgi için sorun giderme kılavuzundaki {0} bölümüne göz atın.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>bağlantı sorunları</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Oyun özellikleri hakkında daha fazla bilgiye mi ihtiyacın var?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Avını bulamıyor musun? Belirli bir ekipmanın nasıl kullanılacağını mı çözemedin? Hangi av sahasının sana en uygun olduğunu mu merak ediyorsun? Daha fazla bilgi için {0} sayfasına göz at. Wiki topluluk tarafından oluşturulur ve yönetilir; sorunun cevabını orada bulamazsan {1} üzerinden sormaktan çekinme.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Avını bulamıyor musun? Belirli bir ekipmanın nasıl kullanılacağını mı çözemedin? Hangi av sahasının sana en uygun olduğunu mu merak ediyorsun? Daha fazla bilgi için {0} sayfasına göz at. Wiki topluluk tarafından oluşturulur ve yönetilir.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Başka teknik sorunların mı var?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Oyunu başlatırken bir sorun mu oldu? Garip bir hata mesajı mı aldın? {0} sayfasına göz at; sorununun cevabını bulamazsan {1} ekibimize bir mesaj gönder.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>sorun giderme kılavuzu</value></data>
@@ -1182,10 +1180,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Rehberler ve Eğitimler</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Video Eğitimler</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Yerel topluluk siteleri</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} oyununun birkaç resmi destek kanalı vardır. Oyunun nasıl oynanacağı ve sorun giderme hakkında pek çok bilgiyi topluluk tarafından yönetilen Wiki sayfamızda bulabilirsiniz. Resmi {game} forumlarımız çok hareketlidir ve acemilere yardım etmekten mutluluk duyan birçok oyuncumuz tarafından her gün ziyaret edilir.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Sorularınızın cevabını forumda veya wikide bulamazsanız destek sistemimizde bir talep oluşturabilirsiniz; size olabildiğince çabuk yardımcı olmaya çalışacağız!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} oyununun birkaç resmi destek kanalı vardır. Oyunun nasıl oynanacağı ve sorun giderme hakkında pek çok bilgiyi topluluk tarafından yönetilen Wiki sayfamızda bulabilirsiniz.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Sorularınızın cevabını wikide bulamazsanız destek sistemimizde bir talep oluşturabilirsiniz; size olabildiğince çabuk yardımcı olmaya çalışacağız!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Desteği</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forumu</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Yedeğin veya hesabın hakkında sorun mu var? Discord'da sor</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (ayrıca {1}, {2} ve {3} dillerinde)</value></data>

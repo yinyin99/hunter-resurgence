@@ -31,7 +31,6 @@
   <data name="Menu.Label" xml:space="preserve"><value>Main menu</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>STORE</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>HELP</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>DOWNLOADS</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Dashboard</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Single player game</value></data>
@@ -277,9 +276,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Having problems connecting to your friends in multiplayer? There can be many causes for this and not everything may be directly related to the game itself. Check out the {0} section in the troubleshooting guide for more information.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>connection issues</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Need more info on game features?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Can't find your prey? Stuck on how to use a specific piece of equipment? Wondering which hunting reserve might suit you best? Check out {0} for more information. The wiki is created and managed by the community, and if you can't find an answer to your question there, feel free to ask in the {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Can't find your prey? Stuck on how to use a specific piece of equipment? Wondering which hunting reserve might suit you best? Check out {0} for more information. The wiki is created and managed by the community.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Having other technical problems?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Was there a problem starting the game? Did you get some weird error message? Head on over to the {0}, and if you can't find the answer to your problem, send a message to our {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>troubleshooting guide</value></data>
@@ -1182,10 +1180,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guides &amp; Tutorials</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Video Tutorials</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Local community websites</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} has several official support channels. A lot of information on how to play the game as well as troubleshooting can be found on our community maintained Wiki page. Our official {game} forums are very active and visited daily by many of our players that are happy to help beginners.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>If you are unable to find an answer to your questions in the forum or wiki, you may open a ticket in our support system and we'll try to help you as quickly as possible!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} has several official support channels. A lot of information on how to play the game as well as troubleshooting can be found on our community maintained Wiki page.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>If you are unable to find an answer to your questions in the wiki, you may open a ticket in our support system and we'll try to help you as quickly as possible!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} Support</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} Forum</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Questions about your backup or account? Ask on Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} Wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (also in {1}, {2} and {3})</value></data>

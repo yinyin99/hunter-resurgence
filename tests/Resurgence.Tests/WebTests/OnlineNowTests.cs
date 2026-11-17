@@ -1,4 +1,5 @@
 using Bunit;
+using Bunit.TestDoubles;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
 using Resurgence.Ui.Components;
@@ -65,5 +66,16 @@ public sealed class OnlineNowTests : UiContext
         var feed = Render<Feed>();
         feed.WaitForAssertion(() => Assert.Single(feed.FindAll(".hero .online.p1")));
         Assert.Single(Render<MenuBar>().FindAll("nav.menu .online.p4"));
+    }
+
+    [Fact]
+    public async Task ThePublicHeroHasNoPillOverAFriendsInvitation()
+    {
+        Serve(new(37, 4));
+        await Services.GetRequiredService<ISessionService>().SignOutAsync();
+        Services.GetRequiredService<BunitNavigationManager>().NavigateTo("/feed?ref=Friend");
+        var feed = Render<Feed>();
+        feed.WaitForAssertion(() => Assert.Contains("Friend", feed.Find(".hero .referrer").TextContent));
+        Assert.Empty(feed.FindAll(".hero .online"));
     }
 }

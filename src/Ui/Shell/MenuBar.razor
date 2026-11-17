@@ -1,6 +1,5 @@
 @inject HostMode Mode
 @inject NavigationManager Nav
-@inject ILauncherBridge Bridge
 
 @if (Hidden)
 {
@@ -43,10 +42,6 @@ else
                 <li><a href="/download" class="@Active("download")">@L["Menu.Downloads"]</a></li>
             }
             <li><a href="/help" class="@Active("help")">@L["Menu.Help"]</a></li>
-            @if (!Mode.Launcher || !Bridge.IsSteam)
-            {
-                <li><ExternalLink Key="forum">@L["Menu.Forum"]</ExternalLink></li>
-            }
         </ul>
     </nav>
 }
