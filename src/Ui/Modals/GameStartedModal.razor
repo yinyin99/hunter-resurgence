@@ -1,5 +1,7 @@
+@implements IDisposable
 @inject ModalService Modal
 @inject ISessionService Sessions
+@inject ILauncherBridge Bridge
 
 @* the old "Done hunting for now?" window, opened once the started game has closed (ModalService.GameStarted); Escape, the × and a click beside it close it *@
 <div class="done" role="dialog" aria-modal="true" tabindex="-1" @onkeydown="Key" @ref="box">
@@ -7,6 +9,14 @@
     <h2>@L["Done.Title"]</h2>
     <a class="btn btn-primary btn-large" href="/profile/@handle/statistics" @onclick="Modal.Close">@L["Done.Stats"]</a>
     <p>@L.Frag("Done.Next", Link("/dashboard", L["Done.HuntNow"].Value))</p>
+    @if (sendLine is not null)
+    {
+        <p class="report" id="done-report" role="status">@sendLine</p>
+    }
+    else if (offer is not null)
+    {
+        <p class="report" id="done-report">@L.Frag("Report.Offer", ReportLink(offer))</p>
+    }
     <div class="info">
         <h4>@L["Done.ConnectionTitle"]</h4>
         <p>@L.Frag("Done.ConnectionText", Ext("support_connections", L["Done.ConnectionLink"].Value))</p>
@@ -19,6 +29,8 @@
 
 @code {
     string handle = "";
+    string? sendLine, offer; // the auto send's progress or result; the trigger of the failed start when the player is only offered the report
+    bool disposed;
     ElementReference box;
 
     void Key(KeyboardEventArgs e) { if (e.Key == "Escape") Modal.Close(); }
@@ -30,5 +42,26 @@
     RenderFragment Link(string href, string text) => @<a href="@href" @onclick="Modal.Close">@text</a>;
     RenderFragment Ext(string key, string text) => @<ExternalLink Key="@key">@text</ExternalLink>;
 
-    protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+    // a failed start (GameRun.Trigger): the report goes out by itself when the player agreed to that, else this window offers it. The window opens once per start, so this sends at most once per start.
+    protected override async Task OnInitializedAsync()
+    {
+        handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+        if (Bridge.LastRun?.Trigger is not { } trigger) return;
+        if (Bridge.ReportConsent != "auto") { offer = trigger; return; }
+        sendLine = L["Report.Sending"];
+        _ = SendAsync(trigger);
+    }
+
+    async Task SendAsync(string trigger)
+    {
+        var sent = await Bridge.SendReportAsync(await Bridge.BuildReportAsync(trigger));
+        sendLine = sent.Reference is { } reference ? L["Report.AutoSent", reference] : L["Report.AutoFailed", L[ReportModal.ErrorKey(sent.Error)].Value];
+        if (!disposed) await InvokeAsync(StateHasChanged);
+    }
+
+    RenderFragment ReportLink(string trigger) => @<a href="#" id="done-report-link" @onclick="() => OpenReport(trigger)" @onclick:preventDefault>@L["Report.Menu"]</a>;
+
+    void OpenReport(string trigger) => Modal.Show<ReportModal>(new Dictionary<string, object?> { [nameof(ReportModal.Trigger)] = trigger });
+
+    public void Dispose() => disposed = true;
 }

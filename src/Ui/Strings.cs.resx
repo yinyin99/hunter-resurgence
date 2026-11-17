@@ -1522,4 +1522,31 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tento formulář nepochází z tohoto serveru.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Toto přihlášení už bylo potvrzeno.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Hra běží. Zavřením launcheru se hra odpojí od komunitního serveru. Ponechat launcher otevřený?&#10;&#10;Ano: ponechat otevřený. Ne: minimalizovat.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Nahlásit problém</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Odešle protokoly hry komunitnímu serveru, abychom mohli pomoci. Uchovány 30 dní.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Shromažďuji soubory…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Hlášení obsahuje tyto soubory:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Tyto soubory nešlo přečíst a chybí:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Uložit</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Odeslat</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Odesílám…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Uloženo jako {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Odesláno. Odkaz: {0} (uveďte ho na Discordu)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Po neúspěšném spuštění odeslat automaticky</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Hlášení o problému odesláno: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Hlášení o problému se nepodařilo odeslat: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Něco se pokazilo? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Odesílat hlášení o problémech?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí, může nám launcher poslat své protokoly, abychom to opravili. Žádná hesla.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Co je v hlášení</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Zobrazit soubory</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Odesílat automaticky</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Ptát se pokaždé</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Nejste přihlášeni. Přihlaste se znovu a zkuste to ještě jednou.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Komunitní server hlášení nepřijal.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Hlášení je příliš velké na odeslání. Raději ho uložte.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Jedno hlášení už se odesílá, nebo jste za posledních 24 hodin odeslali pět. Zkuste to později.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Komunitní server teď nemá místo na hlášení. Raději hlášení uložte.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Hlášení se nepodařilo uložit do Stažených souborů. Raději ho odešlete.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Komunitní server není dostupný. Zkuste to znovu, nebo hlášení raději uložte.</value></data>
 </root>

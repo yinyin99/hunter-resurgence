@@ -1522,4 +1522,31 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Igra teče. Če zaprete launcher, se igra odklopi od skupnostnega strežnika. Naj ostane launcher odprt?&#10;&#10;Da: naj ostane odprt. Ne: minimiraj.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike igre strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Zbiranje datotek…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Poročilo vsebuje te datoteke:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Teh datotek ni bilo mogoče prebrati, zato manjkajo:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Shrani</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Pošlji</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Pošiljanje…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Shranjeno kot {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Poslano. Referenca: {0} (navedite jo na Discordu)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Samodejno pošlji po neuspešnem zagonu</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Poročilo o težavi poslano: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Poročila o težavi ni bilo mogoče poslati: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Je šlo kaj narobe? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Pošiljam poročila o težavah?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene, nam lahko zaganjalnik pošlje svoje dnevnike, da jo popravimo. Brez gesel.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Kaj je v poročilu</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Pokaži datoteke</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Pošlji samodejno</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Vprašaj me vsakič</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Niste prijavljeni. Prijavite se znova in poskusite še enkrat.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Strežnik skupnosti poročila ni sprejel.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Poročilo je preveliko za pošiljanje. Raje ga shranite.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Eno poročilo je že na poti ali ste jih v zadnjih 24 urah poslali pet. Poskusite pozneje.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Strežnik skupnosti trenutno nima prostora za poročila. Raje shranite poročilo.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Poročila ni bilo mogoče shraniti v Prenose. Raje ga pošljite.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Strežnika skupnosti ni bilo mogoče doseči. Poskusite znova ali raje shranite poročilo.</value></data>
 </root>
