@@ -137,6 +137,17 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [InlineData("home Z:\\home\\john.doe", "home <path>")]
     [InlineData("home Z:\\home\\john.doe\\Game\\save.dat ok", "home save.dat ok")]
     [InlineData("opened Z:/john.doe/v.2/Config.INI", "opened Config.INI")]
+    [InlineData("C:\\Users\\Tran.Dat", "<path>")]
+    [InlineData("Z:\\home\\li.lua", "<path>")]
+    [InlineData("\\\\pc\\c$\\Users\\nguyen.bin", "<path>")]
+    [InlineData("\\\\.\\C:\\Users\\john.doe\\secret", "<path>")]
+    [InlineData("\\\\.\\C:\\Users\\john.doe\\x.dll", "x.dll")]
+    [InlineData("\\\\?\\C:\\Users\\john.doe\\x.dll", "x.dll")]
+    [InlineData("\\\\?\\UNC\\pc\\c$\\Users\\john.doe", "<path>")]
+    [InlineData("\\\\?\\UNC\\pc\\c$\\Users\\john.doe\\x.dll", "x.dll")]
+    [InlineData("\\\\?\\Volume{1234-ab}\\Users\\john.doe", "<path>")]
+    [InlineData("C:\\Windows\\System32\\ntdll.dll", "ntdll.dll")]
+    [InlineData("C:\\Games\\mods\\x.asi", "x.asi")]
     public void TestAPathInATextIsReducedToItsFileName(string text, string expected) => Assert.Equal(expected, CrashReports.Clean(text));
 
     [Fact]

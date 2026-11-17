@@ -17,10 +17,13 @@ public static class CrashReports
     sealed record Image(ulong Start, ulong Size, string Name);
     sealed record Entry(string Id, long Account, string Kind, long? Time, string? Module, string[] Frames, string Message, string? Release);
 
-    // A Windows path (a drive or a share, folders that may hold spaces, then the last part): only a file name with a known extension stays. Anything else
-    // (a folder, a name with another dot such as a profile folder "john.doe") is replaced whole, with the rest of the line, so a user name never stays.
-    const string KnownFile = "dll|exe|sys|drv|ocx|node|log|txt|ini|cfg|conf|dat|sav|pak|arc|json|xml|pdb|dmp|tmp|lua|py|pyc|pyd|scn|zip|gz|bin|db|png|jpg|jpeg|tga|dds|bmp|cache";
-    static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*(?:([^\\/:*?""<>|\s]*\.(?:" + KnownFile + @")(?![A-Za-z0-9]))|[^\\/:*?""<>|\r\n]*)",
+    // A Windows path (a drive, a share, or a device or extended form: \\.\ \\?\ \\?\UNC\; then folders that may hold spaces, then the last part): only a file name
+    // with a known extension stays, and never one directly inside a Users or home folder. Anything else (a folder, a profile folder "john.doe") is replaced whole,
+    // with the rest of the line, so a user name never stays.
+    const string KnownFile = "dll|exe|sys|drv|ocx|ax|asi|ime|cpl|node|log|txt|ini|cfg|conf|dat|sav|pak|arc|json|xml|pdb|dmp|tmp|lua|py|pyc|pyd|scn|zip|gz|bin|db|png|jpg|jpeg|tga|dds|bmp|cache";
+    const string PathPart = @"[^\\/:*?""<>|\s]+";
+    static readonly Regex InstallPath = new(@"(?:\\\\[?.]\\(?:UNC\\" + PathPart + "|[A-Za-z]:|" + PathPart + @")|[A-Za-z]:|\\\\" + PathPart + @")[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*"
+        + @"(?:(?<![\\/](?:Users|home)[\\/])([^\\/:*?""<>|\s]*\.(?:" + KnownFile + @")(?![A-Za-z0-9]))|[^\\/:*?""<>|\r\n]*)",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
     static readonly Regex Id = new(@"\A[0-9A-Za-z-]{8,64}\z", RegexOptions.Compiled);
 
