@@ -11,7 +11,7 @@ public class UnlimitedAmmoTests : StateTestBase
     const long Ammo = 77;
     static readonly byte[] BuyAmmo = "item_id=77&amount=1&wallet=GOLD"u8.ToArray(), BuyLure = "item_id=19&amount=1&wallet=GOLD"u8.ToArray();
 
-    State Make(bool on)
+    State Make(bool on, bool installFit = false)
     {
         var connect = CONNECT;
         connect["inventory"]!["active_services"] = O("""{"UNLIMITED_FUEL": 1, "STREAK_PROTECTION": 0}""");
@@ -34,7 +34,15 @@ public class UnlimitedAmmoTests : StateTestBase
                  "price": 5, "silver_price": 100, "notbuyable": 0, "subcat": {"id": 0}, "hidden": 0}
                 """));
         app["bundles"] = JsonNode.Parse("""[{"id": 9, "name": "Test Bundle", "price": 100, "items": [19, 77]}]""");
-        return state = new State(Path.Combine(tmp, $"{on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, sampleInfos: (JsonArray)JsonNode.Parse("""[{"item_id": 77, "units": 10}, {"item_id": 79, "units": 5}]""")!) { UnlimitedAmmo = on };
+        JsonArray? defs = null;
+        if (installFit)  // no recorded `fit` list: the install's definition of the weapon names its ammunition (and an attachment that is none)
+        {
+            app["items"]!.AsArray().Single(i => (long)i!["id"]! == 78)!["fit"] = new JsonObject();
+            defs = (JsonArray)JsonNode.Parse("""
+                [{"id": 77, "define": "TEST_CARTRIDGE"}, {"id": 78, "define": "TEST_RIFLE", "extra": {"weapon": {"attachments": ["TEST_SCOPE", "TEST_CARTRIDGE"]}}}]
+                """)!;
+        }
+        return state = new State(Path.Combine(tmp, $"{on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: defs, sampleInfos: (JsonArray)JsonNode.Parse("""[{"item_id": 77, "units": 10}, {"item_id": 79, "units": 5}]""")!) { UnlimitedAmmo = on };
     }
 
     /// <summary>The units of each stack of the ammunition, by guid.</summary>
@@ -216,6 +224,33 @@ public class UnlimitedAmmoTests : StateTestBase
     }
 
     [Fact]
+    public void EveryOwnedAmmunitionHasOneStackInTheLodgeAlsoWhenItsOnlyBoxIsEquippedAndOffNothingIsAdded()
+    {
+        Make(true);
+        Assert.True(state.GrantItems(ME, Ammo, 1));
+        SetSlot(Ammo, 8);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("8:10 0:10", Held(Ammo));
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("8:10 0:10", Held(Ammo));  // never twice
+        Make(false);
+        Assert.True(state.GrantItems(ME, Ammo, 1));
+        SetSlot(Ammo, 8);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("8:10", Held(Ammo));
+    }
+
+    [Fact]
+    public void TheWeaponAmmunitionRuleNeedsNoRecordedFitList()
+    {
+        Make(true, installFit: true);
+        Assert.True(state.GrantItems(ME, 78, 1));
+        SetSlot(78, 3);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("0:10 9:10", ""), (Held(77), Held(79)));  // the install names 77 only
+    }
+
+    [Fact]
     public void AnEquippedWeaponWithAmmunitionInItsSlotIsLeftAloneAndOffNothingIsGranted()
     {
         Make(true);
@@ -224,7 +259,7 @@ public class UnlimitedAmmoTests : StateTestBase
         SetSlot(78, 2);
         SetSlot(79, 8);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal(("0:10", "8:5"), (Held(77), Held(79)));
+        Assert.Equal(("0:10", "8:5 0:5"), (Held(77), Held(79)));  // the equipped box is not the lodge's: the lodge gets its own stack
         Make(false);
         Assert.True(state.GrantItems(ME, 78, 1));
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());

@@ -614,6 +614,7 @@ public sealed partial class State
     public readonly long LocalAccount;
     // installItems: the install's items the store catalogue does not list (a restored inventory may still hold one), for their definitions only
     readonly Dictionary<long, JsonObject> species = new(), items = new(), installItems = new(), infos = new(), ballistics = new();
+    readonly Dictionary<long, long[]> installFit = new();  // weapon id -> the ids its install definition lists as attachments (the ammunition among them)
     readonly Dictionary<long, string?> reserves = new();
     readonly Dictionary<long, JsonNode?> locations = new();
     readonly JsonObject locale, connect, start;
@@ -726,6 +727,8 @@ public sealed partial class State
             family[Py.L(d!["id"])] = Root(d.AsObject());
             if (d["extra"]?["ammo"] is JsonObject ammo)
                 ballistics[Py.L(d["id"])] = ammo;
+            if (d["extra"]?["weapon"]?["attachments"] is JsonArray att)
+                installFit[Py.L(d["id"])] = [.. att.Select(a => (string?)a).Where(a => a is not null && itemIds.ContainsKey(a)).Select(a => itemIds[a!])];
         }
         foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
             if (!items.ContainsKey(Py.L(i!["id"])))
@@ -2048,12 +2051,14 @@ public sealed partial class State
                 con.Exec("UPDATE items SET units = ?1 WHERE account_id = $a AND item_id = ?2 AND units IS NOT NULL AND units < ?1", box, id);
     }
 
-    /// <summary>The ammunition ids the catalogue lists as fitting a weapon (the `fit` list of the ammunition category), in its order.</summary>
-    long[] AmmoFor(long weapon) => [.. Arr((items.GetValueOrDefault(weapon) ?? installItems.GetValueOrDefault(weapon))?["fit"]?["3"]).Select(f => Py.L(f!["id"]))];
+    /// <summary>The ammunition ids that fit a weapon, in order: the catalogue's `fit` list of the ammunition category, else (a server without the recorded catalogue) the ammunition among the install's attachments of the weapon.</summary>
+    long[] AmmoFor(long weapon) => Arr((items.GetValueOrDefault(weapon) ?? installItems.GetValueOrDefault(weapon))?["fit"]?["3"]) is { Count: > 0 } fit
+        ? [.. fit.Select(f => Py.L(f!["id"]))] : installFit.GetValueOrDefault(weapon) ?? [];
 
     /// <summary>With unlimited ammunition, at a launch, inside its transaction: the account owns a full box of every ammunition that fits a weapon it owns (a weapon with none could not be equipped, and ammunition is not sold),
     /// as a row of its own that the connect that follows lists; only an ammunition the game has a definition for (a recorded one or the install's ballistics, as a restore needs). An equipped weapon (slots 2 to 4) whose ammunition slot
-    /// (the weapon's slot plus 6) is empty gets a copy of its first fitting ammunition there, marked as a copy so the lodge keeps its own stack: a shot with an empty ammunition slot closes the game.</summary>
+    /// (the weapon's slot plus 6) is empty gets a copy of its first fitting ammunition there, marked as a copy so the lodge keeps its own stack: a shot with an empty ammunition slot closes the game.
+    /// Last, every ammunition the account owns has a stack in the lodge (slot 0), also when its only box is equipped: the page lists and copies only what the lodge holds.</summary>
     void ArmWeapons(Db con)
     {
         var rows = con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Id: Convert.ToInt64(r[0]), Slot: Convert.ToInt64(r[1]))).ToList();
@@ -2069,6 +2074,9 @@ public sealed partial class State
             if (!filled.Contains(slot + 6) && AmmoFor(weapon).Where(owned.Contains).ToList() is [var ammo, ..] && Box(ammo) is { } box)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                          NextId(con, "items", "guid"), ammo, slot + 6, Py.Dumps(new JsonObject { [CLONE] = "launch" }), box);
+        foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot <> 23 GROUP BY item_id HAVING MAX(slot = 0) = 0").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
+            if (Box(id) is { } lodgeBox)
+                con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", NextId(con, "items", "guid"), id, lodgeBox);
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()
