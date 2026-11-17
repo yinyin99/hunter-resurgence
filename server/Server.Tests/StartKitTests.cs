@@ -121,6 +121,17 @@ public class StartKitTests : StateTestBase
     }
 
     [Fact]
+    public void UnderUnlimitedAmmunitionAHuntFillsTheFreeAmmunitionToOneBox()
+    {
+        state = new(Db, Py.DumpBytes(CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES, offline: false, startBody: Neutral(), facts: Facts.Parse(FactsJson)) { UnlimitedAmmo = true };
+        state.CreateAccount(A, "alpha");
+        using (var con = state.Store.Open(A))
+            con.Exec("UPDATE items SET units = 3 WHERE account_id = $a AND item_id = 15");
+        Launch(A);
+        Assert.Equal("10", Stacks(A, 15));  // the used stack filled, no second or third box: the lodge's one stack is the unlimited one
+    }
+
+    [Fact]
     public void AnEmptyStackAndAMissingOneAreFilledToo()
     {
         state = Open();

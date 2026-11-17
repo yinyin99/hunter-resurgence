@@ -438,7 +438,7 @@ public sealed partial class State
     {
         List<object[]> rows;
         using (var con = Con(account))
-            rows = con.Rows("SELECT item_id, guid, slot, units, metadata FROM items WHERE account_id = $a ORDER BY item_id, guid");
+            rows = con.Rows($"SELECT item_id, guid, slot, units, metadata FROM items WHERE account_id = $a AND {Shown} ORDER BY item_id, guid");
         return [.. rows.GroupBy(r => (long)r[0]).Select(g => (g.Key, g.Select(r =>
         {
             var metadata = Parse(r[4]);
@@ -452,6 +452,8 @@ public sealed partial class State
             static JsonNode? Scaled(JsonNode? v) => v is JsonObject o
                 ? new JsonObject { ["x"] = Py.D(o["x"]) / 1000, ["y"] = Py.D(o["y"]) / 1000, ["z"] = Py.D(o["z"]) / 1000 } : null;
             var (pos, dir, reserve) = (Take(POSITION), Take(DIRECTION), Take(RESERVE));
+            Take(CLONE);
+            Take(HIDDEN);
             JsonNode? location = null;
             if (r[2] is PLACED_SLOT && pos is not null)
             {
