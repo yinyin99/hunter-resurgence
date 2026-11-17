@@ -812,7 +812,7 @@ handle: `exampleuser`
 account: 2000000123
 archived id: 1234567
 hunterscore: 10450
-steam: [profile](<https://steamcommunity.com/profiles/76561198000000123>)
+steam: [profile](<https://steamcommunity.com/profiles/99999999999999993>)
 run: `review list`
 ```
 
