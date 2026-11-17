@@ -132,6 +132,14 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void AStoredKitItemWaitsInTheInventoryEvenWithItsSlotFree()
+    {
+        var stored = Facts.Parse(FACTS.Replace("[257, 14, 404]", "[14], \"stored\": [257]"));
+        var c = JsonNode.Parse(Install.Connect(cfg, stored, Install.ItemDefinitions(install))!)!;
+        Eq("""[{"item_id": 14, "slot": 8, "guid": "1", "metadata": {}, "units": 30}, {"item_id": 257, "slot": 0, "guid": "2", "metadata": {}, "units": null}]""", c["inventory"]!["items"]);
+    }
+
+    [Fact]
     public void TheShippedStartKitOwnsTheDefaultClothingOfTheInventoryPage()
     {
         // the page fills an empty body, legs or feet slot with its default (188, 39, 59) found among the owned items; without it the page cannot be closed
