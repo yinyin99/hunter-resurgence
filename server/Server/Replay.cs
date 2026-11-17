@@ -501,6 +501,8 @@ w();}).then(go,go);})();</script>
         /// <summary>Web: our website's domain (sign-in, account pages). GameWeb: the game's own web host, where all of the current build's traffic arrives.</summary>
         public readonly string Gs, Apiv2, Api, Web, GameWeb, Signup;
         public readonly HashSet<string> Sinks;
+        /// <summary>The crash host (one of the sinks): its reports are kept per account (<see cref="CrashReports"/>), not in telemetry.jsonl.</summary>
+        public readonly string CrashHost;
         /// <summary>The game's credentials; null without player state.</summary>
         public readonly GameTokens? Tokens;
 
@@ -513,6 +515,7 @@ w();}).then(go,go);})();</script>
             Web = S(cfg, "web_host").ToLowerInvariant();
             GameWeb = S(cfg, "game_web_host").ToLowerInvariant();
             Sinks = SinkHosts(cfg);
+            CrashHost = S(cfg, "crash_host").ToLowerInvariant();
             Signup = S(cfg, "signup_host").ToLowerInvariant();
             Tokens = state is null ? null : new GameTokens(state.Store, S(cfg, "game_web_host"));
         }

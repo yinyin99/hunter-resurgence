@@ -13,6 +13,7 @@ public static class AdminApi
         var admin = app.MapGroup("/admin").RequireHost(hosts).WithGroupName("admin").WithTags("Admin");
         var state = game.State;
         var log = app.Services.GetRequiredService<RequestLog>();
+        var reports = app.Services.GetService<ProblemReports>();
 
         admin.MapGet("/status", () => TypedResults.Ok(new Status(
                 state is null || workDir is null ? null : Path.Combine(workDir, "state.db"), harCount,
@@ -145,6 +146,24 @@ public static class AdminApi
                 TypedResults.Ok(log.Misses().Reverse().Take(Math.Clamp(limit ?? 50, 1, 1000))
                     .Select(l => JsonNode.Parse(l)!.AsObject()).ToArray()))
              .WithName("GetMisses").WithSummary("Requests nothing could answer (the miss log: keys only)");
+
+        admin.MapGet("/reports", Results<Ok<List<ProblemReports.Item>>, ProblemHttpResult> () =>
+                reports is null ? NoReports() : TypedResults.Ok(reports.List()))
+             .WithName("GetReports").WithSummary("The problem reports the launcher sent (kept 30 days), newest first")
+             .WithDescription("Each `{reference, account, handle, ts, trigger, size}`. Download one with `GET /admin/reports/<reference>`.").ProducesProblem(503);
+
+        admin.MapGet("/reports/{reference}", Results<FileContentHttpResult, ProblemHttpResult> (string reference) =>
+                reports is null ? NoReports()
+                : reports.PathOf(reference) is not { } zip ? TypedResults.Problem($"no report {reference}", statusCode: 404, title: "Unknown report")
+                : TypedResults.File(File.ReadAllBytes(zip), "application/zip", reference + ".zip"))
+             .WithName("GetReport").WithSummary("Download a problem report's zip by its reference (p<account>-<8 hex>)").ProducesProblem(404).ProducesProblem(503);
+
+        admin.MapGet("/diagnostics", Results<Ok<Diagnostics>, ProblemHttpResult> ([Description(AccountDoc)] string? account) =>
+                state is null ? NoState() : ResolveAccount(state, account) is not { } id ? NoAccount(account!)
+                : TypedResults.Ok(Diagnostics.Of(state.Store, id, Store.Now())))
+             .WithName("GetDiagnostics").WithSummary("The account's last 30 days: crash reports, hunts without a disconnect, hunts under 60 s, event 30 count")
+             .WithDescription("`crashes`: the kept crash and error reports (time, kind, module, frames with the crashing one first, message); `noDisconnect`: hunts that ended without the game's disconnect call; "
+                              + "`short`: closed hunts under 60 s (both newest first, at most 100); `event30`: how many times the game said the connection to the host failed.").ProducesProblem(404).ProducesProblem(503);
     }
 
     public const int MaxStacks = 1000;  // one transaction per grant
@@ -165,6 +184,9 @@ public static class AdminApi
 
     static ProblemHttpResult NoState() =>
         TypedResults.Problem("no recorded connect to seed the player state from", statusCode: 503, title: "Player state off");
+
+    static ProblemHttpResult NoReports() =>
+        TypedResults.Problem("problem reports are kept by a community server (offline_mode false)", statusCode: 503, title: "Reports off");
 
     public sealed record Status(
         [property: Description("Player state database, null when off")] string? StateDb,

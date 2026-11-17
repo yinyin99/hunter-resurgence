@@ -78,9 +78,10 @@ public sealed record Reply(int Status, List<(string Name, string Value)> Headers
 }
 
 /// <summary>"source status method host+path" per game request on the console, and per miss one miss-log line
-/// (keys only, never values). Telemetry and crash reports (the "sink" replies) are kept whole, bodies cut at 64 KB, in
-/// telemetry.jsonl: trackPlayerDeath's death_type and trackShoot's organ data are only there.</summary>
-public sealed class RequestLog(bool console, string? missesPath, string? telemetryPath = null)
+/// (keys only, never values). Telemetry (the "sink" replies of the telemetry host) is kept whole, bodies cut at 64 KB, in
+/// telemetry.jsonl: trackPlayerDeath's death_type and trackShoot's organ data are only there. crashHost: the one sink whose requests
+/// are not kept there (they are the crash reports, kept per account by <see cref="CrashReports"/>); null: it is kept like the others.</summary>
+public sealed class RequestLog(bool console, string? missesPath, string? telemetryPath = null, string? crashHost = null)
 {
     readonly Lock gate = new();
 
@@ -106,7 +107,7 @@ public sealed class RequestLog(bool console, string? missesPath, string? telemet
                 ["bytes"] = r.Body.Length,
                 ["content_type"] = r.Header("Content-Type"),
             };
-        JsonObject? tele = reply.Source == "sink" && telemetryPath != null
+        JsonObject? tele = reply.Source == "sink" && telemetryPath != null && r.Host != crashHost
             ? new JsonObject
             {
                 ["ts"] = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.ffffff'+00:00'"),

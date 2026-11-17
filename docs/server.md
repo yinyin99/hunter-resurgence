@@ -20,7 +20,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `crash_host` | The host the game's crash reports go to (answered 204). Recommended |
 | `gameserver_host`, `api_host`, `apiv2_host`, `signup_host`, `static_host`, `static_legacy_host`, `map_host`, `photo_host`, `avatar_host`, `news_host`, `telemetry_host` | The names the old build asked for; only needed for it, and to find the recordings made of them. Left out, each is a placeholder (`<role>.invalid`) that no client asks for; `map_host` is also needed by the current build, to fill map tiles from the map host's folder. The organ and lodge picture fallback reads the mirror under `static_host`, so a server without `static_host` cannot fill those pictures from the mirror and serves only what the archive, a recorded reply or the game web host's own mirror folder holds. The server routes by the `Host` of a request |
 | `install_dir` | Required. The game's install folder: its archives answer image and map requests (`game/archives`) and hold the item and species definitions, and its sample files (`game/json_connect_results.json`, `game/json_inventory.json`) seed the connect reply and the item definitions ([Starting data](#starting-data)). Read only |
-| `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, the miss log `misses.jsonl` and `telemetry.jsonl` |
+| `data_dir` | Default `data`: `state.db`, `spawn.json`, `photos/<account id>/`, `reports/<account id>/` ([Problem reports](#problem-reports)), the miss log `misses.jsonl` and `telemetry.jsonl` ([Crash reports](#crash-reports)) |
 | `recordings_dir` | Default `recordings`: Optional: HAR files the operator recorded of their own traffic. The newest 200 reply per request wins |
 | `mirror_dir` | Default `mirror`: saved static pages, `<mirror_dir>/<host>/<path>` |
 | `variants_file` | Optional: a JSON list of `{id, min_score, max_score, css_multiplier}` per trophy variant for the score sheets; its rows win over the facts file's `variants`, which hold the bounds of every scored species ([Scoring and paying a harvest](#scoring-and-paying-a-harvest)), so the file is only needed to change them |
@@ -54,7 +54,7 @@ A reserve takes at most 20 new animal kinds from `admin spawn`; further entries 
 
 ## How a request is answered
 
-1. A request for `telemetry_host` or `crash_host` gets 204 and is kept in `telemetry.jsonl`.
+1. A request for `telemetry_host` or `crash_host` gets 204. With player state, the crash host's fatal and error reports are kept per account ([Crash reports](#crash-reports)) and everything else it sends is dropped; the telemetry host's requests (and the crash host's, without player state) are kept in `telemetry.jsonl`.
 2. The player state answers what it owns: `heartbeat`, `heartbeatScenario`, `disconnect`, `connect`, the photo upload and photo files on the game host; `Inventory/move_multiple2`, `Inventory/buy`, `Launch/start`, `Launch/start_mp`, `Launch/join`, `Network/list` ([Multiplayer](#multiplayer)), `session/start_tutorial`, `User/jwt`, `Oauth/token`, `Chat/conversations`, `Chat/conversation`, `Skill/list`, `Statistics/total`, `Achievement/stats` (the last three for a restored account's own user id, see [Import a backup zip](#import-a-backup-zip); on a community server `Achievement/stats` for any account's user id, see [Public reads](#public-reads); `Statistics/total` for any account's user id, see [Public reads](#public-reads)), the lists that wrap a base reply (`Splash/list_active`, `Public_user/expedition`, `Expedition/list`, `Me/poll`, `Me/me`: the recorded reply on a local server, the empty shape on a community server; `Public_user/expedition` and `Expedition/list` for any account's user id, see [Public reads](#public-reads)) and, on a community server, `Inventory/list`, `Inventory/dict`, `Trophy/list`, `Gallery/list`, `Gallery/delete` ([Gallery](#gallery)), `Wallet/transactions`, `Wallet/silver_transactions` and `Wallet/spent` ([Wallet history](#wallet-history)), `Mission/missions` and the page's mission writes ([Missions](#missions)) and the friends calls ([Friends](#friends)) on the API host; the harvest pages, the trophies, the lodges and the edits of lodges and trophies on the API v2 host ([Lodges](#lodges-and-trophy-visibility)); the sign-in and start page on the website and signup hosts, and the old launcher's own calls on the game host ([Sign-in and tokens](#sign-in-and-tokens)); the kill details page on the website host. `Inventory/buy` accepts amounts of 1 to 1000; any other amount gets `success: false` and costs nothing.
 3. Everything else, in this order: an archive file in the URL's own folder, the recorded reply (a JSONP callback is swapped; on a community server only for a global endpoint, [below](#recordings-on-a-community-server)), the mirror, an archive file found by its name, an empty 200 for a request that was only recorded as unchanged, else a miss: `null` under `/v1/`, `{"err": 0}` on the game host, 404 on the API v2 host. Every miss carries `Cache-Control: no-store`, so the client's disk cache never keeps one and a later fix reaches players without a cache clear. A miss is written to the miss log, keys only.
 
@@ -688,6 +688,7 @@ On a community server (`offline_mode` false) a signed-in player uploads their ow
 | `POST /account/restore/<id>/finish` | Same checks: reads the joined zip and answers `{status, message}` (below); the upload ends whatever the answer |
 | `POST /account/restore` | A zip of one part in one request: the request body, at most 90 MiB. Answers like a finish |
 | `POST /account/delete` | Form `confirm=delete`, same checks: deletes the account and all its data (below), clears the cookie |
+| `POST /account/report` | The launcher's problem report: the zip as the body, header `X-Report-Trigger`, same checks as buy (cookie, `X-Requested-With`). `{reference}` ([Problem reports](#problem-reports)) |
 | `POST /account/buy` | Form `id`, `count`, `wallet`, `bundle=1`, same checks: buys with em$ or gm$ ([Buying from the website](#buying-from-the-website)) |
 | `GET /account/loadouts` | The player's saved loadouts as `GET /game/user/loadout` answers them (`[{name, color, items, id}]`, ascending by id) for the launcher's start picker; `id` is the `loadout` of `POST /auth/launch` ([Loadouts](#loadouts)). 401 when signed out |
 | `GET /account/placed` | The player's own placed tents, callers, blinds and stands: `{items: [{id, reserve, kind, name, x, y}]}`, `x` and `y` percent of the reserve's map picture; `id` is the `tent` of `POST /auth/launch` for a tent ([The launch map](#the-launch-map)). 401 when signed out |
@@ -747,7 +748,53 @@ Upload ids are never reused (`uploads.id` is AUTOINCREMENT, from 100 at least on
 
 A user id is restored once, enforced by the primary key of `restored_ids`, so two uploads at the same moment cannot both win. If a restore turns out wrong, the operator deletes the account's rows (or the account) and imports the kept zip again with `import backup <zip> --account <id>`; deleting the account frees its user id.
 
-**Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row, the tokens, the cookie sessions, the review rows, the decisions and the restored user id; then the account's `restores/<id>/` and `photos/<id>/` folders (the pictures a restore unpacked are in the second, [Pictures](restore.md#pictures); a restore that changed the account's user id moved the folder to the new id, so none is left under the old one). The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
+**Delete my data.** `POST /account/delete` deletes the `accounts` row, and with it, by the foreign keys, every per-player row (the crash reports too), the tokens, the cookie sessions, the review rows, the decisions and the restored user id; then the account's `restores/<id>/`, `photos/<id>/` and `reports/<id>/` folders (the pictures a restore unpacked are in the second, [Pictures](restore.md#pictures); a restore that changed the account's user id moved the folder to the new id, so none is left under the old one; the last holds the problem reports). The Steam id and handle go with the row, so signing in again makes a new account. It refuses (`429`) while an upload of the account is running. The replies are `{status, message}`; the cookie is cleared.
+
+## Problem reports
+
+When the game fails on a player's PC the launcher builds one zip (its contents: [launcher.md](launcher.md)) and sends it from the signed-in player. `POST /account/report` on `web_host`, signed in with the `hr_session` cookie, header `X-Requested-With: launcher` (or any value: a form of another site cannot set it), header `X-Report-Trigger: <trigger>`, the body the zip (`Content-Type: application/zip`).
+
+| Trigger | Sent when |
+|---|---|
+| `manual` | The player pressed "Report a problem" in the launcher's Settings |
+| `short` | The game ran less than 60 s |
+| `exitcode` | The game's exit code was not 0 |
+| `nowindow` | No visible game window was ever seen |
+
+| Reply | When |
+|---|---|
+| `200` `{"reference":"p<account>-<sha8>"}` | Kept. `sha8` is the first 8 hex digits of the zip's SHA-256, so the same zip sent twice is one report |
+| `401` | Not signed in |
+| `400` | A trigger that is none of the four, a request from no page of this server, or a body that is no readable zip (the zip is opened, not unpacked) |
+| `413` | Over 6 MiB (`Content-Length` over it is refused unread; a chunked body stops at the limit) |
+| `429` | A report of the account is being received (one at a time, from the start of the request to the end), or the account sent 5 in the last 24 hours |
+| `507` | The data disk would have less than `upload_min_free_bytes` free after it (the setting of [Upload a backup zip](#upload-a-backup-zip), counting the declared size) |
+
+A report is `reports/<account id>/<reference>.zip` with `<reference>.json` beside it (`{ts, trigger, size}`, `ts` in epoch seconds); the 24-hour limit counts those notes. It is only read by the operator: never through `/account/restore/*`, never restored. It is deleted 30 days after `ts` (a zip without a note, by its file time), at server start and once a day, and with the account (`POST /account/delete`). When a new report is kept the server posts one message to the `review_webhook`: `Problem report: account <id>, <handle>, <reference>, trigger <trigger>, <n> KB. Run: review reports`.
+
+**Review.** `GET /admin/reports` lists the reports (`{reference, account, handle, ts, trigger, size}`, newest first) and `GET /admin/reports/<reference>` downloads the zip ([Admin API](#admin-api)). On the command line:
+
+```
+dotnet run --project server/Server -c Release -- [--settings <file>] review reports | reports <reference> <file> | diagnostics <account>
+```
+
+`review reports` prints one tab-separated line per report: the reference, `account <id>`, `handle <handle>`, the time, the trigger, `<n> bytes`; with a reference and a file it copies that zip to the file (which must not exist). `review diagnostics <account>` (and `GET /admin/diagnostics?account=`) shows what the server knows of the account in the last 30 days, to read beside a report:
+
+- the kept [crash reports](#crash-reports): time, kind, module, the top frames and the message;
+- the hunts that ended without the game's disconnect call: closed hunts whose end is their last heartbeat (the server closed them after 30 s of silence, or the player's next start replaced them; at most 100). A hunt that got no heartbeat and ended by a disconnect is not in the list: the server cannot tell it from a replaced one;
+- the closed hunts that lasted under 60 s (at most 100);
+- how many times the game sent event 30, "the connection to the host failed" ([Multiplayer](#multiplayer)).
+
+## Crash reports
+
+The game sends its error reports to `crash_host` as envelopes: a header line, then per item a header line (`type`, and `length` in bytes) and its payload. With player state the server reads them instead of appending them whole to `telemetry.jsonl` (it held every report's install paths and device hash and was never pruned). The game gets 204 whatever happens.
+
+- **Kept:** `event` items whose `level` is `fatal` or `error` (no level counts as error), and `session` items whose `status` is `abnormal` (a run that ended without a crash report or a clean exit). Everything else is dropped: warnings, info, other sessions, dumps and other attachments, transactions. An envelope is read to its first cut or garbled item, at most 8 items.
+- **Whose:** the `user.id` of the event, or the `did` of a session, when it is the user id of an account of this server. A report with none, or of an account that does not exist, is dropped.
+- **What is stored** (`crash_reports`, schema 27, one row per account and event id; the same id again changes nothing): `ts` (the report's own time, never later than its arrival; a report older than 30 days is dropped), `kind` (`fatal`, `error`, `abnormal`), `module`, `frames`, `message` and `release`. `frames` are the top 8 frames of the exception's stack, the crashing one first, each `module!function` or, when the report names no function, `module+offset` (hex), the module found by address in the report's own list of loaded images, shown by its file name. `message` is the exception's type and value (else the event's message), at most 300 characters. Every path in a stored text or image name is reduced to its file name. Nothing else of a report is stored: the device hash, user name, address, machine name, other contexts and breadcrumbs are dropped.
+- **Kept** the newest 200 per account and 30 days; a purge at start and once a day deletes the older ones. The rows go with the account (`POST /account/delete`).
+
+`telemetry.jsonl` keeps the telemetry host's requests (the death types and organ data the heartbeat does not carry), each body cut at 64 KB. At start a file over 32 MiB is rewritten once: its crash host lines go through the rules above first (those of the last 30 days; the rest is dropped) and the newest 32 MiB of the other lines stay. A server without player state keeps the crash host's requests in the file like the telemetry host's.
 
 ## Archive claims
 
@@ -798,7 +845,7 @@ A proxy in front of the server speaks plain HTTP to it (a listener without `cert
 
 `/admin/*`, Swagger UI (`/swagger`) and the OpenAPI documents are for a person at the server's machine. A request is served only when all of these hold: its `Host` is `localhost` or `127.0.0.1`; it came in on a listener marked `"admin": true`; its peer address (not a header) is a loopback address; and it carries no header that says a proxy relayed it (`X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`, `Forwarded`, `Via`, `X-Real-IP`, the `host_header`). Any other request for those names gets 403. No listener is an admin listener unless marked, and a proxy on the same machine is a loopback peer too, so keep the listener a proxy connects to unmarked and give the admin API its own loopback listener (for example `127.0.0.1:8081`, reached from the VPS through an SSH tunnel). Admin bodies are limited to 64 KiB.
 
-The routes (Swagger UI describes each; `account` is a user id or handle, left out: the local account, except `/admin/rescore`, where left out means every account). Except `status` and `misses`, they answer 503 when the player state is off (no connect to seed it from), and the ones that take `account` answer 404 for an account that does not exist:
+The routes (Swagger UI describes each; `account` is a user id or handle, left out: the local account, except `/admin/rescore`, where left out means every account). Except `status` and `misses`, they answer 503 when the player state is off (no connect to seed it from) (`reports` also when the server is offline, not a community server), and the ones that take `account` answer 404 for an account that does not exist:
 
 | Route | Does |
 |---|---|
@@ -811,6 +858,8 @@ The routes (Swagger UI describes each; `account` is a user id or handle, left ou
 | `POST`, `GET` and `DELETE /admin/spawn` | Add a group of animals to the next hunt (the fields of `admin spawn`: `reserve`, `animal`, `males`, `females`, `x`, `z`, `radius`; and `minWeight`, `maxWeight`, `wounded`, `dormant`), list the entries and where the last connect put them, remove one entry (`?id=`) or all |
 | `POST /admin/spawn/wake?account=` | Body `{populationId, group}` (from the list, `group` 1 or more): the running hunt wakes a dormant group with its next heartbeat |
 | `GET /admin/misses?limit=` | The newest requests nothing could answer, keys only (1 to 1,000, default 50) |
+| `GET /admin/reports`, `GET /admin/reports/<reference>` | The problem reports ([Problem reports](#problem-reports)), newest first; the zip of one by its reference (404 for a reference that is none) |
+| `GET /admin/diagnostics?account=` | The account's last 30 days: crash reports, hunts that ended without a disconnect, hunts under 60 s, the event 30 count ([Problem reports](#problem-reports)) |
 
 `POST /admin/rescore?account=&dry_run=`: scores the stored harvests again with the rules of today (`Scoring`, the ammunition check, the stored kill events: the same step the heartbeat runs), for the account named (user id or handle) or, without `account`, every account. A harvest whose score or score type differs gets its stored harvest page updated; when its css rounds to more than 0 and the account has no `wallet_log` row `CSS Reward (Animal Id: <kill id>)`, that gm$ is paid through `State.AddCurrency` with that summary (and sent as update 15). A disqualified harvest, or one with no score (no antlers, a species without rules), is left as it is. Running it again pays nothing more. One transaction per account. `dry_run` defaults to `true` and writes nothing; the reply is `[{account, rescored, paid, gms}]` with the same counts a real run would write.
 
