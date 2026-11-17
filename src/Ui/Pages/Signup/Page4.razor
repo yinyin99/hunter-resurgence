@@ -74,7 +74,7 @@
         try
         {
             var r = await Servers.StartTutorialAsync(1);
-            if (!r.Ok) { Modal.StartFailed(r, L[r.Error ?? "Launch.Failed"]); return; }
+            if (!r.Ok) { Modal.StartFailed(r); return; }
             Nav.NavigateTo("/signup/page5");
         }
         finally { starting = false; }

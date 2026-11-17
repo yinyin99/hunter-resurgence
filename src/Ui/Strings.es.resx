@@ -1451,6 +1451,35 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Settings.KitRemove" xml:space="preserve"><value>Quitar la configuración</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>La configuración de este PC se hizo para otros nombres de servidor que los de settings.json. Configura de nuevo: sustituye el bloque de hosts y el certificado.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>La autoridad de certificación no es de confianza en este PC (eliminada, o se rechazó el aviso de Windows). Configura de nuevo.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Comprobación del juego: correcta</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>No se encontró el juego.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>El juego no está actualizado: actualízalo en Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam todavía está actualizando el juego.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Esta versión del juego es más reciente de lo que el servidor conoce; puede que aún no funcione.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Faltan algunos archivos del juego: en Steam, Propiedades, Archivos instalados, Verificar la integridad de los archivos de juego.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>La ruta de la carpeta del juego tiene caracteres especiales ({0}); lo mejor es una carpeta sencilla como C:\Games.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>La ruta de la carpeta del juego es muy larga; lo mejor es una carpeta sencilla como C:\Games.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>El juego está en una carpeta de OneDrive; lo mejor es una carpeta sencilla como C:\Games.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>El juego está en una unidad de red; lo mejor es una carpeta local.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam no tiene la sesión iniciada.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bloqueó un archivo del juego ({0}): permítelo en Seguridad de Windows.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Queda poco espacio en {0} ({1} libres).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>El juego ya se está ejecutando: ciérralo y luego inícialo desde aquí.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Abrir Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Ver todo</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Comprobación del juego</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Juego encontrado</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Última versión</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Archivos completos</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Ruta de la carpeta</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Sesión de Steam</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Configuración</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Bloqueo de Windows</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Espacio en disco</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Juego cerrado</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Aviso</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Impide el inicio</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>El puerto {0} lo usa {1}; ciérralo e inténtalo de nuevo.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Configuración anterior encontrada</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Estos programas antiguos están en ejecución. Eliminar los cierra primero:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Carpetas antiguas descomprimidas (Eliminar borra cada una con todo su contenido):</value></data>

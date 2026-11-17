@@ -5,7 +5,7 @@
     <div class="buttons">
         @if (Answer is null)
         {
-            @if (GameFolder) { <button class="btn btn-inverse" id="alert-game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["Settings.GameFolder"]</button> }
+            @if (FixLabel is not null) { <button class="btn btn-inverse" id="alert-fix" @onclick="Fix">@FixLabel</button> }
             <button class="btn btn-primary" autofocus @onclick="Modal.Close">@L["Alert.Ok"]</button>
         }
         else
@@ -20,8 +20,9 @@
     [Parameter, EditorRequired] public string Text { get; set; } = "";
     /// <summary>Set for the Yes/No variant; null shows a single OK.</summary>
     [Parameter] public TaskCompletionSource<bool>? Answer { get; set; }
-    /// <summary>A refused start because the game was not found: offers the "Game folder" window.</summary>
-    [Parameter] public bool GameFolder { get; set; }
+    /// <summary>A refused start's fix (docs/website.md#the-game-check): its button's text and what it does; no button without a text.</summary>
+    [Parameter] public string? FixLabel { get; set; }
+    [Parameter] public EventCallback Fix { get; set; }
 
     void Done(bool yes)
     {

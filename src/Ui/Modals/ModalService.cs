@@ -107,9 +107,25 @@ public sealed class ModalService
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
-    /// <summary>A refused game start: the text, and for <c>Launch.NoGame</c> a button that opens the "Game folder" window.</summary>
-    public void StartFailed(Result r, string text) =>
-        Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text, ["GameFolder"] = r.Error == "Launch.NoGame" }, "alert");
+    /// <summary>A refused game start: the text of its error key and, when the install check that refused it has a fix, that fix's button (<see cref="StartFailedDialog"/>).</summary>
+    public void StartFailed(Result r) =>
+        Show<StartFailedDialog>(new Dictionary<string, object?> { [nameof(StartFailedDialog.Error)] = r.Error ?? "Launch.Failed" }, "alert");
+
+    /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, or Steam. close-game has none.</summary>
+    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit)
+    {
+        switch (fix)
+        {
+            case "choose-folder": Show<GameFolderModal>(); break;
+            case "open-steam": bridge.OpenExternal("steam://open/main"); break;
+            // the launcher puts its steam_app_id (settings.json) in place of the placeholder
+            case "verify-files": bridge.OpenExternal("steam://nav/games/details/{steam_app_id}"); break;
+            case "setup" when kit.Available:
+                try { Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = await kit.StartAsync() ?? kit.Plan() }); }
+                catch (InvalidOperationException e) { Alert(e.Message); } // settings.json has no usable server_url or *_host: the plan's translated text
+                break;
+        }
+    }
 
     /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.
     /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>

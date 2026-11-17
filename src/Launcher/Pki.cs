@@ -134,21 +134,24 @@ static class Pki
     }
 
     /// <summary>Null when setup is in place for exactly <paramref name="hosts"/>: the leaf and its key exist, the leaf is valid and a trusted authority signed it. Else why not (a translated text).</summary>
-    public static string? Check(string[] hosts, DateTimeOffset now, Place? place = null)
+    public static string? Check(string[] hosts, DateTimeOffset now, Place? place = null) => CheckKey(hosts, now, place) is { } key ? Kit.S(key) : null;
+
+    /// <summary>As <see cref="Check"/>, but the reason is a Strings key (<c>Kit.*</c>).</summary>
+    public static string? CheckKey(string[] hosts, DateTimeOffset now, Place? place = null)
     {
         var p = place ?? Place.Default;
-        if (!File.Exists(p.LeafFile) || !CngKey.Exists(p.KeyName)) return Kit.S("Kit.NoLeaf");
+        if (!File.Exists(p.LeafFile) || !CngKey.Exists(p.KeyName)) return "Kit.NoLeaf";
         using var leaf = X509CertificateLoader.LoadCertificate(File.ReadAllBytes(p.LeafFile));
-        if (leaf.NotAfter < now) return Kit.S("Kit.LeafExpired");
+        if (leaf.NotAfter < now) return "Kit.LeafExpired";
         var names = leaf.Extensions.OfType<X509SubjectAlternativeNameExtension>().SingleOrDefault()?.EnumerateDnsNames().Order().ToArray() ?? [];
-        if (!names.SequenceEqual(hosts.Order())) return Kit.S("Kit.OtherNames");
+        if (!names.SequenceEqual(hosts.Order())) return "Kit.OtherNames";
         using var store = p.Open();
         using var chain = new X509Chain();
         chain.ChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
         chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
         chain.ChainPolicy.VerificationTime = now.UtcDateTime;
         chain.ChainPolicy.CustomTrustStore.AddRange(Authorities(store));
-        return chain.Build(leaf) ? null : Kit.S("Kit.NoCa");
+        return chain.Build(leaf) ? null : "Kit.NoCa";
     }
 
     /// <summary>The leaf with its key, for Kestrel. Throws with a texts key when setup has not run or the leaf has expired.</summary>

@@ -1451,6 +1451,35 @@
   <data name="Settings.KitRemove" xml:space="preserve"><value>Удалить настройку</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Настройка на этом ПК сделана для других имён серверов, чем указаны в settings.json. Настройте заново: блок hosts и сертификат будут заменены.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Центр сертификации не является доверенным на этом ПК (удалён или запрос Windows отклонён). Настройте заново.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Проверка игры: всё в порядке</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Игра не найдена.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Игра не обновлена: обновите её в Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam всё ещё обновляет игру.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Эта версия игры новее, чем известно серверу; возможно, она ещё не работает.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Не хватает некоторых файлов игры: в Steam откройте Свойства, Установленные файлы, Проверить целостность файлов игры.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>В пути к папке игры есть специальные символы ({0}); лучше всего работает простая папка, например C:\Games.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Путь к папке игры очень длинный; лучше всего работает простая папка, например C:\Games.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Игра находится в папке OneDrive; лучше всего работает простая папка, например C:\Games.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Игра находится на сетевом диске; лучше всего работает локальная папка.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Вход в Steam не выполнен.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows заблокировал файл игры ({0}): разрешите его в Безопасности Windows.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Мало места на диске {0} (осталось {1}).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Игра уже запущена: закройте её, затем запустите отсюда.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Открыть Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Показать все</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Проверка игры</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Игра найдена</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Последняя версия</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Файлы на месте</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Путь к папке</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Вход в Steam</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Настройка</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Блокировка Windows</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Место на диске</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Игра не запущена</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Предупреждение</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Мешает запуску</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Порт {0} занят программой {1}: закройте её и повторите попытку.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Найдена прежняя настройка</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Эти старые программы запущены. «Удалить» сначала закроет их:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Старые распакованные папки («Удалить» удалит каждую со всем содержимым):</value></data>

@@ -6,13 +6,13 @@ using Resurgence.Services.Mocks;
 
 namespace Resurgence.Launcher;
 
-/// <summary>The launcher's bridge: StartGame, the folder buttons and the cache buttons are real, the rest is still the mock's.</summary>
+/// <summary>The launcher's bridge: StartGame, the install check, the folder buttons and the cache buttons are real, the rest is still the mock's.</summary>
 /// <param name="appData">%APPDATA%; the game's cache is under its product folder.</param>
 /// <param name="pictures">The Pictures folder; the game's screenshots are under its product folder.</param>
 /// <param name="clearBrowser">Clears the launcher's own browser cache.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
-    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null) : ILauncherBridge
+    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -20,7 +20,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -29,7 +29,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // the graphics and options files the Game settings dialog edits (GameSettingsService)
         var settings = new[] { env.Settings.GraphicsFile, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
         var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
-        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load), env.Prefs, env.Save, http, cookie);
+        // Build runs off the UI thread (ProblemReporter.BuildAsync), so waiting for the checks is fine here
+        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult()), env.Prefs, env.Save, http, cookie);
     }
 
     /// <summary>The last game start this watcher saw; null before any.</summary>
@@ -40,6 +41,16 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
+    bool opened;
+    /// <summary>All nine checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
+    public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()
+    {
+        if (checks is null) return rest.CheckInstallAsync();
+        var opening = !opened;
+        opened = true;
+        return checks.RunAsync(opening);
+    }
+
     public Result ChooseGameFolder() => chooseFolder?.Invoke() ?? rest.ChooseGameFolder();
     public void UseAutomaticGameFolder() { if (useAutomatic is null) rest.UseAutomaticGameFolder(); else useAutomatic(); }
     /// <summary>
@@ -104,7 +115,19 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         catch (Exception e) when (e is InvalidOperationException or System.Runtime.InteropServices.COMException) { }
     }
 
-    public void OpenExternal(string url) => rest.OpenExternal(url);
+    /// <summary>
+    /// Opens an <c>https://</c> or <c>steam://</c> address with Windows (the browser, Steam); any other address is ignored, and so is a failure to open. The text <c>{steam_app_id}</c> in the address is replaced by
+    /// <c>steam_app_id</c> of settings.json (an address that names it without one is ignored): the id is configuration, not code.
+    /// </summary>
+    public void OpenExternal(string url)
+    {
+        if (openFolder is null) { rest.OpenExternal(url); return; }
+        const string Id = "{steam_app_id}";
+        if (url.Contains(Id, StringComparison.Ordinal)) url = steamAppId is null ? "" : url.Replace(Id, steamAppId, StringComparison.Ordinal);
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var u) || u.Scheme is not ("https" or "steam")) return;
+        try { openFolder(u.AbsoluteUri); }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { }
+    }
     public void ToggleDevTools() => rest.ToggleDevTools();
     /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
     public void RestartLauncher() { if (restart?.Invoke() != true) rest.RestartLauncher(); }
@@ -114,6 +137,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (install() is not { } g || !File.Exists(g.ClientExe)) return Result.Fail("Launch.NoGame");
         if (url.Any(c => char.IsWhiteSpace(c) || c == '"')) return Result.Fail("Launch.Failed");
         if (isRunning(g.ClientExe)) return Result.Fail("Launch.AlreadyRunning");
+        // version, files and setup block a start with the dashboard's text; ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
+        if (checks?.RunAsync(false, true).GetAwaiter().GetResult().FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
         // the client asks Steam to start it again (running Steam's launch option) unless Steam is up and the app id is given
         if (!steamReady()) return Result.Fail("Launch.NoSteam");
         // the exe's own folder: the client finds its data and writes its logs relative to the working folder

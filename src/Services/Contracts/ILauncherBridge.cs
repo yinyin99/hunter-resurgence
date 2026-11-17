@@ -35,4 +35,6 @@ public interface ILauncherBridge
     string SaveReport(ProblemReport report);
     /// <summary>"unset" (never asked), "auto" (send after a failed start), "ask" (offer only). Stored in the launcher's prefs.</summary>
     string ReportConsent { get; set; }
+    /// <summary>Runs every install check (#631) and returns one result per check, in the order of the Id list; never throws.</summary>
+    Task<IReadOnlyList<InstallCheck>> CheckInstallAsync();
 }

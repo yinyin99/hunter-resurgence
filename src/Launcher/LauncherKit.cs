@@ -33,9 +33,7 @@ public sealed class LauncherKit(Uri? server) : IKitService
             if (notice is null)
             {
                 leaf = Pki.LoadLeaf(now);
-                var text = Hosts.Read(Hosts.DefaultPath);
-                if (!Hosts.Has(text)) notice = Kit.S("Kit.NoHosts");
-                else if (!Hosts.Matches(text, s.Hosts)) notice = Kit.S("Kit.OtherNames"); // a block of an older setup for other names
+                notice = HostsKey(s) is { } key ? Kit.S(key) : null;
                 await Run(s);
             }
             return notice is null ? null : Plan(s, notice);
@@ -45,6 +43,24 @@ public sealed class LauncherKit(Uri? server) : IKitService
             Problem = e.Message;
             return null;
         }
+    }
+
+    static string? HostsKey(KitSettings s)
+    {
+        var text = Hosts.Read(Hosts.DefaultPath);
+        if (!Hosts.Has(text)) return "Kit.NoHosts";
+        return Hosts.Matches(text, s.Hosts) ? null : "Kit.OtherNames"; // a block of an older setup for other names
+    }
+
+    /// <summary>The Strings key of the reason setup is needed now (what <see cref="StartAsync"/> shows), null when setup is in place. A setup that cannot be read (settings.json wrong, the hosts file locked) is not a reason: <see cref="Problem"/> tells.</summary>
+    internal static string? SetupKey(DateTimeOffset now)
+    {
+        try
+        {
+            var s = KitSettings.Load();
+            return Pki.CheckKey(s.Hosts, now) ?? HostsKey(s);
+        }
+        catch (Exception e) when (e is not OutOfMemoryException) { return null; }
     }
 
     async Task Run(KitSettings s)

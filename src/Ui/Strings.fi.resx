@@ -1451,6 +1451,35 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Settings.KitRemove" xml:space="preserve"><value>Poista määritys</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Tämän tietokoneen asennus tehtiin eri palvelinnimille kuin settings.json luettelee. Asenna uudelleen: se korvaa hosts-lohkon ja varmenteen.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Varmenteen myöntäjää ei luoteta tällä tietokoneella (poistettu, tai Windowsin kysely hylättiin). Asenna uudelleen.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Pelin tarkistus: OK</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Peliä ei löytynyt.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Peli ei ole ajan tasalla: päivitä se Steamissä.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam päivittää peliä vielä.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Tämä pelin versio on uudempi kuin palvelin tuntee; se ei välttämättä toimi vielä.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Joitakin pelin tiedostoja puuttuu: Steamissä Ominaisuudet, Asennetut tiedostot, Tarkista pelitiedostojen eheys.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Pelikansion polussa on erikoismerkkejä ({0}); tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Pelikansion polku on hyvin pitkä; tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Peli on OneDrive-kansiossa; tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Peli on verkkoasemalla; paikallinen kansio toimii parhaiten.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steamiin ei ole kirjauduttu.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows esti pelin tiedoston ({0}): salli se Windowsin suojauksessa.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Levytila on vähissä asemalla {0} ({1} jäljellä).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Peli on jo käynnissä: sulje se ja käynnistä se sitten täältä.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Avaa Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Näytä kaikki</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Pelin tarkistus</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Peli löytyi</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Uusin versio</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Tiedostot ehjät</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Kansion polku</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam kirjautunut</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Asennus</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Windowsin esto</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Levytila</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Peli ei ole käynnissä</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Varoitus</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Estää käynnistyksen</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Portti {0} on ohjelman {1} käytössä; sulje se ja yritä uudelleen.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Vanhempi asennus löytyi</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Nämä vanhat ohjelmat ovat käynnissä. Poista sulkee ne ensin:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Vanhat purketut kansiot (Poista poistaa jokaisen sisältöineen):</value></data>

@@ -18,6 +18,7 @@ public sealed class SettingsMenuTests : UiContext
         public GameInstallInfo GameInstall => new(null, null, []);
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }
+        public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync() => Task.FromResult<IReadOnlyList<InstallCheck>>([]);
         public Result ClearCache(string kind) { Asked.Add("clear " + kind); return Result.Fail(error); }
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;

@@ -1451,6 +1451,35 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Settings.KitRemove" xml:space="preserve"><value>Usuń konfigurację</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Konfiguracja na tym komputerze powstała dla innych nazw serwerów niż w settings.json. Skonfiguruj ponownie: zastąpi blok hosts i certyfikat.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Urząd certyfikacji nie jest zaufany na tym komputerze (usunięty lub odrzucono monit Windows). Skonfiguruj ponownie.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Kontrola gry: OK</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Nie znaleziono gry.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Gra nie jest aktualna: zaktualizuj ją w Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam wciąż aktualizuje grę.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Ta wersja gry jest nowsza, niż zna serwer; może jeszcze nie działać.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Brakuje niektórych plików gry: w Steam, Właściwości, Zainstalowane pliki, Sprawdź spójność plików gry.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Ścieżka folderu gry zawiera znaki specjalne ({0}); najlepiej działa zwykły folder, np. C:\Games.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Ścieżka folderu gry jest bardzo długa; najlepiej działa zwykły folder, np. C:\Games.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Gra znajduje się w folderze OneDrive; najlepiej działa zwykły folder, np. C:\Games.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Gra znajduje się na dysku sieciowym; najlepiej działa folder lokalny.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam nie jest zalogowany.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>System Windows zablokował plik gry ({0}): zezwól na niego w Zabezpieczeniach Windows.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Mało miejsca na dysku {0} (zostało {1}).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Gra jest już uruchomiona: zamknij ją, a potem uruchom stąd.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Otwórz Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Pokaż wszystko</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Kontrola gry</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Gra znaleziona</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Najnowsza wersja</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Pliki kompletne</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Ścieżka folderu</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam zalogowany</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Konfiguracja</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Blokada systemu Windows</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Miejsce na dysku</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Gra nie działa</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Ostrzeżenie</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Blokuje start</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Port {0} jest używany przez {1}; zamknij go i spróbuj ponownie.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Znaleziono starszą konfigurację</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Te starsze programy są uruchomione. Usuń najpierw je zamknie:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Stare rozpakowane foldery (Usuń kasuje każdy wraz z zawartością):</value></data>
