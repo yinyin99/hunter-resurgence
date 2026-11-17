@@ -82,6 +82,11 @@ public class ProblemReportTests
             Assert.DoesNotContain("eyJ", entries[name]);
             Assert.DoesNotContain('\0', entries[name]);
         }
+        // a one-byte log that starts with zeros (a file the game was still filling) is not UTF-16: its token line is still scrubbed
+        File.WriteAllBytes(Path.Combine(g.Folder, "debug.log"), [.. new byte[4096], .. Encoding.ASCII.GetBytes($"x\nGET /x?a={Jwt}\nkept line\n")]);
+        var zeros = Read(Make(temp, g.Install).Build("manual").Path)["game/debug.log"];
+        Assert.DoesNotContain("eyJ", zeros);
+        Assert.Contains("kept line", zeros);
         var cef = entries["game/cef.log"]; // cut at 2 MB of bytes = 1 M characters, at a line
         Assert.InRange(cef.Length, 900_000, 1_050_000);
         Assert.StartsWith("zzzz", cef);

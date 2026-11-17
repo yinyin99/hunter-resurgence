@@ -119,15 +119,16 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         try
         {
             using var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            var head = new byte[(int)Math.Min(f.Length, 4096)];
+            var length = f.Length; // the game may still write: one size for the whole read
+            var head = new byte[(int)Math.Min(length, 4096)];
             f.ReadExactly(head);
             var utf16 = Utf16Of(head);
-            var n = Math.Min(f.Length, cap);
-            var start = f.Length - n;
+            var n = Math.Min(length, cap);
+            var start = length - n;
             if (utf16 is not null) // whole characters, counted from the start of the file
             {
                 start += start % 2;
-                n = (f.Length - start) & ~1L;
+                n = (length - start) & ~1L;
             }
             var buf = new byte[n];
             f.Seek(start, SeekOrigin.Begin);
@@ -140,7 +141,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return null; }
     }
 
-    /// <summary>UTF-16 by its byte order mark, or by a quarter or more of the first bytes being zero (ASCII text in UTF-16 is half zeros); null for a one-byte text.</summary>
+    /// <summary>UTF-16 by its byte order mark, or by a quarter or more of the first bytes being zero, nearly all of them at even or all at odd places (ASCII text in UTF-16 is half zeros on one side); null for a one-byte text, also one that starts with zeros.</summary>
     static Encoding? Utf16Of(byte[] head)
     {
         if (head is [255, 254, ..]) return Encoding.Unicode;
@@ -148,7 +149,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         int even = 0, odd = 0;
         for (var i = 0; i < head.Length; i++)
             if (head[i] == 0) { if (i % 2 == 0) even++; else odd++; }
-        return head.Length >= 4 && even + odd >= head.Length / 4 ? odd >= even ? Encoding.Unicode : Encoding.BigEndianUnicode : null;
+        return head.Length >= 4 && even + odd >= head.Length / 4 && Math.Min(even, odd) * 8 < Math.Max(even, odd) ? odd >= even ? Encoding.Unicode : Encoding.BigEndianUnicode : null;
     }
 
     string SystemText(List<string> missing, string? exe)
