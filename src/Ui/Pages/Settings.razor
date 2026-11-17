@@ -4,14 +4,24 @@
 
 <PageTitle>@L["Set.Title"]</PageTitle>
 
-@* the avatar is the only account setting the community server has (docs/website.md#sign-in) *@
+@* the avatar is the only account setting the community server has (docs/website.md#sign-in); the others could be built later and show disabled *@
 <div class="page-min">
     <h2 class="page-title">@(L["Set.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <div class="cols">
         <nav class="menu">
             <h3>@handle</h3>
             <ul>
-                <li class="on"><a href="/settings">@L["Set.TabAvatar"]</a></li>
+                @foreach (var (key, label) in tabs)
+                {
+                    @if (key == "avatar")
+                    {
+                        <li class="on"><a href="/settings">@L[label]</a></li>
+                    }
+                    else
+                    {
+                        <li class="off" aria-disabled="true" title="@L["Settings.ComingLater"]"><span>@L[label]</span></li>
+                    }
+                }
             </ul>
         </nav>
         <section class="panel">
@@ -40,6 +50,12 @@
 </div>
 
 @code {
+    static readonly (string Key, string Label)[] tabs =
+    [
+        ("email", "Set.TabEmail"), ("avatar", "Set.TabAvatar"), ("language", "Set.TabLocale"), ("purchases", "Wal.History"), ("bans", "Set.TabBans"),
+        ("steam", "Set.TabSteam"), ("profile", "Set.TabProfile"),
+    ];
+
     Account? account;
     IReadOnlyList<AvatarChoice> avatars = [];
     string handle = "";

@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Jegerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinnstillinger</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spilladministrasjon</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommer senere</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Bruk Steams Spill-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Lim inn denne linjen i spillets startvalg i Steam (Egenskaper) for å starte spillet via denne starteren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopier</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Det oppstod en feil under sending av meldingen.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoinnstillinger</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Kontoens e-post</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Språk og tidssone</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Utestengte spillere</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-innstillinger</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profilinnstillinger</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spilleravatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Avataren du velger, representerer deg både i spillet og på nettet</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Din nåværende avatar</value></data>

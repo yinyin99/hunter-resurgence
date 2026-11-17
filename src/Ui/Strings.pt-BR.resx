@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Sua Pontuação de Caçador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ajustes da Conta</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Administrar Jogo</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Em breve</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Usar o botão Jogar do Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Cole esta linha nas opções de inicialização do jogo na Steam (Propriedades) para iniciá-lo por este launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Ocorreu um erro ao enviar sua mensagem.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Ajustes da Conta</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-mail da conta</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Idioma e fuso horário</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Banimentos multiplayer</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Ajustes da Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Ajustes do Perfil</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar do jogador</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>O avatar escolhido representará você tanto no jogo quanto na web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Seu avatar atual</value></data>

@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Hunterpoäng</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinställningar</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spelhantering</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommer senare</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Använd Steams Spela-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Klistra in den här raden i spelets startalternativ i Steam (Egenskaper) för att starta spelet via den här startaren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiera</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Ett fel inträffade när ditt meddelande skulle skickas.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoinställningar</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Kontots e-post</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Språk och tidszon</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Bannlysta spelare</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-inställningar</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profilinställningar</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spelaravatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Avataren du väljer representerar dig både i spelet och på webben</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Din nuvarande avatar</value></data>

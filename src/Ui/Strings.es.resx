@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tu Puntuación del Cazador</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Configuración de la cuenta</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Administración del juego</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Próximamente</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Usar el botón Jugar de Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Pega esta línea en las opciones de lanzamiento del juego en Steam (Propiedades) para iniciarlo con este launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Se ha producido un error al enviar tu mensaje.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Configuración de la cuenta</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Email de la cuenta</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Idioma y zona horaria</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Expulsiones multijugador</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Configuración de Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Configuración del perfil</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar del jugador</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>El avatar que elijas te representará tanto en el juego como en la web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Tu avatar actual</value></data>

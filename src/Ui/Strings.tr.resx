@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Hesap ayarları</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Oyun Yönetimi</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Daha sonra gelecek</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Steam'in Oyna düğmesini kullan</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Oyunu bu başlatıcı üzerinden açmak için bu satırı Steam'deki oyunun Başlatma seçeneklerine (Özellikler) yapıştırın:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopyala</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Mesajınız gönderilirken bir hata oluştu.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Hesap ayarları</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Hesap e-postası</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Dil ve saat dilimi</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Çok oyunculu mod banları</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam ayarları</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profil ayarları</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Oyuncu avatarı</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Seçtiğiniz avatar sizi hem oyunda hem de web sitesinde temsil eder</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Mevcut avatarınız</value></data>

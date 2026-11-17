@@ -4,7 +4,9 @@
 @inject IKitService Kit
 
 <ul class="settings-menu">
-    <li><a href="/settings">@L["Settings.Account"]</a></li>  @* the avatar: the settings page has no other tab *@
+    <li><a href="/settings">@L["Settings.Account"]</a></li>  @* the settings page: the avatar works, its other items show disabled *@
+    @* could be built later (the lodges and bait sites the server keeps): shown disabled *@
+    <li class="off" aria-disabled="true" title="@L["Settings.ComingLater"]"><span>@L["Settings.GameManagement"]</span></li>
     <li><a href="/restore">@L["Settings.Restore"]</a></li>
     <li><a href="#" @onclick="() => Modal.Show<LanguageModal>()" @onclick:preventDefault>@L["Settings.Language"]</a></li>
     <li><a href="#" id="seasonal-events" @onclick="() => Modal.Show<SeasonalEventsModal>()" @onclick:preventDefault>@L["Settings.SeasonalEvents"]</a></li>

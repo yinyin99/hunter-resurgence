@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr Hunter-Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoeinstellungen</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spielverwaltung</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommt später</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Steams Play-Taste verwenden</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Füge diese Zeile in die Startoptionen des Spiels in Steam (Eigenschaften) ein, damit das Spiel über diesen Launcher startet:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopieren</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoeinstellungen</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Konto-E-Mail</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Sprache &amp; Zeitzone</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer-Banne</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-Einstellungen</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profileinstellungen</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spieler-Avatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Der gewählte Avatar repräsentiert Sie sowohl im Spiel als auch im Web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Ihr aktueller Avatar</value></data>

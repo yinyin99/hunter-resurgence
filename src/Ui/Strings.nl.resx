@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spelbeheer</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Komt later</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Steams Spelen-knop gebruiken</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Plak deze regel in de startopties van het spel in Steam (Eigenschappen) om het spel via deze launcher te starten:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiëren</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Er is een fout opgetreden bij het versturen van je bericht.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Accountinstellingen</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Account-e-mail</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Taal en tijdzone</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer-bans</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-instellingen</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profielinstellingen</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spelersavatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>De avatar die je kiest vertegenwoordigt je zowel in het spel als op het web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Je huidige avatar</value></data>

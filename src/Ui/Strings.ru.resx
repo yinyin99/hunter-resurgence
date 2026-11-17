@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ваши очки охотника</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Появится позже</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Использовать кнопку «Играть» в Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Вставьте эту строку в параметры запуска игры в Steam (Свойства), чтобы запускать игру через этот лаунчер:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Копировать</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>При отправке сообщения произошла ошибка.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Настройки аккаунта</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Аватар</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Эл. почта аккаунта</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Язык и часовой пояс</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Блокировки в мультиплеере</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Настройки Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Настройки профиля</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Аватар игрока</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Выбранный аватар будет представлять вас и в игре, и на сайте</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Ваш текущий аватар</value></data>

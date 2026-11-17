@@ -90,7 +90,7 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("Weapons", cut.Find("nav.menu a.top.open").TextContent.Trim());  // the top-level label is the translated one
     }
 
-    /// <summary>The website's Settings menu has the four entries that work there (the launcher's folders, caches and dialogs are not on it), and the settings page the avatar only.</summary>
+    /// <summary>The website's Settings menu has the four entries that work there and Game Management disabled (the launcher's folders, caches and dialogs are not on it); the settings page links the avatar only and shows six items disabled, none for Facebook.</summary>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -98,12 +98,17 @@ public sealed class LiveSiteTests : UiContext
     {
         Live(live);
         var cut = Render<SettingsMenu>();
-        Assert.Equal(4, cut.FindAll("li").Count);
+        Assert.Equal(5, cut.FindAll("li").Count);
         Assert.Equal(["/settings", "/restore"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
         Assert.Single(cut.FindAll("#seasonal-events"));
+        Assert.Equal(["Game Management"], cut.FindAll("li[aria-disabled=true]").Select(li => li.TextContent.Trim()));  // shown, not clickable
+        Assert.Equal("Coming later", cut.Find("li[aria-disabled=true]").GetAttribute("title"));
         Assert.Empty(cut.FindAll("a[href='/game-management']"));
 
-        Assert.Single(Render<Settings>().FindAll("nav.menu li"));
+        var page = Render<Settings>();
+        Assert.Equal(["Avatar"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the one that works
+        Assert.Equal(["Account email", "Language & time zone", "Purchase History", "Multiplayer bans", "Steam settings", "Profile settings"], page.FindAll("nav.menu li[aria-disabled=true]").Select(li => li.TextContent.Trim()));
+        Assert.DoesNotContain("Facebook", page.Markup);
     }
 
     [Theory]

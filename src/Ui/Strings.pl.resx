@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Twoje Punkty Myśliwego</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ustawienia konta</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Zarządzanie grą</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Pojawi się później</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Użyj przycisku Graj w Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Wklej ten wiersz w opcjach uruchamiania gry w Steam (Właściwości), aby uruchamiać grę przez ten launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiuj</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Podczas wysyłania wiadomości wystąpił błąd.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Ustawienia konta</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Awatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-mail konta</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Język i strefa czasowa</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Bany w grze wieloosobowej</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Ustawienia Steam</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Ustawienia profilu</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Awatar gracza</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Wybrany awatar będzie Cię reprezentować zarówno w grze, jak i w sieci</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Twój obecny awatar</value></data>

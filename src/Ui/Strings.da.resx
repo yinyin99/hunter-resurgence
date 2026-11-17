@@ -48,6 +48,8 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din jægerscore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoindstillinger</value></data>
+  <data name="Settings.GameManagement" xml:space="preserve"><value>Spiladministration</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommer senere</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Brug Steams Afspil-knap</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Indsæt denne linje i spillets startindstillinger i Steam (Egenskaber), så spillet starter via denne launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiér</value></data>
@@ -837,6 +839,11 @@
   <data name="Msg.Failed" xml:space="preserve"><value>Der opstod en fejl, da din besked skulle sendes.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoindstillinger</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Konto-e-mail</value></data>
+  <data name="Set.TabLocale" xml:space="preserve"><value>Sprog og tidszone</value></data>
+  <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer-udelukkelser</value></data>
+  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-indstillinger</value></data>
+  <data name="Set.TabProfile" xml:space="preserve"><value>Profilindstillinger</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spilleravatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Den avatar, du vælger, repræsenterer dig både i spillet og på nettet</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Din nuværende avatar</value></data>
