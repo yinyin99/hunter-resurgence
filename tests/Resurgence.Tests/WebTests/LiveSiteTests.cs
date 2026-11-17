@@ -90,15 +90,20 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("Weapons", cut.Find("nav.menu a.top.open").TextContent.Trim());  // the top-level label is the translated one
     }
 
+    /// <summary>The website's Settings menu has the four entries that work there (the launcher's folders, caches and dialogs are not on it), and the settings page the avatar only.</summary>
     [Theory]
-    [InlineData(false, 2)]
-    [InlineData(true, 1)]
-    public void TheLiveSettingsMenuHasTheAvatarSettingsButNoGameManagement(bool live, int accountLinks)
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheWebsiteSettingsMenuAndPageHaveOnlyWhatWorks(bool live)
     {
         Live(live);
         var cut = Render<SettingsMenu>();
-        Assert.Equal(accountLinks, cut.FindAll("a[href='/settings'], a[href='/game-management']").Count);
-        Assert.Single(cut.FindAll("a[href='/restore']"));
+        Assert.Equal(4, cut.FindAll("li").Count);
+        Assert.Equal(["/settings", "/restore"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
+        Assert.Single(cut.FindAll("#seasonal-events"));
+        Assert.Empty(cut.FindAll("a[href='/game-management']"));
+
+        Assert.Single(Render<Settings>().FindAll("nav.menu li"));
     }
 
     [Theory]

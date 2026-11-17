@@ -8,10 +8,6 @@ namespace Resurgence.Tests.WebTests;
 
 public sealed class PageTitleTests : UiContext
 {
-    sealed class NoSwitch : ILanguageSwitcher { public void Set(string code) { } }
-
-    IRenderedComponent<Settings> RenderSettings() { Services.AddSingleton<ILanguageSwitcher>(new NoSwitch()); return Render<Settings>(); }
-
     // thread-local cultures only (no Default*): nothing leaks to other tests
     static void In(string culture, string uiCulture, Action a)
     {
@@ -26,7 +22,7 @@ public sealed class PageTitleTests : UiContext
 
     [Fact]
     public void SettingsTitleUsesTheCulturesUpperCase() =>
-        In("tr-TR", "en", () => Assert.Equal("ACCOUNT SETTİNGS", RenderSettings().Find("h2.page-title").TextContent));
+        In("tr-TR", "en", () => Assert.Equal("ACCOUNT SETTİNGS", Render<Settings>().Find("h2.page-title").TextContent));
 
     [Fact]
     public void WalletTitleUsesTheCulturesUpperCase() =>

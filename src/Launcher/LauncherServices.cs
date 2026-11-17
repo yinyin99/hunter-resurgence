@@ -43,7 +43,7 @@ static class LauncherServices
         services.AddSingleton<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<ISignupService>(new MockSignupService(mock));
-        services.AddSingleton<IAccountService>(new MockAccountService(mock));
+        services.AddSingleton<IAccountService>(new MockAccountService());
         services.AddSingleton<ISeasonalEventsService>(new MockSeasonalEventsService(mock));
         services.AddSingleton<IDiscordInviteService>(new MockDiscordInviteService());
         services.AddSingleton<IRestoreOfferService>(new MockRestoreOfferService());
@@ -89,7 +89,7 @@ static class LauncherServices
         services.AddSingleton<IRestoreOfferService>(sp => new ServerRestoreOfferService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreOfferService>>()));
         // the avatar (settings, sign-up) is the server's; the rest of the account settings is the mock's, which the live pages do not offer
         services.AddSingleton<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
-            new MockAccountService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerAccountService>>()));
+            new MockAccountService(), sp.GetRequiredService<ILogger<ServerAccountService>>()));
         services.AddSingleton<ISignupService>(sp => new ServerSignupService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>()));
         services.AddSingleton<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>()));

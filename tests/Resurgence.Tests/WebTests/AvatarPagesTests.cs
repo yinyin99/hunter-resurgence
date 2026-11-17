@@ -78,8 +78,6 @@ public sealed class AvatarPagesTests : UiContext
         Assert.Equal([Imported, "avatar-1000001", "avatar-default"], drawn);
     }
 
-    sealed class NoSwitch : ILanguageSwitcher { public void Set(string code) { } }
-
     sealed class Friends(IReadOnlyList<Friend> list) : IFriendsService
     {
         public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult(list);
@@ -93,13 +91,12 @@ public sealed class AvatarPagesTests : UiContext
     }
 
     [Fact]
-    public void TheLiveSettingsOfferTheServersAvatarsOnly()
+    public void TheSettingsOfferTheServersAvatarsOnly()
     {
         var fake = new Fake(_ => Json($$"""{"current":"{{Imported}}","ids":[1000000,1000001],"imported":"{{Imported}}"}"""));
         Services.AddSingleton<IAccountService>(new ServerAccountService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, new MockAccountService(), NullLogger<ServerAccountService>.Instance));
-        Services.AddSingleton<ILanguageSwitcher>(new NoSwitch());
         Services.GetRequiredService<HostMode>().Live = true;
-        var cut = Render<Settings>(p => p.Add(s => s.Tab, "email"));  // another tab is the avatar's: the rest is the mock's
+        var cut = Render<Settings>();
         cut.WaitForAssertion(() => Assert.Equal(3, cut.FindAll("button.pick").Count));
         Assert.Single(cut.FindAll("nav.menu li"));
         Assert.Equal(Imported, cut.Find(".cur img").GetAttribute("src"));

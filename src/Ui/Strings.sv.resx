@@ -48,7 +48,6 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din Hunterpoäng</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinställningar</value></data>
-  <data name="Settings.GameManagement" xml:space="preserve"><value>Spelhantering</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Använd Steams Spela-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Klistra in den här raden i spelets startalternativ i Steam (Egenskaper) för att starta spelet via den här startaren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiera</value></data>
@@ -97,6 +96,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Spelmapp</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Rensa launcherns cache</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Rensa spelets cache</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Mappen hittades inte. Spelet kanske inte är installerat ännu.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Stäng spelet först och töm sedan dess cache.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Vissa filer kunde inte tas bort. Försök igen senare.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Vänner ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Hitta andra jägare...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Skicka meddelande</value></data>
@@ -834,81 +836,13 @@
   <data name="Msg.Self" xml:space="preserve"><value>Du kan inte skicka meddelanden till dig själv.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Ett fel inträffade när ditt meddelande skulle skickas.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoinställningar</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Kontots e-post</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
-  <data name="Set.TabLocale" xml:space="preserve"><value>Språk och tidszon</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Bannlysta spelare</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-inställningar</value></data>
-  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-inställningar</value></data>
-  <data name="Set.TabProfile" xml:space="preserve"><value>Profilinställningar</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spelaravatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Avataren du väljer representerar dig både i spelet och på webben</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Din nuvarande avatar</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Välj en ny avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarer att låsa upp</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Den här avataren är låst. Du kan låsa upp den genom att köpa den i butiken.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-post:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-postadress</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Uppdatera e-post</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Ett bekräftelsemejl har skickats till din nya e-postadress. Bekräfta den för att aktivera den nya e-postadressen.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Den e-postadressen är inte tillgänglig</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Något gick fel när din e-postadress skulle uppdateras.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Bekräfta e-post</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Din e-postadress har ändrats.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Skicka bekräftelse igen</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Bekräftelsemejlet har skickats igen.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Skicka om e-postbekräftelsen</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-postmeddelandet skickades igen</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Det gick inte att skicka e-postmeddelandet igen. Försök igen eller kontakta supporten</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Det gick inte att skicka e-postmeddelandet igen. Försök igen eller kontakta supporten.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Språk</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Välj land</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Tidszon:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Spara</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Kontots köphistorik</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Alla transaktioner du gör, både via {0} och {1}, sparas i din plånbok.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banken</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>butiken</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Klicka här för att visa din plånbok</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Bannlysta spelare</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Du har inte bannlyst några spelare från dina spel</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Häv bann</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Är du säker på att du vill häva bannlysningen av {0} från dina spel?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Du kan koppla ditt konto till Facebook för att göra det enklare att logga in.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Anslut</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Ditt {game}-konto {0} är kopplat till ditt Steam-konto. Om du vill koppla det här {game}-kontot till ett annat Steam-konto, eller koppla Steam-kontot till ett annat konto på {game}, måste du först koppla bort de två konton som redan är kopplade.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Varning</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Om du kopplar bort ditt Steam-konto loggas du ut från {game} och launchern stängs. Du kan inte spela {game} via Steam igen förrän du kopplar det till ett annat konto.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jag förstår och vill koppla bort mitt Steam-konto</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Något gick fel och ditt Steam-konto kopplades inte bort. Försök igen!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Rubrikbild</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Rubrikbilder låses upp när du når nya nivåer i tre olika prestationskategorier – Djurmästare, Vapenmästare och Utforskarmästare. När en rubrikbild väl är upplåst finns den kvar för alltid.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Läs mer om prestationsmästarnivåerna.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Ingen</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Senaste</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Djur</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Vapen</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Utforskande</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Event</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Dagliga uppdrag</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Spara profilinställningar</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profilinställningarna sparades</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profilen kunde inte sparas. Försök igen eller kontakta supporten.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Betesplatser</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>HEM</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Välj ett avsnitt.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>VAL AV TROPHY LODGE</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>För närvarande äger du ingen stuga.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>HANTERING AV BETESPLATSER</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Fyll på foderautomaten upp till:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Bete</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktiva</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Fyll på</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Välkommen till {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Grattis {0}, ditt alldeles nya {game}-konto har skapats!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Om du redan har laddat ner och installerat spelets launcher och klient är du redo att börja spela! Om du är ny i {game} rekommenderar vi att du går igenom guiderna innan du ger dig ut på din första riktiga jakt. Guiderna lär dig allt du behöver veta för att klara dig på egen hand i Evergreen Hunting Reserve. Kom igång nedan.</value></data>

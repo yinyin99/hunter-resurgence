@@ -48,7 +48,6 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
-  <data name="Settings.GameManagement" xml:space="preserve"><value>Spelbeheer</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Steams Spelen-knop gebruiken</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Plak deze regel in de startopties van het spel in Steam (Eigenschappen) om het spel via deze launcher te starten:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiëren</value></data>
@@ -97,6 +96,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Spelmap</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Launcher-cache wissen</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Spelcache wissen</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>De map is niet gevonden. Misschien is de game nog niet geïnstalleerd.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sluit eerst de game en wis daarna de cache.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Sommige bestanden konden niet worden verwijderd. Probeer het later opnieuw.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Vrienden ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Zoek andere jagers...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Bericht sturen</value></data>
@@ -834,81 +836,13 @@
   <data name="Msg.Self" xml:space="preserve"><value>Je kunt jezelf geen berichten sturen.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Er is een fout opgetreden bij het versturen van je bericht.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Accountinstellingen</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Account-e-mail</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
-  <data name="Set.TabLocale" xml:space="preserve"><value>Taal en tijdzone</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer-bans</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-instellingen</value></data>
-  <data name="Set.TabSteam" xml:space="preserve"><value>Steam-instellingen</value></data>
-  <data name="Set.TabProfile" xml:space="preserve"><value>Profielinstellingen</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spelersavatar</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>De avatar die je kiest vertegenwoordigt je zowel in het spel als op het web</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Je huidige avatar</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Kies een nieuwe avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Ontgrendelbare avatars</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Deze avatar is vergrendeld. Je kunt hem ontgrendelen door hem in de winkel te kopen.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-mailadres</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>E-mail bijwerken</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Er is een bevestigingsmail gestuurd naar je nieuwe e-mailadres. Bevestig het om het nieuwe e-mailadres te activeren.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Dat e-mailadres is niet beschikbaar</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Er is iets misgegaan bij het bijwerken van je e-mailadres.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>E-mail bevestigen</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Je e-mailadres is gewijzigd.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Bevestiging opnieuw sturen</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Bevestigingsmail opnieuw verstuurd.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail opnieuw verstuurd</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>E-mail opnieuw versturen mislukt. Probeer het opnieuw of neem contact op met support</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Opnieuw versturen van de e-mail mislukt. Probeer het opnieuw of neem contact op met de support.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Taal</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Kies een land</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Tijdzone:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Opslaan</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Aankoopgeschiedenis van het account</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Alle transacties die je doet, zowel via de {0} als via de {1}, worden opgeslagen in je portemonnee.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>bank</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>winkel</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Klik hier om je portemonnee te bekijken</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Verbannen spelers</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Je hebt geen spelers uit je spellen verbannen</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Ban opheffen</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Weet je zeker dat je de ban van {0} voor je spellen wilt opheffen?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Je kunt je account aan Facebook koppelen om het inloggen te vergemakkelijken.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Koppelen</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Je {game}-account {0} is gekoppeld aan je Steam-account. Als je dit {game}-account aan een ander Steam-account wilt koppelen, of het Steam-account aan een ander account op {game}, moet je eerst de twee accounts loskoppelen die nu aan elkaar gekoppeld zijn.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Waarschuwing</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Als je je Steam-account loskoppelt, word je uitgelogd bij {game} en wordt de launcher gesloten. Je kunt {game} pas weer op Steam spelen nadat je een ander account hebt gekoppeld.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ik begrijp het en wil mijn Steam-account loskoppelen</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Er is iets misgegaan en je Steam-account is niet ontkoppeld. Probeer het opnieuw!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Headerafbeelding</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Headerafbeeldingen worden ontgrendeld wanneer je nieuwe niveaus bereikt in drie verschillende prestatiecategorieën: Dierenmeester, Wapenmeester en Verkenningsmeester. Eenmaal ontgrendeld blijven headerafbeeldingen voor altijd beschikbaar.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Lees meer over de meesterniveaus van de prestaties.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Geen</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Meest recent</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Dieren</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Wapens</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Verkenning</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Evenementen</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Dagelijkse missies</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Profielinstellingen opslaan</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profielinstellingen opgeslagen</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profiel opslaan mislukt. Probeer het opnieuw of neem contact op met de support.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofeehut</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Lokaaslocaties</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>STARTPAGINA</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Kies een sectie.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>KEUZE TROFEEHUT</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Je bezit momenteel geen trofeehutten.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>BEHEER VAN LOKAASLOCATIES</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Voerplaats vullen tot:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Lokaas</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Actief</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Bijvullen</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Welkom bij {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gefeliciteerd {0}, je gloednieuwe {game}-account is aangemaakt!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Als je de launcher en de client van het spel al hebt gedownload en geïnstalleerd, kun je meteen beginnen met spelen! Ben je nieuw bij {game}? Dan raden we je aan eerst de lessen te doorlopen voordat je op je eerste echte jacht gaat. In de lessen leer je alles wat je moet weten om het zelf te redden in het Evergreen Hunting Reserve. Begin hieronder.</value></data>

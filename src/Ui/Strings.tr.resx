@@ -48,7 +48,6 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Hesap ayarları</value></data>
-  <data name="Settings.GameManagement" xml:space="preserve"><value>Oyun Yönetimi</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Steam'in Oyna düğmesini kullan</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Oyunu bu başlatıcı üzerinden açmak için bu satırı Steam'deki oyunun Başlatma seçeneklerine (Özellikler) yapıştırın:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopyala</value></data>
@@ -97,6 +96,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Oyun Klasörü</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Başlatıcı önbelleğini temizle</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Oyun önbelleğini temizle</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Klasör bulunamadı. Oyun henüz yüklenmemiş olabilir.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Önce oyunu kapatın, ardından önbelleğini temizleyin.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Bazı dosyalar silinemedi. Daha sonra tekrar deneyin.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Arkadaşlar ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Diğer avcıları bul...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Mesaj gönder</value></data>
@@ -834,81 +836,13 @@
   <data name="Msg.Self" xml:space="preserve"><value>Kendinize mesaj gönderemezsiniz.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Mesajınız gönderilirken bir hata oluştu.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Hesap ayarları</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Hesap e-postası</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
-  <data name="Set.TabLocale" xml:space="preserve"><value>Dil ve saat dilimi</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Çok oyunculu mod banları</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook ayarları</value></data>
-  <data name="Set.TabSteam" xml:space="preserve"><value>Steam ayarları</value></data>
-  <data name="Set.TabProfile" xml:space="preserve"><value>Profil ayarları</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Oyuncu avatarı</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Seçtiğiniz avatar sizi hem oyunda hem de web sitesinde temsil eder</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Mevcut avatarınız</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Yeni bir avatar seçin</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Kilidi açılabilir avatarlar</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Bu avatar kilitli. Mağazadan satın alarak kilidini açabilirsiniz.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-posta:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-posta adresi</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>E-postayı güncelle</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Yeni e-posta adresinize bir onay e-postası gönderildi. Yeni e-posta adresini etkinleştirmek için lütfen onaylayın.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Bu e-posta adresi kullanılamıyor</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>E-postanız güncellenmeye çalışılırken bir sorun oluştu.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>E-postayı onayla</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>E-posta adresiniz değiştirildi.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Onayı yeniden gönder</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Onay e-postası yeniden gönderildi.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-posta yeniden gönderildi</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>E-posta yeniden gönderilemedi. Lütfen tekrar deneyin veya destekle iletişime geçin</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-posta yeniden gönderilemedi. Lütfen tekrar deneyin veya destekle iletişime geçin.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Dil</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Ülke</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Ülke seçin</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Saat dilimi:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Kaydet</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Hesap satın alma geçmişi</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>{0} ve {1} üzerinden yaptığınız tüm işlemler cüzdanınıza kaydedilir.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banka</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>mağaza</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Cüzdanınızı görüntülemek için buraya tıklayın</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Banlanan oyuncular</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Oyunlarınızdan hiçbir oyuncuyu banlamadınız</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Banı kaldır</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>{0} adlı oyuncunun oyunlarınızdaki banını kaldırmak istediğinizden emin misiniz?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Oturum açmayı kolaylaştırmak için hesabınızı Facebook'a bağlayabilirsiniz.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Bağla</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>{game} hesabınız ({0}) Steam hesabınıza bağlı. Bu {game} hesabını başka bir Steam hesabına bağlamak veya bu Steam hesabını {game} üzerindeki başka bir hesaba bağlamak isterseniz, önce şu anda bağlı olan iki hesabın bağlantısını kesmelisiniz.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Uyarı</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Steam hesabınızın bağlantısını kesmek, {game} oyunundan çıkış yapmanıza neden olur ve başlatıcıyı kapatır. Başka bir hesaba bağlanana kadar {game} oyununu Steam üzerinden tekrar oynayamazsınız.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Anlıyorum ve Steam hesabımın bağlantısını kesmek istiyorum</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Bir sorun oluştu ve Steam hesabınızın bağlantısı kesilmedi. Lütfen tekrar deneyin!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Başlık görseli</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Başlık görselleri, üç farklı Başarı kategorisinde (Hayvan Ustası, Silah Ustası ve Keşif Ustası) yeni seviyelere ulaştığınızda açılır. Bir kez açıldıktan sonra başlık görselleri sonsuza dek kullanılabilir kalır.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Başarı Ustası seviyeleri hakkında daha fazla ayrıntı öğrenin.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Yok</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>En Yeni</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Hayvanlar</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Silahlar</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Keşif</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Etkinlikler</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Günlük Görevler</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Profil ayarlarını kaydet</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profil ayarları kaydedildi</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profil kaydedilemedi. Lütfen tekrar deneyin veya destekle iletişime geçin.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofe Kulübesi</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Yem Noktaları</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>ANA SAYFA</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Lütfen bir bölüm seçin.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>TROFE KULÜBESİ SEÇİMİ</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Şu anda hiç kulübeniz yok.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>YEM NOKTASI YÖNETİMİ</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Yemliği şu seviyeye kadar doldur:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Yem</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Durum</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Etkin</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Yeniden doldur</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>{game} oyununa hoş geldiniz</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Tebrikler {0}, yepyeni {game} hesabınız oluşturuldu!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Oyun başlatıcısını ve istemciyi zaten indirip yüklediyseniz oynamaya başlamaya hazırsınız! {game} oyununda yeniyseniz, ilk gerçek avınıza çıkmadan önce eğitimleri oynamanızı öneririz. Eğitimler, Evergreen Av Rezervi'nde kendi başınıza başarılı olmak için bilmeniz gereken her şeyi size öğretecek. Aşağıdan başlayın.</value></data>

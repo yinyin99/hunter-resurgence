@@ -48,7 +48,6 @@
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše lovecké skóre</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavení účtu</value></data>
-  <data name="Settings.GameManagement" xml:space="preserve"><value>Správa hry</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Použít tlačítko Hrát ve Steamu</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Vložte tento řádek do Možností spuštění hry ve Steamu (Vlastnosti), aby se hra spouštěla přes tento launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopírovat</value></data>
@@ -97,6 +96,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Složka hry</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Vymazat mezipaměť launcheru</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Vymazat mezipaměť hry</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Složka nebyla nalezena. Hra možná ještě není nainstalována.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Nejprve zavřete hru a pak vymažte její mezipaměť.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Některé soubory se nepodařilo smazat. Zkuste to znovu později.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Přátelé ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Najít další lovce...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Poslat zprávu</value></data>
@@ -834,81 +836,13 @@
   <data name="Msg.Self" xml:space="preserve"><value>Nemůžete posílat zprávy sami sobě.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Při odesílání zprávy došlo k chybě.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Nastavení účtu</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>E-mail účtu</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
-  <data name="Set.TabLocale" xml:space="preserve"><value>Jazyk a časové pásmo</value></data>
-  <data name="Set.TabBans" xml:space="preserve"><value>Blokace hráčů</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Nastavení Facebooku</value></data>
-  <data name="Set.TabSteam" xml:space="preserve"><value>Nastavení Steamu</value></data>
-  <data name="Set.TabProfile" xml:space="preserve"><value>Nastavení profilu</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar hráče</value></data>
   <data name="Set.AvatarInfo" xml:space="preserve"><value>Avatar, který si vyberete, vás bude reprezentovat ve hře i na webu</value></data>
   <data name="Set.AvatarCurrent" xml:space="preserve"><value>Váš aktuální avatar</value></data>
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Vyberte nový avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Odemykatelné avatary</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Tento avatar je uzamčen. Odemknete ho zakoupením v obchodě.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-mailová adresa</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Změnit e-mail</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Na vaši novou e-mailovou adresu jsme poslali potvrzovací e-mail. Potvrďte ji, aby se nová adresa aktivovala.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Tato e-mailová adresa není dostupná</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Při změně e-mailu se něco pokazilo.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Potvrdit e-mail</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Vaše e-mailová adresa byla změněna.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Poslat potvrzení znovu</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Potvrzovací e-mail byl odeslán znovu.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail byl odeslán znovu</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>E-mail se nepodařilo odeslat znovu. Zkuste to prosím znovu nebo kontaktujte podporu</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-mail se nepodařilo odeslat znovu. Zkuste to prosím znovu nebo kontaktujte podporu.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Jazyk</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Země</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Vyberte zemi</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Časové pásmo:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Uložit</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Historie nákupů účtu</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Všechny transakce, které provedete přes {0} a {1}, se ukládají do vaší peněženky.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banku</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>obchod</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Kliknutím zobrazíte svou peněženku</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Zablokovaní hráči</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Ve svých hrách jste zatím nezablokovali žádného hráče</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Odblokovat</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Opravdu chcete odblokovat hráče {0} ve svých hrách?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Svůj účet můžete propojit s Facebookem, aby bylo přihlašování snazší.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Propojit</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Účet {0} ve hře {game} je propojen s vaším účtem na Steamu. Pokud chcete tento účet hry {game} propojit s jiným účtem na Steamu, nebo propojit tento účet na Steamu s jiným účtem ve hře {game}, musíte nejprve zrušit propojení těchto dvou již propojených účtů.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Varování</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Zrušením propojení účtu Steam budete odhlášeni ze hry {game} a launcher se zavře. Hru {game} na Steamu nebudete moci znovu hrát, dokud se nepřipojíte k jinému účtu.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Rozumím a chci zrušit propojení svého účtu Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Něco se pokazilo a váš účet Steam nebyl odpojen. Zkuste to prosím znovu!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Obrázek v záhlaví</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Obrázky záhlaví se odemykají po dosažení nových úrovní ve třech kategoriích achievementů – Mistr zvířat, Mistr zbraní a Mistr průzkumu. Po odemknutí zůstanou obrázky záhlaví k dispozici navždy.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Zjistěte více o úrovních Mistra v achievementech.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Žádný</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Poslední</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Zvířata</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Zbraně</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Průzkum</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Události</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Denní mise</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Uložit nastavení profilu</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Nastavení profilu uloženo</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profil se nepodařilo uložit. Zkuste to prosím znovu nebo kontaktujte podporu.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofejní myslivna</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Přikrmiště</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>DOMŮ</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Vyberte prosím sekci.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>VÝBĚR TROFEJNÍ MYSLIVNY</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Momentálně nevlastníte žádné myslivny.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>PŘIKRMIŠTĚ – SPRÁVA</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Naplnit krmelec až na:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Krmivo</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Stav</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktivní</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Doplnit</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Vítejte ve hře {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gratulujeme, {0}, váš zbrusu nový účet hry {game} byl vytvořen!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Pokud už máte stažený a nainstalovaný launcher i klienta hry, můžete začít hrát! Pokud ve hře {game} začínáte, doporučujeme před prvním skutečným lovem projít výukou. Naučí vás vše, co potřebujete k samostatnému lovu v Evergreen Hunting Reserve. Začněte níže.</value></data>
