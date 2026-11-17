@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 25;
+    public const int Version = 26;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -126,7 +126,7 @@ public sealed class Store
     // keep_handle: the player chose to keep the account's own name
     const string ClaimTables = """
         CREATE TABLE claims (
-            id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL UNIQUE REFERENCES accounts (id) ON DELETE CASCADE, archived_uid INTEGER NOT NULL, handle TEXT NOT NULL,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL UNIQUE REFERENCES accounts (id) ON DELETE CASCADE, archived_uid INTEGER NOT NULL, handle TEXT NOT NULL,
             hunterscore INTEGER NOT NULL, state TEXT NOT NULL, ts INTEGER NOT NULL, decided_ts INTEGER, note TEXT NOT NULL, keep_handle INTEGER NOT NULL);
         CREATE INDEX claims_uid ON claims (archived_uid);
         CREATE TABLE claim_lookups (
@@ -349,6 +349,21 @@ public sealed class Store
             }
             // The counter starts at the highest server id now in use: ids freed before this step (adopted or deleted) may be handed out once more.
             if (version < 25) con.Script(IdCounter);
+            if (version < 26)
+            {
+                // claim ids are never reused (deleting the account deletes its claim): a c<id> in an old alert must not name another player's claim. Floor 100 as for uploads.
+                con.Script("""
+                    CREATE TABLE claims_new (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT, account_id INTEGER NOT NULL UNIQUE REFERENCES accounts (id) ON DELETE CASCADE, archived_uid INTEGER NOT NULL, handle TEXT NOT NULL,
+                        hunterscore INTEGER NOT NULL, state TEXT NOT NULL, ts INTEGER NOT NULL, decided_ts INTEGER, note TEXT NOT NULL, keep_handle INTEGER NOT NULL);
+                    INSERT INTO claims_new SELECT id, account_id, archived_uid, handle, hunterscore, state, ts, decided_ts, note, keep_handle FROM claims;
+                    DROP TABLE claims;
+                    ALTER TABLE claims_new RENAME TO claims;
+                    CREATE INDEX claims_uid ON claims (archived_uid);
+                    DELETE FROM sqlite_sequence WHERE name = 'claims';
+                    INSERT INTO sqlite_sequence (name, seq) VALUES ('claims', MAX(100, (SELECT COALESCE(MAX(id), 0) FROM claims)));
+                    """);
+            }
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
