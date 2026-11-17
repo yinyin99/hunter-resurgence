@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Ni nastavljeno: settings.json nima vnosa za te datoteke.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Enkrat zaženi igro, da ustvari svoje datoteke z nastavitvami.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Datoteka z nastavitvami ima obliko, ki je zaganjalnik ne pozna, zato je ne spreminja.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Igra teče. Zapri jo pred shranjevanjem, ker te datoteke prepiše sama.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Nastavitev ni bilo mogoče shraniti.</value></data>

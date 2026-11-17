@@ -78,7 +78,20 @@ public class GameSettingsServiceTests
         var (svc, _, _, o) = Make(temp.Path, Config());
         Write(g, Gfx.Replace("129", "130"));
         Assert.Equal("GameSettings.BadFormat", (await svc.SaveAsync(o)).Error);
-        File.Delete(g);
-        Assert.Equal("GameSettings.Missing", (await svc.SaveAsync(o)).Error);
+    }
+
+    // #652: the game never writes the graphics file, so a missing one opens on defaults and Save creates it
+    [Fact]
+    public async Task AMissingGraphicsFileOpensOnDefaultsAndSaveCreatesIt()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        var svc = new GameSettingsService(Config(), new Prefs(), temp.Path, () => { });
+        var read = await svc.ReadAsync();
+        Assert.Null(read.Error);
+        Assert.False(File.Exists(g));
+        Assert.True((await svc.SaveAsync(read.Options with { Fullscreen = true, Resolution = new(1600, 900, 144), Scene = 3 })).Ok);
+        Assert.Equal("129\r\n1\r\n1600 900 144\r\n3\r\n1\r\n1\r\n0\r\n0\r\n1\r\n0\r\n0\r\n0\r\n", Bytes(g));
+        Assert.True((await svc.ReadAsync()).Options is { Fullscreen: true, Scene: 3, Resolution: { Width: 1600, Height: 900, Hz: 144 } });
     }
 }

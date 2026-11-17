@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Yapılandırılmadı: settings.json bu dosyalar için bir girdi içermiyor.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Ayar dosyalarının oluşturulması için oyunu bir kez başlatın.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Bir ayar dosyasının biçimi başlatıcı tarafından tanınmıyor, bu yüzden dosyaya dokunulmadı.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Oyun çalışıyor. Kaydetmeden önce kapatın: bu dosyaları oyun kendisi yeniden yazıyor.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Ayarlar kaydedilemedi.</value></data>

@@ -86,6 +86,22 @@ public static class GameFiles
         Save(path, text, string.Join('\n', lines));
     }
 
+    /// <summary>The game only reads the graphics file (the old launcher wrote it): without one it runs on built-in values. These stand in for them in the dialog:
+    /// windowed at the desktop's mode, medium quality, vertical sync on.</summary>
+    public static GraphicsSettings DefaultGraphics() => CurrentDisplayMode() is var (w, h, hz)
+        ? new() { Width = w, Height = h, Hz = hz, Scene = 1, Texture = 1, Shadow = 1, Vsync = true }
+        : new() { Width = 1280, Height = 720, Hz = 60, Scene = 1, Texture = 1, Shadow = 1, Vsync = true };
+
+    /// <summary>Writes a new graphics file in the game's format: 12 lines, CRLF; the three after vertical sync (contextual help, extended audio memory, one unknown) are 0.
+    /// Never replaces a file: one that appeared in the meantime is an IOException.</summary>
+    public static void CreateGraphics(string path, GraphicsSettings g)
+    {
+        int[] lines = [Marker, g.Fullscreen ? 1 : 0, -1, g.Scene, g.Texture, g.Shadow, g.Msaa, g.Aniso, g.Vsync ? 1 : 0, 0, 0, 0];
+        var text = string.Concat(lines.Select(v => (v == -1 ? $"{g.Width} {g.Height} {g.Hz}" : v.ToString()) + "\r\n"));
+        using var f = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
+        f.Write(Latin1.GetBytes(text));
+    }
+
     static GraphicsSettings? ParseGraphics(string[] lines)
     {
         if (lines.Length < 9) return null;
@@ -163,6 +179,13 @@ public static class GameFiles
         for (var i = 0; EnumDisplaySettings(null, i, ref dm); i++)
             if (dm.dmDisplayFrequency > 1) set.Add(((int)dm.dmPelsWidth, (int)dm.dmPelsHeight, (int)dm.dmDisplayFrequency));
         return [.. set];
+    }
+
+    /// <summary>The primary display's current mode; null when Windows does not say.</summary>
+    static (int W, int H, int Hz)? CurrentDisplayMode()
+    {
+        var dm = new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
+        return EnumDisplaySettings(null, -1, ref dm) && dm.dmPelsWidth > 0 && dm.dmDisplayFrequency > 1 ? ((int)dm.dmPelsWidth, (int)dm.dmPelsHeight, (int)dm.dmDisplayFrequency) : null;  // -1: ENUM_CURRENT_SETTINGS
     }
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]

@@ -16,7 +16,8 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         var modes = GameFiles.DisplayModes().Select(m => new Resolution(m.W, m.H, m.Hz)).ToList();
         if (GraphicsPath is not { } gp) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.NotConfigured"));
         var (g, problem) = GameFiles.ReadGraphics(gp);
-        if (g is null) return Task.FromResult(new GameSettings(None, modes, 0, problem == FileProblem.Missing ? "GameSettings.Missing" : "GameSettings.BadFormat"));
+        if (g is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.BadFormat"));
+        g ??= GameFiles.DefaultGraphics();  // the game never writes this file: Save creates it
         // the options file is optional: without it the contextual help switch is simply not offered
         var o = OptionsPath is { } op ? GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value : null;
         var current = new Resolution(g.Width, g.Height, g.Hz);
@@ -30,10 +31,11 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         if (GameFiles.ClientRunning(settings.ClientExe)) return Task.FromResult(Result.Fail("GameSettings.ClientRunning"));
         try
         {
-            if (GraphicsPath is not { } gp) return Task.FromResult(Result.Fail("GameSettings.Missing"));
+            if (GraphicsPath is not { } gp) return Task.FromResult(Result.Fail("GameSettings.NotConfigured"));
             var (g, problem) = GameFiles.ReadGraphics(gp);
-            if (g is null) return Task.FromResult(Result.Fail(problem == FileProblem.Missing ? "GameSettings.Missing" : "GameSettings.BadFormat"));
-            GameFiles.WriteGraphics(gp, ToGraphics(g, options));
+            if (g is null && problem != FileProblem.Missing) return Task.FromResult(Result.Fail("GameSettings.BadFormat"));
+            if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics(), options));
+            else GameFiles.WriteGraphics(gp, ToGraphics(g, options));
             if (OptionsPath is { } op && GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value is { } o && options.ContextualHelp is { } help && o.Has("ContextualHelp"))
             {
                 o.Set("ContextualHelp", help ? 1 : 0);

@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Ikke konfigurert: settings.json har ingen oppføring for disse filene.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Start spillet én gang, så oppretter det innstillingsfilene sine.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>En innstillingsfil har et format launcheren ikke kjenner, så den blir ikke endret.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Spillet kjører. Lukk det før du lagrer: det skriver over disse filene selv.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Innstillingene kunne ikke lagres.</value></data>
