@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Page introuvable</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Cette page n’existe pas.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>CHASSER</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} joueur</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} joueurs</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} partie</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} parties</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} chasseur en ligne</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} chasseurs en ligne</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} partie multijoueur</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} parties multijoueur</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>OBTENEZ DES EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>ACTUALITÉS</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>COMPÉTITIONS</value></data>

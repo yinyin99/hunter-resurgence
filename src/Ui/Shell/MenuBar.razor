@@ -9,6 +9,7 @@
 else
 {
     <nav class="menu @(InBar ? "in-bar" : "")" aria-label="@L["Menu.Label"]">
+        @if (!InBar) { <OnlineNow Place="4" /> }
         @if (Mode.Launcher)
         {
             <div class="hunt-now">

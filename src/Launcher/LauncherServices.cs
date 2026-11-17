@@ -86,6 +86,8 @@ static class LauncherServices
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
         services.AddSingleton<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>()));
+        // the main page's online line: the server's public counts
+        services.AddSingleton<IOnlineService>(sp => new ServerOnlineService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ILogger<ServerOnlineService>>()));
         services.AddSingleton<IRestoreOfferService>(sp => new ServerRestoreOfferService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreOfferService>>()));
         // the avatar (settings, sign-up) is the server's; the rest of the account settings is the mock's, which the live pages do not offer
         services.AddSingleton<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),

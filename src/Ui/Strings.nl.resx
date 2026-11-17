@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina niet gevonden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Deze pagina bestaat niet.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAAG NU</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} speler</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} spelers</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} spel</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} spellen</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} jager online</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} jagers online</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} multiplayerspel</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} multiplayerspellen</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>KOOP EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NIEUWS</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>WEDSTRIJDEN</value></data>

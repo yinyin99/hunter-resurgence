@@ -1,0 +1,48 @@
+@implements IDisposable
+@inject IOnlineService Online
+
+@* how many hunters are in a hunt and how many multiplayer games are open: the server's counts, read again every minute; no counts (a server that does not answer), no pill *@
+@if (now is { } n)
+{
+    <span class="online p@(Place)"><i class="dot" aria-hidden="true"></i><span>@(Hero ? Line(n, "Online.Hunter", "Online.Hunters", "Online.MpGame", "Online.MpGames") : Line(n, "Online.Player", "Online.Players", "Online.Game", "Online.Games"))</span></span>
+}
+
+@code {
+    readonly CancellationTokenSource stop = new();
+    OnlineCounts? now;
+
+    /// <summary>1 under the logo of the public hero (long text), 4 in the menu row left of Hunt now (short text, smaller: the row is full).</summary>
+    [Parameter] public int Place { get; set; }
+
+    /// <summary>How often the server is asked again.</summary>
+    [Parameter] public TimeSpan Every { get; set; } = TimeSpan.FromSeconds(60);
+
+    bool Hero => Place == 1;
+
+    /// <summary>"<b>37</b> players · <b>4</b> games": each count in its own text, so a language puts the number where its grammar wants it (one form for 1, another for the rest).</summary>
+    MarkupString Line(OnlineCounts n, string one, string many, string gameOne, string gameMany) =>
+        new($"{L.Html(n.Players == 1 ? one : many, $"<strong>{n.Players}</strong>").Value} · {L.Html(n.Games == 1 ? gameOne : gameMany, $"<strong>{n.Games}</strong>").Value}");
+
+    protected override async Task OnInitializedAsync()
+    {
+        now = await Online.NowAsync();
+        _ = Poll();
+    }
+
+    async Task Poll()
+    {
+        using var timer = new PeriodicTimer(Every);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token))
+            {
+                var next = await Online.NowAsync();
+                if (stop.IsCancellationRequested) return;
+                await InvokeAsync(() => { now = next; StateHasChanged(); });
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => stop.Cancel();
+}

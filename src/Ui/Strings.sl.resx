@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Strani ni mogoče najti</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ta stran ne obstaja.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>NA LOV</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>Igralci: {0}</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>Igralci: {0}</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>Igre: {0}</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>Igre: {0}</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>Lovci na spletu: {0}</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>Lovci na spletu: {0}</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>Skupinski lovi: {0}</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>Skupinski lovi: {0}</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>KUPI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NOVICE</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>TEKMOVANJA</value></data>

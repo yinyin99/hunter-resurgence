@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Sivua ei löytynyt</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tätä sivua ei ole olemassa.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>METSÄSTÄMÄÄN</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} pelaaja</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} pelaajaa</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} peli</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} peliä</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} metsästäjä paikalla</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} metsästäjää paikalla</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} moninpeli</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} moninpeliä</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>HANKI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>UUTISET</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>KILPAILUT</value></data>

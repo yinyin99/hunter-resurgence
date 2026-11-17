@@ -1,0 +1,10 @@
+.online { --live: #3ddc3d; display: inline-flex; align-items: center; gap: 8px; box-sizing: border-box; padding: 4px 14px 4px 11px; border: 1px solid rgba(61, 220, 61, .35); border-radius: var(--r-pill); background: rgba(61, 220, 61, .1); color: #ccc; font-size: 14px; line-height: 20px; white-space: nowrap; }
+.online strong { color: #fff; font-weight: 600; }
+.dot { position: relative; flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--live); }
+.dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--live); animation: online-pulse 2s ease-out infinite; }
+@keyframes online-pulse { from { transform: scale(1); opacity: .7; } to { transform: scale(2.8); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .dot::after { animation: none; } }
+
+.p1 { position: absolute; left: 50%; top: 262px; transform: translateX(-50%); }
+/* the menu row is full: a smaller pill keeps the last items (Help, Forum) inside it */
+.p4 { margin: 14px 0 0 12px; padding: 2px 10px 2px 8px; gap: 6px; font-size: 12px; line-height: 18px; }

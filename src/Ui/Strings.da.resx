@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Siden blev ikke fundet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne side findes ikke.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAGT NU</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} spiller</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} spillere</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} spil</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} spil</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} jæger online</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} jægere online</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} multiplayer-spil</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} multiplayer-spil</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>KØB EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NYHEDER</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>KONKURRENCER</value></data>
