@@ -27,11 +27,12 @@ public sealed class ProblemReporter(Diagnostics diagnostics, Prefs prefs, Action
 
     public Task<ProblemReport> BuildAsync(string trigger) => Task.Run(() => diagnostics.Build(trigger));
 
-    /// <summary>The Error is a Strings key: Report.ErrSignIn (401 or not signed in), ErrFormat (400), ErrSize (413), ErrLimit (429), ErrDisk (507), ErrNetwork (no answer or anything else).</summary>
+    /// <summary>The Error is a Strings key: Report.ErrSignIn (401 or not signed in), ErrFormat (400), ErrSize (413), ErrLimit (429), ErrDisk (507), ErrNetwork (no answer or anything else), ErrSave (the zip file is not there).</summary>
     public async Task<ReportSent> SendAsync(ProblemReport report)
     {
         if (http is null) return new(null, "Report.ErrNetwork");
         if (cookie?.Value is null) return new(null, "Report.ErrSignIn");
+        if (!File.Exists(report.Path)) return new(null, "Report.ErrSave"); // never written (see Diagnostics.Build), or replaced by a newer report
         try
         {
             using var request = cookie.Request(HttpMethod.Post, Route);
@@ -62,9 +63,10 @@ public sealed class ProblemReporter(Diagnostics diagnostics, Prefs prefs, Action
         }
     }
 
-    /// <summary>Copies the zip to the Downloads folder (the one Windows says, which the player may have moved); an IOException or UnauthorizedAccessException is the caller's to show.</summary>
+    /// <summary>Copies the zip to the Downloads folder (the one Windows says, which the player may have moved); an IOException (FileNotFoundException when the zip was never written or a newer report replaced it) or UnauthorizedAccessException is the caller's to show.</summary>
     public string Save(ProblemReport report)
     {
+        if (!File.Exists(report.Path)) throw new FileNotFoundException("the report zip is not there", report.Path);
         var folder = downloads ?? (SHGetKnownFolderPath(DownloadsId, 0, 0, out var path) == 0 ? path : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"));
         Directory.CreateDirectory(folder);
         var to = Path.Combine(folder, Path.GetFileName(report.Path));

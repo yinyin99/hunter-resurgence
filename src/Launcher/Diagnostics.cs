@@ -26,6 +26,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
+    static readonly TimeSpan WmiTimeout = TimeSpan.FromSeconds(10);
     const string Removed = "[line removed: it may hold a credential]";
 
     /// <summary>Game launchers, boosters and overlays that hook into or squeeze games; running ones are named in system.txt. Data: a new one is a new line.</summary>
@@ -39,8 +40,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         ("GameOverlayUI", "Steam overlay"), ("ReShade", "ReShade"), ("AutoHotkey", "AutoHotkey"), ("MsiDragonCenter", "MSI Center"), ("ArmouryCrate.Service", "ASUS Armoury Crate"),
     ];
 
-    /// <summary>A line that looks like it carries a credential (a token, a cookie, a bearer or authorization header, a JWT) is replaced as a whole.</summary>
-    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|hr_session|secret|password", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
+    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : l));
 
@@ -71,7 +72,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             }
             void AddFile(string name, string path)
             {
-                if (Tail(path, cap) is { } text) Add(name, text, Encoding.Latin1);
+                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding);
                 else missing.Add(name);
             }
 
@@ -95,28 +96,60 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing }, RunHistory.Json), Encoding.UTF8);
         }
         var folderOut = outFolder ?? Path.Combine(Path.GetTempPath(), "hunter-resurgence");
-        Directory.CreateDirectory(folderOut);
-        // one report at a time: the older ones are the player's already saved or sent
-        foreach (var old in Try(() => Directory.GetFiles(folderOut, "hunter-resurgence-report-*.zip"), [], "") ?? []) Try(() => { File.Delete(old); return old; }, [], "");
-        var path = Path.Combine(folderOut, $"hunter-resurgence-report-{DateTime.UtcNow:yyyyMMdd-HHmmss}.zip");
-        File.WriteAllBytes(path, ms.ToArray());
-        return new(path, files, missing, ms.Length, trigger);
+        try
+        {
+            Directory.CreateDirectory(folderOut);
+            // one report at a time: the older ones are the player's already saved or sent
+            foreach (var old in Try(() => Directory.GetFiles(folderOut, "hunter-resurgence-report-*.zip"), [], "") ?? []) Try(() => { File.Delete(old); return old; }, [], "");
+            var path = Path.Combine(folderOut, $"hunter-resurgence-report-{DateTime.UtcNow:yyyyMMdd-HHmmss}.zip");
+            File.WriteAllBytes(path, ms.ToArray());
+            return new(path, files, missing, ms.Length, trigger);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            // no place for the zip (the temp folder is full, locked or not allowed): a report without a file, which Send and Save refuse (ProblemReporter)
+            return new("", files, [.. missing, "report zip"], 0, trigger);
+        }
     }
 
-    /// <summary>The last <paramref name="cap"/> bytes of a file (from the start of a line), read although the game still writes it; null when it is missing or locked.</summary>
-    static string? Tail(string path, int cap)
+    /// <summary>The last <paramref name="cap"/> bytes of a file (from the start of a line), read although the game still writes it, and the encoding to write it back with: Latin-1 keeps every byte of a one-byte
+    /// text, a UTF-16 text (a byte order mark, or the zero bytes of mostly ASCII text) is decoded so that the scrub sees its lines, and goes into the zip as UTF-8. Null when it is missing or locked.</summary>
+    static (string Text, Encoding Encoding)? Tail(string path, int cap)
     {
         try
         {
             using var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            var n = (int)Math.Min(f.Length, cap);
+            var length = f.Length; // the game may still write: one size for the whole read
+            var head = new byte[(int)Math.Min(length, 4096)];
+            f.ReadExactly(head);
+            var utf16 = Utf16Of(head);
+            var n = Math.Min(length, cap);
+            var start = length - n;
+            if (utf16 is not null) // whole characters, counted from the start of the file
+            {
+                start += start % 2;
+                n = (length - start) & ~1L;
+            }
             var buf = new byte[n];
-            f.Seek(-n, SeekOrigin.End);
+            f.Seek(start, SeekOrigin.Begin);
             f.ReadExactly(buf);
-            var text = Encoding.Latin1.GetString(buf);
-            return f.Length > n && text.IndexOf('\n') is >= 0 and var i ? text[(i + 1)..] : text;
+            var text = (utf16 ?? Encoding.Latin1).GetString(buf);
+            if (start == 0 && text.StartsWith('\uFEFF')) text = text[1..];
+            if (start > 0 && text.IndexOf('\n') is >= 0 and var i) text = text[(i + 1)..];
+            return (text, utf16 is null ? Encoding.Latin1 : Encoding.UTF8);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    /// <summary>UTF-16 by its byte order mark, or by a quarter or more of the first bytes being zero, nearly all of them at even or all at odd places (ASCII text in UTF-16 is half zeros on one side); null for a one-byte text, also one that starts with zeros.</summary>
+    static Encoding? Utf16Of(byte[] head)
+    {
+        if (head is [255, 254, ..]) return Encoding.Unicode;
+        if (head is [254, 255, ..]) return Encoding.BigEndianUnicode;
+        int even = 0, odd = 0;
+        for (var i = 0; i < head.Length; i++)
+            if (head[i] == 0) { if (i % 2 == 0) even++; else odd++; }
+        return head.Length >= 4 && even + odd >= head.Length / 4 && Math.Min(even, odd) * 8 < Math.Max(even, odd) ? odd >= even ? Encoding.Unicode : Encoding.BigEndianUnicode : null;
     }
 
     string SystemText(List<string> missing, string? exe)
@@ -157,13 +190,13 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
 
     static IEnumerable<string> Antivirus()
     {
-        using var s = new ManagementObjectSearcher(@"root\SecurityCenter2", "SELECT displayName FROM AntiVirusProduct");
+        using var s = new ManagementObjectSearcher(@"root\SecurityCenter2", "SELECT displayName FROM AntiVirusProduct") { Options = { Timeout = WmiTimeout } };
         foreach (var o in s.Get()) using (o) if (o["displayName"] is string n) yield return n;
     }
 
     static IEnumerable<string> Gpu()
     {
-        using var s = new ManagementObjectSearcher("SELECT Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController");
+        using var s = new ManagementObjectSearcher("SELECT Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController") { Options = { Timeout = WmiTimeout } };
         foreach (var o in s.Get())
             using (o) yield return $"Graphics: {o["Name"]}, driver {o["DriverVersion"]}, screen {o["CurrentHorizontalResolution"]}x{o["CurrentVerticalResolution"]} at {o["CurrentRefreshRate"]} Hz";
     }

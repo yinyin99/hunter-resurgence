@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -22,11 +21,13 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         foreach (var other in all.Skip(1)) other.Dispose();
         if (all.FirstOrDefault() is not { } p) return null;
         var id = (uint)p.Id;
-        return new(() => HasVisibleWindow(id), () =>
+        // a handle held from now on: the exit code is read from it after the process is gone (a process looked up by name holds none)
+        var handle = OpenProcess(QueryLimited, false, id);
+        return new(() => HasVisibleWindow(id), () => handle != 0 && GetExitCodeProcess(handle, out var code) && code != StillActive ? unchecked((int)code) : null, () =>
         {
-            try { return p.HasExited ? p.ExitCode : null; }
-            catch (Exception e) when (e is InvalidOperationException or Win32Exception) { return null; } // a process of another privilege level: no exit code
-        }, p.Dispose);
+            if (handle != 0) CloseHandle(handle);
+            p.Dispose();
+        });
     }
 
     static bool HasVisibleWindow(uint pid)
@@ -41,11 +42,16 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         return found;
     }
 
+    const uint QueryLimited = 4096, StillActive = 259; // PROCESS_QUERY_LIMITED_INFORMATION; the "has no exit code yet" value
+
     delegate bool EnumWindowsProc(nint window, nint param);
 
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc callback, nint param);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(nint window, out uint pid);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(nint window);
+    [DllImport("kernel32.dll", SetLastError = true)] static extern nint OpenProcess(uint access, bool inherit, uint pid);
+    [DllImport("kernel32.dll")] static extern bool GetExitCodeProcess(nint process, out uint code);
+    [DllImport("kernel32.dll")] static extern bool CloseHandle(nint handle);
 }
 
 /// <summary>The last game starts the launcher watched, in runs.json next to launcher.json (at most <see cref="Keep"/>). A missing or damaged file is no history.</summary>

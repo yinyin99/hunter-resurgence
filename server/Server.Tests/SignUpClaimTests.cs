@@ -118,7 +118,7 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var done = await Post(login, $"kind=old&old={LongName}&handle=Fresh");  // 40 characters: more than a new name may have
         Assert.Equal(302, done.Status);
         Assert.Equal("Fresh", state.Store.HandleOf(state.Store.AccountBySteam("99999999999999995")!.Value));
-        Assert.Contains("claimed ", await OneAlert());
+        Assert.Contains("archived: `", await OneAlert());
     }
 
     [Fact]
@@ -142,13 +142,15 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var fresh = await Post(await NewLogin("99999999999999993"), "kind=new&handle=Newbie");
         Assert.Equal(302, fresh.Status);
         var text = await OneAlert();
-        Assert.Contains("New account: Newbie, account ", text);
-        Assert.Contains("fresh start", text);
-        Assert.Contains("<https://steamcommunity.com/profiles/99999999999999993>", text);
+        Assert.StartsWith("\U0001F195 **New account**\nhandle: `Newbie`\naccount: ", text);
+        Assert.Contains("\noutcome: fresh start", text);
+        Assert.DoesNotContain("archived", text);
+        Assert.Contains("\nsteam: [profile](<https://steamcommunity.com/profiles/99999999999999993>)", text);
 
         hook.Texts.Clear();
         await Post(await NewLogin("99999999999999994"), "kind=old&old=Alpha&handle=");
-        Assert.Contains("claimed Alpha (hunterscore 500): restored", await OneAlert());
+        var claimed = await OneAlert();
+        Assert.Contains("\narchived: `Alpha`, hunterscore 500\noutcome: claim restored", claimed);
 
         hook.Texts.Clear();
         Alerts.Signup(new JsonObject(), "unset", new HttpClient(hook));
