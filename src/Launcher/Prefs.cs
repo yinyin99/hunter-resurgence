@@ -24,6 +24,8 @@ public sealed class Prefs
     /// <summary>When the Steam dialog last opened by itself (at most once a day) and whether the player said "don't ask again".</summary>
     public DateTimeOffset? SteamOptionAsked { get; set; }
     public bool SteamOptionNever { get; set; }
+    /// <summary>Problem reports: "unset" (never asked), "auto" (sent by itself after a failed start) or "ask" (only offered).</summary>
+    public string ReportConsent { get; set; } = "unset";
 
     public static Prefs Load(string path)
     {

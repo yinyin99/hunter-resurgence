@@ -17,4 +17,14 @@ public interface ILauncherBridge
     void ToggleDevTools();
     /// <summary>The launcher has updated itself: start the new one.</summary>
     void RestartLauncher();
+    /// <summary>The last game start the launcher watched; null before any.</summary>
+    GameRun? LastRun { get; }
+    /// <summary>Builds the problem report zip (never throws; a missing file is listed as missing).</summary>
+    Task<ProblemReport> BuildReportAsync(string trigger);
+    /// <summary>Sends a built report to the community server.</summary>
+    Task<ReportSent> SendReportAsync(ProblemReport report);
+    /// <summary>Copies the zip to the user's Downloads folder; returns the full path.</summary>
+    string SaveReport(ProblemReport report);
+    /// <summary>"unset" (never asked), "auto" (send after a failed start), "ask" (offer only). Stored in the launcher's prefs.</summary>
+    string ReportConsent { get; set; }
 }
