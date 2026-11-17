@@ -548,22 +548,34 @@ public sealed partial class State
     /// cloned: [{"item_guid": "new_item_&lt;ms&gt;", "item_id": N}] creates a stack of one full box for each placeholder (the page's name for a copy it made of the lodge's unlimited ammunition); the reply maps each placeholder
     /// created by THIS call to the new integer guid, or is null when none was created. The page gives the copy that guid and only then tells the game about the stack, so the guid must be a number the game can hold and never reused.
     /// A placeholder the account already has a box for (a tab change and a close overlap, the page asks twice) creates nothing and is not in the reply: the page replaced the placeholder when it got the first answer, and a key it no longer
-    /// knows stops it before it updates the game. `box(item)` is the stack size of an item that may be copied, null for any other: an entry for it creates nothing.
-    /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.</summary>
+    /// knows stops it before it updates the game. `box(item)` is the stack size of an item that may be copied, null for any other: an entry for it creates nothing; so does an item the account does not own yet or has <see cref="MaxAmmoRows"/> rows of.
+    /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.
+    /// The account's copies and row counts are read once, and only when the request has a placeholder, so a request of any size costs one scan under the write lock.</summary>
     public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Func<long, long?> box)
     {
         var fresh = new JsonObject();
-        long? Known(string placeholder) => con.Scalar($"SELECT guid FROM items WHERE account_id = $a AND json_extract(metadata, '$.{CLONE}') = ?", placeholder) as long?;
+        var known = new Lazy<Dictionary<string, long>>(() =>
+        {
+            var copies = new Dictionary<string, long>();
+            foreach (var r in con.Rows($"SELECT json_extract(metadata, '$.{CLONE}'), guid FROM items WHERE account_id = $a AND json_extract(metadata, '$.{CLONE}') IS NOT NULL"))
+                copies[(string)r[0]] = Convert.ToInt64(r[1]);
+            return copies;
+        });
+        var counts = new Lazy<Dictionary<long, long>>(() => con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id").ToDictionary(r => Convert.ToInt64(r[0]), r => Convert.ToInt64(r[1])));
+        long next = 0;
         con.Begin();
         foreach (var node in cloned)
         {
-            if (node is not JsonObject c || !IsPlaceholder(c["item_guid"], out var placeholder) || !TryKey(c["item_id"], out var id) || Known(placeholder) is not null || box(id) is not { } units)
+            if (node is not JsonObject c || !IsPlaceholder(c["item_guid"], out var placeholder) || !TryKey(c["item_id"], out var id) || known.Value.ContainsKey(placeholder)
+                || counts.Value.GetValueOrDefault(id) is not (> 0 and < MaxAmmoRows) || box(id) is not { } units)
                 continue;
-            var guid = NextId(con, "items", "guid");
-            if (guid > int.MaxValue)  // the game's guid is a 32-bit number
+            if (next == 0)
+                next = NextId(con, "items", "guid");
+            if (next > int.MaxValue)  // the game's guid is a 32-bit number
                 continue;
-            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, ?, ?)", guid, id, Py.Dumps(new JsonObject { [CLONE] = placeholder }), units);  // a full box, whatever the request says
-            fresh[placeholder] = guid;
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, ?, ?)", next, id, Py.Dumps(new JsonObject { [CLONE] = placeholder }), units);  // a full box, whatever the request says
+            fresh[placeholder] = known.Value[placeholder] = next++;
+            counts.Value[id]++;
         }
         foreach (var node in mapping)
         {
@@ -572,8 +584,8 @@ public sealed partial class State
             long? row = null;
             if (Py.IsDigit(name))
                 row = long.TryParse(name, out var number) ? number : null;
-            else if (IsPlaceholder(m["item_guid"], out var placeholder))
-                row = Known(placeholder);
+            else if (IsPlaceholder(m["item_guid"], out var placeholder) && known.Value.TryGetValue(placeholder, out var copy))
+                row = copy;
             if (row is { } guid)
                 con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", m["slot_id"], guid);
         }
@@ -1568,9 +1580,8 @@ public sealed partial class State
     /// <summary>Most rows of one ammunition an account may own, copies of the lodge's stack included: a crafted request cannot grow the table without end (a backpack holds far fewer boxes).</summary>
     const long MaxAmmoRows = 100;
 
-    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition the account already owns and has fewer than <see cref="MaxAmmoRows"/> rows of; null for any other item.</summary>
-    long? CloneBox(Db con, long itemId) =>
-        UnlimitedService && IsAmmo(itemId) && con.Scalar("SELECT COUNT(*) FROM items WHERE account_id = $a AND item_id = ?", itemId) is long rows and > 0 && rows < MaxAmmoRows ? Box(itemId) : null;
+    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition (<see cref="MoveMultiple2"/> also asks that the account owns it and has fewer than <see cref="MaxAmmoRows"/> rows of it); null for any other item.</summary>
+    long? CloneBox(long itemId) => UnlimitedService && IsAmmo(itemId) ? Box(itemId) : null;
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
     /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0
@@ -1936,7 +1947,7 @@ public sealed partial class State
         var mapping = JsonNode.Parse(form.TryGetValue("mapping", out var m) ? m[0] : "[]")!.AsArray();
         using var con = Con(account);
         var cloned = JsonNode.Parse(form.TryGetValue("clonedItems", out var c) ? c[0] : "[]")!.AsArray();
-        var fresh = MoveMultiple2(con, mapping, cloned, id => CloneBox(con, id));
+        var fresh = MoveMultiple2(con, mapping, cloned, CloneBox);
         if (fresh is not null)
             Console.WriteLine($"inventory of account {account}: ammunition boxes cloned, guids {string.Join(", ", fresh.Select(kv => $"{kv.Key} -> {kv.Value}"))}");
         return Py.DumpBytes(fresh);
@@ -2008,7 +2019,7 @@ public sealed partial class State
     /// then filled to a full box too (a larger stack stays). The rows are in the connect that follows.</summary>
     void RefillAmmo(Db con)
     {
-        if (UnlimitedAmmo)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
+        if (UnlimitedService)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
             con.Exec($"DELETE FROM items WHERE account_id = $a AND slot = 0 AND json_extract(metadata, '$.{CLONE}') IS NOT NULL AND EXISTS (SELECT 1 FROM items o WHERE o.account_id = $a AND o.item_id = items.item_id AND o.slot = 0 AND o.guid < items.guid)");
         var (ammo, boxes) = facts.FreeAmmo();
         foreach (var id in ammo)

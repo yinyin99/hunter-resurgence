@@ -153,6 +153,30 @@ public class UnlimitedAmmoTests : StateTestBase
         Eq("1", Items()[Py.Str(reply["new_item_1"])]!["slot"]);
     }
 
+    [Fact]
+    public void TheMarkIsNeverInTheReadsAndALoneMarkedBoxInTheLodgeStaysAtALaunch()
+    {
+        Make(true);
+        SetStacks(3);
+        var guid = long.Parse(Py.Str(Reply(Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""))["new_item_1"]));
+        Assert.DoesNotContain("__clone", System.Text.Encoding.UTF8.GetString(state.InventoryListReply(ME)));
+        Assert.DoesNotContain("__clone", System.Text.Encoding.UTF8.GetString(state.InventoryDictReply(ME)));
+        using (var con = state.Store.Open(ME))
+            con.Exec("DELETE FROM items WHERE account_id = $a AND item_id = 77 AND guid <> ?", guid);  // the only stack in the lodge is a copy
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("0:10", Held(77));
+    }
+
+    [Fact]
+    public void ATutorialCreatesNoCopyAndAnswersNull()
+    {
+        var s = Make(true);
+        SetStacks(3);
+        s.NoteTutorial(ME, "tutorial-session", 1);
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_1", "item_id": 77}]"""));
+        Assert.Equal("3", Stacks());
+    }
+
     /// <summary>The slot and units of each row of an item, oldest first.</summary>
     string Held(long item)
     {
