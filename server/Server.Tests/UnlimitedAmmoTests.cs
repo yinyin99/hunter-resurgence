@@ -21,8 +21,20 @@ public class UnlimitedAmmoTests : StateTestBase
              "units": {"count": 10, "name": "cartridges"}, "fit": {}, "inventory": {"slots": [0, 1, 8], "capacity": 0, "weight": 1},
              "price": 5, "silver_price": 100, "notbuyable": 0, "subcat": {"id": 0}, "hidden": 0}
             """));
+        // a weapon (78) that fits 77, 79 and 80; the game has a definition of 77 and 79 (as the install gives every ammunition) but not of 80
+        app["items"]!.AsArray().Add(O("""
+            {"id": 78, "name": "Test Rifle", "description": "", "define": "TEST_RIFLE", "type": 1, "group": 1, "cat": 1, "client_type": 1, "image": "x", "variationname": null,
+             "units": null, "fit": {"3": [{"id": 77}, {"id": 79}, {"id": 80}]}, "inventory": {"slots": [0, 1, 2, 3, 4], "capacity": 0, "weight": 1},
+             "price": 50, "silver_price": 100, "notbuyable": 0, "subcat": {"id": 0}, "hidden": 0}
+            """));
+        foreach (var id in new[] { 79, 80 })
+            app["items"]!.AsArray().Add(O($$"""
+                {"id": {{id}}, "name": "Test Cartridge {{id}}", "description": "", "define": "TEST_CARTRIDGE_{{id}}", "type": 3, "group": 13, "cat": 3, "client_type": 3, "image": "x", "variationname": null,
+                 "units": {"count": 5, "name": "cartridges"}, "fit": {}, "inventory": {"slots": [0, 1, 8], "capacity": 0, "weight": 1},
+                 "price": 5, "silver_price": 100, "notbuyable": 0, "subcat": {"id": 0}, "hidden": 0}
+                """));
         app["bundles"] = JsonNode.Parse("""[{"id": 9, "name": "Test Bundle", "price": 100, "items": [19, 77]}]""");
-        return state = new State(Path.Combine(tmp, $"{on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES) { UnlimitedAmmo = on };
+        return state = new State(Path.Combine(tmp, $"{on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, sampleInfos: (JsonArray)JsonNode.Parse("""[{"item_id": 77, "units": 10}, {"item_id": 79, "units": 5}]""")!) { UnlimitedAmmo = on };
     }
 
     /// <summary>The units of each stack of the ammunition, by guid.</summary>
@@ -139,6 +151,60 @@ public class UnlimitedAmmoTests : StateTestBase
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         Assert.Equal("10 10 10", Stacks());  // the two stacks it owns stay, and the box in the backpack
         Eq("1", Items()[Py.Str(reply["new_item_1"])]!["slot"]);
+    }
+
+    /// <summary>The slot and units of each row of an item, oldest first.</summary>
+    string Held(long item)
+    {
+        using var con = state.Store.Open(ME);
+        return string.Join(" ", con.Rows("SELECT slot, units FROM items WHERE account_id = $a AND item_id = ? ORDER BY guid", item).Select(r => $"{r[0]}:{r[1]}"));
+    }
+
+    void SetSlot(long item, long slot)
+    {
+        using var con = state.Store.Open(ME);
+        con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND item_id = ?", slot, item);
+    }
+
+    [Fact]
+    public void EveryLaunchGivesOneFullBoxOfEachAmmunitionThatFitsAnOwnedWeaponButOnlyOneTheGameHasADefinitionOf()
+    {
+        Make(true);
+        Assert.True(state.GrantItems(ME, 78, 1));
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("0:10", "0:5", ""), (Held(77), Held(79), Held(80)));  // 80 has no definition: the game would close after the connect
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("0:10", "0:5"), (Held(77), Held(79)));  // never twice
+        Assert.All(Items().Where(i => (long)i.Value!["item_id"]! is 77 or 79), i => Eq("{}", i.Value!["metadata"]));
+    }
+
+    [Fact]
+    public void AnEquippedWeaponWithAnEmptyAmmunitionSlotGetsACopyOfItsFirstAmmunitionAndTheLodgeKeepsItsStack()
+    {
+        Make(true);
+        Assert.True(state.GrantItems(ME, 78, 1));
+        SetSlot(78, 3);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("0:10 9:10", "0:5"), (Held(77), Held(79)));  // the weapon's slot plus 6
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("0:10 9:10", Held(77));  // the slot is filled now
+        Assert.All(Items().Where(i => (long)i.Value!["item_id"]! == 77), i => Eq("{}", i.Value!["metadata"]));
+    }
+
+    [Fact]
+    public void AnEquippedWeaponWithAmmunitionInItsSlotIsLeftAloneAndOffNothingIsGranted()
+    {
+        Make(true);
+        Assert.True(state.GrantItems(ME, 78, 1));
+        Assert.True(state.GrantItems(ME, 79, 1));
+        SetSlot(78, 2);
+        SetSlot(79, 8);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("0:10", "8:5"), (Held(77), Held(79)));
+        Make(false);
+        Assert.True(state.GrantItems(ME, 78, 1));
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal(("", ""), (Held(77), Held(79)));
     }
 
     [Fact]

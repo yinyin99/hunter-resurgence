@@ -2029,9 +2029,33 @@ public sealed partial class State
         }
         if (!UnlimitedAmmo)
             return;
+        ArmWeapons(con);
         foreach (var id in con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a AND units IS NOT NULL").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo))
             if (Box(id) is { } box)
                 con.Exec("UPDATE items SET units = ?1 WHERE account_id = $a AND item_id = ?2 AND units IS NOT NULL AND units < ?1", box, id);
+    }
+
+    /// <summary>The ammunition ids the catalogue lists as fitting a weapon (the `fit` list of the ammunition category), in its order.</summary>
+    long[] AmmoFor(long weapon) => [.. Arr((items.GetValueOrDefault(weapon) ?? installItems.GetValueOrDefault(weapon))?["fit"]?["3"]).Select(f => Py.L(f!["id"]))];
+
+    /// <summary>With unlimited ammunition, at a launch, inside its transaction: the account owns a full box of every ammunition that fits a weapon it owns (a weapon with none could not be equipped, and ammunition is not sold),
+    /// as a row of its own that the connect that follows lists; only an ammunition the game has a definition for (a recorded one or the install's ballistics, as a restore needs). An equipped weapon (slots 2 to 4) whose ammunition slot
+    /// (the weapon's slot plus 6) is empty gets a copy of its first fitting ammunition there, marked as a copy so the lodge keeps its own stack: a shot with an empty ammunition slot closes the game.</summary>
+    void ArmWeapons(Db con)
+    {
+        var rows = con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Id: Convert.ToInt64(r[0]), Slot: Convert.ToInt64(r[1]))).ToList();
+        var owned = rows.Select(r => r.Id).ToHashSet();
+        bool IsWeapon(long id) => (items.GetValueOrDefault(id) ?? installItems.GetValueOrDefault(id)) is { } item && Is(G(item, "cat", null), WeaponCategory);
+        foreach (var ammo in owned.Where(IsWeapon).SelectMany(AmmoFor).Distinct().Where(a => !owned.Contains(a) && IsAmmo(a) && (infos.ContainsKey(a) || ballistics.ContainsKey(a)) && Box(a) is not null).ToList())
+        {
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", NextId(con, "items", "guid"), ammo, Box(ammo));
+            owned.Add(ammo);
+        }
+        var filled = rows.Where(r => r.Slot is >= 8 and <= 10).Select(r => r.Slot).ToHashSet();
+        foreach (var (weapon, slot) in rows.Where(r => r.Slot is >= 2 and <= 4 && IsWeapon(r.Id)))
+            if (!filled.Contains(slot + 6) && AmmoFor(weapon).Where(owned.Contains).ToList() is [var ammo, ..] && Box(ammo) is { } box)
+                con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
+                         NextId(con, "items", "guid"), ammo, slot + 6, Py.Dumps(new JsonObject { [CLONE] = "launch" }), box);
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()
