@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Pokud jste si ještě nestáhli launcher a klienta hry, musíte to udělat před zahájením lovu.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Ke stažení</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Nastavení</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>E-mailovou adresu, jazyk nebo avatar hráče můžete změnit na stránce nastavení.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Pokud chcete změnit svůj avatar hráče, můžete tak učinit na stránce nastavení.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Změnit nastavení účtu</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Veškerý váš postup ve hře {game} najdete na stránce profilu, kde jsou i podrobné statistiky všech vašich předchozích lovů.</value></data>

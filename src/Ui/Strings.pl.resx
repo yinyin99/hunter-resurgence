@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Jeśli nie masz jeszcze pobranego launchera i klienta gry, musisz je pobrać przed rozpoczęciem polowania.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Pliki do pobrania</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Ustawienia</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jeśli chcesz zmienić adres e-mail, ustawienia języka lub awatar gracza, zrobisz to na stronie ustawień.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jeśli chcesz zmienić awatar gracza, możesz to zrobić na stronie ustawień.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Zmień ustawienia konta</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Cały Twój postęp w grze {game} jest widoczny na stronie profilu, gdzie znajdziesz szczegółowe statystyki wszystkich poprzednich polowań.</value></data>

@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Als je de launcher en de client van het spel nog niet hebt gedownload, moet je dat doen voordat je kunt gaan jagen.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Naar downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Instellingen</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Als je je e-mailadres, taalinstellingen of spelersavatar wilt wijzigen, kan dat op de instellingenpagina.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Als je je spelersavatar wilt wijzigen, kun je dat doen op de instellingenpagina.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Accountinstellingen wijzigen</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profiel</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Al je voortgang in {game} staat op je profielpagina, waar je ook gedetailleerde statistieken van al je eerdere jachten vindt.</value></data>

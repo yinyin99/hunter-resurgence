@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Se non hai ancora scaricato il launcher e il client del gioco, devi farlo prima di poter iniziare a cacciare.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Ai download</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Impostazioni</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Se vuoi modificare il tuo indirizzo email, le impostazioni della lingua o il tuo avatar, puoi farlo nella pagina delle impostazioni.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Se vuoi cambiare il tuo avatar da giocatore, puoi farlo nella pagina delle impostazioni.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modifica impostazioni account</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profilo</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Tutti i tuoi progressi in {game} sono mostrati nella tua pagina del profilo, dove troverai statistiche dettagliate su tutte le tue battute di caccia precedenti.</value></data>

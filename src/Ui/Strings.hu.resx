@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Ha még nem töltötted le a játék launcherét és kliensét, ezt meg kell tenned, mielőtt vadászni kezdhetnél.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>A letöltésekhez</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Beállítások</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Ha módosítani szeretnéd az e-mail címedet, a nyelvi beállításaidat vagy a játékos avatarodat, azt a beállítások oldalon teheted meg.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Ha módosítani szeretnéd a játékosavatarodat, megteheted a beállítások oldalon.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Fiókbeállítások módosítása</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>A profiloldaladon látható a játékban ({game}) elért összes előrehaladásod; ott megtalálod az összes korábbi vadászatod részletes statisztikáit.</value></data>

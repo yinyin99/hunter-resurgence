@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Jos et ole vielä ladannut pelin käynnistäjää ja asiakasohjelmaa, sinun täytyy tehdä se ennen kuin voit aloittaa metsästyksen.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Latauksiin</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Asetukset</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jos haluat vaihtaa sähköpostiosoitteesi, kieliasetuksesi tai pelaajan avatarisi, voit tehdä sen asetussivulla.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jos haluat vaihtaa pelaajan avatarin, voit tehdä sen asetussivulla.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Muuta tilin asetuksia</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profiili</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Kaikki edistymisesi {game}-pelissä näkyy profiilisivullasi, josta löydät yksityiskohtaiset tilastot kaikista aiemmista metsästyksistäsi.</value></data>

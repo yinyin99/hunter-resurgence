@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Wenn Sie Launcher und Spiel-Client noch nicht heruntergeladen haben, müssen Sie das tun, bevor Sie mit der Jagd beginnen können.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Zu den Downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Einstellungen</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Wenn Sie Ihre E-Mail-Adresse, Ihre Spracheinstellungen oder Ihren Spieler-Avatar ändern möchten, können Sie das auf der Einstellungsseite tun.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Wenn Sie Ihren Spieler-Avatar ändern möchten, können Sie das auf der Einstellungsseite tun.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Kontoeinstellungen ändern</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Ihr gesamter Fortschritt in {game} wird auf Ihrer Profilseite angezeigt. Dort finden Sie detaillierte Statistiken zu allen Ihren bisherigen Jagden.</value></data>

@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Om du ännu inte har laddat ner spelets launcher och klient måste du göra det innan du kan börja jaga.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Till nedladdningar</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Inställningar</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Om du vill ändra din e-postadress, dina språkinställningar eller din spelaravatar kan du göra det på inställningssidan.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Om du vill ändra din spelaravatar kan du göra det på inställningssidan.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Ändra kontoinställningar</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Alla dina framsteg i {game} visas på din profilsida, där hittar du detaljerad statistik för alla dina tidigare jakter.</value></data>

@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>To downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your email address, language settings or your player avatar you can do so on the settings page.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your player avatar you can do so on the settings page.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Change account settings</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profile</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>All of your progress in {game} is shown on your profile page, there you will find detailed stats for all of your previous hunts.</value></data>

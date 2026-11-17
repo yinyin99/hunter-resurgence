@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si vous n’avez pas encore téléchargé le launcher et le client du jeu, vous devez le faire avant de pouvoir commencer à chasser.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Télécharger</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Paramètres</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si vous souhaitez modifier votre adresse email, votre langue d’affichage ou votre avatar, vous pouvez le faire sur la page des paramètres.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si vous souhaitez changer votre avatar de joueur, vous pouvez le faire sur la page des paramètres.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modifier les paramètres</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Votre progression dans {game} est visible sur votre page de profil. C’est là que vous trouverez les statistiques détaillées de toutes vos anciennes chasses.</value></data>

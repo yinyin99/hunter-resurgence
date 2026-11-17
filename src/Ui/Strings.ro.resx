@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Dacă nu ați descărcat încă launcherul și clientul jocului, trebuie să faceți acest lucru înainte de a începe să vânați.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>La descărcări</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Setări</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Dacă doriți să vă schimbați adresa de e-mail, limba sau avatarul de jucător, puteți face acest lucru în pagina de setări.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Dacă doriți să vă schimbați avatarul de jucător, puteți face acest lucru pe pagina de setări.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modificați setările contului</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Tot progresul dvs. din {game} este afișat în pagina de profil, unde veți găsi statistici detaliate pentru toate vânătorile anterioare.</value></data>

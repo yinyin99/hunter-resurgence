@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Если вы ещё не скачали лаунчер и клиент игры, сделайте это, прежде чем начинать охоту.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>К загрузкам</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Настройки</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Изменить адрес электронной почты, язык или аватар можно на странице настроек.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Если вы хотите изменить аватар игрока, это можно сделать на странице настроек.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Изменить настройки аккаунта</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Профиль</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Весь ваш прогресс в {game} показан на странице профиля — там вы найдёте подробную статистику по всем прошлым охотам.</value></data>

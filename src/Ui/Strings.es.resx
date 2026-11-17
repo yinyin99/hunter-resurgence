@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Si aún no has descargado el lanzador y el cliente del juego, tendrás que hacerlo antes de poder empezar a cazar.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Ir a descargas</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Configuración</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si quieres cambiar tu dirección de email, la configuración de idioma o tu avatar de jugador, puedes hacerlo en la página de configuración.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Si quieres cambiar tu avatar de jugador, puedes hacerlo en la página de ajustes.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Cambiar configuración de la cuenta</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Perfil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Todo tu progreso en {game} se muestra en tu página de perfil, donde encontrarás estadísticas detalladas de todas tus cacerías anteriores.</value></data>

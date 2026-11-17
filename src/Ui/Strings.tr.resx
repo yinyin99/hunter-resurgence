@@ -858,7 +858,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Oyun başlatıcısını ve istemciyi henüz indirmediyseniz, ava başlamadan önce bunu yapmanız gerekir.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>İndirmelere git</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Ayarlar</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>E-posta adresinizi, dil ayarlarınızı veya oyuncu avatarınızı değiştirmek isterseniz bunu ayarlar sayfasından yapabilirsiniz.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Oyuncu avatarınızı değiştirmek istiyorsanız bunu ayarlar sayfasında yapabilirsiniz.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Hesap ayarlarını değiştir</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>{game} oyunundaki tüm ilerlemeniz profil sayfanızda gösterilir; orada geçmiş tüm avlarınızın ayrıntılı istatistiklerini bulacaksınız.</value></data>
