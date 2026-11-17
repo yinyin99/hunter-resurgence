@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Moninpeli</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Etsi moninpeli</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Harjoitukset</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ on {game}-pelin virtuaalivaluutta, jolla voit ostaa kaupasta tuotteita, kuten aseita, varusteita, vaatteita ja paljon muuta.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Asetukset</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammukset:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>polttoaine:</value></data>

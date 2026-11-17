@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Többjátékos mód</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Többjátékos mód keresése</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Oktatójátékok</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>{game} virtuális pénzneme az em$, amellyel az Áruházban vásárolhatsz fegyvereket, felszerelést, ruházatot és még sok mást.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Beállítások</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>lőszer:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>üzemanyag:</value></data>

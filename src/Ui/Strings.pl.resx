@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Gra wieloosobowa</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Znajdź grę wieloosobową</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Samouczki</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ to wirtualna waluta w grze {game}, za którą kupisz w Sklepie przedmioty, takie jak broń, wyposażenie, ubrania i wiele więcej.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>amunicja:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>paliwo:</value></data>

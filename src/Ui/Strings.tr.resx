@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Çok oyunculu mod</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Çok oyunculu oyun bul</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Eğitimler</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$, {game} oyununun sanal para birimidir; mağazadan silah, ekipman, kıyafet ve çok daha fazlasını satın almak için kullanılabilir.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Ayarlar</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>cephane:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>yakıt:</value></data>

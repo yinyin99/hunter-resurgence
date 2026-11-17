@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Multiplayerspel</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Een multiplayerspel zoeken</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Lessen</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ is de virtuele valuta van {game} waarmee je in de winkel items kunt kopen, zoals wapens, uitrusting, kleding en nog veel meer.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munitie:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>brandstof:</value></data>

@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Hra s ostatními</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Vyhledat hru s ostatními</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Výuka</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ je virtuální měna ve hře {game}, za kterou můžete v obchodě nakupovat zbraně, vybavení, oblečení a mnoho dalšího.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Nastavení</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>střelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>palivo:</value></data>

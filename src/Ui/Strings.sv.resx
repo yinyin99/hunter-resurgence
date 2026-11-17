@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Flerspelarläge</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Hitta ett flerspelarspel</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Guider</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ är {game}s virtuella valuta som du kan använda för att köpa föremål i butiken, till exempel vapen, utrustning, kläder och mycket mer.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Inställningar</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunition:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>bränsle:</value></data>

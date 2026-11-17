@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Joc multiplayer</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Găsiți un joc multiplayer</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriale</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ este moneda virtuală a {game} și poate fi folosită pentru a cumpăra articole din magazin, precum arme, echipament, îmbrăcăminte și multe altele.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Setări</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>muniție:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>combustibil:</value></data>

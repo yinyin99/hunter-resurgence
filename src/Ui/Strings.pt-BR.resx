@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Jogo Multiplayer</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Procurar jogo multiplayer</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriais</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ é a moeda virtual de {game} que pode ser usada para comprar itens na Loja, como armas, equipamentos, roupas e muito mais.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Ajustes</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munição:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>combustível:</value></data>

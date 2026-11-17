@@ -40,13 +40,13 @@ public sealed class MenuBarTests : UiContext
     }
 
     [Theory]
-    [InlineData(false, 1)]
-    [InlineData(true, 0)]
-    public void TheBankLinkShowsOnlyOffTheLiveSite(bool live, int links)
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheMenuHasNoBankLinkInAnyMode(bool live)
     {
         Services.GetRequiredService<HostMode>().Live = live;
         var cut = Render<MenuBar>();
-        Assert.Equal(links, cut.FindAll("a[href='/bank/ems']").Count);
+        Assert.Empty(cut.FindAll("a[href='/bank/ems']"));
     }
 
     [Theory]

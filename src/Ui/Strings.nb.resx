@@ -37,7 +37,6 @@
   <data name="Menu.Multi" xml:space="preserve"><value>Flerspillerspill</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Finn et flerspillerspill</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Opplæring</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ er den virtuelle valutaen i {game}. Den kan brukes til å kjøpe ting i butikken, som våpen, utstyr, klær og mye mer.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Innstillinger</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunisjon:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>drivstoff:</value></data>
