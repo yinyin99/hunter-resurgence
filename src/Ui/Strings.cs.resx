@@ -174,6 +174,9 @@
   <data name="News.Backup.Title" xml:space="preserve"><value>Oficiální servery skončily</value></data>
   <data name="News.Backup.Text" xml:space="preserve"><value>Oficiální servery skončily 11. listopadu 2026. Zálohovací nástroj uložil váš profil: inventář, trofeje, statistiky a další. Komunitní server je nyní otevřený.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Oficiální servery skončily 11. listopadu 2026.</value></data>
+  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: kontrola hry a funkce „Nahlásit problém“</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcher nyní před každým lovem zkontroluje vaši hru: verzi, soubory, složku, Steam a nastavení. Pokud něco nefunguje, poradí vám, jak to opravit. Pokud hru nenajde, vyberte její složku v Nastavení, Složka hry. Pokud se hra nespustí, Nastavení, Nahlásit problém nám pošle vaše protokoly.</value></data>
+  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcher nyní před každým lovem zkontroluje vaši hru.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Přečtěte si to zde</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Jít na lov</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>HRA PRO JEDNOHO</value></data>

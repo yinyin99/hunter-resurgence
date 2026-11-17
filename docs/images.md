@@ -65,7 +65,7 @@ With the values the mock services give, the slots have 640 distinct keys, and th
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
 | `video-<id>` | 900×506, 185×138 | VideoModal, Help (tutorial rows) | 9 of 19: `v1` and `v12`–`v19` are matched to the original help page's videos by section, position and title (the mock names another author for `v12`–`v19`; the titles and order are the original's) and show the video site's `0.jpg` thumbnail, as the original page did. `v2`–`v11` stay empty: the original lists those videos by author only, and the mock's titles do not match the videos' own titles |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
-| `competition-hero-170031`, `competition-hero-170026` | 805×380, 175×95 | FeedCarousel | yes: the project's posts reuse two competition pictures (a deer each, `NewsPosts.cs`), cropped to fill the slide |
+| `competition-hero-170039`, `competition-hero-170031`, `competition-hero-170026` | 805×380, 175×95 | FeedCarousel | yes: the project's posts reuse three competition pictures (`NewsPosts.cs`), cropped to fill the slide |
 | `help-banner`, `help-hero` | 940×250 | Help | yes: the visible crop of the original's tutorial cover |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |

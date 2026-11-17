@@ -174,6 +174,9 @@
   <data name="News.Backup.Title" xml:space="preserve"><value>A hivatalos szerverek bezártak</value></data>
   <data name="News.Backup.Text" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezártak. A mentőeszköz elmentette a profilodat: felszerelést, trófeákat, statisztikákat és mást. A közösségi szerver most nyitva van.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>A hivatalos szerverek 2026. november 11-én bezártak.</value></data>
+  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: játékellenőrzés és „Probléma bejelentése” funkció hozzáadva</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>A launcher mostantól minden vadászat előtt ellenőrzi a játékodat: a verziót, a fájlokat, a mappát, a Steamet és a beállítást. Ha valami nincs rendben, megmondja, hogyan javíthatod. Ha a játék nem található, válaszd ki a mappáját a Beállítások, Játékmappa menüben. Ha a játék nem indul el, a Beállítások, Probléma bejelentése elküldi nekünk a naplóidat.</value></data>
+  <data name="News.Launcher031.Lead" xml:space="preserve"><value>A launcher mostantól minden vadászat előtt ellenőrzi a játékodat.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Olvasd el itt</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Irány vadászni</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>EGYJÁTÉKOS</value></data>
