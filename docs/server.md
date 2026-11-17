@@ -788,6 +788,8 @@ dotnet run --project server/Server -c Release -- [--settings <file>] claim <acco
 
 `review list` prints a waiting claim as `c<id>`, `claim`, `account <id>`, `archived <uid>`, `handle <handle>`, `hunterscore <n>`, the time and the note (why it waits), tab separated, after the kept zips. `review approve c<id>` runs the restore above (the player's choice of name stands unless `--keep-handle` keeps the account's own) and the row becomes `restored`. `review reject c<id> [reason]` marks the row `rejected` and keeps the reason; the player gets it in the inbox, and the claim stays the account's one. `claim` restores an archived player onto an account (its user id or handle) at once: no lookup limit, no review, no confirmation, and it replaces the account's earlier claim row. All of them run on their own and need the recordings, like `import backup`. Deleting an account deletes its `claims` and `claim_lookups` rows, so the archived player can be claimed again.
 
+Claim ids are never reused (`claims.id` is AUTOINCREMENT, from 100 at least on a database migrated from before), so a `c<id>` in an old alert never names another player's claim after an account is deleted.
+
 ## Behind a reverse proxy
 
 A proxy in front of the server speaks plain HTTP to it (a listener without `cert`). The game routes by host name, which a proxy hides, so a local forwarder in front of the proxy puts the name the client asked for in a request header. The server reads `host_header` (default `X-Game-Host`) and routes by its value, only when the peer address is in `trusted_proxies`; from any other peer the header is ignored. A value that is not a host name (optionally with a port) is ignored too.

@@ -26,6 +26,52 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(table, Cfg, state, tmp), tmp);  // the server looks for archive.db in the work folder
     }
 
+    const long Acc1 = 2000000001, Acc2 = 2000000002;
+
+    static void AddAccountWithClaim(Db con, long account, long claimId)
+    {
+        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, account) VALUES (?, ?, ?, 0, '{}')", account, "7656119000000" + account, "h" + account);
+        con.Exec("INSERT INTO claims (id, account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (?, ?, 1, 'a', 0, 'waiting', 0, '', 0)", claimId, account);
+    }
+
+    static long NextClaim(Db con, long account)
+    {
+        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, account) VALUES (?, '76561190000009999', ?, 0, '{}')", account, "h" + account);
+        return con.Insert("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (?, 1, 'a', 0, 'waiting', 0, '', 0)", account);
+    }
+
+    [Fact]
+    public void TestClaimIdsAreNotReusedAfterTheHighestAccountIsDeleted()
+    {
+        var store = new Store(Path.Combine(tmp, "ids.db"));
+        using var con = store.Open(Acc1);
+        AddAccountWithClaim(con, Acc1, 1);
+        AddAccountWithClaim(con, Acc2, 2);
+        store.DeleteAccount(Acc2);
+        Assert.True(NextClaim(con, Acc2 + 1) > 2);
+    }
+
+    [Fact]
+    public void TestSchemaOfVersion25KeepsTheClaimsAndSeedsTheSequence()
+    {
+        var file = Path.Combine(tmp, "v25.db");
+        var store = new Store(file);
+        using (var con = store.Open(Acc1))
+        {
+            con.Exec("DROP TABLE claims");
+            con.Exec("CREATE TABLE claims (id INTEGER PRIMARY KEY, account_id INTEGER NOT NULL UNIQUE REFERENCES accounts (id) ON DELETE CASCADE, archived_uid INTEGER NOT NULL, handle TEXT NOT NULL, hunterscore INTEGER NOT NULL, state TEXT NOT NULL, ts INTEGER NOT NULL, decided_ts INTEGER, note TEXT NOT NULL, keep_handle INTEGER NOT NULL)");
+            AddAccountWithClaim(con, Acc1, 1);
+            AddAccountWithClaim(con, Acc2, 7);
+            con.Exec("PRAGMA user_version = 25");
+        }
+        var check = new Store(file);
+        using var c2 = check.Open(Acc1);
+        Assert.Equal([1L, 7L], c2.Rows("SELECT id FROM claims ORDER BY id").Select(r => (long)r[0]));
+        check.DeleteAccount(Acc2);
+        Assert.True(NextClaim(c2, Acc2 + 1) >= 101);
+        Assert.Equal(1L, c2.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'claims_uid'"));
+    }
+
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
     void MakeArchive()
