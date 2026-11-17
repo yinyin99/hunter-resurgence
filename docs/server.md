@@ -28,7 +28,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `all_licenses` | Default `true`: every player hunts with an unlimited license, see [Licenses](#licenses). `false`: licenses are items like any other |
 | `unlimited_ammo` | Default `true`: every player has unlimited ammunition, see [Unlimited ammunition](#unlimited-ammunition). `false`: ammunition is an item like any other. Independent of `all_licenses` |
 | `link_discord` | Optional: an `https` invite URL of the operator's Discord; the `LINK_DISCORD` environment variable (set by the deploy from the repository secret, [deploy.md](deploy.md#deploys)) wins over it. When set, the launcher's start page when signed in shows "Join the Discord: news, help and the operator" as a link to it (the website's confirm and "Done" pages show the same line from its own `LINK_DISCORD`). Unset, empty or not `https`: nothing is shown |
-| `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) or an archive claim waits ([Archive claims](#archive-claims)) the server posts `{"content": "..."}` there, in the [alert layout](#discord-alerts): the review id (`c<id>` for a claim), the account id, the backup's or archived user id and its handle (and for a claim the hunterscore), the account's Steam profile link (or `none`), nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
+| `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) or an archive claim waits ([Archive claims](#archive-claims)) the server posts `{"content": "..."}` there. The same webhook gets the alerts for a refused upload and a problem report. Every alert has the layout and fields of [Discord alerts](#discord-alerts), nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
 | `upload_account_files` | Default `3`, at least `1`: how many zips one account may have stored for the operator at once: the ones waiting for review plus the refused ones kept under `refused/` ([Upload a backup zip](#upload-a-backup-zip)). Restored zips do not count. A new upload over it is refused at `restore/start` (status `quota`) |
 | `upload_account_bytes` | Default `1073741824` (1 GB), at least `1`: the most bytes of stored zips (with their picture files) one account may have for the operator. An upload that would pass it is refused at the start, or as soon as the bytes received pass what is left (status `quota`) |
 | `upload_total_bytes` | Default `5368709120` (5 GB), at least `1`: the most bytes of stored zips on the whole server. Over it, uploads are refused at the start and during the upload (status `paused`) |
@@ -807,12 +807,12 @@ Example:
 
 ```text
 📜 **Claim waiting for review**
-claim: c27
+claim: c12
 handle: `exampleuser`
-account: 2000000050
-archived id: 19728421
-hunterscore: 13380
-steam: [profile](<https://steamcommunity.com/profiles/76561198000000000>)
+account: 2000000123
+archived id: 1234567
+hunterscore: 10450
+steam: [profile](<https://steamcommunity.com/profiles/76561198000000123>)
 run: `review list`
 ```
 

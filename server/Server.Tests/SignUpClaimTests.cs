@@ -144,6 +144,7 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         var text = await OneAlert();
         Assert.StartsWith("\U0001F195 **New account**\nhandle: `Newbie`\naccount: ", text);
         Assert.Contains("\noutcome: fresh start", text);
+        Assert.DoesNotContain("archived", text);
         Assert.Contains("\nsteam: [profile](<https://steamcommunity.com/profiles/99999999999999993>)", text);
 
         hook.Texts.Clear();

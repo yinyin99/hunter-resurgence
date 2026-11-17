@@ -114,12 +114,15 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     public async Task TestAProblemReportAlertUsesTheSharedLayoutOnTheReviewWebhook()
     {
         var http = new Capture();
-        Alerts.ProblemReport(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, 2000000050, "some_name", "p2000000050-1a2b3c4d", "short", 1_572_864, new HttpClient(http));
+        Alerts.ProblemReport(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, 2000000123, "some_name", "p2000000123-1a2b3c4d", "short", 1_572_864, new HttpClient(http));
+        Alerts.ProblemReport(new JsonObject { ["review_webhook"] = "https://hooks.test/w/1" }, 7, "!!", "p7-00000000", "manual", 1000, new HttpClient(http));
         var deadline = DateTime.UtcNow.AddSeconds(10);
-        while (DateTime.UtcNow < deadline && http.Posts.Count == 0) await Task.Delay(20);
-        await Task.Delay(100);
-        Assert.Equal("\U0001FA7A **Problem report**\nhandle: `some_name`\naccount: 2000000050\nreference: `p2000000050-1a2b3c4d`\ntrigger: short\nsize: 1.5 MiB",
-            (string)JsonNode.Parse(Assert.Single(http.Posts).Body)!["content"]!);
+        while (DateTime.UtcNow < deadline && http.Posts.Count < 2) await Task.Delay(20);
+        var posts = http.Posts.Select(p => (string)JsonNode.Parse(p.Body)!["content"]!).OrderBy(x => x.Contains("some_name") ? 0 : 1).ToList();
+        Assert.Contains("handle: none", posts[1]);
+        Assert.Contains("size: 1 KiB", posts[1]);
+        Assert.Equal("\U0001FA7A **Problem report**\nhandle: `some_name`\naccount: 2000000123\nreference: `p2000000123-1a2b3c4d`\ntrigger: short\nsize: 1.5 MiB",
+            posts[0]);
     }
 
     [Fact]
