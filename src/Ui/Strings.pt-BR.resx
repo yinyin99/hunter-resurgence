@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>Você precisa aceitar os Termos de uso antes de continuar.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Ao clicar em "Continuar" você concorda com os {0}. Como seus dados são tratados está explicado na página {1}.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>Aceito os Termos de uso</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Li Seus dados</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Li a página Seus dados</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Já é um caçador?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Entrar</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Quem mais os vê</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>O provedor de hospedagem: o servidor roda em um servidor virtual alugado, então o provedor hospeda tudo o que foi citado acima.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: toda requisição ao site e ao servidor passa por ele, junto com o seu endereço IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: os canais privados do operador recebem uma mensagem a cada nova conta (nome de usuário, número da conta e id da Steam) e a cada backup ou solicitação aguardando revisão (os mesmos dados).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: os canais privados do operador recebem uma mensagem a cada nova conta, a cada backup ou solicitação aguardando revisão e a cada envio recusado, com o nome de usuário, o número da conta, o id da Steam e os detalhes do backup ou da solicitação. Excluir meus dados não apaga essas mensagens.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: o servidor punch-through do jogo, no mesmo servidor alugado, vê o seu endereço IP e a porta quando você entra em uma partida, e o computador do outro jogador se conecta diretamente ao seu, então ele pode ver o seu endereço IP.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Seus direitos</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>Você pode perguntar o que é guardado sobre você, pedir a correção, excluir você mesmo com Excluir meus dados e se opor ao uso. Se achar que seus dados são tratados de forma indevida, pode reclamar a uma autoridade de proteção de dados. Escreva para o contato acima.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Seu navegador está aberto. Entre lá com a Steam.</value></data>

@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>Trebuie să acceptați Termeni de utilizare înainte de a continua.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați {0}. Modul în care sunt tratate datele dvs. este explicat pe pagina {1}.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>Accept Termeni de utilizare</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Am citit pagina „Datele dvs.”</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Am citit pagina Datele dvs.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sunteți deja vânător?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Conectare</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Cine altcineva le vede</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>Furnizorul de găzduire: serverul rulează pe un server virtual închiriat, deci furnizorul găzduiește tot ce este menționat mai sus.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: fiecare cerere către site și către server trece prin el, împreună cu adresa dvs. IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: canalele private ale operatorului primesc un mesaj pentru fiecare cont nou (pseudonim, număr de cont și ID Steam) și pentru fiecare backup sau cerere care așteaptă verificarea (aceleași detalii).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: canalele private ale operatorului primesc un mesaj pentru fiecare cont nou, pentru fiecare backup sau cerere care așteaptă verificarea și pentru fiecare încărcare refuzată, cu pseudonimul, numărul de cont, ID-ul Steam și detaliile backup-ului sau ale cererii. Ștergeți datele mele nu elimină aceste mesaje.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: serverul punch-through al jocului, pe același server închiriat, vă vede adresa IP și portul când intrați într-un joc, iar calculatorul celuilalt jucător se conectează direct la al dvs., deci acel jucător vă poate vedea adresa IP.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Drepturile dvs.</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>Puteți cere ce se păstrează despre dvs., puteți cere corectarea lor, le puteți șterge singur cu „Ștergeți datele mele” și vă puteți opune utilizării lor. Dacă credeți că datele dvs. sunt tratate greșit, puteți depune o plângere la o autoritate de protecție a datelor. Scrieți la contactul de mai sus.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Browserul este deschis. Conectează-te acolo cu Steam.</value></data>

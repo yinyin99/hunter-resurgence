@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>Du må godta bruksvilkårene før du fortsetter.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Ved å klikke på «Fortsett»-knappen godtar du {0}. Hvordan dataene dine behandles, forklares på siden {1}.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>Jeg godtar bruksvilkårene</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jeg har lest Dine data</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jeg har lest siden Dine data</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Allerede jeger?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Logg inn</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-post</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Hvem andre som ser dem</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>Vertsleverandøren: serveren kjører på en leid virtuell server, så leverandøren huser alt som er nevnt ovenfor.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: alle forespørsler til nettstedet og serveren går gjennom Cloudflare, sammen med IP-adressen din.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatørens private kanaler får en melding for hver ny konto (brukernavn, kontonummer og Steam-id) og for hver sikkerhetskopi eller forespørsel som venter på gjennomgang (samme opplysninger).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatørens private kanaler får en melding for hver ny konto, for hver sikkerhetskopi eller forespørsel som venter på gjennomgang og for hver avvist opplasting, med brukernavn, kontonummer, Steam-id og detaljer om sikkerhetskopien eller forespørselen. Slett dataene mine fjerner ikke disse meldingene.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Flerspiller: spillets punch-through-server, på den samme leide serveren, ser IP-adressen og porten din når du blir med i et spill, og den andre spillerens datamaskin kobler seg direkte til din, så vedkommende kan se IP-adressen din.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Rettighetene dine</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>Du kan be om innsyn i hva som er lagret om deg, få det rettet, slette det selv med Slett dataene mine, og protestere mot bruken. Hvis du mener dataene dine behandles feil, kan du klage til en personvernmyndighet. Skriv til kontaktadressen ovenfor.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Nettleseren din er åpen. Logg inn med Steam der.</value></data>

@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>Je moet de gebruiksvoorwaarden accepteren voordat je verdergaat.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Door op de knop "Doorgaan" te klikken ga je akkoord met de {0}. Hoe met je gegevens wordt omgegaan, staat uitgelegd op de pagina {1}.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>Ik accepteer de gebruiksvoorwaarden</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ik heb Jouw gegevens gelezen</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ik heb de pagina Jouw gegevens gelezen</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Al een jager?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Inloggen</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Wie het nog meer ziet</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>De hostingprovider: de server draait op een gehuurde virtuele server, dus de provider host alles wat hierboven staat.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: elk verzoek aan de website en de server loopt erdoorheen, samen met je IP-adres.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: de privékanalen van de beheerder krijgen een bericht bij elk nieuw account (gebruikersnaam, accountnummer en Steam-id) en bij elke back-up of claim die op beoordeling wacht (dezelfde gegevens).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: de privékanalen van de beheerders krijgen een bericht bij elk nieuw account, bij elke back-up of claim die op beoordeling wacht en bij elke geweigerde upload, met de gebruikersnaam, het accountnummer, het Steam-id en de details van de back-up of claim. Mijn gegevens verwijderen wist die berichten niet.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: de punch-through-server van het spel, op dezelfde gehuurde server, ziet je IP-adres en poort wanneer je een spel betreedt, en de computer van de andere speler maakt rechtstreeks verbinding met die van jou, dus die speler kan je IP-adres zien.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Jouw rechten</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>Je kunt vragen welke gegevens over jou worden bewaard, ze laten corrigeren, ze zelf verwijderen met Mijn gegevens verwijderen en bezwaar maken tegen het gebruik ervan. Als je denkt dat er verkeerd met je gegevens wordt omgegaan, kun je een klacht indienen bij een gegevensbeschermingsautoriteit. Schrijf naar het contactadres hierboven.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Je browser is geopend. Log daar in met Steam.</value></data>

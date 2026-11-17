@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>You must accept the Terms of use before continuing.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>By clicking the "Continue" button you accept the {0}. How your data is handled is explained on the {1} page.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>I accept the Terms of use</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I have read Your data</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I have read the Your data page</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Who else sees it</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>The hosting provider: the server runs on a rented virtual server, so the provider hosts everything above.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: every request to the website and the server passes through it, with your IP address.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: the operator's private channels get a message for each new account (handle, account number and Steam id) and for each backup or claim waiting for review (the same details).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: the operators' private channels get a message for each new account, for each backup or claim waiting for review and for each refused upload, with the handle, account number, Steam id and details of the backup or claim. Delete my data does not remove those messages.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: the game's punch-through server, on the same rented server, sees your IP address and port when you join a game, and the other player's computer connects to yours directly, so they can see your IP address.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Your rights</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>You can ask what is held about you, have it corrected, delete it yourself with Delete my data, and object to its use. If you think your data is handled wrongly, you can complain to a data protection authority. Write to the contact above.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Your browser is open. Sign in with Steam there.</value></data>

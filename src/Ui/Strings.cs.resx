@@ -135,7 +135,7 @@
   <data name="Eula.Title" xml:space="preserve"><value>Před pokračováním musíte přijmout Podmínky použití.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Kliknutím na tlačítko „Pokračovat“ přijímáte {0}. Jak se nakládá s vašimi údaji, vysvětluje stránka {1}.</value></data>
   <data name="Eula.AgreeEula" xml:space="preserve"><value>Přijímám Podmínky použití</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Přečetl(a) jsem Vaše údaje</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Přečetl(a) jsem stránku Vaše údaje</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Už jste lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Přihlásit se</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1468,7 +1468,8 @@
   <data name="Data.Others.Title" xml:space="preserve"><value>Kdo je ještě vidí</value></data>
   <data name="Data.Others.Host" xml:space="preserve"><value>Poskytovatel hostingu: server běží na pronajatém virtuálním serveru, takže poskytovatel hostuje vše výše uvedené.</value></data>
   <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: prochází jím každý požadavek na web a server, a to s vaší IP adresou.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: soukromé kanály operátora dostanou zprávu o každém novém účtu (přezdívka, číslo účtu a Steam ID) a o každé záloze nebo žádosti čekající na kontrolu (stejné údaje).</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: soukromé kanály operátora dostanou zprávu o každém novém účtu, o každé záloze nebo žádosti čekající na kontrolu a o každém odmítnutém nahrání, s přezdívkou, číslem účtu, Steam ID a podrobnostmi o záloze nebo žádosti. Smazat mé údaje tyto zprávy neodstraní.</value></data>
+  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: server hry pro navazování spojení (punch-through) na stejném pronajatém serveru vidí vaši IP adresu a port, když se připojíte ke hře, a počítač druhého hráče se připojuje přímo k vašemu, takže může vidět vaši IP adresu.</value></data>
   <data name="Data.Rights.Title" xml:space="preserve"><value>Vaše práva</value></data>
   <data name="Data.Rights.Text" xml:space="preserve"><value>Můžete se zeptat, co se o vás uchovává, nechat to opravit, sami to smazat pomocí Smazat mé údaje a vznést námitku proti jeho využití. Pokud se domníváte, že se s vašimi údaji nakládá nesprávně, můžete podat stížnost u úřadu pro ochranu osobních údajů. Pište na kontakt výše.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Prohlížeč se otevřel. Přihlaste se tam přes Steam.</value></data>
