@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Nenastaveno: soubor settings.json neobsahuje záznam pro tyto soubory.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Jednou hru spusťte, aby vytvořila své soubory s nastavením.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Soubor s nastavením má formát, který launcher nezná, proto zůstal beze změny.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Hra běží. Před uložením ji zavřete: tyto soubory si přepisuje sama.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Nastavení se nepodařilo uložit.</value></data>

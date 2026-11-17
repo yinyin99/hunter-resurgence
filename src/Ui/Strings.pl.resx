@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Nie skonfigurowano: plik settings.json nie zawiera wpisu dla tych plików.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Uruchom grę raz, aby utworzyła pliki ustawień.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Plik ustawień ma format nieznany launcherowi, więc pozostaje nietknięty.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Gra jest uruchomiona. Zamknij ją przed zapisem: sama nadpisuje te pliki.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Nie udało się zapisać ustawień.</value></data>

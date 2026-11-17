@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Ei määritetty: settings.json ei sisällä merkintää näille tiedostoille.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Käynnistä peli kerran, jotta se luo asetustiedostonsa.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Asetustiedoston muotoa ei tunnisteta käynnistäjässä, joten sitä ei muuteta.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Peli on käynnissä. Sulje se ennen tallennusta: peli kirjoittaa nämä tiedostot itse uudelleen.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Asetuksia ei voitu tallentaa.</value></data>

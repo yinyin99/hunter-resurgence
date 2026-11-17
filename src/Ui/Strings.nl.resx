@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Niet geconfigureerd: settings.json bevat geen vermelding voor deze bestanden.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Start het spel één keer zodat het zijn instellingenbestanden aanmaakt.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Een instellingenbestand heeft een indeling die de launcher niet kent en blijft daarom ongewijzigd.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Het spel is actief. Sluit het voordat je opslaat: het herschrijft deze bestanden zelf.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>De instellingen konden niet worden opgeslagen.</value></data>

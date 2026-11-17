@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Inte konfigurerat: settings.json saknar post för de här filerna.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Starta spelet en gång så att det skapar sina inställningsfiler.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>En inställningsfil har ett format som launchern inte känner igen, så den lämnas orörd.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Spelet körs. Stäng det innan du sparar: det skriver över de här filerna själv.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Inställningarna kunde inte sparas.</value></data>

@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Neconfigurat: settings.json nu conține nicio intrare pentru aceste fișiere.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Porniți jocul o dată pentru ca acesta să creeze fișierele de setări.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Un fișier de setări are un format necunoscut launcherului, așa că a fost lăsat neatins.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Jocul rulează. Închideți-l înainte de salvare: el rescrie singur aceste fișiere.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Setările nu au putut fi salvate.</value></data>

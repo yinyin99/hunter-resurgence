@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Nincs beállítva: a settings.json nem tartalmaz bejegyzést ezekhez a fájlokhoz.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Indítsd el egyszer a játékot, hogy létrehozza a beállításfájljait.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Az egyik beállításfájl olyan formátumú, amelyet a launcher nem ismer, ezért érintetlenül maradt.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>A játék fut. Mentés előtt zárd be: ezeket a fájlokat a játék maga írja felül.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>A beállításokat nem sikerült menteni.</value></data>

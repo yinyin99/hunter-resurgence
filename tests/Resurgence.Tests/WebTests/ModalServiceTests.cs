@@ -30,7 +30,7 @@ public class ModalServiceTests
     public async Task TheFirstStartSetupGoesOnWhenThereIsNothingToSetUp()
     {
         Assert.True(await new ModalService().SetUpFirst(new Settings(first: false, error: null)));
-        Assert.True(await new ModalService().SetUpFirst(new Settings(first: true, error: "GameSettings.Missing")));
+        Assert.True(await new ModalService().SetUpFirst(new Settings(first: true, error: "GameSettings.BadFormat")));
     }
 
     [Fact]

@@ -326,7 +326,6 @@
   <data name="GameSettings.X8" xml:space="preserve"><value>8x</value></data>
   <data name="GameSettings.X16" xml:space="preserve"><value>16x</value></data>
   <data name="GameSettings.NotConfigured" xml:space="preserve"><value>Не настроено: в settings.json нет записей для этих файлов.</value></data>
-  <data name="GameSettings.Missing" xml:space="preserve"><value>Запустите игру один раз, чтобы она создала свои файлы настроек.</value></data>
   <data name="GameSettings.BadFormat" xml:space="preserve"><value>Формат файла настроек лаунчеру неизвестен, поэтому файл оставлен без изменений.</value></data>
   <data name="GameSettings.ClientRunning" xml:space="preserve"><value>Игра запущена. Закройте её перед сохранением: она сама перезаписывает эти файлы.</value></data>
   <data name="GameSettings.SaveFailed" xml:space="preserve"><value>Не удалось сохранить настройки.</value></data>
