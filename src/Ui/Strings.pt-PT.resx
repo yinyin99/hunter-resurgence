@@ -1523,27 +1523,23 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>O jogo está a decorrer. Fechar o launcher desliga o jogo do servidor da comunidade. Manter o launcher aberto?&#10;&#10;Sim: manter aberto. Não: minimizar.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Comunicar um problema</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Isto cria um zip com os ficheiros listados abaixo, para quem gere o servidor da comunidade. Veja o que contém e guarde-o para o partilhar por si, ou envie-o para o servidor da comunidade (associado à sua conta, guardado durante 30 dias).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envia os registos do jogo para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A reunir os ficheiros…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>O relatório contém estes ficheiros:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Estes não puderam ser lidos e ficaram de fora:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Guardar em Transferências</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Enviar para o servidor da comunidade</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>A enviar…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Guardado como {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Enviado. A sua referência é {0}. Indique-a ao pedir ajuda.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar automaticamente um relatório de problema após um arranque falhado</value></data>
-  <data name="Report.AutoSent" xml:space="preserve"><value>Foi enviado um relatório de problema: {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Enviado. Referência: {0} (indique-a no Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar automaticamente após um arranque falhado</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Relatório de problema enviado: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Algo correu mal? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar ou fechar demasiado cedo, o launcher pode criar um relatório de problema para ajudar a descobrir o motivo. Um relatório contém:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>os ficheiros de registo do jogo e as suas definições</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>os eventos de falha do Windows referentes ao jogo</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>a versão e o idioma do Windows, a placa gráfica e os ecrãs, e os nomes dos antivírus, aceleradores e overlays em execução no seu PC</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>quando iniciou o jogo recentemente e como terminou cada arranque</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Nunca contém palavras-passe nem tokens.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>Um relatório vai para o servidor da comunidade, associado à sua conta. É guardado durante 30 dias e os operadores do servidor podem lê-lo. Mais em {0}. Pode alterar a sua escolha mais tarde no menu Definições.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar, o launcher pode enviar-nos os registos para o corrigirmos. Sem palavras-passe.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>O que há num relatório</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Mostrar ficheiros</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar de cada vez</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Não tem sessão iniciada. Inicie sessão novamente e tente outra vez.</value></data>

@@ -1523,27 +1523,23 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Peli on käynnissä. Jos suljet launcherin, peli katkaisee yhteyden yhteisöpalvelimeen. Pidetäänkö launcher auki?&#10;&#10;Kyllä: pidä auki. Ei: pienennä.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Tämä luo zip-tiedoston, jossa on alla luetellut tiedostot, yhteisöpalvelimen ylläpitäjille. Katso, mitä se sisältää, ja tallenna se jaettavaksi itse tai lähetä se yhteisöpalvelimelle (liitetty tiliisi, säilytetään 30 päivää).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin lokit yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Kootaan tiedostoja…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Raportti sisältää nämä tiedostot:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Näitä ei voitu lukea, ja ne jätettiin pois:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Tallenna Latauksiin</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Lähetä yhteisöpalvelimelle</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Tallenna</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Lähetä</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Lähetetään…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Tallennettu nimellä {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Lähetetty. Viitteesi on {0}. Mainitse se, kun pyydät apua.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Lähetä ongelmaraportti automaattisesti epäonnistuneen käynnistyksen jälkeen</value></data>
-  <data name="Report.AutoSent" xml:space="preserve"><value>Ongelmaraportti lähetettiin: {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Lähetetty. Viite: {0} (kerro se Discordissa)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Lähetä automaattisesti epäonnistuneen käynnistyksen jälkeen</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Ongelmaraportti lähetetty: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty tai sulkeutuu liian aikaisin, launcher voi luoda ongelmaraportin, joka auttaa selvittämään syyn. Raportti sisältää:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>pelin lokitiedostot ja asetukset</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>Windowsin kaatumistapahtumat pelille</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>Windowsin versio ja kieli, näytönohjain ja näytöt sekä tietokoneellasi toimivien virustentorjuntaohjelmien, boosterien ja overlay-ohjelmien nimet</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>milloin olet viimeksi käynnistänyt pelin ja miten kukin käynnistys päättyi</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Se ei koskaan sisällä salasanoja tai tunnisteita.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>Raportti lähetetään yhteisöpalvelimelle ja liitetään tiliisi. Sitä säilytetään 30 päivää, ja palvelimen ylläpitäjät voivat lukea sen. Lisää kohdassa {0}. Voit muuttaa valintaasi myöhemmin Asetukset-valikossa.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa, jotta voimme korjata ongelman. Ei salasanoja.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Mitä raportissa on</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Et ole kirjautunut sisään. Kirjaudu uudelleen ja yritä uudestaan.</value></data>

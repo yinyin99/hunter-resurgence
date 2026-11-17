@@ -85,6 +85,7 @@ public sealed class ProblemReportTests : UiContext
         modal.Show<ReportConsentModal>();
         var cut = Render<ReportConsentModal>();
         Assert.Equal("/your-data", cut.Find("a").GetAttribute("href"));
+        Assert.Empty(cut.FindAll(".btn-primary"));  // the two choices weigh the same
 
         cut.Find(button).Click();
         Assert.Equal(consent, bridge.ReportConsent);
@@ -171,6 +172,8 @@ public sealed class ProblemReportTests : UiContext
         cut.WaitForAssertion(() => Assert.Equal(["debug.log", "system.txt"], cut.FindAll("#report-files li").Select(li => li.TextContent)));
         Assert.Equal(["manual"], bridge.Built);
         Assert.Equal(["cef.log"], cut.FindAll("#report-missing li").Select(li => li.TextContent));
+        Assert.Equal(2, cut.Find("details.files").QuerySelectorAll("ul").Length);  // both lists sit behind "Show files"
+        Assert.Equal("report-send", cut.Find(".btn-primary").Id);
 
         cut.Find("#report-save").Click();
         Assert.Contains(@"C:\Downloads\report.zip", cut.Find("#report-saved").TextContent);

@@ -1523,27 +1523,23 @@
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Игра запущена. Если закрыть лаунчер, игра отключится от сервера сообщества. Оставить лаунчер открытым?&#10;&#10;Да: оставить открытым. Нет: свернуть.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Создаёт zip с перечисленными ниже файлами для тех, кто управляет сервером сообщества. Посмотрите, что в нём, затем сохраните его, чтобы передать самостоятельно, или отправьте на сервер сообщества (привязан к вашей учётной записи, хранится 30 дней).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы игры на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Сбор файлов…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>В отчёте эти файлы:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Эти файлы не удалось прочитать, они не включены:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Сохранить в «Загрузки»</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Отправить на сервер сообщества</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Отправить</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Отправка…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Сохранено как {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Отправлено. Ваш номер обращения: {0}. Назовите его, когда будете просить о помощи.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Автоматически отправлять отчёт о проблеме после неудачного запуска</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Отправлено. Номер обращения: {0} (назовите его в Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Отправлять автоматически после неудачного запуска</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Отчёт о проблеме отправлен: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Не удалось отправить отчёт о проблеме: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Что-то пошло не так? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Отправлять отчёты о проблемах?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается или закрывается слишком быстро, лаунчер может собрать отчёт о проблеме, чтобы помочь найти причину. В отчёте:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>файлы журналов игры и её настройки</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>события сбоев игры в Windows</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>версию и язык Windows, видеокарту и экраны, а также названия антивирусов, бустеров и оверлеев, работающих на вашем компьютере</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>когда вы недавно запускали игру и чем закончился каждый запуск</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>В нём никогда нет паролей и токенов.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>Отчёт уходит на сервер сообщества и привязывается к вашей учётной записи. Он хранится 30 дней, и операторы сервера могут его читать. Подробнее: {0}. Свой выбор можно позже изменить в меню «Настройки».</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы, чтобы мы это исправили. Без паролей.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Что в отчёте</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Показать файлы</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Отправлять автоматически</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Спрашивать каждый раз</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Вы не вошли в систему. Войдите снова и повторите попытку.</value></data>

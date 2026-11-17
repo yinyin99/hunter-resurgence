@@ -1523,27 +1523,23 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Denne påloggingen er allerede bekreftet.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spillet kjører. Hvis du lukker launcheren, kobles spillet fra community-serveren. Vil du la launcheren være åpen?&#10;&#10;Ja: la den være åpen. Nei: minimer den.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapporter et problem</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Dette lager en zip med filene som er listet under, til de som driver fellesskapsserveren. Se hva den inneholder, og lagre den for å dele den selv, eller send den til fellesskapsserveren (knyttet til kontoen din, lagres i 30 dager).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sender spillets logger til fellesskapsserveren slik at vi kan hjelpe. Lagres i 30 dager.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samler inn filene…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapporten inneholder disse filene:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Disse kunne ikke leses og er utelatt:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Lagre i Nedlastinger</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Send til fellesskapsserveren</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Lagre</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Sender…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Lagret som {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Sendt. Referansen din er {0}. Oppgi den når du ber om hjelp.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Send en problemrapport automatisk etter en mislykket start</value></data>
-  <data name="Report.AutoSent" xml:space="preserve"><value>En problemrapport ble sendt: {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sendt. Referanse: {0} (oppgi den på Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatisk etter en mislykket start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Problemrapport sendt: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gikk noe galt? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Sende problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter eller lukkes for tidlig, kan launcheren lage en problemrapport som hjelper oss å finne årsaken. En rapport inneholder:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>spillets loggfiler og innstillinger</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>Windows' krasjhendelser for spillet</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>Windows-versjon og -språk, skjermkort og skjermer, og navnene på antivirusprogrammer, boostere og overlays som kjører på PC-en din</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>når du nylig startet spillet, og hvordan hver start endte</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Den inneholder aldri passord eller tokener.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>En rapport sendes til fellesskapsserveren, knyttet til kontoen din. Den lagres i 30 dager, og serverens operatører kan lese den. Mer under {0}. Du kan endre valget senere i menyen Innstillinger.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende oss loggene sine slik at vi kan fikse det. Ingen passord.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Hva er i en rapport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Spør meg hver gang</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Du er ikke logget inn. Logg inn på nytt og prøv igjen.</value></data>

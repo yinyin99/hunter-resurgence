@@ -1523,27 +1523,23 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>A játék fut. Az indító bezárása megszakítja a játék kapcsolatát a közösségi szerverrel. Nyitva marad az indító?&#10;&#10;Igen: marad nyitva. Nem: kis méretre állítás.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Ez egy zip-et készít az alább felsorolt fájlokkal a közösségi szerver üzemeltetőinek. Nézd meg, mit tartalmaz, majd mentsd el, hogy magad oszd meg, vagy küldd el a közösségi szervernek (a fiókodhoz kötve, 30 napig őrizzük).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék naplóit a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A fájlok összegyűjtése…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>A jelentés ezeket a fájlokat tartalmazza:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Ezeket nem sikerült beolvasni, ezért kimaradtak:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Mentés a Letöltések mappába</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Küldés a közösségi szervernek</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Mentés</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Küldés</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Küldés…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Mentve ezen a néven: {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Elküldve. A hivatkozási számod: {0}. Add meg, amikor segítséget kérsz.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Sikertelen indítás után automatikusan problémajelentést küldök</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Elküldve. Hivatkozási szám: {0} (add meg Discordon)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Automatikus küldés sikertelen indítás után</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problémajelentés elküldve: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>A problémajelentést nem sikerült elküldeni: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Valami elromlott? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Küldjünk problémajelentéseket?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el vagy túl korán bezárul, az indító problémajelentést készíthet, amely segít kideríteni az okot. A jelentés tartalma:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>a játék naplófájljai és beállításai</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>a játékhoz tartozó Windows-összeomlási események</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>a Windows verziója és nyelve, a videokártya és a képernyők, valamint a számítógépeden futó víruskeresők, gyorsítók és overlayek neve</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>mikor indítottad el legutóbb a játékot, és hogyan végződött az egyes indítás</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Soha nem tartalmaz jelszavakat vagy tokeneket.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>A jelentés a közösségi szerverre kerül, a fiókodhoz kötve. 30 napig őrizzük, és a szerver üzemeltetői olvashatják. Bővebben itt: {0}. A választásodat később megváltoztathatod a Beállítások menüben.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el, az indító elküldheti nekünk a naplóit, hogy kijavíthassuk. Jelszavak nélkül.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Mi van egy jelentésben</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Fájlok megjelenítése</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Küldés automatikusan</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kérdezzen mindig</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Nem vagy bejelentkezve. Jelentkezz be újra, és próbáld meg még egyszer.</value></data>

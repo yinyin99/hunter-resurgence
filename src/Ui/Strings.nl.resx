@@ -1523,27 +1523,23 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>De game draait. Als je de launcher sluit, verbreekt de game de verbinding met de communityserver. De launcher open houden?&#10;&#10;Ja: open houden. Nee: minimaliseren.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Dit maakt een zip met de hieronder genoemde bestanden, voor de mensen die de communityserver beheren. Bekijk wat erin zit en sla hem op om zelf te delen, of stuur hem naar de communityserver (gekoppeld aan je account, 30 dagen bewaard).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs van het spel naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>De bestanden worden verzameld…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Het rapport bevat deze bestanden:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Deze konden niet worden gelezen en ontbreken:</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Opslaan in Downloads</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Naar de communityserver sturen</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Versturen</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Bezig met verzenden…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Opgeslagen als {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Verzonden. Je referentie is {0}. Noem die als je om hulp vraagt.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Na een mislukte start automatisch een probleemrapport sturen</value></data>
-  <data name="Report.AutoSent" xml:space="preserve"><value>Er is een probleemrapport verzonden: {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Verzonden. Referentie: {0} (geef die op Discord door)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Automatisch sturen na een mislukte start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Probleemrapport verzonden: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Het probleemrapport kon niet worden verzonden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Is er iets misgegaan? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Probleemrapporten sturen?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start of te snel sluit, kan de launcher een probleemrapport maken om de oorzaak te vinden. Een rapport bevat:</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>de logbestanden en instellingen van het spel</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>de Windows-crashgebeurtenissen van het spel</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>je Windows-versie en -taal, videokaart en schermen, en de namen van antivirusprogramma's, boosters en overlays die op je pc draaien</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>wanneer je het spel onlangs hebt gestart en hoe elke start eindigde</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Er staan nooit wachtwoorden of tokens in.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>Een rapport gaat naar de communityserver, gekoppeld aan je account. Het wordt 30 dagen bewaard en de beheerders van de server kunnen het lezen. Meer onder {0}. Je kunt je keuze later wijzigen in het menu Instellingen.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs sturen zodat we het kunnen oplossen. Geen wachtwoorden.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Wat zit er in een rapport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Bestanden tonen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch sturen</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Elke keer vragen</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Je bent niet aangemeld. Meld je opnieuw aan en probeer het nog eens.</value></data>

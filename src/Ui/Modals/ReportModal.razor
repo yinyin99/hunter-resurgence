@@ -1,7 +1,7 @@
 @inject ModalService Modal
 @inject ILauncherBridge Bridge
 
-@* "Report a problem": what the report holds, then Save or Send (docs/launcher.md#report-a-problem). Opened from the Settings menu (trigger manual) and from the "Done hunting for now?" window (the failed start's trigger) *@
+@* "Report a problem": one line, the files behind "Show files", then Send or Save (docs/launcher.md#report-a-problem). Opened from the Settings menu (trigger manual) and from the "Done hunting for now?" window (the failed start's trigger) *@
 <div class="report dialog-card" role="dialog" aria-modal="true" aria-labelledby="report-title">
     <h1 id="report-title">@L["Report.Menu"]</h1>
     <p>@L["Report.Info"]</p>
@@ -11,13 +11,16 @@
     }
     else
     {
-        <h2>@L["Report.Holds"]</h2>
-        <ul id="report-files">@foreach (var f in report.Files) { <li>@f</li> }</ul>
-        @if (report.Missing.Count > 0)
-        {
-            <h2>@L["Report.Missing"]</h2>
-            <ul id="report-missing">@foreach (var f in report.Missing) { <li>@f</li> }</ul>
-        }
+        <details class="files">
+            <summary>@L["Report.Files"]</summary>
+            <h2>@L["Report.Holds"]</h2>
+            <ul id="report-files">@foreach (var f in report.Files) { <li>@f</li> }</ul>
+            @if (report.Missing.Count > 0)
+            {
+                <h2>@L["Report.Missing"]</h2>
+                <ul id="report-missing">@foreach (var f in report.Missing) { <li>@f</li> }</ul>
+            }
+        </details>
         @if (saved is not null) { <p id="report-saved" role="status">@L["Report.Saved", saved]</p> }
         else if (saveFailed) { <p class="error" role="alert">@L["Report.ErrSave"]</p> }
         @if (sent?.Reference is { } reference) { <p id="report-reference" role="status">@L["Report.Sent", reference]</p> }
@@ -25,8 +28,8 @@
     }
     <label class="auto"><input type="checkbox" class="tick" id="report-auto" @bind="auto" @bind:after="Remember" /> @L["Report.AutoToggle"]</label>
     <div class="buttons">
-        <button type="button" class="btn btn-inverse" id="report-save" disabled="@(report is null)" @onclick="Save">@L["Report.Save"]</button>
         <button type="button" class="btn btn-primary" id="report-send" disabled="@(report is null || sending || sent?.Reference is not null)" @onclick="Send">@L[sending ? "Report.Sending" : "Report.Send"]</button>
+        <button type="button" class="btn btn-inverse" id="report-save" disabled="@(report is null)" @onclick="Save">@L["Report.Save"]</button>
         <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
     </div>
 </div>

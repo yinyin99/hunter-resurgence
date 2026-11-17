@@ -1523,27 +1523,23 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Le jeu est en cours. Fermer le launcher déconnecte le jeu du serveur communautaire. Garder le launcher ouvert ?&#10;&#10;Oui : le garder ouvert. Non : le réduire.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Ceci crée un zip avec les fichiers listés ci-dessous, pour les personnes qui gèrent le serveur communautaire. Vérifiez ce qu'il contient, puis enregistrez-le pour le partager vous-même, ou envoyez-le au serveur communautaire (lié à votre compte, conservé 30 jours).</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux du jeu au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Collecte des fichiers…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Le rapport contient ces fichiers :</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Ceux-ci n'ont pas pu être lus et sont absents :</value></data>
-  <data name="Report.Save" xml:space="preserve"><value>Enregistrer dans Téléchargements</value></data>
-  <data name="Report.Send" xml:space="preserve"><value>Envoyer au serveur communautaire</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Envoyer</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Envoi…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Enregistré sous {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Envoyé. Votre référence est {0}. Indiquez-la quand vous demandez de l'aide.</value></data>
-  <data name="Report.AutoToggle" xml:space="preserve"><value>Envoyer automatiquement un rapport de problème après un démarrage raté</value></data>
-  <data name="Report.AutoSent" xml:space="preserve"><value>Un rapport de problème a été envoyé : {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Envoyé. Référence : {0} (donnez-la sur Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Envoyer automatiquement après un démarrage raté</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Rapport de problème envoyé : {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Le rapport de problème n'a pas pu être envoyé : {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Un souci ? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Envoyer des rapports de problème ?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si le jeu ne démarre pas ou se ferme trop tôt, le launcher peut créer un rapport de problème pour aider à en trouver la cause. Un rapport contient :</value></data>
-  <data name="Report.ConsentLogs" xml:space="preserve"><value>les fichiers journaux du jeu et ses paramètres</value></data>
-  <data name="Report.ConsentEvents" xml:space="preserve"><value>les événements de plantage Windows du jeu</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>votre version et langue de Windows, votre carte graphique et vos écrans, ainsi que les noms des antivirus, boosters et overlays qui tournent sur votre PC</value></data>
-  <data name="Report.ConsentStarts" xml:space="preserve"><value>quand vous avez récemment lancé le jeu et comment chaque démarrage s'est terminé</value></data>
-  <data name="Report.ConsentNever" xml:space="preserve"><value>Il ne contient jamais de mots de passe ni de jetons.</value></data>
-  <data name="Report.ConsentWhere" xml:space="preserve"><value>Un rapport est envoyé au serveur communautaire, lié à votre compte. Il est conservé 30 jours et les opérateurs du serveur peuvent le lire. Plus d'informations sous {0}. Vous pourrez modifier votre choix plus tard dans le menu Paramètres.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si le jeu ne démarre pas, le launcher peut nous envoyer ses journaux pour que nous le corrigions. Aucun mot de passe.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Que contient un rapport ?</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Afficher les fichiers</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Envoyer automatiquement</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Me demander à chaque fois</value></data>
   <data name="Report.ErrSignIn" xml:space="preserve"><value>Vous n'êtes pas connecté. Reconnectez-vous et réessayez.</value></data>
