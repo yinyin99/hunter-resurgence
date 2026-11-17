@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>De l’option de lancement de Steam</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Trouvé dans votre bibliothèque Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Une autre installation a été trouvée : {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Le dossier que vous avez choisi ne contient plus le jeu : {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Le jeu est introuvable dans ce dossier. Choisissez le dossier où le jeu est installé.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Fermez d’abord le jeu, puis videz son cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Certains fichiers n’ont pas pu être supprimés. Réessayez plus tard.</value></data>

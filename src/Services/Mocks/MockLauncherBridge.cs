@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development states of the "Game folder" window: "folder:two" (a second install seen), "folder:manual" (chosen by the player), "folder:none" (no game; a start says so),
+/// <param name="mock">Development states of the "Game folder" window: "folder:two" (a second install seen), "folder:manual" (chosen by the player), "folder:gone" (the chosen folder lost the game), "folder:none" (no game; a start says so),
 /// "folder:refuse" (the picker refuses the folder).</param>
 public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? mock = null) : ILauncherBridge
 {
@@ -13,6 +13,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     {
         "folder:two" => new(Steam, "steam-library", [@"E:\SteamLibrary\steamapps\common\Hunter"]),
         "folder:manual" => new(Chosen, "manual", []),
+        "folder:gone" => new(Steam, "steam-library", [], @"D:\Games\Old"),
         "folder:none" => new(null, null, []),
         _ => new(Steam, "steam-library", []),
     };

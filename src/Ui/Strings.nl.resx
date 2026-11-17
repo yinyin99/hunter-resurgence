@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Uit Steams startoptie</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Gevonden in je Steam-bibliotheek</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Er is nog een installatie gevonden: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>De map die je koos bevat het spel niet meer: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Het spel is niet gevonden in die map. Kies de map waarin het spel is geïnstalleerd.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sluit eerst de game en wis daarna de cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Sommige bestanden konden niet worden verwijderd. Probeer het later opnieuw.</value></data>

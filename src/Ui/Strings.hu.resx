@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>A Steam indítási beállításából</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Megtalálva a Steam-könyvtárban</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Egy másik telepítés is található: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>A kiválasztott mappában már nincs ott a játék: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>A játék nem található ebben a mappában. Válassza ki azt a mappát, ahová a játék telepítve van.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Előbb zárd be a játékot, utána ürítsd a gyorsítótárát.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Néhány fájlt nem sikerült törölni. Próbáld újra később.</value></data>

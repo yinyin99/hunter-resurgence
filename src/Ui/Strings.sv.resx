@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Från Steams startalternativ</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Hittat i ditt Steam-bibliotek</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>En annan installation hittades: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Mappen du valde innehåller inte längre spelet: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Spelet hittades inte i den mappen. Välj mappen där spelet är installerat.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Stäng spelet först och töm sedan dess cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Vissa filer kunde inte tas bort. Försök igen senare.</value></data>

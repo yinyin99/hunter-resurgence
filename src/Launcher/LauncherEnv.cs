@@ -36,7 +36,7 @@ public sealed class LauncherEnv
         Search = GameFinder.Search(Settings, Prefs.GameFolder, Environment.GetCommandLineArgs().Skip(1), SteamPath);
     }
 
-    public GameInstallInfo GameInstallInfo => new(Install?.Folder, Search.Source, Search.Others);
+    public GameInstallInfo GameInstallInfo => new(Install?.Folder, Search.Source, Search.Others, Search.Gone);
 
     /// <summary>The picked folder (the install root or the exe's folder) is saved as the manual folder and the game is found again; cancelled (null) changes nothing.</summary>
     public Result ChooseGameFolder(Func<string?> pick)
@@ -69,7 +69,6 @@ public sealed class LauncherEnv
     /// <summary>The folder the player picked, or null when cancelled; whether it holds the game is up to the caller.</summary>
     public string? PickFolder()
     {
-        // the bridge is called off the window's thread: the dialog belongs to it
         return Application.Current.Dispatcher.Invoke(() =>
         {
             var d = new OpenFolderDialog { InitialDirectory = Install?.Folder ?? "" };

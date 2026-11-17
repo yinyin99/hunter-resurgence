@@ -110,7 +110,7 @@ public class GameFinderTests
         Assert.Equal(("steam-option", launch, 0), (option.Source, option.Install?.Folder, option.Others.Count));
 
         var stale = GameFinder.Search(s, Path.Combine(root, "Gone"), [], steam);
-        Assert.Null(stale.Source);
+        Assert.Equal(("steam-library", Path.Combine(root, "Gone")), (stale.Source, stale.Gone));
         Assert.Equal(folders[1], stale.Install?.Folder);
         Assert.Equal([folders[0]], stale.Others);
         Assert.Null(GameFinder.Search(s, null, [], null).Install);

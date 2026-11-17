@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Dall’opzione di avvio di Steam</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Trovato nella tua libreria Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>È stata trovata un’altra installazione: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>La cartella che hai scelto non contiene più il gioco: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Il gioco non è stato trovato in quella cartella. Scegli la cartella in cui il gioco è installato.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Chiudi prima il gioco, poi svuota la sua cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Alcuni file non sono stati eliminati. Riprova più tardi.</value></data>

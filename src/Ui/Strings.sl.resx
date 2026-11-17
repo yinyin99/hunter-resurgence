@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Iz možnosti zagona v Steamu</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Najdeno v vaši knjižnici Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Najdena je bila še ena namestitev: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Mapa, ki ste jo izbrali, ne vsebuje več igre: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Igra v tej mapi ni bila najdena. Izberite mapo, v kateri je igra nameščena.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Najprej zaprite igro, nato izpraznite njen predpomnilnik.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Nekaterih datotek ni bilo mogoče izbrisati. Poskusite znova pozneje.</value></data>

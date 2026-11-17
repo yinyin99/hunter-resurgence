@@ -10,9 +10,10 @@
     }
     else
     {
-        <input id="folder-path" class="field line" readonly value="@info.Folder" />
+        <input id="folder-path" class="field line" readonly aria-label="@L["Settings.GameFolder"]" value="@info.Folder" />
         @if (info.Source is { } source) { <p id="folder-source" class="source">@L["GameFolder." + source]</p> }
     }
+    @if (info.Gone is not null) { <p id="folder-gone" class="note">@L["GameFolder.Gone", info.Gone]</p> }
     @foreach (var other in info.Others)
     {
         <p class="note other">@L["GameFolder.Other", other]</p>
@@ -20,7 +21,7 @@
     @if (error is not null) { <p class="error" role="alert">@error</p> }
     <div class="buttons">
         <button type="button" class="btn @(info.Folder is null ? "btn-primary" : "btn-inverse")" id="folder-choose" @onclick="Choose">@L["GameFolder.Choose"]</button>
-        @if (info.Source == "manual") { <button type="button" class="btn btn-inverse" id="folder-auto" @onclick="Automatic">@L["GameFolder.Automatic"]</button> }
+        @if (info.Source == "manual" || info.Gone is not null) { <button type="button" class="btn btn-inverse" id="folder-auto" @onclick="Automatic">@L["GameFolder.Automatic"]</button> }
         @if (info.Folder is not null) { <button type="button" class="btn btn-inverse" id="folder-open" @onclick="Open">@L["GameFolder.Open"]</button> }
         <button type="button" class="btn @(info.Folder is null ? "btn-inverse" : "btn-primary")" id="folder-close" autofocus @onclick="Modal.Close">@L["Alert.Close"]</button>
     </div>

@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Da opção de inicialização do Steam</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Encontrado na sua biblioteca Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Outra instalação foi encontrada: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>A pasta que você escolheu não tem mais o jogo: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>O jogo não foi encontrado nessa pasta. Escolha a pasta onde o jogo está instalado.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Feche o jogo primeiro e depois limpe o cache dele.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Não foi possível excluir alguns arquivos. Tente novamente mais tarde.</value></data>

@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Z možnosti spuštění ve Steamu</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Nalezeno ve vaší knihovně Steamu</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Byla nalezena další instalace: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Složka, kterou jste vybrali, už hru neobsahuje: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Hra v této složce nebyla nalezena. Vyberte složku, do které je hra nainstalována.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Nejprve zavřete hru a pak vymažte její mezipaměť.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Některé soubory se nepodařilo smazat. Zkuste to znovu později.</value></data>

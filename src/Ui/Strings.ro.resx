@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Din opțiunea de lansare Steam</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Găsit în biblioteca ta Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>A fost găsită o altă instalare: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Folderul pe care l-ai ales nu mai conține jocul: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Jocul nu a fost găsit în acel folder. Alege folderul în care este instalat jocul.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Închideți mai întâi jocul, apoi goliți memoria cache a acestuia.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Unele fișiere nu au putut fi șterse. Încercați din nou mai târziu.</value></data>

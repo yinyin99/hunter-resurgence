@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Steam’in başlatma seçeneğinden</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Steam kitaplığınızda bulundu</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Başka bir kurulum bulundu: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Seçtiğiniz klasörde artık oyun yok: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Oyun bu klasörde bulunamadı. Oyunun kurulu olduğu klasörü seçin.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Önce oyunu kapatın, ardından önbelleğini temizleyin.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Bazı dosyalar silinemedi. Daha sonra tekrar deneyin.</value></data>

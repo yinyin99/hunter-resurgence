@@ -2,21 +2,21 @@ using System.Text.RegularExpressions;
 
 namespace Resurgence.Launcher;
 
-/// <summary>An install folder in which the client exe exists, and the full path of that exe.</summary>
+/// <summary>A game folder in which the client exe exists, and the full path of that exe.</summary>
 public sealed record GameInstall(string Folder, string ClientExe);
 
 /// <summary>The install in use (null when none), how it was found and the other game folders seen.</summary>
-public sealed record GameSearch(GameInstall? Install, string? Source, IReadOnlyList<string> Others);
+public sealed record GameSearch(GameInstall? Install, string? Source, IReadOnlyList<string> Others, string? Gone = null);
 
-/// <summary>Finds the game's install folder. Read-only: nothing is ever written to it.</summary>
+/// <summary>Finds the game folder. Read-only: nothing is ever written to it.</summary>
 public static partial class GameFinder
 {
     /// <summary>Order: the folder chosen by hand, the Steam launch-options command, then Steam's own library data.</summary>
     public static GameInstall? Find(Settings s, string? chosenFolder, IEnumerable<string> args, string? steamPath) => Search(s, chosenFolder, args, steamPath).Install;
 
     /// <summary>
-    /// The install in use, how it was found (manual, steam-option, steam-library) and the other game folders seen (each once, existing only). Source is null when none was found,
-    /// and also when a folder chosen by hand no longer holds the client: the automatic install is used then.
+    /// The install in use, how it was found (manual, steam-option, steam-library) and the other game folders seen (each once, existing only). Source is null when none was found.
+    /// Gone is the folder chosen by hand when it no longer holds the client: the automatic install is used then.
     /// </summary>
     public static GameSearch Search(Settings s, string? chosenFolder, IEnumerable<string> args, string? steamPath)
     {
@@ -31,7 +31,7 @@ public static partial class GameFinder
         var key = (GameInstall g) => Path.TrimEndingDirectorySeparator(g.Folder);
         var others = seen.Select(x => x.Game).Where(g => !key(g).Equals(key(first), StringComparison.OrdinalIgnoreCase))
             .DistinctBy(key, StringComparer.OrdinalIgnoreCase).Select(g => g.Folder).ToList();
-        return new(first, stale ? null : source, others);
+        return new(first, source, others, stale ? chosenFolder : null);
     }
 
     /// <summary>The folder counts only when the client exe exists in it.</summary>
@@ -42,7 +42,7 @@ public static partial class GameFinder
         return File.Exists(exe) ? new(Path.GetFullPath(folder), Path.GetFullPath(exe)) : null;
     }
 
-    /// <summary>The install folder for a folder inside it (the install root itself, or the exe's folder, or deeper), null when no folder up the path holds the client.</summary>
+    /// <summary>The game folder for a folder inside it (the install root itself, or the exe's folder, or deeper), null when no folder up the path holds the client.</summary>
     public static GameInstall? FromDir(Settings s, string? dir)
     {
         for (; !string.IsNullOrWhiteSpace(dir); dir = Path.GetDirectoryName(dir))
@@ -50,7 +50,7 @@ public static partial class GameFinder
         return null;
     }
 
-    // Steam started us with launch options `"<our exe>" %command%`: %command% is an exe inside the install folder, possibly in a subfolder
+    // Steam started us with launch options `"<our exe>" %command%`: %command% is an exe inside the game folder, possibly in a subfolder
     static IEnumerable<GameInstall> FromArgs(Settings s, IEnumerable<string> args) =>
         args.Where(a => a.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) && Path.IsPathRooted(a) && File.Exists(a)).Select(a => FromDir(s, Path.GetDirectoryName(a))).OfType<GameInstall>();
 

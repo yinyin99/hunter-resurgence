@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Из параметра запуска Steam</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Найдено в вашей библиотеке Steam</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Найдена другая установка: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>В выбранной вами папке игры больше нет: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Игра не найдена в этой папке. Выберите папку, в которую установлена игра.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Сначала закройте игру, затем очистите её кэш.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Некоторые файлы удалить не удалось. Повторите попытку позже.</value></data>

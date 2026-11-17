@@ -107,6 +107,7 @@
   <data name="GameFolder.steam-option" xml:space="preserve"><value>Steamin käynnistysvalinnasta</value></data>
   <data name="GameFolder.steam-library" xml:space="preserve"><value>Löytyi Steam-kirjastostasi</value></data>
   <data name="GameFolder.Other" xml:space="preserve"><value>Löytyi toinen asennus: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Valitsemassasi kansiossa ei enää ole peliä: {0}</value></data>
   <data name="Settings.FolderNoGame" xml:space="preserve"><value>Peliä ei löytynyt tästä kansiosta. Valitse kansio, johon peli on asennettu.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sulje ensin peli ja tyhjennä sitten sen välimuisti.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Joitakin tiedostoja ei voitu poistaa. Yritä myöhemmin uudelleen.</value></data>

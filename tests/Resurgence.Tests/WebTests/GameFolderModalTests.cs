@@ -49,6 +49,19 @@ public sealed class GameFolderModalTests : UiContext
     }
 
     [Fact]
+    public void AChosenFolderThatLostTheGameIsNamedAndCanBeForgotten()
+    {
+        var cut = Open("folder:gone");
+        Assert.Equal(@"The folder you chose no longer has the game: D:\Games\Old", cut.Find("#folder-gone").TextContent);
+        Assert.Equal("Found in your Steam library", cut.Find("#folder-source").TextContent);
+        Assert.Equal(["Choose folder…", "Use automatic", "Open folder", "Close"], Buttons(cut));
+
+        cut.Find("#folder-auto").Click();
+
+        Assert.Empty(cut.FindAll("#folder-gone"));
+    }
+
+    [Fact]
     public void ChoosingAFolderShowsItAsChosenByYou()
     {
         var cut = Open(null);
@@ -79,6 +92,7 @@ public sealed class GameFolderModalTests : UiContext
     {
         var modal = Services.GetRequiredService<ModalService>();
         modal.StartFailed(Result.Fail("Launch.NoGame"), "x");
+        Assert.True((bool)modal.Parameters!["GameFolder"]!);
         var alert = Render<AlertDialog>(p => p.Add(a => a.Text, "x").Add(a => a.GameFolder, true));
         alert.Find("#alert-game-folder").Click();
         Assert.Equal(typeof(GameFolderModal), modal.Type);
