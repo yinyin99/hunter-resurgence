@@ -4,10 +4,12 @@ namespace Resurgence.Services;
 public interface ILauncherBridge
 {
     bool IsSteam { get; }
+    /// <summary>Opens a folder in Explorer; a failure is a <see cref="Result"/> whose Error is a text key (<c>Settings.NoFolder</c>).</summary>
     /// <param name="kind">game, screenshots or logs</param>
-    void OpenFolder(string kind);
+    Result OpenFolder(string kind);
+    /// <summary>Clears a cache; a failure is a <see cref="Result"/> whose Error is a text key (<c>Settings.NoFolder</c>, <c>Settings.CacheGameRunning</c>, <c>Settings.CacheFailed</c>).</summary>
     /// <param name="kind">launcher or game</param>
-    void ClearCache(string kind);
+    Result ClearCache(string kind);
     void OpenExternal(string url);
     /// <summary>Starts the game client; a failure is a <see cref="Result"/> whose Error is a text key.</summary>
     Result StartGame(string url);
