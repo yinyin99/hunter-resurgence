@@ -611,7 +611,7 @@ public sealed class Uploads(State state, string dataDir)
         lock (decide)
         {
             Store.DeleteAccount(account);
-            foreach (var dir in new[] { "restores", "photos", "refused" })
+            foreach (var dir in new[] { "restores", "photos", "refused", "reports" })
             {
                 var path = Path.Combine(dataDir, dir, account.ToString());
                 if (Directory.Exists(path)) Directory.Delete(path, recursive: true);

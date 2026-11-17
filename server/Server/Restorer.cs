@@ -186,6 +186,15 @@ public static class Restorer
         }
         if (finalId != current)  // the photos taken here follow the account; a name clash keeps the account's own photo
             state.MovePhotos(current, finalId);
+        var reports = Path.Combine(dataDir, "reports", current.ToString());
+        if (finalId != current && Directory.Exists(reports))  // so do its problem reports, whose references name the account
+        {
+            var target = Path.Combine(dataDir, "reports", finalId.ToString());
+            Directory.CreateDirectory(target);
+            foreach (var file in Directory.GetFiles(reports))
+                File.Move(file, Path.Combine(target, Path.GetFileName(file).Replace($"p{current}-", $"p{finalId}-")), overwrite: true);
+            Directory.Delete(reports);
+        }
         state.Unpack(finalId, zipPath is null ? null : kept, zipPath is null ? linksZip : PicturesZip(kept), pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
     }
@@ -197,7 +206,7 @@ public static class Restorer
         con.Script("PRAGMA defer_foreign_keys = ON");
         foreach (var table in Store.PlayerTables)
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = $a", to);
-        foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress" })
+        foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress", "crash_reports" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays

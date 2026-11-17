@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 26;
+    public const int Version = 27;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -134,6 +134,15 @@ public sealed class Store
             PRIMARY KEY (account_id, day)) WITHOUT ROWID;
         """;
 
+    // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge
+    // runs over every account at once. `frames` is a JSON array of "module+offset" texts, the crashing frame first.
+    const string CrashReports = $"""
+        CREATE TABLE IF NOT EXISTS crash_reports (
+            n INTEGER PRIMARY KEY, {A}, event_id TEXT NOT NULL, ts INTEGER NOT NULL, kind TEXT NOT NULL, module TEXT, frames TEXT NOT NULL, message TEXT NOT NULL, release TEXT,
+            UNIQUE (account_id, event_id));
+        CREATE INDEX IF NOT EXISTS crash_reports_ts ON crash_reports (ts);
+        """;
+
     // a player's count toward each community mission of an event, and whether the reward was paid; shared by all players, so not in PlayerTables
     const string CommunityProgress = $"""
         CREATE TABLE IF NOT EXISTS community_progress (
@@ -173,6 +182,7 @@ public sealed class Store
         {WebSessions}
         {Uploads}
         {UploadResults}
+        {CrashReports}
         {WalletLog}
         {Missions}
         {Challenges}
@@ -364,6 +374,7 @@ public sealed class Store
                     INSERT INTO sqlite_sequence (name, seq) VALUES ('claims', MAX(100, (SELECT COALESCE(MAX(id), 0) FROM claims)));
                     """);
             }
+            if (version < 27) con.Script(CrashReports);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

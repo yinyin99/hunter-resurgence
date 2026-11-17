@@ -31,7 +31,12 @@ public static class GameApi
     public static void MapGame(this WebApplication app, Game game)
     {
         var s = game.State;
-        app.Map("/{**path}", Handle(game, _ => new Reply(204, [], [], "sink")))
+        app.Map("/{**path}", Handle(game, r =>
+            {
+                if (s is not null && r.Host == game.CrashHost)
+                    KeepCrashReports(s.Store, r);
+                return new Reply(204, [], [], "sink");
+            }))
            .RequireHost([.. game.Sinks]).ExcludeFromDescription();  // telemetry and crash reports
 
         var gs = Group(app, game.Gs, "Game server (gameserver_host)");
@@ -566,6 +571,19 @@ public static class GameApi
         }
 
         app.MapFallback("/{**path}", Handle(game, _ => null)).ExcludeFromDescription();  // replay, archives, mirror, misses
+    }
+
+    /// <summary>A crash host request: its fatal and error reports are kept for the account that sent them (<see cref="CrashReports"/>); the game gets its 204 whatever happens here.</summary>
+    static void KeepCrashReports(Store store, Req r)
+    {
+        try
+        {
+            CrashReports.Keep(store, r.Body, Store.Now());
+        }
+        catch (Exception e)  // anything a stranger's body can cause: the sink answers 204 whatever it was
+        {
+            Console.Error.WriteLine("crash report not kept: " + e.Message);
+        }
     }
 
     const string Form = "application/x-www-form-urlencoded";

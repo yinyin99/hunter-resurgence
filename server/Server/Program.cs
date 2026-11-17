@@ -50,6 +50,11 @@ const string ReviewUsage = """
     approve c<id> restores the archived profile onto the claiming account (its user id never changes); --keep-handle leaves the account its own name.
     reject deletes the kept zip and its row and keeps the reason (the rest of the line) for the player. A rejected claim stays as a row with its reason.
     Both leave the player a notice in the game.
+
+    review reports lists the problem reports the launcher sent (kept 30 days): reference (p<account>-<8 hex>), account, handle, time, trigger, size.
+    review reports <reference> <file> copies that report's zip to <file> (it must not exist yet).
+    review diagnostics <account: user id or handle> prints the account's last 30 days: crash reports (time, kind, module, top frames, message), hunts that ended
+    without a disconnect, hunts under 60 s, and how many times the game said the connection to the host failed (event 30).
     """;
 
 const string ClaimUsage = """
@@ -210,6 +215,11 @@ void Import(string[] a)
 
 void Review(string[] a)
 {
+    if (a is ["reports", ..] or ["diagnostics", _])
+    {
+        ReviewReports(a);
+        return;
+    }
     long id = 0;
     long? onlyAccount = null;
     if (Array.IndexOf(a, "--account") is var at and >= 0)
@@ -415,5 +425,33 @@ async Task Serve()
     finally
     {
         foreach (var c in certs) c.Dispose();  // disposing deletes a loaded key's temporary file
+    }
+}
+
+void ReviewReports(string[] a)
+{
+    if (!(a is ["reports"] or ["reports", _, _] or ["diagnostics", _])) Die(ReviewUsage);
+    Directory.CreateDirectory(settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+    if (state == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+    var reports = new ProblemReports(state, settings.DataDir);
+    switch (a)
+    {
+        case ["diagnostics", var who]:
+            if (AdminApi.ResolveAccount(state, who) is not { } account) { Die($"no account {who}"); return; }
+            foreach (var line in Diagnostics.Of(state.Store, account, DateTimeOffset.UtcNow.ToUnixTimeSeconds()).Lines()) Console.WriteLine(line);
+            break;
+        case ["reports", var reference, var file]:
+            if (reports.PathOf(reference) is not { } zip) { Die($"no problem report {reference}"); return; }
+            try { File.Copy(zip, file); }
+            catch (IOException e) { Die($"cannot write {file}: {e.Message}"); }
+            Console.WriteLine($"{reference} saved to {file}");
+            break;
+        default:
+            var all = reports.List();
+            foreach (var r in all)
+                Console.WriteLine($"{r.Reference}\taccount {r.Account}\thandle {r.Handle ?? "(deleted)"}\t{DateTimeOffset.FromUnixTimeSeconds(r.Ts):u}\t{r.Trigger}\t{r.Size} bytes");
+            if (all.Count == 0) Console.WriteLine("no problem reports");
+            break;
     }
 }

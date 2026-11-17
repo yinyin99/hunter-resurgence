@@ -48,6 +48,7 @@ public static class AccountApi
     {
         if (app.Services.GetService<Uploads>() is not { } uploads || app.Services.GetService<Claims>() is not { } claims) return;
         var state = game.State!;
+        var reports = app.Services.GetRequiredService<ProblemReports>();
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
@@ -179,13 +180,47 @@ public static class AccountApi
                 var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
                 if (!form.TryGetValue("confirm", out var c) || c[0] != "delete")
                     return Refuse(400, "invalid", "Deleting needs confirm=delete.");
-                if (uploads.Busy(account)) return Refuse(429, "busy", "An upload of yours is still being processed. Try again in a minute.");
+                if (uploads.Busy(account) || reports.Busy(account)) return Refuse(429, "busy", "An upload or report of yours is still being processed. Try again in a minute.");
                 uploads.Delete(account);
                 return Json(200, new JsonObject { ["status"] = "deleted", ["message"] = "Your account and all its data were deleted." },
                             $"{SignIn.SessionCookie}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
             })
             .WithName("AccountDelete").WithSummary("Delete the account and all its data (form `confirm=delete`)")
-            .WithDescription("Deletes the account's rows, tokens, sessions, kept backup zips and photos, its Steam id and handle. Signs the browser out.")
+            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/report", async (HttpContext ctx) =>
+            {
+                NoBody(ctx);  // a zip is never buffered for the log
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var (now, trigger) = (Store.Now(), ctx.Request.Headers["X-Report-Trigger"].ToString());
+                if (reports.Begin(account, trigger, ctx.Request.ContentLength, now) is { } refused)
+                    return Outcome(refused);
+                try
+                {
+                    ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = ProblemReports.MaxBytes + 1;  // a chunked body has no length to check
+                    using var zip = new MemoryStream();
+                    try
+                    {
+                        await ctx.Request.Body.CopyToAsync(zip);
+                    }
+                    catch (BadHttpRequestException e) when (e.StatusCode == StatusCodes.Status413PayloadTooLarge)
+                    {
+                        return Refuse(413, "too_large", "A problem report is at most 6 MB.");
+                    }
+                    var (no, reference) = reports.Save(account, trigger, zip.ToArray(), now);
+                    return no is { } failed ? Outcome(failed) : Json(200, new JsonObject { ["reference"] = reference });
+                }
+                finally
+                {
+                    reports.End(account);
+                }
+            })
+            .WithName("AccountReport").WithSummary("Send a problem report: the zip as the body, header `X-Report-Trigger`")
+            .WithDescription("The launcher's problem report (a zip of at most 6 MiB) from the signed-in player (`hr_session` cookie, header `X-Requested-With`). `X-Report-Trigger` is `manual`, `short`, `exitcode` or `nowindow`. "
+                             + "`200` `{reference}` (`p<account>-<8 hex>`; the same zip twice is one report); `401` not signed in; `400` a trigger that is none of those or a body that is no zip; `413` over 6 MiB; "
+                             + "`429` a report of the account is being received, or it sent 5 in the last 24 h; `507` the data disk has less than `upload_min_free_bytes` free. Kept 30 days for the operator; removed by `POST /account/delete`.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/buy", async (HttpContext ctx) =>
