@@ -170,7 +170,7 @@ public sealed class Store
             seasonal_events INTEGER NOT NULL DEFAULT 1,       -- 0: the player opted out of seasonal events
             discord_invited INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher showed the player the Discord invite once
             restore_offered INTEGER NOT NULL DEFAULT 0,       -- 1: the website or the launcher offered the player the restore page once
-            start_kit INTEGER NOT NULL DEFAULT 0,             -- 1: the account has the start kit (a new account is seeded with it; an older one gets it once, at the first start of the server that has it)
+            start_kit INTEGER NOT NULL DEFAULT 0,             -- the version of the start kit the account has (facts `start.version`; 0: from before the kit): an older one gets the items added since, once
             account TEXT NOT NULL);                          -- the connect reply's `account` object
         CREATE TABLE tokens (
             hash TEXT PRIMARY KEY,                           -- SHA-256 of the token, hex
@@ -649,13 +649,13 @@ public sealed class Store
 
     /// <summary>Add an account and, in the same transaction, let seed fill its rows (the server's starting data, or an
     /// importer's). id is the game's user id; account is the connect reply's `account` object. Throws when the id,
-    /// the handle or the Steam id is taken.</summary>
-    public void CreateAccount(long id, string handle, JsonObject account, string? steamId64 = null, Action<Db>? seed = null)
+    /// the handle or the Steam id is taken. startKit is the version of the start kit the seed gives (`accounts.start_kit`).</summary>
+    public void CreateAccount(long id, string handle, JsonObject account, string? steamId64 = null, Action<Db>? seed = null, long startKit = 1)
     {
         using var con = Open(id);
         con.Begin();
-        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, start_kit, account) VALUES (?, ?, ?, ?, 1, ?)",
-                 id, steamId64, handle, Now(), Py.Dumps(account));
+        con.Exec("INSERT INTO accounts (id, steam_id64, handle, created_ts, start_kit, account) VALUES (?, ?, ?, ?, ?, ?)",
+                 id, steamId64, handle, Now(), startKit, Py.Dumps(account));
         seed?.Invoke(con);
         con.Commit();
     }

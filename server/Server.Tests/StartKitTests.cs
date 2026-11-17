@@ -14,7 +14,7 @@ public class StartKitTests : StateTestBase
     static JsonObject Catalogue()
     {
         var app = APP;
-        foreach (var (id, units) in new[] { (90, "null"), (15, """{"count": 10}""") })
+        foreach (var (id, units) in new[] { (90, "null"), (91, "null"), (15, """{"count": 10}""") })
             app["items"]!.AsArray().Add(O($$"""
                 {"id": {{id}}, "name": "Test Item {{id}}", "description": "", "define": "TEST_ITEM_{{id}}", "type": 41, "group": 13, "cat": 4, "client_type": 4,
                  "image": "x", "variationname": null, "units": {{units}}, "fit": {}, "inventory": {"slots": [0, 1, 2, 8], "capacity": 0, "weight": 1},
@@ -95,6 +95,31 @@ public class StartKitTests : StateTestBase
             con.Exec("UPDATE accounts SET banned = 0 WHERE id = ?", B);
         state = Open();
         Assert.Equal("90/2/ 10/8/10 15/0/10", Own(B));
+    }
+
+    // a kit with a higher `start.version` gives the items added since to every account once; a new account starts at the current version
+    [Fact]
+    public void ARaisedKitVersionGivesTheNewItemsOnceToEveryAccount()
+    {
+        state = Open();
+        state.CreateAccount(A, "alpha");
+        var connect = (JsonObject)JsonNode.Parse(Neutral())!;
+        connect["inventory"]!["items"]!.AsArray().Add(JsonNode.Parse("""{"item_id": 91, "slot": 0, "guid": "4", "metadata": {}, "units": null}"""));
+        var v2 = Facts.Parse(FactsJson.Replace("\"start\": {", "\"start\": {\"version\": 2, "));
+        State Open2() => new(Db, Py.DumpBytes(CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES, offline: false, startBody: Py.DumpBytes(connect), facts: v2);
+        state = Open2();
+        Assert.Equal("90/2/ 10/8/10 15/0/10 91/0/", Own(A));
+        using (var con = state.Store.Open(A))
+        {
+            con.Begin();
+            con.Exec("DELETE FROM items WHERE account_id = $a AND item_id = 91");
+            con.Commit();
+        }
+        state = Open2();
+        Assert.Equal("90/2/ 10/8/10 15/0/10", Own(A));  // once
+        state.CreateAccount(B, "bravo");
+        using var all = state.Store.Open();
+        Assert.Equal(2L, all.Scalar("SELECT start_kit FROM accounts WHERE id = ?", B));
     }
 
     [Fact]

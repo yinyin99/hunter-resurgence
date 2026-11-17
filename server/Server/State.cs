@@ -744,17 +744,19 @@ public sealed partial class State
         LocalAccount = Py.L(G(local, "user_id", 1));
         if (!Store.AccountExists(LocalAccount))
             Store.CreateAccount(LocalAccount, Py.Str(G(local, "handle", "")), (JsonObject)local.DeepClone(), seed: con => Seed(con, connect, skillList));
-        // an account from before the start kit (schema 22) gets the start items it lacks, once (not a banned one: it gets them at its first start after the ban is lifted)
+        // an account whose kit is older than the facts file's (0: from before the start kit, schema 22) gets the start items it lacks, once (not a banned one: it gets them at
+        // its first start after the ban is lifted)
         List<long> ids;
+        var kit = this.facts.StartVersion();  // the field: the parameter may be null
         using (var all = Store.Open())
         {
-            foreach (var id in all.Rows("SELECT id FROM accounts WHERE start_kit = 0 AND banned = 0 ORDER BY id").Select(r => (long)r[0]).ToList())
+            foreach (var id in all.Rows("SELECT id FROM accounts WHERE start_kit < ? AND banned = 0 ORDER BY id", kit).Select(r => (long)r[0]).ToList())
                 using (var con = Store.Open(id))
                 {
                     con.Begin();
                     PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
                                                (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
-                    con.Exec("UPDATE accounts SET start_kit = 1 WHERE id = ?", id);
+                    con.Exec("UPDATE accounts SET start_kit = ? WHERE id = ?", kit, id);
                     con.Commit();
                 }
             ids = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
@@ -796,7 +798,7 @@ public sealed partial class State
     /// <summary>A new account with the server's starting data (the neutral start, never the recorded connect). id is the game's user id; throws when the
     /// id, the handle or the Steam id is taken.</summary>
     public void CreateAccount(long id, string handle, string? steamId64 = null) =>
-        Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, con => Seed(con, start, ReferenceEquals(start, connect) ? skillList : null));
+        Store.CreateAccount(id, handle, NewAccount(id, handle), steamId64, con => Seed(con, start, ReferenceEquals(start, connect) ? skillList : null), facts.StartVersion());
 
     /// <summary>The item catalogue a restore reads units by (the Application/application reply); null without one.</summary>
     public Restore.IItemCatalogue? Catalogue => items.Count == 0 ? null : new ItemCatalogue(items, avatars);

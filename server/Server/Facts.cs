@@ -241,6 +241,9 @@ public sealed class Facts
         return ([.. (start["items"] as JsonArray ?? []).Select(Py.L)], (JsonObject)(start["wallet"] as JsonObject ?? []).DeepClone());
     }
 
+    /// <summary><c>start.version</c> (1 when absent): raised when items are added to the kit, so accounts with an older kit get the new ones once.</summary>
+    public long StartVersion() => Obj("start")["version"] is { } v ? Py.L(v) : 1;
+
     /// <summary>The free ammunition every hunt starts with, <c>start.free_ammo</c>: its item ids and how many full boxes of each the player has at least.</summary>
     public (long[] Items, long Boxes) FreeAmmo()
     {
