@@ -120,7 +120,8 @@ public sealed class Uploads(State state, string dataDir)
         using (var con = Store.Open(account))
             con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'refused', NULL, NULL, 0, ?)", Store.Now(), message);
         if (!quota)
-            Alert($"Upload refused: account {account}, {Alerts.Name((string)Store.AccountJson(account)["handle"]!)}, {Alerts.Steam(Store.SteamId64(account))}, {message}. Kept: {RefusedId(account, sha)}");
+            Alert(Alerts.Text("\u26D4", "Upload refused", null, ("handle", Alerts.Handle((string)Store.AccountJson(account)["handle"]!)), ("account", account),
+                ("steam", Alerts.Steam(Store.SteamId64(account))), ("reason", message), ("kept", $"`{RefusedId(account, sha)}`")));
         return new(400, "invalid", message);
     }
 
@@ -428,9 +429,9 @@ public sealed class Uploads(State state, string dataDir)
         }
         if (keptId is { } n)
         {
-            // the handle is the zip's own text: only plain name characters go into the alert
-            var name = Regex.Replace(handle ?? "", @"[^A-Za-z0-9_.-]", "");
-            Alert($"Backup waiting for review: id {n}, account {account}, backup user id {uid}, handle {(name.Length > 32 ? name[..32] : name)}, {Alerts.Steam(Store.SteamId64(account))}. Run: review list");
+            // the handle is the zip's own text: Alerts.Handle keeps only plain name characters
+            Alert(Alerts.Text("\U0001F4E6", "Backup waiting for review", "review list", ("id", n), ("handle", Alerts.Handle(handle ?? "")), ("account", account),
+                ("backup user id", uid), ("steam", Alerts.Steam(Store.SteamId64(account)))));
         }
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
