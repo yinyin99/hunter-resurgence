@@ -1490,8 +1490,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Report.AutoFailed" xml:space="preserve"><value>Nie udało się wysłać raportu o problemie: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Coś poszło nie tak? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Wysyłać raporty o problemach?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jeśli gra się nie uruchomi, launcher może wysłać nam swoje dzienniki, żebyśmy mogli to naprawić. Bez haseł.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Co zawiera raport</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jeśli gra się nie uruchomi, launcher może wysłać nam swoje dzienniki, żebyśmy mogli to naprawić.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Pokaż pliki</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Wysyłaj automatycznie</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Pytaj za każdym razem</value></data>

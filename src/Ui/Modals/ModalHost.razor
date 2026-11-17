@@ -39,6 +39,7 @@
 
     public async ValueTask DisposeAsync()
     {
-        if (module is not null) await module.DisposeAsync();
+        try { if (module is not null) await module.DisposeAsync(); }
+        catch (JSDisconnectedException) { } // the tab closed: the module is gone with its circuit
     }
 }

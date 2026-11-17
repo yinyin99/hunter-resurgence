@@ -1490,8 +1490,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Der Problembericht konnte nicht gesendet werden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ist etwas schiefgelaufen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Problemberichte senden?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns seine Logs schicken, damit wir es beheben können. Keine Passwörter.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Was steht in einem Bericht</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns seine Logs schicken, damit wir es beheben können.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dateien anzeigen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch senden</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Jedes Mal fragen</value></data>

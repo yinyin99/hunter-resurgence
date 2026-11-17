@@ -1490,8 +1490,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>Hlášení o problému se nepodařilo odeslat: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Něco se pokazilo? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Odesílat hlášení o problémech?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí, může nám launcher poslat své protokoly, abychom to opravili. Žádná hesla.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Co je v hlášení</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí, může nám launcher poslat své protokoly, abychom to opravili.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Zobrazit soubory</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Odesílat automaticky</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Ptát se pokaždé</value></data>
