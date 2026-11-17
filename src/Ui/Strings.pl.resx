@@ -1522,4 +1522,31 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Gra jest uruchomiona. Zamknięcie launchera rozłączy ją z serwerem społeczności. Zostawić launcher otwarty?&#10;&#10;Tak: zostaw otwarty. Nie: zminimalizuj.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Zgłoś problem</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Wysyła dzienniki gry na serwer społeczności, żebyśmy mogli pomóc. Przechowywane 30 dni.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Zbieranie plików…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Raport zawiera te pliki:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Tych plików nie udało się odczytać i zostały pominięte:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Zapisz</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Wyślij</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Wysyłanie…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Zapisano jako {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Wysłano. Numer referencyjny: {0} (podaj go na Discordzie)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Wysyłaj automatycznie po nieudanym uruchomieniu</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Raport o problemie wysłany: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Nie udało się wysłać raportu o problemie: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Coś poszło nie tak? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Wysyłać raporty o problemach?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jeśli gra się nie uruchomi, launcher może wysłać nam swoje dzienniki, żebyśmy mogli to naprawić. Bez haseł.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Co zawiera raport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Pokaż pliki</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Wysyłaj automatycznie</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Pytaj za każdym razem</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Nie jesteś zalogowany. Zaloguj się ponownie i spróbuj jeszcze raz.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Serwer społeczności nie przyjął raportu.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Raport jest za duży, by go wysłać. Zapisz go zamiast tego.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Jeden raport jest już w drodze albo w ciągu ostatnich 24 godzin wysłano pięć. Spróbuj później.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Serwer społeczności nie ma teraz miejsca na raporty. Zapisz raport zamiast tego.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Nie udało się zapisać raportu w Pobranych. Wyślij go zamiast tego.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Nie można połączyć się z serwerem społeczności. Spróbuj ponownie lub zapisz raport zamiast tego.</value></data>
 </root>

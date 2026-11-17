@@ -1522,4 +1522,31 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Jocul rulează. Închiderea launcherului îl deconectează de la serverul comunității. Păstrezi launcherul deschis?&#10;&#10;Da: păstrează-l deschis. Nu: minimizează-l.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele jocului serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Se adună fișierele…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Raportul conține aceste fișiere:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Acestea nu au putut fi citite și au fost omise:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Salvează</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Trimite</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Se trimite…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Salvat ca {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Trimis. Referință: {0} (comunicați-o pe Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Trimite automat după o pornire eșuată</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Raport de problemă trimis: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Ceva nu a mers bine? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Trimiteți rapoarte de probleme?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale ca să remediem problema. Fără parole.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Ce conține un raport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Arată fișierele</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Trimite automat</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Întreabă-mă de fiecare dată</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Nu sunteți autentificat. Autentificați-vă din nou și încercați încă o dată.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Serverul comunității nu a acceptat raportul.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Raportul este prea mare pentru a fi trimis. Salvați-l în schimb.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Un raport este deja în curs de trimitere sau ați trimis cinci în ultimele 24 de ore. Încercați mai târziu.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Serverul comunității nu are loc pentru rapoarte în acest moment. Salvați raportul în schimb.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Raportul nu a putut fi salvat în Descărcări. Trimiteți-l în schimb.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Serverul comunității nu a putut fi contactat. Încercați din nou sau salvați raportul în schimb.</value></data>
 </root>

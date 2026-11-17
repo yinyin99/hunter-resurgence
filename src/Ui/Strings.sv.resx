@@ -1522,4 +1522,31 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spelet körs. Om du stänger launchern kopplas spelet från communityservern. Vill du låta launchern vara öppen?&#10;&#10;Ja: låt den vara öppen. Nej: minimera den.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Skickar spelets loggar till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Samlar in filerna…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Rapporten innehåller dessa filer:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Dessa kunde inte läsas och är utelämnade:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Spara</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Skicka</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Skickar…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Sparad som {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Skickad. Referens: {0} (ange den på Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Skicka automatiskt efter en misslyckad start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Problemrapport skickad: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunde inte skickas: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Gick något fel? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Skicka problemrapporter?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sina loggar så att vi kan åtgärda det. Inga lösenord.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Vad finns i en rapport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Visa filer</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Skicka automatiskt</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Fråga mig varje gång</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Du är inte inloggad. Logga in igen och försök på nytt.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Gemenskapsservern accepterade inte rapporten.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Rapporten är för stor för att skickas. Spara den i stället.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>En rapport är redan på väg, eller så har du skickat fem de senaste 24 timmarna. Försök igen senare.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Gemenskapsservern har inget utrymme för rapporter just nu. Spara rapporten i stället.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Rapporten kunde inte sparas i Hämtade filer. Skicka den i stället.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Gemenskapsservern kunde inte nås. Försök igen eller spara rapporten i stället.</value></data>
 </root>

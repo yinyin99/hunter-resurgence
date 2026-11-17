@@ -1522,4 +1522,31 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Spillet kører. Hvis du lukker launcheren, afbrydes spillet fra community-serveren. Vil du holde launcheren åben?&#10;&#10;Ja: hold den åben. Nej: minimer den.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Rapportér et problem</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sender spillets logfiler til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Samler filerne…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Rapporten indeholder disse filer:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Disse kunne ikke læses og er udeladt:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Gem</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Sender…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Gemt som {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sendt. Reference: {0} (oplys den på Discord)</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatisk efter en mislykket start</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Problemrapport sendt: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Gik noget galt? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problemrapporter?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler, så vi kan rette det. Ingen adgangskoder.</value></data>
+  <data name="Report.ConsentLink" xml:space="preserve"><value>Hvad er der i en rapport</value></data>
+  <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Spørg mig hver gang</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Du er ikke logget ind. Log ind igen, og prøv igen.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Fællesskabsserveren accepterede ikke rapporten.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Rapporten er for stor til at blive sendt. Gem den i stedet.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>En rapport er allerede på vej, eller du har sendt fem inden for de seneste 24 timer. Prøv igen senere.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Fællesskabsserveren har ikke plads til rapporter lige nu. Gem rapporten i stedet.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Rapporten kunne ikke gemmes i Downloads. Send den i stedet.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Fællesskabsserveren kunne ikke nås. Prøv igen, eller gem rapporten i stedet.</value></data>
 </root>
