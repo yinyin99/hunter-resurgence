@@ -43,20 +43,24 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
     static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash).</summary>
-    static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])[^\\/:*?""<>|\r\n]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-    static readonly string Profile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
-    static readonly Regex? UserNameWord = Environment.UserName is { Length: > 0 } u ? new($@"(?<![\w]){Regex.Escape(u)}(?![\w])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) : null;
+    /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash): up to the next slash, or, at the end of the path, up to a space or punctuation.</summary>
+    static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])(?:[^\\/:*?""<>|\r\n]+(?=[\\/])|[^\s\\/:*?""<>|,;()'\[\]]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex? Own = OwnNames();
+
+    /// <summary>The account name and the profile path, each also as the Latin-1 reading of its UTF-8 bytes (one-byte logs are read as Latin-1, so a non-ASCII name shows up that way).</summary>
+    static Regex? OwnNames()
+    {
+        static IEnumerable<string> Forms(string v) => v.Length == 0 ? [] : [v, Encoding.Latin1.GetString(Encoding.UTF8.GetBytes(v))];
+        var profile = Environment.GetEnvironmentVariable("USERPROFILE")?.TrimEnd('\\', '/') ?? "";
+        var parts = Forms(Environment.UserName).Select(n => $@"(?<![\w<]){Regex.Escape(n)}(?![\w>])")
+            .Concat(profile.Length > 3 ? Forms(profile).Select(p => Regex.Escape(p) + @"(?![\w])") : []).Distinct().ToList();
+        return parts.Count == 0 ? null : new(string.Join('|', parts), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
 
     /// <summary>Replaces credential lines as a whole, then the Windows user name (profile folder in a path, the profile path, the account name) by <c>&lt;user&gt;</c>, keeping the rest of the line.</summary>
     public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : User(l)));
 
-    static string User(string line)
-    {
-        if (Profile.Length > 3 && Path.GetFileName(Profile.TrimEnd('\\', '/')) is { Length: > 0 } name) line = line.Replace(Profile, Profile[..^name.Length] + "<user>", StringComparison.OrdinalIgnoreCase);
-        line = ProfileName.Replace(line, "<user>");
-        return UserNameWord?.Replace(line, "<user>") ?? line;
-    }
+    static string User(string line) => Own?.Replace(ProfileName.Replace(line, "<user>"), "<user>") ?? ProfileName.Replace(line, "<user>");
 
     /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)

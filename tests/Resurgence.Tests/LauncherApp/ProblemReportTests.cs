@@ -40,6 +40,7 @@ public class ProblemReportTests
     [Theory]
     [InlineData(@"open C:\Users\Jane Doe\AppData\Local\x.log failed", @"open C:\Users\<user>\AppData\Local\x.log failed")]
     [InlineData(@"\\pc\share\Users\jane\Desktop", @"\\pc\share\Users\<user>\Desktop")]
+    [InlineData("cwd C:\\Users\\Bob, size 3 (ok)", "cwd C:\\Users\\<user>, size 3 (ok)")]
     [InlineData("D:/Users/jane/x", "D:/Users/<user>/x")]
     public void TheProfileFolderNameIsReplacedAndTheRestOfTheLineStays(string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line));
 
@@ -49,6 +50,8 @@ public class ProblemReportTests
         var text = Diagnostics.Scrub($"{Environment.GetEnvironmentVariable("USERPROFILE")}\\a.txt by {Environment.UserName}");
         Assert.DoesNotContain(Environment.UserName, text, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("<user>", text);
+        Assert.DoesNotContain("<<", text);
+        Assert.DoesNotContain(Environment.UserName, Diagnostics.Scrub(Encoding.Latin1.GetString(Encoding.UTF8.GetBytes("by " + Environment.UserName))), StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
