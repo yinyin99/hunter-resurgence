@@ -2018,8 +2018,8 @@ public sealed partial class State
     }
 
     /// <summary>At every hunt's start: the free ammunition (<see cref="Facts.FreeAmmo"/>) is topped up to its full boxes, a box being the item's stack size. A stack the player has used is filled
-    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. With <see cref="UnlimitedAmmo"/> every other ammunition stack the player owns is
-    /// then filled to a full box too (a larger stack stays). The rows are in the connect that follows.</summary>
+    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. With <see cref="UnlimitedAmmo"/> the lodge keeps only its oldest stack of each ammunition,
+    /// the free ammunition is one box, every other ammunition stack the player owns is then filled to a full box too (a larger stack stays), and <see cref="ArmWeapons"/> runs. The rows are in the connect that follows.</summary>
     void RefillAmmo(Db con)
     {
         if (UnlimitedService)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
@@ -2028,13 +2028,9 @@ public sealed partial class State
         if (UnlimitedAmmo)  // the lodge shows one stack of each ammunition as the unlimited one, and the page copies a stack only when it is the only one in the lodge: more boxes would only stop the copying
         {
             boxes = 1;
-            // more lodge stacks of one ammunition (older free boxes, a restore, a purchase) go into the oldest one, their units added
+            // more lodge stacks of one ammunition (older free boxes, a restore) are the same unlimited stack: the oldest stays, the others go (adding their units up would make a stack larger than a box)
             foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot = 0 AND units IS NOT NULL GROUP BY item_id HAVING COUNT(*) > 1").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
-            {
-                const string Oldest = "(SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL)";
-                con.Exec($"UPDATE items SET units = (SELECT SUM(MAX(units, 0)) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL) WHERE account_id = $a AND guid = {Oldest}", id);
-                con.Exec($"DELETE FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL AND guid > {Oldest}", id);
-            }
+                con.Exec("DELETE FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL AND guid > (SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL)", id);
         }
         foreach (var id in ammo)
         {
