@@ -127,10 +127,16 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [InlineData("share \\\\host\\share\\dir\\f.log and D:\\a\\b.txt", "share f.log and b.txt")]
     [InlineData("no path here: 12 of 30", "no path here: 12 of 30")]
     [InlineData("profile C:\\Users\\Bob Smith", "profile <path>")]
-    [InlineData("in C:\\Games\\data, then x", "in <path>, then x")]
+    [InlineData("in C:\\Games\\data, then x", "in <path>")]
     [InlineData("see C:\\Users\\john.doe", "see <path>")]
     [InlineData("see C:\\Users\\jdoe. Then it failed", "see <path>")]
     [InlineData("C:\\Users\\john.doe\\Saved Games\\a.sav", "a.sav")]
+    [InlineData("admin share \\\\pc\\c$\\Users\\john.doe\\AppData\\x.dll failed", "admin share x.dll failed")]
+    [InlineData("admin share \\\\pc\\c$\\Users\\john.doe", "admin share <path>")]
+    [InlineData("\\\\pc\\c$\\Users\\Jane Doe.PC", "<path>")]
+    [InlineData("home Z:\\home\\john.doe", "home <path>")]
+    [InlineData("home Z:\\home\\john.doe\\Game\\save.dat ok", "home save.dat ok")]
+    [InlineData("opened Z:/john.doe/v.2/Config.INI", "opened Config.INI")]
     public void TestAPathInATextIsReducedToItsFileName(string text, string expected) => Assert.Equal(expected, CrashReports.Clean(text));
 
     [Fact]

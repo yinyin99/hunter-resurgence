@@ -17,17 +17,17 @@ public static class CrashReports
     sealed record Image(ulong Start, ulong Size, string Name);
     sealed record Entry(string Id, long Account, string Kind, long? Time, string? Module, string[] Frames, string Message, string? Release);
 
-    // a Windows path (drive or share, folders that may hold spaces, then the file name): only the file name stays. A path that ends in a
-    // folder (no dot in its last part) is replaced whole, so a profile folder's user name never stays
-    static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*(?:([^\\/:*?""<>|\s]*\.[^\\/:*?""<>|\s]*)|[^\\/:*?""<>|\r\n.,;]*)", RegexOptions.Compiled);
+    // A Windows path (a drive or a share, folders that may hold spaces, then the last part): only a file name with a known extension stays. Anything else
+    // (a folder, a name with another dot such as a profile folder "john.doe") is replaced whole, with the rest of the line, so a user name never stays.
+    const string KnownFile = "dll|exe|sys|drv|ocx|node|log|txt|ini|cfg|conf|dat|sav|pak|arc|json|xml|pdb|dmp|tmp|lua|py|pyc|pyd|scn|zip|gz|bin|db|png|jpg|jpeg|tga|dds|bmp|cache";
+    static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*(?:([^\\/:*?""<>|\s]*\.(?:" + KnownFile + @")(?![A-Za-z0-9]))|[^\\/:*?""<>|\r\n]*)",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
     static readonly Regex Id = new(@"\A[0-9A-Za-z-]{8,64}\z", RegexOptions.Compiled);
-    // the folder of a Windows user profile (a name may hold dots and spaces, so it takes the rest of the line): never kept
-    static readonly Regex UserFolder = new(@"(?<=[A-Za-z]:[\\/]Users[\\/])[^\\/:*?""<>|\r\n]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    /// <summary>The text with every install path reduced to its file name (a folder path becomes `&lt;path&gt;`), cut to 300 characters.</summary>
+    /// <summary>The text with every Windows path reduced to its file name (any other path becomes `&lt;path&gt;`), cut to 300 characters.</summary>
     public static string Clean(string text)
     {
-        var s = InstallPath.Replace(UserFolder.Replace(text, "user"), m => m.Groups[1].Success ? m.Groups[1].Value : "<path>");
+        var s = InstallPath.Replace(text, m => m.Groups[1].Success ? m.Groups[1].Value : "<path>");
         return s.Length > MaxText ? s[..MaxText] : s;
     }
 
@@ -172,7 +172,7 @@ public static class CrashReports
             read++;
             JsonObject? o;
             try { o = JsonNode.Parse(line) as JsonObject; }
-            catch (Exception e) when (e is System.Text.Json.JsonException or ArgumentException) { continue; }
+            catch (System.Text.Json.JsonException) { continue; }
             if (o is null) continue;
             if (T(o["host"]) == crashHost)
             {
