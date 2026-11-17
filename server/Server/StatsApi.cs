@@ -11,8 +11,13 @@ public static class StatsApi
     {
         var state = game.State!;
         if (!state.Online) return;
-        app.MapGroup("/stats").RequireHost(game.Web).WithGroupName("game").WithTags("Stats (web_host)")
-            .MapGet("/online", () =>
+        var stats = app.MapGroup("/stats").RequireHost(game.Web).WithGroupName("game").WithTags("Stats (web_host)");
+        stats.MapGet("/game", () => new Reply(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=300"), ("X-Content-Type-Options", "nosniff")],
+                Py.DumpBytes(new JsonObject { ["build"] = game.Cfg["game_build"]?.DeepClone() }), "stats"))
+            .WithName("GameStats").WithSummary("The game build the server supports")
+            .WithDescription("`{build}`: the Steam build id of the game version the server supports (settings.json `game_build`), null when the operator set none. The launcher compares it with the installed game's. Sent with `Cache-Control: public, max-age=300`.")
+            .Produces(200, contentType: "application/json");
+        stats.MapGet("/online", () =>
             {
                 var (players, games) = state.OnlineCounts();
                 return new Reply(200, [("Content-Type", "application/json"), ("Cache-Control", $"public, max-age={State.OnlineCacheSeconds}"), ("X-Content-Type-Options", "nosniff")],
