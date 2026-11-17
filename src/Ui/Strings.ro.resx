@@ -49,6 +49,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Setări cont</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionarea jocului</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Va fi disponibil mai târziu</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Folosește butonul Joacă din Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Lipește această linie în opțiunile de lansare ale jocului din Steam (Proprietăți) pentru a porni jocul prin acest launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiază</value></data>
@@ -97,6 +98,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Folderul jocului</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Curățați cache-ul launcherului</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Curățați cache-ul jocului</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Folderul nu a fost găsit. Poate jocul nu este încă instalat.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Închideți mai întâi jocul, apoi goliți memoria cache a acestuia.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Unele fișiere nu au putut fi șterse. Încercați din nou mai târziu.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Prieteni ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Găsiți alți vânători...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Trimiteți mesaj</value></data>
@@ -834,11 +838,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Nu puteți trimite mesaje către propriul cont.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>A apărut o eroare la trimiterea mesajului.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Setări cont</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>E-mailul contului</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-mailul contului</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Limbă și fus orar</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Blocări multiplayer</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Setări Facebook</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Setări Steam</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Setări profil</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatarul jucătorului</value></data>
@@ -847,68 +850,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Selectați un avatar nou</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatare deblocabile</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Acest avatar este blocat. Îl puteți debloca cumpărându-l din magazin.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>Adresă de e-mail</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Schimbați e-mailul</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Un e-mail de confirmare a fost trimis la noua adresă de e-mail. Confirmați-o pentru a activa noua adresă.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Această adresă de e-mail nu este disponibilă</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Ceva nu a funcționat la actualizarea adresei de e-mail.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmați e-mailul</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Adresa dvs. de e-mail a fost schimbată.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Retrimiteți confirmarea</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>E-mail de confirmare retrimis.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail retrimis cu succes</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Retrimiterea e-mailului a eșuat. Încercați din nou sau contactați asistența</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Retrimiterea e-mailului a eșuat. Încercați din nou sau contactați asistența.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Limba</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Țară</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Alegeți țara</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Fus orar:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Salvați</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Istoric achiziții cont</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Toate tranzacțiile pe care le efectuați, atât prin {0}, cât și prin {1}, sunt salvate în portofelul dvs.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>bancă</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>magazin</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Faceți clic aici pentru a vedea portofelul dvs.</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Jucători blocați</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Nu ați blocat niciun jucător din jocurile dvs.</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Deblocați</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Sigur doriți să deblocați utilizatorul {0} în jocurile dvs.?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Vă puteți conecta contul la Facebook pentru a vă autentifica mai ușor.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Conectați</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Contul dvs. {game} {0} este conectat la contul dvs. Steam. Dacă doriți să conectați acest cont {game} la un alt cont Steam sau să conectați contul Steam la un alt cont {game}, trebuie mai întâi să deconectați cele două conturi deja conectate.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Atenție</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Deconectarea contului Steam vă va deconecta din {game} și va închide launcherul. Nu veți mai putea juca {game} pe Steam până când nu vă conectați la un alt cont.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Înțeleg și vreau să-mi deconectez contul Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Ceva nu a funcționat și contul dvs. Steam nu a fost deconectat. Încercați din nou!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagine de antet</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Imaginile de antet se deblochează când atingeți niveluri noi în trei categorii de Realizări: Maestru al animalelor, Maestru al armelor și Maestru al explorării. Odată deblocate, imaginile de antet rămân disponibile pentru totdeauna.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Aflați mai multe despre nivelurile Maestru din Realizări.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Niciuna</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Cea mai recentă</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animale</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Arme</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Explorare</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Evenimente</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Misiuni zilnice</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Salvați setările profilului</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Setări profil salvate</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Salvarea profilului a eșuat. Încercați din nou sau contactați asistența.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Cabană de trofee</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Puncte de momeală</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>ACASĂ</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Alegeți o secțiune.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>SELECTAȚI CABANA DE TROFEE</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Momentan nu dețineți nicio cabană.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>GESTIONAREA PUNCTELOR DE MOMEALĂ</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Umpleți hrănitorul până la:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Momeală</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Stare</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Activ</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Reumpleți</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Bun venit în {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Felicitări, {0}, noul dvs. cont {game} a fost creat!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Dacă ați descărcat și instalat deja launcherul și clientul jocului, sunteți gata să începeți să jucați! Dacă sunteți nou în {game}, vă recomandăm să parcurgeți tutorialele înainte de prima vânătoare adevărată. Tutorialele vă vor învăța tot ce trebuie să știți pentru a vă descurca singur în Rezervația de vânătoare Evergreen. Începeți mai jos.</value></data>
@@ -924,7 +865,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Dacă nu ați descărcat încă launcherul și clientul jocului, trebuie să faceți acest lucru înainte de a începe să vânați.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>La descărcări</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Setări</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Dacă doriți să vă schimbați adresa de e-mail, limba sau avatarul de jucător, puteți face acest lucru în pagina de setări.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Dacă doriți să vă schimbați avatarul de jucător, puteți face acest lucru pe pagina de setări.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Modificați setările contului</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Tot progresul dvs. din {game} este afișat în pagina de profil, unde veți găsi statistici detaliate pentru toate vânătorile anterioare.</value></data>

@@ -55,7 +55,7 @@ public class BrandingTests
     public void HtmlEncodesTheTextAndKeepsTheGivenTags() => English(() =>
     {
         var loc = Resurgence.Tests.WebTests.TestLoc.Make(new Resurgence.Ui.Branding(new() { ["game_name"] = "Foo" }));
-        Assert.Equal("Language &amp; time zone", loc.Html("Set.TabLocale").Value);
+        Assert.Equal("Game info &amp; Starting point", loc.Html("Launch.Info").Value);
         var tutorials = loc.Html("Help.Tut.Intro", "<a href=\"/t\">", "</a>").Value;
         Assert.Contains("Learn the basics of how to play Foo.", tutorials);
         Assert.Contains("<a href=\"/t\">playable tutorials</a>", tutorials);

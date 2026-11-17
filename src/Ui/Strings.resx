@@ -49,6 +49,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Account settings</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Game Management</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Coming later</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Use Steam's Play button</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Paste this line into the game's Launch options in Steam (Properties) to start the game through this launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copy</value></data>
@@ -97,6 +98,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Game Folder</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Clear launcher cache</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Clear game cache</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>The folder was not found. The game may not be installed yet.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Close the game first, then clear its cache.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Some files could not be deleted. Try again later.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Friends ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Find other hunters...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Send message</value></data>
@@ -834,11 +838,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>You can't send messages to yourself.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>An error occurred while sending your message.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Account settings</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Account email</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Account email</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Language &amp; time zone</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer bans</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook settings</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam settings</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profile settings</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Player avatar</value></data>
@@ -847,68 +850,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Select a new avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Unlockable avatars</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>This avatar is locked. You can unlock it by buying it in the store.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>Email:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>Email Address</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Update Email</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>A confirmation email has been sent to your new email address. Please confirm it in order to activate the new email address.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>That email address is not available</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Something went wrong when trying to update your email.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirm Email</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Your email address has been changed.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Resend confirmation</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Confirmation email resent.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Resend email successful</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Resend email failed. Please try again or contact support</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Resending the email failed. Please try again or contact support.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Language</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Country</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Choose country</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Time zone:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Save</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Account purchase history</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>All transactions you make, both through the {0} and the {1} are saved in your wallet.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>bank</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>store</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Click here to view your wallet</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Banned players</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>You have not banned any players from your games</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Unban</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>You can connect your account to Facebook to make it easier to sign in.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Connect</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Your {game} account {0} is connected to your Steam account. If you want to connect this {game} account to another Steam account, or connect the Steam account to another account on {game}, you must first disconnect the two accounts that are already connected.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Warning</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Disconnecting your Steam account will log you out of {game} and close the launcher. You won't be able to play {game} on Steam again until you connect to another account.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>I understand and want to disconnect my Steam account</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Something went wrong and your Steam account was not disconnected. Please try again!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Header image</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Header images get unlocked when you reach new levels in three different Achievement categories - Animals Master, Weapons Master and Exploration Master. Once unlocked, header images remain available forever.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Find out more details on the Achievement Master levels.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>None</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Most Recent</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animals</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Weapons</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Exploration</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Events</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Daily Missions</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Save Profile Settings</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profile settings saved</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profile save failed. Please try again or contact support.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trophy Lodge</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Bait Sites</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>HOME</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Please choose a section.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>TROPHY LODGE SELECTION</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>You currently don't own any lodges.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>BAIT SITE MANAGEMENT</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Fill feeder up to:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Bait</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Active</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Refill</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Welcome to {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulations {0}, your brand new {game} account has been created!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>If you have already downloaded and installed the game launcher and client, you are ready to start playing! If you are new to {game} we recommend playing through the tutorials before going on your first real hunt. The tutorials will teach you everything you need to know to make it on your own in the Evergreen Hunting Reserve. Get started below.</value></data>
@@ -924,7 +865,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>If you haven't downloaded the game launcher and client yet you need to do so before you can start hunting.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>To downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your email address, language settings or your player avatar you can do so on the settings page.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>If you want to change your player avatar you can do so on the settings page.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Change account settings</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profile</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>All of your progress in {game} is shown on your profile page, there you will find detailed stats for all of your previous hunts.</value></data>

@@ -56,7 +56,6 @@ public class LauncherServicesTests
     [InlineData("/competitions", true)]
     [InlineData("/bank", true)]
     [InlineData("/settings", false)]  // the live settings page is the server's avatar
-    [InlineData("/game-management", true)]
     [InlineData("/feed", false)]
     public void LiveLauncherHidesTheMockOnlyPages(string path, bool hidden) => Assert.Equal(hidden, Resurgence.Ui.LauncherGuard.MockOnly(path));
 }

@@ -49,6 +49,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoindstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spiladministration</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommer senere</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Brug Steams Afspil-knap</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Indsæt denne linje i spillets startindstillinger i Steam (Egenskaber), så spillet starter via denne launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiér</value></data>
@@ -97,6 +98,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Spilmappe</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Ryd launcher-cache</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Ryd spilcache</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Mappen blev ikke fundet. Spillet er måske ikke installeret endnu.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Luk spillet først, og ryd derefter dets cache.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Nogle filer kunne ikke slettes. Prøv igen senere.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Venner ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Find andre jægere...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Send besked</value></data>
@@ -834,11 +838,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Du kan ikke sende beskeder til dig selv.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Der opstod en fejl, da din besked skulle sendes.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoindstillinger</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Konto-e-mail</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Konto-e-mail</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Sprog og tidszone</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Multiplayer-udelukkelser</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-indstillinger</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam-indstillinger</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profilindstillinger</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spilleravatar</value></data>
@@ -847,68 +850,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Vælg en ny avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarer, der kan låses op</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Denne avatar er låst. Du kan låse den op ved at købe den i butikken.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-mailadresse</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Opdater e-mail</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Der er sendt en bekræftelses-e-mail til din nye e-mailadresse. Bekræft den for at aktivere den nye e-mailadresse.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Den e-mailadresse er ikke tilgængelig</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Noget gik galt under opdateringen af din e-mail.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Bekræft e-mail</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Din e-mailadresse er blevet ændret.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Send bekræftelse igen</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Bekræftelses-e-mail sendt igen.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-mailen blev sendt igen</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>E-mailen kunne ikke sendes igen. Prøv igen, eller kontakt support</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>E-mailen kunne ikke sendes igen. Prøv igen, eller kontakt support.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Sprog</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Vælg land</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Tidszone:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Gem</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Kontoens købshistorik</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Alle transaktioner, du foretager, både via {0} og {1}, gemmes i din tegnebog.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banken</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>butikken</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Klik her for at se din tegnebog</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Udelukkede spillere</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Du har ikke udelukket nogen spillere fra dine spil</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Ophæv</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Er du sikker på, at du vil ophæve udelukkelsen af {0} fra dine spil?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Du kan forbinde din konto med Facebook, så det bliver nemmere at logge ind.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Forbind</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Din {game}-konto {0} er forbundet med din Steam-konto. Hvis du vil forbinde denne {game}-konto med en anden Steam-konto eller forbinde Steam-kontoen med en anden konto i {game}, skal du først afbryde forbindelsen mellem de to konti, der allerede er forbundet.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Advarsel</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Hvis du afbryder forbindelsen til din Steam-konto, bliver du logget ud af {game}, og launcheren lukkes. Du kan ikke spille {game} på Steam igen, før du forbinder med en anden konto.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jeg forstår det og vil afbryde forbindelsen til min Steam-konto</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Noget gik galt, og forbindelsen til din Steam-konto blev ikke afbrudt. Prøv igen!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Bannerbillede</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Bannerbilleder låses op, når du når nye niveauer i tre forskellige milepælskategorier – Dyremester, Våbenmester og Udforskningsmester. Når et bannerbillede er låst op, forbliver det tilgængeligt for altid.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Se flere oplysninger om mesterniveauerne for milepæle.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Ingen</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Seneste</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Dyr</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Våben</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Udforskning</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Begivenheder</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Daglige missioner</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Gem profilindstillinger</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profilindstillinger gemt</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profilen kunne ikke gemmes. Prøv igen, eller kontakt support.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofæhytte</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Lokkepladser</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>START</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Vælg en sektion.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>VALG AF TROFÆHYTTE</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Du ejer i øjeblikket ingen hytter.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>ADMINISTRATION AF LOKKEPLADSER</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Fyld foderautomaten op til:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Lokkemad</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktiv</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Genfyld</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Velkommen til {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Tillykke, {0}! Din splinternye {game}-konto er oprettet!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Hvis du allerede har downloadet og installeret spillets launcher og klient, er du klar til at spille! Er du ny i {game}, anbefaler vi, at du gennemfører selvstudierne, før du går på din første rigtige jagt. Selvstudierne lærer dig alt, hvad du har brug for at vide for at klare dig selv i Evergreen Hunting Reserve. Kom i gang nedenfor.</value></data>
@@ -924,7 +865,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Hvis du endnu ikke har downloadet spillets launcher og klient, skal du gøre det, før du kan gå på jagt.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Til downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Indstillinger</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Hvis du vil ændre din e-mailadresse, dine sprogindstillinger eller din spilleravatar, kan du gøre det på indstillingssiden.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Hvis du vil ændre din spilleravatar, kan du gøre det på indstillingssiden.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Ændr kontoindstillinger</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Alle dine fremskridt i {game} vises på din profilside, hvor du finder detaljeret statistik for alle dine tidligere jagter.</value></data>

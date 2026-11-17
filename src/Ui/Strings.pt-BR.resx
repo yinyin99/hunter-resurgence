@@ -49,6 +49,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Ajustes da Conta</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Administrar Jogo</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Em breve</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Usar o botão Jogar do Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Cole esta linha nas opções de inicialização do jogo na Steam (Propriedades) para iniciá-lo por este launcher:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Copiar</value></data>
@@ -97,6 +98,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Pasta do Jogo</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Limpar Cache do Launcher</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Limpar Cache do Jogo</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>A pasta não foi encontrada. O jogo talvez ainda não esteja instalado.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Feche o jogo primeiro e depois limpe o cache dele.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Não foi possível excluir alguns arquivos. Tente novamente mais tarde.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Amigos ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Procurar outros caçadores…</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Enviar mensagem</value></data>
@@ -834,11 +838,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Você não pode enviar mensagens para si mesmo.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Ocorreu um erro ao enviar sua mensagem.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Ajustes da Conta</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>E-mail da conta</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-mail da conta</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Idioma e fuso horário</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Banimentos multiplayer</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Ajustes do Facebook</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Ajustes da Steam</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Ajustes do Perfil</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar do jogador</value></data>
@@ -847,68 +850,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Selecione um novo avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatares desbloqueáveis</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Este avatar está bloqueado. Compre-o na loja para desbloqueá-lo.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>Endereço de e-mail</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Atualizar e-mail</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Enviamos um e-mail de confirmação para seu novo endereço. Confirme-o para ativar o novo endereço de e-mail.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Esse endereço de e-mail não está disponível</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Algo deu errado ao tentar atualizar seu e-mail.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Confirmar e-mail</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Seu endereço de e-mail foi alterado.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Reenviar confirmação</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>E-mail de confirmação reenviado.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Reenvia o e-Mail de Confirmação. Você precisa clicar no link enviado para o e-Mail.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Reenviar e-Mail de Confirmação</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-mail reenviado com sucesso</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Falha ao reenviar o e-mail. Tente novamente ou entre em contato com o suporte</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Falha ao reenviar o e-mail. Tente novamente ou entre em contato com o suporte.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Idioma</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>País</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Escolha o país</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Fuso horário:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Salvar</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Histórico de compras da conta</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Todas as transações feitas no {0} e na {1} são salvas na sua carteira.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banco</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>loja</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Clique aqui para ver sua carteira</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Jogadores banidos</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Você não baniu nenhum jogador dos seus jogos</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Desbanir</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Tem certeza de que quer desbanir {0} dos seus jogos?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Você pode conectar sua conta ao Facebook para facilitar o login.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Conectar</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Sua conta de {game} {0} está conectada à sua conta da Steam. Para conectar esta conta de {game} a outra conta da Steam, ou a conta da Steam a outra conta de {game}, você precisa primeiro desconectar as duas contas que já estão conectadas.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Aviso</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Ao desconectar sua conta da Steam, você será desconectado de {game} e o launcher será fechado. Você não poderá jogar {game} na Steam novamente até se conectar a outra conta.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Entendi e quero desconectar minha conta da Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Algo deu errado e sua conta da Steam não foi desvinculada. Tente novamente!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Imagem de cabeçalho</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>As imagens de cabeçalho são desbloqueadas quando você alcança novos níveis em três categorias de Conquistas: Mestre de Animais, Mestre de Armas e Mestre de Exploração. Depois de desbloqueadas, elas ficam disponíveis para sempre.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Veja mais detalhes sobre os níveis de Mestre de Conquistas.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Nenhuma</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Mais recente</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Animais</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Armas</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Exploração</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Eventos</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Missões Diárias</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Salvar ajustes do perfil</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Ajustes do perfil salvos</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Falha ao salvar o perfil. Tente novamente ou entre em contato com o suporte.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Salão de Troféus</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Locais de Ração</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>INÍCIO</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Escolha uma seção.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>SELEÇÃO DO SALÃO DE TROFÉUS</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Você ainda não possui nenhum Salão de Troféus.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>GERENCIAR LOCAIS DE RAÇÃO</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Reabastecer o local de ração até:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Ração</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Situação</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Ativo</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Completar</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Boas-vindas a {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Parabéns, {0}! Sua nova conta de {game} foi criada!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Se você já baixou e instalou o launcher e o cliente do jogo, está tudo pronto para começar a jogar! Se você é novo em {game}, recomendamos fazer os tutoriais antes da sua primeira caçada de verdade. Os tutoriais ensinam tudo o que você precisa saber para se virar sozinho na Evergreen Hunting Reserve. Comece abaixo.</value></data>
@@ -924,7 +865,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Se você ainda não baixou o launcher e o cliente do jogo, precisará fazer isso antes de começar a caçar.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Ir para Downloads</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Ajustes</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Se quiser alterar seu endereço de e-mail, o idioma ou o avatar do jogador, você pode fazer isso na página de ajustes.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Se você quiser alterar o avatar do seu jogador, pode fazer isso na página de configurações.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Alterar ajustes da conta</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Perfil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Todo o seu progresso em {game} aparece na página do seu perfil, onde você encontra estatísticas detalhadas de todas as suas caçadas anteriores.</value></data>

@@ -26,7 +26,6 @@ Disallow: /new-message
 Disallow: /launch-map
 Disallow: /servers
 Disallow: /tutorials
-Disallow: /game-management
 Disallow: /invite-friends
 Disallow: /missions
 Disallow: /competitions
