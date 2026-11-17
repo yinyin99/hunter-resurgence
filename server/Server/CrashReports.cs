@@ -23,7 +23,7 @@ public static class CrashReports
     const string KnownFile = "dll|exe|sys|drv|ocx|ax|asi|ime|cpl|node|log|txt|ini|cfg|conf|dat|sav|pak|arc|json|xml|pdb|dmp|tmp|lua|py|pyc|pyd|scn|zip|gz|bin|db|png|jpg|jpeg|tga|dds|bmp|cache";
     const string PathPart = @"[^\\/:*?""<>|\s]+";
     static readonly Regex InstallPath = new(@"(?:\\\\[?.]\\(?:UNC\\" + PathPart + "|[A-Za-z]:|" + PathPart + @")|[A-Za-z]:|\\\\" + PathPart + @")[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*"
-        + @"(?:(?<![\\/](?:Users|home)[\\/])([^\\/:*?""<>|\s]*\.(?:" + KnownFile + @")(?![A-Za-z0-9]))|[^\\/:*?""<>|\r\n]*)",
+        + @"(?:(?<![\\/](?:Users|home)[\\/])([^\\/:*?""<>|\s]*\.(?:" + KnownFile + @")(?![A-Za-z0-9]))|[^\r\n]*)",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
     static readonly Regex Id = new(@"\A[0-9A-Za-z-]{8,64}\z", RegexOptions.Compiled);
 

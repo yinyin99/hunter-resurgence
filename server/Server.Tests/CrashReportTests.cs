@@ -148,6 +148,10 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [InlineData("\\\\?\\Volume{1234-ab}\\Users\\john.doe", "<path>")]
     [InlineData("C:\\Windows\\System32\\ntdll.dll", "ntdll.dll")]
     [InlineData("C:\\Games\\mods\\x.asi", "x.asi")]
+    [InlineData("move C:\\Games\\x to C:\\Users\\john\\y", "move <path>")]
+    [InlineData("'C:\\\\Users\\\\john doe\\\\save.dat'", "'<path>")]
+    [InlineData("C:/Users//jane/x", "<path>")]
+    [InlineData("C:\\Users\\john\\ \\\\nas\\share\\jane\\x", "<path>")]
     public void TestAPathInATextIsReducedToItsFileName(string text, string expected) => Assert.Equal(expected, CrashReports.Clean(text));
 
     [Fact]
