@@ -113,10 +113,11 @@ public static class Install
         var byId = itemDefinitions.OfType<JsonObject>().Where(d => d["id"] is not null).ToDictionary(d => Py.L(d["id"]), d => d);
         var items = new JsonArray();
         var taken = new HashSet<long>();
-        foreach (var id in kit)
+        var stored = facts.StartStored().ToHashSet();
+        foreach (var id in kit.Concat(stored))
         {
             var units = byId.TryGetValue(id, out var d) && d["units"] is { } u && Py.IsNum(u) && Py.D(u) > 0 ? u.DeepClone() : null;
-            var slot = facts.StartSlot((string?)d?["type"], taken);
+            var slot = stored.Contains(id) ? 0 : facts.StartSlot((string?)d?["type"], taken);  // stored: in the inventory, never equipped
             taken.Add(slot);
             items.Add(new JsonObject
             {
