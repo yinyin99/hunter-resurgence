@@ -11,7 +11,7 @@ public class UnlimitedAmmoTests : StateTestBase
     const long Ammo = 77;
     static readonly byte[] BuyAmmo = "item_id=77&amount=1&wallet=GOLD"u8.ToArray(), BuyLure = "item_id=19&amount=1&wallet=GOLD"u8.ToArray();
 
-    State Make(bool on, bool installFit = false)
+    State Make(bool on, bool installFit = false, bool? dbOf = null)
     {
         var connect = CONNECT;
         connect["inventory"]!["active_services"] = O("""{"UNLIMITED_FUEL": 1, "STREAK_PROTECTION": 0}""");
@@ -42,7 +42,7 @@ public class UnlimitedAmmoTests : StateTestBase
                 [{"id": 77, "define": "TEST_CARTRIDGE"}, {"id": 78, "define": "TEST_RIFLE", "extra": {"weapon": {"attachments": ["TEST_SCOPE", "TEST_CARTRIDGE"]}}}]
                 """)!;
         }
-        return state = new State(Path.Combine(tmp, $"{on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: defs, sampleInfos: (JsonArray)JsonNode.Parse("""[{"item_id": 77, "units": 10}, {"item_id": 79, "units": 5}]""")!) { UnlimitedAmmo = on };
+        return state = new State(Path.Combine(tmp, $"{dbOf ?? on}.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: defs, sampleInfos: (JsonArray)JsonNode.Parse("""[{"item_id": 77, "units": 10}, {"item_id": 79, "units": 5}]""")!) { UnlimitedAmmo = on };
     }
 
     /// <summary>The units of each stack of the ammunition, by guid.</summary>
@@ -77,17 +77,28 @@ public class UnlimitedAmmoTests : StateTestBase
     }
 
     [Fact]
-    public void EveryLaunchKeepsTheOldestLodgeStackOfAnAmmunitionAndFillsItAndNeverLowersALargerOne()
+    public void TheGameIsShownOnlyTheOldestLodgeStackOfAnAmmunitionTheOthersAreKeptAndShownAgainWhenOff()
     {
         Make(true);
         SetStacks(3, 0, 25);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal("10", Stacks());  // one lodge stack: the page copies only the only one
-        SetStacks(25);  // a second stack; the oldest now holds 25
-        SetSlot(Ammo, 1);  // both in the backpack: no lodge stack to keep, the larger one stays, the launch adds the lodge's own
+        Assert.Equal("10 10 25", Stacks());  // nothing deleted, every stack full, the larger one never lowered
+        Assert.Equal("0:10", Shown());  // the game and the page see one lodge stack: the page copies only the only one
+        Assert.Single(Reply(state.InventoryDictReply(ME))["77"]!.AsArray());
+        Assert.Single(Reply(state.InventoryListReply(ME)).AsArray().Single(g => (long)g!["item"]!["id"]! == Ammo)!["own"]!.AsArray());
+        long hidden;
+        using (var con = state.Store.Open(ME))
+            hidden = (long)con.Scalar("SELECT MAX(guid) FROM items WHERE account_id = $a AND item_id = 77")!;
+        Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(JsonNode.Parse($$"""[{"item_guid": "{{hidden}}", "slot_id": 1}]""")!)));
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal("25 10 10", Stacks());
+        Assert.Equal(("0:10 0:10 0:25", "0:10"), (Held(Ammo), Shown()));  // the hidden guid was not moved, and it stays hidden at the next launch
+        Make(false, dbOf: true);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("0:10 0:10 0:25", Shown());  // off: every stack is the game's again
     }
+
+    /// <summary>The slot and units of each row of the ammunition the connect lists, by guid.</summary>
+    string Shown() => string.Join(" ", Items().Select(kv => kv.Value!).Where(i => (long)i["item_id"]! == Ammo).Select(i => $"{i["slot"]}:{i["units"]}"));
 
     [Fact]
     public void OffALaunchLeavesTheStacksAlone()
@@ -161,7 +172,8 @@ public class UnlimitedAmmoTests : StateTestBase
         Assert.Equal("3 4 10 10 10", Stacks());  // the first went to the backpack, the others stayed in the lodge
         Assert.All(Items().Where(i => (long)i.Value!["item_id"]! == Ammo), i => Eq("{}", i.Value!["metadata"]));
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal("10 10", Stacks());  // the copies left in the lodge go, of the two stacks it owns the oldest stays (filled), the box in the backpack stays
+        Assert.Equal("10 10 10", Stacks());  // the copies left in the lodge go; of the two stacks it owns the newer is hidden, not deleted; the box in the backpack stays
+        Assert.Equal("0:10 1:10", Shown());
         Eq("1", Items()[Py.Str(reply["new_item_1"])]!["slot"]);
     }
 

@@ -26,8 +26,12 @@ public sealed partial class State
     public const long DefaultAvatar = 1000000;  // the picture of a new account: the first one of the avatar list
     /// <summary>Metadata keys of a placed item: the items table has no columns for them (see <see cref="Items"/>). The position
     /// is in millimetres, the direction x 1000 and the reserve is the web's number (from 1) of the hunt's reserve.
-    /// <see cref="CLONE"/> marks a box the in-game page copied out of the lodge's unlimited ammunition (its value is the page's placeholder guid); neither the game nor a reply shows it.</summary>
-    public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve", CLONE = "__clone";
+    /// <see cref="CLONE"/> marks a box the in-game page copied out of the lodge's unlimited ammunition (its value is the page's placeholder guid); neither the game nor a reply shows it.
+    /// <see cref="HIDDEN"/> marks a lodge stack of an ammunition that has an older one in the lodge while unlimited ammunition is on (<see cref="RefillAmmo"/>): the row is kept, but no read
+    /// of the game or the page lists it and no request moves or changes it (<see cref="Shown"/>).</summary>
+    public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve", CLONE = "__clone", HIDDEN = "__hidden";
+    /// <summary>SQL condition on an items row: not a hidden lodge stack (<see cref="HIDDEN"/>).</summary>
+    const string Shown = $"NOT (slot = 0 AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL)";
     // Inventory/buy `wallet` → (wallet currency, catalogue price key); gm$ is charged the catalogue's silver_price, never discounted (see Price)
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price"), ["SILVER"] = ("gm", "silver_price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // not for sale or over the balance
@@ -59,12 +63,13 @@ public sealed partial class State
     /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A placed item keeps its
     /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
     /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped.</summary>
-    public static JsonArray Items(Db con) => new(con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a ORDER BY guid").Select(r =>
+    public static JsonArray Items(Db con) => new(con.Rows($"SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a AND {Shown} ORDER BY guid").Select(r =>
     {
         var metadata = JsonNode.Parse((string)r[3])!.AsObject();
         var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
         metadata.Remove(RESERVE);
         metadata.Remove(CLONE);
+        metadata.Remove(HIDDEN);
         foreach (var (key, member) in new[] { (POSITION, "position"), (DIRECTION, "direction") })
             if (metadata.TryGetPropertyValue(key, out var value))
             {
@@ -201,7 +206,7 @@ public sealed partial class State
                 // a negative quantity refills, up to the catalogue's stack size and never lowering a larger stack; an item without a stack size is not refilled
                 var cap = con.Scalar("SELECT item_id FROM items WHERE account_id = $a AND guid = ?", guid) is long itemId ? box(itemId) ?? 0 : 0;
                 con.Exec("UPDATE items SET units = CASE WHEN units - ?1 > units THEN MAX(units, MIN(units - ?1, ?3)) ELSE units - ?1 END, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
-                         + " WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL", G(e, "quantity", 0), guid, cap);
+                         + $" WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL AND {Shown}", G(e, "quantity", 0), guid, cap);
             }
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
@@ -238,7 +243,7 @@ public sealed partial class State
             else if (Is(e["event"], 8) && ItemGuid(e["item"]) is { } moved && Py.IsInt(e["slot"]))
                 // a slot other than 23 is a pick-up: the item keeps no placement
                 con.Exec("UPDATE items SET slot = ?1, metadata = CASE WHEN ?1 = 23 THEN metadata"
-                         + " ELSE json_remove(metadata, '$.__position', '$.__direction', '$.__reserve') END WHERE account_id = $a AND guid = ?2",
+                         + $" ELSE json_remove(metadata, '$.__position', '$.__direction', '$.__reserve') END WHERE account_id = $a AND guid = ?2 AND {Shown}",
                          e["slot"], moved);
             else if (Is(e["event"], 33))
                 MoveUnits(con, e);
@@ -324,8 +329,8 @@ public sealed partial class State
     {
         var quantity = Py.IsNum(e["quantity"]) ? (long)Py.D(e["quantity"]) : 0;
         if (ItemGuid(e["item_from"]) is not { } fromGuid || ItemGuid(e["item_to"]) is not { } to || to == fromGuid || quantity <= 0
-            || con.Rows("SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ?", fromGuid, quantity).FirstOrDefault() is not { } source
-            || con.Exec("UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL", quantity, to, source[0]) == 0)
+            || con.Rows($"SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND units >= ? AND {Shown}", fromGuid, quantity).FirstOrDefault() is not { } source
+            || con.Exec($"UPDATE items SET units = units + ? WHERE account_id = $a AND guid = ? AND item_id = ? AND units IS NOT NULL AND {Shown}", quantity, to, source[0]) == 0)
             return;
         con.Exec("UPDATE items SET units = units - ?1, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END WHERE account_id = $a AND guid = ?2", quantity, fromGuid);
     }
@@ -587,7 +592,7 @@ public sealed partial class State
             else if (IsPlaceholder(m["item_guid"], out var placeholder) && known.Value.TryGetValue(placeholder, out var copy))
                 row = copy;
             if (row is { } guid)
-                con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", m["slot_id"], guid);
+                con.Exec($"UPDATE items SET slot = ? WHERE account_id = $a AND guid = ? AND {Shown}", m["slot_id"], guid);  // a hidden lodge stack is no guid the game or the page knows
         }
         con.Commit();
         return fresh.Count == 0 ? null : fresh;
@@ -2018,19 +2023,21 @@ public sealed partial class State
     }
 
     /// <summary>At every hunt's start: the free ammunition (<see cref="Facts.FreeAmmo"/>) is topped up to its full boxes, a box being the item's stack size. A stack the player has used is filled
-    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. With <see cref="UnlimitedAmmo"/> the lodge keeps only its oldest stack of each ammunition,
-    /// the free ammunition is one box, every other ammunition stack the player owns is then filled to a full box too (a larger stack stays), and <see cref="ArmWeapons"/> runs. The rows are in the connect that follows.</summary>
+    /// first, then new full stacks are added; a stock of more than the boxes (bought) is never lowered. With <see cref="UnlimitedAmmo"/> the game is shown only the oldest lodge stack of each ammunition
+    /// (the others are kept and marked <see cref="HIDDEN"/>; every launch decides again, so with it off they are shown again), the free ammunition is one box, every other ammunition stack the player owns
+    /// is then filled to a full box too (a larger stack stays), and <see cref="ArmWeapons"/> runs. The rows are in the connect that follows.</summary>
     void RefillAmmo(Db con)
     {
         if (UnlimitedService)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
             con.Exec($"DELETE FROM items WHERE account_id = $a AND slot = 0 AND json_extract(metadata, '$.{CLONE}') IS NOT NULL AND EXISTS (SELECT 1 FROM items o WHERE o.account_id = $a AND o.item_id = items.item_id AND o.slot = 0 AND o.guid < items.guid)");
+        con.Exec($"UPDATE items SET metadata = json_remove(metadata, '$.{HIDDEN}') WHERE account_id = $a AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL");
         var (ammo, boxes) = facts.FreeAmmo();
         if (UnlimitedAmmo)  // the lodge shows one stack of each ammunition as the unlimited one, and the page copies a stack only when it is the only one in the lodge: more boxes would only stop the copying
         {
             boxes = 1;
-            // more lodge stacks of one ammunition (older free boxes, a restore) are the same unlimited stack: the oldest stays, the others go (adding their units up would make a stack larger than a box)
+            // more lodge stacks of one ammunition (older free boxes, a restore) are the same unlimited stack: the oldest is shown, the others are kept but hidden from the game and the page
             foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot = 0 AND units IS NOT NULL GROUP BY item_id HAVING COUNT(*) > 1").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
-                con.Exec("DELETE FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL AND guid > (SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL)", id);
+                con.Exec($"UPDATE items SET metadata = json_set(metadata, '$.{HIDDEN}', 1) WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL AND guid > (SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL)", id);
         }
         foreach (var id in ammo)
         {
