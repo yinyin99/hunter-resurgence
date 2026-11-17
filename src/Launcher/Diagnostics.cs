@@ -72,7 +72,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             }
             void AddFile(string name, string path)
             {
-                if (Tail(path, cap) is { } text) Add(name, text, Encoding.Latin1);
+                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding);
                 else missing.Add(name);
             }
 
@@ -96,28 +96,59 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing }, RunHistory.Json), Encoding.UTF8);
         }
         var folderOut = outFolder ?? Path.Combine(Path.GetTempPath(), "hunter-resurgence");
-        Directory.CreateDirectory(folderOut);
-        // one report at a time: the older ones are the player's already saved or sent
-        foreach (var old in Try(() => Directory.GetFiles(folderOut, "hunter-resurgence-report-*.zip"), [], "") ?? []) Try(() => { File.Delete(old); return old; }, [], "");
-        var path = Path.Combine(folderOut, $"hunter-resurgence-report-{DateTime.UtcNow:yyyyMMdd-HHmmss}.zip");
-        File.WriteAllBytes(path, ms.ToArray());
-        return new(path, files, missing, ms.Length, trigger);
+        try
+        {
+            Directory.CreateDirectory(folderOut);
+            // one report at a time: the older ones are the player's already saved or sent
+            foreach (var old in Try(() => Directory.GetFiles(folderOut, "hunter-resurgence-report-*.zip"), [], "") ?? []) Try(() => { File.Delete(old); return old; }, [], "");
+            var path = Path.Combine(folderOut, $"hunter-resurgence-report-{DateTime.UtcNow:yyyyMMdd-HHmmss}.zip");
+            File.WriteAllBytes(path, ms.ToArray());
+            return new(path, files, missing, ms.Length, trigger);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            // no place for the zip (the temp folder is full, locked or not allowed): a report without a file, which Send and Save refuse (ProblemReporter)
+            return new("", files, [.. missing, "report zip"], 0, trigger);
+        }
     }
 
-    /// <summary>The last <paramref name="cap"/> bytes of a file (from the start of a line), read although the game still writes it; null when it is missing or locked.</summary>
-    static string? Tail(string path, int cap)
+    /// <summary>The last <paramref name="cap"/> bytes of a file (from the start of a line), read although the game still writes it, and the encoding to write it back with: Latin-1 keeps every byte of a one-byte
+    /// text, a UTF-16 text (a byte order mark, or the zero bytes of mostly ASCII text) is decoded so that the scrub sees its lines, and goes into the zip as UTF-8. Null when it is missing or locked.</summary>
+    static (string Text, Encoding Encoding)? Tail(string path, int cap)
     {
         try
         {
             using var f = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
-            var n = (int)Math.Min(f.Length, cap);
+            var head = new byte[(int)Math.Min(f.Length, 4096)];
+            f.ReadExactly(head);
+            var utf16 = Utf16Of(head);
+            var n = Math.Min(f.Length, cap);
+            var start = f.Length - n;
+            if (utf16 is not null) // whole characters, counted from the start of the file
+            {
+                start += start % 2;
+                n = (f.Length - start) & ~1L;
+            }
             var buf = new byte[n];
-            f.Seek(-n, SeekOrigin.End);
+            f.Seek(start, SeekOrigin.Begin);
             f.ReadExactly(buf);
-            var text = Encoding.Latin1.GetString(buf);
-            return f.Length > n && text.IndexOf('\n') is >= 0 and var i ? text[(i + 1)..] : text;
+            var text = (utf16 ?? Encoding.Latin1).GetString(buf);
+            if (start == 0 && text.StartsWith('\uFEFF')) text = text[1..];
+            if (start > 0 && text.IndexOf('\n') is >= 0 and var i) text = text[(i + 1)..];
+            return (text, utf16 is null ? Encoding.Latin1 : Encoding.UTF8);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    /// <summary>UTF-16 by its byte order mark, or by a quarter or more of the first bytes being zero (ASCII text in UTF-16 is half zeros); null for a one-byte text.</summary>
+    static Encoding? Utf16Of(byte[] head)
+    {
+        if (head is [255, 254, ..]) return Encoding.Unicode;
+        if (head is [254, 255, ..]) return Encoding.BigEndianUnicode;
+        int even = 0, odd = 0;
+        for (var i = 0; i < head.Length; i++)
+            if (head[i] == 0) { if (i % 2 == 0) even++; else odd++; }
+        return head.Length >= 4 && even + odd >= head.Length / 4 ? odd >= even ? Encoding.Unicode : Encoding.BigEndianUnicode : null;
     }
 
     string SystemText(List<string> missing, string? exe)

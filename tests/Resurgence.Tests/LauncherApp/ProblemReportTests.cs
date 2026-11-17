@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Launcher;
@@ -27,8 +28,8 @@ public class ProblemReportTests
         return new(folder, Path.Combine(folder, "client.exe"));
     }
 
-    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null) =>
-        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"], exe => [$"event 1000 {exe} crashed"]);
+    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null, string? outFolder = null) =>
+        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), outFolder ?? Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"], exe => [$"event 1000 {exe} crashed"]);
 
     static Dictionary<string, string> Read(string zip)
     {
@@ -60,6 +61,52 @@ public class ProblemReportTests
         Assert.Equal(entries.Keys.Order(), report.Files.Order());
         Assert.Equal(new FileInfo(report.Path).Length, report.Bytes);
         Assert.Equal("manual", report.Trigger);
+    }
+
+    [Fact]
+    public void AUtf16LogIsDecodedAndScrubbedLikeAnyOther()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var text = $"alpha\nGET /x?a={Jwt}\nline three\n";
+        // with a byte order mark, and big-endian without one (found by its zero bytes)
+        File.WriteAllBytes(Path.Combine(g.Folder, "debug.log"), [.. Encoding.Unicode.GetPreamble(), .. Encoding.Unicode.GetBytes(text)]);
+        File.WriteAllBytes(Path.Combine(g.Folder, "console.log"), Encoding.BigEndianUnicode.GetBytes(text));
+        var big = string.Concat(Enumerable.Repeat(new string('z', 99) + "\n", 15_000)) + "last line\n"; // 3 MB in UTF-16
+        File.WriteAllBytes(Path.Combine(g.Folder, "cef.log"), Encoding.Unicode.GetBytes(big));
+        var entries = Read(Make(temp, g.Install).Build("manual").Path);
+        foreach (var name in new[] { "game/debug.log", "game/console.log" })
+        {
+            Assert.Equal("alpha", entries[name].Split('\n')[0]);
+            Assert.Contains("line three", entries[name]);
+            Assert.DoesNotContain("eyJ", entries[name]);
+            Assert.DoesNotContain('\0', entries[name]);
+        }
+        var cef = entries["game/cef.log"]; // cut at 2 MB of bytes = 1 M characters, at a line
+        Assert.InRange(cef.Length, 900_000, 1_050_000);
+        Assert.StartsWith("zzzz", cef);
+        Assert.EndsWith("last line\n", cef);
+        Assert.DoesNotContain('\0', cef);
+    }
+
+    [Fact]
+    public async Task AZipThatCannotBeWrittenIsAReportWithoutAFileThatSendAndSaveRefuse()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        Files.Touch(Path.Combine(temp.Path, "blocked"));
+        var diagnostics = Make(temp, g.Install, outFolder: Path.Combine(temp.Path, "blocked", "sub")); // a folder below a file: it cannot be made
+        var report = diagnostics.Build("manual");
+        Assert.Equal("", report.Path);
+        Assert.Equal(0, report.Bytes);
+        Assert.Contains("report zip", report.Missing);
+        Assert.Contains("system.txt", report.Files);
+
+        var handler = new Handler((_, _) => new(HttpStatusCode.OK));
+        var reporter = new ProblemReporter(diagnostics, new Prefs(), () => { }, new HttpClient(handler) { BaseAddress = new("http://127.0.0.1/") }, new ServerCookie { Value = "abc" }, Path.Combine(temp.Path, "downloads"));
+        Assert.Equal(new ReportSent(null, "Report.ErrSave"), await reporter.SendAsync(report));
+        Assert.Empty(handler.Seen);
+        Assert.Throws<FileNotFoundException>(() => reporter.Save(report));
     }
 
     [Fact]
