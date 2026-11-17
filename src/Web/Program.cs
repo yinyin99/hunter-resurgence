@@ -65,7 +65,9 @@ builder.Services.Replace(ServiceDescriptor.Scoped<MockWalletState, MockWalletSta
 builder.Services.Replace(ServiceDescriptor.Scoped<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.Replace(ServiceDescriptor.Scoped<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
-builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetRequiredService<ILogger<MockServersService>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<HostMode>().Mock));
+// one launcher bridge per circuit: the "Game folder" window's state is the circuit's
+builder.Services.Replace(ServiceDescriptor.Scoped<ILauncherBridge>(sp => new MockLauncherBridge(sp.GetRequiredService<ILogger<MockLauncherBridge>>(), sp.GetRequiredService<HostMode>().Mock)));
+builder.Services.Replace(ServiceDescriptor.Scoped<IServersService>(sp => new MockServersService(sp.GetRequiredService<ILogger<MockServersService>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService());
 builder.Services.AddScoped<ISeasonalEventsService>(sp => new MockSeasonalEventsService(sp.GetRequiredService<HostMode>().Mock));

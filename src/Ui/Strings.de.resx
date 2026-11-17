@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Launcher-Cache löschen</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Spiel-Cache löschen</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Der Ordner wurde nicht gefunden. Vielleicht ist das Spiel noch nicht installiert.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Das Spiel wurde nicht gefunden</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Ordner wählen…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Automatisch verwenden</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Ordner öffnen</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Von Ihnen gewählt</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Aus Steams Startoption</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>In Ihrer Steam-Bibliothek gefunden</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Eine weitere Installation wurde gefunden: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Der von Ihnen gewählte Ordner enthält das Spiel nicht mehr: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>In diesem Ordner wurde das Spiel nicht gefunden. Wählen Sie den Ordner, in dem das Spiel installiert ist.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Schließen Sie zuerst das Spiel und leeren Sie dann seinen Cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Einige Dateien konnten nicht gelöscht werden. Versuchen Sie es später erneut.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Freunde ({0})</value></data>

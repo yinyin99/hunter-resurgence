@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Borrar caché del lanzador</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Borrar caché del juego</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>No se encontró la carpeta. Puede que el juego aún no esté instalado.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>No se encontró el juego</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Elegir carpeta…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Usar automático</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Abrir carpeta</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Elegida por ti</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>De la opción de inicio de Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Encontrado en tu biblioteca de Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Se encontró otra instalación: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>La carpeta que elegiste ya no contiene el juego: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>No se encontró el juego en esa carpeta. Elige la carpeta donde está instalado el juego.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Cierra primero el juego y vacía después su caché.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>No se pudieron eliminar algunos archivos. Inténtalo de nuevo más tarde.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Amigos ({0})</value></data>

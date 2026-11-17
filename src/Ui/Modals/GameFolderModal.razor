@@ -1,0 +1,52 @@
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+
+@* the game install the launcher uses, how it was found and the way to choose another (docs/launcher.md#settings-folders-and-caches) *@
+<div class="folder dialog-card" role="dialog" aria-modal="true" aria-labelledby="folder-title">
+    <h1 id="folder-title">@L["Settings.GameFolder"]</h1>
+    @if (info.Folder is null)
+    {
+        <p id="folder-none">@L["GameFolder.None"]</p>
+    }
+    else
+    {
+        <input id="folder-path" class="field line" readonly aria-label="@L["Settings.GameFolder"]" value="@info.Folder" />
+        @if (info.Source is { } source) { <p id="folder-source" class="source">@L["GameFolder." + source]</p> }
+    }
+    @if (info.Gone is not null) { <p id="folder-gone" class="note">@L["GameFolder.Gone", info.Gone]</p> }
+    @foreach (var other in info.Others)
+    {
+        <p class="note other">@L["GameFolder.Other", other]</p>
+    }
+    @if (error is not null) { <p class="error" role="alert">@error</p> }
+    <div class="buttons">
+        <button type="button" class="btn @(info.Folder is null ? "btn-primary" : "btn-inverse")" id="folder-choose" @onclick="Choose">@L["GameFolder.Choose"]</button>
+        @if (info.Source == "manual" || info.Gone is not null) { <button type="button" class="btn btn-inverse" id="folder-auto" @onclick="Automatic">@L["GameFolder.Automatic"]</button> }
+        @if (info.Folder is not null) { <button type="button" class="btn btn-inverse" id="folder-open" @onclick="Open">@L["GameFolder.Open"]</button> }
+        <button type="button" class="btn @(info.Folder is null ? "btn-inverse" : "btn-primary")" id="folder-close" autofocus @onclick="Modal.Close">@L["Alert.Close"]</button>
+    </div>
+</div>
+
+@code {
+    GameInstallInfo info = new(null, null, []);
+    string? error;
+
+    protected override void OnInitialized() => info = Bridge.GameInstall;
+
+    // the picker returns when the player is done; a refusal says why here (the error is a text key)
+    void Choose() => Done(Bridge.ChooseGameFolder());
+
+    void Automatic()
+    {
+        Bridge.UseAutomaticGameFolder();
+        Done(Result.Success);
+    }
+
+    void Open() => Done(Bridge.OpenFolder("game"), keep: true);
+
+    void Done(Result r, bool keep = false)
+    {
+        error = r.Ok ? null : L[r.Error!].Value;
+        if (!keep) info = Bridge.GameInstall;
+    }
+}

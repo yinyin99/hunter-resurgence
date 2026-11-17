@@ -47,7 +47,7 @@
         {
             if (!await Modal.SetUpFirst(GameSettings)) return;
             var r = await Service.StartTutorialAsync(t.Id);
-            if (!r.Ok) Modal.Alert(L[r.Error ?? "Launch.Failed"]);
+            if (!r.Ok) Modal.StartFailed(r, L[r.Error ?? "Launch.Failed"]);
         }
         finally { starting = false; }
     }

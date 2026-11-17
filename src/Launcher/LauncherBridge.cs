@@ -11,14 +11,16 @@ namespace Resurgence.Launcher;
 /// <param name="pictures">The Pictures folder; the game's screenshots are under its product folder.</param>
 /// <param name="clearBrowser">Clears the launcher's own browser cache.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
-    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null) : ILauncherBridge
+    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
+    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
         () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, appData: GameFiles.AppData,
-        pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache)
+        pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -37,6 +39,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public static string Arguments(string url, int param) => $"/connect:{url} /param:{param & int.MaxValue & ~128} /steam";
 
     public bool IsSteam => rest.IsSteam;
+    public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
+    public Result ChooseGameFolder() => chooseFolder?.Invoke() ?? rest.ChooseGameFolder();
+    public void UseAutomaticGameFolder() { if (useAutomatic is null) rest.UseAutomaticGameFolder(); else useAutomatic(); }
     /// <summary>
     /// game: the game folder; logs: the client's folder, where the game writes its logs (the exe's own folder); screenshots: <c>Pictures\&lt;product&gt;\Screenshots</c>, or when the game
     /// has made none yet, the nearest folder above it that exists. A folder that does not exist (and no game found) is <c>Settings.NoFolder</c>.

@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Tøm launcher-hurtigminne</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Tøm spillets hurtigminne</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Fant ikke mappen. Spillet er kanskje ikke installert ennå.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Spillet ble ikke funnet</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Velg mappe…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Bruk automatisk</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Åpne mappe</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Valgt av deg</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Fra Steams startvalg</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Funnet i Steam-biblioteket ditt</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>En annen installasjon ble funnet: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Mappen du valgte inneholder ikke lenger spillet: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Spillet ble ikke funnet i den mappen. Velg mappen der spillet er installert.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Lukk spillet først, og tøm deretter hurtigbufferen.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Noen filer kunne ikke slettes. Prøv igjen senere.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Venner ({0})</value></data>

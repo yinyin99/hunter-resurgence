@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Rensa launcherns cache</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Rensa spelets cache</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Mappen hittades inte. Spelet kanske inte är installerat ännu.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Spelet hittades inte</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Välj mapp…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Använd automatiskt</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Öppna mapp</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Vald av dig</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Från Steams startalternativ</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Hittat i ditt Steam-bibliotek</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>En annan installation hittades: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Mappen du valde innehåller inte längre spelet: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Spelet hittades inte i den mappen. Välj mappen där spelet är installerat.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Stäng spelet först och töm sedan dess cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Vissa filer kunde inte tas bort. Försök igen senare.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Vänner ({0})</value></data>

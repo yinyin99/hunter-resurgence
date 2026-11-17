@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Очистить кэш лаунчера</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Очистить кэш игры</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Папка не найдена. Возможно, игра ещё не установлена.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Игра не найдена</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Выбрать папку…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Использовать автоматически</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Открыть папку</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Выбрано вами</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Из параметра запуска Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Найдено в вашей библиотеке Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Найдена другая установка: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>В выбранной вами папке игры больше нет: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Игра не найдена в этой папке. Выберите папку, в которую установлена игра.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Сначала закройте игру, затем очистите её кэш.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Некоторые файлы удалить не удалось. Повторите попытку позже.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Друзья ({0})</value></data>

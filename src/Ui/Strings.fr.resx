@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Vider le cache du launcher</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Vider le cache du jeu</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Le dossier est introuvable. Le jeu n’est peut-être pas encore installé.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Le jeu est introuvable</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Choisir le dossier…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Utiliser la détection automatique</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Ouvrir le dossier</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Choisi par vous</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>De l’option de lancement de Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Trouvé dans votre bibliothèque Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Une autre installation a été trouvée : {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>Le dossier que vous avez choisi ne contient plus le jeu : {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Le jeu est introuvable dans ce dossier. Choisissez le dossier où le jeu est installé.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Fermez d’abord le jeu, puis videz son cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Certains fichiers n’ont pas pu être supprimés. Réessayez plus tard.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Amis ({0})</value></data>

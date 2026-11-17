@@ -105,6 +105,16 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Launcher-cache wissen</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Spelcache wissen</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>De map is niet gevonden. Misschien is de game nog niet geïnstalleerd.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Het spel is niet gevonden</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Map kiezen…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Automatisch gebruiken</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Map openen</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Door jou gekozen</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Uit Steams startoptie</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Gevonden in je Steam-bibliotheek</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Er is nog een installatie gevonden: {0}</value></data>
+  <data name="GameFolder.Gone" xml:space="preserve"><value>De map die je koos bevat het spel niet meer: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Het spel is niet gevonden in die map. Kies de map waarin het spel is geïnstalleerd.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sluit eerst de game en wis daarna de cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Sommige bestanden konden niet worden verwijderd. Probeer het later opnieuw.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Vrienden ({0})</value></data>

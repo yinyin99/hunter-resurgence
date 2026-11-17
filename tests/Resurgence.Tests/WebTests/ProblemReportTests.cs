@@ -15,6 +15,9 @@ public sealed class ProblemReportTests : UiContext
     {
         public bool IsSteam => false;
         public Result OpenFolder(string kind) => Result.Success;
+        public GameInstallInfo GameInstall => new(null, null, []);
+        public Result ChooseGameFolder() => Result.Success;
+        public void UseAutomaticGameFolder() { }
         public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;

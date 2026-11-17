@@ -1,4 +1,5 @@
 using Resurgence.Launcher;
+using Resurgence.Services;
 using static Resurgence.Tests.LauncherApp.Files;
 
 namespace Resurgence.Tests.LauncherApp;
@@ -77,5 +78,67 @@ public class GameFinderTests
         var upper = Path.Combine(temp.Path, "STEAM");
         Write(Path.Combine(steam, "steamapps", "libraryfolders.vdf"), "\"libraryfolders\" { \"0\" { \"path\" \"" + upper.Replace(@"\", @"\\") + "\" } \"1\" { \"path\" \"rel\\\\lib\" } }");
         Assert.Equal([upper], GameFinder.Libraries(steam));
+    }
+
+    [Fact]
+    public void SearchNamesTheSourceAndEveryOtherInstallSeen()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var root = temp.Path;
+        var steam = Path.Combine(root, "Steam");
+        var lib2 = Path.Combine(root, "Lib2");
+        var s = new Settings("4711", @"bin\client.exe");
+        Write(Path.Combine(steam, "steamapps", "libraryfolders.vdf"), "\"libraryfolders\" { \"0\" { \"path\" \"" + lib2.Replace(@"\", @"\\") + "\" } }");
+        string[] folders = [Path.Combine(steam, "steamapps", "common", "A"), Path.Combine(lib2, "steamapps", "common", "B")];
+        foreach (var (lib, f) in new[] { (steam, folders[0]), (lib2, folders[1]) })
+        {
+            Write(Path.Combine(lib, "steamapps", "appmanifest_4711.acf"), "\"AppState\" { \"installdir\" \"" + Path.GetFileName(f) + "\" }");
+            Touch(Path.Combine(f, s.ClientExe!));
+        }
+        var manual = Path.Combine(root, "Manual");
+        Touch(Path.Combine(manual, s.ClientExe!));
+        var launch = Path.Combine(root, "Launch");
+        Touch(Path.Combine(launch, s.ClientExe!));
+
+        var auto = GameFinder.Search(s, null, [], steam);
+        Assert.Equal((folders[1], "steam-library"), (auto.Install?.Folder, auto.Source));
+        Assert.Equal([folders[0]], auto.Others);
+        var all = GameFinder.Search(s, manual + Path.DirectorySeparatorChar, [Path.Combine(launch, s.ClientExe!), Path.Combine(folders[0], s.ClientExe!)], steam);
+        Assert.Equal(("manual", manual), (all.Source, all.Install!.Folder.TrimEnd(Path.DirectorySeparatorChar)));
+        Assert.Equal(new[] { launch, folders[0], folders[1] }.Order(), all.Others.Order());
+        var option = GameFinder.Search(s, null, [Path.Combine(launch, s.ClientExe!)], null);
+        Assert.Equal(("steam-option", launch, 0), (option.Source, option.Install?.Folder, option.Others.Count));
+
+        var stale = GameFinder.Search(s, Path.Combine(root, "Gone"), [], steam);
+        Assert.Equal(("steam-library", Path.Combine(root, "Gone")), (stale.Source, stale.Gone));
+        Assert.Equal(folders[1], stale.Install?.Folder);
+        Assert.Equal([folders[0]], stale.Others);
+        Assert.Null(GameFinder.Search(s, null, [], null).Install);
+        var none = GameFinder.Search(s, Path.Combine(root, "Gone"), [], null);
+        Assert.Equal((null, Path.Combine(root, "Gone")), (none.Install, none.Gone));
+    }
+
+    [Fact]
+    public void ChoosingAFolderAcceptsTheRootOrTheExeFolderSavesItAndAutomaticForgetsIt()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var s = new Settings("4711", @"bin\client.exe");
+        var game = Path.Combine(temp.Path, "Game");
+        Touch(Path.Combine(game, s.ClientExe!));
+        var path = Path.Combine(temp.Path, "launcher.json");
+        var env = new LauncherEnv(path) { Settings = s };
+
+        Assert.Equal(Result.Success, env.ChooseGameFolder(() => null));
+        Assert.Null(Prefs.Load(path).GameFolder);
+        Assert.Equal("Settings.FolderNoGame", env.ChooseGameFolder(() => temp.Path).Error);
+        Assert.Null(Prefs.Load(path).GameFolder);
+
+        Assert.True(env.ChooseGameFolder(() => Path.Combine(game, "bin")).Ok);
+        Assert.Equal((game, game, "manual"), (Prefs.Load(path).GameFolder, env.GameInstallInfo.Folder, env.GameInstallInfo.Source));
+        env.UseAutomaticGameFolder();
+        Assert.Null(Prefs.Load(path).GameFolder);
+        Assert.Null(env.GameInstallInfo.Folder);
+        Assert.True(env.ChooseGameFolder(() => game).Ok);
+        Assert.Equal(game, env.GameInstallInfo.Folder);
     }
 }

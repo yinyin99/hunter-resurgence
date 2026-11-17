@@ -15,6 +15,9 @@ public sealed class SettingsMenuTests : UiContext
         public List<string> Asked { get; } = [];
         public bool IsSteam => false;
         public Result OpenFolder(string kind) { Asked.Add("open " + kind); return Result.Fail(error); }
+        public GameInstallInfo GameInstall => new(null, null, []);
+        public Result ChooseGameFolder() => Result.Success;
+        public void UseAutomaticGameFolder() { }
         public Result ClearCache(string kind) { Asked.Add("clear " + kind); return Result.Fail(error); }
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;
@@ -29,7 +32,6 @@ public sealed class SettingsMenuTests : UiContext
     }
 
     [Theory]
-    [InlineData("Game Folder", "open game", "Settings.NoFolder", "The folder was not found. The game may not be installed yet.")]
     [InlineData("Screenshots", "open screenshots", "Settings.NoFolder", "The folder was not found. The game may not be installed yet.")]
     [InlineData("Clear game cache", "clear game", "Settings.CacheGameRunning", "Close the game first, then clear its cache.")]
     [InlineData("Clear launcher cache", "clear launcher", "Settings.CacheFailed", "Some files could not be deleted. Try again later.")]
@@ -46,6 +48,14 @@ public sealed class SettingsMenuTests : UiContext
         var modal = Services.GetRequiredService<ModalService>();
         Assert.Equal(typeof(AlertDialog), modal.Type);
         Assert.Equal(text, modal.Parameters!["Text"]);
+    }
+
+    [Fact]
+    public void TheGameFolderEntryOpensItsWindow()
+    {
+        Services.GetRequiredService<HostMode>().Launcher = true;
+        Render<SettingsMenu>().Find("#game-folder").Click();
+        Assert.Equal(typeof(GameFolderModal), Services.GetRequiredService<ModalService>().Type);
     }
 
     [Fact]
