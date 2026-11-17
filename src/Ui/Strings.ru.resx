@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Такой страницы не существует.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>ОХОТА</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>Игроки: {0}</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>Игроки: {0}</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>Игры: {0}</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>Игры: {0}</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>Охотники онлайн: {0}</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>Охотники онлайн: {0}</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>Многопользовательские игры: {0}</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>Многопользовательские игры: {0}</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>ПОЛУЧИТЬ EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>НОВОСТИ</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>СОРЕВНОВАНИЯ</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Главное меню</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>МАГАЗИН</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>ПОМОЩЬ</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>ФОРУМ</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>ЗАГРУЗКА</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Главная</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Одиночная игра</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Мультиплеер</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Найти многопользовательскую игру</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Обучение</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ — виртуальная валюта {game}. В магазине за неё можно купить оружие, снаряжение, одежду и многое другое.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Настройки</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>боеприпасы:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>топливо:</value></data>
@@ -269,9 +275,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Не удаётся подключиться к друзьям в многопользовательской игре? Причин может быть много, и не все связаны непосредственно с самой игрой. Подробнее читайте в разделе {0} руководства по устранению неполадок.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>проблемы с подключением</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Нужна дополнительная информация об игре?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Не можете найти добычу? Не знаете, как пользоваться снаряжением? Не уверены, какой охотничий заповедник вам подойдёт? Загляните в {0}. Вики создаётся и ведётся сообществом, а если ответа там нет, спросите на {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Не можете найти добычу? Не знаете, как пользоваться снаряжением? Не уверены, какой охотничий заповедник вам подойдёт? Загляните в {0}. Вики создаётся и ведётся сообществом.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>вики {game}</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>форуме</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Другие технические проблемы?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Возникла проблема при запуске игры? Появилось странное сообщение об ошибке? Загляните в {0}, а если не найдёте решения, напишите в нашу {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>руководство по устранению неполадок</value></data>
@@ -1174,10 +1179,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Руководства и обучение</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Видеоуроки</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Сайты местных сообществ</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>У {game} есть несколько официальных каналов поддержки. Много информации о том, как играть и как решать проблемы, можно найти на странице вики, которую ведёт сообщество. Наши официальные форумы {game} очень активны, и их ежедневно посещают многие игроки, которые рады помочь новичкам.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Если вы не нашли ответ на свои вопросы на форуме или в вики, можете создать обращение в нашей системе поддержки, и мы постараемся помочь вам как можно быстрее!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>У {game} есть несколько официальных каналов поддержки. Много информации о том, как играть и как решать проблемы, можно найти на странице вики, которую ведёт сообщество.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Если вы не нашли ответ на свои вопросы в вики, можете создать обращение в нашей системе поддержки, и мы постараемся помочь вам как можно быстрее!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Поддержка {game}</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Форум {game}</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Вопросы о резервной копии или аккаунте? Спросите в Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Вики {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (также на {1}, {2} и {3})</value></data>

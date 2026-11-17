@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Stránka nenalezena</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tato stránka neexistuje.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JÍT LOVIT</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>Hráči: {0}</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>Hráči: {0}</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>Hry: {0}</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>Hry: {0}</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>Lovci online: {0}</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>Lovci online: {0}</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>Hry pro více hráčů: {0}</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>Hry pro více hráčů: {0}</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>ZÍSKAT EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NOVINKY</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>SOUTĚŽE</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Hlavní menu</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>OBCHOD</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>POMOC</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FÓRUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>KE STAŽENÍ</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Nástěnka</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Hra pro jednoho</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Hra s ostatními</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Vyhledat hru s ostatními</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Výuka</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ je virtuální měna ve hře {game}, za kterou můžete v obchodě nakupovat zbraně, vybavení, oblečení a mnoho dalšího.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Nastavení</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>střelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>palivo:</value></data>
@@ -269,9 +275,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Máte problémy s připojením k přátelům v multiplayeru? Může to mít mnoho příčin a ne všechny musí souviset přímo s hrou. Další informace najdete v části {0} v průvodci řešením problémů.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>problémy s připojením</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Potřebujete více informací o funkcích hry?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Nemůžete najít svou kořist? Nevíte, jak použít určitou část vybavení? Zajímá vás, která lovecká oblast by vám mohla vyhovovat nejlépe? Více informací najdete na stránce {0}. Wiki vytváří a spravuje komunita, a pokud tam odpověď na svou otázku nenajdete, klidně se zeptejte na {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nemůžete najít svou kořist? Nevíte, jak použít určitou část vybavení? Zajímá vás, která lovecká oblast by vám mohla vyhovovat nejlépe? Více informací najdete na stránce {0}. Wiki vytváří a spravuje komunita.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>wiki {game}</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>fóru</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Máte jiné technické potíže?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Nastal problém při spuštění hry? Zobrazila se vám podivná chybová hláška? Podívejte se do {0} a pokud tam odpověď na svůj problém nenajdete, napište naší {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>průvodce řešením problémů</value></data>
@@ -1174,10 +1179,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Návody a výuka</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videonávody</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Místní komunitní weby</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>Hra {game} má několik oficiálních kanálů podpory. Spoustu informací o hraní i řešení potíží najdete na naší komunitně spravované wiki. Naše oficiální fóra hry {game} jsou velmi živá a denně je navštěvuje mnoho hráčů, kteří rádi pomohou začátečníkům.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Pokud odpověď na své otázky nenajdete na fóru ani na wiki, můžete založit tiket v našem systému podpory a my se vám pokusíme pomoci co nejrychleji!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>Hra {game} má několik oficiálních kanálů podpory. Spoustu informací o hraní i řešení potíží najdete na naší komunitně spravované wiki.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Pokud odpověď na své otázky nenajdete na wiki, můžete založit tiket v našem systému podpory a my se vám pokusíme pomoci co nejrychleji!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Podpora {game}</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Fórum {game}</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Dotazy k záloze nebo účtu? Zeptejte se na Discordu</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (také {1}, {2} a {3})</value></data>

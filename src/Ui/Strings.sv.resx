@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Sidan hittades inte</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Den här sidan finns inte.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAGA</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} spelare</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} spelare</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} spel</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} spel</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} jägare online</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} jägare online</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} flerspelarspel</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} flerspelarspel</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>SKAFFA EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NYHETER</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>TÄVLINGAR</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Huvudmeny</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>BUTIK</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>HJÄLP</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>NEDLADDNINGAR</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Instrumentpanel</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Enspelarläge</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Flerspelarläge</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Hitta ett flerspelarspel</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Guider</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ är {game}s virtuella valuta som du kan använda för att köpa föremål i butiken, till exempel vapen, utrustning, kläder och mycket mer.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Inställningar</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunition:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>bränsle:</value></data>
@@ -269,9 +275,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Har du problem att ansluta till dina vänner i multiplayer? Det kan finnas många orsaker och inte allt behöver ha direkt med spelet att göra. Läs avsnittet om {0} i felsökningsguiden för mer information.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>anslutningsproblem</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Behöver du mer information om spelets funktioner?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Hittar du inte ditt byte? Kommer du inte på hur en viss utrustning används? Undrar du vilket jaktområde som passar dig bäst? Kolla in {0} för mer information. Wikin skapas och drivs av communityn, och om du inte hittar svar på din fråga där, fråga gärna i {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Hittar du inte ditt byte? Kommer du inte på hur en viss utrustning används? Undrar du vilket jaktområde som passar dig bäst? Kolla in {0} för mer information. Wikin skapas och drivs av communityn.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game}-wikin</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forumet</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Har du andra tekniska problem?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Uppstod det ett problem när spelet skulle starta? Fick du ett konstigt felmeddelande? Gå till {0}, och om du inte hittar svaret på ditt problem, skicka ett meddelande till vår {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>felsökningsguiden</value></data>
@@ -1174,10 +1179,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guider och handledningar</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoguider</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Lokala communitysajter</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flera officiella supportkanaler. Mycket information om hur man spelar och felsöker finns på vår wiki, som underhålls av communityn. Våra officiella {game}-forum är mycket aktiva och besöks dagligen av många spelare som gärna hjälper nybörjare.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Om du inte hittar svar på dina frågor i forumet eller wikin kan du skapa ett ärende i vårt supportsystem, så försöker vi hjälpa dig så snabbt vi kan!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flera officiella supportkanaler. Mycket information om hur man spelar och felsöker finns på vår wiki, som underhålls av communityn.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Om du inte hittar svar på dina frågor i wikin kan du skapa ett ärende i vårt supportsystem, så försöker vi hjälpa dig så snabbt vi kan!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-support</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Frågor om din säkerhetskopia eller ditt konto? Fråga på Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (finns även på {1}, {2} och {3})</value></data>

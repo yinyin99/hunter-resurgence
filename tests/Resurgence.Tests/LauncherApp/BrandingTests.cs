@@ -67,9 +67,9 @@ public class BrandingTests
     {
         using var ctx = new Bunit.BunitContext();
         var loc = Resurgence.Tests.WebTests.TestLoc.Make();
-        Microsoft.AspNetCore.Components.RenderFragment forum = b => b.AddMarkupContent(0, "<b>forum</b>");
-        var html = ctx.Render(loc.Frag("Done.InfoText", "<i>wiki</i>", forum)).Markup;
-        Assert.Contains("Check out &lt;i&gt;wiki&lt;/i&gt; for more information.", html);
-        Assert.Contains("feel free to ask in the <b>forum</b>.", html);
+        Microsoft.AspNetCore.Components.RenderFragment support = b => b.AddMarkupContent(0, "<b>support</b>");
+        var html = ctx.Render(loc.Frag("Done.TechText", "<i>guide</i>", support)).Markup;
+        Assert.Contains("Head on over to the &lt;i&gt;guide&lt;/i&gt;,", html);
+        Assert.Contains("send a message to our <b>support</b>.", html);
     });
 }

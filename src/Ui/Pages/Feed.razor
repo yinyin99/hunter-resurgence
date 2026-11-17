@@ -21,6 +21,8 @@
         }
         <a href="/download" class="hero-button" data-launch="hunter-resurgence://open">@L["Landing.Play"] <Icon Name="chevron-right" /> <Icon Name="chevron-right" /></a>
         @if (Brand.Link("trailer") is not null) { <button type="button" class="trailer" @onclick="Trailer">Watch the trailer</button> }
+        @* not over a friend's invitation, which has the room under the logo *@
+        @if (string.IsNullOrWhiteSpace(Ref)) { <OnlineNow Place="1" /> }
     </section>
 }
 <h2 class="latest @(signedIn == false ? "after-hero" : "")">@L["Feed.LatestNews"]</h2>
