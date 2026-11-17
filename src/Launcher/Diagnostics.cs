@@ -43,7 +43,20 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
     static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : l));
+    /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash).</summary>
+    static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])[^\\/:*?""<>|\r\n]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly string Profile = Environment.GetEnvironmentVariable("USERPROFILE") ?? "";
+    static readonly Regex? UserNameWord = Environment.UserName is { Length: > 0 } u ? new($@"(?<![\w]){Regex.Escape(u)}(?![\w])", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant) : null;
+
+    /// <summary>Replaces credential lines as a whole, then the Windows user name (profile folder in a path, the profile path, the account name) by <c>&lt;user&gt;</c>, keeping the rest of the line.</summary>
+    public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : User(l)));
+
+    static string User(string line)
+    {
+        if (Profile.Length > 3 && Path.GetFileName(Profile.TrimEnd('\\', '/')) is { Length: > 0 } name) line = line.Replace(Profile, Profile[..^name.Length] + "<user>", StringComparison.OrdinalIgnoreCase);
+        line = ProfileName.Replace(line, "<user>");
+        return UserNameWord?.Replace(line, "<user>") ?? line;
+    }
 
     /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)
@@ -202,10 +215,10 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     }
 
     /// <summary>The last <see cref="EventDays"/> days of Application Error (1000) and Windows Error Reporting (1001) events whose text names the exe, newest first, at most <see cref="EventsMax"/>.</summary>
-    static IEnumerable<string> ReadEvents(string exe)
+    internal static IEnumerable<string> ReadEvents(string exe)
     {
         var age = (long)TimeSpan.FromDays(EventDays).TotalMilliseconds;
-        using var reader = new EventLogReader(new EventLogQuery("Application", PathType.LogName, $"*[System[(EventID=1000 or EventID=1001) and TimeCreated[timeDiff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
+        using var reader = new EventLogReader(new EventLogQuery("Application", PathType.LogName, $"*[System[(EventID=1000 or EventID=1001) and TimeCreated[timediff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
         var found = new List<string>();
         while (found.Count < EventsMax && reader.ReadEvent() is { } e)
             using (e)

@@ -37,6 +37,27 @@ public class ProblemReportTests
         return z.Entries.ToDictionary(e => e.FullName, e => { using var r = new StreamReader(e.Open(), System.Text.Encoding.Latin1); return r.ReadToEnd(); });
     }
 
+    [Theory]
+    [InlineData(@"open C:\Users\Jane Doe\AppData\Local\x.log failed", @"open C:\Users\<user>\AppData\Local\x.log failed")]
+    [InlineData(@"\\pc\share\Users\jane\Desktop", @"\\pc\share\Users\<user>\Desktop")]
+    [InlineData("D:/Users/jane/x", "D:/Users/<user>/x")]
+    public void TheProfileFolderNameIsReplacedAndTheRestOfTheLineStays(string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line));
+
+    [Fact]
+    public void TheAccountNameAndTheProfilePathAreReplaced()
+    {
+        var text = Diagnostics.Scrub($"{Environment.GetEnvironmentVariable("USERPROFILE")}\\a.txt by {Environment.UserName}");
+        Assert.DoesNotContain(Environment.UserName, text, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("<user>", text);
+    }
+
+    [Fact]
+    public void TheEventQueryIsValidForWindows()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        _ = Diagnostics.ReadEvents("no-such-game.exe").ToList(); // must not throw "The specified query is invalid"
+    }
+
     [Fact]
     public void TheZipHasNoSignInAndNoJwtFile()
     {
