@@ -21,11 +21,13 @@ public static class CrashReports
     // folder (no dot in its last part) is replaced whole, so a profile folder's user name never stays
     static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*(?:([^\\/:*?""<>|\s]*\.[^\\/:*?""<>|\s]*)|[^\\/:*?""<>|\r\n.,;]*)", RegexOptions.Compiled);
     static readonly Regex Id = new(@"\A[0-9A-Za-z-]{8,64}\z", RegexOptions.Compiled);
+    // the folder of a Windows user profile (a name may hold dots and spaces, so it takes the rest of the line): never kept
+    static readonly Regex UserFolder = new(@"(?<=[A-Za-z]:[\\/]Users[\\/])[^\\/:*?""<>|\r\n]+", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     /// <summary>The text with every install path reduced to its file name (a folder path becomes `&lt;path&gt;`), cut to 300 characters.</summary>
     public static string Clean(string text)
     {
-        var s = InstallPath.Replace(text, m => m.Groups[1].Success ? m.Groups[1].Value : "<path>");
+        var s = InstallPath.Replace(UserFolder.Replace(text, "user"), m => m.Groups[1].Success ? m.Groups[1].Value : "<path>");
         return s.Length > MaxText ? s[..MaxText] : s;
     }
 
@@ -76,7 +78,7 @@ public static class CrashReports
                     found.Add(entry);
                 pos = end + 1;
             }
-            catch (System.Text.Json.JsonException)
+            catch (Exception e) when (e is System.Text.Json.JsonException or ArgumentException or InvalidOperationException or FormatException)  // a stranger's body: a duplicate key throws ArgumentException
             {
                 break;  // a cut or garbled item: the rest of the body can't be told apart
             }
@@ -170,7 +172,7 @@ public static class CrashReports
             read++;
             JsonObject? o;
             try { o = JsonNode.Parse(line) as JsonObject; }
-            catch (System.Text.Json.JsonException) { continue; }
+            catch (Exception e) when (e is System.Text.Json.JsonException or ArgumentException) { continue; }
             if (o is null) continue;
             if (T(o["host"]) == crashHost)
             {

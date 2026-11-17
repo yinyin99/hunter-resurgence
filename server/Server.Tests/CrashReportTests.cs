@@ -128,6 +128,9 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [InlineData("no path here: 12 of 30", "no path here: 12 of 30")]
     [InlineData("profile C:\\Users\\Bob Smith", "profile <path>")]
     [InlineData("in C:\\Games\\data, then x", "in <path>, then x")]
+    [InlineData("see C:\\Users\\john.doe", "see <path>")]
+    [InlineData("see C:\\Users\\jdoe. Then it failed", "see <path>")]
+    [InlineData("C:\\Users\\john.doe\\Saved Games\\a.sav", "a.sav")]
     public void TestAPathInATextIsReducedToItsFileName(string text, string expected) => Assert.Equal(expected, CrashReports.Clean(text));
 
     [Fact]
@@ -138,6 +141,7 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
         Assert.Equal(0, CrashReports.Keep(state.Store, "not an envelope"u8.ToArray(), Now));
         Assert.Equal(0, CrashReports.Keep(state.Store, [], Now));
         Assert.Equal(0, CrashReports.Keep(state.Store, "{}\n{\"type\":\"event\",\"length\":999999}\n{}"u8.ToArray(), Now));
+        Assert.Equal(0, CrashReports.Keep(state.Store, "{}\n{\"type\":\"event\"}\n{\"event_id\":\"e0000009\",\"level\":\"error\",\"level\":\"fatal\"}"u8.ToArray(), Now));  // a duplicate key
         Assert.Single(Rows(player));
     }
 
