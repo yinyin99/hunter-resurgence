@@ -42,10 +42,6 @@ public sealed class LauncherEnv
     /// <summary>Folder of the client exe: the game's logs live next to it.</summary>
     public string? ClientFolder => Install is null ? null : Path.GetDirectoryName(Install.ClientExe);
 
-    /// <summary>Steam's own screenshot folder of this game for the signed-in user (generic Steam layout).</summary>
-    public string? ScreenshotsFolder => SteamPath is null || account == 0 || Settings.SteamAppId is null ? null
-        : Path.Combine(SteamPath, "userdata", account.ToString(), "760", "remote", Settings.SteamAppId, "screenshots");
-
     public void Save()
     {
         try { Prefs.Save(PrefsPath); SaveFailed = false; }
@@ -65,9 +61,6 @@ public sealed class LauncherEnv
         return d.ShowDialog(Application.Current.MainWindow) == true ? d.FileName : null;
     }
 
-    /// <summary>Open a folder in Explorer; does nothing when it does not exist.</summary>
-    public static void OpenFolder(string? path)
-    {
-        if (path is not null && Directory.Exists(path)) Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
-    }
+    /// <summary>Open a folder in Explorer.</summary>
+    public static void OpenFolder(string path) => Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
 }

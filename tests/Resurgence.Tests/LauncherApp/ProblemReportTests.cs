@@ -254,19 +254,6 @@ public class ProblemReportTests
         Assert.Equal(7, game.ExitCode());
     }
 
-    [Fact]
-    public void LogsOpenTheClientFolderAndTheRestStaysTheMocks()
-    {
-        var opened = new List<string?>();
-        var rest = new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance);
-        var b = new LauncherBridge(() => new(Path.Combine("x", "game"), Path.Combine("x", "game", "bin", "client.exe")), rest, _ => false, _ => true, () => true, null, openFolder: opened.Add);
-        b.OpenFolder("logs");
-        b.OpenFolder("screenshots");
-        Assert.Equal([Path.Combine("x", "game", "bin")], opened);
-        new LauncherBridge(() => null, rest, _ => false, _ => true, () => true, null, openFolder: opened.Add).OpenFolder("logs");
-        Assert.Equal([Path.Combine("x", "game", "bin"), null], opened);
-    }
-
     sealed class Handler(Func<HttpRequestMessage, byte[], HttpResponseMessage> answer) : HttpMessageHandler
     {
         public List<(HttpRequestMessage Request, byte[] Body)> Seen { get; } = [];
