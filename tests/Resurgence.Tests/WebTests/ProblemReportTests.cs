@@ -86,6 +86,7 @@ public sealed class ProblemReportTests : UiContext
         var cut = Render<ReportConsentModal>();
         Assert.Equal("/your-data", cut.Find("a").GetAttribute("href"));
         Assert.Equal("consent-auto", cut.Find(".btn-primary").Id);  // "Send automatically" is the primary choice
+        Assert.Equal("consent-auto", cut.Find("[autofocus]").Id);  // so Enter accepts it
 
         cut.Find(button).Click();
         Assert.Equal(consent, bridge.ReportConsent);
