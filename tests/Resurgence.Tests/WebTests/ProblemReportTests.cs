@@ -14,8 +14,8 @@ public sealed class ProblemReportTests : UiContext
     sealed class Bridge(string consent = "unset", GameRun? run = null, ReportSent? answer = null, bool saveFails = false) : ILauncherBridge
     {
         public bool IsSteam => false;
-        public void OpenFolder(string kind) { }
-        public void ClearCache(string kind) { }
+        public Result OpenFolder(string kind) => Result.Success;
+        public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;
         public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);

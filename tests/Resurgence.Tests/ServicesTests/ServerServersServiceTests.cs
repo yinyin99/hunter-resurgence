@@ -22,8 +22,8 @@ public class ServerServersServiceTests
     {
         public List<string> Started { get; } = [];
         public bool IsSteam => false;
-        public void OpenFolder(string kind) { }
-        public void ClearCache(string kind) { }
+        public Result OpenFolder(string kind) => Result.Success;
+        public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result Next = Result.Success;
         public Result StartGame(string url) { Started.Add(url); return Next; }

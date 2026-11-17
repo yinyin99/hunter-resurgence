@@ -5,8 +5,8 @@ namespace Resurgence.Services.Mocks;
 public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log) : ILauncherBridge
 {
     public bool IsSteam => true;
-    public void OpenFolder(string kind) => log.LogInformation("open folder {Kind}", kind);
-    public void ClearCache(string kind) => log.LogInformation("clear {Kind} cache", kind);
+    public Result OpenFolder(string kind) { log.LogInformation("open folder {Kind}", kind); return Result.Success; }
+    public Result ClearCache(string kind) { log.LogInformation("clear {Kind} cache", kind); return Result.Success; }
     public void OpenExternal(string url) => log.LogInformation("open {Url}", url);
     public Result StartGame(string url) { log.LogInformation("start game {Url}", url); return Result.Success; }
     /// <summary>No game runs here: the old five seconds.</summary>

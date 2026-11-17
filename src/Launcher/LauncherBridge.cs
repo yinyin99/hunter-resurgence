@@ -6,15 +6,18 @@ using Resurgence.Services.Mocks;
 
 namespace Resurgence.Launcher;
 
-/// <summary>The launcher's bridge: StartGame is real, the rest is still the mock's.</summary>
+/// <summary>The launcher's bridge: StartGame, the folder buttons and the cache buttons are real, the rest is still the mock's.</summary>
+/// <param name="appData">%APPDATA%; the game's cache is under its product folder.</param>
+/// <param name="pictures">The Pictures folder; the game's screenshots are under its product folder.</param>
+/// <param name="clearBrowser">Clears the launcher's own browser cache.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
-    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string?>? openFolder = null) : ILauncherBridge
+    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
         () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
-        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder)
+        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, clearBrowser: MainWindow.ClearBrowserCache)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -33,14 +36,68 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public static string Arguments(string url, int param) => $"/connect:{url} /param:{param & int.MaxValue & ~128} /steam";
 
     public bool IsSteam => rest.IsSteam;
-    /// <summary>logs: the client's folder, where the game writes its logs (the exe's own folder).</summary>
-    public void OpenFolder(string kind)
+    /// <summary>
+    /// game: the install folder; logs: the client's folder, where the game writes its logs (the exe's own folder); screenshots: <c>Pictures\&lt;product&gt;\Screenshots</c>, or when the game
+    /// has made none yet, the nearest folder above it that exists. A folder that does not exist (and no game found) is <c>Settings.NoFolder</c>.
+    /// </summary>
+    public Result OpenFolder(string kind)
     {
-        if (kind == "logs" && openFolder is not null) openFolder(install() is { } g ? Path.GetDirectoryName(g.ClientExe) : null);
-        else rest.OpenFolder(kind);
+        if (install() is not { } g) return Result.Fail("Settings.NoFolder");
+        var shots = Path.Combine(pictures ?? Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Product(g));
+        var dir = kind switch
+        {
+            "game" => g.Folder,
+            "logs" => Path.GetDirectoryName(g.ClientExe),
+            "screenshots" => new[] { Path.Combine(shots, "Screenshots"), shots, Path.GetDirectoryName(shots) }.FirstOrDefault(Directory.Exists),
+            _ => null,
+        };
+        if (dir is null || !Directory.Exists(dir)) return Result.Fail("Settings.NoFolder");
+        (openFolder ?? LauncherEnv.OpenFolder)(dir);
+        return Result.Success;
     }
 
-    public void ClearCache(string kind) => rest.ClearCache(kind);
+    /// <summary>The game's per-user folder in %APPDATA% and Pictures is named like its exe without the extension.</summary>
+    static string Product(GameInstall g) => Path.GetFileNameWithoutExtension(g.ClientExe);
+
+    // the client's browser keeps its profile in cache\ (or cache_local, cache_dev, cache_beta by the server it connects to); in it, the cache folders hold files only the browser can rebuild.
+    // Cookies, local storage and settings live in other folders of the profile and stay.
+    static readonly string[] CacheRoots = ["cache", "cache_local", "cache_dev", "cache_beta"];
+    static readonly string[] CacheFolders = ["Cache", "Code Cache", "GPUCache", "DawnGraphiteCache", "DawnWebGPUCache", "GrShaderCache", "ShaderCache", "GraphiteDawnCache"];
+
+    /// <summary>
+    /// game: deletes the cache folders of the game's browser (never cookies, local storage or settings); refused while the game runs (<c>Settings.CacheGameRunning</c>), and
+    /// <c>Settings.CacheFailed</c> when a folder could not be deleted (the rest is still cleared). launcher: the launcher's own browser clears its disk and cache storage while running (cookies and
+    /// local storage stay); ponytail: not awaited (the bridge is synchronous and runs on the UI thread), so a failure there is not reported.
+    /// </summary>
+    public Result ClearCache(string kind)
+    {
+        if (kind == "launcher")
+        {
+            if (clearBrowser is null) return Result.Fail("Settings.CacheFailed");
+            _ = ClearBrowser(clearBrowser);
+            return Result.Success;
+        }
+        if (kind != "game") return Result.Fail("Settings.CacheFailed");
+        if (install() is not { } g) return Result.Fail("Settings.NoFolder");
+        if (isRunning(g.ClientExe)) return Result.Fail("Settings.CacheGameRunning");
+        var failed = false;
+        foreach (var root in CacheRoots)
+            foreach (var profile in new[] { "", "Default" })
+                foreach (var name in CacheFolders)
+                {
+                    var dir = Path.Combine(appData ?? GameFiles.AppData, Product(g), root, profile, name);
+                    try { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
+                    catch (Exception e) when (e is IOException or UnauthorizedAccessException) { failed = true; }
+                }
+        return failed ? Result.Fail("Settings.CacheFailed") : Result.Success;
+    }
+
+    static async Task ClearBrowser(Func<Task> clear)
+    {
+        try { await clear(); }
+        catch (Exception e) when (e is InvalidOperationException or System.Runtime.InteropServices.COMException) { }
+    }
+
     public void OpenExternal(string url) => rest.OpenExternal(url);
     public void ToggleDevTools() => rest.ToggleDevTools();
     /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
