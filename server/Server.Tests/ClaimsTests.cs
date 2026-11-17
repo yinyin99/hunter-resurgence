@@ -250,7 +250,7 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.False(Owns(player, 9501));  // nothing restored yet
         var waiting = Assert.Single(claims.Waiting());
         Assert.Equal((player, 3002L, "Bravo", 12000L), (waiting.Account, waiting.Uid, waiting.Handle, waiting.Hunterscore));
-        Assert.Equal($"Claim waiting for review: c{waiting.Id}, account {player}, archived 3002, handle Bravo, hunterscore 12000, {Alerts.Steam(state.Store.SteamId64(player))}. Run: review list", Assert.Single(alerts));
+        Assert.Equal($"\U0001F4DC **Claim waiting for review**\nclaim: c{waiting.Id}\nhandle: `Bravo`\naccount: {player}\narchived id: 3002\nhunterscore: 12000\nsteam: {Alerts.Steam(state.Store.SteamId64(player))}\nrun: `review list`", Assert.Single(alerts));
         Assert.Contains("waits for an operator", Assert.Single(Notices(player)));
         Assert.Equal("waiting", claims.Of(player)!.State);
         Assert.Equal("refused", claims.Claim(player, "alpha", true, false).Kind);  // the one claim is taken
@@ -309,7 +309,7 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         var done = claims.Claim(second, "alpha", false, false);  // hunterscore 500, but already claimed
         Assert.Equal("review", done.Kind);
         Assert.False(Owns(second, 9001));
-        Assert.Contains("archived 3001", Assert.Single(alerts));
+        Assert.Contains("archived id: 3001", Assert.Single(alerts));
         Assert.Contains("already claimed", Assert.Single(claims.Waiting()).Note);
     }
 
