@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Dina uppgifter används för att driva tjänsten du ber om: inloggning, ditt konto och återställning av din säkerhetskopia. Operatören har också ett berättigat intresse av att hålla tjänsten igång och säker (loggar, kontroll av uppladdningar). Inget säljs eller används för reklam.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Hur länge det sparas</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ditt konto och dess uppgifter finns kvar tills du använder Radera mina uppgifter.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Servern kopierar sina databaser varje dag och behåller de senaste 7. Efter Radera mina uppgifter finns ditt konto kvar i dessa kopior i upp till 7 dagar.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- och proxyloggar kan innehålla IP-adresser och handles. De sparas i högst 30 dagar, och kortare när loggen blir full.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Vem mer som ser det</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Webbhotellet: servern körs på en hyrd virtuell server, så leverantören hostar allt ovan.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: varje förfrågan till webbplatsen och servern går genom den, med din IP-adress.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatörernas privata kanaler får ett meddelande för varje nytt konto, för varje säkerhetskopia eller anspråk som väntar på granskning och för varje nekad uppladdning, med handle, kontonummer, Steam-id och uppgifter om säkerhetskopian eller anspråket. Radera mina uppgifter tar inte bort de meddelandena.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: spelets punch-through-server, på samma hyrda server, ser din IP-adress och port när du går med i ett spel, och den andra spelarens dator ansluter direkt till din, så den spelaren kan se din IP-adress.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Dina rättigheter</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Du kan fråga vad som finns om dig, få det rättat, radera det själv med Radera mina uppgifter och invända mot att det används. Om du anser att dina uppgifter hanteras fel kan du klaga hos en dataskyddsmyndighet. Skriv till kontakten ovan.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- och proxyloggar kan innehålla IP-adresser och handles. De sparas i högst 30 dagar.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din webbläsare är öppen. Logga in med Steam där.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Logga in med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>

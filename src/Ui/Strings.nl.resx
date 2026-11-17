@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Je gegevens worden gebruikt om de dienst te laten werken waar je om vraagt: inloggen, je account en het herstellen van je back-up. De beheerder heeft ook een gerechtvaardigd belang bij het werkend en veilig houden van de dienst (logs, controle van uploads). Er wordt niets verkocht of voor reclame gebruikt.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Hoe lang het wordt bewaard</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Je account en de bijbehorende gegevens blijven bestaan totdat je Mijn gegevens verwijderen gebruikt.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>De server kopieert elke dag zijn databases en bewaart de laatste 7. Na Mijn gegevens verwijderen staat je account nog maximaal 7 dagen in die kopieën.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- en proxylogs kunnen IP-adressen en gebruikersnamen bevatten. Ze worden maximaal 30 dagen bewaard, en korter als het log vol raakt.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Wie het nog meer ziet</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>De hostingprovider: de server draait op een gehuurde virtuele server, dus de provider host alles wat hierboven staat.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: elk verzoek aan de website en de server loopt erdoorheen, samen met je IP-adres.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: de privékanalen van de beheerders krijgen een bericht bij elk nieuw account, bij elke back-up of claim die op beoordeling wacht en bij elke geweigerde upload, met de gebruikersnaam, het accountnummer, het Steam-id en de details van de back-up of claim. Mijn gegevens verwijderen wist die berichten niet.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: de punch-through-server van het spel, op dezelfde gehuurde server, ziet je IP-adres en poort wanneer je een spel betreedt, en de computer van de andere speler maakt rechtstreeks verbinding met die van jou, dus die speler kan je IP-adres zien.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Jouw rechten</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Je kunt vragen welke gegevens over jou worden bewaard, ze laten corrigeren, ze zelf verwijderen met Mijn gegevens verwijderen en bezwaar maken tegen het gebruik ervan. Als je denkt dat er verkeerd met je gegevens wordt omgegaan, kun je een klacht indienen bij een gegevensbeschermingsautoriteit. Schrijf naar het contactadres hierboven.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- en proxylogs kunnen IP-adressen en gebruikersnamen bevatten. Ze worden maximaal 30 dagen bewaard.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Je browser is geopend. Log daar in met Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Inloggen met Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>De aanmelding is niet op tijd bevestigd. Probeer het opnieuw.</value></data>

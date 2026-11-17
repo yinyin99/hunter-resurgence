@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Verileriniz, istediğiniz hizmeti sunmak için kullanılır: oturum açma, hesabınız ve yedeğinizin geri yüklenmesi. Operatörün ayrıca hizmetin çalışır ve güvenli kalmasında meşru bir menfaati vardır (günlükler, yüklemelerin kontrolü). Hiçbir şey satılmaz veya reklam için kullanılmaz.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Ne kadar süre saklanır</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Hesabınız ve verileri, “Verilerimi sil” özelliğini kullanana kadar kalır.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Sunucu veritabanlarını her gün kopyalar ve son 7 kopyayı saklar. “Verilerimi sil” işleminden sonra hesabınız bu kopyalarda 7 güne kadar durur.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Sunucu ve proxy günlükleri IP adresleri ve kullanıcı adları içerebilir. En fazla 30 gün saklanır; günlük dolarsa daha kısa süre saklanır.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Başka kimler görür</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Barındırma sağlayıcısı: sunucu kiralık bir sanal sunucuda çalışır, bu yüzden yukarıdakilerin tümü sağlayıcıda barındırılır.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: web sitesine ve sunucuya yapılan her istek, IP adresinizle birlikte onun üzerinden geçer.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatörlerin özel kanallarına her yeni hesap için, incelemeyi bekleyen her yedek veya talep için ve reddedilen her yükleme için; kullanıcı adı, hesap numarası, Steam id ve yedeğin veya talebin ayrıntılarıyla birlikte bir mesaj gelir. Verilerimi sil bu mesajları kaldırmaz.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Çok oyunculu: oyunun punch-through sunucusu, aynı kiralık sunucuda, bir oyuna katıldığınızda IP adresinizi ve portunuzu görür; diğer oyuncunun bilgisayarı doğrudan sizinkine bağlanır, bu yüzden o oyuncu IP adresinizi görebilir.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Haklarınız</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Hakkınızda nelerin tutulduğunu sorabilir, düzeltilmesini isteyebilir, “Verilerimi sil” ile kendiniz silebilir ve kullanımına itiraz edebilirsiniz. Verilerinizin yanlış işlendiğini düşünüyorsanız bir veri koruma kurumuna şikâyette bulunabilirsiniz. Yukarıdaki iletişim adresine yazın.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Sunucu ve proxy günlükleri IP adresleri ve kullanıcı adları içerebilir. En fazla 30 gün saklanır.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Tarayıcın açık. Orada Steam ile oturum aç.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Steam ile oturum aç</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Giriş zamanında onaylanmadı. Lütfen tekrar dene.</value></data>

@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Dataene dine brukes til å drive tjenesten du ber om: innlogging, kontoen din og gjenoppretting av sikkerhetskopien. Operatøren har også en berettiget interesse i å holde tjenesten i gang og trygg (logger, kontroll av opplastinger). Ingenting selges eller brukes til reklame.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Hvor lenge de lagres</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Kontoen din og dataene dine blir liggende til du bruker Slett dataene mine.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Serveren kopierer databasene sine hver dag og beholder de siste 7. Etter Slett dataene mine finnes kontoen din fortsatt i disse kopiene i opptil 7 dager.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxylogger kan inneholde IP-adresser og brukernavn. De lagres i høyst 30 dager, og kortere hvis loggen blir full.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Hvem andre som ser dem</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Vertsleverandøren: serveren kjører på en leid virtuell server, så leverandøren huser alt som er nevnt ovenfor.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: alle forespørsler til nettstedet og serveren går gjennom Cloudflare, sammen med IP-adressen din.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatørens private kanaler får en melding for hver ny konto, for hver sikkerhetskopi eller forespørsel som venter på gjennomgang og for hver avvist opplasting, med brukernavn, kontonummer, Steam-id og detaljer om sikkerhetskopien eller forespørselen. Slett dataene mine fjerner ikke disse meldingene.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Flerspiller: spillets punch-through-server, på den samme leide serveren, ser IP-adressen og porten din når du blir med i et spill, og den andre spillerens datamaskin kobler seg direkte til din, så vedkommende kan se IP-adressen din.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Rettighetene dine</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Du kan be om innsyn i hva som er lagret om deg, få det rettet, slette det selv med Slett dataene mine, og protestere mot bruken. Hvis du mener dataene dine behandles feil, kan du klage til en personvernmyndighet. Skriv til kontaktadressen ovenfor.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxylogger kan inneholde IP-adresser og brukernavn. De lagres i høyst 30 dager.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Nettleseren din er åpen. Logg inn med Steam der.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Logg inn med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Innloggingen ble ikke bekreftet i tide. Prøv igjen.</value></data>

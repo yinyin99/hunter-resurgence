@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Twoje dane służą do działania usługi, o którą prosisz: logowania, Twojego konta i przywracania kopii zapasowej. Operator ma też uzasadniony interes w utrzymaniu działania i bezpieczeństwa usługi (logi, sprawdzanie przesłanych plików). Nic nie jest sprzedawane ani używane do reklam.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Jak długo dane są przechowywane</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Twoje konto i jego dane pozostają, dopóki nie użyjesz opcji Usuń moje dane.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Serwer codziennie kopiuje swoje bazy danych i przechowuje ostatnie 7 kopii. Po użyciu opcji Usuń moje dane Twoje konto nadal znajduje się w tych kopiach przez maksymalnie 7 dni.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logi serwera i proxy mogą zawierać adresy IP i nazwy użytkowników. Są przechowywane najwyżej 30 dni, a krócej, gdy log się zapełni.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Kto jeszcze je widzi</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Dostawca hostingu: serwer działa na wynajętym serwerze wirtualnym, więc dostawca hostuje wszystko, co wymieniono powyżej.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: każde żądanie do strony i serwera przechodzi przez tę usługę wraz z Twoim adresem IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: prywatne kanały operatora otrzymują wiadomość o każdym nowym koncie, o każdej kopii zapasowej lub roszczeniu oczekującym na sprawdzenie oraz o każdym odrzuconym przesłaniu, z nazwą użytkownika, numerem konta, identyfikatorem Steam i szczegółami kopii zapasowej lub roszczenia. Usuń moje dane nie usuwa tych wiadomości.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Gra wieloosobowa: serwer punch-through gry, działający na tym samym wynajętym serwerze, widzi Twój adres IP i port, gdy dołączasz do gry, a komputer drugiego gracza łączy się bezpośrednio z Twoim, więc ten gracz może zobaczyć Twój adres IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Twoje prawa</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Możesz zapytać, jakie dane o Tobie są przechowywane, poprosić o ich poprawienie, usunąć je samodzielnie za pomocą opcji Usuń moje dane oraz sprzeciwić się ich wykorzystywaniu. Jeśli uważasz, że Twoje dane są przetwarzane nieprawidłowo, możesz złożyć skargę do organu ochrony danych. Napisz na adres kontaktowy podany wyżej.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logi serwera i proxy mogą zawierać adresy IP i nazwy użytkowników. Są przechowywane najwyżej 30 dni.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Przeglądarka jest otwarta. Zaloguj się tam przez Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Zaloguj się przez Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Logowanie nie zostało potwierdzone na czas. Spróbuj ponownie.</value></data>

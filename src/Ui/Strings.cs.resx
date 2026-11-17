@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Vaše údaje se používají k provozu služby, o kterou žádáte: přihlášení, váš účet a obnovení zálohy. Operátor má také oprávněný zájem na tom, aby služba fungovala a byla bezpečná (logy, kontrola nahrávek). Nic se neprodává ani nepoužívá pro reklamu.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Jak dlouho se uchovávají</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Váš účet a jeho data zůstávají, dokud nepoužijete Smazat mé údaje.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Server každý den kopíruje své databáze a uchovává posledních 7. Po použití Smazat mé údaje je váš účet v těchto kopiích ještě až 7 dní.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logy serveru a proxy mohou obsahovat IP adresy a přezdívky. Uchovávají se nejvýše 30 dní, a kratší dobu, když se log zaplní.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Kdo je ještě vidí</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Poskytovatel hostingu: server běží na pronajatém virtuálním serveru, takže poskytovatel hostuje vše výše uvedené.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: prochází jím každý požadavek na web a server, a to s vaší IP adresou.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: soukromé kanály operátora dostanou zprávu o každém novém účtu, o každé záloze nebo žádosti čekající na kontrolu a o každém odmítnutém nahrání, s přezdívkou, číslem účtu, Steam ID a podrobnostmi o záloze nebo žádosti. Smazat mé údaje tyto zprávy neodstraní.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: server hry pro navazování spojení (punch-through) na stejném pronajatém serveru vidí vaši IP adresu a port, když se připojíte ke hře, a počítač druhého hráče se připojuje přímo k vašemu, takže může vidět vaši IP adresu.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Vaše práva</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Můžete se zeptat, co se o vás uchovává, nechat to opravit, sami to smazat pomocí Smazat mé údaje a vznést námitku proti jeho využití. Pokud se domníváte, že se s vašimi údaji nakládá nesprávně, můžete podat stížnost u úřadu pro ochranu osobních údajů. Pište na kontakt výše.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logy serveru a proxy mohou obsahovat IP adresy a přezdívky. Uchovávají se nejvýše 30 dní.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Prohlížeč se otevřel. Přihlaste se tam přes Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Přihlásit se přes Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Přihlášení nebylo včas potvrzeno. Zkuste to prosím znovu.</value></data>

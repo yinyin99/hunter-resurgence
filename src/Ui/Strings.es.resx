@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Tus datos se usan para ofrecer el servicio que pides: inicio de sesión, tu cuenta y la restauración de tu copia de seguridad. El operador también tiene un interés legítimo en mantener el servicio funcionando y seguro (registros, revisión de subidas). No se vende nada ni se usa para publicidad.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Cuánto tiempo se conservan</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Tu cuenta y sus datos permanecen hasta que uses Eliminar mis datos.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>El servidor copia sus bases de datos cada día y conserva las últimas 7. Tras Eliminar mis datos, tu cuenta sigue en esas copias hasta 7 días.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Los registros del servidor y del proxy pueden contener direcciones IP y nombres de usuario. Se conservan como máximo 30 días, y menos cuando el registro se llena.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Quién más los ve</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>El proveedor de alojamiento: el servidor funciona en un servidor virtual alquilado, así que el proveedor aloja todo lo anterior.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: todas las solicitudes al sitio web y al servidor pasan por él, con tu dirección IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: los canales privados del operador reciben un mensaje por cada cuenta nueva, por cada copia de seguridad o reclamación pendiente de revisión y por cada subida rechazada, con el nombre de usuario, el número de cuenta, el id de Steam y los detalles de la copia o la reclamación. Eliminar mis datos no borra esos mensajes.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multijugador: el servidor punch-through del juego, en el mismo servidor alquilado, ve tu dirección IP y tu puerto cuando te unes a una partida, y el ordenador del otro jugador se conecta directamente al tuyo, así que puede ver tu dirección IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Tus derechos</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Puedes preguntar qué se guarda sobre ti, pedir que se corrija, eliminarlo tú mismo con Eliminar mis datos y oponerte a su uso. Si crees que tus datos se tratan incorrectamente, puedes presentar una queja ante una autoridad de protección de datos. Escribe al contacto indicado arriba.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Los registros del servidor y del proxy pueden contener direcciones IP y nombres de usuario. Se conservan como máximo 30 días.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Tu navegador está abierto. Inicia sesión allí con Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Iniciar sesión con Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>El inicio de sesión no se confirmó a tiempo. Inténtalo de nuevo.</value></data>

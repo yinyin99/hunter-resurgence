@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Vaši podatki se uporabljajo za izvajanje storitve, ki jo zahtevate: prijava, vaš račun in obnovitev varnostne kopije. Operater ima tudi zakonit interes, da storitev deluje in je varna (dnevniki, preverjanje nalaganj). Nič se ne prodaja in ne uporablja za oglaševanje.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Kako dolgo se hranijo</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Vaš račun in njegovi podatki ostanejo, dokler ne uporabite možnosti »Izbriši moje podatke«.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Strežnik vsak dan kopira svoje zbirke podatkov in hrani zadnjih 7. Po možnosti »Izbriši moje podatke« je vaš račun v teh kopijah še do 7 dni.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Dnevniki strežnika in posredniškega strežnika lahko vsebujejo naslove IP in vzdevke. Hranijo se največ 30 dni, in manj, ko se dnevnik napolni.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Kdo jih še vidi</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Ponudnik gostovanja: strežnik deluje na najetem virtualnem strežniku, zato ponudnik gosti vse zgoraj navedeno.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: vsaka zahteva za spletno mesto in strežnik gre skozenj, skupaj z vašim naslovom IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: zasebni kanali operaterjev prejmejo sporočilo za vsak nov račun, za vsako varnostno kopijo ali zahtevek, ki čaka na pregled, in za vsako zavrnjeno nalaganje, z vzdevkom, številko računa, Steam id in podrobnostmi varnostne kopije ali zahtevka. »Izbriši moje podatke« teh sporočil ne odstrani.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Igra za več igralcev: strežnik igre za prebijanje NAT, na istem najetem strežniku, vidi vaš naslov IP in vrata, ko se pridružite igri, računalnik drugega igralca pa se poveže neposredno z vašim, zato lahko vidi vaš naslov IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Vaše pravice</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Lahko vprašate, kaj se hrani o vas, zahtevate popravek, podatke sami izbrišete z »Izbriši moje podatke« in ugovarjate njihovi uporabi. Če menite, da se z vašimi podatki ravna napačno, lahko vložite pritožbo pri organu za varstvo podatkov. Pišite na zgornji stik.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Dnevniki strežnika in posredniškega strežnika lahko vsebujejo naslove IP in vzdevke. Hranijo se največ 30 dni.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Brskalnik je odprt. Tam se prijavite s Steamom.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Prijava s Steamom</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>

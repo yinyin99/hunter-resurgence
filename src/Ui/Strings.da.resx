@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Dine data bruges til at drive den tjeneste, du beder om: login, din konto og gendannelse af din backup. Operatøren har også en legitim interesse i at holde tjenesten kørende og sikker (logs, kontrol af uploads). Intet sælges eller bruges til reklamer.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Hvor længe det gemmes</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Din konto og dens data bliver, indtil du bruger Slet mine data.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Serveren kopierer sine databaser hver dag og beholder de sidste 7. Efter Slet mine data findes din konto stadig i disse kopier i op til 7 dage.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxy-logs kan indeholde IP-adresser og handles. De gemmes højst 30 dage, og kortere, når loggen fyldes op.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Hvem andre ser det</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Hostingudbyderen: serveren kører på en lejet virtuel server, så udbyderen hoster alt ovenstående.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: alle anmodninger til websitet og serveren går gennem den, sammen med din IP-adresse.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operatørens private kanaler får en besked for hver ny konto, for hver backup eller anmodning, der venter på gennemgang, og for hver afvist upload, med handle, kontonummer, Steam-id og oplysninger om backuppen eller anmodningen. Slet mine data fjerner ikke de beskeder.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: spillets punch-through-server, på den samme lejede server, ser din IP-adresse og port, når du tilmelder dig et spil, og den anden spillers computer forbinder direkte til din, så vedkommende kan se din IP-adresse.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Dine rettigheder</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Du kan spørge, hvad der er gemt om dig, få det rettet, selv slette det med Slet mine data og gøre indsigelse mod brugen. Hvis du mener, at dine data behandles forkert, kan du klage til en databeskyttelsesmyndighed. Skriv til kontakten ovenfor.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxy-logs kan indeholde IP-adresser og handles. De gemmes højst 30 dage.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din browser er åben. Log ind med Steam der.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Log ind med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Login blev ikke bekræftet i tide. Prøv igen.</value></data>

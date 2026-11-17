@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Your data is used to run the service you ask for: sign-in, your account and restoring your backup. The operator also has a legitimate interest in keeping the service working and safe (logs, checking uploads). Nothing is sold or used for advertising.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>How long it is kept</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Your account and its data stay until you use Delete my data.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>The server copies its databases every day and keeps the last 7. After Delete my data, your account is still in those copies for up to 7 days.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server and proxy logs can contain IP addresses and handles. They are kept for at most 30 days, and for less when the log fills up.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Who else sees it</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>The hosting provider: the server runs on a rented virtual server, so the provider hosts everything above.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: every request to the website and the server passes through it, with your IP address.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: the operators' private channels get a message for each new account, for each backup or claim waiting for review and for each refused upload, with the handle, account number, Steam id and details of the backup or claim. Delete my data does not remove those messages.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: the game's punch-through server, on the same rented server, sees your IP address and port when you join a game, and the other player's computer connects to yours directly, so they can see your IP address.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Your rights</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>You can ask what is held about you, have it corrected, delete it yourself with Delete my data, and object to its use. If you think your data is handled wrongly, you can complain to a data protection authority. Write to the contact above.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server and proxy logs can contain IP addresses and handles. They are kept for at most 30 days.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Your browser is open. Sign in with Steam there.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Sign in with Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>The sign-in was not confirmed in time. Please try again.</value></data>

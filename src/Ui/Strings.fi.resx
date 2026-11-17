@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Tietojasi käytetään pyytämäsi palvelun tuottamiseen: kirjautumiseen, tiliisi ja varmuuskopiosi palauttamiseen. Operaattorilla on myös oikeutettu etu pitää palvelu toimivana ja turvallisena (lokit, lähetysten tarkistus). Mitään ei myydä eikä käytetä mainontaan.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Kuinka kauan tiedot säilytetään</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Tilisi ja sen tiedot säilyvät, kunnes käytät Poista tietoni.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Palvelin kopioi tietokantansa päivittäin ja säilyttää viimeiset 7. Poista tietoni -toiminnon jälkeen tilisi on näissä kopioissa vielä enintään 7 päivää.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Palvelimen ja välityspalvelimen lokit voivat sisältää IP-osoitteita ja käyttäjänimiä. Niitä säilytetään enintään 30 päivää, ja lyhyemmän ajan, kun loki täyttyy.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Kuka muu näkee ne</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Palveluntarjoaja: palvelin toimii vuokratulla virtuaalipalvelimella, joten palveluntarjoaja isännöi kaiken edellä mainitun.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: jokainen verkkosivuston ja palvelimen pyyntö kulkee sen kautta IP-osoitteesi kanssa.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: operaattorin yksityiset kanavat saavat viestin jokaisesta uudesta tilistä, jokaisesta tarkistusta odottavasta varmuuskopiosta tai vaatimuksesta ja jokaisesta hylätystä lähetyksestä sekä käyttäjänimen, tilinumeron, Steam-tunnuksen ja varmuuskopion tai vaatimuksen tiedot. Poista tietoni ei poista näitä viestejä.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Moninpeli: pelin punch-through-palvelin samalla vuokratulla palvelimella näkee IP-osoitteesi ja porttisi, kun liityt peliin, ja toisen pelaajan tietokone yhdistää suoraan sinun tietokoneeseesi, joten hän voi nähdä IP-osoitteesi.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Oikeutesi</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Voit kysyä, mitä sinusta säilytetään, pyytää korjaamaan sen, poistaa sen itse toiminnolla Poista tietoni ja vastustaa sen käyttöä. Jos katsot, että tietojasi käsitellään väärin, voit tehdä valituksen tietosuojaviranomaiselle. Kirjoita yllä olevaan yhteystietoon.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Palvelimen ja välityspalvelimen lokit voivat sisältää IP-osoitteita ja käyttäjänimiä. Niitä säilytetään enintään 30 päivää.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Selaimesi on auki. Kirjaudu siellä Steamilla.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Kirjaudu Steamilla</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>

@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Vos données servent à faire fonctionner le service demandé : connexion, votre compte et la restauration de votre sauvegarde. L’opérateur a aussi un intérêt légitime à maintenir le service en marche et sûr (journaux, vérification des envois). Rien n’est vendu ni utilisé pour la publicité.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Combien de temps elles sont conservées</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Votre compte et ses données restent jusqu’à ce que vous utilisiez Supprimer mes données.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Le serveur copie ses bases de données chaque jour et garde les 7 dernières. Après Supprimer mes données, votre compte reste dans ces copies jusqu’à 7 jours.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Les journaux du serveur et du proxy peuvent contenir des adresses IP et des pseudos. Ils sont conservés 30 jours au plus, et moins quand le journal se remplit.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Qui d’autre les voit</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>L’hébergeur : le serveur tourne sur un serveur virtuel loué, donc l’hébergeur héberge tout ce qui précède.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare : chaque requête vers le site web et le serveur passe par lui, avec votre adresse IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord : les canaux privés de l’opérateur reçoivent un message pour chaque nouveau compte, pour chaque sauvegarde ou demande en attente de vérification et pour chaque envoi refusé, avec le pseudo, le numéro de compte, l’id Steam et les détails de la sauvegarde ou de la demande. Supprimer mes données ne supprime pas ces messages.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multijoueur : le serveur punch-through du jeu, sur le même serveur loué, voit votre adresse IP et votre port lorsque vous rejoignez une partie, et l’ordinateur de l’autre joueur se connecte directement au vôtre, il peut donc voir votre adresse IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Vos droits</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Vous pouvez demander ce qui est conservé à votre sujet, le faire corriger, le supprimer vous-même avec Supprimer mes données et vous opposer à son utilisation. Si vous pensez que vos données sont mal traitées, vous pouvez déposer une plainte auprès d’une autorité de protection des données. Écrivez au contact ci-dessus.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Les journaux du serveur et du proxy peuvent contenir des adresses IP et des pseudos. Ils sont conservés 30 jours au plus.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Votre navigateur est ouvert. Connectez-vous-y avec Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Se connecter avec Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>La connexion n'a pas été confirmée à temps. Veuillez réessayer.</value></data>

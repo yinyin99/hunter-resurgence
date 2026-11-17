@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Az adataidat a kért szolgáltatás működtetéséhez használjuk: bejelentkezés, a fiókod és a mentésed visszaállítása. Az üzemeltetőnek jogos érdeke fűződik a szolgáltatás működésének és biztonságának fenntartásához is (naplók, feltöltések ellenőrzése). Semmit sem adunk el, és nem használunk reklámcélokra.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Meddig tároljuk</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>A fiókod és adatai addig maradnak meg, amíg az Adataim törlése funkciót nem használod.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>A szerver minden nap lemásolja az adatbázisait, és megtartja az utolsó 7 másolatot. Az Adataim törlése után a fiókod még legfeljebb 7 napig szerepel ezekben a másolatokban.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>A szerver- és proxynaplók IP-címeket és felhasználóneveket tartalmazhatnak. Legfeljebb 30 napig őrizzük őket, telítődéskor rövidebb ideig.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Ki látja még</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>A tárhelyszolgáltató: a szerver bérelt virtuális szerveren fut, ezért a szolgáltató tárolja a fent felsorolt mindent.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: a weboldalra és a szerverre irányuló minden kérés áthalad rajta, az IP-címeddel együtt.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: az üzemeltető privát csatornái üzenetet kapnak minden új fiókról, minden ellenőrzésre váró mentésről vagy igényről és minden elutasított feltöltésről, a felhasználónévvel, a fiókszámmal, a Steam-azonosítóval és a mentés vagy igény részleteivel. Az Adataim törlése ezeket az üzeneteket nem távolítja el.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Többjátékos mód: a játék punch-through szervere, ugyanazon a bérelt szerveren, látja az IP-címedet és a portodat, amikor csatlakozol egy játékhoz, a másik játékos számítógépe pedig közvetlenül csatlakozik a tiédhez, így láthatja az IP-címedet.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Jogaid</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Kérheted, hogy tájékoztassunk a rólad tárolt adatokról, kérheted a helyesbítésüket, az Adataim törlése funkcióval magad is törölheted őket, és tiltakozhatsz a felhasználásuk ellen. Ha úgy gondolod, hogy az adataidat helytelenül kezelik, panaszt tehetsz egy adatvédelmi hatóságnál. Írj a fenti elérhetőségre.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>A szerver- és proxynaplók IP-címeket és felhasználóneveket tartalmazhatnak. Legfeljebb 30 napig őrizzük őket.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>A böngésződ megnyílt. Jelentkezz be ott a Steammel.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Bejelentkezés Steammel</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>A bejelentkezést nem erősítették meg időben. Próbáld újra.</value></data>

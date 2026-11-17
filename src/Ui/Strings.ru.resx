@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Ваши данные нужны, чтобы работал сервис, который вы запрашиваете: вход, ваш аккаунт и восстановление резервной копии. У оператора также есть законный интерес в том, чтобы сервис работал и был безопасным (журналы, проверка загрузок). Ничего не продаётся и не используется для рекламы.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Как долго это хранится</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ваш аккаунт и его данные хранятся, пока вы не нажмёте «Удалить мои данные».</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Сервер копирует свои базы данных каждый день и хранит последние 7 копий. После «Удалить мои данные» ваш аккаунт остаётся в этих копиях ещё до 7 дней.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Журналы сервера и прокси могут содержать IP-адреса и ники. Они хранятся не дольше 30 дней, а при заполнении журнала — меньше.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Кто ещё это видит</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Хостинг-провайдер: сервер работает на арендованном виртуальном сервере, поэтому провайдер размещает всё перечисленное выше.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: каждый запрос к сайту и серверу проходит через него вместе с вашим IP-адресом.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: в закрытые каналы оператора приходит сообщение о каждом новом аккаунте, о каждой резервной копии или заявке, ожидающей проверки, и о каждой отклонённой загрузке, с ником, номером аккаунта, Steam ID и подробностями резервной копии или заявки. «Удалить мои данные» эти сообщения не удаляет.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Мультиплеер: сервер пробития NAT (punch-through) игры, на том же арендованном сервере, видит ваш IP-адрес и порт, когда вы входите в игру, а компьютер другого игрока подключается напрямую к вашему, поэтому он может увидеть ваш IP-адрес.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Ваши права</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Вы можете запросить, что о вас хранится, потребовать исправить это, удалить самостоятельно через «Удалить мои данные» и возразить против использования. Если вы считаете, что ваши данные обрабатываются неправильно, вы можете подать жалобу в орган по защите данных. Пишите по контакту выше.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Журналы сервера и прокси могут содержать IP-адреса и ники. Они хранятся не дольше 30 дней.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Браузер открыт. Войдите там через Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Войти через Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Вход не был подтверждён вовремя. Попробуйте ещё раз.</value></data>

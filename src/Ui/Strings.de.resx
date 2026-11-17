@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Ihre Daten werden verwendet, um den gewünschten Dienst zu betreiben: Anmeldung, Ihr Konto und die Wiederherstellung Ihres Backups. Der Betreiber hat außerdem ein berechtigtes Interesse daran, den Dienst funktionsfähig und sicher zu halten (Logs, Prüfung von Uploads). Nichts wird verkauft oder für Werbung genutzt.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Wie lange es gespeichert wird</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ihr Konto und seine Daten bleiben bestehen, bis Sie Meine Daten löschen verwenden.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>Der Server kopiert seine Datenbanken täglich und behält die letzten 7. Nach Meine Daten löschen ist Ihr Konto noch bis zu 7 Tage in diesen Kopien enthalten.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- und Proxy-Logs können IP-Adressen und Handles enthalten. Sie werden höchstens 30 Tage aufbewahrt, bei vollem Log auch kürzer.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Wer es sonst noch sieht</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>Der Hosting-Anbieter: Der Server läuft auf einem gemieteten virtuellen Server, daher hostet der Anbieter alles oben Genannte.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: Jede Anfrage an die Website und den Server läuft darüber, zusammen mit Ihrer IP-Adresse.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: Die privaten Kanäle des Betreibers erhalten eine Nachricht zu jedem neuen Konto, zu jedem Backup oder Antrag, der auf Prüfung wartet, und zu jedem abgelehnten Upload, mit Handle, Kontonummer, Steam-ID und Angaben zum Backup oder Antrag. Meine Daten löschen entfernt diese Nachrichten nicht.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Mehrspieler: Der Punch-through-Server des Spiels auf demselben gemieteten Server sieht Ihre IP-Adresse und Ihren Port, wenn Sie einem Spiel beitreten, und der Computer des anderen Spielers verbindet sich direkt mit Ihrem, sodass er Ihre IP-Adresse sehen kann.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Ihre Rechte</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Sie können nachfragen, was über Sie gespeichert ist, es berichtigen lassen, es mit Meine Daten löschen selbst löschen und der Nutzung widersprechen. Wenn Sie glauben, dass Ihre Daten falsch behandelt werden, können Sie sich bei einer Datenschutzbehörde beschweren. Schreiben Sie an den Kontakt oben.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- und Proxy-Logs können IP-Adressen und Handles enthalten. Sie werden höchstens 30 Tage aufbewahrt.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Dein Browser ist geöffnet. Melde dich dort mit Steam an.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Mit Steam anmelden</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>

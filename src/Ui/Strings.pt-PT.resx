@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Os seus dados são usados para prestar o serviço que pede: início de sessão, a sua conta e a restauração da sua cópia de segurança. O operador tem também um interesse legítimo em manter o serviço a funcionar e seguro (registos, verificação de envios). Nada é vendido nem usado para publicidade.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Durante quanto tempo é guardado</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>A sua conta e os respetivos dados mantêm-se até usar Eliminar os meus dados.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>O servidor copia as suas bases de dados todos os dias e guarda as últimas 7. Depois de Eliminar os meus dados, a sua conta ainda consta dessas cópias durante até 7 dias.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Os registos do servidor e do proxy podem conter endereços IP e nomes de caçador. São guardados no máximo 30 dias, e menos quando o registo enche.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Quem mais os vê</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>O fornecedor de alojamento: o servidor funciona num servidor virtual alugado, pelo que o fornecedor aloja tudo o que foi indicado acima.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: todos os pedidos ao site e ao servidor passam por ele, com o seu endereço IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: os canais privados do operador recebem uma mensagem por cada conta nova, por cada cópia de segurança ou pedido à espera de revisão e por cada envio recusado, com o nome de caçador, o número da conta, o ID Steam e os detalhes da cópia de segurança ou do pedido. Eliminar os meus dados não apaga essas mensagens.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multijogador: o servidor punch-through do jogo, no mesmo servidor alugado, vê o seu endereço IP e a porta quando entra num jogo, e o computador do outro jogador liga-se diretamente ao seu, pelo que esse jogador pode ver o seu endereço IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Os seus direitos</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Pode perguntar o que é guardado sobre si, pedir a sua correção, eliminá-lo você mesmo com Eliminar os meus dados e opor-se à sua utilização. Se considerar que os seus dados são tratados incorretamente, pode apresentar queixa a uma autoridade de proteção de dados. Escreva para o contacto acima.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Os registos do servidor e do proxy podem conter endereços IP e nomes de caçador. São guardados no máximo 30 dias.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>O seu navegador está aberto. Inicie sessão lá com o Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Iniciar sessão com o Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>O início de sessão não foi confirmado a tempo. Tente novamente.</value></data>

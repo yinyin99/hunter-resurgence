@@ -1464,15 +1464,7 @@
   <data name="Data.Why.Text" xml:space="preserve"><value>Seus dados são usados para fazer funcionar o serviço que você pede: login, sua conta e a restauração do seu backup. O operador também tem um interesse legítimo em manter o serviço funcionando e seguro (logs, verificação de envios). Nada é vendido nem usado para publicidade.</value></data>
   <data name="Data.Keep.Title" xml:space="preserve"><value>Por quanto tempo são guardados</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Sua conta e seus dados ficam até você usar Excluir meus dados.</value></data>
-  <data name="Data.Keep.Copies" xml:space="preserve"><value>O servidor copia seus bancos de dados todos os dias e guarda as últimas 7 cópias. Depois de Excluir meus dados, sua conta ainda fica nessas cópias por até 7 dias.</value></data>
-  <data name="Data.Keep.Logs" xml:space="preserve"><value>Os logs do servidor e do proxy podem conter endereços IP e nomes de usuário. Ficam guardados por no máximo 30 dias, e por menos tempo quando o log enche.</value></data>
-  <data name="Data.Others.Title" xml:space="preserve"><value>Quem mais os vê</value></data>
-  <data name="Data.Others.Host" xml:space="preserve"><value>O provedor de hospedagem: o servidor roda em um servidor virtual alugado, então o provedor hospeda tudo o que foi citado acima.</value></data>
-  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: toda requisição ao site e ao servidor passa por ele, junto com o seu endereço IP.</value></data>
-  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: os canais privados do operador recebem uma mensagem a cada nova conta, a cada backup ou solicitação aguardando revisão e a cada envio recusado, com o nome de usuário, o número da conta, o id da Steam e os detalhes do backup ou da solicitação. Excluir meus dados não apaga essas mensagens.</value></data>
-  <data name="Data.Others.Multi" xml:space="preserve"><value>Multiplayer: o servidor punch-through do jogo, no mesmo servidor alugado, vê o seu endereço IP e a porta quando você entra em uma partida, e o computador do outro jogador se conecta diretamente ao seu, então ele pode ver o seu endereço IP.</value></data>
-  <data name="Data.Rights.Title" xml:space="preserve"><value>Seus direitos</value></data>
-  <data name="Data.Rights.Text" xml:space="preserve"><value>Você pode perguntar o que é guardado sobre você, pedir a correção, excluir você mesmo com Excluir meus dados e se opor ao uso. Se achar que seus dados são tratados de forma indevida, pode reclamar a uma autoridade de proteção de dados. Escreva para o contato acima.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Os logs do servidor e do proxy podem conter endereços IP e nomes de usuário. Ficam guardados por no máximo 30 dias.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Seu navegador está aberto. Entre lá com a Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Entrar com a Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>O login não foi confirmado a tempo. Tente novamente.</value></data>
