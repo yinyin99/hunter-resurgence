@@ -396,13 +396,15 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             return Redirect(Page(r, "handle"));
         }
         var outcome = "fresh start";
+        string? claimed = null;
         if (player is not null)  // restored or kept for review: the player's inbox says which
         {
             var o = claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);
-            outcome = $"claimed {Alerts.Name(player.Handle)} (hunterscore {player.Hunterscore}): "
-                      + (o.Kind == "restored" ? "restored" : o.Kind == "review" ? "waiting for review" : $"refused ({o.Kind})");
+            claimed = $"{Alerts.Handle(player.Handle)}, hunterscore {player.Hunterscore}";
+            outcome = o.Kind == "restored" ? "claim restored" : o.Kind == "review" ? "claim waiting for review" : $"claim refused ({o.Kind})";
         }
-        signupAlert?.Invoke($"New account: {Alerts.Name(handle)}, account {account}, {Alerts.Steam(steamId)}, {outcome}.");
+        signupAlert?.Invoke(Alerts.Text("\U0001F195", "New account", null, ("handle", Alerts.Handle(handle)), ("account", account), ("steam", Alerts.Steam(steamId)),
+            ("archived", claimed), ("outcome", outcome)));
         return Finish(r, login, account);
     }
 
