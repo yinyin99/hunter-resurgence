@@ -1540,7 +1540,7 @@
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается или закрывается слишком быстро, лаунчер может собрать отчёт о проблеме, чтобы помочь найти причину. В отчёте:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>файлы журналов игры и её настройки</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>события сбоев игры в Windows</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>названия антивирусов и игровых бустеров, работающих на вашем компьютере</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>версию и язык Windows, видеокарту и экраны, а также названия антивирусов, бустеров и оверлеев, работающих на вашем компьютере</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>когда вы недавно запускали игру и чем закончился каждый запуск</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>В нём никогда нет паролей и токенов.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Отчёт уходит на сервер сообщества и привязывается к вашей учётной записи. Он хранится 30 дней, и операторы сервера могут его читать. Подробнее: {0}. Свой выбор можно позже изменить в меню «Настройки».</value></data>

@@ -1540,7 +1540,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet oder zu früh schließt, kann der Launcher einen Problembericht erstellen, der hilft, die Ursache zu finden. Ein Bericht enthält:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>die Logdateien und Einstellungen des Spiels</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>die Windows-Absturzereignisse des Spiels</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>die Namen von Virenscannern und Spiele-Boostern, die auf deinem PC laufen</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>deine Windows-Version und -Sprache, Grafikkarte und Bildschirme sowie die Namen von Virenscannern, Boostern und Overlays, die auf deinem PC laufen</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>wann du das Spiel zuletzt gestartet hast und wie jeder Start endete</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Er enthält nie Passwörter oder Token.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Ein Bericht geht an den Community-Server und wird mit deinem Konto verknüpft. Er wird 30 Tage aufbewahrt und kann von den Betreibern des Servers gelesen werden. Mehr unter {0}. Du kannst deine Wahl später im Menü Einstellungen ändern.</value></data>

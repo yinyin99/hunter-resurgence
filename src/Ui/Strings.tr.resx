@@ -1540,7 +1540,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa veya çok erken kapanırsa başlatıcı, nedenini bulmaya yardımcı olacak bir sorun raporu oluşturabilir. Bir rapor şunları içerir:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>oyunun günlük dosyaları ve ayarları</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>oyun için Windows çökme olayları</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>bilgisayarınızda çalışan antivirüs programlarının ve oyun hızlandırıcıların adları</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız, ayrıca bilgisayarınızda çalışan antivirüs, hızlandırıcı ve bindirme programlarının adları</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>oyunu son zamanlarda ne zaman başlattığınız ve her başlatmanın nasıl bittiği</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Parola veya jeton asla içermez.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Rapor, hesabınıza bağlı olarak topluluk sunucusuna gider. 30 gün saklanır ve sunucunun operatörleri okuyabilir. Ayrıntılar: {0}. Seçiminizi daha sonra Ayarlar menüsünden değiştirebilirsiniz.</value></data>

@@ -8,7 +8,7 @@ using Resurgence.Ui.Shell;
 
 namespace Resurgence.Tests.WebTests;
 
-/// <summary>The problem report's first-launch consent, the Settings entry, and the "Done hunting for now?" window after a failed start (docs/launcher.md#problem-reports).</summary>
+/// <summary>The problem report's first-launch consent, the Settings entry, and the "Done hunting for now?" window after a failed start (docs/launcher.md#report-a-problem).</summary>
 public sealed class ProblemReportTests : UiContext
 {
     sealed class Bridge(string consent = "unset", GameRun? run = null, ReportSent? answer = null, bool saveFails = false) : ILauncherBridge
@@ -94,7 +94,7 @@ public sealed class ProblemReportTests : UiContext
     [Theory]
     [InlineData(true, true)]
     [InlineData(false, false)]  // the website never asks
-    public void TheShellAsksTheLauncherOnceAfterSignIn(bool launcher, bool asked)
+    public async Task TheShellAsksTheLauncherOnceAfterSignIn(bool launcher, bool asked)
     {
         Services.AddSingleton(new HostMode { Launcher = launcher });
         Services.AddSingleton<IRestoreOfferService>(new NoRestoreOffer());
@@ -102,7 +102,7 @@ public sealed class ProblemReportTests : UiContext
         var modal = Services.GetRequiredService<ModalService>();
         var cut = Render<ShellLayout>();
         if (asked) cut.WaitForAssertion(() => Assert.Equal(typeof(ReportConsentModal), modal.Type));
-        else Assert.NotEqual(typeof(ReportConsentModal), modal.Type);
+        else { await Task.Delay(300); Assert.NotEqual(typeof(ReportConsentModal), modal.Type); }  // the restore offer is none: the consent would be next
     }
 
     [Fact]

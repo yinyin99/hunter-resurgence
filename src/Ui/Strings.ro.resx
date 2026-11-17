@@ -1540,7 +1540,7 @@ Numele:</value></data>
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește sau se închide prea devreme, launcherul poate crea un raport de problemă care ajută la aflarea cauzei. Un raport conține:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>fișierele jurnal ale jocului și setările lui</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>evenimentele de blocare Windows pentru joc</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>numele programelor antivirus și ale booster-elor de jocuri care rulează pe PC-ul dvs.</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>versiunea și limba Windows, placa video și ecranele, plus numele programelor antivirus, ale booster-elor și ale overlay-urilor care rulează pe PC-ul dvs.</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>când ați pornit recent jocul și cum s-a încheiat fiecare pornire</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Nu conține niciodată parole sau jetoane.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Un raport merge la serverul comunității, legat de contul dvs. Este păstrat 30 de zile, iar operatorii serverului îl pot citi. Mai multe la {0}. Vă puteți schimba alegerea mai târziu din meniul Setări.</value></data>

@@ -1540,7 +1540,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia o si chiude troppo presto, il launcher può creare un rapporto sul problema per aiutare a capirne il motivo. Un rapporto contiene:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>i file di log del gioco e le sue impostazioni</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>gli eventi di arresto anomalo di Windows per il gioco</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>i nomi degli antivirus e dei booster di gioco in esecuzione sul tuo PC</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>la versione e la lingua di Windows, la scheda video e gli schermi, e i nomi di antivirus, booster e overlay in esecuzione sul tuo PC</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>quando hai avviato il gioco di recente e come è finito ogni avvio</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Non contiene mai password o token.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Un rapporto va al server della community, collegato al tuo account. Viene conservato 30 giorni e gli operatori del server possono leggerlo. Maggiori informazioni in {0}. Puoi cambiare la tua scelta in seguito dal menu Impostazioni.</value></data>

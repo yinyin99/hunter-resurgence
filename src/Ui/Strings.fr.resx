@@ -1540,7 +1540,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Si le jeu ne démarre pas ou se ferme trop tôt, le launcher peut créer un rapport de problème pour aider à en trouver la cause. Un rapport contient :</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>les fichiers journaux du jeu et ses paramètres</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>les événements de plantage Windows du jeu</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>les noms des antivirus et des boosters de jeu qui tournent sur votre PC</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>votre version et langue de Windows, votre carte graphique et vos écrans, ainsi que les noms des antivirus, boosters et overlays qui tournent sur votre PC</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>quand vous avez récemment lancé le jeu et comment chaque démarrage s'est terminé</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Il ne contient jamais de mots de passe ni de jetons.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Un rapport est envoyé au serveur communautaire, lié à votre compte. Il est conservé 30 jours et les opérateurs du serveur peuvent le lire. Plus d'informations sous {0}. Vous pourrez modifier votre choix plus tard dans le menu Paramètres.</value></data>

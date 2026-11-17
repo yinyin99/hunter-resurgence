@@ -1540,7 +1540,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start of te snel sluit, kan de launcher een probleemrapport maken om de oorzaak te vinden. Een rapport bevat:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>de logbestanden en instellingen van het spel</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>de Windows-crashgebeurtenissen van het spel</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>de namen van antivirusprogramma's en game-boosters die op je pc draaien</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>je Windows-versie en -taal, videokaart en schermen, en de namen van antivirusprogramma's, boosters en overlays die op je pc draaien</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>wanneer je het spel onlangs hebt gestart en hoe elke start eindigde</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Er staan nooit wachtwoorden of tokens in.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Een rapport gaat naar de communityserver, gekoppeld aan je account. Het wordt 30 dagen bewaard en de beheerders van de server kunnen het lezen. Meer onder {0}. Je kunt je keuze later wijzigen in het menu Instellingen.</value></data>

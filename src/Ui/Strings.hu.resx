@@ -1540,7 +1540,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el vagy túl korán bezárul, az indító problémajelentést készíthet, amely segít kideríteni az okot. A jelentés tartalma:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>a játék naplófájljai és beállításai</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>a játékhoz tartozó Windows-összeomlási események</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>a számítógépeden futó víruskeresők és játékgyorsítók neve</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>a Windows verziója és nyelve, a videokártya és a képernyők, valamint a számítógépeden futó víruskeresők, gyorsítók és overlayek neve</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>mikor indítottad el legutóbb a játékot, és hogyan végződött az egyes indítás</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Soha nem tartalmaz jelszavakat vagy tokeneket.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>A jelentés a közösségi szerverre kerül, a fiókodhoz kötve. 30 napig őrizzük, és a szerver üzemeltetői olvashatják. Bővebben itt: {0}. A választásodat később megváltoztathatod a Beállítások menüben.</value></data>

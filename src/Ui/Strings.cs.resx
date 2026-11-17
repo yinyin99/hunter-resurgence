@@ -1540,7 +1540,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí nebo se zavře příliš brzy, může launcher vytvořit hlášení o problému, které pomůže zjistit příčinu. Hlášení obsahuje:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>protokoly hry a její nastavení</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>události pádů hry ve Windows</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>názvy antivirů a herních boosterů, které běží na vašem počítači</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>verzi a jazyk Windows, grafickou kartu a obrazovky a názvy antivirů, boosterů a overlayů, které běží na vašem počítači</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>kdy jste hru nedávno spustili a jak každé spuštění skončilo</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Nikdy neobsahuje hesla ani tokeny.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Hlášení se odešle komunitnímu serveru a propojí se s vaším účtem. Uchovává se 30 dní a mohou ho číst provozovatelé serveru. Více v části {0}. Svou volbu můžete později změnit v nabídce Nastavení.</value></data>

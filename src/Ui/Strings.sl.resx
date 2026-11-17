@@ -1540,7 +1540,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene ali se prehitro zapre, lahko zaganjalnik ustvari poročilo o težavi, ki pomaga najti vzrok. Poročilo vsebuje:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>dnevniške datoteke igre in njene nastavitve</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>dogodke zrušitev igre v sistemu Windows</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>imena protivirusnih programov in pospeševalnikov iger, ki tečejo na vašem računalniku</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>različico in jezik sistema Windows, grafično kartico in zaslone ter imena protivirusnih programov, pospeševalnikov in prekrivnih programov, ki tečejo na vašem računalniku</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>kdaj ste igro nazadnje zagnali in kako se je vsak zagon končal</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Nikoli ne vsebuje gesel ali žetonov.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>Poročilo gre strežniku skupnosti in je povezano z vašim računom. Hrani se 30 dni, bralci pa so upravljavci strežnika. Več pod {0}. Svojo izbiro lahko pozneje spremenite v meniju Nastavitve.</value></data>

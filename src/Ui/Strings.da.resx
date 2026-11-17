@@ -1540,7 +1540,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter eller lukker for tidligt, kan launcheren lave en problemrapport, der hjælper med at finde årsagen. En rapport indeholder:</value></data>
   <data name="Report.ConsentLogs" xml:space="preserve"><value>spillets logfiler og indstillinger</value></data>
   <data name="Report.ConsentEvents" xml:space="preserve"><value>Windows' nedbrudshændelser for spillet</value></data>
-  <data name="Report.ConsentSystem" xml:space="preserve"><value>navnene på antivirusprogrammer og spilboostere, der kører på din pc</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>din Windows-version og -sprog, grafikkort og skærme samt navnene på antivirusprogrammer, boostere og overlays, der kører på din pc</value></data>
   <data name="Report.ConsentStarts" xml:space="preserve"><value>hvornår du for nylig startede spillet, og hvordan hver start endte</value></data>
   <data name="Report.ConsentNever" xml:space="preserve"><value>Den indeholder aldrig adgangskoder eller tokens.</value></data>
   <data name="Report.ConsentWhere" xml:space="preserve"><value>En rapport sendes til fællesskabsserveren, knyttet til din konto. Den gemmes i 30 dage, og serverens operatører kan læse den. Mere under {0}. Du kan ændre dit valg senere i menuen Indstillinger.</value></data>
