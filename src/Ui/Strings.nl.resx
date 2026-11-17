@@ -1494,8 +1494,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Het probleemrapport kon niet worden verzonden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Is er iets misgegaan? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Probleemrapporten sturen?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs sturen zodat we het kunnen oplossen. Geen wachtwoorden.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Wat zit er in een rapport</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs sturen zodat we het kunnen oplossen.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Bestanden tonen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch sturen</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Elke keer vragen</value></data>

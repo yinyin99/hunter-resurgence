@@ -1494,8 +1494,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Algo deu errado? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar, o launcher pode nos enviar os logs dele para corrigirmos. Sem senhas.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>O que há em um relatório</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar, o launcher pode nos enviar os logs dele para corrigirmos.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostrar arquivos</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar toda vez</value></data>

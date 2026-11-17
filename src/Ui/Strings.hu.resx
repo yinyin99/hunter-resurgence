@@ -1494,8 +1494,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Report.AutoFailed" xml:space="preserve"><value>A problémajelentést nem sikerült elküldeni: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Valami elromlott? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Küldjünk problémajelentéseket?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el, az indító elküldheti nekünk a naplóit, hogy kijavíthassuk. Jelszavak nélkül.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Mi van egy jelentésben</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el, az indító elküldheti nekünk a naplóit, hogy kijavíthassuk.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Fájlok megjelenítése</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Küldés automatikusan</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kérdezzen mindig</value></data>

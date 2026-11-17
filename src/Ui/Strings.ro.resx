@@ -1494,8 +1494,7 @@ Numele:</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ceva nu a mers bine? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Trimiteți rapoarte de probleme?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale ca să remediem problema. Fără parole.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Ce conține un raport</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale ca să remediem problema.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Arată fișierele</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Trimite automat</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Întreabă-mă de fiecare dată</value></data>

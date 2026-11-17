@@ -84,7 +84,8 @@ public sealed class ProblemReportTests : UiContext
         var modal = Services.GetRequiredService<ModalService>();
         modal.Show<ReportConsentModal>();
         var cut = Render<ReportConsentModal>();
-        Assert.Equal("/your-data", cut.Find("a").GetAttribute("href"));
+        Assert.Empty(cut.FindAll("a"));  // no link that would leave the dialog
+        Assert.DoesNotContain("password", cut.Markup, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("consent-auto", cut.Find(".btn-primary").Id);  // "Send automatically" is the primary choice
         Assert.Equal("consent-auto", Assert.Single(cut.FindAll("[autofocus]")).Id);  // so Enter accepts it
 

@@ -1494,8 +1494,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gik noget galt? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler, så vi kan rette det. Ingen adgangskoder.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Hvad er der i en rapport</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler, så vi kan rette det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Spørg mig hver gang</value></data>
