@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>De exe is niet ondertekend, dus Windows kan "Uw pc is beveiligd door Windows / Onbekende uitgever" tonen. Kies "Meer informatie" en dan "Toch uitvoeren".</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Download de back-uptool</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privacybeleid</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Licentieovereenkomst voor eindgebruikers</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACYBELEID</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENTIEOVEREENKOMST VOOR EINDGEBRUIKERS</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Je moet de licentieovereenkomst voor eindgebruikers en het privacybeleid bevestigen voordat je doorgaat.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Door op de knop "Doorgaan" te klikken ga je akkoord met {0} en {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Ik ga akkoord met de EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ik ga akkoord met het privacybeleid</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Laatst bijgewerkt op: voorbeeldtekst</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>INLEIDING</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Voorbeeldkop</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Voorbeeldtekst. De beheerder van deze dienst levert de echte juridische tekst.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Voor informatie over de verwerking van persoonsgegevens, zie: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Gebruiksvoorwaarden</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Je moet de gebruiksvoorwaarden accepteren voordat je verdergaat.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Door op de knop "Doorgaan" te klikken ga je akkoord met de {0}. Hoe met je gegevens wordt omgegaan, staat uitgelegd op de pagina {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Ik accepteer de gebruiksvoorwaarden</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ik heb de pagina Jouw gegevens gelezen</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Al een jager?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Inloggen</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log in, open Je back-up herstellen en gebruik Mijn gegevens verwijderen. Dat verwijdert het account, de spelgegevens, de bewaarde zips en de foto's, en logt je uit. Je Steam-id wordt dan vergeten; opnieuw inloggen maakt een nieuw account aan.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>De operator van deze server kan alles hierboven zien.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Probleemrapporten</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Als het starten van het spel mislukt (het draaide korter dan een minuut, eindigde met een fout of toonde geen venster), stelt de launcher een rapport samen: de logbestanden en instellingen van het spel, Windows-crashgebeurtenissen voor het spel, de namen van antivirus-, booster- en overlayprogramma's, je Windows-versie en -taal, videokaart en schermen en je recente starts. Er staan geen wachtwoorden of tokens in. Het wordt alleen verstuurd als je "Automatisch versturen" hebt gekozen (eenmalig gevraagd, te wijzigen bij Instellingen), anders alleen wanneer je op Versturen drukt. Het wordt 30 dagen bij je account bewaard en de beheerders kunnen het lezen. Een melding met je gebruikersnaam, accountnummer en de referentie van het rapport gaat naar het privé-Discord-kanaal van de beheerders. Mijn gegevens verwijderen verwijdert je rapporten.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Het spel verstuurt zelf zijn crashrapporten. De server bewaart de crash- en foutrapporten 30 dagen per account, zonder installatiepaden en apparaat-ID.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Gebruiksvoorwaarden</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence is een gratis, onofficieel fanproject. Het is niet gelieerd aan de uitgever van het spel.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>De dienst wordt geleverd zoals hij is, zonder garantie dat hij werkt, beschikbaar blijft of je gegevens bewaart.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>De dienst en de accounts kunnen op elk moment veranderen of stoppen.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Gedragsregels</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Val andere jagers niet lastig en beledig ze niet, gebruik niet het account van iemand anders, val de dienst niet aan en overbelast hem niet, en upload geen back-up die niet van jou is.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Gebruik geen cheats, geheugenbewerking of aangepaste spelbestanden.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>De beheerder kan accounts schorsen die deze regels overtreden.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Het spel zelf blijft onder zijn eigen licentie vallen; deze voorwaarden veranderen dat niet.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Hoe met je gegevens wordt omgegaan, staat uitgelegd op de pagina {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Wie deze dienst beheert</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence is een gratis fanproject dat door de beheerder wordt gerund. Om de beheerder te bereiken, schrijf je op de Discord-server van het project (link in de voettekst) of naar contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Waarom het wordt bewaard</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Je gegevens worden gebruikt om de dienst te laten werken waar je om vraagt: inloggen, je account en het herstellen van je back-up. De beheerder heeft ook een gerechtvaardigd belang bij het werkend en veilig houden van de dienst (logs, controle van uploads). Er wordt niets verkocht of voor reclame gebruikt.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Hoe lang het wordt bewaard</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Je account en de bijbehorende gegevens blijven bestaan totdat je Mijn gegevens verwijderen gebruikt.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- en proxylogs kunnen IP-adressen en gebruikersnamen bevatten. Ze worden maximaal 30 dagen bewaard.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Je browser is geopend. Log daar in met Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Inloggen met Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>De aanmelding is niet op tijd bevestigd. Probeer het opnieuw.</value></data>

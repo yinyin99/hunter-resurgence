@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Die exe ist nicht code-signiert, daher zeigt Windows eventuell „Der Computer wurde durch Windows geschützt / Unbekannter Herausgeber“. Wählen Sie „Weitere Informationen“, dann „Trotzdem ausführen“.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Backup-Tool herunterladen</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Datenschutzerklärung</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Endbenutzer-Lizenzvertrag</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>DATENSCHUTZERKLÄRUNG</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>ENDBENUTZER-LIZENZVERTRAG</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Du musst die Endbenutzer-Lizenzvereinbarung und die Datenschutzerklärung bestätigen, bevor du fortfahren kannst.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Mit einem Klick auf „Weiter“ stimmst du der {0} und der {1} zu</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>Lizenzvereinbarung</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Ich stimme der Lizenzvereinbarung zu</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ich stimme der Datenschutzerklärung zu</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Zuletzt aktualisiert am: Platzhaltertext</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>EINLEITUNG</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Platzhalter-Überschrift</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Platzhaltertext. Den eigentlichen Rechtstext liefert der Betreiber dieses Dienstes.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Informationen zum Umgang mit personenbezogenen Daten findest du in der {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Nutzungsbedingungen</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Du musst die Nutzungsbedingungen akzeptieren, bevor du fortfährst.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Mit einem Klick auf „Weiter“ stimmst du den {0} zu. Wie mit deinen Daten umgegangen wird, steht auf der Seite {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Ich akzeptiere die Nutzungsbedingungen</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Ich habe die Seite Ihre Daten gelesen</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sind Sie schon Jäger?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Anmelden</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-Mail</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ihre Daten löschen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Melden Sie sich an, öffnen Sie „Ihr Backup wiederherstellen“ und wählen Sie „Meine Daten löschen“. Dadurch werden das Konto, seine Spieldaten, die aufbewahrten Zips und die Fotos gelöscht, und Sie werden abgemeldet. Ihre Steam-ID wird dann vergessen; bei einer erneuten Anmeldung wird ein neues Konto angelegt.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Der Betreiber dieses Servers kann all das Obige sehen.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Problemberichte</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Wenn ein Spielstart fehlschlägt (er lief weniger als eine Minute, endete mit einem Fehler oder zeigte kein Fenster), erstellt der Launcher einen Bericht: die Logs und Einstellungen des Spiels, Windows-Absturzereignisse des Spiels, die Namen von Antivirus-, Booster- und Overlay-Programmen, Ihre Windows-Version und -Sprache, Grafikkarte und Bildschirme sowie Ihre letzten Starts. Er enthält keine Passwörter oder Tokens. Er wird nur gesendet, wenn Sie "Automatisch senden" gewählt haben (einmalig abgefragt, in den Einstellungen änderbar), andernfalls nur, wenn Sie auf Senden klicken. Er wird 30 Tage lang bei Ihrem Konto gespeichert und kann von den Betreibern gelesen werden. Eine Benachrichtigung mit Ihrem Handle, Ihrer Kontonummer und der Referenz des Berichts geht an den privaten Discord-Kanal der Betreiber. Meine Daten löschen entfernt Ihre Berichte.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Das Spiel sendet seine eigenen Absturzberichte selbst. Der Server bewahrt die Absturz- und Fehlerberichte 30 Tage pro Konto auf, wobei Installationspfade und die Gerätekennung entfernt werden.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Nutzungsbedingungen</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence ist ein kostenloses, inoffizielles Fanprojekt. Es steht in keiner Verbindung zum Herausgeber des Spiels.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Der Dienst wird so bereitgestellt, wie er ist, ohne Garantie, dass er funktioniert, verfügbar bleibt oder Ihre Daten behält.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Der Dienst und seine Konten können sich jederzeit ändern oder eingestellt werden.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Verhaltensregeln</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Belästigen oder beleidigen Sie keine anderen Jäger, nutzen Sie nicht das Konto einer anderen Person, greifen Sie den Dienst nicht an und überlasten Sie ihn nicht, und laden Sie kein Backup hoch, das nicht Ihnen gehört.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Verwenden Sie keine Cheats, keine Speicherbearbeitung und keine veränderten Spieldateien.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Der Betreiber kann Konten sperren, die gegen diese Regeln verstoßen.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Das Spiel selbst bleibt unter seiner eigenen Lizenz; diese Bedingungen ändern daran nichts.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Wie mit Ihren Daten umgegangen wird, steht auf der Seite {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Wer diesen Dienst betreibt</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence ist ein kostenloses Fanprojekt, das von seinem Betreiber geführt wird. Den Betreiber erreichen Sie auf dem Discord-Server des Projekts (Link in der Fußzeile) oder unter contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Warum es gespeichert wird</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Ihre Daten werden verwendet, um den gewünschten Dienst zu betreiben: Anmeldung, Ihr Konto und die Wiederherstellung Ihres Backups. Der Betreiber hat außerdem ein berechtigtes Interesse daran, den Dienst funktionsfähig und sicher zu halten (Logs, Prüfung von Uploads). Nichts wird verkauft oder für Werbung genutzt.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Wie lange es gespeichert wird</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Ihr Konto und seine Daten bleiben bestehen, bis Sie Meine Daten löschen verwenden.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- und Proxy-Logs können IP-Adressen und Handles enthalten. Sie werden höchstens 30 Tage aufbewahrt.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Dein Browser ist geöffnet. Melde dich dort mit Steam an.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Mit Steam anmelden</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>

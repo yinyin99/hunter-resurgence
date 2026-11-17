@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Fișierul exe nu este semnat, așa că Windows poate afișa „Windows protected your PC / Unknown publisher”. Alegeți „More info”, apoi „Run anyway”.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Descărcați instrumentul de backup</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Politica de confidențialitate</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Acord de licență pentru utilizatorul final</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITICA DE CONFIDENȚIALITATE</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>ACORD DE LICENȚĂ PENTRU UTILIZATORUL FINAL</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să confirmați acordul de licență pentru utilizatorul final și politica de confidențialitate înainte de a continua.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați următoarele: {0} și {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Sunt de acord cu EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Sunt de acord cu Politica de confidențialitate</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Ultima actualizare: text provizoriu</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>INTRODUCERE</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Titlu provizoriu</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Text provizoriu. Operatorul acestui serviciu furnizează textul juridic real.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Despre modul de prelucrare a datelor personale, consultați: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Termenii de utilizare</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să acceptați Termenii de utilizare înainte de a continua.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați {0}. Modul în care sunt tratate datele dvs. este explicat pe pagina {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Accept Termenii de utilizare</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Am citit pagina Datele dvs.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sunteți deja vânător?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Conectare</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatorul acestui server poate vedea tot ce este menționat mai sus.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Rapoarte de probleme</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>După ce pornirea jocului eșuează (a rulat sub un minut, s-a încheiat cu o eroare sau nu a afișat nicio fereastră), launcherul pregătește un raport: jurnalele și setările jocului, evenimentele de blocare Windows pentru joc, numele programelor antivirus, booster și overlay, versiunea și limba Windows, placa video și ecranele și pornirile tale recente. Nu conține parole sau token-uri. Este trimis doar dacă ai ales „Trimite automat” (întrebat o singură dată, poate fi schimbat în Setări), altfel doar când apeși Trimite. Este păstrat împreună cu contul tău 30 de zile, iar operatorii îl pot citi. O notificare cu pseudonimul tău, numărul contului tău și referința raportului ajunge pe canalul Discord privat al operatorilor. Ștergeți datele mele elimină rapoartele dvs.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Jocul își trimite singur rapoartele de blocare. Serverul le păstrează pe cele de blocare și de eroare 30 de zile pentru fiecare cont, fără căile de instalare și identificatorul dispozitivului.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Termeni de utilizare</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence este un proiect gratuit și neoficial al fanilor. Nu are legătură cu editorul jocului.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Serviciul este oferit așa cum este, fără garanția că funcționează, rămâne disponibil sau vă păstrează datele.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Serviciul și conturile sale se pot schimba sau opri în orice moment.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Reguli de conduită</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Nu hărțuiți și nu insultați alți vânători, nu folosiți contul altei persoane, nu atacați și nu suprasolicitați serviciul și nu încărcați un backup care nu este al dvs.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Nu folosiți coduri de înșelăciune, editarea memoriei sau fișiere de joc modificate.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operatorul poate suspenda conturile care încalcă aceste reguli.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Jocul în sine rămâne sub propria licență; acești termeni nu o schimbă.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Modul în care sunt tratate datele dvs. este explicat pe pagina {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Cine administrează acest serviciu</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence este un proiect gratuit al fanilor, administrat de operatorul său. Pentru a contacta operatorul, scrieți pe serverul Discord al proiectului (link în subsol) sau la contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>De ce sunt păstrate</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Datele dvs. sunt folosite pentru a furniza serviciul pe care îl cereți: conectarea, contul dvs. și restaurarea backup-ului. Operatorul are și un interes legitim să mențină serviciul funcțional și sigur (jurnale, verificarea încărcărilor). Nimic nu este vândut sau folosit pentru publicitate.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Cât timp sunt păstrate</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Contul dvs. și datele sale rămân până când folosiți „Ștergeți datele mele”.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Jurnalele serverului și ale proxy-ului pot conține adrese IP și pseudonime. Sunt păstrate cel mult 30 de zile.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Browserul este deschis. Conectează-te acolo cu Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Conectare cu Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Autentificarea nu a fost confirmată la timp. Încearcă din nou.</value></data>

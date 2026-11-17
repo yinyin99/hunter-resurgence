@@ -23,7 +23,7 @@ public static class Seo
     // ponytail: one board and store walk per request; cache it if the sitemap is fetched often or the board grows past a few thousand hunters
     public static async Task<string> SitemapAsync(string origin, IStoreService store, ILeaderboardsService boards)
     {
-        List<string> paths = ["/", "/store", "/store/bundles", .. ServerLeaderboardsService.Kinds.Select(k => $"/leaderboards/{k}"), "/download", "/help", "/your-data"];
+        List<string> paths = ["/", "/store", "/store/bundles", .. ServerLeaderboardsService.Kinds.Select(k => $"/leaderboards/{k}"), "/download", "/help", "/your-data", "/terms"];
         // the store's "all" is /store itself
         void Categories(IEnumerable<StoreCategory> cs) { foreach (var c in cs) { if (c.Key != "all") paths.Add($"/store/{c.Key}"); Categories(c.Children); } }
         Categories(await store.CategoriesAsync());

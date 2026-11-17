@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe kod imzalı değildir, bu yüzden Windows “Windows bilgisayarınızı korudu / Bilinmeyen yayımcı” gösterebilir. “Daha fazla bilgi” ve ardından “Yine de çalıştır” seçeneğini seçin.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Yedekleme aracını indir</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Gizlilik Politikası</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Son Kullanıcı Lisans Sözleşmesi</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>GİZLİLİK POLİTİKASI</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>SON KULLANICI LİSANS SÖZLEŞMESİ</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Devam etmeden önce Son Kullanıcı Lisans Sözleşmesi'ni ve Gizlilik Politikası'nı onaylamalısınız.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>“Devam” düğmesine tıklayarak şunları kabul etmiş olursunuz: {0} ve {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>EULA'yı kabul ediyorum</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Gizlilik Politikası'nı kabul ediyorum</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Son güncelleme: yer tutucu metin</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>GİRİŞ</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Yer tutucu başlık</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Yer tutucu metin. Gerçek hukuki metni bu hizmetin işletmecisi sağlar.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Kişisel verilerin nasıl işlendiği hakkında bilgi için: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Kullanım Koşulları</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Devam etmeden önce Kullanım Koşullarını kabul etmelisiniz.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>“Devam” düğmesine tıklayarak {0} metnini kabul etmiş olursunuz. Verilerinizin nasıl işlendiği {1} sayfasında açıklanır.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Kullanım Koşullarını kabul ediyorum</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Verileriniz sayfasını okudum</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Zaten bir avcı mısınız?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Oturum aç</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-posta</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Sorun raporları</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, oyun için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Oyun kendi çökme raporlarını kendisi gönderir. Sunucu, çökme ve hata raporlarını hesap başına 30 gün saklar; kurulum yolları ve cihaz tanımlayıcısı çıkarılır.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Kullanım Koşulları</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence ücretsiz, resmî olmayan bir hayran projesidir. Oyunun yayıncısıyla bağlantısı yoktur.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Hizmet olduğu gibi sunulur; çalışacağı, erişilebilir kalacağı veya verilerinizi saklayacağı garanti edilmez.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Hizmet ve hesapları herhangi bir zamanda değişebilir veya sona erebilir.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Davranış kuralları</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Diğer avcılara taciz veya hakaret etmeyin, başkasının hesabını kullanmayın, hizmete saldırmayın veya onu aşırı yüklemeyin, size ait olmayan bir yedek yüklemeyin.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Hile, bellek düzenleme veya değiştirilmiş oyun dosyaları kullanmayın.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operatör, bu kuralları ihlal eden hesapları askıya alabilir.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Oyunun kendisi kendi lisansı altında kalır; bu koşullar onu değiştirmez.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Verilerinizin nasıl işlendiği {0} sayfasında açıklanır.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Bu hizmeti kim yürütüyor</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence, operatörü tarafından yürütülen ücretsiz bir hayran projesidir. Operatöre ulaşmak için projenin Discord sunucusuna (bağlantı sayfa altında) veya contact@hunter-resurgence.com adresine yazın.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Neden saklanır</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Verileriniz, istediğiniz hizmeti sunmak için kullanılır: oturum açma, hesabınız ve yedeğinizin geri yüklenmesi. Operatörün ayrıca hizmetin çalışır ve güvenli kalmasında meşru bir menfaati vardır (günlükler, yüklemelerin kontrolü). Hiçbir şey satılmaz veya reklam için kullanılmaz.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Ne kadar süre saklanır</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Hesabınız ve verileri, “Verilerimi sil” özelliğini kullanana kadar kalır.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Sunucu ve proxy günlükleri IP adresleri ve kullanıcı adları içerebilir. En fazla 30 gün saklanır.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Tarayıcın açık. Orada Steam ile oturum aç.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Steam ile oturum aç</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Giriş zamanında onaylanmadı. Lütfen tekrar dene.</value></data>

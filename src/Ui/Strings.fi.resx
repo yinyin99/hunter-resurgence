@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe-tiedostoa ei ole allekirjoitettu, joten Windows voi näyttää ”Windows suojasi tietokonettasi / Tuntematon julkaisija”. Valitse ”Lisätietoja” ja sitten ”Suorita silti”.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Lataa varmuuskopiotyökalu</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Tietosuojakäytäntö</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Käyttöoikeussopimus</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>TIETOSUOJAKÄYTÄNTÖ</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>LOPPUKÄYTTÄJÄN KÄYTTÖOIKEUSSOPIMUS</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Sinun on hyväksyttävä käyttöoikeussopimus ja tietosuojakäytäntö ennen jatkamista.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Klikkaamalla ”Jatka”-painiketta hyväksyt seuraavat: {0} ja {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Hyväksyn EULA-sopimuksen</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Hyväksyn tietosuojakäytännön</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Viimeksi päivitetty: paikkateksti</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>JOHDANTO</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Paikkaotsikko</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Paikkateksti. Palvelun ylläpitäjä toimittaa varsinaisen oikeudellisen tekstin.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Tietoa henkilötietojen käsittelystä: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Käyttöehdot</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Sinun on hyväksyttävä käyttöehdot ennen jatkamista.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Klikkaamalla ”Jatka”-painiketta hyväksyt seuraavat: {0}. Tietojesi käsittelystä kerrotaan sivulla {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Hyväksyn käyttöehdot</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Olen lukenut Tietosi-sivun</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Oletko jo metsästäjä?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Kirjaudu</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Sähköposti</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Ongelmaraportit</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, pelin Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Se ei sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Peli lähettää omat kaatumisraporttinsa itse. Palvelin säilyttää kaatumis- ja virheraportit 30 päivää tiliä kohti, asennuspolut ja laitetunniste poistettuina.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Käyttöehdot</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence on ilmainen, epävirallinen fanien projekti. Se ei ole sidoksissa pelin julkaisijaan.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Palvelu tarjotaan sellaisenaan ilman takuuta siitä, että se toimii, pysyy saatavilla tai säilyttää tietosi.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Palvelu ja sen tilit voivat muuttua tai loppua milloin tahansa.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Käyttäytymissäännöt</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Älä häiritse tai loukkaa muita metsästäjiä, käytä toisen henkilön tiliä, hyökkää palvelua vastaan tai kuormita sitä liikaa, äläkä lähetä varmuuskopiota, joka ei ole sinun.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Älä käytä huijauksia, muistin muokkausta äläkä muokattuja pelitiedostoja.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operaattori voi jäädyttää tilit, jotka rikkovat näitä sääntöjä.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Peli itse pysyy oman lisenssinsä alaisena; nämä ehdot eivät muuta sitä.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Tietojesi käsittelystä kerrotaan sivulla {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Kuka palvelua pyörittää</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence on ilmainen fanien projekti, jota operaattori pyörittää. Operaattorin tavoitat kirjoittamalla projektin Discord-palvelimella (linkki alatunnisteessa) tai osoitteeseen contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Miksi tiedot säilytetään</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Tietojasi käytetään pyytämäsi palvelun tuottamiseen: kirjautumiseen, tiliisi ja varmuuskopiosi palauttamiseen. Operaattorilla on myös oikeutettu etu pitää palvelu toimivana ja turvallisena (lokit, lähetysten tarkistus). Mitään ei myydä eikä käytetä mainontaan.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Kuinka kauan tiedot säilytetään</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Tilisi ja sen tiedot säilyvät, kunnes käytät Poista tietoni.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Palvelimen ja välityspalvelimen lokit voivat sisältää IP-osoitteita ja käyttäjänimiä. Niitä säilytetään enintään 30 päivää.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Selaimesi on auki. Kirjaudu siellä Steamilla.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Kirjaudu Steamilla</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>

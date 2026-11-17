@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe-filen er ikke kodesigneret, så Windows viser måske »Windows beskyttede din pc / Ukendt udgiver«. Vælg »Flere oplysninger« og derefter »Kør alligevel«.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Download backupværktøjet</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privatlivspolitik</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Slutbrugerlicensaftale</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVATLIVSPOLITIK</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>SLUTBRUGERLICENSAFTALE</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Du skal bekræfte slutbrugerlicensaftalen og privatlivspolitikken, før du fortsætter.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Ved at klikke på knappen "Fortsæt" accepterer du {0} og {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jeg accepterer EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jeg accepterer privatlivspolitikken</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Sidst opdateret: pladsholdertekst</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>INDLEDNING</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Pladsholderoverskrift</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Pladsholdertekst. Den egentlige juridiske tekst leveres af tjenestens udbyder.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Se {0} for oplysninger om, hvordan personoplysninger behandles.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Brugsvilkår</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Du skal acceptere brugsvilkårene, før du fortsætter.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Ved at klikke på knappen "Fortsæt" accepterer du {0}. Hvordan dine data behandles, forklares på siden {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jeg accepterer brugsvilkårene</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jeg har læst siden Dine data</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Er du allerede jæger?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Log ind</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletning af dine data</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log ind, åbn Gendan din backup, og brug Slet mine data. Det sletter kontoen, dens spildata, de gemte zips og fotos og logger dig ud. Dit Steam-id glemmes derefter; hvis du logger ind igen, oprettes en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren af denne server kan se alt ovenstående.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Fejlrapporter</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, Windows-nedbrudshændelser for spillet, navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Den indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Spillet sender selv sine egne nedbrudsrapporter. Serveren beholder nedbruds- og fejlrapporterne i 30 dage pr. konto, med installationsstier og enhedsidentifikatoren fjernet.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Brugsvilkår</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence er et gratis, uofficielt fanprojekt. Det er ikke tilknyttet spillets udgiver.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Tjenesten leveres, som den er, uden garanti for, at den virker, forbliver tilgængelig eller beholder dine data.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Tjenesten og dens konti kan ændres eller stoppe når som helst.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Adfærdsregler</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Du må ikke chikanere eller fornærme andre jægere, bruge en anden persons konto, angribe eller overbelaste tjenesten eller uploade en backup, der ikke er din.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Du må ikke bruge snydekoder, hukommelsesredigering eller ændrede spilfiler.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operatøren kan suspendere konti, der overtræder disse regler.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Selve spillet forbliver under sin egen licens; disse vilkår ændrer det ikke.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Hvordan dine data behandles, forklares på siden {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Hvem driver denne tjeneste</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence er et gratis fanprojekt, der drives af sin operatør. For at kontakte operatøren skal du skrive på projektets Discord-server (link i sidefoden) eller til contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Hvorfor det gemmes</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Dine data bruges til at drive den tjeneste, du beder om: login, din konto og gendannelse af din backup. Operatøren har også en legitim interesse i at holde tjenesten kørende og sikker (logs, kontrol af uploads). Intet sælges eller bruges til reklamer.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Hvor længe det gemmes</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Din konto og dens data bliver, indtil du bruger Slet mine data.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxy-logs kan indeholde IP-adresser og handles. De gemmes højst 30 dage.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din browser er åben. Log ind med Steam der.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Log ind med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Login blev ikke bekræftet i tide. Prøv igen.</value></data>

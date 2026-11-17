@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>The exe is not code-signed, so Windows may show "Windows protected your PC / Unknown publisher". Choose "More info", then "Run anyway".</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Download the backup tool</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Privacy Policy</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>End User License Agreement</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRIVACY POLICY</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>END USER LICENSE AGREEMENT</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>You must confirm the EULA and Privacy Policy agreements before continuing.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>By clicking the "Continue" button you agree to the {0} and the {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>I agree to the EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I agree to the Privacy Policy</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Last updated on: placeholder text</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>INTRODUCTION</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Placeholder heading</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Placeholder text. The operator of this service supplies the real legal text.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>For how personal data is handled, see the {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Terms of use</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>You must accept the Terms of use before continuing.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>By clicking the "Continue" button you accept the {0}. How your data is handled is explained on the {1} page.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>I accept the Terms of use</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>I have read the Your data page</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Already a hunter?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Sign in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>Email</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Problem reports</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>After a game start fails (it ran under a minute, ended with an error, or showed no window), the launcher puts together a report: the game's logs and settings, Windows crash events for the game, the names of antivirus, booster and overlay programs, your Windows version and language, graphics card and screens, and your recent starts. It holds no passwords or tokens. It is sent only if you chose "Send automatically" (asked once, changeable in Settings), otherwise only when you press Send. It is kept with your account for 30 days and the operators can read it. A notice with your handle, account number and the report's reference goes to the operators' private Discord channel. Delete my data removes your reports.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>The game sends its own crash reports itself. The server keeps the crash and error ones for 30 days per account, with install paths and the device identifier removed.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Terms of use</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence is a free, unofficial fan project. It is not affiliated with the publisher of the game.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>The service is provided as it is, with no guarantee that it works, stays available or keeps your data.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>The service and its accounts can change or stop at any time.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Rules of conduct</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Do not harass or insult other hunters, use another person's account, attack or overload the service, or upload a backup that is not yours.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Do not use cheats, memory editing or modified game files.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>The operator may suspend accounts that break these rules.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>The game itself stays under its own license; these terms do not change it.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>How your data is handled is explained on the {0} page.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Who runs this service</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence is a free fan project run by its operator. To reach the operator, write on the project's Discord server (link in the footer) or to contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Why it is kept</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Your data is used to run the service you ask for: sign-in, your account and restoring your backup. The operator also has a legitimate interest in keeping the service working and safe (logs, checking uploads). Nothing is sold or used for advertising.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>How long it is kept</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Your account and its data stay until you use Delete my data.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server and proxy logs can contain IP addresses and handles. They are kept for at most 30 days.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Your browser is open. Sign in with Steam there.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Sign in with Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>The sign-in was not confirmed in time. Please try again.</value></data>

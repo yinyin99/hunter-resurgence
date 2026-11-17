@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Exe-filen är inte kodsignerad, så Windows kan visa ”Windows skyddade datorn / Okänd utgivare”. Välj ”Mer information” och sedan ”Kör ändå”.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Ladda ned säkerhetskopieringsverktyget</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Integritetspolicy</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Licensavtal för slutanvändare</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>INTEGRITETSPOLICY</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENSAVTAL FÖR SLUTANVÄNDARE</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Du måste bekräfta licensavtalet för slutanvändare och integritetspolicyn innan du fortsätter.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Genom att klicka på knappen "Fortsätt" godkänner du {0} och {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jag godkänner EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jag godkänner integritetspolicyn</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Senast uppdaterad: platshållartext</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>INLEDNING</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Platshållarrubrik</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Platshållartext. Den som driver tjänsten tillhandahåller den verkliga juridiska texten.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Se {0} för information om hur personuppgifter hanteras.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Användarvillkor</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Du måste godkänna användarvillkoren innan du fortsätter.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Genom att klicka på knappen "Fortsätt" godkänner du {0}. Hur dina uppgifter hanteras förklaras på sidan {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Jag godkänner användarvillkoren</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Jag har läst sidan Dina uppgifter</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Är du redan jägare?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Logga in</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-post</value></data>
@@ -1453,6 +1445,26 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort; att logga in igen skapar ett nytt konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatören för den här servern kan se allt ovan.</value></data>
+  <data name="Data.Reports.Title" xml:space="preserve"><value>Problemrapporter</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>När en spelstart misslyckas (spelet kördes under en minut, avslutades med ett fel eller visade inget fönster) sammanställer launchern en rapport: spelets loggar och inställningar, Windows kraschhändelser för spelet, namnen på antivirus-, booster- och overlayprogram, din Windows-version och ditt språk, grafikkort och skärmar samt dina senaste starter. Den innehåller inga lösenord eller tokens. Den skickas bara om du valde ”Skicka automatiskt” (du tillfrågas en gång och kan ändra i Inställningar), annars bara när du trycker på Skicka. Den sparas med ditt konto i 30 dagar och operatörerna kan läsa den. En avisering med ditt handle, ditt kontonummer och rapportens referens går till operatörernas privata Discord-kanal. Radera mina uppgifter tar bort dina rapporter.</value></data>
+  <data name="Data.Reports.Game" xml:space="preserve"><value>Spelet skickar sina egna kraschrapporter själv. Servern sparar krasch- och felrapporterna i 30 dagar per konto, med installationssökvägar och enhetsidentifieraren borttagna.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Användarvillkor</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence är ett gratis, inofficiellt fanprojekt. Det har ingen koppling till spelets utgivare.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Tjänsten tillhandahålls i befintligt skick, utan garanti för att den fungerar, förblir tillgänglig eller behåller dina uppgifter.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Tjänsten och dess konton kan ändras eller upphöra när som helst.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Uppföranderegler</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Trakassera eller förolämpa inte andra jägare, använd inte någon annans konto, attackera eller överbelasta inte tjänsten och ladda inte upp en säkerhetskopia som inte är din.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Använd inte fusk, minnesredigering eller modifierade spelfiler.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operatören kan stänga av konton som bryter mot dessa regler.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Själva spelet omfattas av sin egen licens; dessa villkor ändrar inte den.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Hur dina uppgifter hanteras förklaras på sidan {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Vem som driver tjänsten</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence är ett gratis fanprojekt som drivs av sin operatör. För att nå operatören, skriv på projektets Discord-server (länk i sidfoten) eller till contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Varför det sparas</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Dina uppgifter används för att driva tjänsten du ber om: inloggning, ditt konto och återställning av din säkerhetskopia. Operatören har också ett berättigat intresse av att hålla tjänsten igång och säker (loggar, kontroll av uppladdningar). Inget säljs eller används för reklam.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Hur länge det sparas</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Ditt konto och dess uppgifter finns kvar tills du använder Radera mina uppgifter.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- och proxyloggar kan innehålla IP-adresser och handles. De sparas i högst 30 dagar.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din webbläsare är öppen. Logga in med Steam där.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Logga in med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>

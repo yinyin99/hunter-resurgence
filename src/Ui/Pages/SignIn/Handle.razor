@@ -30,6 +30,7 @@ else if (step is { Step: "handle" })
         @if (Error is { } error) { <p id="handle-note" class="error" role="alert">@L[error]</p> }
         else { <p id="handle-note" class="note">@L[restore ? "SignInPage.Handle.OldEmpty" : "SignInPage.Handle.Rule"]</p> }
         <button type="submit" class="btn btn-primary btn-large btn-block">@L["Signup.Continue"]</button>
+        <p class="note">@L.Frag("Eula.By", Link("/terms", "Footer.Terms"), Link("/your-data", "Footer.YourData"))</p>
     </form>
 }
 else { <SignInProblem Reason="expired" /> }
@@ -37,6 +38,9 @@ else { <SignInProblem Reason="expired" /> }
 @code {
     SignInStep? step;
     bool loaded, restore;
+
+    // a new tab: the form keeps what was typed
+    RenderFragment Link(string href, string text) => @<a href="@href" target="_blank" rel="noopener">@L[text]</a>;
 
     // the server's fixed keys of the last refused form
     string? Error => step?.Error switch
