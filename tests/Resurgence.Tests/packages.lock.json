@@ -620,6 +620,11 @@
         "resolved": "11.0.0",
         "contentHash": "+boRR9uSKiIPtFeRLGwO5xylhDF80xpwM+dmk5jgIqqeUKLbujGkGICMTKqQrBzKO6fIp8BU8DV6YZkQukqo3A=="
       },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "10.0.15",
+        "contentHash": "U21LynVbH2ayLFLTqlLnd3hx52Fe/acpCXO4BAUIqfWs8CwFWT0zxlg8WR2+LZ7zcLgi/d08eq7rp4iLMMt+4w=="
+      },
       "System.Security.AccessControl": {
         "type": "Transitive",
         "resolved": "6.0.1",
@@ -723,6 +728,7 @@
           "Microsoft.AspNetCore.Components.WebView.Wpf": "[10.0.130, )",
           "Resurgence.Restore": "[1.0.0, )",
           "Resurgence.Ui": "[1.0.0, )",
+          "System.Management": "[10.0.15, )",
           "Velopack": "[1.2.161, )"
         }
       },
@@ -761,6 +767,11 @@
         "type": "Transitive",
         "resolved": "5.0.0",
         "contentHash": "dDoKi0PnDz31yAyETfRntsLArTlVAVzUzCIvvEDsDsucrl33Dl8pIJG06ePTJTI3tGpeyHS9Cq7Foc/s4EeKcg=="
+      },
+      "System.Management": {
+        "type": "Transitive",
+        "resolved": "10.0.15",
+        "contentHash": "U21LynVbH2ayLFLTqlLnd3hx52Fe/acpCXO4BAUIqfWs8CwFWT0zxlg8WR2+LZ7zcLgi/d08eq7rp4iLMMt+4w=="
       },
       "System.Security.AccessControl": {
         "type": "Transitive",
