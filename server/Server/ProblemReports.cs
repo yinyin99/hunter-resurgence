@@ -16,8 +16,8 @@ public sealed class ProblemReports(State state, string dataDir)
     public const int PerDay = 5, KeepDays = 30;
     public static readonly string[] Triggers = ["manual", "short", "exitcode", "nowindow"];
 
-    /// <summary>Called with the text for the operator when a report is kept (the server sets it to the review webhook).</summary>
-    public Action<string> Alert { get; init; } = _ => { };
+    /// <summary>Called with the account, handle, reference, trigger and size in bytes when a new report is kept (the server sets it to <see cref="Alerts.ProblemReport"/> on the review webhook).</summary>
+    public Action<long, string, string, string, long> Alert { get; init; } = (_, _, _, _, _) => { };
     /// <summary>A report is refused (507) when the data disk would have less than this free after it (the setting `upload_min_free_bytes`).</summary>
     public long MinFreeBytes { get; init; } = Uploads.MinFreeBytesDefault;
     /// <summary>Free bytes of the data disk; a test replaces it.</summary>
@@ -66,6 +66,9 @@ public sealed class ProblemReports(State state, string dataDir)
         return refused;
     }
 
+    /// <summary>Is a report of this account being received (a delete waits for it).</summary>
+    public bool Busy(long account) => inFlight.ContainsKey(account);
+
     public void End(long account) => inFlight.TryRemove(account, out _);
 
     /// <summary>Keep the zip (a body that is no readable zip is 400, one over 6 MiB 413); the same zip twice is one report. Returns the refusal or the reference.</summary>
@@ -93,7 +96,7 @@ public sealed class ProblemReports(State state, string dataDir)
             return (new(401, "signed_out", "Sign in first."), null);
         }
         if (isNew)
-            Alert($"Problem report: account {account}, {Alerts.Name(state.Store.HandleOf(account) ?? "")}, {reference}, trigger {trigger}, {(zip.Length + 1023) / 1024} KB. Run: review reports");
+            Alert(account, state.Store.HandleOf(account) ?? "", reference, trigger, zip.Length);
         return (null, reference);
     }
 

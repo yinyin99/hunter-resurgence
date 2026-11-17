@@ -580,7 +580,7 @@ public static class GameApi
         {
             CrashReports.Keep(store, r.Body, Store.Now());
         }
-        catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException)
+        catch (Exception e)  // anything a stranger's body can cause: the sink answers 204 whatever it was
         {
             Console.Error.WriteLine("crash report not kept: " + e.Message);
         }

@@ -126,6 +126,8 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [InlineData("C:/Games/My Game/data/core.pak is bad", "core.pak is bad")]
     [InlineData("share \\\\host\\share\\dir\\f.log and D:\\a\\b.txt", "share f.log and b.txt")]
     [InlineData("no path here: 12 of 30", "no path here: 12 of 30")]
+    [InlineData("profile C:\\Users\\Bob Smith", "profile <path>")]
+    [InlineData("in C:\\Games\\data, then x", "in <path>, then x")]
     public void TestAPathInATextIsReducedToItsFileName(string text, string expected) => Assert.Equal(expected, CrashReports.Clean(text));
 
     [Fact]
@@ -154,11 +156,13 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
     [Fact]
     public void TestAnAccountKeepsItsNewest200()
     {
+        CrashReports.Keep(state.Store, Envelope(("event", Event("f0000001", "fatal", player))), Now);
         for (var n = 0; n < 205; n++)
             CrashReports.Keep(state.Store, Envelope(("event", Event($"e{n:D7}", "error", player))), Now);
         var rows = Rows(player);
-        Assert.Equal((200, "e0000204"), (rows.Count, (string)rows[^1][0]));
-        Assert.Equal("e0000005", (string)rows[0][0]);
+        Assert.Equal(201, rows.Count);  // the cap is per kind: the flood of errors never pushes the fatal report out
+        Assert.Equal("f0000001", (string)rows[0][0]);
+        Assert.Equal(("e0000005", "e0000204"), ((string)rows[1][0], (string)rows[^1][0]));
     }
 
     [Fact]
@@ -171,6 +175,7 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
         var line = JsonNode.Parse(Assert.Single(File.ReadAllLines(Path.Combine(tmp, "telemetry.jsonl"))))!;
         Assert.Equal("telemetry.test", (string)line["host"]!);
         Assert.Equal(204, (await server.SendAsync("POST", "crash.test", "/api/34/envelope/", [], "garbage"u8.ToArray())).Status);  // the game gets its 204 whatever it sent
+        Assert.Equal(204, (await server.SendAsync("POST", "crash.test", "/api/34/envelope/", [], Encoding.UTF8.GetBytes("{}\n{\"type\":\"event\"}\n" + new string('[', 5000)))).Status);
     }
 
     [Fact]
@@ -190,15 +195,17 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
             Line("telemetry.test", "third", recent),
         ]);
         var size = new FileInfo(file).Length;
-        CrashReports.TrimTelemetry(file, "crash.test", state.Store, Now, cap: size * 10);  // under the cap: untouched
-        Assert.Equal(size, new FileInfo(file).Length);
-        Assert.Empty(Rows(player));
+        string Bodies() => string.Join(",", File.ReadAllLines(file).Select(l => (string)JsonNode.Parse(l)!["body"]!));
+        CrashReports.TrimTelemetry(file, "crash.test", state.Store, Now, cap: size * 10);  // under the cap, the crash lines and the cut line still go
+        Assert.Equal("first,second,third", Bodies());
+        Assert.Equal(["e0000001"], Rows(player).Select(r => (string)r[0]));  // the older crash line is past its 30 days
+        var bytes = File.ReadAllBytes(file);
+        CrashReports.TrimTelemetry(file, "crash.test", state.Store, Now, cap: size * 10);  // nothing left to drop: untouched
+        Assert.Equal(bytes, File.ReadAllBytes(file));
 
         var cap = Line("telemetry.test", "second", recent).Length + Line("telemetry.test", "third", recent).Length + 2 * Environment.NewLine.Length;
         CrashReports.TrimTelemetry(file, "crash.test", state.Store, Now, cap);
-        var kept = File.ReadAllLines(file).Select(l => (string)JsonNode.Parse(l)!["body"]!);
-        Assert.Equal(["second", "third"], kept);
-        Assert.Equal(["e0000001"], Rows(player).Select(r => (string)r[0]));  // the older crash line is past its 30 days
+        Assert.Equal("second,third", Bodies());
     }
 
     [Fact]

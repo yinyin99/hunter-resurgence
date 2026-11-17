@@ -17,14 +17,15 @@ public static class CrashReports
     sealed record Image(ulong Start, ulong Size, string Name);
     sealed record Entry(string Id, long Account, string Kind, long? Time, string? Module, string[] Frames, string Message, string? Release);
 
-    // a Windows path (drive or share, folders that may hold spaces, then the file name): only the file name stays
-    static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*([^\\/:*?""<>|\s]*)", RegexOptions.Compiled);
+    // a Windows path (drive or share, folders that may hold spaces, then the file name): only the file name stays. A path that ends in a
+    // folder (no dot in its last part) is replaced whole, so a profile folder's user name never stays
+    static readonly Regex InstallPath = new(@"(?:[A-Za-z]:|\\\\[^\\/:*?""<>|\s]+)[\\/](?:[^\\/:*?""<>|\r\n]+[\\/])*(?:([^\\/:*?""<>|\s]*\.[^\\/:*?""<>|\s]*)|[^\\/:*?""<>|\r\n.,;]*)", RegexOptions.Compiled);
     static readonly Regex Id = new(@"\A[0-9A-Za-z-]{8,64}\z", RegexOptions.Compiled);
 
-    /// <summary>The text with every install path reduced to its file name, cut to 300 characters.</summary>
+    /// <summary>The text with every install path reduced to its file name (a folder path becomes `&lt;path&gt;`), cut to 300 characters.</summary>
     public static string Clean(string text)
     {
-        var s = InstallPath.Replace(text, "$1");
+        var s = InstallPath.Replace(text, m => m.Groups[1].Success ? m.Groups[1].Value : "<path>");
         return s.Length > MaxText ? s[..MaxText] : s;
     }
 
@@ -109,7 +110,7 @@ public static class CrashReports
         var function = T(f["function"]) is { } fn ? Clean(fn) : null;
         if (image is not null)
             return (function is not null ? $"{image.Name}!{function}" : $"{image.Name}+{addr!.Value - image.Start:x}", image.Name);
-        return (function ?? ((T(f["module"]) ?? T(f["package"])) is { } m ? Clean(m).Split('\\', '/')[^1] : T(f["instruction_addr"]) ?? "?"), null);
+        return (function ?? ((T(f["module"]) ?? T(f["package"])) is { } m ? Clean(m).Split('\\', '/')[^1] : Clean(T(f["instruction_addr"]) ?? "?")), null);
     }
 
     // an abnormal session is a run that ended without a crash report or a clean exit: the account is its `did` when that is a user id
@@ -131,7 +132,8 @@ public static class CrashReports
             added += con.Exec("INSERT OR IGNORE INTO crash_reports (account_id, event_id, ts, kind, module, frames, message, release)"
                               + " SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8 WHERE EXISTS (SELECT 1 FROM accounts WHERE id = ?1)",
                               e.Account, e.Id, ts, e.Kind, e.Module, Py.Dumps(new JsonArray([.. e.Frames.Select(f => (JsonNode?)f)]), compact: true), e.Message, e.Release);
-            con.Exec("DELETE FROM crash_reports WHERE account_id = ?1 AND n <= (SELECT n FROM crash_reports WHERE account_id = ?1 ORDER BY n DESC LIMIT 1 OFFSET ?2)", e.Account, PerAccount);
+            // the cap is per kind: a flood of harmless errors never pushes out a fatal report or an abnormal session
+            con.Exec("DELETE FROM crash_reports WHERE account_id = ?1 AND kind = ?3 AND n <= (SELECT n FROM crash_reports WHERE account_id = ?1 AND kind = ?3 ORDER BY n DESC LIMIT 1 OFFSET ?2)", e.Account, PerAccount, e.Kind);
         }
         return added;
     }
@@ -154,16 +156,18 @@ public static class CrashReports
             .Select(r => new Row((long)r[0], (string)r[1], r[2] as string, JsonNode.Parse((string)r[3])!.AsArray().Select(f => (string)f!).ToArray(), (string)r[4], r[5] as string))];
     }
 
-    /// <summary>When telemetry.jsonl is over `cap` bytes: rewrite it with the newest lines of every host but the crash host that fit, once, at start. The
+    /// <summary>Rewrite telemetry.jsonl without its crash host lines and, when it is over `cap` bytes, with only the newest lines that fit, once, at start. The
     /// crash host's lines (the whole body of every report, install paths and device included) go through <see cref="Keep"/> first when they are younger than
-    /// 30 days and there is a store, so what the old file holds is not lost.</summary>
+    /// 30 days and there is a store, so what the old file holds is not lost. A file with nothing to drop is left as it is.</summary>
     public static void TrimTelemetry(string path, string crashHost, Store? store, long now, long cap = TelemetryCap)
     {
-        if (!File.Exists(path) || new FileInfo(path).Length <= cap) return;
+        if (!File.Exists(path)) return;
         var kept = new Queue<string>();
         long size = 0;
+        var read = 0;
         foreach (var line in File.ReadLines(path))
         {
+            read++;
             JsonObject? o;
             try { o = JsonNode.Parse(line) as JsonObject; }
             catch (System.Text.Json.JsonException) { continue; }
@@ -180,6 +184,7 @@ public static class CrashReports
             while (size > cap && kept.Count > 0)
                 size -= kept.Dequeue().Length + Environment.NewLine.Length;
         }
+        if (kept.Count == read) return;
         var tmp = path + ".trim";
         File.WriteAllLines(tmp, kept, new UTF8Encoding(false));
         File.Move(tmp, path, overwrite: true);

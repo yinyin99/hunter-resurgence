@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Server;
 using static Resurgence.Server.Tests.Fixtures;
 
@@ -130,14 +131,14 @@ public class ProblemReportTests : StateTestBase, IAsyncLifetime
     [Fact]
     public void TestAKeptReportSendsOneAlertWithAccountHandleReferenceTriggerAndSize()
     {
-        var texts = new List<string>();
-        var reports = new ProblemReports(state, tmp) { MinFreeBytes = 0, Alert = texts.Add };
+        var alerts = new List<(long, string, string, string, long)>();
+        var reports = new ProblemReports(state, tmp) { MinFreeBytes = 0, Alert = (a, h, r, t, b) => alerts.Add((a, h, r, t, b)) };
         var zip = Zip();
         var (refused, reference) = reports.Save(player, "nowindow", zip, Now);
         Assert.Null(refused);
-        Assert.Equal($"Problem report: account {player}, player, {reference}, trigger nowindow, {(zip.Length + 1023) / 1024} KB. Run: review reports", Assert.Single(texts));
+        Assert.Equal((player, "player", reference!, "nowindow", (long)zip.Length), Assert.Single(alerts));
         reports.Save(player, "nowindow", zip, Now);  // again: still one alert
-        Assert.Single(texts);
+        Assert.Single(alerts);
     }
 
     [Fact]
@@ -199,5 +200,40 @@ public class ProblemReportTests : StateTestBase, IAsyncLifetime
         var diagnostics = await server.Http.GetFromJsonAsync<JsonObject>($"http://localhost/admin/diagnostics?account={player}", ct);
         Assert.Equal(["crashes", "noDisconnect", "short", "event30"], diagnostics!.Select(p => p.Key));
         Assert.Equal(HttpStatusCode.NotFound, (await server.Http.GetAsync("http://localhost/admin/diagnostics?account=nobody", ct)).StatusCode);
+    }
+
+    [Fact]
+    public async Task TestADeleteWaitsForAReportBeingReceived()
+    {
+        var live = server.Services.GetRequiredService<ProblemReports>();
+        Assert.Null(live.Begin(player, "manual", 1, Now));
+        Task<Reply> Delete() => server.SendAsync("POST", "web.test", "/account/delete",
+            [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], "confirm=delete"u8.ToArray());
+        Assert.Equal(429, (await Delete()).Status);
+        Assert.True(state.Store.AccountExists(player));
+        live.End(player);
+        Assert.Equal(200, (await Delete()).Status);
+    }
+
+    [Fact]
+    public async Task TestARestoreThatGivesTheAccountAnotherUserIdTakesItsReportsAndCrashReportsAlong()
+    {
+        var reference = (string)(await Send(Zip())).Body["reference"]!;
+        using (var con = state.Store.Open())
+            con.Exec("INSERT INTO crash_reports (account_id, event_id, ts, kind, frames, message) VALUES (?, 'e0000001', ?, 'fatal', '[]', 'm')", player, Now);
+        var up = await server.SendAsync("POST", "web.test", "/account/restore",
+            [("Content-Type", "application/zip"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], File.ReadAllBytes(TestZip.Own().Write(tmp, "mine.zip")));
+        Assert.Equal(200, up.Status);
+        long id;
+        using (var con = state.Store.Open(player))
+            id = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+        Assert.Equal("restored", new Uploads(state, tmp).Approve(id).Kind);
+        Assert.False(state.Store.AccountExists(player));  // the backup's user id is the account's now
+        var reports = new ProblemReports(state, tmp);
+        Assert.NotNull(reports.PathOf($"p1001-{reference[^8..]}"));
+        Assert.Null(reports.PathOf(reference));
+        Assert.False(Directory.Exists(Dir(player)));
+        using var check = state.Store.Open();
+        Assert.Equal(1L, (long)check.Scalar("SELECT COUNT(*) FROM crash_reports WHERE account_id = 1001")!);
     }
 }

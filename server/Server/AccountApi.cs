@@ -48,6 +48,7 @@ public static class AccountApi
     {
         if (app.Services.GetService<Uploads>() is not { } uploads || app.Services.GetService<Claims>() is not { } claims) return;
         var state = game.State!;
+        var reports = app.Services.GetRequiredService<ProblemReports>();
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
@@ -179,7 +180,7 @@ public static class AccountApi
                 var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
                 if (!form.TryGetValue("confirm", out var c) || c[0] != "delete")
                     return Refuse(400, "invalid", "Deleting needs confirm=delete.");
-                if (uploads.Busy(account)) return Refuse(429, "busy", "An upload of yours is still being processed. Try again in a minute.");
+                if (uploads.Busy(account) || reports.Busy(account)) return Refuse(429, "busy", "An upload or report of yours is still being processed. Try again in a minute.");
                 uploads.Delete(account);
                 return Json(200, new JsonObject { ["status"] = "deleted", ["message"] = "Your account and all its data were deleted." },
                             $"{SignIn.SessionCookie}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
@@ -188,7 +189,6 @@ public static class AccountApi
             .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out.")
             .Produces(200, contentType: "application/json");
 
-        var reports = app.Services.GetRequiredService<ProblemReports>();
         group.MapPost("/report", async (HttpContext ctx) =>
             {
                 NoBody(ctx);  // a zip is never buffered for the log
@@ -205,7 +205,7 @@ public static class AccountApi
                     {
                         await ctx.Request.Body.CopyToAsync(zip);
                     }
-                    catch (BadHttpRequestException)
+                    catch (BadHttpRequestException e) when (e.StatusCode == StatusCodes.Status413PayloadTooLarge)
                     {
                         return Refuse(413, "too_large", "A problem report is at most 6 MB.");
                     }
