@@ -728,7 +728,7 @@ public sealed partial class State
             if (d["extra"]?["ammo"] is JsonObject ammo)
                 ballistics[Py.L(d["id"])] = ammo;
             if (d["extra"]?["weapon"]?["attachments"] is JsonArray att)
-                installFit[Py.L(d["id"])] = [.. att.Select(a => (string?)a).Where(a => a is not null && itemIds.ContainsKey(a)).Select(a => itemIds[a!])];
+                installFit[Py.L(d["id"])] = [.. att.Where(Py.IsStr).Select(a => (string)a!).Where(itemIds.ContainsKey).Select(a => itemIds[a])];
         }
         foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
             if (!items.ContainsKey(Py.L(i!["id"])))
@@ -2026,7 +2026,16 @@ public sealed partial class State
             con.Exec($"DELETE FROM items WHERE account_id = $a AND slot = 0 AND json_extract(metadata, '$.{CLONE}') IS NOT NULL AND EXISTS (SELECT 1 FROM items o WHERE o.account_id = $a AND o.item_id = items.item_id AND o.slot = 0 AND o.guid < items.guid)");
         var (ammo, boxes) = facts.FreeAmmo();
         if (UnlimitedAmmo)  // the lodge shows one stack of each ammunition as the unlimited one, and the page copies a stack only when it is the only one in the lodge: more boxes would only stop the copying
+        {
             boxes = 1;
+            // more lodge stacks of one ammunition (older free boxes, a restore, a purchase) go into the oldest one, their units added
+            foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot = 0 AND units IS NOT NULL GROUP BY item_id HAVING COUNT(*) > 1").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
+            {
+                const string Oldest = "(SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL)";
+                con.Exec($"UPDATE items SET units = (SELECT SUM(MAX(units, 0)) FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL) WHERE account_id = $a AND guid = {Oldest}", id);
+                con.Exec($"DELETE FROM items WHERE account_id = $a AND item_id = ?1 AND slot = 0 AND units IS NOT NULL AND guid > {Oldest}", id);
+            }
+        }
         foreach (var id in ammo)
         {
             if (Box(id) is not { } box)
@@ -2058,7 +2067,8 @@ public sealed partial class State
     /// <summary>With unlimited ammunition, at a launch, inside its transaction: the account owns a full box of every ammunition that fits a weapon it owns (a weapon with none could not be equipped, and ammunition is not sold),
     /// as a row of its own that the connect that follows lists; only an ammunition the game has a definition for (a recorded one or the install's ballistics, as a restore needs). An equipped weapon (slots 2 to 4) whose ammunition slot
     /// (the weapon's slot plus 6) is empty gets a copy of its first fitting ammunition there, marked as a copy so the lodge keeps its own stack: a shot with an empty ammunition slot closes the game.
-    /// Last, every ammunition the account owns has a stack in the lodge (slot 0), also when its only box is equipped: the page lists and copies only what the lodge holds.</summary>
+    /// Last, every ammunition the account owns has a stack in the lodge (slot 0), also when its only box is equipped: the page lists and copies only what the lodge holds. That stack is marked as a copy,
+    /// so the next launch removes it once an older stack is back in the lodge (<see cref="RefillAmmo"/>).</summary>
     void ArmWeapons(Db con)
     {
         var rows = con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Id: Convert.ToInt64(r[0]), Slot: Convert.ToInt64(r[1]))).ToList();
@@ -2074,9 +2084,9 @@ public sealed partial class State
             if (!filled.Contains(slot + 6) && AmmoFor(weapon).Where(owned.Contains).ToList() is [var ammo, ..] && Box(ammo) is { } box)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                          NextId(con, "items", "guid"), ammo, slot + 6, Py.Dumps(new JsonObject { [CLONE] = "launch" }), box);
-        foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot <> 23 GROUP BY item_id HAVING MAX(slot = 0) = 0").Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
+        foreach (var id in con.Rows("SELECT item_id FROM items WHERE account_id = $a AND slot <> ? GROUP BY item_id HAVING MAX(slot = 0) = 0", PLACED_SLOT).Select(r => Convert.ToInt64(r[0])).Where(IsAmmo).ToList())
             if (Box(id) is { } lodgeBox)
-                con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', ?)", NextId(con, "items", "guid"), id, lodgeBox);
+                con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, ?, ?)", NextId(con, "items", "guid"), id, Py.Dumps(new JsonObject { [CLONE] = "launch" }), lodgeBox);
     }
 
     JsonObject HarvestPage(JsonObject e3, JsonObject spawn, JsonNode? expeditionId, JsonNode? reserveId, JsonNode? score, string? scoreType) => new()

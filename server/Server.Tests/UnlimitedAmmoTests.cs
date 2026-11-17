@@ -77,12 +77,12 @@ public class UnlimitedAmmoTests : StateTestBase
     }
 
     [Fact]
-    public void EveryLaunchFillsEveryOwnedAmmunitionStackAndNeverLowersALargerOne()
+    public void EveryLaunchMergesTheLodgeStacksOfAnAmmunitionIntoTheOldestAndNeverLowersALargerOne()
     {
         Make(true);
         SetStacks(3, 0, 25);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal("10 10 25", Stacks());
+        Assert.Equal("28", Stacks());  // one lodge stack: the page copies only the only one
     }
 
     [Fact]
@@ -157,7 +157,7 @@ public class UnlimitedAmmoTests : StateTestBase
         Assert.Equal("3 4 10 10 10", Stacks());  // the first went to the backpack, the others stayed in the lodge
         Assert.All(Items().Where(i => (long)i.Value!["item_id"]! == Ammo), i => Eq("{}", i.Value!["metadata"]));
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
-        Assert.Equal("10 10 10", Stacks());  // the two stacks it owns stay, and the box in the backpack
+        Assert.Equal("10 10", Stacks());  // the copies left in the lodge go, the two stacks it owns become one (filled), the box in the backpack stays
         Eq("1", Items()[Py.Str(reply["new_item_1"])]!["slot"]);
     }
 
@@ -233,6 +233,9 @@ public class UnlimitedAmmoTests : StateTestBase
         Assert.Equal("8:10 0:10", Held(Ammo));
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         Assert.Equal("8:10 0:10", Held(Ammo));  // never twice
+        SetSlot(Ammo, 0);  // the equipped box is put back: the lodge stack the launch added is a copy and goes
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Assert.Equal("0:10", Held(Ammo));
         Make(false);
         Assert.True(state.GrantItems(ME, Ammo, 1));
         SetSlot(Ammo, 8);
