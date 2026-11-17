@@ -274,6 +274,45 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal("Test Camp", (string)Json(reply)[0]!["name"]!);
     }
 
+    Task<Reply> Online() => Send("GET", "web.test", "/stats/online");
+
+    static string Counts(Reply r) => $"{Json(r)["players"]}/{Json(r)["games"]}";
+
+    [Fact]
+    public async Task TestTheOnlineCountsFollowTheHeartbeatsOfTheLastTwoMinutesAndAreKeptFor30Seconds()
+    {
+        var none = await Online();  // no cookie, no token
+        Assert.Equal(("stats", 200, "0/0"), (none.Source, none.Status, Counts(none)));
+        Assert.Contains(("Cache-Control", "public, max-age=30"), none.Headers);
+        Eq("""{"players": 0, "games": 0}""", Json(none));
+
+        await ReadyHost();  // a hunt and a game, the host's heartbeat now
+        Assert.Equal("0/0", Counts(await Online()));  // the answer of a moment ago
+        now += 60;
+        Assert.Equal("1/1", Counts(await Online()));  // a heartbeat 1 minute old counts
+        now += 120;
+        Assert.Equal("0/0", Counts(await Online()));  // 3 minutes old: the hunt and its game have gone quiet
+    }
+
+    [Fact]
+    public async Task TestTheOnlineCountsCountAccountsOnceAndOnlyTheGamesStillOpen()
+    {
+        await ReadyHost();
+        var guestSession = Joined(await Join(GUEST));
+        await Beat(guestSession, GUEST, "");
+        now += 40;
+        Assert.Equal("2/1", Counts(await Online()));  // two players in one game
+
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'guest'");
+        now += 40;
+        Assert.Equal("1/1", Counts(await Online()));  // a banned account is not counted
+
+        Assert.Equal(200, (await Send("POST", Api, "/v1/Launch/start", HOST, Start)).Status);  // the host's own hunt ends its game
+        now += 40;
+        Assert.Equal("1/0", Counts(await Online()));
+    }
+
     [Fact]
     public async Task TestTheAddressIsTheLastForwardedOneOfATrustedProxyAndNeverTheProxysOwn()
     {
