@@ -215,4 +215,17 @@ public sealed class ProblemReportTests : UiContext
         cut.Find("#report-send").Click();
         cut.WaitForAssertion(() => Assert.Equal(1, bridge.Sent));
     }
+
+    [Fact]
+    public void TheReportFromTheDoneWindowReplacesIt()
+    {
+        Use(new Bridge("ask", Failed));
+        var modal = Services.GetRequiredService<ModalService>();
+        var host = Render<ModalHost>();
+        modal.Show<GameStartedModal>();
+        host.WaitForElement("#done-report-link").Click();
+        host.WaitForElement("#report-files li");
+        Assert.Empty(host.FindAll(".done"));          // the Done window is gone, not stacked under the report
+        Assert.Single(host.FindAll(".dialog-card"));
+    }
 }
