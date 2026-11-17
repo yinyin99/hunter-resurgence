@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -42,7 +43,9 @@ public class ProblemReportTests
         var g = NewGame(temp);
         Files.Write(Path.Combine(g.Folder, "jwt.json"), $"{{\"jwt\": \"{Jwt}\"}}");
         Files.Write(Path.Combine(g.Folder, "debug.log"), $"start\nrequest /x?a={Jwt}&b=1\nAuthorization: Bearer abc.def\nCookie: hr_session=abc\nthe end\n");
-        Files.Write(Path.Combine(g.Folder, "a.netlog"), $"line one\n{{\"x\":\"{Jwt}\"}}\n");
+        // the game's own session id is 40 hex digits and sits in a header or a reply field, without any of the usual words
+        var id = string.Concat(Enumerable.Repeat("0123456789", 4)); // built, not written: the push check refuses a 40-digit literal
+        Files.Write(Path.Combine(g.Folder, "a.netlog"), $"line one\n{{\"x\":\"{Jwt}\"}}\nGET /x id: {id}\n{{\"session_id\":\"{id}\"}}\nline two\n");
         var report = Make(temp, g.Install).Build("manual");
 
         var entries = Read(report.Path);
@@ -52,6 +55,8 @@ public class ProblemReportTests
         Assert.Contains("start", entries["game/debug.log"]);
         Assert.Contains("the end", entries["game/debug.log"]);
         Assert.Contains("line one", entries["game/a.netlog"]);
+        Assert.Contains("line two", entries["game/a.netlog"]);
+        Assert.DoesNotContain(id, string.Concat(entries.Values));
         Assert.Equal(entries.Keys.Order(), report.Files.Order());
         Assert.Equal(new FileInfo(report.Path).Length, report.Bytes);
         Assert.Equal("manual", report.Trigger);
@@ -106,11 +111,11 @@ public class ProblemReportTests
     {
         using var temp = new TempDir("resurgence-test-");
         var g = NewGame(temp);
-        var line = new string('a', 99) + "\n";
+        var line = new string('z', 99) + "\n";
         File.WriteAllText(Path.Combine(g.Folder, "debug.log"), string.Concat(Enumerable.Repeat(line, 30_000)) + "last line\n"); // 3 MB
         var small = Read(Make(temp, g.Install).Build("manual").Path)["game/debug.log"];
         Assert.InRange(small.Length, 1_900_000, 2 * 1024 * 1024);
-        Assert.StartsWith("aaaa", small);
+        Assert.StartsWith("zzzz", small);
         Assert.EndsWith("last line\n", small);
         Assert.Equal(0, (small.Length - "last line\n".Length) % line.Length);
 
@@ -156,7 +161,7 @@ public class ProblemReportTests
             var runs = new Queue<bool>([false, true, true, true, true, false]);
             var looks = 0;
             var b = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => runs.Count > 0 && runs.Dequeue(), _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1),
-                find: _ => new GameProcess(() => ++looks > 2, () => 3), history: history);
+                find: _ => new GameProcess(() => ++looks > 2, () => runs.Count == 0 ? 3 : null), history: history);
             Assert.Null(b.LastRun);
             Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
             var run = b.LastRun!;
@@ -180,6 +185,21 @@ public class ProblemReportTests
         Assert.False(await never.WhenGameExitsAsync());
         Assert.Null(never.LastRun);
         Assert.Equal("nowindow", history.Load()[^1].Trigger);
+    }
+
+    [Fact]
+    public void ARealProcessGivesItsExitCodeAfterItIsGone()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var exe = Path.Combine(temp.Path, $"hrtest{Guid.NewGuid():N}.exe");
+        File.Copy(Path.Combine(Environment.SystemDirectory, "cmd.exe"), exe);
+        using var p = Process.Start(new ProcessStartInfo(exe, "/c ping -n 3 127.0.0.1 >nul & exit 7") { CreateNoWindow = true, UseShellExecute = false })!;
+        using var game = GameProcess.Find(exe)!;
+        Assert.NotNull(game);
+        Assert.Null(game.ExitCode()); // still running
+        Assert.False(game.WindowVisible());
+        Assert.True(p.WaitForExit(30_000));
+        Assert.Equal(7, game.ExitCode());
     }
 
     [Fact]

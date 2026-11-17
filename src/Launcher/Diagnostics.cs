@@ -26,6 +26,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
+    static readonly TimeSpan WmiTimeout = TimeSpan.FromSeconds(10);
     const string Removed = "[line removed: it may hold a credential]";
 
     /// <summary>Game launchers, boosters and overlays that hook into or squeeze games; running ones are named in system.txt. Data: a new one is a new line.</summary>
@@ -39,8 +40,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         ("GameOverlayUI", "Steam overlay"), ("ReShade", "ReShade"), ("AutoHotkey", "AutoHotkey"), ("MsiDragonCenter", "MSI Center"), ("ArmouryCrate.Service", "ASUS Armoury Crate"),
     ];
 
-    /// <summary>A line that looks like it carries a credential (a token, a cookie, a bearer or authorization header, a JWT) is replaced as a whole.</summary>
-    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|hr_session|secret|password", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, session, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id) is replaced as a whole.</summary>
+    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|session|secret|password|\b[0-9a-f]{32,}\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : l));
 
@@ -157,13 +158,13 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
 
     static IEnumerable<string> Antivirus()
     {
-        using var s = new ManagementObjectSearcher(@"root\SecurityCenter2", "SELECT displayName FROM AntiVirusProduct");
+        using var s = new ManagementObjectSearcher(@"root\SecurityCenter2", "SELECT displayName FROM AntiVirusProduct") { Options = { Timeout = WmiTimeout } };
         foreach (var o in s.Get()) using (o) if (o["displayName"] is string n) yield return n;
     }
 
     static IEnumerable<string> Gpu()
     {
-        using var s = new ManagementObjectSearcher("SELECT Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController");
+        using var s = new ManagementObjectSearcher("SELECT Name, DriverVersion, CurrentHorizontalResolution, CurrentVerticalResolution, CurrentRefreshRate FROM Win32_VideoController") { Options = { Timeout = WmiTimeout } };
         foreach (var o in s.Get())
             using (o) yield return $"Graphics: {o["Name"]}, driver {o["DriverVersion"]}, screen {o["CurrentHorizontalResolution"]}x{o["CurrentVerticalResolution"]} at {o["CurrentRefreshRate"]} Hz";
     }
