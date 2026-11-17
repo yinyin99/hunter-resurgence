@@ -60,7 +60,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     }
 
     /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
-    /// to a minute (false: it never appeared), then until it is gone (true). ponytail: polls every <c>poll</c> (1 s), a process handle would need the start to keep it.</summary>
+    /// to a minute (false: it never appeared), then until it is gone (true) or the process found has exited. It also records the run (<see cref="LastRun"/>). ponytail: polls every <c>poll</c> (1 s); Steam starts the game, so there is no start to keep a handle from, and the process is looked up by name.</summary>
     public async Task<bool> WhenGameExitsAsync()
     {
         if (install() is not { } g) return false;

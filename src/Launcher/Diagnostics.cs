@@ -40,8 +40,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         ("GameOverlayUI", "Steam overlay"), ("ReShade", "ReShade"), ("AutoHotkey", "AutoHotkey"), ("MsiDragonCenter", "MSI Center"), ("ArmouryCrate.Service", "ASUS Armoury Crate"),
     ];
 
-    /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, session, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id) is replaced as a whole.</summary>
-    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|session|secret|password|\b[0-9a-f]{32,}\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
+    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     public static string Scrub(string text) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : l));
 
