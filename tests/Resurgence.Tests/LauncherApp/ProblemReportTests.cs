@@ -44,15 +44,12 @@ public class ProblemReportTests
     [InlineData("D:/Users/jane/x", "D:/Users/<user>/x")]
     public void TheProfileFolderNameIsReplacedAndTheRestOfTheLineStays(string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line));
 
-    [Fact]
-    public void TheAccountNameAndTheProfilePathAreReplaced()
-    {
-        var text = Diagnostics.Scrub($"{Environment.GetEnvironmentVariable("USERPROFILE")}\\a.txt by {Environment.UserName}");
-        Assert.DoesNotContain(Environment.UserName, text, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("<user>", text);
-        Assert.DoesNotContain("<<", text);
-        Assert.DoesNotContain(Environment.UserName, Diagnostics.Scrub(Encoding.Latin1.GetString(Encoding.UTF8.GetBytes("by " + Environment.UserName))), StringComparison.OrdinalIgnoreCase);
-    }
+    [Theory]
+    [InlineData("Jane Doe", @"C:\Users\Jane Doe", "\"C:\\Users\\Jane Doe\", by Jane Doe <jane doe@x>", "\"C:\\Users\\<user>\", by <user> <<user>@x>")]
+    [InlineData("José", @"D:\Profiles\José", "José at D:\\Profiles\\José\\x, Joséphine", "<user> at D:\\Profiles\\<user>\\x, Joséphine")]
+    [InlineData("José", @"D:\Profiles\José", "Jos\u00c3\u00a9 started", "<user> started")]
+    [InlineData("user", @"C:\Users\user", "C:\\Users\\user\\a user", "C:\\Users\\<user>\\a <user>")]
+    public void TheOwnNameAndProfilePathAreReplaced(string name, string profile, string line, string expected) => Assert.Equal(expected, Diagnostics.Scrub(line, Diagnostics.OwnNames(name, profile)));
 
     [Fact]
     public void TheEventQueryIsValidForWindows()
