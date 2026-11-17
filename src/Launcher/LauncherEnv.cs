@@ -19,8 +19,6 @@ public sealed class LauncherEnv
     public string Version { get; } =
         (typeof(LauncherEnv).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0").Split('+')[0];
 
-    uint account;
-
     public LauncherEnv(string? prefsPath = null)
     {
         PrefsPath = prefsPath ?? Prefs.DefaultPath;
@@ -34,7 +32,7 @@ public sealed class LauncherEnv
     public void Detect()
     {
         SteamPath = Steam.InstallPath();
-        account = Steam.ActiveAccount();
+        var account = Steam.ActiveAccount();
         SteamId64 = account == 0 ? null : Steam.SteamId64(account);
         Install = GameFinder.Find(Settings, Prefs.GameFolder, Environment.GetCommandLineArgs().Skip(1), SteamPath);
     }

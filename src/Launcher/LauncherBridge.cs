@@ -17,7 +17,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
         () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
-        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, clearBrowser: MainWindow.ClearBrowserCache)
+        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, appData: GameFiles.AppData,
+        pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -37,13 +38,13 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     public bool IsSteam => rest.IsSteam;
     /// <summary>
-    /// game: the install folder; logs: the client's folder, where the game writes its logs (the exe's own folder); screenshots: <c>Pictures\&lt;product&gt;\Screenshots</c>, or when the game
+    /// game: the game folder; logs: the client's folder, where the game writes its logs (the exe's own folder); screenshots: <c>Pictures\&lt;product&gt;\Screenshots</c>, or when the game
     /// has made none yet, the nearest folder above it that exists. A folder that does not exist (and no game found) is <c>Settings.NoFolder</c>.
     /// </summary>
     public Result OpenFolder(string kind)
     {
-        if (install() is not { } g) return Result.Fail("Settings.NoFolder");
-        var shots = Path.Combine(pictures ?? Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), Product(g));
+        if (install() is not { } g || openFolder is null || pictures is null) return Result.Fail("Settings.NoFolder");
+        var shots = Path.Combine(pictures, Product(g));
         var dir = kind switch
         {
             "game" => g.Folder,
@@ -52,7 +53,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             _ => null,
         };
         if (dir is null || !Directory.Exists(dir)) return Result.Fail("Settings.NoFolder");
-        (openFolder ?? LauncherEnv.OpenFolder)(dir);
+        openFolder(dir);
         return Result.Success;
     }
 
@@ -77,7 +78,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             _ = ClearBrowser(clearBrowser);
             return Result.Success;
         }
-        if (kind != "game") return Result.Fail("Settings.CacheFailed");
+        if (kind != "game" || appData is null) return Result.Fail("Settings.CacheFailed");
         if (install() is not { } g) return Result.Fail("Settings.NoFolder");
         if (isRunning(g.ClientExe)) return Result.Fail("Settings.CacheGameRunning");
         var failed = false;
@@ -85,7 +86,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             foreach (var profile in new[] { "", "Default" })
                 foreach (var name in CacheFolders)
                 {
-                    var dir = Path.Combine(appData ?? GameFiles.AppData, Product(g), root, profile, name);
+                    var dir = Path.Combine(appData, Product(g), root, profile, name);
                     try { if (Directory.Exists(dir)) Directory.Delete(dir, true); }
                     catch (Exception e) when (e is IOException or UnauthorizedAccessException) { failed = true; }
                 }

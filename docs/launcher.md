@@ -219,7 +219,7 @@ A normal run has none. After a failed start the launcher sends the report by its
 | `runs.json` | the last 10 starts the launcher watched |
 | `report.json` | the trigger, the time, the launcher's version, the entries and what is missing |
 
-The game's folder is the folder of its exe (`client_exe`); it is only read.
+The folder of the game's exe (`client_exe`) is only read.
 
 **What is never in it.** `jwt.json` and anything outside the places above are never read. Every line of every file that looks like a credential (a JWT, a run of 32 or more hexadecimal digits such as the game's session id, or one of the words token, cookie, bearer, authorization, jwt, secret or password) is replaced as a whole by `[line removed: it may hold a credential]`; the other lines stay. A text in UTF-16 (a byte order mark, or a quarter of its first 4 KB zero bytes that sit on one side, as in ASCII text) is decoded first so that its lines are scrubbed too, and is stored as UTF-8; any other file keeps its bytes. The Steam sign-in, the hosts file and the launcher's session are not read at all.
 
@@ -237,7 +237,7 @@ The Settings menu's five folder and cache entries are `ILauncherBridge.OpenFolde
 
 | Entry | What it does |
 |---|---|
-| Game Folder (`game`) | opens the game's install folder (the folder that holds `client_exe`, the root of the install), not the exe's own subfolder. |
+| Game Folder (`game`) | opens the game folder, where the game is installed. When `client_exe` is in a subfolder, that is the folder above the exe's own (Logfiles opens the exe's). |
 | Logfiles (`logs`) | opens the folder of the exe, where the game writes its logs. |
 | Screenshots (`screenshots`) | opens `Pictures\<product>\Screenshots`, where the game writes its screenshots (the Pictures folder is the one Windows says). The game creates the folder with its first screenshot; until then the launcher opens the nearest folder above it that exists (`Pictures\<product>`, then Pictures) instead of failing. |
 | Clear launcher cache (`launcher`) | the launcher's own browser (WebView2) drops its disk cache and its cache storage while it runs (`ClearBrowsingDataAsync`); cookies, local storage and settings are kept. The call is not awaited: the menu answers at once, and a browser that is not up yet or fails is not reported. |

@@ -15,7 +15,7 @@ public class FolderActionTests : IDisposable
     public FolderActionTests()
     {
         game = Path.Combine(temp.Path, "common", "Client");
-        exe = Path.Combine(game, "bin", "hunter.exe");
+        exe = Path.Combine(game, "bin", "client.exe");
         appData = Path.Combine(temp.Path, "appdata");
         pictures = Path.Combine(temp.Path, "pictures");
         Directory.CreateDirectory(Path.GetDirectoryName(exe)!);
@@ -43,11 +43,11 @@ public class FolderActionTests : IDisposable
     {
         var b = Bridge();
         Assert.True(b.OpenFolder("screenshots").Ok);
-        Directory.CreateDirectory(Path.Combine(pictures, "hunter"));
+        Directory.CreateDirectory(Path.Combine(pictures, "client"));
         Assert.True(b.OpenFolder("screenshots").Ok);
-        Directory.CreateDirectory(Path.Combine(pictures, "hunter", "Screenshots"));
+        Directory.CreateDirectory(Path.Combine(pictures, "client", "Screenshots"));
         Assert.True(b.OpenFolder("screenshots").Ok);
-        Assert.Equal([pictures, Path.Combine(pictures, "hunter"), Path.Combine(pictures, "hunter", "Screenshots")], opened);
+        Assert.Equal([pictures, Path.Combine(pictures, "client"), Path.Combine(pictures, "client", "Screenshots")], opened);
     }
 
     [Fact]
@@ -64,13 +64,13 @@ public class FolderActionTests : IDisposable
     [Fact]
     public void ClearingTheGameCacheKeepsCookiesLocalStorageAndSettings()
     {
-        var profile = Path.Combine(appData, "hunter", "cache", "Default");
+        var profile = Path.Combine(appData, "client", "cache", "Default");
         string[] gone = ["Cache", "Code Cache", "GPUCache"], kept = ["Local Storage", "Network"];
         foreach (var d in gone.Concat(kept)) File.WriteAllText(Directory.CreateDirectory(Path.Combine(profile, d)).FullName + "/f", "x");
-        File.WriteAllText(Path.Combine(appData, "hunter", "cache", "Local State"), "x");
-        var beta = Path.Combine(appData, "hunter", "cache_beta", "Cache");
+        File.WriteAllText(Path.Combine(appData, "client", "cache", "Local State"), "x");
+        var beta = Path.Combine(appData, "client", "cache_beta", "Cache");
         File.WriteAllText(Directory.CreateDirectory(beta).FullName + "/f", "x");
-        var settings = Path.Combine(appData, "hunter", "settings.bin");
+        var settings = Path.Combine(appData, "client", "settings.bin");
         File.WriteAllText(settings, "x");
 
         Assert.True(Bridge().ClearCache("game").Ok);
@@ -78,7 +78,7 @@ public class FolderActionTests : IDisposable
         Assert.All(gone, d => Assert.False(Directory.Exists(Path.Combine(profile, d))));
         Assert.All(kept, d => Assert.True(File.Exists(Path.Combine(profile, d, "f"))));
         Assert.False(Directory.Exists(beta));
-        Assert.True(File.Exists(Path.Combine(appData, "hunter", "cache", "Local State")));
+        Assert.True(File.Exists(Path.Combine(appData, "client", "cache", "Local State")));
         Assert.True(File.Exists(settings));
         Assert.True(Bridge().ClearCache("game").Ok); // nothing left to clear is not a failure
     }
@@ -86,7 +86,7 @@ public class FolderActionTests : IDisposable
     [Fact]
     public void TheGameCacheIsNotClearedWhileTheGameRunsOrWithoutAGame()
     {
-        var cache = Path.Combine(appData, "hunter", "cache", "Cache");
+        var cache = Path.Combine(appData, "client", "cache", "Cache");
         Directory.CreateDirectory(cache);
         Assert.Equal("Settings.CacheGameRunning", Bridge(running: true).ClearCache("game").Error);
         Assert.True(Directory.Exists(cache));
@@ -97,7 +97,7 @@ public class FolderActionTests : IDisposable
     [Fact]
     public void ALockedGameCacheFolderIsReportedAndTheRestIsStillCleared()
     {
-        var root = Path.Combine(appData, "hunter", "cache");
+        var root = Path.Combine(appData, "client", "cache");
         Directory.CreateDirectory(Path.Combine(root, "Cache"));
         Directory.CreateDirectory(Path.Combine(root, "GPUCache"));
         // a file open without sharing keeps its folder from being deleted
