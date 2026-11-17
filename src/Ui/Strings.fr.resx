@@ -175,7 +175,7 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Les serveurs officiels ont fermé le 11 novembre 2026. L’outil de sauvegarde a enregistré votre profil : inventaire, trophées, statistiques et plus. Le serveur communautaire est ouvert.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Les serveurs officiels ont fermé le 11 novembre 2026.</value></data>
   <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31 : vérification du jeu et fonction « Signaler un problème » ajoutées</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Le launcher vérifie désormais votre jeu avant chaque chasse : version, fichiers, dossier, Steam et configuration. Si quelque chose ne va pas, il vous explique comment le corriger. Si le jeu est introuvable, choisissez son dossier dans Paramètres, Répertoire du jeu.</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>Le launcher vérifie désormais votre jeu avant chaque chasse : version, fichiers, dossier, Steam et configuration. Si quelque chose ne va pas, il vous explique comment le corriger. Si le jeu est introuvable, choisissez son dossier dans Paramètres, Répertoire du jeu. Si le jeu ne démarre pas, Paramètres, Signaler un problème nous envoie vos journaux.</value></data>
   <data name="News.Launcher031.Lead" xml:space="preserve"><value>Le launcher vérifie désormais votre jeu avant chaque chasse.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>À lire ici</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Chasser</value></data>

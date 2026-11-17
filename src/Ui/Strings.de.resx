@@ -175,7 +175,7 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen. Das Backup-Tool hat Ihr Profil gesichert: Inventar, Trophäen, Statistiken und mehr. Der Community-Server ist jetzt geöffnet.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Die offiziellen Server wurden am 11. November 2026 geschlossen.</value></data>
   <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: Spielprüfung und Funktion „Ein Problem melden“ hinzugefügt</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Der Launcher prüft jetzt vor jeder Jagd Ihr Spiel: Version, Dateien, Ordner, Steam und Einrichtung. Stimmt etwas nicht, sagt er Ihnen, wie Sie es beheben. Wird das Spiel nicht gefunden, wählen Sie seinen Ordner unter Einstellungen, Spieleverzeichnis.</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>Der Launcher prüft jetzt vor jeder Jagd Ihr Spiel: Version, Dateien, Ordner, Steam und Einrichtung. Stimmt etwas nicht, sagt er Ihnen, wie Sie es beheben. Wird das Spiel nicht gefunden, wählen Sie seinen Ordner unter Einstellungen, Spieleverzeichnis. Wenn das Spiel nicht startet, sendet Einstellungen, Ein Problem melden uns Ihre Protokolle.</value></data>
   <data name="News.Launcher031.Lead" xml:space="preserve"><value>Der Launcher prüft jetzt vor jeder Jagd Ihr Spiel.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Hier lesen</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Zur Jagd</value></data>

@@ -175,7 +175,7 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026. Narzędzie do kopii zapasowej zapisało Twój profil: ekwipunek, trofea, statystyki i więcej. Serwer społeczności jest już otwarty.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026.</value></data>
   <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: dodano sprawdzanie gry i funkcję „Zgłoś problem”</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcher sprawdza teraz Twoją grę przed każdym polowaniem: wersję, pliki, folder, Steam i konfigurację. Jeśli coś jest nie tak, podpowie, jak to naprawić. Jeśli gry nie znaleziono, wybierz jej folder w Ustawieniach, Folder gry.</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcher sprawdza teraz Twoją grę przed każdym polowaniem: wersję, pliki, folder, Steam i konfigurację. Jeśli coś jest nie tak, podpowie, jak to naprawić. Jeśli gry nie znaleziono, wybierz jej folder w Ustawieniach, Folder gry. Jeśli gra się nie uruchamia, Ustawienia, Zgłoś problem wysyła nam Twoje logi.</value></data>
   <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcher sprawdza teraz Twoją grę przed każdym polowaniem.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Przeczytaj tutaj</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Poluj</value></data>

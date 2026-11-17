@@ -175,7 +175,7 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Os servidores oficiais fecharam a 11 de novembro de 2026. A ferramenta de cópia de segurança guardou o seu perfil: inventário, troféus, estatísticas e mais. O servidor da comunidade já está aberto.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Os servidores oficiais fecharam a 11 de novembro de 2026.</value></data>
   <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: verificação do jogo e funcionalidade «Comunicar um problema» adicionadas</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>O launcher agora verifica o seu jogo antes de cada caçada: versão, ficheiros, pasta, Steam e configuração. Se algo estiver errado, diz-lhe como corrigir. Se o jogo não for encontrado, escolha a pasta dele em Definições, Pasta do jogo.</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>O launcher agora verifica o seu jogo antes de cada caçada: versão, ficheiros, pasta, Steam e configuração. Se algo estiver errado, diz-lhe como corrigir. Se o jogo não for encontrado, escolha a pasta dele em Definições, Pasta do jogo. Se o jogo não iniciar, Definições, Comunicar um problema envia-nos os seus registos.</value></data>
   <data name="News.Launcher031.Lead" xml:space="preserve"><value>O launcher agora verifica o seu jogo antes de cada caçada.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Leia aqui</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Caçar</value></data>

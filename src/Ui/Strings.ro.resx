@@ -175,7 +175,7 @@
   <data name="News.Backup.Text" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026. Instrumentul de backup v-a salvat profilul: inventar, trofee, statistici și altele. Serverul comunității este deschis acum.</value></data>
   <data name="News.Backup.Lead" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026.</value></data>
   <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: verificarea jocului și funcția „Raportează o problemă” adăugate</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcherul vă verifică acum jocul înainte de fiecare vânătoare: versiunea, fișierele, folderul, Steam și configurarea. Dacă ceva nu este în regulă, vă spune cum să remediați. Dacă jocul nu este găsit, alegeți folderul lui în Setări, Folderul jocului.</value></data>
+  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcherul vă verifică acum jocul înainte de fiecare vânătoare: versiunea, fișierele, folderul, Steam și configurarea. Dacă ceva nu este în regulă, vă spune cum să remediați. Dacă jocul nu este găsit, alegeți folderul lui în Setări, Folderul jocului. Dacă jocul nu pornește, Setări, Raportează o problemă ne trimite jurnalele dvs.</value></data>
   <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcherul vă verifică acum jocul înainte de fiecare vânătoare.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Citiți aici</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Mergeți la vânătoare</value></data>
