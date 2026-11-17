@@ -1490,8 +1490,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunde inte skickas: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gick något fel? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Skicka problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sina loggar så att vi kan åtgärda det. Inga lösenord.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Vad finns i en rapport</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sina loggar så att vi kan åtgärda det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Visa filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Skicka automatiskt</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Fråga mig varje gång</value></data>
