@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Tjenesten og kontoene kan endres eller opphøre når som helst.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Oppførselsregler</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Ikke trakasser eller fornærm andre jegere, ikke bruk en annen persons konto, ikke angrip eller overbelast tjenesten, og ikke last opp en sikkerhetskopi som ikke er din.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Ikke bruk juks, minneredigering eller endrede spillfiler.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operatøren kan suspendere kontoer som bryter disse reglene.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Selve spillet er fortsatt underlagt sin egen lisens; disse vilkårene endrer ikke det.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Hvordan dataene dine behandles, forklares på siden {0}.</value></data>

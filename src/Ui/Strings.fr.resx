@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Le service et ses comptes peuvent changer ou s’arrêter à tout moment.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Règles de conduite</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Ne harcelez pas et n’insultez pas les autres chasseurs, n’utilisez pas le compte d’une autre personne, n’attaquez pas et ne surchargez pas le service, et n’envoyez pas une sauvegarde qui n’est pas la vôtre.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>N’utilisez pas de triche, de modification de la mémoire ni de fichiers de jeu modifiés.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>L’opérateur peut suspendre les comptes qui enfreignent ces règles.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Le jeu lui-même reste soumis à sa propre licence ; ces conditions ne la modifient pas.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>La façon dont vos données sont traitées est expliquée sur la page {0}.</value></data>

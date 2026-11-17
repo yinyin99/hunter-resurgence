@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Palvelu ja sen tilit voivat muuttua tai loppua milloin tahansa.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Käyttäytymissäännöt</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Älä häiritse tai loukkaa muita metsästäjiä, käytä toisen henkilön tiliä, hyökkää palvelua vastaan tai kuormita sitä liikaa, äläkä lähetä varmuuskopiota, joka ei ole sinun.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Älä käytä huijauksia, muistin muokkausta äläkä muokattuja pelitiedostoja.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operaattori voi jäädyttää tilit, jotka rikkovat näitä sääntöjä.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Peli itse pysyy oman lisenssinsä alaisena; nämä ehdot eivät muuta sitä.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Tietojesi käsittelystä kerrotaan sivulla {0}.</value></data>

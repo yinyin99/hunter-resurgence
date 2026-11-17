@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Storitev in njeni računi se lahko kadar koli spremenijo ali prenehajo.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Pravila vedenja</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Ne nadlegujte in ne žalite drugih lovcev, ne uporabljajte računa druge osebe, ne napadajte in ne preobremenjujte storitve ter ne nalagajte varnostne kopije, ki ni vaša.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Ne uporabljajte goljufij, urejanja pomnilnika ali spremenjenih datotek igre.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operater lahko začasno onemogoči račune, ki kršijo ta pravila.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Igra sama ostaja pod svojo licenco; ti pogoji je ne spreminjajo.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Kako ravnamo z vašimi podatki, je razloženo na strani {0}.</value></data>

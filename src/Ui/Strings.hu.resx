@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>A szolgáltatás és a fiókok bármikor megváltozhatnak vagy megszűnhetnek.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Viselkedési szabályok</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Ne zaklass és ne sértegess más vadászokat, ne használd más fiókját, ne támadd meg és ne terheld túl a szolgáltatást, és ne tölts fel olyan mentést, amely nem a tiéd.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Ne használj csalásokat, memóriaszerkesztést vagy módosított játékfájlokat.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Az üzemeltető felfüggesztheti a szabályokat megszegő fiókokat.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Maga a játék a saját licence alatt marad; ezek a feltételek ezen nem változtatnak.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Az adataid kezelését a(z) {0} oldal ismerteti.</value></data>

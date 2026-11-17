@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Der Dienst und seine Konten können sich jederzeit ändern oder eingestellt werden.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Verhaltensregeln</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Belästigen oder beleidigen Sie keine anderen Jäger, nutzen Sie nicht das Konto einer anderen Person, greifen Sie den Dienst nicht an und überlasten Sie ihn nicht, und laden Sie kein Backup hoch, das nicht Ihnen gehört.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Verwenden Sie keine Cheats, keine Speicherbearbeitung und keine veränderten Spieldateien.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Der Betreiber kann Konten sperren, die gegen diese Regeln verstoßen.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Das Spiel selbst bleibt unter seiner eigenen Lizenz; diese Bedingungen ändern daran nichts.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Wie mit Ihren Daten umgegangen wird, steht auf der Seite {0}.</value></data>

@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>El servicio y sus cuentas pueden cambiar o terminar en cualquier momento.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Normas de conducta</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>No acoses ni insultes a otros cazadores, no uses la cuenta de otra persona, no ataques ni sobrecargues el servicio y no subas una copia de seguridad que no sea tuya.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>No uses trampas, edición de memoria ni archivos de juego modificados.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>El operador puede suspender las cuentas que incumplan estas normas.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>El juego en sí sigue bajo su propia licencia; estos términos no la modifican.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Cómo se tratan tus datos se explica en la página {0}.</value></data>

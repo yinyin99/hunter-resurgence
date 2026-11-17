@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Služba a její účty se mohou kdykoli změnit nebo skončit.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Pravidla chování</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Neobtěžujte ani neurážejte ostatní lovce, nepoužívejte cizí účet, neútočte na službu ani ji nepřetěžujte a nenahrávejte zálohu, která vám nepatří.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Nepoužívejte cheaty, úpravy paměti ani upravené herní soubory.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operátor může pozastavit účty, které tato pravidla porušují.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Samotná hra zůstává pod vlastní licencí; tyto podmínky ji nemění.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Jak se nakládá s vašimi údaji, vysvětluje stránka {0}.</value></data>

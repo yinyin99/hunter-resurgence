@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Hizmet ve hesapları herhangi bir zamanda değişebilir veya sona erebilir.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Davranış kuralları</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Diğer avcılara taciz veya hakaret etmeyin, başkasının hesabını kullanmayın, hizmete saldırmayın veya onu aşırı yüklemeyin, size ait olmayan bir yedek yüklemeyin.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Hile, bellek düzenleme veya değiştirilmiş oyun dosyaları kullanmayın.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operatör, bu kuralları ihlal eden hesapları askıya alabilir.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Oyunun kendisi kendi lisansı altında kalır; bu koşullar onu değiştirmez.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Verilerinizin nasıl işlendiği {0} sayfasında açıklanır.</value></data>

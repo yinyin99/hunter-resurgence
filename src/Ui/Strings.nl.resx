@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>De dienst en de accounts kunnen op elk moment veranderen of stoppen.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Gedragsregels</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Val andere jagers niet lastig en beledig ze niet, gebruik niet het account van iemand anders, val de dienst niet aan en overbelast hem niet, en upload geen back-up die niet van jou is.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Gebruik geen cheats, geheugenbewerking of aangepaste spelbestanden.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>De beheerder kan accounts schorsen die deze regels overtreden.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Het spel zelf blijft onder zijn eigen licentie vallen; deze voorwaarden veranderen dat niet.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Hoe met je gegevens wordt omgegaan, staat uitgelegd op de pagina {0}.</value></data>

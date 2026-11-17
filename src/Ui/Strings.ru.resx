@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Сервис и его аккаунты могут измениться или прекратить работу в любой момент.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Правила поведения</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Не преследуйте и не оскорбляйте других охотников, не используйте чужой аккаунт, не атакуйте и не перегружайте сервис и не загружайте резервную копию, которая вам не принадлежит.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Не используйте читы, редактирование памяти или изменённые файлы игры.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Оператор может блокировать аккаунты, нарушающие эти правила.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Сама игра остаётся под своей лицензией; эти условия её не меняют.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Как обрабатываются ваши данные, объясняется на странице «{0}».</value></data>

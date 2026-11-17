@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>The service and its accounts can change or stop at any time.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Rules of conduct</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Do not harass or insult other hunters, use another person's account, attack or overload the service, or upload a backup that is not yours.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Do not use cheats, memory editing or modified game files.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>The operator may suspend accounts that break these rules.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>The game itself stays under its own license; these terms do not change it.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>How your data is handled is explained on the {0} page.</value></data>

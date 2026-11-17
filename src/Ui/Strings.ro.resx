@@ -131,10 +131,10 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Fișierul exe nu este semnat, așa că Windows poate afișa „Windows protected your PC / Unknown publisher”. Alegeți „More info”, apoi „Run anyway”.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Descărcați instrumentul de backup</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Politica de confidențialitate</value></data>
-  <data name="Footer.Terms" xml:space="preserve"><value>Termeni de utilizare</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să acceptați Termeni de utilizare înainte de a continua.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Termenii de utilizare</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Trebuie să acceptați Termenii de utilizare înainte de a continua.</value></data>
   <data name="Eula.By" xml:space="preserve"><value>Făcând clic pe butonul „Continuați”, acceptați {0}. Modul în care sunt tratate datele dvs. este explicat pe pagina {1}.</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Accept Termeni de utilizare</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Accept Termenii de utilizare</value></data>
   <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Am citit pagina Datele dvs.</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Sunteți deja vânător?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Conectare</value></data>
@@ -1454,6 +1454,7 @@
   <data name="Terms.Change" xml:space="preserve"><value>Serviciul și conturile sale se pot schimba sau opri în orice moment.</value></data>
   <data name="Terms.Conduct.Title" xml:space="preserve"><value>Reguli de conduită</value></data>
   <data name="Terms.Conduct.Text" xml:space="preserve"><value>Nu hărțuiți și nu insultați alți vânători, nu folosiți contul altei persoane, nu atacați și nu suprasolicitați serviciul și nu încărcați un backup care nu este al dvs.</value></data>
+  <data name="Terms.Cheats" xml:space="preserve"><value>Nu folosiți coduri de înșelăciune, editarea memoriei sau fișiere de joc modificate.</value></data>
   <data name="Terms.Suspend" xml:space="preserve"><value>Operatorul poate suspenda conturile care încalcă aceste reguli.</value></data>
   <data name="Terms.Game" xml:space="preserve"><value>Jocul în sine rămâne sub propria licență; acești termeni nu o schimbă.</value></data>
   <data name="Terms.Data" xml:space="preserve"><value>Modul în care sunt tratate datele dvs. este explicat pe pagina {0}.</value></data>
