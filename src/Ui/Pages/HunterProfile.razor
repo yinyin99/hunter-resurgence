@@ -15,7 +15,7 @@
 @if (profile is not null)
 {
     <header class="head">
-        @* the header picture: on the live site the one the player chose (none without one); on the mock the one of the settings: none, the most recent kill or a picture *@
+        @* the header picture: on the live site the one the player chose (none without one); on the mock the most recent kill's *@
         @if (banner is not null) { <AssetSlot Name="@banner" Width="940" Height="200" Class="banner" /> }
         <div class="polaroid"><AssetSlot Name="polaroid-back" Width="239" Height="288" /><AssetSlot Name="@avatar" Width="171" Height="171" Class="avatar" /><AssetSlot Name="polaroid-front" Width="239" Height="288" Class="front" /></div>
         <h1>@profile.Handle</h1>
@@ -68,7 +68,7 @@
 
     Profile? profile;
     bool signedIn;
-    string header = "recent", avatar = Avatars.Default;
+    string avatar = Avatars.Default;
     string? banner;
 
     [Parameter] public string Handle { get; set; } = "";
@@ -88,10 +88,9 @@
         profile = await Service.ProfileAsync(Handle);
         if (profile is null) { Nav.NotFound(); return; }  // an unknown handle: "Page not found", HTTP 404
         signedIn = await Session.CurrentAsync() is not null;
-        // the header picture and the avatar of the signed-in player come from the account (another hunter's are not known here); a player of the server has their own avatar
-        if (profile is { Own: true, Tabs: null }) (header, avatar) = ((await Account.HeadersAsync()).Selected, (await Account.AccountAsync()).Avatar);
-        else (header, avatar) = ("recent", profile.Avatar ?? Avatars.Default);
-        banner = Mode.Live ? (profile.Background is { } background ? "profile-bg-" + background : null) : header == "none" ? null : header == "recent" ? "profile-banner" : header;
+        // the avatar of the signed-in player comes from the account (another hunter's is not known here); a player of the server has their own avatar
+        avatar = profile is { Own: true, Tabs: null } ? (await Account.AccountAsync()).Avatar : profile.Avatar ?? Avatars.Default;
+        banner = Mode.Live ? (profile.Background is { } background ? "profile-bg-" + background : null) : "profile-banner";
     }
 
     // the request goes to the friends service; the profile then says it is pending, also when the page is opened again

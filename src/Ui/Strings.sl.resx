@@ -57,6 +57,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavitve računa</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Upravljanje igre</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Pride pozneje</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Uporabi gumb Igraj v Steamu</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Prilepite to vrstico v zagonske možnosti igre v Steamu (Lastnosti), da se igra zažene prek tega zaganjalnika:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopiraj</value></data>
@@ -105,6 +106,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Mapa igre</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Počisti predpomnilnik zaganjalnika</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Počisti predpomnilnik igre</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Mape ni mogoče najti. Igra morda še ni nameščena.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Najprej zaprite igro, nato izpraznite njen predpomnilnik.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Nekaterih datotek ni bilo mogoče izbrisati. Poskusite znova pozneje.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Prijatelji ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Poišči druge lovce ...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Pošlji sporočilo</value></data>
@@ -842,11 +846,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Sporočila sebi ni mogoče poslati.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Pri pošiljanju sporočila je prišlo do napake.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Nastavitve računa</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>E-naslov računa</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>E-naslov računa</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Jezik in časovni pas</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Večigralske prepovedi</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Nastavitve za Facebook</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Nastavitve za Steam</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Nastavitve profila</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Avatar igralca</value></data>
@@ -855,68 +858,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Izberi nov avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarji za odklep</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Ta avatar je zaklenjen. Odkleneš ga lahko z nakupom v trgovini.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-naslov:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-naslov</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Posodobi e-naslov</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Na tvoj novi e-naslov smo poslali potrditveno e-sporočilo. Potrdi ga, da aktiviraš novi e-naslov.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Ta e-naslov ni na voljo</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Pri posodabljanju tvojega e-naslova je prišlo do napake.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Potrditev e-naslova</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Tvoj e-naslov je bil spremenjen.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Ponovno pošlji potrditev</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Potrditveno e-sporočilo je ponovno poslano.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Resend the confirmation email. You have to click the link in the email.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Resend confirmation email</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-sporočilo je bilo ponovno poslano</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Ponovno pošiljanje e-sporočila ni uspelo. Poskusite znova ali se obrnite na podporo</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Ponovno pošiljanje ni uspelo. Poskusi znova ali se obrni na podporo.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Jezik</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Država</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Izberi državo</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Časovni pas:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Shrani</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Zgodovina nakupov računa</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Vse transakcije v razdelkih „{0}“ in „{1}“ so shranjene v tvoji denarnici.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banka</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>trgovina</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Klikni tukaj za ogled svoje denarnice</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Prepovedani igralci</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>V svojih igrah še nimaš prepovedanih igralcev</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Odblokiraj</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Ali res želiš v svojih igrah odblokirati tega igralca: {0}?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Svoj račun lahko povežeš s Facebookom, da si olajšaš prijavo.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Poveži</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Tvoj račun {0} v igri {game} je povezan z računom Steam. Če želiš ta račun v igri {game} povezati z drugim računom Steam ali povezati svoj račun Steam z drugim računom v igri {game}, moraš najprej prekiniti povezavo obeh že povezanih računov.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Opozorilo</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Prekinitev povezave z računom Steam te bo odjavila iz igre {game} in zaprla zaganjalnik. Igranje igre {game} v Steamu ne bo mogoče, dokler se ne povežeš z drugim računom.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Razumem in želim prekiniti povezavo s svojim računom Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Nekaj je šlo narobe in povezava z vašim računom Steam ni bila prekinjena. Poskusite znova!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Naslovna slika</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Naslovne slike se odklenejo, ko dosežeš nove ravni v treh različnih kategorijah dosežkov: Mojster živali, Mojster orožja in Mojster raziskovanja. Ko so odklenjene, ostanejo na voljo za vedno.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Več podrobnosti o ravneh mojstrov dosežkov.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Brez</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Najnovejša</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Živali</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Orožje</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Raziskovanje</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Dogodki</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Dnevne misije</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Shrani nastavitve profila</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Nastavitve profila so shranjene</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Shranjevanje profila ni uspelo. Poskusi znova ali se obrni na podporo.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofejna koča</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Krmišča</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>DOMOV</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Izberi razdelek.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>IZBIRA TROFEJNE KOČE</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Trenutno nimaš nobene koče.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>UPRAVLJANJE KRMIŠČ</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Napolni krmišče do:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Hrana</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Stanje</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktivno</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Dopolni</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Dobrodošli v igri {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Čestitamo, {0}! Tvoj povsem nov račun za igro {game} je ustvarjen!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Če sta zaganjalnik in odjemalec igre že prenesena in nameščena, lahko začneš igrati! Če je igra {game} zate nova, priporočamo, da pred prvim pravim lovom opraviš vadnice. Vadnice te bodo naučile vsega, kar moraš vedeti, da se samostojno znajdeš v rezervatu Evergreen Hunting. Začni spodaj.</value></data>
@@ -932,7 +873,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Če zaganjalnik in odjemalec igre še nista preneseni, ju moraš prenesti, preden se odpraviš na lov.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>K prenosom</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Nastavitve</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Če želiš spremeniti svoj e-naslov, jezikovne nastavitve ali avatar igralca, to storiš na strani z nastavitvami.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Če želite spremeniti svoj avatar igralca, lahko to storite na strani z nastavitvami.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Spremeni nastavitve računa</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Ves tvoj napredek v igri {game} je prikazan na strani tvojega profila, kjer najdeš podrobno statistiko vseh svojih preteklih lovov.</value></data>

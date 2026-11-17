@@ -57,6 +57,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Fiókbeállítások</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Játékkezelés</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Később érkezik</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>A Steam Játék gombjának használata</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Illeszd be ezt a sort a játék Steam indítási beállításai közé (Tulajdonságok), hogy a játék ezzel az indítóval induljon:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Másolás</value></data>
@@ -105,6 +106,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Játékmappa</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>A launcher gyorsítótárának törlése</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>A játék gyorsítótárának törlése</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>A mappa nem található. Lehet, hogy a játék még nincs telepítve.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Előbb zárd be a játékot, utána ürítsd a gyorsítótárát.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Néhány fájlt nem sikerült törölni. Próbáld újra később.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Barátok ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Keress további vadászokat...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Üzenet küldése</value></data>
@@ -842,11 +846,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Nem küldhetsz üzenetet saját magadnak.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Hiba történt az üzenet elküldésekor.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Fiókbeállítások</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Fiók e-mail címe</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Fiók e-mail címe</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Nyelv és időzóna</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Többjátékos kitiltások</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-beállítások</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam-beállítások</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profilbeállítások</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Játékos avatarja</value></data>
@@ -855,68 +858,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Válassz új avatart</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Feloldható avatarok</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Ez az avatar zárolva van. Feloldhatod, ha megveszed az áruházban.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-mail:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-mail cím</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>E-mail módosítása</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Megerősítő e-mailt küldtünk az új e-mail címedre. Kérjük, erősítsd meg az új e-mail cím aktiválásához.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Ez az e-mail cím nem elérhető</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Hiba történt az e-mail cím módosításakor.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>E-mail megerősítése</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Az e-mail címed megváltozott.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Megerősítés újraküldése</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>A megerősítő e-mail újra elküldve.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Megerősítő email újraküldése. Kattints az emailben lévő linkre.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Megerősítő email újraküldése</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Az e-mail újraküldése sikerült</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Az e-mail újraküldése nem sikerült. Kérjük, próbáld újra, vagy fordulj az ügyfélszolgálathoz.</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Az e-mail újraküldése nem sikerült. Kérjük, próbáld újra, vagy fordulj az ügyfélszolgálathoz.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Nyelv</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Ország</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Válassz országot</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Időzóna:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Mentés</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Fiók vásárlási előzményei</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Minden tranzakciód elmentődik a pénztárcádban. Forrásuk: {0} vagy {1}.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>bank</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>áruház</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Kattints ide a pénztárcád megtekintéséhez</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Kitiltott játékosok</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Nem tiltottál ki senkit a játékaidból</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Feloldás</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Biztosan feloldod a játékaidból a következő játékos kitiltását: {0}?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Összekapcsolhatod a fiókodat a Facebookkal, hogy könnyebben bejelentkezhess.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Összekapcsolás</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>{game}-fiókod ({0}) össze van kapcsolva a Steam-fiókoddal. Ha ezt a fiókot ({game}) egy másik Steam-fiókkal, vagy a Steam-fiókot egy másik {game}-fiókkal szeretnéd összekapcsolni, előbb le kell választanod a két már összekapcsolt fiókot.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Figyelmeztetés</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>A Steam-fiókod leválasztása kijelentkeztet a játékból ({game}), és bezárja a launchert. Amíg nem kapcsolódsz egy másik fiókhoz, nem játszhatsz ezzel a játékkal a Steamen: {game}.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Megértettem, és le akarom választani a Steam-fiókomat</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Hiba történt, és a Steam-fiókod leválasztása nem sikerült. Kérjük, próbáld újra!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Fejléckép</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>A fejlécképek akkor oldódnak fel, ha három különböző eredménykategóriában – Vadak mestere, Fegyverek mestere és Felfedezés mestere – új szintet érsz el. A feloldott fejlécképek örökre elérhetők maradnak.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Tudj meg többet az Eredménymester-szintekről.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Nincs</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Legutóbbi</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Vadak</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Fegyverek</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Felfedezés</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Események</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Napi küldetések</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Profilbeállítások mentése</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profilbeállítások elmentve</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>A profil mentése nem sikerült. Kérjük, próbáld újra, vagy fordulj az ügyfélszolgálathoz.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trófeacsarnok</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Etetőhelyek</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>KEZDŐLAP</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Kérjük, válassz egy részt.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>TRÓFEACSARNOK VÁLASZTÓ</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Jelenleg nincs trófeacsarnokod.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>ETETŐHELYEK KEZELÉSE</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Etető feltöltése eddig:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Csali</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Állapot</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktív</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Utántöltés</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Üdvözlünk: {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gratulálunk, {0}! Az új {game} fiókod elkészült!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Ha már letöltötted és telepítetted a játék launcherét és kliensét, készen állsz a játékra! Ha új vagy ebben a játékban ({game}), azt ajánljuk, hogy az első igazi vadászat előtt játszd végig az oktatójátékokat. Az oktatójátékok mindent megtanítanak, amit tudnod kell ahhoz, hogy egyedül is boldogulj az Evergreen vadászterületen. Kezdj bele lent.</value></data>
@@ -932,7 +873,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Ha még nem töltötted le a játék launcherét és kliensét, ezt meg kell tenned, mielőtt vadászni kezdhetnél.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>A letöltésekhez</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Beállítások</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Ha módosítani szeretnéd az e-mail címedet, a nyelvi beállításaidat vagy a játékos avatarodat, azt a beállítások oldalon teheted meg.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Ha módosítani szeretnéd a játékosavatarodat, megteheted a beállítások oldalon.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Fiókbeállítások módosítása</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>A profiloldaladon látható a játékban ({game}) elért összes előrehaladásod; ott megtalálod az összes korábbi vadászatod részletes statisztikáit.</value></data>

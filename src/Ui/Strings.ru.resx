@@ -57,6 +57,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Появится позже</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Использовать кнопку «Играть» в Steam</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Вставьте эту строку в параметры запуска игры в Steam (Свойства), чтобы запускать игру через этот лаунчер:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Копировать</value></data>
@@ -105,6 +106,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Папка с игрой</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Очистить кэш лаунчера</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Очистить кэш игры</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Папка не найдена. Возможно, игра ещё не установлена.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Сначала закройте игру, затем очистите её кэш.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Некоторые файлы удалить не удалось. Повторите попытку позже.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Друзья ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Найти других охотников...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Отправить сообщение</value></data>
@@ -842,11 +846,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Нельзя отправлять сообщения самому себе.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>При отправке сообщения произошла ошибка.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Настройки аккаунта</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Эл. почта аккаунта</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Аватар</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Эл. почта аккаунта</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Язык и часовой пояс</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Блокировки в мультиплеере</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Настройки Facebook</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Настройки Steam</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Настройки профиля</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Аватар игрока</value></data>
@@ -855,68 +858,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Выбрать новый аватар</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Аватары, которые можно открыть</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Этот аватар заблокирован. Его можно открыть, купив в магазине.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>Эл. почта:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>Адрес эл. почты</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Изменить адрес почты</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>На ваш новый адрес электронной почты отправлено письмо с подтверждением. Подтвердите его, чтобы активировать новый адрес.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Этот адрес эл. почты недоступен</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Не удалось обновить адрес электронной почты.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Подтвердить почту</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Ваш адрес электронной почты изменён.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Отправить ещё раз</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Письмо отправлено повторно.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Повторная отправка письма с подтверждением. Вам нужно кликнуть по ссылке в письме.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Повторная отправка подтверждения</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Письмо отправлено повторно</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Не удалось отправить письмо повторно. Попробуйте ещё раз или обратитесь в поддержку</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Не удалось отправить письмо повторно. Попробуйте ещё раз или обратитесь в поддержку.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Язык</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Страна</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Выберите страну</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Часовой пояс:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Сохранить</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>История покупок аккаунта</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Все транзакции, совершаемые через {0} и {1}, сохраняются в вашем кошельке.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>банк</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>магазин</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Нажмите здесь, чтобы открыть кошелёк</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Заблокированные игроки</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Вы ещё не блокировали игроков в своих играх</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Разблокировать</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Вы уверены, что хотите разблокировать {0} в своих играх?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Вы можете привязать свой аккаунт к Facebook, чтобы входить было проще.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Привязать</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>Ваш аккаунт {game} {0} привязан к вашему аккаунту Steam. Чтобы привязать этот аккаунт {game} к другому аккаунту Steam или этот аккаунт Steam к другому аккаунту {game}, сначала нужно отвязать два уже связанных аккаунта.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Предупреждение</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Если отвязать аккаунт Steam, вы выйдете из {game} и лаунчер закроется. Вы не сможете снова играть в {game} через Steam, пока не привяжете другой аккаунт.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Я понимаю и хочу отвязать свой аккаунт Steam</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Что-то пошло не так, и ваш аккаунт Steam не был отвязан. Попробуйте ещё раз!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Фон профиля</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Фоны профиля открываются, когда вы достигаете новых уровней в трёх категориях достижений: «Повелитель зверей», «Стрелок-мастер» и «Исследователь». Открытые фоны остаются доступными навсегда.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Подробнее об уровнях достижений.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Нет</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Последний</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Животные</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Оружие</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Исследование</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>События</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Ежедневные миссии</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Сохранить настройки профиля</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Настройки профиля сохранены</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Не удалось сохранить профиль. Попробуйте ещё раз или обратитесь в поддержку.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Зал трофеев</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Кормушки</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>ГЛАВНАЯ</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Выберите раздел.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>ВЫБОР ЗАЛА ТРОФЕЕВ</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>У вас пока нет ни одного зала.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>УПРАВЛЕНИЕ КОРМУШКАМИ</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Заполнить кормушку до:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Прикорм</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Статус</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Активно</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Пополнить</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Добро пожаловать в {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Поздравляем, {0}! Ваш новый аккаунт {game} создан!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Если вы уже скачали и установили лаунчер и клиент игры, можно начинать играть! Если вы впервые в {game}, рекомендуем пройти обучение, прежде чем отправляться на первую настоящую охоту. Обучение научит всему, что нужно, чтобы самостоятельно освоиться в охотугодьях Эвергрин. Начните ниже.</value></data>
@@ -932,7 +873,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Если вы ещё не скачали лаунчер и клиент игры, сделайте это, прежде чем начинать охоту.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>К загрузкам</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Настройки</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Изменить адрес электронной почты, язык или аватар можно на странице настроек.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Если вы хотите изменить аватар игрока, это можно сделать на странице настроек.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Изменить настройки аккаунта</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Профиль</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Весь ваш прогресс в {game} показан на странице профиля — там вы найдёте подробную статистику по всем прошлым охотам.</value></data>

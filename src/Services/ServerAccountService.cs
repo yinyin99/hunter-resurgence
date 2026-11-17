@@ -5,14 +5,14 @@ using Resurgence.Services.Mocks;
 namespace Resurgence.Services;
 
 /// <summary>The account of the signed-in player: the avatar is the community server's (<see cref="ServerAccountApi.AvatarChoices"/>: the game's avatars to choose from, the one imported from the player's backup while
-/// they have it, and the choice, <see cref="ServerAccountApi.SetAvatar"/>); the rest of the settings is still the mock's, which the live site does not offer (<c>HostMode.Live</c>). Without a session, or when the server
+/// they have it, and the choice, <see cref="ServerAccountApi.SetAvatar"/>); the recruit page is still the mock's. Without a session, or when the server
 /// does not answer, the avatar is the default one, there is nothing to choose and a choice fails.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, MockAccountService mock, ILogger<ServerAccountService> log) : IAccountService
 {
     public event Action? Changed;
 
-    public async Task<Account> AccountAsync() => await mock.AccountAsync() with { Avatar = Avatars.Slot((await FetchAsync(http, cookie, log))?.Current) };
+    public async Task<Account> AccountAsync() => new(Avatars.Slot((await FetchAsync(http, cookie, log))?.Current));
 
     /// <summary>The game's avatars in the order of its list, then the imported picture when the player has one; the avatar-<c>id</c> slots, the picture's link for the imported one.</summary>
     public async Task<IReadOnlyList<AvatarChoice>> AvatarsAsync()
@@ -64,15 +64,5 @@ public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, M
         return null;
     }
 
-    public Task<LocaleChoices> LocaleChoicesAsync() => mock.LocaleChoicesAsync();
-    public Task<Result> SaveLocaleAsync(string language, string country, string timeZone) => mock.SaveLocaleAsync(language, country, timeZone);
-    public Task<Result> RequestEmailChangeAsync(string email) => mock.RequestEmailChangeAsync(email);
-    public Task<Result> ResendConfirmationAsync() => mock.ResendConfirmationAsync();
-    public Task<Result> ConfirmEmailChangeAsync(string email, string code) => mock.ConfirmEmailChangeAsync(email, code);
-    public Task<IReadOnlyList<BannedPlayer>> BansAsync() => mock.BansAsync();
-    public Task<Result> UnbanAsync(int id) => mock.UnbanAsync(id);
-    public Task<Headers> HeadersAsync() => mock.HeadersAsync();
-    public Task<Result> SaveHeaderAsync(string selected) => mock.SaveHeaderAsync(selected);
-    public Task<Result> DisconnectSteamAsync() => mock.DisconnectSteamAsync();
     public Task<Recruiting> RecruitingAsync() => mock.RecruitingAsync();
 }

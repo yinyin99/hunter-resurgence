@@ -57,6 +57,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Tilin asetukset</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Pelin hallinta</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Tulossa myöhemmin</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Käytä Steamin Pelaa-painiketta</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Liitä tämä rivi pelin käynnistysvalintoihin Steamissa (Ominaisuudet), niin peli käynnistyy tämän käynnistimen kautta:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopioi</value></data>
@@ -105,6 +106,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Pelin kansio</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Tyhjennä käynnistäjän välimuisti</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Tyhjennä pelin välimuisti</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Kansiota ei löytynyt. Peliä ei ehkä ole vielä asennettu.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sulje ensin peli ja tyhjennä sitten sen välimuisti.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Joitakin tiedostoja ei voitu poistaa. Yritä myöhemmin uudelleen.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Kaverit ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Etsi muita metsästäjiä...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Lähetä viesti</value></data>
@@ -842,11 +846,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Et voi lähettää viestejä itsellesi.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Viestin lähettämisessä tapahtui virhe.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Tilin asetukset</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Tilin sähköposti</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Tilin sähköposti</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Kieli ja aikavyöhyke</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Moninpeliporttikiellot</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-asetukset</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam-asetukset</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profiiliasetukset</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Pelaajan avatar</value></data>
@@ -855,68 +858,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Valitse uusi avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avattavat avatarit</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Tämä avatar on lukittu. Voit avata sen ostamalla sen kaupasta.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>Sähköposti:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>Sähköpostiosoite</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Päivitä sähköposti</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>Uuteen sähköpostiosoitteeseesi on lähetetty vahvistusviesti. Vahvista osoite ottaaksesi sen käyttöön.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Tämä sähköpostiosoite ei ole saatavilla</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Sähköpostiosoitteen päivittämisessä tapahtui virhe.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Vahvista sähköposti</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>Sähköpostiosoitteesi on vaihdettu.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Lähetä vahvistus uudelleen</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Vahvistussähköposti lähetetty uudelleen.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti. Sinun täytyy painaa viestissä olevaa linkkiä.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Uudelleenlähetä vahvistussähköposti</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>Sähköpostin uudelleenlähetys onnistui</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Sähköpostin uudelleenlähetys epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Kieli</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Maa</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Valitse maa</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Aikavyöhyke:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Tallenna</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Tilin ostohistoria</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Kaikki sekä {0}- että {1}-osiossa tekemäsi tapahtumat tallentuvat lompakkoosi.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>pankki</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>kauppa</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Näytä lompakkosi napsauttamalla tästä</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Pelaajat porttikiellossa</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Et ole asettanut yhtään pelaajaa porttikieltoon peleissäsi</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Poista porttikielto</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa käyttäjän {0} porttikiellon peleistäsi?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Voit yhdistää tilisi Facebookiin, jolloin kirjautuminen on helpompaa.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Yhdistä</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>{game}-tilisi ({0}) on yhdistetty Steam-tiliisi. Jos haluat yhdistää tämän {game}-tilin toiseen Steam-tiliin tai yhdistää Steam-tilin toiseen {game}-tiliin, sinun täytyy ensin katkaista kyseisten kahden jo yhdistetyn tilin yhteys.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Varoitus</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Steam-tilin yhteyden katkaiseminen kirjaa sinut ulos {game}-pelistä ja sulkee käynnistäjän. Et voi pelata {game}-peliä Steamissä uudelleen, ennen kuin yhdistät sen toiseen tiliin.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Ymmärrän ja haluan katkaista Steam-tilini yhteyden</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Jokin meni pieleen, eikä Steam-tilisi yhteyttä katkaistu. Yritä uudelleen!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Otsikkokuva</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Otsikkokuvat avautuvat, kun saavutat uusia tasoja kolmessa eri saavutuskategoriassa: Eläinmestari, Asemestari ja Tutkimusmestari. Avautuneet otsikkokuvat pysyvät käytettävissä ikuisesti.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Lue lisää saavutusmestarien tasoista.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Ei mitään</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Viimeisin</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Eläimet</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Aseet</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Tutkimus</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Tapahtumat</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Päivittäistehtävät</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Tallenna profiiliasetukset</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profiiliasetukset tallennettu</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profiilin tallennus epäonnistui. Yritä uudelleen tai ota yhteyttä tukeen.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofeemaja</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Syöttipaikat</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>KOTI</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Valitse osio.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>TROFEEMAJAN VALINTA</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Et omista tällä hetkellä yhtään majaa.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>SYÖTTIPAIKKOJEN HALLINTA</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Täytä syöttilaite tasolle:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Syötti</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Tila</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktiivinen</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Täydennä</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Tervetuloa peliin {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Onneksi olkoon, {0}! Uusi {game}-tilisi on luotu!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Jos olet jo ladannut ja asentanut pelin käynnistäjän ja asiakasohjelman, voit aloittaa pelaamisen! Jos {game} on sinulle uusi, suosittelemme pelaamaan harjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi. Harjoituksissa opit kaiken, mitä tarvitset pärjätäksesi itse Evergreenin metsästysalueella. Aloita alta.</value></data>
@@ -932,7 +873,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Jos et ole vielä ladannut pelin käynnistäjää ja asiakasohjelmaa, sinun täytyy tehdä se ennen kuin voit aloittaa metsästyksen.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Latauksiin</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Asetukset</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jos haluat vaihtaa sähköpostiosoitteesi, kieliasetuksesi tai pelaajan avatarisi, voit tehdä sen asetussivulla.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Jos haluat vaihtaa pelaajan avatarin, voit tehdä sen asetussivulla.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Muuta tilin asetuksia</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profiili</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>Kaikki edistymisesi {game}-pelissä näkyy profiilisivullasi, josta löydät yksityiskohtaiset tilastot kaikista aiemmista metsästyksistäsi.</value></data>

@@ -49,6 +49,36 @@ public sealed partial class State
     bool HuntAlive(Db con) =>
         con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL AND COALESCE(last_seen, start_ts) >= ?", Clock() - HEARTBEAT_TIMEOUT) is not null;
 
+    /// <summary>Seconds <see cref="OnlineCounts"/> is kept (and the `max-age` of `GET /stats/online`).</summary>
+    public const int OnlineCacheSeconds = 30;
+
+    readonly object onlineGate = new();
+    (double At, long Players, long Games)? onlineCounts;
+
+    /// <summary>`GET /stats/online`: how many accounts are in a hunt with a heartbeat in the last HEARTBEAT_TIMEOUT (the `online` of <see cref="PublicUser(long)"/>; never a banned
+    /// account or the recorded player's) and how many multiplayer sessions are open (the list of `Network/list`). Counted at most once in <see cref="OnlineCacheSeconds"/>.
+    /// ponytail: expeditions is a per-player table, so each account is read on its own connection (Db refuses a cross-account read), as in
+    /// <see cref="Store.GameBoard"/>; one query per account every 30 s at most. Keep a last-heartbeat map in memory if the accounts grow into the tens of thousands.</summary>
+    public (long Players, long Games) OnlineCounts()
+    {
+        lock (onlineGate)
+        {
+            var now = Clock();
+            if (onlineCounts is { } kept && now >= kept.At && now - kept.At < OnlineCacheSeconds) return (kept.Players, kept.Games);
+            List<long> accounts;
+            using (var con = Store.Open())
+                accounts = [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id IS NOT ?", LocalAccount).Select(r => (long)r[0])];
+            var players = accounts.LongCount(id =>
+            {
+                using var con = Store.Open(id);
+                return HuntAlive(con);
+            });
+            var fresh = (At: now, Players: players, Games: (long)games.Open(now).Count);
+            onlineCounts = fresh;
+            return (fresh.Players, fresh.Games);
+        }
+    }
+
     /// <summary>Friend entries of accounts, as Me/friends and User/friendslist send them, sorted by `handle` (upper case, ordinal).</summary>
     List<JsonNode?> FriendEntries(IEnumerable<long> accounts) => [.. accounts.Select(account =>
     {

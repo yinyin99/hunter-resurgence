@@ -120,6 +120,7 @@ jobs:
           check server https://site.test/hunters
           check server https://site.test/hunters/someone/statistics
           check server https://site.test/catalog/store
+          check server https://site.test/stats/online
           # a minigame board: the launcher (no Accept) reaches the server, a page load of the same path (Accept: text/html) the website
           check server https://site.test/leaderboards/lanebandit
           check web -H 'Accept: text/html,application/xhtml+xml' https://site.test/leaderboards/lanebandit
@@ -159,7 +160,6 @@ jobs:
           grep -qE '_content/Resurgence\.Ui/icons\.[a-z0-9]+\.svg#' feed.html # the sprite too
           grep -qE 'og:image" content="http://localhost:8080/apple-touch-icon\.[a-z0-9]+\.png"' feed.html # docs/website.md#search-engines
           grep -q '<h1 class="visually-hidden"' feed.html
-          curl -sf http://localhost:8080/settings/language | grep -q 'value="Europe/Paris"'
           curl -sf http://localhost:8080/robots.txt | grep -q '^User-agent: MJ12bot' # docs/website.md
           # the security headers on a page and on the 404 page (docs/website.md#security-headers)
           for path in /feed /no-such-page; do

@@ -67,7 +67,7 @@ builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new MockS
 builder.Services.Replace(ServiceDescriptor.Scoped<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), sp.GetRequiredService<HostMode>().Mock)));
 builder.Services.AddScoped<IServersService>(sp => new MockServersService(sp.GetRequiredService<ILogger<MockServersService>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsService(sp.GetRequiredService<HostMode>().Mock));
-builder.Services.AddScoped<IAccountService>(sp => new MockAccountService(sp.GetRequiredService<HostMode>().Mock));
+builder.Services.AddScoped<IAccountService>(sp => new MockAccountService());
 builder.Services.AddScoped<ISeasonalEventsService>(sp => new MockSeasonalEventsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IDiscordInviteService, MockDiscordInviteService>();
 builder.Services.AddScoped<IRestoreOfferService, MockRestoreOfferService>();
@@ -100,7 +100,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     builder.Services.Replace(ServiceDescriptor.Scoped<IRestoreOfferService>(sp => new ServerRestoreOfferService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreOfferService>>())));
     // the player's avatar and the choices of the settings and the sign-up page are the server's (docs/website.md#avatars); the rest of the account settings is the mock's, and the live site does not offer it
     builder.Services.Replace(ServiceDescriptor.Scoped<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
-        new MockAccountService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerAccountService>>())));
+        new MockAccountService(), sp.GetRequiredService<ILogger<ServerAccountService>>())));
     builder.Services.Replace(ServiceDescriptor.Scoped<ISignupService>(sp => new ServerSignupService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>())));
     // the inventory is the account's, read again on every open of its page

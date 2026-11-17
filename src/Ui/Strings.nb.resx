@@ -57,6 +57,7 @@
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinnstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spilladministrasjon</value></data>
+  <data name="Settings.ComingLater" xml:space="preserve"><value>Kommer senere</value></data>
   <data name="Settings.SteamOption" xml:space="preserve"><value>Bruk Steams Spill-knapp</value></data>
   <data name="Steam.Help" xml:space="preserve"><value>Lim inn denne linjen i spillets startvalg i Steam (Egenskaper) for å starte spillet via denne starteren:</value></data>
   <data name="Steam.Copy" xml:space="preserve"><value>Kopier</value></data>
@@ -105,6 +106,9 @@
   <data name="Settings.GameFolder" xml:space="preserve"><value>Spillmappe</value></data>
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Tøm launcher-hurtigminne</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Tøm spillets hurtigminne</value></data>
+  <data name="Settings.NoFolder" xml:space="preserve"><value>Fant ikke mappen. Spillet er kanskje ikke installert ennå.</value></data>
+  <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Lukk spillet først, og tøm deretter hurtigbufferen.</value></data>
+  <data name="Settings.CacheFailed" xml:space="preserve"><value>Noen filer kunne ikke slettes. Prøv igjen senere.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Venner ({0})</value></data>
   <data name="Friends.Search" xml:space="preserve"><value>Finn andre jegere...</value></data>
   <data name="Friends.SendMessage" xml:space="preserve"><value>Send melding</value></data>
@@ -842,11 +846,10 @@
   <data name="Msg.Self" xml:space="preserve"><value>Du kan ikke sende meldinger til deg selv.</value></data>
   <data name="Msg.Failed" xml:space="preserve"><value>Det oppstod en feil under sending av meldingen.</value></data>
   <data name="Set.Title" xml:space="preserve"><value>Kontoinnstillinger</value></data>
-  <data name="Set.TabEmail" xml:space="preserve"><value>Kontoens e-post</value></data>
   <data name="Set.TabAvatar" xml:space="preserve"><value>Avatar</value></data>
+  <data name="Set.TabEmail" xml:space="preserve"><value>Kontoens e-post</value></data>
   <data name="Set.TabLocale" xml:space="preserve"><value>Språk og tidssone</value></data>
   <data name="Set.TabBans" xml:space="preserve"><value>Utestengte spillere</value></data>
-  <data name="Set.TabFacebook" xml:space="preserve"><value>Facebook-innstillinger</value></data>
   <data name="Set.TabSteam" xml:space="preserve"><value>Steam-innstillinger</value></data>
   <data name="Set.TabProfile" xml:space="preserve"><value>Profilinnstillinger</value></data>
   <data name="Set.AvatarTitle" xml:space="preserve"><value>Spilleravatar</value></data>
@@ -855,68 +858,6 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Velg en ny avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarer som kan låses opp</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Denne avataren er låst. Du kan låse den opp ved å kjøpe den i butikken.</value></data>
-  <data name="Set.EmailTitle" xml:space="preserve"><value>E-post:</value></data>
-  <data name="Set.EmailAddress" xml:space="preserve"><value>E-postadresse</value></data>
-  <data name="Set.EmailUpdate" xml:space="preserve"><value>Oppdater e-post</value></data>
-  <data name="Set.EmailCodeSent" xml:space="preserve"><value>En bekreftelses-e-post er sendt til den nye e-postadressen din. Bekreft den for å aktivere den nye adressen.</value></data>
-  <data name="Set.EmailTaken" xml:space="preserve"><value>Den e-postadressen er ikke tilgjengelig</value></data>
-  <data name="Set.EmailFailed" xml:space="preserve"><value>Noe gikk galt under oppdateringen av e-posten din.</value></data>
-  <data name="Set.EmailConfirm" xml:space="preserve"><value>Bekreft e-post</value></data>
-  <data name="Set.EmailChanged" xml:space="preserve"><value>E-postadressen din er endret.</value></data>
-  <data name="Set.EmailResend" xml:space="preserve"><value>Send bekreftelse på nytt</value></data>
-  <data name="Set.EmailResent" xml:space="preserve"><value>Bekreftelses-e-posten er sendt på nytt.</value></data>
-  <data name="Set.EmailUnconfirmed" xml:space="preserve"><value>Send bekreftelses-eposten på nytt. Du må klikke på linken i eposten.</value></data>
-  <data name="Set.EmailResendConfirm" xml:space="preserve"><value>Send bekreftelses-eposten på nytt</value></data>
-  <data name="Set.ResendOk" xml:space="preserve"><value>E-posten er sendt på nytt</value></data>
-  <data name="Set.ResendFailed" xml:space="preserve"><value>Kunne ikke sende e-posten på nytt. Prøv igjen eller kontakt kundestøtten.</value></data>
-  <data name="Set.EmailResendFailed" xml:space="preserve"><value>Kunne ikke sende e-posten på nytt. Prøv igjen eller kontakt kundestøtten.</value></data>
-  <data name="Set.Language" xml:space="preserve"><value>Språk</value></data>
-  <data name="Set.Country" xml:space="preserve"><value>Land</value></data>
-  <data name="Set.CountryChoose" xml:space="preserve"><value>Velg land</value></data>
-  <data name="Set.TimeZone" xml:space="preserve"><value>Tidssone:</value></data>
-  <data name="Set.Save" xml:space="preserve"><value>Lagre</value></data>
-  <data name="Set.PurchasesTitle" xml:space="preserve"><value>Kontoens transaksjonslogg</value></data>
-  <data name="Set.PurchasesText" xml:space="preserve"><value>Alle transaksjoner du gjør, både i {0} og i {1}, lagres i lommeboken din.</value></data>
-  <data name="Set.Bank" xml:space="preserve"><value>banken</value></data>
-  <data name="Set.Store" xml:space="preserve"><value>butikken</value></data>
-  <data name="Set.WalletLink" xml:space="preserve"><value>Klikk her for å se lommeboken din</value></data>
-  <data name="Set.BansTitle" xml:space="preserve"><value>Utestengte spillere</value></data>
-  <data name="Set.BansNone" xml:space="preserve"><value>Du har ikke utestengt noen spillere fra spillene dine</value></data>
-  <data name="Set.Unban" xml:space="preserve"><value>Opphev</value></data>
-  <data name="Set.UnbanConfirm" xml:space="preserve"><value>Er du sikker på at du vil oppheve utestengelsen av {0} fra spillene dine?</value></data>
-  <data name="Set.FacebookText" xml:space="preserve"><value>Du kan koble kontoen din til Facebook for å gjøre det enklere å logge inn.</value></data>
-  <data name="Set.Connect" xml:space="preserve"><value>Koble til</value></data>
-  <data name="Set.SteamTitle" xml:space="preserve"><value>Steam</value></data>
-  <data name="Set.SteamText" xml:space="preserve"><value>{game}-kontoen din {0} er koblet til Steam-kontoen din. Hvis du vil koble denne {game}-kontoen til en annen Steam-konto, eller koble Steam-kontoen til en annen konto i {game}, må du først koble fra de to kontoene som allerede er koblet sammen.</value></data>
-  <data name="Set.Warning" xml:space="preserve"><value>Advarsel</value></data>
-  <data name="Set.SteamWarning" xml:space="preserve"><value>Hvis du kobler fra Steam-kontoen din, blir du logget ut av {game}, og launcheren lukkes. Du kan ikke spille {game} på Steam igjen før du kobler til en annen konto.</value></data>
-  <data name="Set.SteamDisconnect" xml:space="preserve"><value>Jeg forstår og ønsker å koble fra Steam-kontoen min</value></data>
-  <data name="Set.SteamFailed" xml:space="preserve"><value>Noe gikk galt, og Steam-kontoen din ble ikke koblet fra. Prøv igjen!</value></data>
-  <data name="Set.HeaderTitle" xml:space="preserve"><value>Toppbilde</value></data>
-  <data name="Set.HeaderText" xml:space="preserve"><value>Toppbilder låses opp når du når nye nivåer i tre ulike prestasjonskategorier: Animals Master, Weapons Master og Exploration Master. Når et toppbilde er låst opp, forblir det tilgjengelig for alltid.</value></data>
-  <data name="Set.HeaderLink" xml:space="preserve"><value>Finn ut mer om nivåene i Achievement Master.</value></data>
-  <data name="Set.HeaderNone" xml:space="preserve"><value>Ingen</value></data>
-  <data name="Set.HeaderRecent" xml:space="preserve"><value>Nyeste</value></data>
-  <data name="Set.GroupAnimals" xml:space="preserve"><value>Dyr</value></data>
-  <data name="Set.GroupWeapons" xml:space="preserve"><value>Våpen</value></data>
-  <data name="Set.GroupExploration" xml:space="preserve"><value>Utforsking</value></data>
-  <data name="Set.GroupEvents" xml:space="preserve"><value>Arrangementer</value></data>
-  <data name="Set.GroupMissions" xml:space="preserve"><value>Daglige oppdrag</value></data>
-  <data name="Set.SaveProfile" xml:space="preserve"><value>Lagre profilinnstillinger</value></data>
-  <data name="Set.ProfileSaved" xml:space="preserve"><value>Profilinnstillingene er lagret</value></data>
-  <data name="Set.ProfileFailed" xml:space="preserve"><value>Profilen ble ikke lagret. Prøv igjen eller kontakt kundestøtten.</value></data>
-  <data name="GM.Lodge" xml:space="preserve"><value>Trofehytte</value></data>
-  <data name="GM.Bait" xml:space="preserve"><value>Åteplasser</value></data>
-  <data name="GM.Home" xml:space="preserve"><value>HJEM</value></data>
-  <data name="GM.Choose" xml:space="preserve"><value>Velg en seksjon.</value></data>
-  <data name="GM.LodgeTitle" xml:space="preserve"><value>VALG AV TROFEHYTTE</value></data>
-  <data name="GM.NoLodges" xml:space="preserve"><value>Du eier ingen hytter ennå.</value></data>
-  <data name="GM.BaitTitle" xml:space="preserve"><value>ADMINISTRER ÅTEPLASSER</value></data>
-  <data name="GM.Fill" xml:space="preserve"><value>Fyll fôringsautomaten opp til:</value></data>
-  <data name="GM.BaitCol" xml:space="preserve"><value>Åte</value></data>
-  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.Active" xml:space="preserve"><value>Aktiv</value></data>
-  <data name="GM.Refill" xml:space="preserve"><value>Fyll på</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Velkommen til {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gratulerer {0}, den splitter nye {game}-kontoen din er opprettet!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Hvis du allerede har lastet ned og installert spillets launcher og klient, er du klar til å begynne å spille! Er du ny i {game}, anbefaler vi at du spiller gjennom opplæringene før du drar på din første ekte jakt. Opplæringene lærer deg alt du trenger for å klare deg på egen hånd i Evergreen Hunting Reserve. Kom i gang nedenfor.</value></data>
@@ -932,7 +873,7 @@
   <data name="Welcome.DownloadsText" xml:space="preserve"><value>Hvis du ikke har lastet ned spillets launcher og klient ennå, må du gjøre det før du kan begynne å jakte.</value></data>
   <data name="Welcome.DownloadsGo" xml:space="preserve"><value>Til nedlastinger</value></data>
   <data name="Welcome.Settings" xml:space="preserve"><value>Innstillinger</value></data>
-  <data name="Welcome.SettingsText" xml:space="preserve"><value>Hvis du vil endre e-postadressen din, språkinnstillingene eller spilleravataren din, kan du gjøre det på innstillingssiden.</value></data>
+  <data name="Welcome.SettingsText" xml:space="preserve"><value>Hvis du vil endre spilleravataren din, kan du gjøre det på innstillingssiden.</value></data>
   <data name="Welcome.SettingsGo" xml:space="preserve"><value>Endre kontoinnstillinger</value></data>
   <data name="Welcome.Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Welcome.ProfileText" xml:space="preserve"><value>All fremgangen din i {game} vises på profilsiden din. Der finner du detaljert statistikk for alle de tidligere jaktene dine.</value></data>

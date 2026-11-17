@@ -1,3 +1,4 @@
+using Microsoft.Web.WebView2.Core;
 using System.Windows;
 
 namespace Resurgence.Launcher;
@@ -34,4 +35,9 @@ public partial class MainWindow : Window
 
     static bool AskKeepOpen() =>
         MessageBox.Show(Kit.S("Launcher.CloseWhileRunning"), Kit.S("App.Name"), MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes) == MessageBoxResult.Yes;
+
+    /// <summary>Settings, Clear launcher cache: the launcher's own browser drops its disk cache and cache storage while it runs; cookies, local storage and settings stay.</summary>
+    public static Task ClearBrowserCache() => Application.Current.Dispatcher.InvokeAsync(() =>
+        (((MainWindow)Application.Current.MainWindow).Blazor.WebView.CoreWebView2 ?? throw new InvalidOperationException("the browser has not started"))
+            .Profile.ClearBrowsingDataAsync(CoreWebView2BrowsingDataKinds.DiskCache | CoreWebView2BrowsingDataKinds.CacheStorage)).Task.Unwrap();
 }
