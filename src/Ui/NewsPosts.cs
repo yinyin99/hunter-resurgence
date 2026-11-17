@@ -10,9 +10,10 @@ public sealed record NewsPost(string Id, DateTime When, string LinkKey, string L
 /// <summary>The project's own posts, newest first, shown whole on the feed and once each in its carousel. A new post is an entry here, its three resx keys in every translation, and a picture (docs/images.md).</summary>
 public static class NewsPosts
 {
-    // the pictures are two of the operator's competition pictures (a deer each), already on the site
+    // the pictures are three of the operator's competition pictures, already on the site
     public static readonly IReadOnlyList<NewsPost> All =
     [
+        new("Launcher031", new(2026, 11, 17, 20, 0, 0), "source", "Feed.DevLink", "competition-hero-170039"),
         new("Backup", new(2026, 11, 9, 12, 0, 0), "backup", "Backup.Download", "competition-hero-170031"),
         new("Dev", new(2026, 11, 9, 11, 0, 0), "source", "Feed.DevLink", "competition-hero-170026"),
     ];
