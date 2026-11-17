@@ -120,6 +120,7 @@ jobs:
           check server https://site.test/hunters
           check server https://site.test/hunters/someone/statistics
           check server https://site.test/catalog/store
+          check server https://site.test/stats/online
           # a minigame board: the launcher (no Accept) reaches the server, a page load of the same path (Accept: text/html) the website
           check server https://site.test/leaderboards/lanebandit
           check web -H 'Accept: text/html,application/xhtml+xml' https://site.test/leaderboards/lanebandit
