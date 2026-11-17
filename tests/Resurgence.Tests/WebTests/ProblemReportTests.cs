@@ -85,7 +85,7 @@ public sealed class ProblemReportTests : UiContext
         modal.Show<ReportConsentModal>();
         var cut = Render<ReportConsentModal>();
         Assert.Equal("/your-data", cut.Find("a").GetAttribute("href"));
-        Assert.Empty(cut.FindAll(".btn-primary"));  // the two choices weigh the same
+        Assert.Equal("consent-auto", cut.Find(".btn-primary").Id);  // "Send automatically" is the primary choice
 
         cut.Find(button).Click();
         Assert.Equal(consent, bridge.ReportConsent);
