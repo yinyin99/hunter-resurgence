@@ -114,6 +114,8 @@ public class GameFinderTests
         Assert.Equal(folders[1], stale.Install?.Folder);
         Assert.Equal([folders[0]], stale.Others);
         Assert.Null(GameFinder.Search(s, null, [], null).Install);
+        var none = GameFinder.Search(s, Path.Combine(root, "Gone"), [], null);
+        Assert.Equal((null, Path.Combine(root, "Gone")), (none.Install, none.Gone));
     }
 
     [Fact]

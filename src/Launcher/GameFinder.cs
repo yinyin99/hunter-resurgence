@@ -16,22 +16,23 @@ public static partial class GameFinder
 
     /// <summary>
     /// The install in use, how it was found (manual, steam-option, steam-library) and the other game folders seen (each once, existing only). Source is null when none was found.
-    /// Gone is the folder chosen by hand when it no longer holds the client: the automatic install is used then.
+    /// Gone is the folder chosen by hand when it no longer holds the client: the automatic install is used then, if any.
     /// </summary>
     public static GameSearch Search(Settings s, string? chosenFolder, IEnumerable<string> args, string? steamPath)
     {
         if (!s.Configured) return new(null, null, []);
         var seen = new List<(GameInstall Game, string Source)>();
-        if (Check(s, chosenFolder) is { } m) seen.Add((m, "manual"));
+        var manual = Check(s, chosenFolder);
+        var gone = manual is null && !string.IsNullOrWhiteSpace(chosenFolder) ? chosenFolder : null;
+        if (manual is { } m) seen.Add((m, "manual"));
         seen.AddRange(FromArgs(s, args).Select(g => (g, "steam-option")));
         seen.AddRange(FromSteam(s, steamPath).Select(g => (g, "steam-library")));
-        if (seen.Count == 0) return new(null, null, []);
+        if (seen.Count == 0) return new(null, null, [], gone);
         var (first, source) = seen[0];
-        var stale = !string.IsNullOrWhiteSpace(chosenFolder) && source != "manual";
         var key = (GameInstall g) => Path.TrimEndingDirectorySeparator(g.Folder);
         var others = seen.Select(x => x.Game).Where(g => !key(g).Equals(key(first), StringComparison.OrdinalIgnoreCase))
             .DistinctBy(key, StringComparer.OrdinalIgnoreCase).Select(g => g.Folder).ToList();
-        return new(first, source, others, stale ? chosenFolder : null);
+        return new(first, source, others, gone);
     }
 
     /// <summary>The folder counts only when the client exe exists in it.</summary>
