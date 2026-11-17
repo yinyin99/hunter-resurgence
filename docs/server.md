@@ -148,7 +148,7 @@ With recordings that cover every input, the replies are the ones the recordings 
 
 **The free ammunition.** `start.free_ammo` of the facts file lists the ammunition every player gets for free (`items`: the .243 ammunition and the three 12 GA shells) and `boxes`, how many full boxes (3). Every launch tops each of them up in the launch's transaction, before the connect, to that many full boxes (`Launch/start`, `Launch/start_mp`, `Launch/join`, `session/start_single_player`, and `POST /auth/launch` when it opens a hunt), a box being the item's stack size in the catalogue (so 30 .243 rounds, 90 birdshot, 30 buckshot, 30 slugs): the stacks the player has used are filled first, then new full stacks are added. A larger stock, bought in the store, is never lowered. The refilled stacks are in the connect that follows, like any change of the inventory.
 
-**Unlimited ammunition.** With `unlimited_ammo` on (the default) the same launches also fill every other ammunition the player owns to a full box, [Unlimited ammunition](#unlimited-ammunition).
+**Unlimited ammunition.** With `unlimited_ammo` on (the default) the same launches also fill every other ammunition the player owns to a full box, and top the free ammunition up to one box instead of `boxes` (the lodge keeps one stack of each, which the page copies, and it copies a stack only when it is the only one in the lodge), [Unlimited ammunition](#unlimited-ammunition).
 
 **The `infos` of the connect reply** are the definitions of the account's own items, one per distinct `item_id`, in order of first appearance, as the game's server sends them. A list longer than `items` stops the game right after `connect`, so the recorded connect's `infos` are only a source of definitions, never sent whole.
 

@@ -2022,6 +2022,8 @@ public sealed partial class State
         if (UnlimitedService)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
             con.Exec($"DELETE FROM items WHERE account_id = $a AND slot = 0 AND json_extract(metadata, '$.{CLONE}') IS NOT NULL AND EXISTS (SELECT 1 FROM items o WHERE o.account_id = $a AND o.item_id = items.item_id AND o.slot = 0 AND o.guid < items.guid)");
         var (ammo, boxes) = facts.FreeAmmo();
+        if (UnlimitedAmmo)  // the lodge shows one stack of each ammunition as the unlimited one, and the page copies a stack only when it is the only one in the lodge: more boxes would only stop the copying
+            boxes = 1;
         foreach (var id in ammo)
         {
             if (Box(id) is not { } box)
