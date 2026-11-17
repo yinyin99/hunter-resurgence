@@ -88,7 +88,7 @@ public sealed partial class State
         {
             if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;
             long? guid = IntOf(e["item_guid"], out var g) ? g : null;
-            if (con.Scalar($"SELECT guid FROM items WHERE account_id = $a AND slot = 0 AND item_id = ?1 AND (?2 IS NULL OR guid = ?2) AND {Shown} ORDER BY guid LIMIT 1", itemId, guid) is long free)
+            if (con.Scalar("SELECT guid FROM items WHERE account_id = $a AND slot = 0 AND item_id = ?1 AND (?2 IS NULL OR guid = ?2) ORDER BY guid LIMIT 1", itemId, guid) is long free)
                 con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", slot, free);
             else if (unlimited && items.TryGetValue(itemId, out var definition) && Is(G(definition, "cat", null), AmmoCategory)
                      && con.Scalar("SELECT 1 FROM items WHERE account_id = $a AND item_id = ?", itemId) is not null)

@@ -62,8 +62,8 @@ public sealed partial class State
 
     /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A placed item keeps its
     /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
-    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped.</summary>
-    public static JsonArray Items(Db con) => new(con.Rows($"SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a AND {Shown} ORDER BY guid").Select(r =>
+    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped. A hidden lodge stack (<see cref="HIDDEN"/>) is left out unless <paramref name="all"/>.</summary>
+    public static JsonArray Items(Db con, bool all = false) => new(con.Rows($"SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a AND {(all ? "1" : Shown)} ORDER BY guid").Select(r =>
     {
         var metadata = JsonNode.Parse((string)r[3])!.AsObject();
         var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
@@ -228,14 +228,14 @@ public sealed partial class State
                         if (Py.D(xp) < old) metadata["experience"] = old;
                     }
                 }
-                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?",
+                con.Exec($"UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ? AND {Shown}",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
             }
             else if (Is(e["event"], 25) && ItemGuid(e["item"]) is { } placed && Vec(e, "position") is { } position)
             {
                 // the placement waits for event 8 (slot 23); the reserve is the hunt's. A missing direction removes the old one
                 var reserve = con.Rows("SELECT reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault()?[0];
-                con.Exec("UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ?", Py.Dumps(new JsonObject
+                con.Exec($"UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ? AND {Shown}", Py.Dumps(new JsonObject
                 {
                     [POSITION] = position, [DIRECTION] = Vec(e, "direction"), [RESERVE] = Py.FromSql(reserve),
                 }), placed);
@@ -1745,11 +1745,11 @@ public sealed partial class State
         con.Commit();
     }
 
-    /// <summary>Inventory rows in the connect reply's `inventory.items` shape.</summary>
+    /// <summary>Inventory rows in the connect reply's `inventory.items` shape, hidden lodge stacks too (the operator's view).</summary>
     public JsonArray Inventory(long account)
     {
         using var con = Con(account);
-        return Items(con);
+        return Items(con, all: true);
     }
 
     public JsonObject Wallet(long account)
@@ -2015,6 +2015,8 @@ public sealed partial class State
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, location, now, LastEvent(con),
                  Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null, tent);  // out of one day: the recorded time stays
         MissionLaunch(con, tent is null ? location : null);  // a tent is no lodge: no `Start at` objective
+        // the previous launch's hidden marks go first: the loadout takes any row, and RefillAmmo decides again which lodge stacks the game is shown
+        con.Exec($"UPDATE items SET metadata = json_remove(metadata, '$.{HIDDEN}') WHERE account_id = $a AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL");
         ApplyLoadout(con, Form1(form, "loadout_id"));
         RefillAmmo(con);
         con.Commit();
@@ -2030,7 +2032,6 @@ public sealed partial class State
     {
         if (UnlimitedService)  // a box the page copied out of the lodge and put back is redundant: the oldest stack in the lodge is the unlimited one
             con.Exec($"DELETE FROM items WHERE account_id = $a AND slot = 0 AND json_extract(metadata, '$.{CLONE}') IS NOT NULL AND EXISTS (SELECT 1 FROM items o WHERE o.account_id = $a AND o.item_id = items.item_id AND o.slot = 0 AND o.guid < items.guid)");
-        con.Exec($"UPDATE items SET metadata = json_remove(metadata, '$.{HIDDEN}') WHERE account_id = $a AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL");
         var (ammo, boxes) = facts.FreeAmmo();
         if (UnlimitedAmmo)  // the lodge shows one stack of each ammunition as the unlimited one, and the page copies a stack only when it is the only one in the lodge: more boxes would only stop the copying
         {

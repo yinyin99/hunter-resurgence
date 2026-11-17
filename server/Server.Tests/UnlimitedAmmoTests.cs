@@ -101,6 +101,32 @@ public class UnlimitedAmmoTests : StateTestBase
     string Shown() => string.Join(" ", Items().Select(kv => kv.Value!).Where(i => (long)i["item_id"]! == Ammo).Select(i => $"{i["slot"]}:{i["units"]}"));
 
     [Fact]
+    public void NoEventChangesAHiddenStackAndALoadoutNamingItAddsNoRowLaunchAfterLaunch()
+    {
+        Make(true);
+        SetStacks(10, 10);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        long shown, hidden, loadout;
+        using (var con = state.Store.Open(ME))
+            (shown, hidden) = ((long)con.Scalar("SELECT MIN(guid) FROM items WHERE account_id = $a AND item_id = 77")!, (long)con.Scalar("SELECT MAX(guid) FROM items WHERE account_id = $a AND item_id = 77")!);
+        state.HeartbeatReply(ME, Events(O($$"""{"event": 8, "item": "{{hidden}}", "slot": 1}"""), O($$"""{"event": 6, "item": "{{hidden}}", "quantity": 4}"""),
+            O($$"""{"event": 33, "item_from": "{{hidden}}", "quantity": 2, "item_to": "{{shown}}"}"""), O($$"""{"event": 23, "item": "{{hidden}}", "metadata": {"x": 1} }"""),
+            O($$"""{"event": 25, "item": "{{hidden}}", "position_x": 4, "position_y": 5, "position_z": 6}""")));
+        using (var con = state.Store.Open(ME))
+        {
+            Assert.Equal("""{"__hidden":1}""", con.Scalar("SELECT metadata FROM items WHERE account_id = $a AND guid = ?", hidden));
+            con.Exec("INSERT INTO loadouts (account_id, name, color, entries) VALUES ($a, 'Ammo', 0, ?)", $$"""[{"item_id": 77, "slot_id": 8, "item_guid": {{hidden}}}]""");
+            loadout = (long)con.Scalar("SELECT MAX(id) FROM loadouts WHERE account_id = $a")!;
+        }
+        Assert.Equal("0:10 0:10", Held(Ammo));  // not moved, not used, no units moved
+        for (var i = 0; i < 3; i++)
+        {
+            state.NoteLaunch(ME, System.Text.Encoding.ASCII.GetBytes($"start=100&reserve=2&loadout_id={loadout}"));
+            Assert.Equal(("0:10 8:10", "0:10 8:10"), (Held(Ammo), Shown()));  // the loadout takes the box it names, a launch decides the marks again: never a new row
+        }
+    }
+
+    [Fact]
     public void OffALaunchLeavesTheStacksAlone()
     {
         Make(false);
