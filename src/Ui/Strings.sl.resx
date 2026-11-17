@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Datoteka exe ni podpisana, zato lahko Windows prikaže „Windows protected your PC / Unknown publisher“. Izberite „More info“ in nato „Run anyway“.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Prenesite orodje za varnostno kopiranje</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Pravilnik o zasebnosti</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Licenčna pogodba za končnega uporabnika</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>PRAVILNIK O ZASEBNOSTI</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENČNA POGODBA ZA KONČNEGA UPORABNIKA</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Pred nadaljevanjem morate potrditi licenčno pogodbo za končnega uporabnika in pravilnik o zasebnosti.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>S klikom na gumb »Nadaljuj« se strinjate z naslednjim: {0} in {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Strinjam se z EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Strinjam se s Pravilnikom o zasebnosti</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Zadnja posodobitev: besedilo za zapolnitev</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>UVOD</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Naslov za zapolnitev</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Besedilo za zapolnitev. Pravo pravno besedilo zagotovi upravljavec te storitve.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>O obdelavi osebnih podatkov glejte: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Pogoji uporabe</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Pred nadaljevanjem morate sprejeti pogoje uporabe.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>S klikom na gumb »Nadaljuj« sprejmete {0}. Kako ravnamo z vašimi podatki, je razloženo na strani {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Sprejemam pogoje uporabe</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Prebral/-a sem stran »Vaši podatki«</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Si že lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Prijava</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-naslov</value></data>
@@ -1453,6 +1445,29 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Brisanje vaših podatkov</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi; ob novi prijavi se ustvari nov račun.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operater tega strežnika vidi vse zgoraj navedeno.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Pogoji uporabe</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence je brezplačen, neuradni projekt oboževalcev. Ni povezan z založnikom igre.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Storitev je ponujena takšna, kot je, brez jamstva, da deluje, ostaja na voljo ali hrani vaše podatke.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Storitev in njeni računi se lahko kadar koli spremenijo ali prenehajo.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Pravila vedenja</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Ne nadlegujte in ne žalite drugih lovcev, ne uporabljajte računa druge osebe, ne napadajte in ne preobremenjujte storitve ter ne nalagajte varnostne kopije, ki ni vaša.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operater lahko začasno onemogoči račune, ki kršijo ta pravila.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Igra sama ostaja pod svojo licenco; ti pogoji je ne spreminjajo.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Kako ravnamo z vašimi podatki, je razloženo na strani {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Kdo upravlja to storitev</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence je brezplačen projekt oboževalcev, ki ga vodi njegov operater. Operaterja dosežete s sporočilom na strežniku Discord projekta (povezava v nogi strani) ali na contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Zakaj se hranijo</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Vaši podatki se uporabljajo za izvajanje storitve, ki jo zahtevate: prijava, vaš račun in obnovitev varnostne kopije. Operater ima tudi zakonit interes, da storitev deluje in je varna (dnevniki, preverjanje nalaganj). Nič se ne prodaja in ne uporablja za oglaševanje.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Kako dolgo se hranijo</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Vaš račun in njegovi podatki ostanejo, dokler ne uporabite možnosti »Izbriši moje podatke«.</value></data>
+  <data name="Data.Keep.Copies" xml:space="preserve"><value>Strežnik vsak dan kopira svoje zbirke podatkov in hrani zadnjih 7. Po možnosti »Izbriši moje podatke« je vaš račun v teh kopijah še do 7 dni.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Dnevniki strežnika in posredniškega strežnika lahko vsebujejo naslove IP in vzdevke. Hranijo se največ 30 dni, in manj, ko se dnevnik napolni.</value></data>
+  <data name="Data.Others.Title" xml:space="preserve"><value>Kdo jih še vidi</value></data>
+  <data name="Data.Others.Host" xml:space="preserve"><value>Ponudnik gostovanja: strežnik deluje na najetem virtualnem strežniku, zato ponudnik gosti vse zgoraj navedeno.</value></data>
+  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: vsaka zahteva za spletno mesto in strežnik gre skozenj, skupaj z vašim naslovom IP.</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: zasebni kanali operaterja prejmejo sporočilo za vsak nov račun (vzdevek, številka računa in Steam id) ter za vsako varnostno kopijo ali zahtevek, ki čaka na pregled (enake podrobnosti).</value></data>
+  <data name="Data.Rights.Title" xml:space="preserve"><value>Vaše pravice</value></data>
+  <data name="Data.Rights.Text" xml:space="preserve"><value>Lahko vprašate, kaj se hrani o vas, zahtevate popravek, podatke sami izbrišete z »Izbriši moje podatke« in ugovarjate njihovi uporabi. Če menite, da se z vašimi podatki ravna napačno, lahko vložite pritožbo pri organu za varstvo podatkov. Pišite na zgornji stik.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Brskalnik je odprt. Tam se prijavite s Steamom.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Prijava s Steamom</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>

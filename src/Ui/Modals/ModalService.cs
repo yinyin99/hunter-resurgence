@@ -11,7 +11,7 @@ public sealed class ModalService
     public string Backdrop { get; private set; } = "page";
     public event Action? Changed;
 
-    // a click on the backdrop closes these (as in the old app); the language, alert and legal dialogs do not (D-SHELL-5), nor the game settings.
+    // a click on the backdrop closes these (as in the old app); the language and alert dialogs do not (D-SHELL-5), nor the game settings.
     // The join map has a full-window layer of its own inside the dialog.
     static readonly Type[] CloseOnBackdrop = [typeof(BankModal), typeof(BuyModal), typeof(VideoModal), typeof(GameStartedModal)];
 

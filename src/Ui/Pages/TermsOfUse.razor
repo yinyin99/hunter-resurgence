@@ -1,0 +1,23 @@
+@page "/terms"
+
+<PageTitle>@L["Terms.Title"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@L["Terms.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</h2>
+    <section class="panel box">
+        <p>@L["Terms.Intro"]</p>
+        <ul>
+            <li>@L["Terms.AsIs"]</li>
+            <li>@L["Terms.Change"]</li>
+        </ul>
+        <h3>@L["Terms.Conduct.Title"]</h3>
+        <p>@L["Terms.Conduct.Text"]</p>
+        <p>@L["Terms.Suspend"]</p>
+        <p>@L["Terms.Game"]</p>
+        <p>@L.Frag("Terms.Data", Link)</p>
+    </section>
+</div>
+
+@code {
+    RenderFragment Link => @<a href="/your-data">@L["Footer.YourData"]</a>;
+}

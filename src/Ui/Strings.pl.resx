@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Plik exe nie jest podpisany, więc Windows może pokazać „System Windows ochronił ten komputer / Nieznany wydawca”. Wybierz „Więcej informacji”, a potem „Uruchom mimo to”.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Pobierz narzędzie do kopii zapasowej</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Polityka prywatności</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Umowa licencyjna użytkownika</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>POLITYKA PRYWATNOŚCI</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>UMOWA LICENCYJNA UŻYTKOWNIKA</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Przed kontynuowaniem musisz potwierdzić umowę licencyjną użytkownika i politykę prywatności.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Klikając przycisk „Dalej”, akceptujesz następujące dokumenty: {0} i {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Akceptuję EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Akceptuję Politykę prywatności</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Ostatnia aktualizacja: tekst zastępczy</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>WPROWADZENIE</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Nagłówek zastępczy</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Tekst zastępczy. Właściwy tekst prawny dostarcza operator tej usługi.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Informacje o przetwarzaniu danych osobowych: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Warunki korzystania</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Przed kontynuowaniem musisz zaakceptować Warunki korzystania.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Klikając przycisk „Dalej”, akceptujesz: {0}. Sposób postępowania z Twoimi danymi opisano na stronie {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Akceptuję Warunki korzystania</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Przeczytałem(-am) stronę Twoje dane</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Masz już konto?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Zaloguj się</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1453,6 +1445,29 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Usuwanie Twoich danych</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Zaloguj się, otwórz Przywróć kopię zapasową i użyj Usuń moje dane. Usuwa to konto, jego dane z gry, przechowywane zipy i zdjęcia oraz wylogowuje Cię. Twoje id Steam zostaje wtedy zapomniane; ponowne logowanie tworzy nowe konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operator tego serwera widzi wszystko powyższe.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Warunki korzystania</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence to bezpłatny, nieoficjalny projekt fanów. Nie jest powiązany z wydawcą gry.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Usługa jest udostępniana w stanie, w jakim jest, bez gwarancji, że działa, pozostanie dostępna lub zachowa Twoje dane.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Usługa i jej konta mogą się zmienić lub zostać zakończone w dowolnej chwili.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Zasady zachowania</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Nie nękaj ani nie obrażaj innych łowców, nie używaj cudzego konta, nie atakuj ani nie przeciążaj usługi i nie wysyłaj kopii zapasowej, która nie jest Twoja.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operator może zawiesić konta, które łamią te zasady.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Sama gra podlega własnej licencji; te warunki jej nie zmieniają.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Sposób postępowania z Twoimi danymi opisano na stronie {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Kto prowadzi tę usługę</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence to bezpłatny projekt fanów prowadzony przez operatora. Aby się z nim skontaktować, napisz na serwerze Discord projektu (link w stopce) lub na adres contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Dlaczego dane są przechowywane</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Twoje dane służą do działania usługi, o którą prosisz: logowania, Twojego konta i przywracania kopii zapasowej. Operator ma też uzasadniony interes w utrzymaniu działania i bezpieczeństwa usługi (logi, sprawdzanie przesłanych plików). Nic nie jest sprzedawane ani używane do reklam.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Jak długo dane są przechowywane</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Twoje konto i jego dane pozostają, dopóki nie użyjesz opcji Usuń moje dane.</value></data>
+  <data name="Data.Keep.Copies" xml:space="preserve"><value>Serwer codziennie kopiuje swoje bazy danych i przechowuje ostatnie 7 kopii. Po użyciu opcji Usuń moje dane Twoje konto nadal znajduje się w tych kopiach przez maksymalnie 7 dni.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logi serwera i proxy mogą zawierać adresy IP i nazwy użytkowników. Są przechowywane najwyżej 30 dni, a krócej, gdy log się zapełni.</value></data>
+  <data name="Data.Others.Title" xml:space="preserve"><value>Kto jeszcze je widzi</value></data>
+  <data name="Data.Others.Host" xml:space="preserve"><value>Dostawca hostingu: serwer działa na wynajętym serwerze wirtualnym, więc dostawca hostuje wszystko, co wymieniono powyżej.</value></data>
+  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: każde żądanie do strony i serwera przechodzi przez tę usługę wraz z Twoim adresem IP.</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: prywatne kanały operatora otrzymują wiadomość o każdym nowym koncie (nazwa użytkownika, numer konta i identyfikator Steam) oraz o każdej kopii zapasowej lub roszczeniu oczekującym na sprawdzenie (te same dane).</value></data>
+  <data name="Data.Rights.Title" xml:space="preserve"><value>Twoje prawa</value></data>
+  <data name="Data.Rights.Text" xml:space="preserve"><value>Możesz zapytać, jakie dane o Tobie są przechowywane, poprosić o ich poprawienie, usunąć je samodzielnie za pomocą opcji Usuń moje dane oraz sprzeciwić się ich wykorzystywaniu. Jeśli uważasz, że Twoje dane są przetwarzane nieprawidłowo, możesz złożyć skargę do organu ochrony danych. Napisz na adres kontaktowy podany wyżej.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Przeglądarka jest otwarta. Zaloguj się tam przez Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Zaloguj się przez Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Logowanie nie zostało potwierdzone na czas. Spróbuj ponownie.</value></data>

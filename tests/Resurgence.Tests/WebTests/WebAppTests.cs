@@ -213,7 +213,7 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
 
         Assert.Equal("application/xml", r.Content.Headers.ContentType?.MediaType);
         var locs = System.Xml.Linq.XDocument.Parse(await Html(r)).Descendants("{http://www.sitemaps.org/schemas/sitemap/0.9}loc").Select(l => l.Value).ToList();
-        string[] expected = ["/", "/store", "/store/bundles", "/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough", "/download", "/help", "/your-data",
+        string[] expected = ["/", "/store", "/store/bundles", "/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough", "/download", "/help", "/your-data", "/terms",
             "/store/0", "/store/item/7", "/store/bundle/3", "/profile/Fox"];  // no sales: no item has a struck-through price
         Assert.Equal(expected.Select(p => "http://localhost" + p).Order(), locs.Order());
         Assert.NotEmpty(server.Hosts);

@@ -131,19 +131,11 @@
   <data name="Backup.SmartScreen" xml:space="preserve"><value>Soubor exe není podepsaný, takže Windows může zobrazit „Systém Windows ochránil váš počítač / Neznámý vydavatel“. Zvolte „Další informace“ a pak „Přesto spustit“.</value></data>
   <data name="Backup.Download" xml:space="preserve"><value>Stáhnout zálohovací nástroj</value></data>
   <data name="Footer.Privacy" xml:space="preserve"><value>Zásady ochrany soukromí</value></data>
-  <data name="Footer.Eula" xml:space="preserve"><value>Licenční smlouva s koncovým uživatelem</value></data>
-  <data name="Footer.Privacy.Title" xml:space="preserve"><value>ZÁSADY OCHRANY SOUKROMÍ</value></data>
-  <data name="Footer.Eula.Title" xml:space="preserve"><value>LICENČNÍ SMLOUVA S KONCOVÝM UŽIVATELEM</value></data>
-  <data name="Eula.Title" xml:space="preserve"><value>Před pokračováním musíte potvrdit Licenční smlouvu s koncovým uživatelem a Zásady ochrany soukromí.</value></data>
-  <data name="Eula.By" xml:space="preserve"><value>Kliknutím na tlačítko „Pokračovat“ souhlasíte s následujícím: {0} a {1}</value></data>
-  <data name="Eula.LinkEula" xml:space="preserve"><value>EULA</value></data>
-  <data name="Eula.AgreeEula" xml:space="preserve"><value>Souhlasím s EULA</value></data>
-  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Souhlasím se Zásadami ochrany soukromí</value></data>
-  <data name="Legal.Updated" xml:space="preserve"><value>Naposledy aktualizováno: zástupný text</value></data>
-  <data name="Legal.Section" xml:space="preserve"><value>ÚVOD</value></data>
-  <data name="Legal.Subsection" xml:space="preserve"><value>Zástupný nadpis</value></data>
-  <data name="Legal.Placeholder" xml:space="preserve"><value>Zástupný text. Skutečné právní znění dodá provozovatel této služby.</value></data>
-  <data name="Legal.SeePrivacy" xml:space="preserve"><value>Informace o zpracování osobních údajů: {0}.</value></data>
+  <data name="Footer.Terms" xml:space="preserve"><value>Podmínky použití</value></data>
+  <data name="Eula.Title" xml:space="preserve"><value>Před pokračováním musíte přijmout Podmínky použití.</value></data>
+  <data name="Eula.By" xml:space="preserve"><value>Kliknutím na tlačítko „Pokračovat“ přijímáte {0}. Jak se nakládá s vašimi údaji, vysvětluje stránka {1}.</value></data>
+  <data name="Eula.AgreeEula" xml:space="preserve"><value>Přijímám Podmínky použití</value></data>
+  <data name="Eula.AgreePrivacy" xml:space="preserve"><value>Přečetl(a) jsem Vaše údaje</value></data>
   <data name="Public.Already" xml:space="preserve"><value>Už jste lovec?</value></data>
   <data name="Public.SignIn" xml:space="preserve"><value>Přihlásit se</value></data>
   <data name="Signin.Email" xml:space="preserve"><value>E-mail</value></data>
@@ -1453,6 +1445,29 @@
   <data name="Data.Delete.Title" xml:space="preserve"><value>Smazání vašich údajů</value></data>
   <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene; novým přihlášením vznikne nový účet.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operátor tohoto serveru vidí vše výše uvedené.</value></data>
+  <data name="Terms.Title" xml:space="preserve"><value>Podmínky použití</value></data>
+  <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence je bezplatný, neoficiální fanouškovský projekt. Není spojen s vydavatelem hry.</value></data>
+  <data name="Terms.AsIs" xml:space="preserve"><value>Služba je poskytována tak, jak je, bez záruky, že bude fungovat, zůstane dostupná nebo zachová vaše údaje.</value></data>
+  <data name="Terms.Change" xml:space="preserve"><value>Služba a její účty se mohou kdykoli změnit nebo skončit.</value></data>
+  <data name="Terms.Conduct.Title" xml:space="preserve"><value>Pravidla chování</value></data>
+  <data name="Terms.Conduct.Text" xml:space="preserve"><value>Neobtěžujte ani neurážejte ostatní lovce, nepoužívejte cizí účet, neútočte na službu ani ji nepřetěžujte a nenahrávejte zálohu, která vám nepatří.</value></data>
+  <data name="Terms.Suspend" xml:space="preserve"><value>Operátor může pozastavit účty, které tato pravidla porušují.</value></data>
+  <data name="Terms.Game" xml:space="preserve"><value>Samotná hra zůstává pod vlastní licencí; tyto podmínky ji nemění.</value></data>
+  <data name="Terms.Data" xml:space="preserve"><value>Jak se nakládá s vašimi údaji, vysvětluje stránka {0}.</value></data>
+  <data name="Data.Who.Title" xml:space="preserve"><value>Kdo službu provozuje</value></data>
+  <data name="Data.Who.Text" xml:space="preserve"><value>Hunter Resurgence je bezplatný fanouškovský projekt, který provozuje jeho operátor. Operátora zastihnete na Discord serveru projektu (odkaz v patičce) nebo na contact@hunter-resurgence.com.</value></data>
+  <data name="Data.Why.Title" xml:space="preserve"><value>Proč se údaje uchovávají</value></data>
+  <data name="Data.Why.Text" xml:space="preserve"><value>Vaše údaje se používají k provozu služby, o kterou žádáte: přihlášení, váš účet a obnovení zálohy. Operátor má také oprávněný zájem na tom, aby služba fungovala a byla bezpečná (logy, kontrola nahrávek). Nic se neprodává ani nepoužívá pro reklamu.</value></data>
+  <data name="Data.Keep.Title" xml:space="preserve"><value>Jak dlouho se uchovávají</value></data>
+  <data name="Data.Keep.Account" xml:space="preserve"><value>Váš účet a jeho data zůstávají, dokud nepoužijete Smazat mé údaje.</value></data>
+  <data name="Data.Keep.Copies" xml:space="preserve"><value>Server každý den kopíruje své databáze a uchovává posledních 7. Po použití Smazat mé údaje je váš účet v těchto kopiích ještě až 7 dní.</value></data>
+  <data name="Data.Keep.Logs" xml:space="preserve"><value>Logy serveru a proxy mohou obsahovat IP adresy a přezdívky. Uchovávají se nejvýše 30 dní, a kratší dobu, když se log zaplní.</value></data>
+  <data name="Data.Others.Title" xml:space="preserve"><value>Kdo je ještě vidí</value></data>
+  <data name="Data.Others.Host" xml:space="preserve"><value>Poskytovatel hostingu: server běží na pronajatém virtuálním serveru, takže poskytovatel hostuje vše výše uvedené.</value></data>
+  <data name="Data.Others.Cloudflare" xml:space="preserve"><value>Cloudflare: prochází jím každý požadavek na web a server, a to s vaší IP adresou.</value></data>
+  <data name="Data.Others.Discord" xml:space="preserve"><value>Discord: soukromé kanály operátora dostanou zprávu o každém novém účtu (přezdívka, číslo účtu a Steam ID) a o každé záloze nebo žádosti čekající na kontrolu (stejné údaje).</value></data>
+  <data name="Data.Rights.Title" xml:space="preserve"><value>Vaše práva</value></data>
+  <data name="Data.Rights.Text" xml:space="preserve"><value>Můžete se zeptat, co se o vás uchovává, nechat to opravit, sami to smazat pomocí Smazat mé údaje a vznést námitku proti jeho využití. Pokud se domníváte, že se s vašimi údaji nakládá nesprávně, můžete podat stížnost u úřadu pro ochranu osobních údajů. Pište na kontakt výše.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Prohlížeč se otevřel. Přihlaste se tam přes Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Přihlásit se přes Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Přihlášení nebylo včas potvrzeno. Zkuste to prosím znovu.</value></data>
