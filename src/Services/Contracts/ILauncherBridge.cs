@@ -9,7 +9,7 @@ public interface ILauncherBridge
     Result OpenFolder(string kind);
     /// <summary>The game install the launcher uses now, how it was found, and the other installs it saw; Folder null when none.</summary>
     GameInstallInfo GameInstall { get; }
-    /// <summary>Opens a folder picker; the chosen folder must hold the game's exe (the folder itself or its install root); saved as the manual folder. Error: a Strings key (Settings.FolderNoGame when the exe isn't there, Settings.FolderCancelled is not an error: return Ok with no change).</summary>
+    /// <summary>Opens a folder picker; the chosen folder must hold the game's exe (the folder itself or its install root); saved as the manual folder. Error: the Strings key <c>Settings.FolderNoGame</c> when the exe isn't there; a cancelled picker is not an error: Ok, nothing changes.</summary>
     Result ChooseGameFolder();
     /// <summary>Forgets the manual folder; detection goes back to Steam.</summary>
     void UseAutomaticGameFolder();
