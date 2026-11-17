@@ -1522,4 +1522,35 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Oyun çalışıyor. Launcher'ı kapatmak oyunun topluluk sunucusuyla bağlantısını keser. Launcher açık kalsın mı?&#10;&#10;Evet: açık kalsın. Hayır: simge durumuna küçült.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Bu, topluluk sunucusunu işletenler için aşağıda listelenen dosyalardan bir zip oluşturur. İçeriğine bakın, ardından kendiniz paylaşmak için kaydedin veya topluluk sunucusuna gönderin (hesabınıza bağlanır, 30 gün saklanır).</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Dosyalar toplanıyor…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Rapor şu dosyaları içerir:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Bunlar okunamadı ve dışarıda bırakıldı:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>İndirilenler'e kaydet</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Topluluk sunucusuna gönder</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Gönderiliyor…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>{0} olarak kaydedildi</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Gönderildi. Referansınız {0}. Yardım isterken bunu belirtin.</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Başarısız bir başlatmadan sonra otomatik olarak sorun raporu gönder</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Bir sorun raporu gönderildi: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Bir şeyler mi ters gitti? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Sorun raporları gönderilsin mi?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa veya çok erken kapanırsa başlatıcı, nedenini bulmaya yardımcı olacak bir sorun raporu oluşturabilir. Bir rapor şunları içerir:</value></data>
+  <data name="Report.ConsentLogs" xml:space="preserve"><value>oyunun günlük dosyaları ve ayarları</value></data>
+  <data name="Report.ConsentEvents" xml:space="preserve"><value>oyun için Windows çökme olayları</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>bilgisayarınızda çalışan antivirüs programlarının ve oyun hızlandırıcıların adları</value></data>
+  <data name="Report.ConsentStarts" xml:space="preserve"><value>oyunu son zamanlarda ne zaman başlattığınız ve her başlatmanın nasıl bittiği</value></data>
+  <data name="Report.ConsentNever" xml:space="preserve"><value>Parola veya jeton asla içermez.</value></data>
+  <data name="Report.ConsentWhere" xml:space="preserve"><value>Rapor, hesabınıza bağlı olarak topluluk sunucusuna gider. 30 gün saklanır ve sunucunun operatörleri okuyabilir. Ayrıntılar: {0}. Seçiminizi daha sonra Ayarlar menüsünden değiştirebilirsiniz.</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Otomatik gönder</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Her seferinde sor</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Oturum açmadınız. Yeniden oturum açıp bir kez daha deneyin.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Topluluk sunucusu raporu kabul etmedi.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Rapor göndermek için çok büyük. Bunun yerine kaydedin.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Bir rapor zaten yolda veya son 24 saatte beş rapor gönderdiniz. Daha sonra tekrar deneyin.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Topluluk sunucusunda şu anda raporlar için yer yok. Bunun yerine raporu kaydedin.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Rapor İndirilenler'e kaydedilemedi. Bunun yerine gönderin.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Topluluk sunucusuna ulaşılamadı. Yeniden deneyin veya bunun yerine raporu kaydedin.</value></data>
 </root>

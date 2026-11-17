@@ -1,0 +1,30 @@
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+
+@* asked once, after the first sign-in (ModalService.OfferReportConsentAsync, docs/launcher.md#problem-reports); Escape does nothing, so a choice is made *@
+<div class="consent dialog-card" role="dialog" aria-modal="true" aria-labelledby="consent-title">
+    <h1 id="consent-title">@L["Report.ConsentTitle"]</h1>
+    <p>@L["Report.ConsentIntro"]</p>
+    <ul>
+        <li>@L["Report.ConsentLogs"]</li>
+        <li>@L["Report.ConsentEvents"]</li>
+        <li>@L["Report.ConsentSystem"]</li>
+        <li>@L["Report.ConsentStarts"]</li>
+    </ul>
+    <p>@L["Report.ConsentNever"]</p>
+    <p>@L.Frag("Report.ConsentWhere", Link)</p>
+    <div class="buttons">
+        <button type="button" class="btn btn-inverse" id="consent-ask" @onclick='() => Choose("ask")'>@L["Report.ConsentAsk"]</button>
+        <button type="button" class="btn btn-primary" id="consent-auto" autofocus @onclick='() => Choose("auto")'>@L["Report.ConsentAuto"]</button>
+    </div>
+</div>
+
+@code {
+    RenderFragment Link => @<a href="/your-data" @onclick="Modal.Close">@L["Footer.YourData"]</a>;
+
+    void Choose(string consent)
+    {
+        Bridge.ReportConsent = consent;
+        Modal.Close();
+    }
+}

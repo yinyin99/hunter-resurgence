@@ -1,0 +1,69 @@
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+
+@* "Report a problem": what the report holds, then Save or Send (docs/launcher.md#problem-reports). Opened from the Settings menu (trigger manual) and from the "Done hunting for now?" window (the failed start's trigger) *@
+<div class="report dialog-card" role="dialog" aria-modal="true" aria-labelledby="report-title">
+    <h1 id="report-title">@L["Report.Menu"]</h1>
+    <p>@L["Report.Info"]</p>
+    @if (report is null)
+    {
+        <p id="report-building">@L["Report.Building"]</p>
+    }
+    else
+    {
+        <h2>@L["Report.Holds"]</h2>
+        <ul id="report-files">@foreach (var f in report.Files) { <li>@f</li> }</ul>
+        @if (report.Missing.Count > 0)
+        {
+            <h2>@L["Report.Missing"]</h2>
+            <ul id="report-missing">@foreach (var f in report.Missing) { <li>@f</li> }</ul>
+        }
+        @if (saved is not null) { <p id="report-saved" role="status">@L["Report.Saved", saved]</p> }
+        else if (saveFailed) { <p class="error" role="alert">@L["Report.ErrSave"]</p> }
+        @if (sent?.Reference is { } reference) { <p id="report-reference" role="status">@L["Report.Sent", reference]</p> }
+        else if (sent?.Error is { } error) { <p class="error" role="alert">@L[ErrorKey(error)]</p> }
+    }
+    <label class="auto"><input type="checkbox" class="tick" id="report-auto" @bind="auto" @bind:after="Remember" /> @L["Report.AutoToggle"]</label>
+    <div class="buttons">
+        <button type="button" class="btn btn-inverse" id="report-save" disabled="@(report is null)" @onclick="Save">@L["Report.Save"]</button>
+        <button type="button" class="btn btn-primary" id="report-send" disabled="@(report is null || sending || sent?.Reference is not null)" @onclick="Send">@L[sending ? "Report.Sending" : "Report.Send"]</button>
+        <button type="button" class="btn btn-inverse" @onclick="Modal.Close">@L["Alert.Close"]</button>
+    </div>
+</div>
+
+@code {
+    static readonly string[] Errors = ["Report.ErrSignIn", "Report.ErrFormat", "Report.ErrSize", "Report.ErrLimit", "Report.ErrDisk", "Report.ErrNetwork"];
+
+    /// <summary>The text key of a send error; a key the UI does not know is the generic one.</summary>
+    public static string ErrorKey(string? error) => Errors.Contains(error) ? error! : "Report.ErrNetwork";
+
+    /// <summary>manual from Settings; short, exitcode or nowindow from a failed start.</summary>
+    [Parameter] public string Trigger { get; set; } = "manual";
+
+    ProblemReport? report;
+    ReportSent? sent;
+    string? saved;
+    bool auto, sending, saveFailed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        auto = Bridge.ReportConsent == "auto";
+        report = await Bridge.BuildReportAsync(Trigger);
+    }
+
+    void Remember() => Bridge.ReportConsent = auto ? "auto" : "ask";
+
+    // Downloads may not be writable
+    void Save()
+    {
+        try { (saved, saveFailed) = (Bridge.SaveReport(report!), false); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { (saved, saveFailed) = (null, true); }
+    }
+
+    async Task Send()
+    {
+        (sending, sent) = (true, null);
+        sent = await Bridge.SendReportAsync(report!);
+        sending = false;
+    }
+}

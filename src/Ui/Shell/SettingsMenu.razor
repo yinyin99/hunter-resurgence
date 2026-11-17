@@ -18,6 +18,7 @@
         <li><a href="#" id="steam-option" @onclick="() => Modal.Show<SteamOptionModal>()" @onclick:preventDefault>@L["Settings.SteamOption"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("screenshots")' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("logs")' @onclick:preventDefault>@L["Settings.Logfiles"]</a></li>
+        <li><a href="#" id="report-problem" @onclick="() => Modal.Show<ReportModal>()" @onclick:preventDefault>@L["Report.Menu"]</a></li>
         <li><a href="#" @onclick='() => Bridge.OpenFolder("game")' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>
         <li><a href="#" @onclick='() => Bridge.ClearCache("launcher")' @onclick:preventDefault>@L["Settings.ClearLauncherCache"]</a></li>
         <li><a href="#" @onclick='() => Bridge.ClearCache("game")' @onclick:preventDefault>@L["Settings.ClearGameCache"]</a></li>

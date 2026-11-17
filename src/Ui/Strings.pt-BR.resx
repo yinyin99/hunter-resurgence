@@ -1522,4 +1522,35 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>O jogo está em execução. Fechar o launcher desconecta o jogo do servidor da comunidade. Manter o launcher aberto?&#10;&#10;Sim: manter aberto. Não: minimizar.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Relatar um problema</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Isto cria um zip com os arquivos listados abaixo, para quem cuida do servidor da comunidade. Veja o que ele contém e salve-o para compartilhar você mesmo, ou envie-o ao servidor da comunidade (vinculado à sua conta, guardado por 30 dias).</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Reunindo os arquivos…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>O relatório contém estes arquivos:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Estes não puderam ser lidos e ficaram de fora:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Salvar em Downloads</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Enviar ao servidor da comunidade</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Enviando…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Salvo como {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Enviado. Sua referência é {0}. Informe-a ao pedir ajuda.</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar um relatório de problema automaticamente após uma inicialização com falha</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>Um relatório de problema foi enviado: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Algo deu errado? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar ou fechar cedo demais, o launcher pode criar um relatório de problema para ajudar a descobrir o motivo. Um relatório contém:</value></data>
+  <data name="Report.ConsentLogs" xml:space="preserve"><value>os arquivos de log do jogo e suas configurações</value></data>
+  <data name="Report.ConsentEvents" xml:space="preserve"><value>os eventos de falha do Windows referentes ao jogo</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>os nomes dos antivírus e dos aceleradores de jogo em execução no seu PC</value></data>
+  <data name="Report.ConsentStarts" xml:space="preserve"><value>quando você iniciou o jogo recentemente e como cada inicialização terminou</value></data>
+  <data name="Report.ConsentNever" xml:space="preserve"><value>Ele nunca contém senhas nem tokens.</value></data>
+  <data name="Report.ConsentWhere" xml:space="preserve"><value>Um relatório vai para o servidor da comunidade, vinculado à sua conta. Ele é guardado por 30 dias e os operadores do servidor podem lê-lo. Mais em {0}. Você pode mudar sua escolha depois no menu Configurações.</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar toda vez</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Você não está conectado. Entre novamente e tente de novo.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>O servidor da comunidade não aceitou o relatório.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>O relatório é grande demais para ser enviado. Salve-o em vez disso.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Um relatório já está a caminho, ou você enviou cinco nas últimas 24 horas. Tente novamente mais tarde.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>O servidor da comunidade está sem espaço para relatórios no momento. Salve o relatório em vez disso.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Não foi possível salvar o relatório em Downloads. Envie-o em vez disso.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Não foi possível acessar o servidor da comunidade. Tente de novo ou salve o relatório em vez disso.</value></data>
 </root>

@@ -82,13 +82,19 @@
             if (Mode.Launcher) await module.InvokeVoidAsync("watchKeys", self);
             else await module.InvokeVoidAsync("watchLaunch");
         }
-        // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, then the restore offer, each once per account (docs/website.md)
+        // the first time a player with a username is in the shell (not on the agreements page, which a player who has not accepted is sent to): the Discord invitation, then the restore offer, each once per account, then the launcher's problem report consent (docs/website.md)
         if (!offered && !eula && session is { Handle.Length: > 0 } && await Sessions.LicenseAcceptedAsync())
         {
             offered = true;
             if (Brand.Link("discord") is not null) await Modal.OfferDiscordAsync(Invite);
-            _ = Modal.OfferRestoreAsync(RestoreOffer); // waits for the Discord dialog to close: not awaited here
+            _ = OfferRestoreThenConsentAsync(); // waits for the Discord dialog to close: not awaited here
         }
+    }
+
+    async Task OfferRestoreThenConsentAsync()
+    {
+        await Modal.OfferRestoreAsync(RestoreOffer);
+        if (Mode.Launcher) await Modal.OfferReportConsentAsync(Bridge);
     }
 
     /// <summary>Called by shell.js on Ctrl+D in the launcher window.</summary>

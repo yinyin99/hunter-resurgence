@@ -1522,4 +1522,35 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Questo modulo non proviene da questo server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
   <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Il gioco è in esecuzione. Chiudere il launcher lo disconnette dal server della community. Tenere aperto il launcher?&#10;&#10;Sì: tienilo aperto. No: riducilo a icona.</value></data>
+  <data name="Report.Menu" xml:space="preserve"><value>Segnala un problema</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Crea uno zip con i file elencati qui sotto, per chi gestisce il server della community. Controlla cosa contiene, poi salvalo per condividerlo tu stesso oppure invialo al server della community (collegato al tuo account, conservato 30 giorni).</value></data>
+  <data name="Report.Building" xml:space="preserve"><value>Raccolta dei file…</value></data>
+  <data name="Report.Holds" xml:space="preserve"><value>Il rapporto contiene questi file:</value></data>
+  <data name="Report.Missing" xml:space="preserve"><value>Questi non sono stati letti e sono stati esclusi:</value></data>
+  <data name="Report.Save" xml:space="preserve"><value>Salva in Download</value></data>
+  <data name="Report.Send" xml:space="preserve"><value>Invia al server della community</value></data>
+  <data name="Report.Sending" xml:space="preserve"><value>Invio in corso…</value></data>
+  <data name="Report.Saved" xml:space="preserve"><value>Salvato come {0}</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Inviato. Il tuo riferimento è {0}. Indicalo quando chiedi aiuto.</value></data>
+  <data name="Report.AutoToggle" xml:space="preserve"><value>Invia automaticamente un rapporto sul problema dopo un avvio non riuscito</value></data>
+  <data name="Report.AutoSent" xml:space="preserve"><value>È stato inviato un rapporto sul problema: {0}</value></data>
+  <data name="Report.AutoFailed" xml:space="preserve"><value>Non è stato possibile inviare il rapporto sul problema: {0}</value></data>
+  <data name="Report.Offer" xml:space="preserve"><value>Qualcosa è andato storto? {0}</value></data>
+  <data name="Report.ConsentTitle" xml:space="preserve"><value>Inviare i rapporti sui problemi?</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia o si chiude troppo presto, il launcher può creare un rapporto sul problema per aiutare a capirne il motivo. Un rapporto contiene:</value></data>
+  <data name="Report.ConsentLogs" xml:space="preserve"><value>i file di log del gioco e le sue impostazioni</value></data>
+  <data name="Report.ConsentEvents" xml:space="preserve"><value>gli eventi di arresto anomalo di Windows per il gioco</value></data>
+  <data name="Report.ConsentSystem" xml:space="preserve"><value>i nomi degli antivirus e dei booster di gioco in esecuzione sul tuo PC</value></data>
+  <data name="Report.ConsentStarts" xml:space="preserve"><value>quando hai avviato il gioco di recente e come è finito ogni avvio</value></data>
+  <data name="Report.ConsentNever" xml:space="preserve"><value>Non contiene mai password o token.</value></data>
+  <data name="Report.ConsentWhere" xml:space="preserve"><value>Un rapporto va al server della community, collegato al tuo account. Viene conservato 30 giorni e gli operatori del server possono leggerlo. Maggiori informazioni in {0}. Puoi cambiare la tua scelta in seguito dal menu Impostazioni.</value></data>
+  <data name="Report.ConsentAuto" xml:space="preserve"><value>Invia automaticamente</value></data>
+  <data name="Report.ConsentAsk" xml:space="preserve"><value>Chiedimelo ogni volta</value></data>
+  <data name="Report.ErrSignIn" xml:space="preserve"><value>Non hai effettuato l'accesso. Accedi di nuovo e riprova.</value></data>
+  <data name="Report.ErrFormat" xml:space="preserve"><value>Il server della community non ha accettato il rapporto.</value></data>
+  <data name="Report.ErrSize" xml:space="preserve"><value>Il rapporto è troppo grande per essere inviato. Salvalo invece.</value></data>
+  <data name="Report.ErrLimit" xml:space="preserve"><value>Un rapporto è già in corso di invio, oppure ne hai inviati cinque nelle ultime 24 ore. Riprova più tardi.</value></data>
+  <data name="Report.ErrDisk" xml:space="preserve"><value>Il server della community non ha spazio per i rapporti in questo momento. Salva invece il rapporto.</value></data>
+  <data name="Report.ErrSave" xml:space="preserve"><value>Non è stato possibile salvare il rapporto in Download. Invialo invece.</value></data>
+  <data name="Report.ErrNetwork" xml:space="preserve"><value>Impossibile raggiungere il server della community. Riprova, oppure salva invece il rapporto.</value></data>
 </root>
