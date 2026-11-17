@@ -37,7 +37,7 @@ grep -rln '<AssetSlot' src/Ui --include=*.razor | wc -l
 grep -rn '<MapPlaceholder' src/Ui --include=*.razor
 ```
 
-With the values the mock services give, the slots have 661 distinct keys, and the 8 `marker-<kind>` of the launch map (the mock without tents) on top; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
+With the values the mock services give, the slots have 640 distinct keys, and the 8 `marker-<kind>` of the launch map (the mock without tents) on top; a pattern's names come from the data of the page (`item-<id>`: one picture per store item, scaled to each slot that shows it). "Have it" says whether the operator's files hold the original picture of that place: `yes`, `no` with the reason, or the count for a pattern. Reasons: *player content* (uploaded by players: never used), *no original picture* (the original showed none there), *not in the operator's files*. The column is kept by hand; `/images-missing.json` gives the current state of the folder.
 
 | Name or pattern | Size (W×H) | Where used | Have it |
 |---|---|---|---|

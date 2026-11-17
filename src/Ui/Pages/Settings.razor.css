@@ -21,3 +21,4 @@ h5 { margin: 12px 0 8px; font-size: 17.5px; line-height: 20px; font-weight: 400;
 .locked span { position: absolute; top: 66px; left: 0; width: 100%; font-size: 12px; line-height: 18px; text-align: center; color: var(--text-2); }
 .avatars + h5 + .avatars { margin-bottom: 70px; }
 .cur { margin: 0 0 28px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
