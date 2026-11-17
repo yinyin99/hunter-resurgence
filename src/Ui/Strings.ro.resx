@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina nu a fost găsită</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Această pagină nu există.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VÂNAȚI ACUM</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>Jucători: {0}</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>Jucători: {0}</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>Jocuri: {0}</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>Jocuri: {0}</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>Vânători online: {0}</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>Vânători online: {0}</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>Jocuri multiplayer: {0}</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>Jocuri multiplayer: {0}</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>OBȚINEȚI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>ȘTIRI</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>COMPETIȚII</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Meniul principal</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>MAGAZIN</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>AJUTOR</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>DESCĂRCĂRI</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Panou de bord</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Joc single-player</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Joc multiplayer</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Găsiți un joc multiplayer</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutoriale</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ este moneda virtuală a {game} și poate fi folosită pentru a cumpăra articole din magazin, precum arme, echipament, îmbrăcăminte și multe altele.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Setări</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>muniție:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>combustibil:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Ai probleme la conectarea cu prietenii în multiplayer? Pot exista multe cauze și nu toate au legătură directă cu jocul. Consultă secțiunea {0} din ghidul de depanare pentru mai multe informații.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>probleme de conexiune</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Ai nevoie de mai multe informații despre funcțiile jocului?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Nu îți găsești prada? Nu știi cum se folosește un echipament anume? Te întrebi ce rezervație de vânătoare ți se potrivește cel mai bine? Consultă {0} pentru mai multe informații. Wiki-ul este creat și administrat de comunitate, iar dacă nu găsești acolo răspunsul la întrebarea ta, întreabă liniștit pe {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nu îți găsești prada? Nu știi cum se folosește un echipament anume? Te întrebi ce rezervație de vânătoare ți se potrivește cel mai bine? Consultă {0} pentru mai multe informații. Wiki-ul este creat și administrat de comunitate.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>wiki-ul {game}</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Ai alte probleme tehnice?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>A fost o problemă la pornirea jocului? Ai primit un mesaj de eroare ciudat? Mergi la {0}, iar dacă nu găsești răspunsul la problema ta, trimite un mesaj către {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>ghidul de depanare</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Ghiduri și tutoriale</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Tutoriale video</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Site-uri comunitare locale</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} are mai multe canale oficiale de asistență. O mulțime de informații despre cum se joacă, precum și soluții pentru probleme se găsesc pe pagina noastră Wiki, întreținută de comunitate. Forumurile oficiale {game} sunt foarte active și vizitate zilnic de mulți dintre jucătorii noștri, care ajută cu plăcere începătorii.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Dacă nu găsiți răspunsul la întrebările dvs. pe forum sau în wiki, puteți deschide un tichet în sistemul nostru de asistență și vom încerca să vă ajutăm cât mai repede!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} are mai multe canale oficiale de asistență. O mulțime de informații despre cum se joacă, precum și soluții pentru probleme se găsesc pe pagina noastră Wiki, întreținută de comunitate.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Dacă nu găsiți răspunsul la întrebările dvs. în wiki, puteți deschide un tichet în sistemul nostru de asistență și vom încerca să vă ajutăm cât mai repede!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Asistență {game}</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Forumul {game}</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Întrebări despre backup sau cont? Întreabă pe Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (și în {1}, {2} și {3})</value></data>

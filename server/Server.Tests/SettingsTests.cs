@@ -47,6 +47,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheGameBuildIsOptionalAndAPositiveWholeNumber()
+    {
+        Assert.Null(Load(Minimal()).Cfg["game_build"]);
+        var ok = Minimal();
+        ok["game_build"] = 26432499;
+        Assert.Equal(26432499L, (long)Load(ok).Cfg["game_build"]!);
+        foreach (var bad in new JsonNode[] { 0, -3, 2.5, "7" })
+        {
+            var o = Minimal();
+            o["game_build"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void TheCommunityDivisorDefaultsToTwentyAndNeedsAWholeNumberOfAtLeastOne()
     {
         Assert.Equal(20, (int)Load(Minimal()).Cfg["event_community_divisor"]!);

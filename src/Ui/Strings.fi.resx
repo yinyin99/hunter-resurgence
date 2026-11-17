@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Sivua ei löytynyt</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tätä sivua ei ole olemassa.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>METSÄSTÄMÄÄN</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} pelaaja</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} pelaajaa</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} peli</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} peliä</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} metsästäjä paikalla</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} metsästäjää paikalla</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} moninpeli</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} moninpeliä</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>HANKI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>UUTISET</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>KILPAILUT</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Päävalikko</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>KAUPPA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>APU</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FOORUMI</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>LATAUKSET</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Kojelauta</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Yksinpeli</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Moninpeli</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Etsi moninpeli</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Harjoitukset</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ on {game}-pelin virtuaalivaluutta, jolla voit ostaa kaupasta tuotteita, kuten aseita, varusteita, vaatteita ja paljon muuta.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Asetukset</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammukset:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>polttoaine:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Onko sinulla ongelmia yhteyden muodostamisessa ystäviisi moninpelissä? Syitä voi olla monia, eikä kaikki välttämättä liity suoraan itse peliin. Lisätietoja löydät vianmääritysoppaan kohdasta {0}.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>yhteysongelmat</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Tarvitsetko lisätietoa pelin ominaisuuksista?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Etkö löydä saalistasi? Etkö tiedä, miten jotain varustetta käytetään? Mietitkö, mikä metsästysalue sopisi sinulle parhaiten? Lisätietoja löydät osoitteesta {0}. Wikin luo ja ylläpitää yhteisö, ja jos et löydä vastausta kysymykseesi sieltä, kysy vapaasti {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Etkö löydä saalistasi? Etkö tiedä, miten jotain varustetta käytetään? Mietitkö, mikä metsästysalue sopisi sinulle parhaiten? Lisätietoja löydät osoitteesta {0}. Wikin luo ja ylläpitää yhteisö.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game}-wiki</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>foorumilla</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Muita teknisiä ongelmia?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Oliko pelin käynnistyksessä ongelmia? Saitko oudon virheilmoituksen? Tutustu kohtaan {0}, ja jos et löydä ratkaisua ongelmaasi, lähetä viesti {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>vianmääritysopas</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Oppaat ja harjoitukset</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoharjoitukset</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Paikalliset yhteisösivustot</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game}-pelillä on useita virallisia tukikanavia. Paljon tietoa pelaamisesta ja vianmäärityksestä löytyy yhteisön ylläpitämältä Wiki-sivulta. Viralliset {game}-foorumimme ovat hyvin aktiivisia, ja monet pelaajamme vierailevat niillä päivittäin ja auttavat mielellään aloittelijoita.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Jos et löydä vastausta kysymyksiisi foorumilta tai wikistä, voit avata tukipyynnön tukijärjestelmässämme, niin yritämme auttaa sinua mahdollisimman pian!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game}-pelillä on useita virallisia tukikanavia. Paljon tietoa pelaamisesta ja vianmäärityksestä löytyy yhteisön ylläpitämältä Wiki-sivulta.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Jos et löydä vastausta kysymyksiisi wikistä, voit avata tukipyynnön tukijärjestelmässämme, niin yritämme auttaa sinua mahdollisimman pian!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-tuki</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-foorumi</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Kysyttävää varmuuskopiosta tai tilistä? Kysy Discordissa</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (myös kielillä: {1}, {2} ja {3})</value></data>

@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VADÁSSZ!</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} játékos</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} játékos</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} játék</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} játék</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} vadász online</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} vadász online</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} többjátékos játék</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} többjátékos játék</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>EM$ SZERZÉSE</value></data>
   <data name="Menu.News" xml:space="preserve"><value>HÍREK</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>VERSENYEK</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Főmenü</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>ÁRUHÁZ</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>SÚGÓ</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FÓRUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>LETÖLTÉSEK</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Vezérlőpult</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Egyjátékos mód</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Többjátékos mód</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Többjátékos mód keresése</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Oktatójátékok</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>{game} virtuális pénzneme az em$, amellyel az Áruházban vásárolhatsz fegyvereket, felszerelést, ruházatot és még sok mást.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Beállítások</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>lőszer:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>üzemanyag:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Gondod van a barátaiddal való kapcsolódással többjátékos módban? Ennek sok oka lehet, és nem biztos, hogy mindegyik közvetlenül a játékhoz kötődik. További információért nézd meg a hibaelhárítási útmutató {0} részét.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>kapcsolódási problémák</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Több információra van szükséged a játék funkcióiról?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Nem találod a zsákmányod? Nem tudod, hogyan használj egy adott felszerelést? Azon tűnődsz, melyik vadászterület illik hozzád a legjobban? További információért nézd meg a(z) {0} oldalt. A wikit a közösség hozza létre és kezeli, és ha ott nem találod a választ a kérdésedre, nyugodtan kérdezz a {1}ban.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Nem találod a zsákmányod? Nem tudod, hogyan használj egy adott felszerelést? Azon tűnődsz, melyik vadászterület illik hozzád a legjobban? További információért nézd meg a(z) {0} oldalt. A wikit a közösség hozza létre és kezeli.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game} wiki</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>fórum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Egyéb technikai problémád van?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Probléma volt a játék indításakor? Furcsa hibaüzenetet kaptál? Nézd meg a(z) {0} oldalt, és ha nem találod a választ a problémádra, küldj üzenetet a {1} csapatunknak.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>hibaelhárítási útmutató</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Útmutatók és oktatóanyagok</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videós oktatóanyagok</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Helyi közösségi oldalak</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game}: több hivatalos támogatási csatorna áll rendelkezésedre. A játékról és a hibaelhárításról sok információ megtalálható a közösség által fenntartott Wiki oldalunkon. A hivatalos {game}-fórumunk nagyon aktív, és sok játékosunk naponta felkeresi, akik szívesen segítenek a kezdőknek.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Ha a fórumon vagy a wikiben nem találod meg a kérdéseidre a választ, nyithatsz egy jegyet a támogatási rendszerünkben, és igyekszünk a lehető leggyorsabban segíteni!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game}: több hivatalos támogatási csatorna áll rendelkezésedre. A játékról és a hibaelhárításról sok információ megtalálható a közösség által fenntartott Wiki oldalunkon.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Ha a wikiben nem találod meg a kérdéseidre a választ, nyithatsz egy jegyet a támogatási rendszerünkben, és igyekszünk a lehető leggyorsabban segíteni!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game} ügyfélszolgálat</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game} fórum</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Kérdésed van a mentéseddel vagy a fiókoddal kapcsolatban? Kérdezz a Discordon</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game} wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (további nyelvek: {1}, {2} és {3})</value></data>

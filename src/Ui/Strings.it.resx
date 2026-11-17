@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina non trovata</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Questa pagina non esiste.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>CACCIA ORA</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} giocatore</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} giocatori</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} partita</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} partite</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} cacciatore online</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} cacciatori online</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} partita multiplayer</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} partite multiplayer</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>OTTIENI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NOTIZIE</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>COMPETIZIONI</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Menu principale</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>NEGOZIO</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>GUIDA</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>DOWNLOAD</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Dashboard</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Partita single player</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Partita multiplayer</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Trova una partita multiplayer</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Tutorial</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ è la valuta virtuale di {game}, utilizzabile per acquistare articoli nel Negozio, come armi, equipaggiamento, abbigliamento e molto altro.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Impostazioni</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>munizioni:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>carburante:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Hai problemi a connetterti ai tuoi amici in multiplayer? Ci possono essere molte cause e non tutte sono legate direttamente al gioco. Consulta la sezione {0} nella guida alla risoluzione dei problemi per maggiori informazioni.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>problemi di connessione</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Ti servono più informazioni sulle funzioni del gioco?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Non trovi la tua preda? Non sai come usare un particolare equipaggiamento? Ti chiedi quale riserva di caccia faccia più per te? Consulta {0} per maggiori informazioni. La wiki è creata e gestita dalla community e, se non trovi lì una risposta alla tua domanda, chiedi pure nel {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Non trovi la tua preda? Non sai come usare un particolare equipaggiamento? Ti chiedi quale riserva di caccia faccia più per te? Consulta {0} per maggiori informazioni. La wiki è creata e gestita dalla community.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>la wiki di {game}</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Hai altri problemi tecnici?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>C'è stato un problema nell'avvio del gioco? Hai ricevuto uno strano messaggio di errore? Consulta la {0} e, se non trovi la risposta al tuo problema, invia un messaggio al nostro {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>guida alla risoluzione dei problemi</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guide e tutorial</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Video tutorial</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Siti delle community locali</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} offre diversi canali di assistenza ufficiali. Molte informazioni su come giocare e sulla risoluzione dei problemi si trovano nella nostra pagina Wiki gestita dalla community. I forum ufficiali di {game} sono molto attivi e visitati ogni giorno da molti dei nostri giocatori, felici di aiutare i principianti.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Se non riesci a trovare una risposta alle tue domande nel forum o nella wiki, puoi aprire un ticket nel nostro sistema di assistenza e cercheremo di aiutarti il più in fretta possibile!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} offre diversi canali di assistenza ufficiali. Molte informazioni su come giocare e sulla risoluzione dei problemi si trovano nella nostra pagina Wiki gestita dalla community.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Se non riesci a trovare una risposta alle tue domande nella wiki, puoi aprire un ticket nel nostro sistema di assistenza e cercheremo di aiutarti il più in fretta possibile!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Assistenza {game}</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Forum di {game}</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Domande sul tuo backup o sul tuo account? Chiedi su Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki di {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (anche in {1}, {2} e {3})</value></data>

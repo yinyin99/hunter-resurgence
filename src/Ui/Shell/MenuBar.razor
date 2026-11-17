@@ -1,6 +1,5 @@
 @inject HostMode Mode
 @inject NavigationManager Nav
-@inject ILauncherBridge Bridge
 
 @if (Hidden)
 {
@@ -9,6 +8,7 @@
 else
 {
     <nav class="menu @(InBar ? "in-bar" : "")" aria-label="@L["Menu.Label"]">
+        @if (!InBar) { <OnlineNow Place="4" /> }
         @if (Mode.Launcher)
         {
             <div class="hunt-now">
@@ -27,7 +27,6 @@ else
             @* opens the launcher; without it (or without JavaScript) the download page, see shell.js launch *@
             <a href="/download" class="hunt" data-launch="hunter-resurgence://open">@L["Menu.HuntNow"] <Icon Name="chevron-right" /></a>
         }
-        @if (!Mode.Live) { <a class="ems" href="/bank/ems" data-tip="@L["Menu.GetEmsTip"]"><AssetSlot Name="coin-ems" Width="46" Height="46" Class="coin" /><span>@L["Menu.GetEms"]</span></a> }
         <a class="store" href="/store"><AssetSlot Name="icon-store" Width="46" Height="46" Class="coin" /><span>@L["Menu.Store"]</span></a>
         <ul class="items">
             @if (Mode.Launcher)
@@ -42,10 +41,6 @@ else
                 <li><a href="/download" class="@Active("download")">@L["Menu.Downloads"]</a></li>
             }
             <li><a href="/help" class="@Active("help")">@L["Menu.Help"]</a></li>
-            @if (!Mode.Launcher || !Bridge.IsSteam)
-            {
-                <li><ExternalLink Key="forum">@L["Menu.Forum"]</ExternalLink></li>
-            }
         </ul>
     </nav>
 }

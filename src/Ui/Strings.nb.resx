@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Siden ble ikke funnet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne siden finnes ikke.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAKT NÅ</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>{0} spiller</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>{0} spillere</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>{0} spill</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>{0} spill</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>{0} jeger pålogget</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>{0} jegere pålogget</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>{0} flerspillerspill</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>{0} flerspillerspill</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>FÅ EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NYHETER</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>KONKURRANSER</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Hovedmeny</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>BUTIKK</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>HJELP</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>NEDLASTINGER</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Oversikt</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Enspillerspill</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Flerspillerspill</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Finn et flerspillerspill</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Opplæring</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ er den virtuelle valutaen i {game}. Den kan brukes til å kjøpe ting i butikken, som våpen, utstyr, klær og mye mer.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Innstillinger</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>ammunisjon:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>drivstoff:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Har du problemer med å koble til vennene dine i flerspiller? Det kan være mange årsaker, og ikke alt henger direkte sammen med selve spillet. Se avsnittet om {0} i feilsøkingsveiledningen for mer informasjon.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>tilkoblingsproblemer</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Trenger du mer info om spillfunksjoner?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Finner du ikke byttet ditt? Står du fast med hvordan du bruker et bestemt stykke utstyr? Lurer du på hvilket jaktreservat som passer deg best? Sjekk ut {0} for mer informasjon. Wikien er laget og drevet av fellesskapet, og hvis du ikke finner svar på spørsmålet ditt der, er du velkommen til å spørre i {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Finner du ikke byttet ditt? Står du fast med hvordan du bruker et bestemt stykke utstyr? Lurer du på hvilket jaktreservat som passer deg best? Sjekk ut {0} for mer informasjon. Wikien er laget og drevet av fellesskapet.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>{game}-wikien</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forumet</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Har du andre tekniske problemer?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Oppstod det et problem da du startet spillet? Fikk du en merkelig feilmelding? Ta en titt i {0}, og hvis du ikke finner svar på problemet ditt, send en melding til {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>feilsøkingsveiledningen</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Guider og opplæring</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Videoopplæring</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Lokale nettsamfunn</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flere offisielle støttekanaler. Mye informasjon om hvordan du spiller, og om feilsøking, finner du på wikisiden vår, som drives av fellesskapet. De offisielle {game}-forumene våre er svært aktive og besøkes daglig av mange spillere som gjerne hjelper nybegynnere.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Hvis du ikke finner svar på spørsmålene dine i forumet eller wikien, kan du opprette en sak i støttesystemet vårt, så prøver vi å hjelpe deg så raskt som mulig!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>{game} har flere offisielle støttekanaler. Mye informasjon om hvordan du spiller, og om feilsøking, finner du på wikisiden vår, som drives av fellesskapet.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Hvis du ikke finner svar på spørsmålene dine i wikien, kan du opprette en sak i støttesystemet vårt, så prøver vi å hjelpe deg så raskt som mulig!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>{game}-støtte</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>{game}-forum</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Spørsmål om sikkerhetskopien eller kontoen din? Spør på Discord</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>{game}-wiki</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (også på {1}, {2} og {3})</value></data>

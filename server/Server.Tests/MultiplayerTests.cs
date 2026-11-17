@@ -276,6 +276,16 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
 
     Task<Reply> Online() => Send("GET", "web.test", "/stats/online");
 
+    [Fact]
+    public async Task TestTheGameBuildIsNullUntilSetAndCachedForFiveMinutes()
+    {
+        var unset = await Send("GET", "web.test", "/stats/game");
+        Eq("""{"build": null}""", Json(unset));
+        Assert.Contains(("Cache-Control", "public, max-age=300"), unset.Headers);
+        Cfg["game_build"] = 123;
+        Eq("""{"build": 123}""", Json(await Send("GET", "web.test", "/stats/game")));
+    }
+
     static string Counts(Reply r) => $"{Json(r)["players"]}/{Json(r)["games"]}";
 
     [Fact]

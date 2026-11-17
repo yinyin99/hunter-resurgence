@@ -11,6 +11,14 @@
   <data name="NotFound.Title" xml:space="preserve"><value>Strani ni mogoče najti</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ta stran ne obstaja.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>NA LOV</value></data>
+  <data name="Online.Player" xml:space="preserve"><value>Igralci: {0}</value></data>
+  <data name="Online.Players" xml:space="preserve"><value>Igralci: {0}</value></data>
+  <data name="Online.Game" xml:space="preserve"><value>Igre: {0}</value></data>
+  <data name="Online.Games" xml:space="preserve"><value>Igre: {0}</value></data>
+  <data name="Online.Hunter" xml:space="preserve"><value>Lovci na spletu: {0}</value></data>
+  <data name="Online.Hunters" xml:space="preserve"><value>Lovci na spletu: {0}</value></data>
+  <data name="Online.MpGame" xml:space="preserve"><value>Skupinski lovi: {0}</value></data>
+  <data name="Online.MpGames" xml:space="preserve"><value>Skupinski lovi: {0}</value></data>
   <data name="Menu.GetEms" xml:space="preserve"><value>KUPI EM$</value></data>
   <data name="Menu.News" xml:space="preserve"><value>NOVICE</value></data>
   <data name="Menu.Competitions" xml:space="preserve"><value>TEKMOVANJA</value></data>
@@ -23,14 +31,12 @@
   <data name="Menu.Label" xml:space="preserve"><value>Glavni meni</value></data>
   <data name="Menu.Store" xml:space="preserve"><value>TRGOVINA</value></data>
   <data name="Menu.Help" xml:space="preserve"><value>POMOČ</value></data>
-  <data name="Menu.Forum" xml:space="preserve"><value>FORUM</value></data>
   <data name="Menu.Downloads" xml:space="preserve"><value>PRENOSI</value></data>
   <data name="Menu.Dashboard" xml:space="preserve"><value>Nadzorna plošča</value></data>
   <data name="Menu.Single" xml:space="preserve"><value>Samostojni lov</value></data>
   <data name="Menu.Multi" xml:space="preserve"><value>Skupinski lov</value></data>
   <data name="Menu.Find" xml:space="preserve"><value>Najdi skupinski lov</value></data>
   <data name="Menu.Tutorials" xml:space="preserve"><value>Vadnice</value></data>
-  <data name="Menu.GetEmsTip" xml:space="preserve"><value>em$ je virtualna valuta igre {game}, s katero lahko v trgovini kupuješ predmete, kot so orožje, oprema, oblačila in še veliko več.</value></data>
   <data name="Statusbar.Settings" xml:space="preserve"><value>Nastavitve</value></data>
   <data name="Statusbar.Ammo" xml:space="preserve"><value>strelivo:</value></data>
   <data name="Statusbar.Fuel" xml:space="preserve"><value>gorivo:</value></data>
@@ -279,9 +285,8 @@
   <data name="Done.ConnectionText" xml:space="preserve"><value>Imate težave s povezovanjem s prijatelji v igri za več igralcev? Vzrokov je lahko veliko in vsi niso nujno neposredno povezani z igro. Za več informacij si oglejte razdelek {0} v vodniku za odpravljanje težav.</value></data>
   <data name="Done.ConnectionLink" xml:space="preserve"><value>težave s povezavo</value></data>
   <data name="Done.InfoTitle" xml:space="preserve"><value>Potrebujete več informacij o funkcijah igre?</value></data>
-  <data name="Done.InfoText" xml:space="preserve"><value>Ne najdete plena? Ne veste, kako uporabiti določeno opremo? Se sprašujete, kateri lovski revir vam najbolj ustreza? Za več informacij si oglejte {0}. Wiki ustvarja in upravlja skupnost, če pa tam ne najdete odgovora na svoje vprašanje, se lahko obrnete na {1}.</value></data>
+  <data name="Done.InfoText" xml:space="preserve"><value>Ne najdete plena? Ne veste, kako uporabiti določeno opremo? Se sprašujete, kateri lovski revir vam najbolj ustreza? Za več informacij si oglejte {0}. Wiki ustvarja in upravlja skupnost.</value></data>
   <data name="Done.Wiki" xml:space="preserve"><value>wiki {game}</value></data>
-  <data name="Done.Forum" xml:space="preserve"><value>forum</value></data>
   <data name="Done.TechTitle" xml:space="preserve"><value>Imate druge tehnične težave?</value></data>
   <data name="Done.TechText" xml:space="preserve"><value>Je prišlo do težave pri zagonu igre? Ste prejeli čudno sporočilo o napaki? Obiščite {0}, če pa ne najdete rešitve svoje težave, se obrnite na {1}.</value></data>
   <data name="Done.Guide" xml:space="preserve"><value>vodnik za odpravljanje težav</value></data>
@@ -1184,10 +1189,9 @@
   <data name="Help.Tabs.Guides" xml:space="preserve"><value>Vodiči in vadnice</value></data>
   <data name="Help.Tabs.Video" xml:space="preserve"><value>Video vadnice</value></data>
   <data name="Help.Tabs.Community" xml:space="preserve"><value>Lokalne skupnosti</value></data>
-  <data name="Help.Support.Intro" xml:space="preserve"><value>Igra {game} ima več uradnih kanalov za podporo. Veliko informacij o igranju igre in odpravljanju težav najdeš na wiki strani, ki jo ureja skupnost. Naši uradni forumi igre {game} so zelo aktivni in jih vsak dan obiskuje veliko igralcev, ki z veseljem pomagajo začetnikom.</value></data>
-  <data name="Help.Support.Ticket" xml:space="preserve"><value>Če odgovora na svoja vprašanja ne najdeš na forumu ali wikiju, lahko v našem sistemu za podporo odpreš zahtevek in poskusili ti bomo pomagati čim prej!</value></data>
+  <data name="Help.Support.Intro" xml:space="preserve"><value>Igra {game} ima več uradnih kanalov za podporo. Veliko informacij o igranju igre in odpravljanju težav najdeš na wiki strani, ki jo ureja skupnost.</value></data>
+  <data name="Help.Support.Ticket" xml:space="preserve"><value>Če odgovora na svoja vprašanja ne najdeš na wikiju, lahko v našem sistemu za podporo odpreš zahtevek in poskusili ti bomo pomagati čim prej!</value></data>
   <data name="Help.Support.LinkSupport" xml:space="preserve"><value>Podpora {game}</value></data>
-  <data name="Help.Support.LinkForum" xml:space="preserve"><value>Forum {game}</value></data>
   <data name="Help.Support.LinkDiscord" xml:space="preserve"><value>Vprašanja o varnostni kopiji ali računu? Vprašajte na Discordu</value></data>
   <data name="Help.Support.LinkWiki" xml:space="preserve"><value>Wiki {game}</value></data>
   <data name="Help.Support.Wiki" xml:space="preserve"><value>{0} (tudi v jezikih: {1}, {2} in {3})</value></data>
