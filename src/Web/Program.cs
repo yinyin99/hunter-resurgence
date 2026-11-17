@@ -98,7 +98,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the one-time Discord invitation is remembered with the account
     builder.Services.Replace(ServiceDescriptor.Scoped<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>())));
     // the main page's online line: the server's public counts
-    builder.Services.Replace(ServiceDescriptor.Scoped<IOnlineService>(sp => new ServerOnlineService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ILogger<ServerOnlineService>>())));
+    builder.Services.Replace(ServiceDescriptor.Scoped<IOnlineService>(sp => new ServerOnlineService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerOnlineService>>())));
     builder.Services.Replace(ServiceDescriptor.Scoped<IRestoreOfferService>(sp => new ServerRestoreOfferService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreOfferService>>())));
     // the player's avatar and the choices of the settings and the sign-up page are the server's (docs/website.md#avatars); the rest of the account settings is the mock's, and the live site does not offer it
     builder.Services.Replace(ServiceDescriptor.Scoped<IAccountService>(sp => new ServerAccountService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),

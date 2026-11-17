@@ -5,7 +5,8 @@ namespace Resurgence.Services;
 
 /// <summary>The community server's public <see cref="Path"/>: the counts of hunters in a hunt and of open multiplayer games. The server caches them for 30 seconds.</summary>
 /// <param name="http">Base address is the server; a failure of the network is none.</param>
-public sealed class ServerOnlineService(HttpClient http, ILogger<ServerOnlineService> log) : IOnlineService
+/// <param name="cookie">Only its host is used: the path is public but the server answers it on the website's host only.</param>
+public sealed class ServerOnlineService(HttpClient http, ServerCookie cookie, ILogger<ServerOnlineService> log) : IOnlineService
 {
     /// <summary>GET: 200 <see cref="OnlineCounts"/> as <c>{"players": n, "games": n}</c>, no sign-in.</summary>
     public const string Path = "/stats/online";
@@ -14,7 +15,9 @@ public sealed class ServerOnlineService(HttpClient http, ILogger<ServerOnlineSer
     {
         try
         {
-            using var response = await http.GetAsync(Path);
+            using var request = new HttpRequestMessage(HttpMethod.Get, Path);
+            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
+            using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<OnlineCounts>() is { Players: >= 0, Games: >= 0 } now) return now;
             log.LogWarning("The server answered {Path} with {Status} or an unusable reply: no counts", Path, (int)response.StatusCode);
         }
