@@ -1490,8 +1490,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>The problem report could not be sent: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Something went wrong? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problem reports?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>If the game fails to start, the launcher can send us its logs so we can fix it. No passwords.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>What's in a report</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>If the game fails to start, the launcher can send us its logs so we can fix it.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Show files</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatically</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Ask me each time</value></data>

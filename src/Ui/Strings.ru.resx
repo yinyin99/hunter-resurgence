@@ -1490,8 +1490,7 @@
   <data name="Report.AutoFailed" xml:space="preserve"><value>Не удалось отправить отчёт о проблеме: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Что-то пошло не так? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Отправлять отчёты о проблемах?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы, чтобы мы это исправили. Без паролей.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Что в отчёте</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы, чтобы мы это исправили.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Показать файлы</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Отправлять автоматически</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Спрашивать каждый раз</value></data>

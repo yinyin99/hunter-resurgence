@@ -1490,8 +1490,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Report.AutoFailed" xml:space="preserve"><value>No se pudo enviar el informe de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>¿Algo salió mal? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>¿Enviar informes de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si el juego no arranca, el launcher puede enviarnos sus registros para que lo arreglemos. Sin contraseñas.</value></data>
-  <data name="Report.ConsentLink" xml:space="preserve"><value>Qué contiene un informe</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si el juego no arranca, el launcher puede enviarnos sus registros para que lo arreglemos.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostrar archivos</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automáticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Preguntarme cada vez</value></data>
