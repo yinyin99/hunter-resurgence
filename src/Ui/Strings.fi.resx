@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Tyhjennä käynnistäjän välimuisti</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Tyhjennä pelin välimuisti</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Kansiota ei löytynyt. Peliä ei ehkä ole vielä asennettu.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Peliä ei löytynyt</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Valitse kansio…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Käytä automaattista</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Avaa kansio</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Valitsit itse</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Steamin käynnistysvalinnasta</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Löytyi Steam-kirjastostasi</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Löytyi toinen asennus: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Peliä ei löytynyt tästä kansiosta. Valitse kansio, johon peli on asennettu.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Sulje ensin peli ja tyhjennä sitten sen välimuisti.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Joitakin tiedostoja ei voitu poistaa. Yritä myöhemmin uudelleen.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Kaverit ({0})</value></data>

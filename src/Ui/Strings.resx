@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Clear launcher cache</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Clear game cache</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>The folder was not found. The game may not be installed yet.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>The game was not found</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Choose folder…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Use automatic</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Open folder</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Chosen by you</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>From Steam's launch option</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Found in your Steam library</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Another install was found: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>The game was not found in that folder. Choose the folder where the game is installed.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Close the game first, then clear its cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Some files could not be deleted. Try again later.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Friends ({0})</value></data>

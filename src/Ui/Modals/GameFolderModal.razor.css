@@ -1,0 +1,13 @@
+.folder { position: absolute; top: 83px; left: calc(50% - 330px); box-sizing: border-box; width: 660px; max-height: min(600px, calc(100vh - 103px)); padding: 20px; overflow-y: auto; }
+h1 { margin: 0 0 16px; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
+p { margin: 0 0 20px; font-size: 16px; line-height: 22px; color: var(--text-2); }
+.line { display: block; width: 100%; margin: 0 0 8px; padding: 10px 12px; font: 15px/20px Consolas, monospace; }
+.source { margin-bottom: 20px; color: var(--text-3); }
+.note { padding-inline-start: 12px; border-inline-start: 3px solid var(--launcher-accent); overflow-wrap: anywhere; }
+.error { color: var(--su-error); }
+.buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.btn { min-height: 42px; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }
+.btn-inverse { background-color: var(--surface-5); }
+@media (hover: hover) {
+    .btn-inverse:hover { background-color: var(--surface-4); }
+}

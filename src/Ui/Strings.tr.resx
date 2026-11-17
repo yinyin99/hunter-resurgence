@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Başlatıcı önbelleğini temizle</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Oyun önbelleğini temizle</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Klasör bulunamadı. Oyun henüz yüklenmemiş olabilir.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Oyun bulunamadı</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Klasör seç…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Otomatik kullan</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Klasörü aç</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Sizin seçtiğiniz</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Steam’in başlatma seçeneğinden</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Steam kitaplığınızda bulundu</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Başka bir kurulum bulundu: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Oyun bu klasörde bulunamadı. Oyunun kurulu olduğu klasörü seçin.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Önce oyunu kapatın, ardından önbelleğini temizleyin.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Bazı dosyalar silinemedi. Daha sonra tekrar deneyin.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Arkadaşlar ({0})</value></data>

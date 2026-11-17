@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Wyczyść pamięć podręczną launchera</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Wyczyść pamięć podręczną gry</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Nie znaleziono folderu. Być może gra nie jest jeszcze zainstalowana.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Nie znaleziono gry</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Wybierz folder…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Użyj automatycznego</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Otwórz folder</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Wybrany przez Ciebie</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Z opcji uruchamiania Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Znaleziono w Twojej bibliotece Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Znaleziono inną instalację: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Nie znaleziono gry w tym folderze. Wybierz folder, w którym zainstalowano grę.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Najpierw zamknij grę, a potem wyczyść jej pamięć podręczną.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Nie udało się usunąć niektórych plików. Spróbuj ponownie później.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Znajomi ({0})</value></data>

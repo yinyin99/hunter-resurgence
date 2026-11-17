@@ -107,6 +107,10 @@ public sealed class ModalService
 
     public void Alert(string text) => Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text }, "alert");
 
+    /// <summary>A refused game start: the text, and for <c>Launch.NoGame</c> a button that opens the "Game folder" window.</summary>
+    public void StartFailed(Result r, string text) =>
+        Show<AlertDialog>(new Dictionary<string, object?> { ["Text"] = text, ["GameFolder"] = r.Error == "Launch.NoGame" }, "alert");
+
     /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.
     /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>
     public void GameStarted(ILauncherBridge bridge) => _ = bridge.WhenGameExitsAsync().ContinueWith(ran => { if (ran.Result) Show<GameStartedModal>(); }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);

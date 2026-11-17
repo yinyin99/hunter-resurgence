@@ -17,7 +17,7 @@
         <li><a href="#" @onclick='() => Show(Bridge.OpenFolder("screenshots"))' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
         <li><a href="#" @onclick='() => Show(Bridge.OpenFolder("logs"))' @onclick:preventDefault>@L["Settings.Logfiles"]</a></li>
         <li><a href="#" id="report-problem" @onclick="() => Modal.Show<ReportModal>()" @onclick:preventDefault>@L["Report.Menu"]</a></li>
-        <li><a href="#" @onclick='() => Show(Bridge.OpenFolder("game"))' @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>
+        <li><a href="#" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()" @onclick:preventDefault>@L["Settings.GameFolder"]</a></li>
         <li><a href="#" @onclick='() => Show(Bridge.ClearCache("launcher"))' @onclick:preventDefault>@L["Settings.ClearLauncherCache"]</a></li>
         <li><a href="#" @onclick='() => Show(Bridge.ClearCache("game"))' @onclick:preventDefault>@L["Settings.ClearGameCache"]</a></li>
         @if (Kit.Available)

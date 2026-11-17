@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Curățați cache-ul launcherului</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Curățați cache-ul jocului</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>Folderul nu a fost găsit. Poate jocul nu este încă instalat.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>Jocul nu a fost găsit</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Alege folderul…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Folosește automat</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Deschide folderul</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Ales de tine</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Din opțiunea de lansare Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Găsit în biblioteca ta Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>A fost găsită o altă instalare: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>Jocul nu a fost găsit în acel folder. Alege folderul în care este instalat jocul.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Închideți mai întâi jocul, apoi goliți memoria cache a acestuia.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Unele fișiere nu au putut fi șterse. Încercați din nou mai târziu.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Prieteni ({0})</value></data>

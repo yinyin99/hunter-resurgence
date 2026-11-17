@@ -99,6 +99,15 @@
   <data name="Settings.ClearLauncherCache" xml:space="preserve"><value>Limpar cache do launcher</value></data>
   <data name="Settings.ClearGameCache" xml:space="preserve"><value>Limpar cache do jogo</value></data>
   <data name="Settings.NoFolder" xml:space="preserve"><value>A pasta não foi encontrada. O jogo talvez ainda não esteja instalado.</value></data>
+  <data name="GameFolder.None" xml:space="preserve"><value>O jogo não foi encontrado</value></data>
+  <data name="GameFolder.Choose" xml:space="preserve"><value>Escolher pasta…</value></data>
+  <data name="GameFolder.Automatic" xml:space="preserve"><value>Usar automático</value></data>
+  <data name="GameFolder.Open" xml:space="preserve"><value>Abrir pasta</value></data>
+  <data name="GameFolder.manual" xml:space="preserve"><value>Escolhida por si</value></data>
+  <data name="GameFolder.steam-option" xml:space="preserve"><value>Da opção de arranque do Steam</value></data>
+  <data name="GameFolder.steam-library" xml:space="preserve"><value>Encontrado na sua biblioteca Steam</value></data>
+  <data name="GameFolder.Other" xml:space="preserve"><value>Foi encontrada outra instalação: {0}</value></data>
+  <data name="Settings.FolderNoGame" xml:space="preserve"><value>O jogo não foi encontrado nessa pasta. Escolha a pasta onde o jogo está instalado.</value></data>
   <data name="Settings.CacheGameRunning" xml:space="preserve"><value>Feche primeiro o jogo e depois limpe a respetiva cache.</value></data>
   <data name="Settings.CacheFailed" xml:space="preserve"><value>Não foi possível eliminar alguns ficheiros. Tente novamente mais tarde.</value></data>
   <data name="Friends.Title" xml:space="preserve"><value>Amigos ({0})</value></data>
