@@ -85,7 +85,7 @@
             if (!await Modal.SetUpFirst(GameSettings)) return;
             var result = await Servers.JoinAsync(Server.Id, marker.Id, pass, loadout);
             // the map stays until the "Done hunting" window replaces it, as in the old app
-            if (result.Ok) { asking = null; Modal.GameStarted(Bridge); } else Modal.StartFailed(result, L[result.Error ?? "Launch.Failed"]);
+            if (result.Ok) { asking = null; Modal.GameStarted(Bridge); } else Modal.StartFailed(result);
         }
         finally { joining = false; }
     }

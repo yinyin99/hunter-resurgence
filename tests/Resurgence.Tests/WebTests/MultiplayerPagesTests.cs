@@ -1,5 +1,7 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using Resurgence.Ui;
 using Resurgence.Services;
 using Resurgence.Ui.Modals;
 using Resurgence.Ui.Pages;
@@ -108,7 +110,15 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Equal((false, null, null, null), (game.FriendsOnly, game.Password, game.MinScore, game.MaxScore));
     }
 
-    string? AlertText => Services.GetRequiredService<ModalService>() is { Type: var type, Parameters: var parameters } && type == typeof(AlertDialog) ? (string?)parameters!["Text"] : null;
+    string? AlertText
+    {
+        get
+        {
+            var modal = Services.GetRequiredService<ModalService>();
+            if (modal.Type == typeof(StartFailedDialog)) return Services.GetRequiredService<IStringLocalizer<Strings>>()[(string)modal.Parameters!["Error"]!].Value;
+            return modal.Type == typeof(AlertDialog) ? (string?)modal.Parameters!["Text"] : null;
+        }
+    }
 
     [Fact]
     public void AFullGamesRefusalIsShownAsAMessage()

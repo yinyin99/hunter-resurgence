@@ -1451,6 +1451,35 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Settings.KitRemove" xml:space="preserve"><value>Ta bort konfigurationen</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Konfigurationen på den här datorn gjordes för andra servernamn än de i settings.json. Konfigurera igen: det ersätter hosts-blocket och certifikatet.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Certifikatutfärdaren är inte betrodd på den här datorn (borttagen, eller Windows-frågan nekades). Konfigurera igen.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Spelkontroll: OK</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Spelet hittades inte.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Spelet är inte uppdaterat: uppdatera det i Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam uppdaterar fortfarande spelet.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Den här spelversionen är nyare än servern känner till; den kanske inte fungerar ännu.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Vissa spelfiler saknas: i Steam, Egenskaper, Installerade filer, Verifiera spelfilernas integritet.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Sökvägen till spelmappen har specialtecken ({0}); en vanlig mapp som C:\Games fungerar bäst.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Sökvägen till spelmappen är mycket lång; en vanlig mapp som C:\Games fungerar bäst.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spelet ligger i en OneDrive-mapp; en vanlig mapp som C:\Games fungerar bäst.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Spelet ligger på en nätverksenhet; en lokal mapp fungerar bäst.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam är inte inloggat.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blockerade en spelfil ({0}): tillåt den i Windows-säkerhet.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskutrymme på {0} ({1} kvar).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Spelet körs redan: stäng det och starta det sedan härifrån.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Öppna Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Visa alla</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Spelkontroll</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Spel hittat</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Senaste version</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Filer kompletta</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Mappens sökväg</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam inloggat</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Installation</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Windows-blockering</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Diskutrymme</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Spelet körs inte</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Varning</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Hindrar start</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Port {0} används av {1}; stäng det och försök igen.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Äldre konfiguration hittad</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>De här äldre programmen körs. Ta bort stänger dem först:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Gamla uppackade mappar (Ta bort raderar varje mapp med allt i):</value></data>

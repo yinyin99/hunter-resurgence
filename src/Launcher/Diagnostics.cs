@@ -21,8 +21,9 @@ namespace Resurgence.Launcher;
 /// <param name="antivirus">Antivirus products as Windows reports them.</param>
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
 /// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
+/// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
-    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null)
+    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null)
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
@@ -71,15 +72,16 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     {
         var missing = new List<string>();
         var exe = install() is { } g ? Path.GetFileName(g.ClientExe) : null;
-        var system = SystemText(missing, exe);
+        var checks = installChecks is null ? null : Try(() => installChecks(), missing, "install checks");
+        var system = SystemText(missing, exe, checks);
         var events = exe is null ? "no game folder" : EventsText(missing, exe);
         var run = JsonSerializer.Serialize(Try(() => runs(), missing, "runs.json") ?? [], RunHistory.Json);
         ProblemReport r;
         for (var cap = LogBytes; ; cap /= 4)
-            if ((r = Zip(trigger, cap, new(missing), system, events, run)).Bytes <= Limit || cap < 4096) return r;
+            if ((r = Zip(trigger, cap, new(missing), system, events, run, checks)).Bytes <= Limit || cap < 4096) return r;
     }
 
-    ProblemReport Zip(string trigger, int cap, List<string> missing, string system, string events, string runsJson)
+    ProblemReport Zip(string trigger, int cap, List<string> missing, string system, string events, string runsJson, IReadOnlyList<InstallCheck>? checks)
     {
         var files = new List<string>();
         using var ms = new MemoryStream();
@@ -114,7 +116,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             else missing.Add("game folder");
             foreach (var f in settingsFiles) AddFile("settings/" + Path.GetFileName(f), f);
             files.Add("report.json");
-            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing }, RunHistory.Json), Encoding.UTF8);
+            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing, checks }, RunHistory.Json), Encoding.UTF8);
         }
         var folderOut = outFolder ?? Path.Combine(Path.GetTempPath(), "hunter-resurgence");
         try
@@ -173,7 +175,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         return head.Length >= 4 && even + odd >= head.Length / 4 && Math.Min(even, odd) * 8 < Math.Max(even, odd) ? odd >= even ? Encoding.Unicode : Encoding.BigEndianUnicode : null;
     }
 
-    string SystemText(List<string> missing, string? exe)
+    string SystemText(List<string> missing, string? exe, IReadOnlyList<InstallCheck>? checks)
     {
         var sb = new StringBuilder();
         sb.AppendLine($"Launcher: {version}");
@@ -185,6 +187,11 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var running = Try(() => (processes ?? Processes)().ToHashSet(StringComparer.OrdinalIgnoreCase), missing, "running programs");
         var names = running is null ? [] : Troublemakers.Where(t => running.Contains(t.Process)).Select(t => $"{t.Name} ({t.Process})").Distinct().ToList();
         sb.AppendLine(running is null ? "Boosters and overlays: unknown" : names.Count == 0 ? "Boosters and overlays: none running" : "Boosters and overlays running: " + string.Join(", ", names));
+        if (checks is not null)
+        {
+            sb.AppendLine("Install checks:");
+            foreach (var c in checks) sb.AppendLine($"  {c.Id}: {c.Level} {c.Text}" + (c.Args is { Count: > 0 } a ? " (" + string.Join(", ", a.Select(kv => $"{kv.Key}={kv.Value}")) + ")" : ""));
+        }
         return sb.ToString();
     }
 

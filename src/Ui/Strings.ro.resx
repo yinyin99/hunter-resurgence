@@ -1451,6 +1451,35 @@ Numele:</value></data>
   <data name="Settings.KitRemove" xml:space="preserve"><value>Elimină configurarea</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Configurarea de pe acest PC a fost făcută pentru alte nume de server decât cele din settings.json. Configurați din nou: înlocuiește blocul hosts și certificatul.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Autoritatea de certificare nu este de încredere pe acest PC (eliminată sau solicitarea Windows a fost refuzată). Configurați din nou.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Verificarea jocului: OK</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Jocul nu a fost găsit.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Jocul nu este actualizat: actualizează-l în Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam încă actualizează jocul.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Această versiune a jocului este mai nouă decât cea cunoscută de server; este posibil să nu funcționeze încă.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Lipsesc unele fișiere ale jocului: în Steam, Proprietăți, Fișiere instalate, Verifică integritatea fișierelor jocului.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Calea folderului jocului conține caractere speciale ({0}); un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Calea folderului jocului este foarte lungă; un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Jocul se află într-un folder OneDrive; un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Jocul se află pe o unitate de rețea; un folder local funcționează cel mai bine.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam nu este autentificat.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a blocat un fișier al jocului ({0}): permite-l în Securitate Windows.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Spațiu redus pe disc pe {0} ({1} rămași).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Jocul rulează deja: închide-l, apoi pornește-l de aici.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Deschide Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Arată tot</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Verificarea jocului</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Joc găsit</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Ultima versiune</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Fișiere complete</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Calea folderului</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam autentificat</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Configurare</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Blocare Windows</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Spațiu pe disc</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Jocul nu rulează</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Avertisment</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Blochează pornirea</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Portul {0} este folosit de {1}; închide-l, apoi încearcă din nou.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>S-a găsit o configurare mai veche</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Aceste programe vechi rulează. Ștergere le închide mai întâi:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Foldere vechi dezarhivate (Ștergere elimină fiecare folder cu tot conținutul):</value></data>

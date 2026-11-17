@@ -1,0 +1,28 @@
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+@inject IKitService Kit
+
+@* every install check with its level, and the fix button of each problem (docs/website.md#the-game-check) *@
+<div class="all dialog-card" role="dialog" aria-modal="true" aria-labelledby="check-title">
+    <h1 id="check-title">@L["Check.Title"]</h1>
+    <ul>
+        @foreach (var c in Results)
+        {
+            <li class="@c.Level" data-check="@c.Id">
+                <span class="level">@Level(c)</span>
+                <b>@L["Check.Name." + c.Id]</b>
+                @if (c.Level != "ok") { <span class="text">@L.Text(c)</span> }
+                @if (GameCheckText.FixLabel(c.Fix) is { } label) { <button type="button" class="btn btn-inverse fix" @onclick="() => Modal.FixAsync(c.Fix!, Bridge, Kit)">@L[label]</button> }
+            </li>
+        }
+    </ul>
+    <div class="buttons">
+        <button type="button" class="btn btn-primary" id="check-close" autofocus @onclick="Modal.Close">@L["Alert.Close"]</button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<InstallCheck> Results { get; set; } = [];
+
+    string Level(InstallCheck c) => L[c.Level switch { "ok" => "Alert.Ok", "warn" => "Check.Level.Warn", _ => "Check.Level.Block" }].Value;
+}

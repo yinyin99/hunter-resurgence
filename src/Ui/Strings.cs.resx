@@ -1451,6 +1451,35 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Settings.KitRemove" xml:space="preserve"><value>Odebrat nastavení</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Nastavení na tomto počítači bylo vytvořeno pro jiné názvy serverů, než uvádí settings.json. Nastavte znovu: nahradí blok hosts a certifikát.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Certifikační autorita na tomto počítači není důvěryhodná (odstraněna, nebo byl dotaz Windows odmítnut). Nastavte znovu.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Kontrola hry: v pořádku</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Hra nebyla nalezena.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Hra není aktuální: aktualizujte ji ve Steamu.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam hru stále aktualizuje.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Tato verze hry je novější, než server zná; zatím nemusí fungovat.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Některé herní soubory chybí: ve Steamu Vlastnosti, Nainstalované soubory, Ověřit integritu herních souborů.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Cesta ke složce hry obsahuje speciální znaky ({0}); nejlépe funguje obyčejná složka jako C:\Games.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Cesta ke složce hry je velmi dlouhá; nejlépe funguje obyčejná složka jako C:\Games.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Hra je ve složce OneDrive; nejlépe funguje obyčejná složka jako C:\Games.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Hra je na síťovém disku; nejlépe funguje místní složka.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam není přihlášen.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows zablokoval soubor hry ({0}): povolte jej v Zabezpečení Windows.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Málo místa na disku {0} (zbývá {1}).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Hra už běží: zavřete ji a spusťte ji odsud.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Otevřít Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Zobrazit vše</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Kontrola hry</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Hra nalezena</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Poslední verze</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Soubory kompletní</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Cesta ke složce</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam přihlášen</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Nastavení</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Blokování Windows</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Místo na disku</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Hra neběží</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Varování</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Blokuje spuštění</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Port {0} používá {1}; zavřete jej a zkuste to znovu.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Nalezeno starší nastavení</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Tyto starší programy běží. Smazat je nejdřív zavře:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Staré rozbalené složky (Smazat odstraní každou i s obsahem):</value></data>

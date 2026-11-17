@@ -1451,6 +1451,35 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Settings.KitRemove" xml:space="preserve"><value>Kurulumu kaldır</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Bu bilgisayardaki kurulum, settings.json'daki sunucu adlarından farklı adlar için yapılmış. Yeniden kurun: hosts bloğunu ve sertifikayı değiştirir.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Sertifika yetkilisi bu bilgisayarda güvenilir değil (kaldırılmış veya Windows istemi reddedilmiş). Yeniden kurun.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Oyun denetimi: Tamam</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Oyun bulunamadı.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Oyun güncel değil: Steam'de güncelleyin.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam oyunu hâlâ güncelliyor.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Bu oyun sürümü sunucunun bildiğinden daha yeni; henüz çalışmayabilir.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Bazı oyun dosyaları eksik: Steam'de Özellikler, Yüklü dosyalar, Oyun dosyalarının bütünlüğünü doğrula.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Oyun klasörünün yolunda özel karakterler var ({0}); C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Oyun klasörünün yolu çok uzun; C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Oyun bir OneDrive klasöründe; C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Oyun bir ağ sürücüsünde; yerel bir klasör en iyi sonucu verir.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam'de oturum açık değil.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bir oyun dosyasını engelledi ({0}): Windows Güvenliği'nde izin verin.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>{0} sürücüsünde disk alanı az ({1} kaldı).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Oyun zaten çalışıyor: kapatın, sonra buradan başlatın.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Steam'i aç</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Tümünü gör</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Oyun denetimi</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Oyun bulundu</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Son sürüm</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Dosyalar eksiksiz</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Klasör yolu</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam oturumu</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Kurulum</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Windows engeli</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Disk alanı</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Oyun çalışmıyor</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Uyarı</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Başlatmayı engeller</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>{0} numaralı bağlantı noktasını {1} kullanıyor; kapatın ve tekrar deneyin.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Eski bir kurulum bulundu</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Bu eski programlar çalışıyor. Sil önce bunları kapatır:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Eski açılmış klasörler (Sil her birini içindekilerle birlikte kaldırır):</value></data>

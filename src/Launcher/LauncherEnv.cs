@@ -36,6 +36,10 @@ public sealed class LauncherEnv
         Search = GameFinder.Search(Settings, Prefs.GameFolder, Environment.GetCommandLineArgs().Skip(1), SteamPath);
     }
 
+    InstallChecks? checks;
+    /// <summary>The install check of this PC (one instance: it remembers the server's build for a few minutes).</summary>
+    public InstallChecks Checks => checks ??= InstallChecks.For(this);
+
     public GameInstallInfo GameInstallInfo => new(Install?.Folder, Search.Source, Search.Others, Search.Gone);
 
     /// <summary>The picked folder (the install root or the exe's folder) is saved as the manual folder and the game is found again; cancelled (null) changes nothing.</summary>

@@ -1,0 +1,58 @@
+@implements IDisposable
+@inject HostMode Mode
+@inject ILauncherBridge Bridge
+@inject IKitService Kit
+@inject ModalService Modal
+
+@* the install check's one line under the menu row, in the launcher only: "Game check: OK", or the first problem with its fix button, and a window with all of them (docs/website.md#the-game-check). On the dashboard and on every Hunt now page. *@
+@if (results is not null)
+{
+    <div id="game-check" class="check @(problem?.Level ?? "ok")" role="status">
+        <span class="text">@(problem is null ? L["Check.Ok"] : L.Text(problem))</span>
+        @if (problem is not null && GameCheckText.FixLabel(problem.Fix) is { } label) { <button type="button" class="btn btn-inverse fix" id="game-check-fix" @onclick="Fix">@L[label]</button> }
+        <button type="button" class="see-all" id="game-check-all" @onclick="SeeAll">@L["Check.SeeAll"]</button>
+    </div>
+}
+
+@code {
+    IReadOnlyList<InstallCheck>? results;
+    bool away; // a window of the check is open: when it closes, the checks run again
+
+    InstallCheck? problem => results is null ? null : GameCheckText.FirstProblem(results);
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Mode.Launcher) return;
+        Modal.Changed += Changed;
+        await Run();
+    }
+
+    async Task Run()
+    {
+        results = await Bridge.CheckInstallAsync();
+        StateHasChanged();
+    }
+
+    void SeeAll()
+    {
+        away = true;
+        Modal.Show<GameCheckModal>(new Dictionary<string, object?> { [nameof(GameCheckModal.Results)] = results });
+    }
+
+    // after a fix: again as soon as the window it opened is closed (or at once, when it opened none)
+    async Task Fix()
+    {
+        away = true;
+        await Modal.FixAsync(problem!.Fix!, Bridge, Kit);
+        if (Modal.Type is null) { away = false; await Run(); }
+    }
+
+    void Changed()
+    {
+        if (!away || Modal.Type is not null) return;
+        away = false;
+        _ = InvokeAsync(Run);
+    }
+
+    public void Dispose() => Modal.Changed -= Changed;
+}

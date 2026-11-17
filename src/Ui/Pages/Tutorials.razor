@@ -7,6 +7,7 @@
 
 <PageTitle>@L["Menu.Tutorials"]</PageTitle>
 
+<GameCheck />
 <div class="tutorials">
 <p class="intro">@L["Tut.Intro"]</p>
 <EventSwitch @bind-State="seasonal" Reserves="reservesList" />
@@ -47,7 +48,7 @@
         {
             if (!await Modal.SetUpFirst(GameSettings)) return;
             var r = await Service.StartTutorialAsync(t.Id);
-            if (!r.Ok) Modal.StartFailed(r, L[r.Error ?? "Launch.Failed"]);
+            if (!r.Ok) Modal.StartFailed(r);
         }
         finally { starting = false; }
     }

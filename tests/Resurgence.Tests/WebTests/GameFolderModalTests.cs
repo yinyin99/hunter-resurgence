@@ -86,18 +86,4 @@ public sealed class GameFolderModalTests : UiContext
         Assert.StartsWith("The game was not found in that folder", cut.Find(".error").TextContent);
         Assert.Equal("Found in your Steam library", cut.Find("#folder-source").TextContent);
     }
-
-    [Fact]
-    public void ARefusedStartForAMissingGameOffersTheWindow()
-    {
-        var modal = Services.GetRequiredService<ModalService>();
-        modal.StartFailed(Result.Fail("Launch.NoGame"), "x");
-        Assert.True((bool)modal.Parameters!["GameFolder"]!);
-        var alert = Render<AlertDialog>(p => p.Add(a => a.Text, "x").Add(a => a.GameFolder, true));
-        alert.Find("#alert-game-folder").Click();
-        Assert.Equal(typeof(GameFolderModal), modal.Type);
-
-        modal.StartFailed(Result.Fail("Launch.Failed"), "x");
-        Assert.False((bool)modal.Parameters!["GameFolder"]!);
-    }
 }

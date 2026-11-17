@@ -1451,6 +1451,35 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Settings.KitRemove" xml:space="preserve"><value>Fjern oppsettet</value></data>
   <data name="Kit.OtherNames" xml:space="preserve"><value>Oppsettet på denne PC-en ble laget for andre servernavn enn de i settings.json. Sett opp på nytt: det erstatter hosts-blokken og sertifikatet.</value></data>
   <data name="Kit.NoCa" xml:space="preserve"><value>Sertifikatutstederen er ikke klarert på denne PC-en (fjernet, eller Windows-spørsmålet ble avslått). Sett opp på nytt.</value></data>
+  <data name="Check.Ok" xml:space="preserve"><value>Spillsjekk: OK</value></data>
+  <data name="Check.Game.NotFound" xml:space="preserve"><value>Fant ikke spillet.</value></data>
+  <data name="Check.Version.Old" xml:space="preserve"><value>Spillet er ikke oppdatert: oppdater det i Steam.</value></data>
+  <data name="Check.Version.Updating" xml:space="preserve"><value>Steam oppdaterer fortsatt spillet.</value></data>
+  <data name="Check.Version.Newer" xml:space="preserve"><value>Denne spillversjonen er nyere enn serveren kjenner til; den fungerer kanskje ikke ennå.</value></data>
+  <data name="Check.Files.Missing" xml:space="preserve"><value>Noen spillfiler mangler: i Steam, Egenskaper, Installerte filer, Verifiser integriteten til spillfilene.</value></data>
+  <data name="Check.Path.NonAscii" xml:space="preserve"><value>Stien til spillmappen har spesialtegn ({0}); en vanlig mappe som C:\Games fungerer best.</value></data>
+  <data name="Check.Path.Long" xml:space="preserve"><value>Stien til spillmappen er veldig lang; en vanlig mappe som C:\Games fungerer best.</value></data>
+  <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spillet ligger i en OneDrive-mappe; en vanlig mappe som C:\Games fungerer best.</value></data>
+  <data name="Check.Path.Network" xml:space="preserve"><value>Spillet ligger på en nettverksstasjon; en lokal mappe fungerer best.</value></data>
+  <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam er ikke logget inn.</value></data>
+  <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blokkerte en spillfil ({0}): tillat den i Windows-sikkerhet.</value></data>
+  <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskplass på {0} ({1} igjen).</value></data>
+  <data name="Check.Running" xml:space="preserve"><value>Spillet kjører allerede: lukk det, og start det så herfra.</value></data>
+  <data name="Check.OpenSteam" xml:space="preserve"><value>Åpne Steam</value></data>
+  <data name="Check.SeeAll" xml:space="preserve"><value>Se alle</value></data>
+  <data name="Check.Title" xml:space="preserve"><value>Spillsjekk</value></data>
+  <data name="Check.Name.game" xml:space="preserve"><value>Spill funnet</value></data>
+  <data name="Check.Name.version" xml:space="preserve"><value>Nyeste versjon</value></data>
+  <data name="Check.Name.files" xml:space="preserve"><value>Filer komplette</value></data>
+  <data name="Check.Name.path" xml:space="preserve"><value>Mappens sti</value></data>
+  <data name="Check.Name.steam" xml:space="preserve"><value>Steam logget inn</value></data>
+  <data name="Check.Name.setup" xml:space="preserve"><value>Oppsett</value></data>
+  <data name="Check.Name.windows" xml:space="preserve"><value>Windows-blokkering</value></data>
+  <data name="Check.Name.disk" xml:space="preserve"><value>Diskplass</value></data>
+  <data name="Check.Name.running" xml:space="preserve"><value>Spillet kjører ikke</value></data>
+  <data name="Check.Level.Warn" xml:space="preserve"><value>Advarsel</value></data>
+  <data name="Check.Level.Block" xml:space="preserve"><value>Hindrer start</value></data>
+  <data name="Check.Setup.Port" xml:space="preserve"><value>Port {0} brukes av {1}; lukk det, og prøv igjen.</value></data>
   <data name="Cleanup.Title" xml:space="preserve"><value>Eldre oppsett funnet</value></data>
   <data name="Cleanup.Programs" xml:space="preserve"><value>Disse eldre programmene kjører. Slett lukker dem først:</value></data>
   <data name="Cleanup.Folders" xml:space="preserve"><value>Gamle utpakkede mapper (Slett fjerner hver mappe med alt innhold):</value></data>

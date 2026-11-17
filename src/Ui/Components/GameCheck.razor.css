@@ -1,0 +1,13 @@
+.check { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 14px; padding: 8px 12px; border-inline-start: 4px solid var(--su-progress-bar); border-radius: var(--r-2); background: var(--surface-2); font-size: 16px; line-height: 22px; color: var(--text-2); }
+.check.warn { border-inline-start-color: var(--amber); }
+.check.block { border-inline-start-color: var(--su-error); }
+.text { font-weight: 500; color: var(--su-progress-bar); }
+.warn .text { color: var(--amber); }
+.block .text { color: var(--su-error); }
+.fix { padding: 4px 12px; font-size: 15px; line-height: 20px; }
+.btn-inverse { background-color: var(--surface-5); }
+.see-all { margin-inline-start: auto; padding: 0; border: 0; background: none; font: inherit; color: var(--text-3); text-decoration: underline; cursor: pointer; }
+@media (hover: hover) {
+    .btn-inverse:hover { background-color: var(--surface-4); }
+    .see-all:hover { color: var(--text-1); }
+}
