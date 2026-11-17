@@ -187,6 +187,7 @@ public static class GameApi
             app.MapAccount(game);
             app.MapHunters(game);
             app.MapCatalog(game);
+            app.MapStats(game);
             api.MapExactPost(game, CHAT_CONVERSATIONS, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.ConversationsReply(a), "state")))
                .WithName("ChatConversations").WithSummary("Inbox threads")
                .WithDescription("The server's thread (non-permitted ammo notices), newest message as preview; `[]` when empty.")
