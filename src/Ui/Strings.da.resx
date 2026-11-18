@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log ind, åbn Gendan din backup, og brug Slet mine data. Det sletter kontoen, dens spildata, de gemte zips og fotos og logger dig ud. Dit Steam-id glemmes derefter; hvis du logger ind igen, oprettes en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren af denne server kan se alt ovenstående.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Fejlrapporter</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, Windows-nedbrudshændelser for spillet, navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Den indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, Windows-nedbrudshændelser for spillet, navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Dens tekstfiler indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>En rapport kan også indeholde spillets seneste nedbrudsdump, en kopi af en del af spillets hukommelse ved nedbruddet. I modsætning til resten af rapporten bliver den ikke renset: den kan indeholde det, spillet havde i hukommelsen.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Spillet sender selv sine egne nedbrudsrapporter. Serveren beholder nedbruds- og fejlrapporterne i 30 dage pr. konto, med installationsstier og enhedsidentifikatoren fjernet.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Brugsvilkår</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence er et gratis, uofficielt fanprojekt. Det er ikke tilknyttet spillets udgiver.</value></data>
@@ -1542,7 +1543,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gik noget galt? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler, så vi kan rette det.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler og spillets seneste nedbrudsdump, så vi kan rette det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Spørg mig hver gang</value></data>
@@ -1570,4 +1571,16 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Taxidermy.Already" xml:space="preserve"><value>Allerede gjort for dette dyr.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>For sent: de 72 timer er gået.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Noget gik galt. Prøv igen.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Spillet lukkede med det samme</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Spillet kunne ikke starte, hverken med eller uden Steam.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows blokerede spillet.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Tillad det i Windows-sikkerhed (Smart App Control eller dit sikkerhedsprogram).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>En Windows-komponent, som spillet har brug for, mangler.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Installer spillets komponenter</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Spillet lukkede af sig selv.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Tjek din pc's ur og din forbindelse.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Spillet stoppede.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Send en problemrapport</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Åbn Windows-sikkerhed</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Spilmappen har ingen komponenter at installere: bekræft spillets filer i Steam.</value></data>
 </root>

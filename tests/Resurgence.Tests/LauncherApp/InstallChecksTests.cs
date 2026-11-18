@@ -345,8 +345,11 @@ public class InstallChecksTests
     [InlineData("file:///C:/Windows/System32/cmd.exe", null)]
     [InlineData(@"C:\\Windows\\System32\\cmd.exe", null)]
     [InlineData("ms-settings:windowsdefender", null)]
+    [InlineData("windowsdefender://appbrowser", "windowsdefender://appbrowser")]
+    [InlineData("windowsdefender://appbrowser/x", null)]
+    [InlineData("windowsdefender://other", null)]
     [InlineData("not a url", null)]
-    public void OnlyHttpsAndSteamAddressesAreOpenedAndTheAppIdIsFilledIn(string url, string? opened)
+    public void OnlyHttpsSteamAndTheWindowsSecurityAddressAreOpenedAndTheAppIdIsFilledIn(string url, string? opened)
     {
         var seen = new List<string>();
         new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, "42", openFolder: seen.Add).OpenExternal(url);

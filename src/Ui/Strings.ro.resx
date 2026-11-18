@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatorul acestui server poate vedea tot ce este menționat mai sus.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Rapoarte de probleme</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>După ce pornirea jocului eșuează (a rulat sub un minut, s-a încheiat cu o eroare sau nu a afișat nicio fereastră), launcherul pregătește un raport: jurnalele și setările jocului, evenimentele de blocare Windows pentru joc, numele programelor antivirus, booster și overlay, versiunea și limba Windows, placa video și ecranele și pornirile tale recente. Nu conține parole sau token-uri. Este trimis doar dacă ai ales „Trimite automat” (întrebat o singură dată, poate fi schimbat în Setări), altfel doar când apeși Trimite. Este păstrat împreună cu contul tău 30 de zile, iar operatorii îl pot citi. O notificare cu pseudonimul tău, numărul contului tău și referința raportului ajunge pe canalul Discord privat al operatorilor. Ștergeți datele mele elimină rapoartele dvs.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>După ce pornirea jocului eșuează (a rulat sub un minut, s-a încheiat cu o eroare sau nu a afișat nicio fereastră), launcherul pregătește un raport: jurnalele și setările jocului, evenimentele de blocare Windows pentru joc, numele programelor antivirus, booster și overlay, versiunea și limba Windows, placa video și ecranele și pornirile tale recente. Fișierele lui text nu conțin parole sau token-uri. Este trimis doar dacă ai ales „Trimite automat” (întrebat o singură dată, poate fi schimbat în Setări), altfel doar când apeși Trimite. Este păstrat împreună cu contul tău 30 de zile, iar operatorii îl pot citi. O notificare cu pseudonimul tău, numărul contului tău și referința raportului ajunge pe canalul Discord privat al operatorilor. Ștergeți datele mele elimină rapoartele dvs.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Un raport poate conține și ultimul dump de blocare al jocului, o copie a unei părți din memoria jocului în momentul blocării. Spre deosebire de restul raportului, nu este curățat: poate conține ce avea jocul în memorie.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Jocul își trimite singur rapoartele de blocare. Serverul le păstrează pe cele de blocare și de eroare 30 de zile pentru fiecare cont, fără căile de instalare și identificatorul dispozitivului.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Termeni de utilizare</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence este un proiect gratuit și neoficial al fanilor. Nu are legătură cu editorul jocului.</value></data>
@@ -1542,7 +1543,7 @@ Numele:</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ceva nu a mers bine? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Trimiteți rapoarte de probleme?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale ca să remediem problema.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale și ultimul dump de blocare al jocului ca să remediem problema.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Arată fișierele</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Trimite automat</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Întreabă-mă de fiecare dată</value></data>
@@ -1570,4 +1571,16 @@ Numele:</value></data>
   <data name="Taxidermy.Already" xml:space="preserve"><value>Deja făcut pentru acest animal.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Prea târziu: cele 72 de ore au trecut.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Ceva nu a mers. Încearcă din nou.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Jocul s-a închis imediat</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Jocul nu a putut porni, nici cu Steam, nici fără.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows a blocat jocul.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Permiteți-l în Securitate Windows (Smart App Control sau programul dvs. de securitate).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Lipsește o componentă Windows de care jocul are nevoie.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Instalează componentele jocului</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Jocul s-a închis de la sine.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Verificați ceasul PC-ului și conexiunea.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Jocul s-a oprit.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Trimite un raport despre problemă</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Deschide Securitate Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folderul jocului nu are componente de instalat: verificați jocul în Steam.</value></data>
 </root>

@@ -12,7 +12,7 @@ using Resurgence.Services;
 namespace Resurgence.Launcher;
 
 /// <summary>Builds the problem report zip (docs/launcher.md, "Report a problem"): what the game wrote, its settings, the Windows crash events, what runs beside it and the launcher's last starts.
-/// Nothing that carries a sign-in goes in: <c>jwt.json</c> is never read and every line that looks like a credential is replaced (<see cref="Scrub"/>). A file that is missing or locked is
+/// Nothing that carries a sign-in goes in, except the crash dump: <c>jwt.json</c> is never read and every line of every text that looks like a credential is replaced (<see cref="Scrub"/>); the crash dump is the one file that is not cleaned (it is memory of the game). A file that is missing or locked is
 /// listed in <see cref="ProblemReport.Missing"/>, never an error. The probes are delegates (the default is this PC) so that a test needs no Windows.</summary>
 /// <param name="install">The game's install; null: no game folder to read.</param>
 /// <param name="settingsFiles">The game's settings files (the graphics and options files in %APPDATA%).</param>
@@ -22,11 +22,14 @@ namespace Resurgence.Launcher;
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
 /// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
 /// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
+/// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest of up to 32 MiB goes into the zip.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
-    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null)
+    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
+    Func<string, IEnumerable<string>>? dumps = null)
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
+    internal const long DumpMax = 32L * 1024 * 1024;
     static readonly TimeSpan WmiTimeout = TimeSpan.FromSeconds(10);
     const string Removed = "[line removed: it may hold a credential]";
 
@@ -67,7 +70,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>The player's own name and profile path first (they may hold spaces), then any other profile folder.</summary>
     internal static string Scrub(string text, Regex? own) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : ProfileName.Replace(own?.Replace(l, OwnReplacement) ?? l, "<user>")));
 
-    /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with each file cut to a quarter, until it fits.</summary>
+    /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt without the crash dump (it cannot be cut), then with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)
     {
         var missing = new List<string>();
@@ -75,13 +78,66 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var checks = installChecks is null ? null : Try(() => installChecks(), missing, "install checks");
         var system = SystemText(missing, exe, checks);
         var events = exe is null ? "no game folder" : EventsText(missing, exe);
-        var run = JsonSerializer.Serialize(Try(() => runs(), missing, "runs.json") ?? [], RunHistory.Json);
+        var history = Try(() => runs(), missing, "runs.json") ?? [];
+        var run = JsonSerializer.Serialize(history, RunHistory.Json);
+        var candidates = exe is null ? [] : Dumps(missing, exe, history.Count > 0 ? history[^1].Start : null);
         ProblemReport r;
+        // the newest dump that fits first; one that would push the zip over the limit (it cannot be cut) gives way to the next, then to none
+        foreach (var dump in candidates)
+        {
+            if ((r = Zip(trigger, LogBytes, new(missing), system, events, run, checks, dump)).Bytes <= Limit) return r;
+            missing.Add($"game/{Path.GetFileName(dump)} (the report would be over the size limit)");
+        }
         for (var cap = LogBytes; ; cap /= 4)
-            if ((r = Zip(trigger, cap, new(missing), system, events, run, checks)).Bytes <= Limit || cap < 4096) return r;
+            if ((r = Zip(trigger, cap, new(missing), system, events, run, checks, null)).Bytes <= Limit || cap < 4096) return r;
     }
 
-    ProblemReport Zip(string trigger, int cap, List<string> missing, string system, string events, string runsJson, IReadOnlyList<InstallCheck>? checks)
+    const int DumpTries = 3;
+
+    /// <summary>The game exe's crash dumps written after the start of the last run (an older one belongs to another crash; no run, no dump), newest first, at most <see cref="DumpTries"/>; a dump over <see cref="DumpMax"/>
+    /// is listed in <c>missing</c> and skipped. A full-memory <c>.hdmp</c> gives way to a <c>.dmp</c> or <c>.mdmp</c> of the same crash (the same folder).</summary>
+    List<string> Dumps(List<string> missing, string exe, DateTimeOffset? since)
+    {
+        if (since is null) return [];
+        var all = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).ToList(), missing, "crash dump") ?? [];
+        var small = new List<string>();
+        foreach (var f in all.OrderByDescending(File.GetLastWriteTimeUtc))
+        {
+            if (new FileInfo(f).Length > DumpMax) missing.Add($"game/{Path.GetFileName(f)} (over 32 MiB)");
+            else small.Add(f);
+        }
+        static bool Heap(string f) => Path.GetExtension(f).Equals(".hdmp", StringComparison.OrdinalIgnoreCase);
+        return small.Where(f => !Heap(f) || !small.Any(o => !Heap(o) && Path.GetDirectoryName(o) == Path.GetDirectoryName(f))).Take(DumpTries).ToList();
+    }
+
+    /// <summary>Where Windows keeps the dumps of a crashed program: the LocalDumps folder (the default <c>%LOCALAPPDATA%\CrashDumps</c> or the one the registry names, for all programs or for the exe) as <c>&lt;exe&gt;.&lt;id&gt;.dmp</c>, and the
+    /// report folders of Windows Error Reporting (<c>ReportArchive</c> and <c>ReportQueue</c>, in <c>ProgramData</c> and the user's profile) named after the exe. A folder that cannot be read is skipped, the others are still read.</summary>
+    internal static IEnumerable<string> FindDumps(string exe)
+    {
+        var found = new List<string>();
+        static void Each(Action read) { try { read(); } catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or System.Security.SecurityException) { } }
+        var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var folders = new List<string> { Path.Combine(local, "CrashDumps") };
+        const string Key = @"SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps";
+        foreach (var path in new[] { Key, Key + "\\" + exe })
+            Each(() =>
+            {
+                using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(path);
+                if (k?.GetValue("DumpFolder") is string d) folders.Add(Environment.ExpandEnvironmentVariables(d));
+            });
+        foreach (var folder in folders) Each(() => found.AddRange(Directory.EnumerateFiles(folder, exe + ".*.dmp")));
+        var wer = new[] { Environment.SpecialFolder.CommonApplicationData, Environment.SpecialFolder.LocalApplicationData }.Select(s => Path.Combine(Environment.GetFolderPath(s), "Microsoft", "Windows", "WER"));
+        foreach (var root in wer)
+            foreach (var kind in new[] { "ReportArchive", "ReportQueue" })
+                Each(() =>
+                {
+                    foreach (var report in Directory.EnumerateDirectories(Path.Combine(root, kind), $"*_{exe}_*"))
+                        Each(() => found.AddRange(Directory.EnumerateFiles(report).Where(p => Path.GetExtension(p) is ".dmp" or ".mdmp" or ".hdmp")));
+                });
+        return found;
+    }
+
+    ProblemReport Zip(string trigger, int cap, List<string> missing, string system, string events, string runsJson, IReadOnlyList<InstallCheck>? checks, string? dump)
     {
         var files = new List<string>();
         using var ms = new MemoryStream();
@@ -115,6 +171,18 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             }
             else missing.Add("game folder");
             foreach (var f in settingsFiles) AddFile("settings/" + Path.GetFileName(f), f);
+            if (dump is not null)
+            {
+                var name = "game/" + Path.GetFileName(dump);
+                try
+                {
+                    using var src = new FileStream(dump, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                    using var s = zip.CreateEntry(name, CompressionLevel.Fastest).Open();
+                    src.CopyTo(s);
+                    files.Add(name);
+                }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException) { missing.Add(name); }
+            }
             files.Add("report.json");
             Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing, checks }, RunHistory.Json), Encoding.UTF8);
         }

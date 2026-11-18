@@ -15,17 +15,19 @@ namespace Resurgence.Launcher;
 /// <param name="poll">The step of every wait: for the game to appear, for Steam to sign in, for the client to quit.</param>
 /// <param name="steamWait">How long a start waits for a Steam that is installed but has nobody signed in (20 s).</param>
 /// <param name="quitWithin">How long a start with Steam is watched for the client to quit at once (5 s).</param>
+/// <param name="earlyWithin">A game that ends within this long of its start closed right away (20 s).</param>
+/// <param name="runInstaller">Runs one redistributable and completes when it is done (Windows asks for its rights); null: the mock's.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
-    Settings? settings = null, ILogger? log = null) : ILauncherBridge
+    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, Task>? runInstaller = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -130,7 +132,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     }
 
     /// <summary>
-    /// Opens an <c>https://</c> or <c>steam://</c> address with Windows (the browser, Steam); any other address is ignored, and so is a failure to open. The text <c>{steam_app_id}</c> in the address is replaced by
+    /// Opens an <c>https://</c> or <c>steam://</c> address with Windows (the browser, Steam), or exactly <c>windowsdefender://appbrowser</c> (Windows Security's app control page); any other address is ignored, and so is a failure to open. The text <c>{steam_app_id}</c> in the address is replaced by
     /// <c>steam_app_id</c> of settings.json (an address that names it without one is ignored): the id is configuration, not code.
     /// </summary>
     public void OpenExternal(string url)
@@ -138,9 +140,62 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (openFolder is null) { rest.OpenExternal(url); return; }
         const string Id = "{steam_app_id}";
         if (url.Contains(Id, StringComparison.Ordinal)) url = steamAppId is null ? "" : url.Replace(Id, steamAppId, StringComparison.Ordinal);
-        if (!Uri.TryCreate(url, UriKind.Absolute, out var u) || u.Scheme is not ("https" or "steam")) return;
-        try { openFolder(u.AbsoluteUri); }
+        Uri? u = null;
+        if (url != AppControl && (!Uri.TryCreate(url, UriKind.Absolute, out u) || u.Scheme is not ("https" or "steam"))) return;
+        try { openFolder(u?.AbsoluteUri ?? url); }
         catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { }
+    }
+
+    const string AppControl = "windowsdefender://appbrowser";
+
+    /// <summary>
+    /// Runs the redistributables of the game folder one after the other, off the calling thread (a rejected rights prompt ends the rest). <c>Launch.NoRuntimes</c> when there are none. ponytail: the newest Visual C++ set
+    /// and DirectX only; every older generation would be a prompt more.
+    /// </summary>
+    public Result RunGameRuntimes()
+    {
+        if (runInstaller is null) return rest.RunGameRuntimes();
+        IReadOnlyList<string> files;
+        try { files = install() is { } g ? Runtimes(g.Folder) : []; }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException) { return Result.Fail("Launch.NoRuntimes"); }
+        if (files.Count == 0) return Result.Fail("Launch.NoRuntimes");
+        // a second press while the installers run starts no second chain
+        if (Interlocked.Exchange(ref installing, 1) == 1) return Result.Success;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                foreach (var file in files)
+                    try { await runInstaller(file); }
+                    catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { log?.LogWarning("A game component was not installed: {Error}", e.Message); return; }
+            }
+            finally { Interlocked.Exchange(ref installing, 0); }
+        });
+        return Result.Success;
+    }
+
+    int installing;
+
+    /// <summary>
+    /// The installers of the first redist folder that has any (<c>_CommonRedist</c> or <c>redist</c> in the game folder, else Steam's shared <c>_CommonRedist</c> beside the game's library folder): the Visual C++ ones
+    /// of the newest folder (by name, x64 first) and DirectX's <c>DXSETUP.exe</c>.
+    /// </summary>
+    internal static IReadOnlyList<string> Runtimes(string folder)
+    {
+        foreach (var root in new[] { "_CommonRedist", "redist", Path.Combine("..", "Steamworks Shared", "_CommonRedist") }.Select(r => Path.GetFullPath(Path.Combine(folder, r))).Where(Directory.Exists))
+        {
+            var vc = Directory.EnumerateFiles(root, "*redist*.exe", SearchOption.AllDirectories).GroupBy(Path.GetDirectoryName).MaxBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
+            var found = vc?.Order(StringComparer.OrdinalIgnoreCase).ToList() ?? [];
+            found.AddRange(Directory.EnumerateFiles(root, "DXSETUP.exe", SearchOption.AllDirectories));
+            if (found.Count > 0) return found;
+        }
+        return [];
+    }
+
+    static async Task RunInstaller(string path)
+    {
+        using var p = Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(path) });
+        if (p is not null) await p.WaitForExitAsync();
     }
     public void ToggleDevTools() => rest.ToggleDevTools();
     /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
@@ -159,16 +214,19 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         StartStateChanged?.Invoke();
         var withSteam = SteamUp();
         CarryGraphics(withSteam);
-        using var game = Launch(g, url, param, withSteam);
+        var game = Launch(g, url, param, withSteam);
         if (game is null) return Result.Fail("Launch.StartFailed");
         // the client quit at once because Steam is not there: once more without Steam, and never again
-        if (withSteam && QuitEarly(game) == SteamMissing)
+        if (withSteam && QuitEarly(game.Game) == SteamMissing)
         {
+            game.Game.Dispose();
             CarryGraphics(false);
-            using var again = Launch(g, url, param, false);
-            if (again is null) return Result.Fail("Launch.StartFailed");
+            game = Launch(g, url, param, false);
+            if (game is null) return Result.Fail("Launch.StartFailed");
             withSteam = false;
         }
+        // the process of the last start is the one watched (a process the watch never took is let go)
+        Interlocked.Exchange(ref started, game)?.Game.Dispose();
         // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
@@ -182,17 +240,24 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (GameFiles.CarryGraphics(settings, appData, withSteam) is { } error) log?.LogWarning("The graphics settings could not be copied for the start: {Error}", error);
     }
 
-    /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
-    /// to a minute (false: it never appeared), then until it is gone (true) or the process found has exited. It also records the run (<see cref="LastRun"/>). ponytail: polls every <c>poll</c> (1 s); Steam starts the game, so there is no start to keep a handle from, and the process is looked up by name.</summary>
-    public async Task<bool> WhenGameExitsAsync()
+    /// <summary>
+    /// Completes when the process the last <see cref="StartGame"/> started (the retry after a 16010) has ended, and records the run (<see cref="LastRun"/>): its mode, exit code and whether a window showed. Without such a
+    /// process (the game was started by something else) the client is looked up by its exe: awaited for up to a minute (null: it never appeared), then watched until it is gone. Early: it ended within <c>earlyWithin</c> (20 s)
+    /// of its start, with a known exit code. ponytail: polls every <c>poll</c> (1 s), so <see cref="GameExit.Seconds"/> may be a poll late.
+    /// </summary>
+    public async Task<GameExit?> WhenGameExitsAsync()
     {
-        if (install() is not { } g) return false;
+        if (install() is not { } g) return null;
         var step = poll ?? TimeSpan.FromSeconds(1);
-        for (var waited = TimeSpan.Zero; !isRunning(g.ClientExe) && waited < (appearWithin ?? TimeSpan.FromMinutes(1)); waited += step) await Task.Delay(step);
-        if (!isRunning(g.ClientExe)) return false;
-        // the run: when it was seen, how long it ran, its exit code and whether it ever showed a window (the process is looked up again while it is not held yet)
-        var (start, ran) = (DateTimeOffset.Now, Stopwatch.StartNew());
-        GameProcess? game = null;
+        var held = Interlocked.Exchange(ref started, null);
+        if (held is null)
+        {
+            for (var waited = TimeSpan.Zero; !isRunning(g.ClientExe) && waited < (appearWithin ?? TimeSpan.FromMinutes(1)); waited += step) await Task.Delay(step);
+            if (!isRunning(g.ClientExe)) return null;
+        }
+        // the run: when it started (seen, without a held process), how long it ran, its exit code and whether it ever showed a window (without a held process it is looked up again while it is not found yet)
+        var (at, ran, mode) = held is null ? (DateTimeOffset.Now, Stopwatch.StartNew(), lastStartMode) : (held.At, held.Ran, held.Mode);
+        var game = held?.Game;
         var window = false;
         try
         {
@@ -200,14 +265,26 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             {
                 game ??= find?.Invoke(g.ClientExe);
                 window |= game?.WindowVisible() == true;
-            // the run ends when the exe is gone or the process held has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
-            } while (isRunning(g.ClientExe) && game?.ExitCode() is null && await Delay(step));
-            var run = LastRun = new GameRun(start, ran.Elapsed, game?.ExitCode(), window, lastStartMode);
+            // the run ends when the process held has exited; without one, when the exe is gone or the process found has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
+            } while ((held is not null || isRunning(g.ClientExe)) && game?.ExitCode() is null && await Delay(step));
+            var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
+            var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
+            var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
+            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, mode) : null);
         }
         finally { game?.Dispose(); }
-        return true;
     }
+
+    /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry, so Steam was not what failed), blocked (app control), runtime (a DLL not found), closed (exit 0), crash (anything else).</summary>
+    internal static string Cause(int code, string? mode) => code switch
+    {
+        SteamMissing when mode == "nosteam" => "steam",
+        Blocked => "blocked",
+        DllNotFound => "runtime",
+        0 => "closed",
+        _ => "crash",
+    };
 
     static async Task<bool> Delay(TimeSpan step)
     {
@@ -228,6 +305,10 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     readonly ManualResetEventSlim skipSteam = new();
     volatile bool waitingForSteam;
     string? lastStartMode;
+    /// <summary>The process of the last start, kept for the watch; the watch takes it.</summary>
+    Started? started;
+
+    sealed record Started(GameProcess Game, string Mode, DateTimeOffset At, Stopwatch Ran);
 
     public bool WaitingForSteam => waitingForSteam;
     public string? LastStartMode => lastStartMode;
@@ -236,6 +317,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     /// <summary>The exit code of a client that quit with Steam missing.</summary>
     const int SteamMissing = 16010;
+    // as the signed exit codes of Process: 3236495362 (blocked by Windows app control) and 3221225781 (DLL not found)
+    const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u);
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
@@ -275,12 +358,12 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     }
 
     /// <summary>Starts the client in the exe's own folder (it finds its data and writes its logs relative to the working folder); null when it does not start.</summary>
-    GameProcess? Launch(GameInstall g, string url, int param, bool withSteam)
+    Started? Launch(GameInstall g, string url, int param, bool withSteam)
     {
         var info = new ProcessStartInfo(g.ClientExe, Arguments(url, param, withSteam)) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
         // with the app id set the client does not ask Steam to start it again (that would run Steam's launch option), in either mode
         if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
-        return start(info);
+        return start(info) is { } game ? new(game, withSteam ? "steam" : "nosteam", DateTimeOffset.Now, Stopwatch.StartNew()) : null;
     }
 
     /// <summary>Watches a client started with Steam for <c>quitWithin</c> (5 s) or until its window shows: its exit code when it quit, else null.</summary>

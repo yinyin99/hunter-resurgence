@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Войдите, откройте «Восстановить резервную копию» и нажмите «Удалить мои данные». Это удалит аккаунт, его игровые данные, сохранённые zip-архивы и фотографии, а вы выйдете из аккаунта. После этого ваш Steam ID забывается; повторный вход создаст новый аккаунт.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Оператор этого сервера видит всё перечисленное выше.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Отчёты о проблемах</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Если запуск игры не удался (она работала меньше минуты, завершилась с ошибкой или не показала окно), лаунчер собирает отчёт: журналы и настройки игры, события сбоев Windows для игры, названия антивирусов, бустеров и оверлеев, версию и язык Windows, видеокарту и экраны, а также ваши последние запуски. Паролей и токенов в нём нет. Он отправляется, только если вы выбрали «Отправлять автоматически» (спрашивается один раз, можно изменить в Настройках), иначе — только когда вы нажмёте «Отправить». Он хранится вместе с вашей учётной записью 30 дней, и операторы могут его прочитать. Уведомление с вашим ником, номером вашей учётной записи и номером отчёта отправляется в закрытый Discord-канал операторов. «Удалить мои данные» удаляет ваши отчёты.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Если запуск игры не удался (она работала меньше минуты, завершилась с ошибкой или не показала окно), лаунчер собирает отчёт: журналы и настройки игры, события сбоев Windows для игры, названия антивирусов, бустеров и оверлеев, версию и язык Windows, видеокарту и экраны, а также ваши последние запуски. Паролей и токенов в его текстовых файлах нет. Он отправляется, только если вы выбрали «Отправлять автоматически» (спрашивается один раз, можно изменить в Настройках), иначе — только когда вы нажмёте «Отправить». Он хранится вместе с вашей учётной записью 30 дней, и операторы могут его прочитать. Уведомление с вашим ником, номером вашей учётной записи и номером отчёта отправляется в закрытый Discord-канал операторов. «Удалить мои данные» удаляет ваши отчёты.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Отчёт может содержать и последний дамп сбоя игры, копию части памяти игры в момент сбоя. В отличие от остального отчёта, он не очищается: в нём может быть то, что игра держала в памяти.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Игра сама отправляет свои отчёты о сбоях. Сервер хранит отчёты о сбоях и ошибках 30 дней для каждой учётной записи, удаляя пути установки и идентификатор устройства.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Условия использования</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence — бесплатный неофициальный проект фанатов. Он не связан с издателем игры.</value></data>
@@ -1542,7 +1543,7 @@
   <data name="Report.AutoFailed" xml:space="preserve"><value>Не удалось отправить отчёт о проблеме: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Что-то пошло не так? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Отправлять отчёты о проблемах?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы, чтобы мы это исправили.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы и последний дамп сбоя игры, чтобы мы это исправили.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Показать файлы</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Отправлять автоматически</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Спрашивать каждый раз</value></data>
@@ -1570,4 +1571,16 @@
   <data name="Taxidermy.Already" xml:space="preserve"><value>Для этого животного уже сделано.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Слишком поздно: 72 часа прошли.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Что-то пошло не так. Попробуйте ещё раз.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Игра сразу закрылась</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Игру не удалось запустить ни через Steam, ни без него.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows заблокировала игру.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Разрешите её в Безопасности Windows (Smart App Control или ваша программа защиты).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Не хватает компонента Windows, который нужен игре.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Установить компоненты игры</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Игра закрылась сама.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Проверьте часы на компьютере и подключение.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Игра остановилась.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Отправить отчёт о проблеме</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Открыть Безопасность Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>В папке игры нет компонентов для установки: проверьте файлы игры в Steam.</value></data>
 </root>

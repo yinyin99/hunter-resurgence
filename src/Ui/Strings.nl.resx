@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log in, open Je back-up herstellen en gebruik Mijn gegevens verwijderen. Dat verwijdert het account, de spelgegevens, de bewaarde zips en de foto's, en logt je uit. Je Steam-id wordt dan vergeten; opnieuw inloggen maakt een nieuw account aan.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>De operator van deze server kan alles hierboven zien.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Probleemrapporten</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Als het starten van het spel mislukt (het draaide korter dan een minuut, eindigde met een fout of toonde geen venster), stelt de launcher een rapport samen: de logbestanden en instellingen van het spel, Windows-crashgebeurtenissen voor het spel, de namen van antivirus-, booster- en overlayprogramma's, je Windows-versie en -taal, videokaart en schermen en je recente starts. Er staan geen wachtwoorden of tokens in. Het wordt alleen verstuurd als je "Automatisch versturen" hebt gekozen (eenmalig gevraagd, te wijzigen bij Instellingen), anders alleen wanneer je op Versturen drukt. Het wordt 30 dagen bij je account bewaard en de beheerders kunnen het lezen. Een melding met je gebruikersnaam, accountnummer en de referentie van het rapport gaat naar het privé-Discord-kanaal van de beheerders. Mijn gegevens verwijderen verwijdert je rapporten.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Als het starten van het spel mislukt (het draaide korter dan een minuut, eindigde met een fout of toonde geen venster), stelt de launcher een rapport samen: de logbestanden en instellingen van het spel, Windows-crashgebeurtenissen voor het spel, de namen van antivirus-, booster- en overlayprogramma's, je Windows-versie en -taal, videokaart en schermen en je recente starts. In de tekstbestanden staan geen wachtwoorden of tokens. Het wordt alleen verstuurd als je "Automatisch versturen" hebt gekozen (eenmalig gevraagd, te wijzigen bij Instellingen), anders alleen wanneer je op Versturen drukt. Het wordt 30 dagen bij je account bewaard en de beheerders kunnen het lezen. Een melding met je gebruikersnaam, accountnummer en de referentie van het rapport gaat naar het privé-Discord-kanaal van de beheerders. Mijn gegevens verwijderen verwijdert je rapporten.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Een rapport kan ook de laatste crashdump van het spel bevatten, een kopie van een deel van het geheugen van het spel op het moment van de crash. Anders dan de rest van het rapport wordt die niet opgeschoond: hij kan bevatten wat het spel in het geheugen had.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Het spel verstuurt zelf zijn crashrapporten. De server bewaart de crash- en foutrapporten 30 dagen per account, zonder installatiepaden en apparaat-ID.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Gebruiksvoorwaarden</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence is een gratis, onofficieel fanproject. Het is niet gelieerd aan de uitgever van het spel.</value></data>
@@ -1542,7 +1543,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Het probleemrapport kon niet worden verzonden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Is er iets misgegaan? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Probleemrapporten sturen?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs sturen zodat we het kunnen oplossen.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn logs en de laatste crashdump van het spel sturen zodat we het kunnen oplossen.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Bestanden tonen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch sturen</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Elke keer vragen</value></data>
@@ -1570,4 +1571,16 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Taxidermy.Already" xml:space="preserve"><value>Al gedaan voor dit dier.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Te laat: de 72 uur zijn voorbij.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Er ging iets mis. Probeer het opnieuw.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Het spel sloot meteen af</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Het spel kon niet starten, met of zonder Steam.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows heeft het spel geblokkeerd.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Sta het toe in Windows-beveiliging (Smart App Control of uw beveiligingsprogramma).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Een Windows-onderdeel dat het spel nodig heeft, ontbreekt.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Onderdelen van het spel installeren</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Het spel sloot uit zichzelf af.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Controleer de klok van uw pc en uw verbinding.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Het spel is gestopt.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Een probleemrapport versturen</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows-beveiliging openen</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>De spelmap bevat geen onderdelen om te installeren: controleer het spel in Steam.</value></data>
 </root>

@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene; novým přihlášením vznikne nový účet.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operátor tohoto serveru vidí vše výše uvedené.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Hlášení problémů</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Když se spuštění hry nepodaří (běželo méně než minutu, skončilo chybou nebo nezobrazilo okno), launcher sestaví hlášení: protokoly a nastavení hry, události pádu hry ve Windows, názvy antivirových programů, booster a overlay programů, verze a jazyk Windows, grafická karta a obrazovky a vaše poslední spuštění. Neobsahuje žádná hesla ani tokeny. Odešle se jen tehdy, pokud jste zvolili „Odesílat automaticky“ (zeptáme se jednou, změnit lze v části Nastavení), jinak jen po stisknutí tlačítka Odeslat. Uchovává se u vašeho účtu 30 dní a provozovatelé ho mohou číst. Oznámení s vaší přezdívkou, číslem vašeho účtu a referencí hlášení se odešle do soukromého kanálu provozovatelů na Discordu. Smazat mé údaje vaše hlášení odstraní.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Když se spuštění hry nepodaří (běželo méně než minutu, skončilo chybou nebo nezobrazilo okno), launcher sestaví hlášení: protokoly a nastavení hry, události pádu hry ve Windows, názvy antivirových programů, booster a overlay programů, verze a jazyk Windows, grafická karta a obrazovky a vaše poslední spuštění. Jeho textové soubory neobsahují žádná hesla ani tokeny. Odešle se jen tehdy, pokud jste zvolili „Odesílat automaticky“ (zeptáme se jednou, změnit lze v části Nastavení), jinak jen po stisknutí tlačítka Odeslat. Uchovává se u vašeho účtu 30 dní a provozovatelé ho mohou číst. Oznámení s vaší přezdívkou, číslem vašeho účtu a referencí hlášení se odešle do soukromého kanálu provozovatelů na Discordu. Smazat mé údaje vaše hlášení odstraní.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Hlášení může obsahovat i poslední výpis pádu hry, kopii části paměti hry v okamžiku pádu. Na rozdíl od zbytku hlášení se nečistí: může obsahovat to, co měla hra v paměti.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Hra odesílá své vlastní hlášení o pádech sama. Server uchovává hlášení o pádech a chybách 30 dní pro každý účet, s odstraněnými instalačními cestami a identifikátorem zařízení.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Podmínky použití</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence je bezplatný, neoficiální fanouškovský projekt. Není spojen s vydavatelem hry.</value></data>
@@ -1542,7 +1543,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>Hlášení o problému se nepodařilo odeslat: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Něco se pokazilo? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Odesílat hlášení o problémech?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí, může nám launcher poslat své protokoly, abychom to opravili.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Pokud se hra nespustí, může nám launcher poslat své protokoly a poslední výpis pádu hry, abychom to opravili.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Zobrazit soubory</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Odesílat automaticky</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Ptát se pokaždé</value></data>
@@ -1570,4 +1571,16 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Taxidermy.Already" xml:space="preserve"><value>U tohoto zvířete už je hotovo.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Příliš pozdě: 72 hodin uplynulo.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Něco se pokazilo. Zkuste to prosím znovu.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Hra se hned zavřela</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Hru se nepodařilo spustit, ani se Steamem, ani bez něj.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows hru zablokoval.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Povolte ji v Zabezpečení Windows (Inteligentní řízení aplikací nebo váš bezpečnostní program).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Chybí součást Windows, kterou hra potřebuje.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Nainstalovat součásti hry</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Hra se zavřela sama.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Zkontrolujte čas v počítači a připojení.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Hra se zastavila.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Odeslat hlášení o problému</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Otevřít Zabezpečení Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Složka hry neobsahuje žádné součásti k instalaci: ověřte hru ve Steamu.</value></data>
 </root>

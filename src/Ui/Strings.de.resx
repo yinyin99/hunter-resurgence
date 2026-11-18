@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Melden Sie sich an, öffnen Sie „Ihr Backup wiederherstellen“ und wählen Sie „Meine Daten löschen“. Dadurch werden das Konto, seine Spieldaten, die aufbewahrten Zips und die Fotos gelöscht, und Sie werden abgemeldet. Ihre Steam-ID wird dann vergessen; bei einer erneuten Anmeldung wird ein neues Konto angelegt.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Der Betreiber dieses Servers kann all das Obige sehen.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Problemberichte</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Wenn ein Spielstart fehlschlägt (er lief weniger als eine Minute, endete mit einem Fehler oder zeigte kein Fenster), erstellt der Launcher einen Bericht: die Logs und Einstellungen des Spiels, Windows-Absturzereignisse des Spiels, die Namen von Antivirus-, Booster- und Overlay-Programmen, Ihre Windows-Version und -Sprache, Grafikkarte und Bildschirme sowie Ihre letzten Starts. Er enthält keine Passwörter oder Tokens. Er wird nur gesendet, wenn Sie "Automatisch senden" gewählt haben (einmalig abgefragt, in den Einstellungen änderbar), andernfalls nur, wenn Sie auf Senden klicken. Er wird 30 Tage lang bei Ihrem Konto gespeichert und kann von den Betreibern gelesen werden. Eine Benachrichtigung mit Ihrem Handle, Ihrer Kontonummer und der Referenz des Berichts geht an den privaten Discord-Kanal der Betreiber. Meine Daten löschen entfernt Ihre Berichte.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Wenn ein Spielstart fehlschlägt (er lief weniger als eine Minute, endete mit einem Fehler oder zeigte kein Fenster), erstellt der Launcher einen Bericht: die Logs und Einstellungen des Spiels, Windows-Absturzereignisse des Spiels, die Namen von Antivirus-, Booster- und Overlay-Programmen, Ihre Windows-Version und -Sprache, Grafikkarte und Bildschirme sowie Ihre letzten Starts. Seine Textdateien enthalten keine Passwörter oder Tokens. Er wird nur gesendet, wenn Sie "Automatisch senden" gewählt haben (einmalig abgefragt, in den Einstellungen änderbar), andernfalls nur, wenn Sie auf Senden klicken. Er wird 30 Tage lang bei Ihrem Konto gespeichert und kann von den Betreibern gelesen werden. Eine Benachrichtigung mit Ihrem Handle, Ihrer Kontonummer und der Referenz des Berichts geht an den privaten Discord-Kanal der Betreiber. Meine Daten löschen entfernt Ihre Berichte.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Ein Bericht kann auch den letzten Absturzspeicherauszug des Spiels enthalten, eine Kopie eines Teils des Spielspeichers beim Absturz. Anders als der Rest des Berichts wird er nicht bereinigt: Er kann enthalten, was das Spiel im Speicher hatte.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Das Spiel sendet seine eigenen Absturzberichte selbst. Der Server bewahrt die Absturz- und Fehlerberichte 30 Tage pro Konto auf, wobei Installationspfade und die Gerätekennung entfernt werden.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Nutzungsbedingungen</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence ist ein kostenloses, inoffizielles Fanprojekt. Es steht in keiner Verbindung zum Herausgeber des Spiels.</value></data>
@@ -1542,7 +1543,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Der Problembericht konnte nicht gesendet werden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ist etwas schiefgelaufen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Problemberichte senden?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns seine Logs schicken, damit wir es beheben können.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns seine Logs und den letzten Absturzspeicherauszug des Spiels schicken, damit wir es beheben können.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dateien anzeigen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch senden</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Jedes Mal fragen</value></data>
@@ -1570,4 +1571,16 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Taxidermy.Already" xml:space="preserve"><value>Für dieses Tier bereits erledigt.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Zu spät: die 72 Stunden sind vorbei.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Etwas ist schiefgelaufen. Bitte versuche es erneut.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Das Spiel wurde sofort beendet</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Das Spiel konnte weder mit noch ohne Steam gestartet werden.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows hat das Spiel blockiert.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Erlauben Sie es in der Windows-Sicherheit (Smart App Control oder Ihr Sicherheitsprogramm).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Eine Windows-Komponente, die das Spiel braucht, fehlt.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Komponenten des Spiels installieren</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Das Spiel wurde von selbst beendet.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Prüfen Sie die Uhr Ihres PCs und Ihre Verbindung.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Das Spiel wurde angehalten.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Problembericht senden</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows-Sicherheit öffnen</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Der Spielordner enthält keine Komponenten zum Installieren: Überprüfen Sie das Spiel in Steam.</value></data>
 </root>

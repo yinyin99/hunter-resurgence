@@ -29,7 +29,8 @@ public sealed class ProblemReportTests : UiContext
         public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;
-        public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);
+        public Task<GameExit?> WhenGameExitsAsync() => Task.FromResult<GameExit?>(new(0, 1800, "steam", false, null));
+        public Result RunGameRuntimes() => Result.Success;
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
 

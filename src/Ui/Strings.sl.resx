@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi; ob novi prijavi se ustvari nov račun.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operater tega strežnika vidi vse zgoraj navedeno.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Poročila o težavah</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Ko se zagon igre ne posreči (ta je tekla manj kot minuto, se končala z napako ali ni pokazala okna), zaganjalnik sestavi poročilo: dnevnike in nastavitve igre, dogodke zrušitev sistema Windows za igro, imena protivirusnih programov, programov za pospeševanje in prekrivnih programov, različico in jezik sistema Windows, grafično kartico in zaslone ter vaše nedavne zagone. Ne vsebuje gesel ali žetonov. Pošlje se le, če ste izbrali »Pošlji samodejno« (vprašamo vas enkrat, spremenite lahko v Nastavitvah), sicer le, ko pritisnete Pošlji. Hrani se z vašim računom 30 dni in ga lahko berejo operaterji. Obvestilo z vašim vzdevkom, številko vašega računa in sklicem poročila gre na zasebni kanal Discord operaterjev. »Izbriši moje podatke« izbriše vaša poročila.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Ko se zagon igre ne posreči (ta je tekla manj kot minuto, se končala z napako ali ni pokazala okna), zaganjalnik sestavi poročilo: dnevnike in nastavitve igre, dogodke zrušitev sistema Windows za igro, imena protivirusnih programov, programov za pospeševanje in prekrivnih programov, različico in jezik sistema Windows, grafično kartico in zaslone ter vaše nedavne zagone. Njegove besedilne datoteke ne vsebujejo gesel ali žetonov. Pošlje se le, če ste izbrali »Pošlji samodejno« (vprašamo vas enkrat, spremenite lahko v Nastavitvah), sicer le, ko pritisnete Pošlji. Hrani se z vašim računom 30 dni in ga lahko berejo operaterji. Obvestilo z vašim vzdevkom, številko vašega računa in sklicem poročila gre na zasebni kanal Discord operaterjev. »Izbriši moje podatke« izbriše vaša poročila.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Poročilo lahko vsebuje tudi zadnji izpis sesutja igre, kopijo dela pomnilnika igre v trenutku sesutja. Za razliko od preostalega poročila ni očiščen: lahko vsebuje, kar je imela igra v pomnilniku.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Igra sama pošilja svoja poročila o zrušitvah. Strežnik hrani poročila o zrušitvah in napakah 30 dni na račun, pri čemer so odstranjene namestitvene poti in identifikator naprave.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Pogoji uporabe</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence je brezplačen, neuradni projekt oboževalcev. Ni povezan z založnikom igre.</value></data>
@@ -1542,7 +1543,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Poročila o težavi ni bilo mogoče poslati: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Je šlo kaj narobe? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Pošiljam poročila o težavah?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene, nam lahko zaganjalnik pošlje svoje dnevnike, da jo popravimo.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene, nam lahko zaganjalnik pošlje svoje dnevnike in zadnji izpis sesutja igre, da jo popravimo.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Pokaži datoteke</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Pošlji samodejno</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Vprašaj me vsakič</value></data>
@@ -1570,4 +1571,16 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Taxidermy.Already" xml:space="preserve"><value>Za to žival je že narejeno.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Prepozno: 72 ur je minilo.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Nekaj je šlo narobe. Poskusite znova.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Igra se je takoj zaprla</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Igre ni bilo mogoče zagnati, ne s Steamom ne brez njega.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows je igro blokiral.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Dovolite jo v Varnosti sistema Windows (Smart App Control ali vaš varnostni program).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Manjka komponenta sistema Windows, ki jo igra potrebuje.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Namesti komponente igre</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Igra se je zaprla sama.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Preverite uro računalnika in povezavo.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Igra se je ustavila.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Pošlji poročilo o težavi</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Odpri Varnost sistema Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Mapa igre nima komponent za namestitev: preverite igro v Steamu.</value></data>
 </root>

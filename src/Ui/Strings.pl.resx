@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Zaloguj się, otwórz Przywróć kopię zapasową i użyj Usuń moje dane. Usuwa to konto, jego dane z gry, przechowywane zipy i zdjęcia oraz wylogowuje Cię. Twoje id Steam zostaje wtedy zapomniane; ponowne logowanie tworzy nowe konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operator tego serwera widzi wszystko powyższe.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Raporty o problemach</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Gdy uruchomienie gry się nie powiedzie (działała krócej niż minutę, zakończyła się błędem lub nie pokazała okna), launcher przygotowuje raport: dzienniki i ustawienia gry, zdarzenia awarii gry w systemie Windows, nazwy programów antywirusowych, boosterów i nakładek, wersję i język systemu Windows, kartę graficzną i ekrany oraz Twoje ostatnie uruchomienia. Nie zawiera haseł ani tokenów. Jest wysyłany tylko wtedy, gdy wybierzesz „Wysyłaj automatycznie” (pytanie pojawia się raz, można to zmienić w Ustawieniach), w przeciwnym razie tylko po naciśnięciu Wyślij. Jest przechowywany przy Twoim koncie przez 30 dni i operatorzy mogą go odczytać. Powiadomienie z Twoją nazwą użytkownika, numerem Twojego konta i numerem referencyjnym raportu trafia na prywatny kanał Discord operatorów. Usuń moje dane usuwa Twoje raporty.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Gdy uruchomienie gry się nie powiedzie (działała krócej niż minutę, zakończyła się błędem lub nie pokazała okna), launcher przygotowuje raport: dzienniki i ustawienia gry, zdarzenia awarii gry w systemie Windows, nazwy programów antywirusowych, boosterów i nakładek, wersję i język systemu Windows, kartę graficzną i ekrany oraz Twoje ostatnie uruchomienia. Jego pliki tekstowe nie zawierają haseł ani tokenów. Jest wysyłany tylko wtedy, gdy wybierzesz „Wysyłaj automatycznie” (pytanie pojawia się raz, można to zmienić w Ustawieniach), w przeciwnym razie tylko po naciśnięciu Wyślij. Jest przechowywany przy Twoim koncie przez 30 dni i operatorzy mogą go odczytać. Powiadomienie z Twoją nazwą użytkownika, numerem Twojego konta i numerem referencyjnym raportu trafia na prywatny kanał Discord operatorów. Usuń moje dane usuwa Twoje raporty.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Zgłoszenie może zawierać też ostatni zrzut awaryjny gry, kopię części pamięci gry w chwili awarii. W przeciwieństwie do reszty zgłoszenia nie jest czyszczony: może zawierać to, co gra miała w pamięci.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Gra sama wysyła własne raporty o awariach. Serwer przechowuje raporty o awariach i błędach przez 30 dni dla każdego konta, z usuniętymi ścieżkami instalacji i identyfikatorem urządzenia.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Warunki korzystania</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence to bezpłatny, nieoficjalny projekt fanów. Nie jest powiązany z wydawcą gry.</value></data>
@@ -1542,7 +1543,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Report.AutoFailed" xml:space="preserve"><value>Nie udało się wysłać raportu o problemie: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Coś poszło nie tak? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Wysyłać raporty o problemach?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jeśli gra się nie uruchomi, launcher może wysłać nam swoje dzienniki, żebyśmy mogli to naprawić.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jeśli gra się nie uruchomi, launcher może wysłać nam swoje dzienniki i ostatni zrzut awaryjny gry, żebyśmy mogli to naprawić.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Pokaż pliki</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Wysyłaj automatycznie</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Pytaj za każdym razem</value></data>
@@ -1570,4 +1571,16 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Taxidermy.Already" xml:space="preserve"><value>To już zrobiono dla tego zwierzęcia.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Za późno: minęło 72 godziny.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Coś poszło nie tak. Spróbuj ponownie.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Gra zamknęła się od razu</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Nie udało się uruchomić gry, ani ze Steamem, ani bez niego.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>System Windows zablokował grę.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Zezwól na nią w Zabezpieczeniach Windows (Smart App Control lub Twój program zabezpieczający).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Brakuje składnika systemu Windows, którego potrzebuje gra.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Zainstaluj składniki gry</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Gra zamknęła się sama.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Sprawdź zegar komputera i połączenie.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Gra została zatrzymana.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Wyślij zgłoszenie problemu</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Otwórz Zabezpieczenia Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folder gry nie zawiera składników do zainstalowania: zweryfikuj grę w Steamie.</value></data>
 </root>

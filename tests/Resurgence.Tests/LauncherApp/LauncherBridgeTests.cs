@@ -24,13 +24,13 @@ public class LauncherBridgeTests
         // the game shows up two checks after the start (Steam starts it) and runs for three: the wait ends only after it is gone
         var checks = new Queue<bool>([false, false, true, true, true, false]);
         var b = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => checks.Count > 0 && checks.Dequeue(), LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1));
-        Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.NotNull(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
         Assert.Empty(checks);
 
         // a game that never appears opens no window; no game folder neither
         var never = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1), appearWithin: TimeSpan.FromMilliseconds(20));
-        Assert.False(await never.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
-        Assert.False(await new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null).WhenGameExitsAsync());
+        Assert.Null(await never.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Null(await new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null).WhenGameExitsAsync());
     }
 
     [Fact]
@@ -235,14 +235,91 @@ public class LauncherBridgeTests
         var history = new RunHistory(Path.Combine(temp.Path, "runs.json"));
         foreach (var installed in new[] { false, true })
         {
-            var running = new Queue<bool>(); // the game is not running at the start, then for two looks
-            var b = new LauncherBridge(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => running.Count > 0 && running.Dequeue(), LauncherFakes.Up, new(() => installed, () => installed, () => true), null,
-                poll: TimeSpan.FromMilliseconds(1), find: _ => new GameProcess(() => true, () => running.Count == 0 ? 0 : null), history: history);
+            // the process the launcher started ended with code 4: that exit is the run's, whatever the exe's name looks up
+            var b = new LauncherBridge(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, _ => new GameProcess(() => true, () => 4), new(() => installed, () => installed, () => true), null,
+                poll: TimeSpan.FromMilliseconds(1), history: history);
             Assert.True(b.StartGame("srv://x").Ok);
-            foreach (var x in new[] { true, true, false }) running.Enqueue(x);
-            Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+            Assert.NotNull(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
         }
         Assert.Equal(["nosteam", "steam"], history.Load().Select(r => r.Mode));
+    }
+
+    /// <summary>A bridge whose starts end as the test says (Steam installed and signed in); the watch must never look the game up by name.</summary>
+    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null) =>
+        new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
+            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin);
+
+    [Fact]
+    public async Task AfterA16010FallbackTheWatchFollowsTheRetryAndTheExitedFirstProcessIsIgnored()
+    {
+        using var s = new Start();
+        using var temp = new TempDir("resurgence-test-");
+        var history = new RunHistory(Path.Combine(temp.Path, "runs.json"));
+        var looks = 0;
+        // the first process (with Steam) quits with 16010; the retry runs for two looks and ends with code 3
+        var b = Watching(s, i => s.Started.Count == 1 ? new GameProcess(() => false, () => 16010) : new GameProcess(() => true, () => ++looks > 2 ? 3 : null), history);
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal(["steam", "nosteam"], s.Modes);
+
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal((3, "nosteam", true, "crash"), (exit.ExitCode, exit.Mode, exit.Early, exit.Cause));
+        var run = Assert.Single(history.Load());
+        Assert.Equal((3, "nosteam", true), (run.ExitCode, run.Mode, run.WindowSeen));
+        Assert.Equal(run, b.LastRun);
+    }
+
+    [Fact]
+    public async Task A16010OfTheRetryTooIsTheSteamCause()
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => false, () => 16010));
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal(["steam", "nosteam"], s.Modes);
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal((16010, "nosteam", true, "steam"), (exit.ExitCode, exit.Mode, exit.Early, exit.Cause));
+    }
+
+    [Fact]
+    public async Task AGameThatRanLongerThanTheLimitIsNotEarly()
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => true, () => 0), earlyWithin: TimeSpan.Zero);
+        Assert.True(b.StartGame("srv://x").Ok);
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal((0, "steam", false, null), (exit.ExitCode, exit.Mode, exit.Early, exit.Cause));
+
+        // the same start with the default 20 s: exit 0 right away is "closed"
+        var b2 = Watching(s, _ => new GameProcess(() => true, () => 0));
+        Assert.True(b2.StartGame("srv://x").Ok);
+        Assert.Equal("closed", (await b2.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!.Cause);
+    }
+
+    [Theory]
+    [InlineData(16010, "nosteam", "steam")]
+    [InlineData(16010, "steam", "crash")] // a start with Steam that quit after the retry window: nothing was retried
+    [InlineData(3236495362, "nosteam", "blocked")]
+    [InlineData(3221225781, "steam", "runtime")]
+    [InlineData(0, "steam", "closed")]
+    [InlineData(3221226505, "steam", "crash")]
+    [InlineData(1, "nosteam", "crash")]
+    public void TheCauseFollowsTheExitCode(long code, string mode, string cause) => Assert.Equal(cause, LauncherBridge.Cause(unchecked((int)code), mode));
+
+    [Fact]
+    public async Task TheRuntimesOfTheGameFolderRunOneAfterTheOtherAndNoneIsAnError()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var game = Path.Combine(temp.Path, "game");
+        Directory.CreateDirectory(game);
+        var ran = new List<string>();
+        var done = new SemaphoreSlim(0);
+        var b = new LauncherBridge(() => new(game, Path.Combine(game, "client.exe")), Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, runInstaller: f => { ran.Add(Path.GetRelativePath(game, f).Replace('\\', '/')); done.Release(); return Task.CompletedTask; });
+        Assert.Equal("Launch.NoRuntimes", b.RunGameRuntimes().Error);
+
+        foreach (var f in new[] { "_CommonRedist/vcredist/2010/vcredist_x64.exe", "_CommonRedist/vcredist/2022/VC_redist.x86.exe", "_CommonRedist/vcredist/2022/VC_redist.x64.exe", "_CommonRedist/DirectX/Jun2010/DXSETUP.exe", "_CommonRedist/readme.txt" })
+            Files.Touch(Path.Combine(game, f));
+        Assert.True(b.RunGameRuntimes().Ok);
+        for (var i = 0; i < 3; i++) Assert.True(await done.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(["_CommonRedist/vcredist/2022/VC_redist.x64.exe", "_CommonRedist/vcredist/2022/VC_redist.x86.exe", "_CommonRedist/DirectX/Jun2010/DXSETUP.exe"], ran);
     }
 
     [Fact]

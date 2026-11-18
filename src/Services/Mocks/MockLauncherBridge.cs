@@ -92,8 +92,22 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     public void StartWithoutSteam() => skipWait.Set();
     public event Action? StartStateChanged;
     public string? LastStartMode { get; private set; }
-    /// <summary>No game runs here: the old five seconds.</summary>
-    public async Task<bool> WhenGameExitsAsync() { await Task.Delay(5000); LastRun = new(DateTimeOffset.Now.AddSeconds(-5), TimeSpan.FromSeconds(5), 0, true); return true; }
+    /// <summary>No game runs here: after the old five seconds a normal hunt; "exit:steam|blocked|runtime|noruntime|closed|crash" ends the start within seconds for that cause instead ("noruntime": the runtimes button fails, as with no runtimes in the game folder).</summary>
+    public async Task<GameExit?> WhenGameExitsAsync()
+    {
+        var cause = mock is { } m && m.StartsWith("exit:") ? m[5..] : null;
+        if (cause is null)
+        {
+            await Task.Delay(5000);
+            LastRun = new(DateTimeOffset.Now.AddSeconds(-5), TimeSpan.FromSeconds(5), 0, true);
+            return new(0, 5, LastStartMode ?? "steam", false, null);
+        }
+        await Task.Delay(1500);
+        var code = cause switch { "steam" => 16010, "blocked" => unchecked((int)3236495362), "runtime" or "noruntime" => unchecked((int)3221225781), "closed" => 0, _ => unchecked((int)3221226505) };
+        LastRun = new(DateTimeOffset.Now.AddSeconds(-4), TimeSpan.FromSeconds(4), code, cause != "steam", LastStartMode ?? "steam");
+        return new(code, 4, LastStartMode ?? "steam", true, cause == "noruntime" ? "runtime" : cause);
+    }
+    public Result RunGameRuntimes() { log.LogInformation("run game runtimes"); return mock == "exit:noruntime" ? Result.Fail("Launch.NoRuntimes") : Result.Success; }
     public void ToggleDevTools() => log.LogInformation("toggle dev tools");
     public void RestartLauncher() => log.LogInformation("restart launcher");
 

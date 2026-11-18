@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Sorun raporları</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, oyun için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, oyun için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Metin dosyaları parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Bir rapor oyunun son çökme dökümünü de içerebilir; bu, çökme anında oyunun belleğinin bir bölümünün kopyasıdır. Raporun geri kalanından farklı olarak temizlenmez: oyunun bellekte tuttuklarını içerebilir.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Oyun kendi çökme raporlarını kendisi gönderir. Sunucu, çökme ve hata raporlarını hesap başına 30 gün saklar; kurulum yolları ve cihaz tanımlayıcısı çıkarılır.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Kullanım Koşulları</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence ücretsiz, resmî olmayan bir hayran projesidir. Oyunun yayıncısıyla bağlantısı yoktur.</value></data>
@@ -1542,7 +1543,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Bir şeyler mi ters gitti? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Sorun raporları gönderilsin mi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini bize gönderebilir.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dosyaları göster</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Otomatik gönder</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Her seferinde sor</value></data>
@@ -1570,4 +1571,16 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Taxidermy.Already" xml:space="preserve"><value>Bu hayvan için zaten yapıldı.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Çok geç: 72 saat doldu.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Bir şeyler ters gitti. Lütfen tekrar dene.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Oyun hemen kapandı</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Oyun Steam ile de Steam olmadan da başlatılamadı.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows oyunu engelledi.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Windows Güvenliği'nde izin verin (Akıllı Uygulama Denetimi veya güvenlik programınız).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Oyunun ihtiyaç duyduğu bir Windows bileşeni eksik.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Oyunun bileşenlerini yükle</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Oyun kendiliğinden kapandı.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Bilgisayarınızın saatini ve bağlantınızı kontrol edin.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Oyun durdu.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Sorun raporu gönder</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows Güvenliği'ni aç</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Oyun klasöründe yüklenecek bileşen yok: oyunu Steam'de doğrulayın.</value></data>
 </root>

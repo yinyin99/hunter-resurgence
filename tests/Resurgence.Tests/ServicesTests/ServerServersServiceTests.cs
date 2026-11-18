@@ -36,7 +36,8 @@ public class ServerServersServiceTests
         public void OpenExternal(string url) { }
         public Result Next = Result.Success;
         public Result StartGame(string url) { Started.Add(url); return Next; }
-        public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);
+        public Task<GameExit?> WhenGameExitsAsync() => Task.FromResult<GameExit?>(new(0, 1800, "steam", false, null));
+        public Result RunGameRuntimes() => Result.Success;
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
         public GameRun? LastRun => null;

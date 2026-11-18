@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Accedi, apri Ripristina il tuo backup e usa Elimina i miei dati. Elimina l’account, i suoi dati di gioco, gli zip conservati e le foto, e ti disconnette. Il tuo id Steam viene poi dimenticato; accedendo di nuovo si crea un nuovo account.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>L’operatore di questo server può vedere tutto quanto sopra.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Segnalazioni di problemi</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Quando l’avvio del gioco fallisce (è rimasto in esecuzione meno di un minuto, si è chiuso con un errore o non ha mostrato alcuna finestra), il launcher prepara una segnalazione: i log e le impostazioni del gioco, gli eventi di arresto anomalo di Windows relativi al gioco, i nomi di antivirus, programmi booster e overlay, la tua versione e lingua di Windows, la scheda grafica e gli schermi, e i tuoi avvii recenti. Non contiene password né token. Viene inviata solo se hai scelto "Invia automaticamente" (richiesto una volta, modificabile in Impostazioni), altrimenti solo quando premi Invia. Viene conservata con il tuo account per 30 giorni e gli operatori possono leggerla. Una notifica con il tuo nome utente, il numero del tuo account e il riferimento della segnalazione arriva al canale Discord privato degli operatori. Elimina i miei dati rimuove le tue segnalazioni.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Quando l’avvio del gioco fallisce (è rimasto in esecuzione meno di un minuto, si è chiuso con un errore o non ha mostrato alcuna finestra), il launcher prepara una segnalazione: i log e le impostazioni del gioco, gli eventi di arresto anomalo di Windows relativi al gioco, i nomi di antivirus, programmi booster e overlay, la tua versione e lingua di Windows, la scheda grafica e gli schermi, e i tuoi avvii recenti. I suoi file di testo non contengono password né token. Viene inviata solo se hai scelto "Invia automaticamente" (richiesto una volta, modificabile in Impostazioni), altrimenti solo quando premi Invia. Viene conservata con il tuo account per 30 giorni e gli operatori possono leggerla. Una notifica con il tuo nome utente, il numero del tuo account e il riferimento della segnalazione arriva al canale Discord privato degli operatori. Elimina i miei dati rimuove le tue segnalazioni.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Una segnalazione può contenere anche l'ultimo dump di arresto anomalo del gioco, una copia di parte della memoria del gioco al momento dell'arresto. A differenza del resto della segnalazione, non viene ripulito: può contenere ciò che il gioco aveva in memoria.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Il gioco invia da sé le proprie segnalazioni di arresto anomalo. Il server conserva quelle di arresti anomali ed errori per 30 giorni per account, senza i percorsi di installazione e l’identificativo del dispositivo.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Termini di utilizzo</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence è un progetto di fan gratuito e non ufficiale. Non è affiliato all’editore del gioco.</value></data>
@@ -1542,7 +1543,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>Non è stato possibile inviare il rapporto sul problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Qualcosa è andato storto? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Inviare i rapporti sui problemi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci i suoi log così possiamo risolvere.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci i suoi log e l'ultimo dump di arresto anomalo del gioco così possiamo risolvere.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostra i file</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Invia automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Chiedimelo ogni volta</value></data>
@@ -1570,4 +1571,16 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Taxidermy.Already" xml:space="preserve"><value>Già fatto per questo animale.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Troppo tardi: le 72 ore sono passate.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Qualcosa è andato storto. Riprova.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Il gioco si è chiuso subito</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Il gioco non si è avviato, né con Steam né senza.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows ha bloccato il gioco.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Consentilo in Sicurezza di Windows (Smart App Control o il tuo programma di sicurezza).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Manca un componente di Windows che serve al gioco.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Installa i componenti del gioco</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Il gioco si è chiuso da solo.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Controlla l'orologio del PC e la connessione.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Il gioco si è fermato.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Invia una segnalazione del problema</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Apri Sicurezza di Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>La cartella del gioco non contiene componenti da installare: verifica il gioco in Steam.</value></data>
 </root>

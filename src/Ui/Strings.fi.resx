@@ -1405,7 +1405,8 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Ongelmaraportit</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, pelin Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Se ei sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, pelin Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Sen tekstitiedostot eivät sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
+  <data name="Data.Reports.Dump" xml:space="preserve"><value>Raportti voi sisältää myös pelin viimeisimmän kaatumisvedoksen, kopion osasta pelin muistia kaatumishetkellä. Toisin kuin muuta raporttia, sitä ei siivota: se voi sisältää sen, mitä pelillä oli muistissa.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Peli lähettää omat kaatumisraporttinsa itse. Palvelin säilyttää kaatumis- ja virheraportit 30 päivää tiliä kohti, asennuspolut ja laitetunniste poistettuina.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Käyttöehdot</value></data>
   <data name="Terms.Intro" xml:space="preserve"><value>Hunter Resurgence on ilmainen, epävirallinen fanien projekti. Se ei ole sidoksissa pelin julkaisijaan.</value></data>
@@ -1542,7 +1543,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa, jotta voimme korjata ongelman.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa ja pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>
@@ -1570,4 +1571,16 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Taxidermy.Already" xml:space="preserve"><value>Tämä on jo tehty tälle eläimelle.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Liian myöhään: 72 tuntia on kulunut.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Jokin meni pieleen. Yritä uudelleen.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Peli sulkeutui heti</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Peliä ei voitu käynnistää, ei Steamin kanssa eikä ilman sitä.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows esti pelin.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Salli se Windows-suojauksessa (Smart App Control tai tietoturvaohjelmasi).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Pelin tarvitsema Windows-osa puuttuu.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Asenna pelin osat</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Peli sulkeutui itsestään.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Tarkista tietokoneesi kello ja yhteytesi.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Peli pysähtyi.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Lähetä ongelmaraportti</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Avaa Windows-suojaus</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Pelin kansiossa ei ole asennettavia osia: tarkista pelin tiedostot Steamissä.</value></data>
 </root>
