@@ -28,18 +28,17 @@
     static readonly TimeSpan NoteFor = TimeSpan.FromSeconds(10);
 
     Action? changed, started;
-    bool dismissed;       // the note was clicked away or timed out: it stays away until the next start
     bool armed;           // the click listener and the timer of the note shown now are set
     CancellationTokenSource? timer;
     IJSObjectReference? module;
     DotNetObjectReference<SteamStart>? self;
 
-    bool NoteShown => Bridge.LastStartMode == "nosteam" && !dismissed;
+    bool NoteShown => Bridge.LastStartMode == "nosteam" && !Modal.SteamNoteGone;
 
     protected override void OnInitialized()
     {
         changed = () => _ = InvokeAsync(StateHasChanged);
-        started = () => { timer?.Cancel(); dismissed = false; changed(); };
+        started = () => { timer?.Cancel(); Modal.SteamNoteGone = false; changed(); };
         Bridge.StartStateChanged += started;
         Modal.Changed += changed;
     }
@@ -62,7 +61,7 @@
     public Task Dismiss() => InvokeAsync(() =>
     {
         if (!armed) return; // a stale click listener or timer: no note is waiting to go
-        dismissed = true;
+        Modal.SteamNoteGone = true;
         StateHasChanged();
     });
 

@@ -92,4 +92,20 @@ public sealed class SteamStartTests : UiContext
         bridge.StartWithoutSteam();
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#no-steam-note")));
     }
+
+    [Fact]
+    public async Task ADismissedNoteStaysGoneWhenADialogOpensAndCloses()
+    {
+        var bridge = Use("steam:none");
+        bridge.StartGame("x");
+        var modal = Services.GetRequiredService<ModalService>();
+        var page = Render<SteamStart>();
+        page.WaitForAssertion(() => Assert.NotEmpty(page.FindAll("#no-steam-note")));
+        await page.InvokeAsync(() => page.Instance.Dismiss());
+        var inside = Render<SteamStart>(p => p.Add(a => a.Inside, true));
+        modal.Show<AlertDialog>();
+        inside.WaitForAssertion(() => Assert.Empty(inside.FindAll("#no-steam-note"))); // the copy inside the dialog does not bring it back
+        modal.Close();
+        page.WaitForAssertion(() => Assert.Empty(page.FindAll("#no-steam-note")));
+    }
 }
