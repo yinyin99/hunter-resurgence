@@ -1,6 +1,7 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
+using Resurgence.Ui;
 using Resurgence.Ui.Modals;
 using Resurgence.Ui.Shell;
 
@@ -22,8 +23,9 @@ public sealed class SeasonalEventsModalTests : UiContext
     }
 
     [Fact]
-    public void TheSettingsMenuOpensTheDialog()
+    public void TheLauncherSettingsMenuOpensTheDialog()
     {
+        Services.GetRequiredService<HostMode>().Launcher = true;
         var menu = Render<SettingsMenu>();
         menu.Find("#seasonal-events").Click();
         Assert.Equal(typeof(SeasonalEventsModal), Services.GetRequiredService<ModalService>().Type);
