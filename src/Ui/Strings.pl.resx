@@ -1519,7 +1519,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>To konto nie może się zalogować.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Gra jest uruchomiona. Zamknięcie launchera rozłączy ją z serwerem społeczności. Zostawić launcher otwarty?&#10;&#10;Tak: zostaw otwarty. Nie: zminimalizuj.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Czy na pewno chcesz zamknąć launcher i grę?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Zgłoś problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Wysyła dzienniki gry na serwer społeczności, żebyśmy mogli pomóc. Przechowywane 30 dni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Zbieranie plików…</value></data>
@@ -1529,7 +1529,10 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Report.Send" xml:space="preserve"><value>Wyślij</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Wysyłanie…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Zapisano jako {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Wysłano. Numer referencyjny: {0} (podaj go na Discordzie)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Wysłano.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Podaj ten numer referencyjny na Discordzie</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Skopiowano</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Nie udało się pokazać pliku w Eksploratorze.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Wysyłaj automatycznie po nieudanym uruchomieniu</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Raport o problemie wysłany: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Nie udało się wysłać raportu o problemie: {0}</value></data>

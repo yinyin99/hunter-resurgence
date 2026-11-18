@@ -11,14 +11,14 @@ namespace Resurgence.Launcher;
 /// <param name="pictures">The Pictures folder; the game's screenshots are under its product folder.</param>
 /// <param name="clearBrowser">Clears the launcher's own browser cache.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
-    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
+    Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, Start,
         () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
-        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, appData: GameFiles.AppData,
+        find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks)
     { }
@@ -71,6 +71,15 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (dir is null || !Directory.Exists(dir)) return Result.Fail("Settings.NoFolder");
         openFolder(dir);
         return Result.Success;
+    }
+
+    /// <summary>Shows a file in Explorer; <c>Report.ErrShow</c> when it is gone or Windows refuses.</summary>
+    public Result ShowFile(string path)
+    {
+        if (showFile is null) return rest.ShowFile(path);
+        if (!File.Exists(path)) return Result.Fail("Report.ErrShow");
+        try { showFile(path); return Result.Success; }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return Result.Fail("Report.ErrShow"); }
     }
 
     /// <summary>The game's per-user folder in %APPDATA% and Pictures is named like its exe without the extension.</summary>

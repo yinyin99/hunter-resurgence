@@ -1,4 +1,6 @@
+@implements IDisposable
 @inject ModalService Modal
+@inject IJSRuntime JS
 @inject ILauncherBridge Bridge
 
 @* "Report a problem": one line, the files behind "Show files", then Send or Save (docs/launcher.md#report-a-problem). Opened from the Settings menu (trigger manual) and from the "Done hunting for now?" window (the failed start's trigger) *@
@@ -21,9 +23,24 @@
                 <ul id="report-missing">@foreach (var f in report.Missing) { <li>@f</li> }</ul>
             }
         </details>
-        @if (saved is not null) { <p id="report-saved" role="status">@L["Report.Saved", saved]</p> }
+        @if (saved is not null)
+        {
+            <div class="row">
+                <p id="report-saved" role="status">@L["Report.Saved", saved]</p>
+                <button type="button" class="btn btn-inverse" id="report-show" @onclick="Show">@L["GameFolder.Open"]</button>
+            </div>
+        }
         else if (saveFailed) { <p class="error" role="alert">@L["Report.ErrSave"]</p> }
-        @if (sent?.Reference is { } reference) { <p id="report-reference" role="status">@L["Report.Sent", reference]</p> }
+        @if (showError is not null) { <p class="error" role="alert">@showError</p> }
+        @if (sent?.Reference is { } reference)
+        {
+            <p id="report-sent" role="status">@L["Report.Sent"]</p>
+            <div class="row">
+                <input id="report-reference" class="field ref" readonly aria-describedby="report-give" value="@reference" />
+                <button type="button" class="btn btn-inverse" id="report-copy" @onclick="Copy">@L[copied ? "Report.Copied" : "Steam.Copy"]</button>
+            </div>
+            <p id="report-give">@L["Report.Give"]</p>
+        }
         else if (sent?.Error is { } error) { <p class="error" role="alert">@L[ErrorKey(error)]</p> }
     }
     <label class="auto"><input type="checkbox" class="tick" id="report-auto" @bind="auto" @bind:after="Remember" /> @L["Report.AutoToggle"]</label>
@@ -46,7 +63,12 @@
     ProblemReport? report;
     ReportSent? sent;
     string? saved;
-    bool auto, sending, saveFailed;
+    string? showError;
+    int copies;
+    bool auto, sending, saveFailed, copied;
+    readonly CancellationTokenSource gone = new();
+
+    public void Dispose() => gone.Cancel();
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,8 +81,28 @@
     // Downloads may not be writable
     void Save()
     {
+        showError = null;
         try { (saved, saveFailed) = (Bridge.SaveReport(report!), false); }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { (saved, saveFailed) = (null, true); }
+    }
+
+    void Show() => showError = Bridge.ShowFile(saved!) is { Ok: false } r ? L[r.Error!].Value : null;
+
+    // the same clipboard call as the Steam launch option dialog (shell.js); "Copied" for 2 s
+    async Task Copy()
+    {
+        try
+        {
+            await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            await shell.InvokeVoidAsync("copy", sent!.Reference);
+        }
+        catch (JSException) { return; } // the clipboard refused: the reference stays selectable in the box
+        var click = ++copies;
+        copied = true;
+        StateHasChanged();
+        try { await Task.Delay(TimeSpan.FromSeconds(2), gone.Token); }
+        catch (OperationCanceledException) { return; }
+        if (click == copies) copied = false; // a later click keeps its own 2 seconds
     }
 
     async Task Send()

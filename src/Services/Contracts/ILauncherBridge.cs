@@ -7,6 +7,8 @@ public interface ILauncherBridge
     /// <summary>Opens a folder in Explorer; a failure is a <see cref="Result"/> whose Error is a text key (<c>Settings.NoFolder</c>).</summary>
     /// <param name="kind">game, screenshots or logs</param>
     Result OpenFolder(string kind);
+    /// <summary>Shows a file in Explorer, selected in its folder (the saved problem report); a failure is a <see cref="Result"/> whose Error is a text key (<c>Report.ErrShow</c>), also when the file is gone.</summary>
+    Result ShowFile(string path);
     /// <summary>The game install the launcher uses now, how it was found, and the other installs it saw; Folder null when none.</summary>
     GameInstallInfo GameInstall { get; }
     /// <summary>Opens a folder picker; the chosen folder must hold the game's exe (the folder itself or its install root); saved as the manual folder. Error: the Strings key <c>Settings.FolderNoGame</c> when the exe isn't there; a cancelled picker is not an error: Ok, nothing changes.</summary>

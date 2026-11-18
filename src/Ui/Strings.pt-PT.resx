@@ -1519,7 +1519,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta não pode iniciar sessão.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>O jogo está a decorrer. Fechar o launcher desliga o jogo do servidor da comunidade. Manter o launcher aberto?&#10;&#10;Sim: manter aberto. Não: minimizar.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tens a certeza de que queres fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Comunicar um problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envia os registos do jogo para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A reunir os ficheiros…</value></data>
@@ -1529,7 +1529,10 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>A enviar…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Guardado como {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Enviado. Referência: {0} (indique-a no Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Enviado.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Indique esta referência no Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copiado</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Não foi possível mostrar o ficheiro no Explorador.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar automaticamente após um arranque falhado</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Relatório de problema enviado: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>

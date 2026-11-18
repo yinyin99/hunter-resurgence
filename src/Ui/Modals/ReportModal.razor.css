@@ -5,6 +5,11 @@ p { margin: 0 0 16px; font-size: 16px; line-height: 22px; color: var(--text-2); 
 ul { margin: 0 0 16px; padding-left: 24px; font-size: 16px; line-height: 22px; color: var(--text-2); }
 .auto { display: flex; align-items: center; gap: 8px; margin: 0 0 20px; font-size: 16px; line-height: 22px; color: var(--text-2); cursor: pointer; }
 .error { color: var(--su-error); }
+.row { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; }
+.row p { flex: 1; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.ref { flex: 1; min-width: 0; padding: 10px 12px; font: 15px/20px Consolas, monospace; }
+#report-sent { margin-bottom: 8px; }
+#report-give { margin-top: -8px; }
 .buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
 .btn { min-height: 42px; box-sizing: border-box; padding: 10px 19px; font-size: 17.5px; line-height: 22px; }
 .btn-inverse { background-color: var(--surface-5); }

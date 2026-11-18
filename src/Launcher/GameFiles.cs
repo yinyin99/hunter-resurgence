@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -65,6 +66,33 @@ public static class GameFiles
         var all = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe));
         foreach (var p in all) p.Dispose();
         return all.Length > 0;
+    }
+
+    /// <summary>Asks every process named like the client exe to close like its window's × (the hunt ends as a normal quit) and stops those still running after <paramref name="grace"/>.</summary>
+    public static async Task StopClientAsync(string? clientExe, TimeSpan grace)
+    {
+        if (string.IsNullOrEmpty(clientExe)) return;
+        await StopAsync(Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe)), grace);
+    }
+
+    /// <summary>Close, wait up to <paramref name="grace"/>, then kill what is left; disposes <paramref name="processes"/>.</summary>
+    internal static async Task StopAsync(Process[] processes, TimeSpan grace)
+    {
+        try
+        {
+            foreach (var p in processes)
+                try { p.CloseMainWindow(); } catch (Exception e) when (e is InvalidOperationException or Win32Exception) { } // gone already
+            using var cts = new CancellationTokenSource(grace);
+            try { await Task.WhenAll(processes.Select(p => p.WaitForExitAsync(cts.Token))); }
+            catch (OperationCanceledException)
+            {
+                foreach (var p in processes)
+                    try { if (!p.HasExited) p.Kill(); } catch (Exception e) when (e is InvalidOperationException or Win32Exception) { }
+                foreach (var p in processes)
+                    try { p.WaitForExit(5000); } catch (InvalidOperationException) { }
+            }
+        }
+        finally { foreach (var p in processes) p.Dispose(); }
     }
 
     // ---------- graphics file ----------

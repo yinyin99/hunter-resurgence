@@ -1519,7 +1519,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Bu hesap oturum açamaz.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Oyun çalışıyor. Launcher'ı kapatmak oyunun topluluk sunucusuyla bağlantısını keser. Launcher açık kalsın mı?&#10;&#10;Evet: açık kalsın. Hayır: simge durumuna küçült.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Oyunun günlüklerini yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Dosyalar toplanıyor…</value></data>
@@ -1529,7 +1529,10 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.Send" xml:space="preserve"><value>Gönder</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Gönderiliyor…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>{0} olarak kaydedildi</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Gönderildi. Referans: {0} (Discord'da belirtin)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Gönderildi.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Bu referansı Discord’da belirtin</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopyalandı</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Dosya Gezgin’de gösterilemedi.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Başarısız bir başlatmadan sonra otomatik gönder</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Sorun raporu gönderildi: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
