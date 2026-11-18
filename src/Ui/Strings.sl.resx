@@ -1519,7 +1519,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun se ne sme prijaviti.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Igra teče. Če zaprete launcher, se igra odklopi od skupnostnega strežnika. Naj ostane launcher odprt?&#10;&#10;Da: naj ostane odprt. Ne: minimiraj.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike igre strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Zbiranje datotek…</value></data>
@@ -1529,7 +1529,10 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.Send" xml:space="preserve"><value>Pošlji</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Pošiljanje…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Shranjeno kot {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Poslano. Referenca: {0} (navedite jo na Discordu)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Poslano.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Navedite to referenco na Discordu</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopirano</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Datoteke ni bilo mogoče prikazati v Raziskovalcu.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Samodejno pošlji po neuspešnem zagonu</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Poročilo o težavi poslano: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Poročila o težavi ni bilo mogoče poslati: {0}</value></data>

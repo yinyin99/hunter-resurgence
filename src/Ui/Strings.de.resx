@@ -1519,7 +1519,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dieses Konto darf sich nicht anmelden.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dieses Formular stammt nicht von diesem Server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Das Spiel läuft. Wenn du den Launcher schließt, wird das Spiel vom Community-Server getrennt. Launcher geöffnet lassen?&#10;&#10;Ja: geöffnet lassen. Nein: minimieren.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs des Spiels an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Die Dateien werden gesammelt …</value></data>
@@ -1529,7 +1529,10 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.Send" xml:space="preserve"><value>Senden</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Wird gesendet …</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Gespeichert als {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Gesendet. Referenz: {0} (nenne sie auf Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Gesendet.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Nenne diese Referenz auf Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopiert</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Die Datei konnte nicht im Explorer angezeigt werden.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Nach einem fehlgeschlagenen Start automatisch senden</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problembericht gesendet: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Der Problembericht konnte nicht gesendet werden: {0}</value></data>

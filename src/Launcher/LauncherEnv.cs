@@ -88,4 +88,7 @@ public sealed class LauncherEnv
 
     /// <summary>Open a folder in Explorer.</summary>
     public static void OpenFolder(string path) => Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+
+    /// <summary>Open Explorer with a file selected; a file name cannot hold a quote, so the quoted path is safe.</summary>
+    public static void ShowFile(string path) => Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\""));
 }

@@ -30,6 +30,19 @@ public class FolderActionTests : IDisposable
             openFolder: opened.Add, appData: appData, pictures: pictures, clearBrowser: clearBrowser);
 
     [Fact]
+    public void ShowFileSelectsAnExistingFileAndRefusesAMissingOne()
+    {
+        var shown = new List<string>();
+        var b = new LauncherBridge(() => null, new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), _ => false, _ => true, () => true, null, showFile: shown.Add);
+        var zip = Path.Combine(temp.Path, "report.zip");
+        File.WriteAllText(zip, "x");
+        Assert.True(b.ShowFile(zip).Ok);
+        Assert.Equal([zip], shown);
+        Assert.Equal("Report.ErrShow", b.ShowFile(Path.Combine(temp.Path, "gone.zip")).Error);
+        Assert.Equal([zip], shown);
+    }
+
+    [Fact]
     public void GameAndLogsOpenTheInstallFolderAndTheExesFolder()
     {
         var b = Bridge();

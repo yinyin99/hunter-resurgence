@@ -161,6 +161,14 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void TheShippedStartKitStoresTheEventShotgunAndItsSilverSlugs()
+    {
+        Assert.Contains(1143L, Facts.Default.StartStored());
+        Assert.Contains(1142L, Facts.Default.StartStored());
+        Assert.Equal(3, Facts.Default.StartVersion());
+    }
+
+    [Fact]
     public void NoSampleInTheInstallIsNoTemplate()
     {
         File.Delete(Path.Combine(install, "game", Install.ConnectSample));

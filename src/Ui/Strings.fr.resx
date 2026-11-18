@@ -1519,7 +1519,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ce compte n’est pas autorisé à se connecter.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ce formulaire ne provient pas de ce serveur.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Le jeu est en cours. Fermer le launcher déconnecte le jeu du serveur communautaire. Garder le launcher ouvert ?&#10;&#10;Oui : le garder ouvert. Non : le réduire.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux du jeu au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Collecte des fichiers…</value></data>
@@ -1529,7 +1529,10 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Report.Send" xml:space="preserve"><value>Envoyer</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Envoi…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Enregistré sous {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Envoyé. Référence : {0} (donnez-la sur Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Envoyé.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Donnez cette référence sur Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copié</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Le fichier n’a pas pu être affiché dans l’Explorateur.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Envoyer automatiquement après un démarrage raté</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Rapport de problème envoyé : {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Le rapport de problème n'a pas pu être envoyé : {0}</value></data>

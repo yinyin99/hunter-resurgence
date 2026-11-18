@@ -1519,7 +1519,7 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont nu se poate conecta.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Jocul rulează. Închiderea launcherului îl deconectează de la serverul comunității. Păstrezi launcherul deschis?&#10;&#10;Da: păstrează-l deschis. Nu: minimizează-l.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele jocului serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Se adună fișierele…</value></data>
@@ -1529,7 +1529,10 @@ Numele:</value></data>
   <data name="Report.Send" xml:space="preserve"><value>Trimite</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Se trimite…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Salvat ca {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Trimis. Referință: {0} (comunicați-o pe Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Trimis.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Comunicați această referință pe Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copiat</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Fișierul nu a putut fi afișat în Explorer.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Trimite automat după o pornire eșuată</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Raport de problemă trimis: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>

@@ -1519,7 +1519,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This account may not sign in.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>The game is running. Closing the launcher disconnects it from the community server. Keep the launcher open?&#10;&#10;Yes: keep it open. No: minimize it.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Are you sure you want to close the launcher and the game?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Report a problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sends the game's logs to the community server so we can help. Kept 30 days.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Collecting the files…</value></data>
@@ -1529,7 +1529,10 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Sending…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Saved as {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Sent. Reference: {0} (give it on Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sent.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Give this reference on Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>The file could not be shown in Explorer.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatically after a failed start</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problem report sent: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>The problem report could not be sent: {0}</value></data>
