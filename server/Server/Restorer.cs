@@ -15,6 +15,9 @@ public static class Restorer
     /// <summary>The gm$ an account has at least after a restore: a new account starts with the same (`start.wallet` of the facts file).</summary>
     public const double GmFloor = 15000;
 
+    /// <summary>The em$ a new account starts with (`start.wallet`): a restore never takes the part of it the account has not spent.</summary>
+    public const double StartEm = 1000;
+
     /// <summary>Keys dropped from every JSON reply that is stored: the accounts of this server keep no e-mail, real name, address or phone.</summary>
     static readonly string[] Personal = ["email", "first_name", "last_name", "real_name", "address", "phone"];
 
@@ -290,6 +293,10 @@ public static class Restorer
     /// returns the report.</summary>
     static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit)
     {
+        // the start em$ the account has not spent yet, until a zip's wallet replaced them once (a claim keeps the account's wallet)
+        var unspentStartEm = con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%'") is null
+            ? Math.Min(Convert.ToDouble(con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = 'em'") ?? 0.0, System.Globalization.CultureInfo.InvariantCulture), StartEm)
+            : 0;
         PlayerRows.ClearModel(con);
         var lines = new List<string>();
         var dropped = new List<string>();
@@ -318,11 +325,15 @@ public static class Restorer
         PlayerRows.SetProfile(con, me);
 
         var wallet = m.Wallet ?? new Wallet(0, 0);
-        var gm = Math.Max(wallet.Gm, GmFloor);  // every restore leaves the player enough gm$ to start again
-        PlayerRows.SetWallet(con, "em", wallet.Em);
+        var (em, gm) = (Math.Max(wallet.Em, unspentStartEm), Math.Max(wallet.Gm, GmFloor));  // every restore leaves the player enough gm$ to start again, and the start em$ not spent yet
+        PlayerRows.SetWallet(con, "em", em);
         PlayerRows.SetWallet(con, "gm", gm);
-        if (m.Wallet is null) dropped.Add($"not in the zip: wallet ({wallet.Em} em, {gm} gm stored)");
-        else if (gm > wallet.Gm) lines.Add($"wallet: gm raised from {wallet.Gm} to {gm}");
+        if (m.Wallet is null) dropped.Add($"not in the zip: wallet ({em} em, {gm} gm stored)");
+        else
+        {
+            if (em > wallet.Em) lines.Add($"wallet: em raised from {wallet.Em} to {em}");
+            if (gm > wallet.Gm) lines.Add($"wallet: gm raised from {wallet.Gm} to {gm}");
+        }
 
         foreach (var i in m.Items)
         {
