@@ -19,8 +19,8 @@ public static class AuthPages
         p{margin:0 0 24px}
         a{color:#f9560d;text-decoration:none}
         a:hover{color:#fb8a58}
-        .btn{display:inline-block;max-width:100%;padding:11px 19px;border:0;border-radius:4px;background:#f9370d;color:#fff;font:400 17.5px/20px Roboto,Arial,sans-serif;cursor:pointer}
-        .btn:hover{background:#e72d06}
+        .btn{display:inline-block;max-width:100%;padding:11px 19px;border:0;border-radius:4px;background:#e1320c;color:#fff;font:400 17.5px/20px Roboto,Arial,sans-serif;cursor:pointer}
+        .btn:hover{background:#c32a05}
         .btn.alt{background:#444}
         .btn.alt:hover{background:#555}
         .btn:focus,a:focus{outline:2px solid #f9560d;outline-offset:2px}
