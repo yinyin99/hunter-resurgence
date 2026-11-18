@@ -155,16 +155,26 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public Result RunGameRuntimes()
     {
         if (runInstaller is null) return rest.RunGameRuntimes();
-        var files = install() is { } g ? Runtimes(g.Folder) : [];
+        IReadOnlyList<string> files;
+        try { files = install() is { } g ? Runtimes(g.Folder) : []; }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException) { return Result.Fail("Launch.NoRuntimes"); }
         if (files.Count == 0) return Result.Fail("Launch.NoRuntimes");
+        // a second press while the installers run starts no second chain
+        if (Interlocked.Exchange(ref installing, 1) == 1) return Result.Success;
         _ = Task.Run(async () =>
         {
-            foreach (var file in files)
-                try { await runInstaller(file); }
-                catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { log?.LogWarning("A game component was not installed: {Error}", e.Message); return; }
+            try
+            {
+                foreach (var file in files)
+                    try { await runInstaller(file); }
+                    catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { log?.LogWarning("A game component was not installed: {Error}", e.Message); return; }
+            }
+            finally { Interlocked.Exchange(ref installing, 0); }
         });
         return Result.Success;
     }
+
+    int installing;
 
     /// <summary>
     /// The installers of the first redist folder that has any (<c>_CommonRedist</c> or <c>redist</c> in the game folder, else Steam's shared <c>_CommonRedist</c> beside the game's library folder): the Visual C++ ones
