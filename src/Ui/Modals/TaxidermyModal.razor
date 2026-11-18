@@ -2,29 +2,37 @@
 @inject ModalService Modal
 @inject IProfileService Profile
 
-@* the confirmation of a taxidermy: one row per product with its em$ and gm$ button (the in-game page's, docs/website.md); the server's refusal is told on the error line *@
-<div class="tax dialog-card" role="dialog" aria-modal="true">
-    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+@* the confirmation of a taxidermy: the animal as the header, one row per product with its em$ and gm$ button (the in-game page's), the server's refusal under the row that failed (docs/website.md) *@
+<div class="tax dialog-card" role="dialog" aria-modal="true" aria-labelledby="tax-title">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close"><Icon Name="xmark" /></button>
     @if (bought is null)
     {
-        <h2>@L["Taxidermy.Button"]</h2>
-        <p class="line">@L.Term(Kill.Species) - @Fmt.Score(Kill.Score)</p>
-        <p class="line">@L[Offer.Skull ? "Taxidermy.MessageSkull" : "Taxidermy.MessageNoSkull"]</p>
-        @Row("taxidermy", L["Stat.Taxidermy"])
-        @if (Offer.Skull) { @Row("skull", L["Taxidermy.Skull"]) }
-        @if (error is not null) { <div class="err" role="alert">@L[error]</div> }
+        <header>
+            <h2 id="tax-title">@L.Term(Kill.Species)</h2>
+            <p class="meta">@L["Stat.Score"]: @Fmt.Score(Kill.Score)</p>
+        </header>
+        <section class="products">
+            <p class="message">@L[Offer.Skull ? "Taxidermy.MessageSkull" : "Taxidermy.MessageNoSkull"]</p>
+            @Product("taxidermy", L["Stat.Taxidermy"])
+            @if (Offer.Skull) { @Product("skull", L["Taxidermy.Skull"]) }
+        </section>
         <p class="note">@L["Taxidermy.Note"]</p>
     }
     else
     {
-        <h2>@L[bought == "skull" ? "Taxidermy.SkullDone" : "Taxidermy.Done"]</h2>
-        <p class="line">@L["Taxidermy.Lodge"]</p>
+        <div class="result">
+            <span class="tick"><Icon Name="check" /></span>
+            <div>
+                <h2 id="tax-title">@L[bought == "skull" ? "Taxidermy.SkullDone" : "Taxidermy.Done"]</h2>
+                <p class="message">@L["Taxidermy.Lodge"]</p>
+            </div>
+        </div>
     }
 </div>
 
 @code {
     readonly CancellationTokenSource gone = new();
-    string? bought, error;
+    string? bought, error, failed;
     bool pending;
 
     [Parameter, EditorRequired] public Kill Kill { get; set; } = null!;
@@ -32,18 +40,23 @@
     /// <summary>Raised with what was bought, so the hunt's row shows its badge.</summary>
     [Parameter] public EventCallback<string> Bought { get; set; }
 
-    RenderFragment Row(string product, string name) => @<div class="row"><span class="name">@name</span>
-        <button class="btn btn-primary" id="@(product)-ems" disabled="@pending" @onclick='() => Pay(product, "ems")'>@Offer.Ems.ToString("N0") em$</button>
-        <button class="btn btn-primary" id="@(product)-gms" disabled="@pending" @onclick='() => Pay(product, "gms")'>@Offer.Gms.ToString("N0") gm$</button></div>;
+    RenderFragment Product(string product, string name) => @<div class="product">
+        <div class="row">
+            <span class="name">@name</span>
+            <button class="btn" id="@(product)-ems" disabled="@pending" @onclick='() => Pay(product, "ems")'>@Offer.Ems.ToString("N0") em$</button>
+            <button class="btn" id="@(product)-gms" disabled="@pending" @onclick='() => Pay(product, "gms")'>@Offer.Gms.ToString("N0") gm$</button>
+        </div>
+        @if (failed == product && error is not null) { <p class="err" role="alert"><Icon Name="xmark" /> @L[error]</p> }
+    </div>;
 
     // the buttons stay disabled while the request runs; after the thanks (4 s) the dialog closes by itself
     async Task Pay(string product, string currency)
     {
         if (pending) return;
-        (pending, error) = (true, null);
+        (pending, error, failed) = (true, null, null);
         var r = await Profile.TaxidermizeAsync(Kill.Id, product, currency);
         pending = false;
-        if (r.Value is not { } done) { error = r.Error; return; }
+        if (r.Value is not { } done) { (error, failed) = (r.Error, product); return; }
         bought = done.Done;
         await Bought.InvokeAsync(bought);
         StateHasChanged();

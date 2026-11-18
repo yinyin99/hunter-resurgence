@@ -3,11 +3,11 @@
 @* a harvest of the player's own: the button with the time left (hours, the server's window is 72), then the badge of what was bought (docs/website.md) *@
 @if (done is not null)
 {
-    <span class="done">@L[done == "skull" ? "Taxidermy.SkullBadge" : "Taxidermy.Badge"]</span>
+    <span class="done"><Icon Name="check" /> @L[done == "skull" ? "Taxidermy.SkullBadge" : "Taxidermy.Badge"]</span>
 }
 else if (left > TimeSpan.Zero)
 {
-    <button type="button" class="btn btn-primary" @onclick="Open">@L["Taxidermy.Button"] <small>@(left.TotalHours >= 1 ? L["Taxidermy.HoursLeft", (int)left.TotalHours] : L["Taxidermy.MinutesLeft", Math.Max(1, (int)left.TotalMinutes)])</small></button>
+    <button type="button" class="btn" @onclick="Open"><span>@L["Taxidermy.Button"]</span><span class="left">@(left.TotalHours >= 1 ? L["Taxidermy.HoursLeft", (int)left.TotalHours] : L["Taxidermy.MinutesLeft", Math.Max(1, (int)left.TotalMinutes)])</span></button>
 }
 
 @code {

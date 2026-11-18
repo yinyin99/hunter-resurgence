@@ -1,5 +1,8 @@
-.done { color: var(--success); font-size: 14px; line-height: 20px; }
-/* white on #c62806: 5.7:1 (the theme's primary red gives 3.8:1) */
-.btn { background-color: #c62806; color: #fff; }
-.btn:hover { background-color: #b92505; color: #fff; }
-small { margin-left: 4px; font-size: 13px; color: #fff; }
+/* the primary action of the row: white on --accent-solid (5.7:1); the hours left are the same white, set off by a hairline */
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; background-color: var(--accent-solid); color: #fff; white-space: nowrap; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
+@media (hover: hover) { .btn:hover { background-color: var(--accent-solid-hover); } }
+.btn:active { transform: none; filter: none; }
+@media (prefers-reduced-motion: no-preference) { .btn:active { scale: .96; } }
+.left { padding-inline-start: 8px; border-inline-start: 1px solid rgba(255, 255, 255, .6); font-size: 13px; }
+/* the bought badge: check and words (not colour alone), --success on the table (9.3:1) */
+.done { display: inline-flex; align-items: center; gap: 6px; color: var(--success); font-size: 14px; line-height: 20px; font-weight: 500; white-space: nowrap; }

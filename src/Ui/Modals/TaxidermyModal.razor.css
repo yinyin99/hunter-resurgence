@@ -1,12 +1,28 @@
-.tax { position: absolute; top: calc(50% - 150px); left: calc(50% - 240px); box-sizing: border-box; width: 480px; padding: 20px; color: var(--text-1); }
-h2 { margin: 0 0 16px; padding-right: 36px; font-size: 24px; line-height: 30px; font-weight: 400; color: var(--text-1); }
-.line { margin: 0 0 16px; font-size: 16px; line-height: 22px; color: var(--text-1); }
-.close { position: absolute; right: 12px; top: 6px; color: #fff; font-size: 28px; line-height: 36px; }
-.row { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
-.name { flex: 1; font-size: 16px; line-height: 22px; color: var(--text-1); }
-/* white on #c62806: 5.7:1 (the theme's primary red gives 3.8:1) */
-.row .btn { background-color: #c62806; color: #fff; }
-.row .btn:hover:not(:disabled) { background-color: #b92505; }
-/* white on #8a1c1c: 9.3:1 */
-.err { margin: 0 0 10px; padding: 6px 10px; border-radius: 2px; background: #8a1c1c; color: #fff; font-size: 14px; line-height: 20px; text-align: center; }
-.note { margin: 16px 0 0; font-size: 13px; line-height: 18px; color: var(--text-1); }
+/* spacing steps 8 / 12 / 24: 8 inside a group, 12 between the message and its rows, 24 between groups; text is --text-1 on the card (8.4:1) */
+.tax { position: absolute; inset: 0; box-sizing: border-box; width: min(480px, calc(100% - 32px)); height: fit-content; margin: auto; padding: 24px; color: var(--text-1); }
+header { display: flex; flex-direction: column; gap: 4px; margin-block-end: 24px; padding-inline-end: 40px; }
+h2 { margin: 0; font-size: 24px; line-height: 30px; font-weight: 500; color: var(--text-1); }
+.meta { margin: 0; font-size: 16px; line-height: 22px; color: var(--text-1); }
+.products { display: flex; flex-direction: column; gap: 8px; }
+.message { margin: 0 0 4px; font-size: 16px; line-height: 22px; color: var(--text-1); }
+.close { position: absolute; inset-block-start: 8px; inset-inline-end: 8px; display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-2); font-size: 20px; color: #fff; transition-property: background-color; transition-duration: var(--t-fast); }
+
+/* the row is a surface of its own (inset, --surface-6) so the name and its two prices read as one unit; radius = button radius + padding */
+.row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, minmax(96px, 120px)); align-items: center; gap: 8px; padding: 8px; border-radius: calc(var(--r-2) + 8px); background: var(--surface-6); }
+.name { padding-inline-start: 8px; font-size: 16px; line-height: 22px; font-weight: 500; color: var(--text-1); overflow-wrap: anywhere; }
+/* two peer actions: neutral fills with white text (5.7:1) and an edge (3.6:1), the one primary action is the hunt row's button */
+.btn { box-sizing: border-box; min-height: 40px; border: 1px solid var(--neutral-solid-edge); background-color: var(--neutral-solid); color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; text-align: center; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
+.btn:disabled { opacity: .5; cursor: default; }
+@media (hover: hover) { .btn:hover:not(:disabled) { background-color: var(--neutral-solid-hover); } .close:hover { background-color: var(--tint-2); } }
+.btn:active { transform: none; filter: none; }
+@media (prefers-reduced-motion: no-preference) { .btn:active:not(:disabled) { scale: .96; } }
+@media (max-width: 420px) { .row { grid-template-columns: 1fr 1fr; } .name { grid-column: 1 / -1; } }
+
+/* the refusal sits under the row that failed: icon and words, white on --danger-solid (9.3:1) */
+.err { display: flex; align-items: center; gap: 8px; margin: 8px 0 0; padding: 8px 12px; border-radius: var(--r-2); background: var(--danger-solid); color: #fff; font-size: 14px; line-height: 20px; }
+.note { margin: 24px 0 0; font-size: 13px; line-height: 18px; color: var(--text-1); }
+
+.result { display: flex; align-items: flex-start; gap: 16px; padding-inline-end: 32px; }
+.tick { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--success); color: var(--surface-2); font-size: 20px; }
+.result h2 { margin-block-end: 8px; font-size: 20px; line-height: 28px; }
+.result .message { margin: 0; }
