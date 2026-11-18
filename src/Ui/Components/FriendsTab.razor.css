@@ -2,7 +2,7 @@
 .list li { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-size: 14px; color: var(--text-2); }
 .list li:nth-child(even) { background: var(--surface-2); }
 .list ::deep .asset-slot { margin-right: 6px; }
-.handle { color: var(--accent-text); }
+.handle { color: var(--primary); }
 .list ::deep .icon { width: 14px; height: 14px; }
 .buttons { margin-left: auto; }
 .buttons .btn { margin-left: 6px; }

@@ -32,7 +32,7 @@ dl div { margin: 0 0 6px; }
 dt { padding: 4px 2px 2px; color: #555; }
 dd { margin: 0; padding: 4px 8px; border: 1px solid #efe6d6; text-align: right; color: #555; }
 .aside { width: 246px; }
-.map-btn { display: block; width: 100%; height: 28px; margin: 0 0 80px; border: 0; border-radius: 4px; background: var(--primary); font-size: 20px; line-height: 28px; color: #fff; cursor: pointer; }
+.map-btn { display: block; width: 100%; height: 28px; margin: 0 0 80px; border: 0; border-radius: 4px; background: var(--primary-bg); font-size: 20px; line-height: 28px; color: #fff; cursor: pointer; }
 .final { height: 48px; background: #d8c9b3; text-align: center; font-weight: 700; line-height: 48px; color: #333; }
 .aside p { margin: 0; padding: 8px; border: 1px solid #efe6d6; text-align: center; }
 .aside b { display: block; line-height: 20px; color: #333; }
