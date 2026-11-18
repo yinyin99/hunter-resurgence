@@ -28,8 +28,8 @@ public class ProblemReportTests
         return new(folder, Path.Combine(folder, "client.exe"));
     }
 
-    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null, string? outFolder = null) =>
-        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), outFolder ?? Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"], exe => [$"event 1000 {exe} crashed"]);
+    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null, string? outFolder = null, Func<string, IEnumerable<string>>? dumps = null) =>
+        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), outFolder ?? Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"], exe => [$"event 1000 {exe} crashed"], dumps: dumps);
 
     static Dictionary<string, string> Read(string zip)
     {
@@ -236,7 +236,7 @@ public class ProblemReportTests
             var b = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => runs.Count > 0 && runs.Dequeue(), LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1),
                 find: _ => new GameProcess(() => ++looks > 2, () => runs.Count == 0 ? 3 : null), history: history);
             Assert.Null(b.LastRun);
-            Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
+            Assert.NotNull(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
             var run = b.LastRun!;
             Assert.True(run.WindowSeen);
             Assert.Equal(3, run.ExitCode);
@@ -255,9 +255,55 @@ public class ProblemReportTests
         await quiet.WhenGameExitsAsync();
         Assert.Equal("nowindow", quiet.LastRun!.Trigger);
         var never = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1), appearWithin: TimeSpan.FromMilliseconds(5), history: history);
-        Assert.False(await never.WhenGameExitsAsync());
+        Assert.Null(await never.WhenGameExitsAsync());
         Assert.Null(never.LastRun);
         Assert.Equal("nowindow", history.Load()[^1].Trigger);
+    }
+
+    [Fact]
+    public void TheNewestCrashDumpOfTheGameIsInTheZipAndListed()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var dumps = Path.Combine(temp.Path, "dumps");
+        Files.Write(Path.Combine(dumps, "client.exe.1.dmp"), "older dump");
+        Files.Write(Path.Combine(dumps, "client.exe.2.dmp"), "newer dump");
+        File.SetLastWriteTimeUtc(Path.Combine(dumps, "client.exe.1.dmp"), DateTime.UtcNow.AddHours(-1));
+        string? asked = null;
+        var report = Make(temp, g.Install, dumps: exe => { asked = exe; return Directory.GetFiles(dumps); }).Build("exitcode");
+
+        Assert.Equal("client.exe", asked); // the exe's file name: only that program's dumps
+        var entries = Read(report.Path);
+        Assert.Equal("newer dump", entries["game/client.exe.2.dmp"]);
+        Assert.DoesNotContain("game/client.exe.1.dmp", entries.Keys);
+        Assert.Contains("game/client.exe.2.dmp", report.Files);
+        Assert.Contains("\"game/client.exe.2.dmp\"", entries["report.json"]);
+
+        // no dump (or a probe that fails) is no entry and no failure
+        Assert.DoesNotContain(Read(Make(temp, g.Install, dumps: _ => []).Build("manual").Path).Keys, k => k.EndsWith(".dmp"));
+        Assert.Contains("crash dump", Make(temp, g.Install, dumps: _ => throw new IOException()).Build("manual").Missing);
+    }
+
+    [Fact]
+    public void ACrashDumpOver32MiBIsSkippedAndOneThatWouldBreakTheZipLimitIsDropped()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var big = Path.Combine(temp.Path, "dumps", "client.exe.1.dmp");
+        Directory.CreateDirectory(Path.GetDirectoryName(big)!);
+        using (var f = File.Create(big)) f.SetLength(Diagnostics.DumpMax + 1);
+        var skipped = Make(temp, g.Install, dumps: _ => [big]).Build("exitcode");
+        Assert.DoesNotContain(skipped.Files, f => f.EndsWith(".dmp"));
+        Assert.Contains(skipped.Missing, m => m.Contains("client.exe.1.dmp") && m.Contains("32 MiB"));
+
+        // 6 MiB that do not compress: allowed as a dump, but the zip would pass the limit: dropped, the rest stays full
+        var noise = new byte[6 * 1024 * 1024];
+        new Random(7).NextBytes(noise);
+        File.WriteAllBytes(big, noise);
+        var dropped = Make(temp, g.Install, dumps: _ => [big]).Build("exitcode");
+        Assert.InRange(dropped.Bytes, 1, Diagnostics.Limit);
+        Assert.DoesNotContain(dropped.Files, f => f.EndsWith(".dmp"));
+        Assert.Contains(dropped.Missing, m => m.Contains("client.exe.1.dmp") && m.Contains("size limit"));
     }
 
     [Fact]
