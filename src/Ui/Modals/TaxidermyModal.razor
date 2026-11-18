@@ -12,7 +12,7 @@
         <p class="line">@L[Offer.Skull ? "Taxidermy.MessageSkull" : "Taxidermy.MessageNoSkull"]</p>
         @Row("taxidermy", L["Stat.Taxidermy"])
         @if (Offer.Skull) { @Row("skull", L["Taxidermy.Skull"]) }
-        @if (error is not null) { <div class="su-login-error" role="alert">@L[error]</div> }
+        @if (error is not null) { <div class="err" role="alert">@L[error]</div> }
         <p class="note">@L["Taxidermy.Note"]</p>
     }
     else

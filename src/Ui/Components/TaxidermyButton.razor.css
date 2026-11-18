@@ -1,2 +1,5 @@
 .done { color: var(--success); font-size: 14px; line-height: 20px; }
-small { margin-left: 4px; opacity: .8; }
+/* white on #c62806: 5.7:1 (the theme's primary red gives 3.8:1) */
+.btn { background-color: #c62806; color: #fff; }
+.btn:hover { background-color: #b92505; color: #fff; }
+small { margin-left: 4px; font-size: 13px; color: #fff; }
