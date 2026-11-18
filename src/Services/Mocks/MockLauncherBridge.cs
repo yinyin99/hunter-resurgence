@@ -59,6 +59,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     }
     public void UseAutomaticGameFolder() => GameInstall = new(Steam, "steam-library", []);
     public Result OpenFolder(string kind) { log.LogInformation("open folder {Kind}", kind); return Result.Success; }
+    public Result ShowFile(string path) { log.LogInformation("show file {Path}", path); return Result.Success; }
     public Result ClearCache(string kind) { log.LogInformation("clear {Kind} cache", kind); return Result.Success; }
     public void OpenExternal(string url)
     {

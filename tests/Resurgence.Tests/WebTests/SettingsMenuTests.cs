@@ -15,6 +15,7 @@ public sealed class SettingsMenuTests : UiContext
         public List<string> Asked { get; } = [];
         public bool IsSteam => false;
         public Result OpenFolder(string kind) { Asked.Add("open " + kind); return Result.Fail(error); }
+        public Result ShowFile(string path) => Result.Success;
         public GameInstallInfo GameInstall => new(null, null, []);
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }

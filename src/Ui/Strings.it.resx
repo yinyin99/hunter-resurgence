@@ -1519,7 +1519,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Questo account non può accedere.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Questo modulo non proviene da questo server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Il gioco è in esecuzione. Chiudere il launcher lo disconnette dal server della community. Tenere aperto il launcher?&#10;&#10;Sì: tienilo aperto. No: riducilo a icona.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Vuoi davvero chiudere il launcher e il gioco?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Segnala un problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Invia i log del gioco al server della community così possiamo aiutarti. Conservati 30 giorni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Raccolta dei file…</value></data>
@@ -1529,7 +1529,10 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.Send" xml:space="preserve"><value>Invia</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Invio in corso…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Salvato come {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Inviato. Riferimento: {0} (indicalo su Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Inviato.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Indica questo riferimento su Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copiato</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Impossibile mostrare il file in Esplora file.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Invia automaticamente dopo un avvio non riuscito</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Rapporto sul problema inviato: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Non è stato possibile inviare il rapporto sul problema: {0}</value></data>

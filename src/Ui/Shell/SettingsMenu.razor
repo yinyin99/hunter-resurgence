@@ -9,9 +9,9 @@
     <li class="off" aria-disabled="true" title="@L["Settings.ComingLater"]"><span>@L["Settings.GameManagement"]</span><span class="sr"> (@L["Settings.ComingLater"])</span></li>
     <li><a href="/restore">@L["Settings.Restore"]</a></li>
     <li><a href="#" @onclick="() => Modal.Show<LanguageModal>()" @onclick:preventDefault>@L["Settings.Language"]</a></li>
-    <li><a href="#" id="seasonal-events" @onclick="() => Modal.Show<SeasonalEventsModal>()" @onclick:preventDefault>@L["Settings.SeasonalEvents"]</a></li>
     @if (Mode.Launcher)
     {
+        <li><a href="#" id="seasonal-events" @onclick="() => Modal.Show<SeasonalEventsModal>()" @onclick:preventDefault>@L["Settings.SeasonalEvents"]</a></li>  @* the website has no item: hunts start in the launcher, where the launch map shows the same box while an event runs *@
         <li class="launcher-item"><a href="#" id="game-settings" @onclick="() => Modal.Show<GameSettingsModal>()" @onclick:preventDefault>@L["Settings.GameSettings"]</a></li>
         <li><a href="#" id="steam-option" @onclick="() => Modal.Show<SteamOptionModal>()" @onclick:preventDefault>@L["Settings.SteamOption"]</a></li>
         <li><a href="#" @onclick='() => Show(Bridge.OpenFolder("screenshots"))' @onclick:preventDefault>@L["Settings.Screenshots"]</a></li>
