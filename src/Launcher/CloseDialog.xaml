@@ -13,13 +13,14 @@
             <Setter Property="Padding" Value="12,6" />
             <Setter Property="MinWidth" Value="80" />
             <Setter Property="Margin" Value="5,0,0,0" />
+            <Setter Property="Tag"><Setter.Value><SolidColorBrush Color="White" /></Setter.Value></Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid x:Name="Root">
                             <Border CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="Transparent" BorderThickness="1" x:Name="Bd">
                                 <Grid>
-                                    <Border x:Name="Veil" Background="White" Opacity="0" CornerRadius="3" />
+                                    <Border x:Name="Veil" Background="{TemplateBinding Tag}" Opacity="0" CornerRadius="3" />
                                     <ContentPresenter Margin="{TemplateBinding Padding}" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Grid>
                             </Border>
@@ -39,7 +40,10 @@
         <Border BorderBrush="#4E4C50" BorderThickness="0,2,0,0" Background="#444" Padding="14,12,20,11">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="Yes" Style="{StaticResource Btn}" Background="#2A2A2A" IsEnabled="False" Click="OnYes" />
-                <Button x:Name="No" Style="{StaticResource Btn}" Background="#E1320C" IsDefault="True" IsCancel="True" />
+                <!-- the red button's veil is black: a white one would drop the white text under 4.5:1 -->
+                <Button x:Name="No" Style="{StaticResource Btn}" Background="#E1320C" IsDefault="True" IsCancel="True">
+                    <Button.Tag><SolidColorBrush Color="Black" /></Button.Tag>
+                </Button>
             </StackPanel>
         </Border>
     </StackPanel>
