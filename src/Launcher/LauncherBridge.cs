@@ -153,6 +153,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // version, files and setup block a start with the dashboard's text; ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
         if (checks?.RunAsync(false, true).GetAwaiter().GetResult().FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
         var param = Random.Shared.Next();
+        // this start has no mode yet: the last one's must not show while it waits for Steam or if it fails
+        lastStartMode = null;
+        StartStateChanged?.Invoke();
         var withSteam = SteamUp();
         using var game = Launch(g, url, param, withSteam);
         if (game is null) return Result.Fail("Launch.StartFailed");

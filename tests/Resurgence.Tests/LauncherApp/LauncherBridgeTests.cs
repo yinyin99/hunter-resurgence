@@ -114,6 +114,25 @@ public class LauncherBridgeTests
     }
 
     [Fact]
+    public void TheModeOfTheLastStartIsNotToldWhileTheNextOneWaitsForSteam()
+    {
+        using var s = new Start();
+        bool installed = false, signedIn = false;
+        var b = s.Bridge(new(() => installed, () => signedIn, () => { signedIn = true; return true; }));
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal("nosteam", b.LastStartMode);
+
+        // the next start: Steam is installed now, not signed in, and signs in during the wait
+        (installed, signedIn) = (true, false);
+        var told = new List<string?>();
+        b.StartStateChanged += () => told.Add(b.LastStartMode);
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.DoesNotContain("nosteam", told); // the old note must not come back while this start waits and then starts with Steam
+        Assert.Equal("steam", b.LastStartMode);
+        Assert.Equal(["nosteam", "steam"], s.Modes);
+    }
+
+    [Fact]
     public void SteamSignedInStartsWithSteamAndIsNotStartedAgain()
     {
         using var s = new Start();
@@ -135,7 +154,7 @@ public class LauncherBridgeTests
         Assert.True(b.StartGame("srv://x").Ok);
         Assert.Equal(["steam"], s.Modes);
         Assert.Equal(1, started);
-        Assert.Equal(true, waiting.First()); // "Starting Steam…" was shown ...
+        Assert.Contains(true, waiting); // "Starting Steam…" was shown ...
         Assert.False(b.WaitingForSteam);     // ... and is gone
     }
 

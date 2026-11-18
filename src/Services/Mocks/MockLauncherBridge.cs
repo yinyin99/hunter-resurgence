@@ -74,6 +74,8 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
         log.LogInformation("start game {Url}", url);
         // as the launcher: the game and the running game keep their older keys, version, files and setup say the check's text
         if (Checks().FirstOrDefault(c => c.Level == "block") is { } blocked) return Result.Fail(blocked.Id switch { "game" => "Launch.NoGame", "running" => "Launch.AlreadyRunning", _ => blocked.Text });
+        LastStartMode = null; // as the launcher: this start has no mode yet
+        StartStateChanged?.Invoke();
         if (mock == "steam:wait" && check == "steam")
         {
             skipWait.Reset();
