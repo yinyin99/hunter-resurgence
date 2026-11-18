@@ -45,9 +45,11 @@
     /* the accent as a background under white text (4.52:1); --accent itself stays for text and lines on dark surfaces */
     --accent-bg: #d1480b;
     --accent-hover: #fb8a58;
-    /* white text on these two: 4.50 and 5.75 */
-    --primary: #e1320c;
-    --primary-hover: #c32a05;
+    --primary: #f9370d;
+    --primary-hover: #e72d06;
+    /* the primary as a background under white text: 4.50 and 5.75; --primary stays for text on dark surfaces (5.0 on #111) */
+    --primary-bg: #e1320c;
+    --primary-bg-hover: #c32a05;
     --launcher-accent: #ff4700;
     --menu-hover-from: #333;
     --menu-hover-to: #222;
@@ -218,9 +220,9 @@ a:hover { color: var(--accent-hover); }
     transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
 .btn:active { transform: translateY(1px); filter: brightness(.9); }
-.btn-primary { background-color: var(--primary); color: #fff; }
+.btn-primary { background-color: var(--primary-bg); color: #fff; }
 .btn-inverse { background-color: var(--surface-7); color: #fff; }
-.btn-primary:hover { background-color: var(--primary-hover); color: #fff; }
+.btn-primary:hover { background-color: var(--primary-bg-hover); color: #fff; }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
