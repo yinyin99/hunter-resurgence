@@ -17,14 +17,15 @@ namespace Resurgence.Launcher;
 /// <param name="quitWithin">How long a start with Steam is watched for the client to quit at once (5 s).</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
-    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null) : ILauncherBridge
+    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
+    Settings? settings = null, ILogger? log = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
-    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
+    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -157,11 +158,13 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         lastStartMode = null;
         StartStateChanged?.Invoke();
         var withSteam = SteamUp();
+        CarryGraphics(withSteam);
         using var game = Launch(g, url, param, withSteam);
         if (game is null) return Result.Fail("Launch.StartFailed");
         // the client quit at once because Steam is not there: once more without Steam, and never again
         if (withSteam && QuitEarly(game) == SteamMissing)
         {
+            CarryGraphics(false);
             using var again = Launch(g, url, param, false);
             if (again is null) return Result.Fail("Launch.StartFailed");
             withSteam = false;
@@ -170,6 +173,13 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
         return Result.Success;
+    }
+
+    /// <summary>The graphics settings follow the start's mode (<see cref="GameFiles.CarryGraphics"/>); a failure is logged and never blocks the start.</summary>
+    void CarryGraphics(bool withSteam)
+    {
+        if (settings is null || appData is null) return;
+        if (GameFiles.CarryGraphics(settings, appData, withSteam) is { } error) log?.LogWarning("The graphics settings could not be copied for the start: {Error}", error);
     }
 
     /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
@@ -229,7 +239,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
-    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again.
+    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again. Only the player's press
+    /// of Start without Steam leaves Steam closed: the Steam this start launched, still without anybody signed in, is asked to exit (<see cref="SteamProbes.StopStarted"/>; never one that ran before). When the 20 s
+    /// run out Steam is left alone, the player may be typing a sign-in code.
     /// </summary>
     bool SteamUp()
     {
@@ -244,7 +256,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var step = poll ?? TimeSpan.FromSeconds(1);
             for (var waited = TimeSpan.Zero; waited < (steamWait ?? TimeSpan.FromSeconds(20)); waited += step)
             {
-                if (skipSteam.Wait(step)) return false;
+                if (skipSteam.Wait(step)) return Abandon();
                 if (steam.SignedIn()) return true;
             }
             return false;
@@ -254,6 +266,12 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             waitingForSteam = false;
             StartStateChanged?.Invoke();
         }
+    }
+
+    bool Abandon()
+    {
+        if (!steam.SignedIn()) steam.StopStarted?.Invoke();
+        return false;
     }
 
     /// <summary>Starts the client in the exe's own folder (it finds its data and writes its logs relative to the working folder); null when it does not start.</summary>

@@ -41,7 +41,7 @@ public sealed class OptionsSettings(Dictionary<string, int> values)
 
 /// <summary>
 /// Reads and writes the two settings files of the game in %APPDATA%. Only the edited values change; every other byte stays (files are handled as Latin-1,
-/// which maps every byte to one char). The client reads them once at start, so nothing is written while it runs.
+/// which maps every byte to one char). The client reads them once at start, so nothing is written while it runs. Before every start <see cref="CarryGraphics"/> also replaces the start mode's graphics file by the newest one.
 /// </summary>
 public static class GameFiles
 {
@@ -231,5 +231,26 @@ public static class GameFiles
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
         public ushort dmLogPixels;
         public uint dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmDisplayFlags, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
+    }
+
+    /// <summary>
+    /// Before a start: the graphics file of the start's mode (<c>/steam</c> or not, <see cref="Settings.GraphicsFileNoSteam"/>) is replaced by the other mode's when it is missing or older, so the newest settings
+    /// follow the player to the mode he starts in. Nothing when the two are one file, the other is missing or there is no graphics_file. A copy that fails is returned as its message (the start goes on).
+    /// </summary>
+    public static string? CarryGraphics(Settings settings, string appData, bool withSteam)
+    {
+        if (settings.GraphicsFile is not { } steam || settings.GraphicsFileNoSteam is not { } noSteam) return null;
+        var (from, to) = withSteam ? (noSteam, steam) : (steam, noSteam);
+        FileInfo source = new(Path.Combine(appData, from)), target = new(Path.Combine(appData, to));
+        try
+        {
+            if (!source.Exists || (target.Exists && target.LastWriteTimeUtc >= source.LastWriteTimeUtc)) return null;
+            Directory.CreateDirectory(target.DirectoryName!);
+            var backup = target.FullName + BackupSuffix;
+            if (target.Exists && !File.Exists(backup)) File.Copy(target.FullName, backup);
+            source.CopyTo(target.FullName, true);
+            return null;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return e.Message; }
     }
 }
