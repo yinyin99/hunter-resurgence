@@ -12,3 +12,6 @@ p { margin: 0; font-size: 16px; line-height: 22px; color: var(--text-1); }
 .btn { box-sizing: border-box; min-height: 40px; padding: 8px 16px; font-size: 16px; font-weight: 500; transition-property: background-color, scale; transition-duration: var(--t-base); transition-timing-function: var(--ease); }
 .btn:active { transform: none; filter: none; }
 @media (prefers-reduced-motion: no-preference) { .btn:active:not(:disabled) { scale: .96; } }
+/* OK is the neutral button of the taxidermy dialog (existing tokens); the cause's action keeps the site's .btn-primary */
+.btn:not(.btn-primary) { border: 1px solid var(--neutral-solid-edge); background-color: var(--neutral-solid); color: #fff; }
+@media (hover: hover) { .btn:not(.btn-primary):hover { background-color: var(--neutral-solid-hover); } }

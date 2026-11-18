@@ -10,15 +10,15 @@ namespace Resurgence.Tests.WebTests;
 /// <summary>The window after the started game closed: "Done hunting for now?" only for a real hunt, "The game closed right away" with one action per cause for an early exit (docs/website.md, "The game closed right away").</summary>
 public sealed class GameExitTests : UiContext
 {
-    sealed class Log : ILogger<MockLauncherBridge>
+    sealed class Lines : ILogger<MockLauncherBridge>
     {
-        public List<string> Lines { get; } = [];
+        public List<string> Seen { get; } = [];
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => Lines.Add(formatter(state, exception));
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => Seen.Add(formatter(state, exception));
     }
 
-    readonly Log log = new();
+    readonly Lines log = new();
 
     MockLauncherBridge Use(string? mock)
     {
@@ -55,7 +55,7 @@ public sealed class GameExitTests : UiContext
         Assert.Equal("alert", modal.Backdrop);
 
         var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early(cause)));
-        Assert.Equal("The game closed right away", cut.Find("h1").TextContent);
+        Assert.Equal("The game closed right away", cut.Find("h2").TextContent);
         Assert.Equal(action is null ? ["exit-ok"] : [action.TrimStart('#'), "exit-ok"], cut.FindAll(".actions .btn").Select(b => b.Id));
         Assert.Equal("exit-ok", cut.Find("[autofocus]").Id);
         Assert.Single(cut.FindAll(".btn-primary"));  // one primary action: the cause's, or OK when there is none
@@ -68,7 +68,7 @@ public sealed class GameExitTests : UiContext
         var blocked = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("blocked")));
         Assert.Contains("Smart App Control", blocked.Markup);
         blocked.Find("#exit-security").Click();
-        Assert.Contains("open windowsdefender://appbrowser", log.Lines);
+        Assert.Contains("open windowsdefender://appbrowser", log.Seen);
 
         var closed = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed")));
         Assert.Contains("clock", closed.Markup);
