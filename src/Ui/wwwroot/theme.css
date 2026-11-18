@@ -1,4 +1,4 @@
-/* Theme variables of the old interface (values 1:1); components use the variables, never literals. */
+/* Theme variables of the old interface (the text colours are raised where the old ones were not readable: 4.5:1 on every surface); components use the variables, never literals. */
 
 @font-face { font-family: Roboto; font-weight: 300; font-display: swap; src: url(fonts/roboto-300.woff2) format("woff2"); }
 @font-face { font-family: Roboto; font-weight: 400; font-display: swap; src: url(fonts/roboto-400.woff2) format("woff2"); }
@@ -259,8 +259,8 @@ a { transition: color var(--t-fast) var(--ease); }
 
 /* the grey card of the small dialogs (alert, buy) and the x of every modal */
 .dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
-.dialog-card a { color: var(--accent-text); }
-.dialog-card a:hover { color: #fff; }
+.dialog-card a:not(.btn) { color: var(--accent-text); }
+.dialog-card a:not(.btn):hover { color: #fff; }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
 @keyframes dialog-fade { from { opacity: 0; } }
 .close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
