@@ -313,6 +313,32 @@ public class ProblemReportTests
     }
 
     [Fact]
+    public void ADumpThatDoesNotFitGivesWayToTheNextNewestAndAHeapDumpBesideASmallOneIsLeftOut()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        IReadOnlyList<GameRun> ran = [new(DateTimeOffset.UtcNow.AddHours(-1), TimeSpan.FromSeconds(3), 3, true)];
+        var dir = Path.Combine(temp.Path, "dumps");
+        Directory.CreateDirectory(dir);
+        var noise = new byte[6 * 1024 * 1024]; // does not compress: over the zip limit
+        new Random(7).NextBytes(noise);
+        File.WriteAllBytes(Path.Combine(dir, "client.exe.2.dmp"), noise);
+        Files.Write(Path.Combine(dir, "client.exe.1.dmp"), "small dump");
+        File.SetLastWriteTimeUtc(Path.Combine(dir, "client.exe.1.dmp"), DateTime.UtcNow.AddMinutes(-5));
+        var report = Make(temp, g.Install, runs: () => ran, dumps: _ => Directory.GetFiles(dir)).Build("exitcode");
+        Assert.Equal("small dump", Read(report.Path)["game/client.exe.1.dmp"]);
+        Assert.Contains(report.Missing, m => m.Contains("client.exe.2.dmp") && m.Contains("size limit"));
+
+        // the heap dump of the same crash is not worth a second copy of the memory
+        var crash = Path.Combine(temp.Path, "wer");
+        Files.Write(Path.Combine(crash, "a.hdmp"), "heap");
+        Files.Write(Path.Combine(crash, "a.mdmp"), "mini");
+        var entries = Read(Make(temp, g.Install, runs: () => ran, dumps: _ => Directory.GetFiles(crash)).Build("exitcode").Path);
+        Assert.Equal("mini", entries["game/a.mdmp"]);
+        Assert.DoesNotContain("game/a.hdmp", entries.Keys);
+    }
+
+    [Fact]
     public void ARealProcessGivesItsExitCodeAfterItIsGone()
     {
         using var temp = new TempDir("resurgence-test-");

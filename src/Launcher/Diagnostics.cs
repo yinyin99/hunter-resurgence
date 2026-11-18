@@ -80,25 +80,34 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var events = exe is null ? "no game folder" : EventsText(missing, exe);
         var history = Try(() => runs(), missing, "runs.json") ?? [];
         var run = JsonSerializer.Serialize(history, RunHistory.Json);
-        var dump = exe is null ? null : Dump(missing, exe, history.Count > 0 ? history[^1].Start : null);
+        var candidates = exe is null ? [] : Dumps(missing, exe, history.Count > 0 ? history[^1].Start : null);
         ProblemReport r;
-        for (var cap = LogBytes; ; )
+        // the newest dump that fits first; one that would push the zip over the limit (it cannot be cut) gives way to the next, then to none
+        foreach (var dump in candidates)
         {
-            if ((r = Zip(trigger, cap, new(missing), system, events, run, checks, dump)).Bytes <= Limit || (dump is null && cap < 4096)) return r;
-            if (dump is null) { cap /= 4; continue; }
+            if ((r = Zip(trigger, LogBytes, new(missing), system, events, run, checks, dump)).Bytes <= Limit) return r;
             missing.Add($"game/{Path.GetFileName(dump)} (the report would be over the size limit)");
-            dump = null;
         }
+        for (var cap = LogBytes; ; cap /= 4)
+            if ((r = Zip(trigger, cap, new(missing), system, events, run, checks, null)).Bytes <= Limit || cap < 4096) return r;
     }
 
-    /// <summary>The game exe's newest crash dump written after the start of the last run (an older one belongs to another crash; no run, no dump), if it is at most <see cref="DumpMax"/> (listed in <c>missing</c> when it is larger); null when there is none.</summary>
-    string? Dump(List<string> missing, string exe, DateTimeOffset? since)
+    const int DumpTries = 3;
+
+    /// <summary>The game exe's crash dumps written after the start of the last run (an older one belongs to another crash; no run, no dump), newest first, at most <see cref="DumpTries"/>; a dump over <see cref="DumpMax"/>
+    /// is listed in <c>missing</c> and skipped. A full-memory <c>.hdmp</c> gives way to a <c>.dmp</c> or <c>.mdmp</c> of the same crash (the same folder).</summary>
+    List<string> Dumps(List<string> missing, string exe, DateTimeOffset? since)
     {
-        if (since is null) return null;
-        var newest = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).OrderByDescending(File.GetLastWriteTimeUtc).Take(1).ToList(), missing, "crash dump")?.FirstOrDefault();
-        if (newest is null || new FileInfo(newest).Length <= DumpMax) return newest;
-        missing.Add($"game/{Path.GetFileName(newest)} (over 32 MiB)");
-        return null;
+        if (since is null) return [];
+        var all = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).ToList(), missing, "crash dump") ?? [];
+        var small = new List<string>();
+        foreach (var f in all.OrderByDescending(File.GetLastWriteTimeUtc))
+        {
+            if (new FileInfo(f).Length > DumpMax) missing.Add($"game/{Path.GetFileName(f)} (over 32 MiB)");
+            else small.Add(f);
+        }
+        static bool Heap(string f) => Path.GetExtension(f).Equals(".hdmp", StringComparison.OrdinalIgnoreCase);
+        return small.Where(f => !Heap(f) || !small.Any(o => !Heap(o) && Path.GetDirectoryName(o) == Path.GetDirectoryName(f))).Take(DumpTries).ToList();
     }
 
     /// <summary>Where Windows keeps the dumps of a crashed program: the LocalDumps folder (the default <c>%LOCALAPPDATA%\CrashDumps</c> or the one the registry names, for all programs or for the exe) as <c>&lt;exe&gt;.&lt;id&gt;.dmp</c>, and the
@@ -106,7 +115,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     internal static IEnumerable<string> FindDumps(string exe)
     {
         var found = new List<string>();
-        static void Each(Action read) { try { read(); } catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Security.SecurityException) { } }
+        static void Each(Action read) { try { read(); } catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or System.Security.SecurityException) { } }
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var folders = new List<string> { Path.Combine(local, "CrashDumps") };
         const string Key = @"SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps";
