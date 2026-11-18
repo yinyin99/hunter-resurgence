@@ -33,6 +33,40 @@ public class GameSettingsServiceTests
         Assert.Equal((0, false), (saves[0], prefs.GameSettingsSaved));
     }
 
+    [Theory]
+    [InlineData("nosteam", false, true)]
+    [InlineData(null, true, true)]
+    public async Task TheFileOfTheComingModeIsWrittenBothWhenItIsUnknown(string? mode, bool steamFile, bool noSteamFile)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var s = new Settings("1", "no-such-client.exe", "gSettings_steam_live.cfg", "o.bin", "fake_");
+        Assert.Equal("gSettings_live.cfg", s.GraphicsFileNoSteam);
+        Assert.Null(Config().GraphicsFileNoSteam); // a name without "_steam": one file for both modes
+        var (steam, noSteam) = (Path.Combine(temp.Path, "gSettings_steam_live.cfg"), Path.Combine(temp.Path, "gSettings_live.cfg"));
+        Write(steam, Gfx);
+        Write(noSteam, Gfx.Replace("1920 1080 60", "1280 720 30"));
+        var svc = new GameSettingsService(s, new Prefs(), temp.Path, () => { }, () => mode);
+        var read = await svc.ReadAsync();
+        Assert.Equal(mode == "nosteam" ? 1280 : 1920, read.Options.Resolution.Width); // the file of the mode; the steam file when unknown
+        Assert.True((await svc.SaveAsync(read.Options with { Scene = 3 })).Ok);
+        Assert.Equal(steamFile, GameFiles.ReadGraphics(steam).Value!.Scene == 3);
+        Assert.Equal(noSteamFile, GameFiles.ReadGraphics(noSteam).Value!.Scene == 3);
+        Assert.Equal(mode == "nosteam" ? 30 : 60, GameFiles.ReadGraphics(mode == "nosteam" ? noSteam : steam).Value!.Hz); // what the dialog does not show stays
+    }
+
+    [Fact]
+    public async Task AMissingFileOfTheOtherModeIsCreatedWhenBothAreWritten()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var s = new Settings("1", "no-such-client.exe", "gSettings_steam_live.cfg", "o.bin", "fake_");
+        Write(Path.Combine(temp.Path, "gSettings_steam_live.cfg"), Gfx);
+        var svc = new GameSettingsService(s, new Prefs(), temp.Path, () => { });
+        Assert.True((await svc.SaveAsync((await svc.ReadAsync()).Options with { Scene = 3 })).Ok);
+        Assert.Equal(3, GameFiles.ReadGraphics(Path.Combine(temp.Path, "gSettings_live.cfg")).Value!.Scene);
+        Write(Path.Combine(temp.Path, "gSettings_live.cfg"), "not a settings file");
+        Assert.Equal("GameSettings.BadFormat", (await svc.SaveAsync((await svc.ReadAsync()).Options)).Error);
+    }
+
     [Fact]
     public async Task ContextualHelpIsWrittenToTheOptionsFileAndReadBack()
     {

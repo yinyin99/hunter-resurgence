@@ -232,7 +232,9 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kjører allerede.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Fant ikke spillet. Sjekk mappen i innstillingene.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, logg inn og prøv igjen.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Starter Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Start uten Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Startet uten Steam: Steam-prestasjoner er av i denne økten.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FINN ET FLERSPILLERSPILL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Finn et spill eller en vert...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Tøm</value></data>
@@ -1464,6 +1466,8 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spillet ligger i en OneDrive-mappe; en vanlig mappe som C:\Games fungerer best.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Spillet ligger på en nettverksstasjon; en lokal mappe fungerer best.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam er ikke logget inn.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam er ikke logget inn: spillet starter uten Steam.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam er ikke installert: spillet starter uten Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blokkerte en spillfil ({0}): tillat den i Windows-sikkerhet.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskplass på {0} ({1} igjen).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Spillet kjører allerede: lukk det, og start det så herfra.</value></data>

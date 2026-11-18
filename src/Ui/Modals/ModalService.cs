@@ -11,6 +11,9 @@ public sealed class ModalService
     public string Backdrop { get; private set; } = "page";
     public event Action? Changed;
 
+    /// <summary>The "Started without Steam" note (<see cref="SteamStart"/>) was clicked away or timed out: it stays away until the next start. Shared by the copy on the page and the one inside the dialog.</summary>
+    public bool SteamNoteGone { get; set; }
+
     // a click on the backdrop closes these (as in the old app); the language and alert dialogs do not (D-SHELL-5), nor the game settings.
     // The join map has a full-window layer of its own inside the dialog.
     static readonly Type[] CloseOnBackdrop = [typeof(BankModal), typeof(BuyModal), typeof(VideoModal), typeof(GameStartedModal)];

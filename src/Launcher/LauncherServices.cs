@@ -38,7 +38,7 @@ static class LauncherServices
         // Steam's Play button opens the launcher: the launch option, written with the player's OK (docs/launcher.md#start-it-from-steam)
         services.AddSingleton<ISteamOptionService>(sp => mock is null ? new LauncherSteamOption(sp.GetRequiredService<LauncherEnv>(), SteamOption.StableExe) : new MockSteamOptionService());
         services.AddSingleton<IGameSettingsService>(sp => mock == "settings:first" ? new MockGameSettingsService(sp.GetRequiredService<ILogger<MockGameSettingsService>>(), mock)
-            : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save));
+            : new GameSettingsService(sp.GetRequiredService<LauncherEnv>().Settings, sp.GetRequiredService<LauncherEnv>().Prefs, GameFiles.AppData, sp.GetRequiredService<LauncherEnv>().Save, SteamProbes.Real.PlannedMode));
         services.AddSingleton<IWalletService>(sp => new MockWalletService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<IStoreService>(sp => new MockStoreService(sp.GetRequiredService<MockWalletState>(), mock));
         services.AddSingleton<IBankService>(sp => new MockBankService(sp.GetRequiredService<MockWalletState>(), mock));

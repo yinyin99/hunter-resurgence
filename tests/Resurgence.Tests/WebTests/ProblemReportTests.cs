@@ -15,6 +15,10 @@ public sealed class ProblemReportTests : UiContext
     sealed class Bridge(string consent = "unset", GameRun? run = null, ReportSent? answer = null, bool saveFails = false, bool showFails = false) : ILauncherBridge
     {
         public bool IsSteam => false;
+        public bool WaitingForSteam => false;
+        public void StartWithoutSteam() { }
+        public event Action? StartStateChanged { add { } remove { } }
+        public string? LastStartMode => null;
         public Result OpenFolder(string kind) => Result.Success;
         public List<string> Shown { get; } = [];
         public Result ShowFile(string path) { Shown.Add(path); return showFails ? Result.Fail("Report.ErrShow") : Result.Success; }

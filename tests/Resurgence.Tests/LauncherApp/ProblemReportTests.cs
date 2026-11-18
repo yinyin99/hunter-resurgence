@@ -233,7 +233,7 @@ public class ProblemReportTests
             // the process appears late (the first look finds none), shows a window on the third look, and ends with code 3
             var runs = new Queue<bool>([false, true, true, true, true, false]);
             var looks = 0;
-            var b = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => runs.Count > 0 && runs.Dequeue(), _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1),
+            var b = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => runs.Count > 0 && runs.Dequeue(), LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1),
                 find: _ => new GameProcess(() => ++looks > 2, () => runs.Count == 0 ? 3 : null), history: history);
             Assert.Null(b.LastRun);
             Assert.True(await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
@@ -250,11 +250,11 @@ public class ProblemReportTests
         Assert.True(saved[^1].WindowSeen);
 
         // a game that never shows a window, and a game that never appears records nothing more
-        var quiet = new LauncherBridge(() => new("dir", "client.exe"), rest, new Queue<bool>([true, true, false]) is var q ? _ => q.Count > 0 && q.Dequeue() : null!, _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1),
+        var quiet = new LauncherBridge(() => new("dir", "client.exe"), rest, new Queue<bool>([true, true, false]) is var q ? _ => q.Count > 0 && q.Dequeue() : null!, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1),
             find: _ => new GameProcess(() => false, () => 0), history: history);
         await quiet.WhenGameExitsAsync();
         Assert.Equal("nowindow", quiet.LastRun!.Trigger);
-        var never = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => false, _ => true, () => true, null, poll: TimeSpan.FromMilliseconds(1), appearWithin: TimeSpan.FromMilliseconds(5), history: history);
+        var never = new LauncherBridge(() => new("dir", "client.exe"), rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1), appearWithin: TimeSpan.FromMilliseconds(5), history: history);
         Assert.False(await never.WhenGameExitsAsync());
         Assert.Null(never.LastRun);
         Assert.Equal("nowindow", history.Load()[^1].Trigger);
