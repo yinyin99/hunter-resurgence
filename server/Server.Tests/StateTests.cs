@@ -79,6 +79,20 @@ public class InventoryTests : StateTestBase
     }
 
     [Fact]
+    public void TestConnectNamesEveryCatalogueItem()
+    {
+        // the client dereferences nothing when it creates a placed item whose id `items_locale` lacks (the event tents): the catalogue's and the install's items are all listed, the sample's entries as they are
+        var connect = CONNECT;
+        connect["items_locale"] = JsonNode.Parse("""[{"define": "OLD", "item_id": 10, "name": "Old Bullet", "variationName": "Black"}]""");
+        var own = new State(Path.Combine(tmp, "own.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS);
+        var names = Reply(own.ConnectReply(ME))["items_locale"]!.AsArray().ToDictionary(n => Py.L(n!["item_id"]), n => n!.AsObject());
+        Eq("""{"define": "OLD", "item_id": 10, "name": "Old Bullet", "variationName": "Black"}""", names[10]);
+        Eq("""{"define": "TEST_LURE", "item_id": 19, "name": "Test Lure", "variationName": null}""", names[19]);
+        Eq("""{"define": "TEST_SHOTGUN", "item_id": 391, "name": null, "variationName": null}""", names[391]);  // an item of the install's definitions only
+        Assert.Equal(APP["items"]!.AsArray().Select(i => Py.L(i!["id"])).Concat([391L, 706L]).ToHashSet().Count, names.Count);
+    }
+
+    [Fact]
     public void TestMovePersistsAcrossRestart()
     {
         Assert.Equal("null"u8.ToArray(), state.MoveMultiple2Reply(ME, Form(JsonNode.Parse("""[{"item_guid": 100, "slot_id": 12}]""")!)));

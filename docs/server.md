@@ -156,6 +156,8 @@ With recordings that cover every input, the replies are the ones the recordings 
 
 A definition not in the samples is built from the catalogue; an ammo's is completed with the `extra.ammo` ballistics of the install's item definitions, which the game needs to get past `connect` for an account that owns such an ammo. An item the catalogue does not list (a restored inventory may keep one the store no longer sells) has its definition built from the install's item definitions the same way; the store still shows only the catalogue's items. An owned item without any definition is left out of `infos`, and the game closes after `connect`.
 
+**The `items_locale` of the connect reply** lists the name of every item. The game looks an item's name up there when it creates one that stands in the world (a placed tent), and it closes on an item the list lacks, as soon as a reserve with such an item placed loads. The sample's list stops at the last item before the events, so the server adds, with the catalogue's `define`, `name` and `variationName`, every item of the catalogue and of the install's definitions that the list does not have (the event tents among them); the entries the list has stay as they are.
+
 Still answered only from recordings (without them: a miss, `null` under `/v1/`): the launcher and website pages and their assets, the sign-up host, the avatar and photo hosts, news, `Launch/start` (its tokens), `User/jwt`, the lists that wrap a recorded base reply (`Me/poll`, `Expedition/list`, `Public_user/expedition`, `Splash/list_active`) and the profile, statistics, mission, challenge, leaderboard and friend pages. `coverage --no-recordings` prints the exact list.
 
 ## Public reads
