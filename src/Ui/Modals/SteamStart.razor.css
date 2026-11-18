@@ -1,3 +1,3 @@
-/* fixed at the bottom, as the website's banner; on the website it sits above that banner */
-.steam-start { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9001; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 6px 10px; border-top: 1px solid var(--accent); background: var(--bg-bar-bottom); color: var(--fg-body); font-size: 12px; line-height: 16px; }
+/* fixed at the bottom, as the website's banner; on the website it sits above that banner. Bright body-size text (#EEE on #141312, 16:1) */
+.steam-start { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9001; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 10px; border-top: 1px solid var(--accent); background: var(--bg-bar-bottom); color: var(--fg-heading); font-size: var(--fs-body); line-height: var(--lh-body); }
 .steam-start.above-wip { bottom: 29px; }
