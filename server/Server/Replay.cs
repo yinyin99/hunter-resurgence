@@ -559,6 +559,20 @@ w();}).then(go,go);})();</script>
                 ? MirrorPath(MirrorDir, S(Cfg, "map_host").ToLowerInvariant(), "/" + m.Groups[1].Value) : null;
         }
 
+        static readonly Regex WebAvatar = new(@"\A/media/avatar/256/([1-9]\d{0,17})\.png\z", RegexOptions.ECMAScript);
+        static readonly Regex HostAvatar = new(@"\A/256/([1-9]\d{0,17})\.png\z", RegexOptions.ECMAScript);
+
+        /// <summary>The picture of one of the game's avatars, `/media/avatar/256/&lt;id&gt;.png` on the game web host and `/256/&lt;id&gt;.png` on the avatar host (the avatar list's own address):
+        /// the operator's `avatar-&lt;id&gt;.png` in `images_dir`, else the default avatar's. Only an id of the list is read, so the path never leaves the folder; null for anything else, or no picture at all.</summary>
+        string? AvatarPicture(Req r)
+        {
+            if (State is null || Cfg["images_dir"]?.GetValue<string>() is not { } dir) return null;
+            var m = r.Host == GameWeb ? WebAvatar.Match(r.Path) : r.Host == S(Cfg, "avatar_host").ToLowerInvariant() ? HostAvatar.Match(r.Path) : null;
+            if (m is not { Success: true } || !State.AvatarIds.Contains(long.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture))) return null;
+            string Picture(string id) => System.IO.Path.Combine(dir, $"avatar-{id}.png");
+            return new[] { Picture(m.Groups[1].Value), Picture(State.DefaultAvatar.ToString(System.Globalization.CultureInfo.InvariantCulture)) }.FirstOrDefault(File.Exists);
+        }
+
         /// <summary>Everything the player state does not answer, in order: archive file pinned to the URL's directory,
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
         /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
@@ -586,6 +600,7 @@ w();}).then(go,go);})();</script>
             }
             if (get)
             {
+                if (AvatarPicture(r) is { } avatar) return new(200, [("Content-Type", "image/png")], File.ReadAllBytes(avatar), "image");
                 var f = MirrorPath(MirrorDir, r.Host, r.Path) ?? MapTile(r) ?? PictureMirror(r);
                 if (f != null) return new(200, [("Content-Type", ContentType(System.IO.Path.GetFileName(f)))], File.ReadAllBytes(f), "mirror");
                 data = ArchiveFile(Cfg, r.Host, r.Path, exact: false);
