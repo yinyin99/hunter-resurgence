@@ -42,9 +42,12 @@
 
     /* accents, controls, status */
     --accent: #F9560D;
+    /* the accent as a background under white text (4.52:1); --accent itself stays for text and lines on dark surfaces */
+    --accent-bg: #d1480b;
     --accent-hover: #fb8a58;
-    --primary: #f9370d;
-    --primary-hover: #e72d06;
+    /* white text on these two: 4.50 and 5.75 */
+    --primary: #e1320c;
+    --primary-hover: #c32a05;
     --launcher-accent: #ff4700;
     --menu-hover-from: #333;
     --menu-hover-to: #222;
@@ -255,7 +258,7 @@ a { transition: color var(--t-fast) var(--ease); }
 .pop { position: fixed; position-anchor: auto; inset: auto; top: anchor(bottom); left: anchor(left); min-width: max(158px, anchor-size(width)); margin: 4px 0 0; padding: 6px 0; border: 0; border-radius: var(--r-2); background: var(--surface-3); overflow: auto; }
 .pop li { margin: 0; padding: 0; list-style: none; }
 .pop li button { display: block; box-sizing: border-box; width: 100%; padding: 3px 20px; border: 0; background: none; color: var(--fg-muted); font: inherit; line-height: 20px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
-.pop li button:hover, .pop li button:focus-visible { background: var(--accent); color: #fff; outline: 0; }
+.pop li button:hover, .pop li button:focus-visible { background: var(--accent-bg); color: #fff; outline: 0; }
 
 /* the grey card of the small dialogs (alert, buy) and the x of every modal */
 .dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
