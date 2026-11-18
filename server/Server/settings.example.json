@@ -6,6 +6,7 @@
   "data_dir": "data",
   "recordings_dir": "recordings",
   "mirror_dir": "mirror",
+  "images_dir": "images",
   "variants_file": "variants.json",
   "offline_mode": true,
   "all_licenses": true,
