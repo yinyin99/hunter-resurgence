@@ -1553,4 +1553,21 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Report.ErrDisk" xml:space="preserve"><value>Komunitní server teď nemá místo na hlášení. Raději hlášení uložte.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Hlášení se nepodařilo uložit do Stažených souborů. Raději ho odešlete.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Komunitní server není dostupný. Zkuste to znovu, nebo hlášení raději uložte.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Vypreparovat</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>zbývá {0} h</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>zbývá {0} min</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Namontovaná lebka</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Své zvíře můžete nechat vypreparovat pro svou myslivnu*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Své zvíře můžete nechat vypreparovat nebo vytvořit montáž lebky pro svou myslivnu*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* K vystavení potřebujete myslivnu, ale pokud ji ještě nemáte, jsou uloženy</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Preparace proběhla úspěšně. Vypreparované zvíře bylo odesláno do správce trofejí.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Lebka byla úspěšně namontována. Montáž lebky byla odeslána do správce trofejí.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Vypreparováno</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Lebka namontována</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Vystavte ji v trofejní myslivně ve hře.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Nemáte dostatek em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Nemáte dostatek gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>U tohoto zvířete už je hotovo.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Příliš pozdě: 72 hodin uplynulo.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Něco se pokazilo. Zkuste to prosím znovu.</value></data>
 </root>

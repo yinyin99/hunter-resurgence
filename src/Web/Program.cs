@@ -58,7 +58,7 @@ else builder.Services.AddScoped<INewsService>(sp => new MockNewsService());
 builder.Services.AddScoped<IMissionsService>(sp => new MockMissionsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IFriendsService>(sp => new MockFriendsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IMessagesService>(sp => new MockMessagesService(sp.GetRequiredService<HostMode>().Mock));
-builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>()));
+builder.Services.AddScoped<IProfileService>(sp => new MockProfileService(sp.GetRequiredService<HostMode>().Mock, sp.GetRequiredService<IFriendsService>(), sp.GetRequiredService<MockWalletState>()));
 // one wallet per circuit: what the store and the bank buy shows in the wallet and the status bar
 // (Replace, because the singleton mocks of AddMockServices would otherwise be validated against the scoped state)
 builder.Services.Replace(ServiceDescriptor.Scoped<MockWalletState, MockWalletState>());

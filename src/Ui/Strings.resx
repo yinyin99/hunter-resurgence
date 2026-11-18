@@ -1553,4 +1553,21 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Report.ErrDisk" xml:space="preserve"><value>The community server has no room for reports right now. Save the report instead.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>The report could not be saved to Downloads. Send it instead.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>The community server could not be reached. Try again, or save the report instead.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Taxidermize</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} h left</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} min left</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Mounted Skull</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>You can Taxidermy your animal for your lodge*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>You can Taxidermy your animal or create a Skull Mount for your lodge*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* You need a lodge to show these off but they are stored if you don't own one yet</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Taxidermy successful. Taxidermied animal sent to Trophy Manager.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Skull mounted successfully. Skull Mount sent to Trophy Manager.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Taxidermized</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Skull mounted</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Show it off in your trophy lodge in the game.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Not enough em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Not enough gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Already done for this animal.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Too late: the 72 hours are over.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Something went wrong. Please try again.</value></data>
 </root>

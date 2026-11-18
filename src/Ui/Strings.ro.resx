@@ -1553,4 +1553,21 @@ Numele:</value></data>
   <data name="Report.ErrDisk" xml:space="preserve"><value>Serverul comunității nu are loc pentru rapoarte în acest moment. Salvați raportul în schimb.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Raportul nu a putut fi salvat în Descărcări. Trimiteți-l în schimb.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Serverul comunității nu a putut fi contactat. Încercați din nou sau salvați raportul în schimb.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Împăiază</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>mai sunt {0} h</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>mai sunt {0} min</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Craniu montat</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Poți împăia animalul pentru cabana ta*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Poți împăia animalul sau crea un craniu montat pentru cabana ta*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Ai nevoie de o cabană ca să le expui, dar sunt păstrate dacă nu ai încă una</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Împăierea a reușit. Animalul împăiat a fost trimis la managerul de trofee.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Craniul a fost montat cu succes. Craniul montat a fost trimis la managerul de trofee.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Împăiat</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Craniu montat</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Expune-l în cabana ta de trofee din joc.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Em$ insuficienți</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Gm$ insuficienți</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Deja făcut pentru acest animal.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Prea târziu: cele 72 de ore au trecut.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Ceva nu a mers. Încearcă din nou.</value></data>
 </root>

@@ -1553,4 +1553,21 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Report.ErrDisk" xml:space="preserve"><value>Serwer społeczności nie ma teraz miejsca na raporty. Zapisz raport zamiast tego.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Nie udało się zapisać raportu w Pobranych. Wyślij go zamiast tego.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Nie można połączyć się z serwerem społeczności. Spróbuj ponownie lub zapisz raport zamiast tego.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Wypchaj</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>zostało {0} godz.</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>zostało {0} min</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Zamontowana czaszka</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Możesz wypchać swoje zwierzę do swojej leśniczówki*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Możesz wypchać swoje zwierzę lub stworzyć montaż czaszki do swojej leśniczówki*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Do ich eksponowania potrzebujesz leśniczówki, ale są przechowywane, jeśli jeszcze jej nie masz</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Taksydermia zakończona. Wypchane zwierzę wysłano do menedżera trofeów.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Czaszka zamontowana. Montaż czaszki wysłano do menedżera trofeów.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Wypchane</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Czaszka zamontowana</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Wyeksponuj je w swojej sali trofeów w grze.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Za mało em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Za mało gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>To już zrobiono dla tego zwierzęcia.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Za późno: minęło 72 godziny.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Coś poszło nie tak. Spróbuj ponownie.</value></data>
 </root>

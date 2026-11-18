@@ -1553,4 +1553,21 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.ErrDisk" xml:space="preserve"><value>Yhteisöpalvelimella ei ole nyt tilaa raporteille. Tallenna raportti sen sijaan.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Raporttia ei voitu tallentaa Latauksiin. Lähetä se sen sijaan.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Yhteisöpalvelimeen ei saatu yhteyttä. Yritä uudelleen tai tallenna raportti sen sijaan.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Täytä</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} t jäljellä</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} min jäljellä</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Kiinnitetty kallo</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Voit täyttää eläimesi erämajaasi varten*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Voit täyttää eläimesi tai tehdä kallokiinnityksen erämajaasi varten*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Tarvitset erämajan niiden esittelyyn, mutta ne säilytetään, jos sinulla ei vielä ole sellaista</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Täyttö onnistui. Täytetty eläin lähetettiin trofeehallintaan.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Kallo kiinnitetty onnistuneesti. Kallokiinnitys lähetettiin trofeehallintaan.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Täytetty</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Kallo kiinnitetty</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Esittele se pelin trofeemajassa.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Ei tarpeeksi em$:ää</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Ei tarpeeksi gm$:ää</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Tämä on jo tehty tälle eläimelle.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Liian myöhään: 72 tuntia on kulunut.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Jokin meni pieleen. Yritä uudelleen.</value></data>
 </root>

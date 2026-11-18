@@ -1553,4 +1553,21 @@
   <data name="Report.ErrDisk" xml:space="preserve"><value>На сервере сообщества сейчас нет места для отчётов. Сохраните отчёт вместо этого.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Не удалось сохранить отчёт в «Загрузки». Отправьте его вместо этого.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Не удалось связаться с сервером сообщества. Повторите попытку или сохраните отчёт вместо этого.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Сделать чучело</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>осталось {0} ч</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>осталось {0} мин</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Установленный череп</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Вы можете сделать чучело животного для своей стоянки*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Вы можете сделать чучело животного или установить череп для своей стоянки*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Для показа нужна стоянка, но если её у вас ещё нет, они сохраняются</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Чучело готово. Чучело животного отправлено в менеджер трофеев.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Череп успешно установлен. Установленный череп отправлен в менеджер трофеев.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Чучело готово</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Череп установлен</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Выставьте его в зале трофеев в игре.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Недостаточно em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Недостаточно gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Для этого животного уже сделано.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Слишком поздно: 72 часа прошли.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Что-то пошло не так. Попробуйте ещё раз.</value></data>
 </root>

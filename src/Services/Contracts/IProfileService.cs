@@ -28,8 +28,11 @@ public sealed record SpeciesStat(string Name, int Spotted, int Tracked, int Harv
 public sealed record CollectableStat(string Name, int Collected, int Total, int Max);
 public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds);
 /// <summary>A confirmed kill of an expedition; <see cref="Id"/> opens its score sheet.</summary>
-/// <summary>The taxidermy of a kill of the first 24 hours: until when it can be bought and the prices.</summary>
-public sealed record TaxidermyOffer(DateTime End, int Ems, int Gms);
+/// <summary>The taxidermy of the player's own harvest: until when it can be bought (<see cref="End"/>, UTC), the price in em$ or in gm$, whether the species has a skull to mount, and what was
+/// bought already (<see cref="Done"/>: <c>taxidermy</c> or <c>skull</c>, null while nothing was).</summary>
+public sealed record TaxidermyOffer(DateTime End, int Ems, int Gms, bool Skull = false, string? Done = null);
+/// <summary>A taxidermy that went through: what was bought and the wallet after it.</summary>
+public sealed record TaxidermyDone(string Done, int Ems, int Gms);
 /// <param name="Sheet">Whether the kill has a score sheet to open (a restored kill has none yet).</param>
 public sealed record Kill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, DateTime When, TaxidermyOffer? Taxidermy = null, bool Sheet = true);
 /// <summary>A collectable picked up during an expedition.</summary>
@@ -104,6 +107,10 @@ public interface IProfileService
     Task<Page<HistoryRow>> HistoryAsync(string handle, int page);
     /// <param name="season">0 for all time</param>
     Task<PersonalBest> BestAsync(string handle, int season);
+    /// <summary>Buys the taxidermy or the skull mount of the player's own harvest. The error is a Strings key (<c>Taxidermy.NotEnoughEms</c>, <c>NotEnoughGms</c>, <c>Already</c>, <c>TooLate</c>, <c>Failed</c>).</summary>
+    /// <param name="product">taxidermy or skull</param>
+    /// <param name="currency">ems or gms</param>
+    Task<Result<TaxidermyDone>> TaxidermizeAsync(long killId, string product, string currency);
     Task<Progress> ProgressAsync();
     /// <summary>The launcher opens the single player map while this is 10 or less.</summary>
     Task<int> ExpeditionCountAsync();

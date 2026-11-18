@@ -1553,4 +1553,21 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Report.ErrDisk" xml:space="preserve"><value>De communityserver heeft nu geen ruimte voor rapporten. Sla het rapport in plaats daarvan op.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Het rapport kon niet worden opgeslagen in Downloads. Stuur het in plaats daarvan.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>De communityserver was niet bereikbaar. Probeer het opnieuw of sla het rapport in plaats daarvan op.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Opzetten</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>nog {0} u</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>nog {0} min</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Gemonteerde schedel</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Je kunt je dier laten opzetten voor je jachthut*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Je kunt je dier laten opzetten of een schedelmontage maken voor je jachthut*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Je hebt een jachthut nodig om ze te tonen, maar ze worden bewaard als je er nog geen hebt</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Opzetten gelukt. Het opgezette dier is naar de trofeeënbeheerder gestuurd.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Schedel gemonteerd. De schedelmontage is naar de trofeeënbeheerder gestuurd.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Opgezet</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Schedel gemonteerd</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Toon het in je trofeehut in het spel.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Onvoldoende em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Onvoldoende gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Al gedaan voor dit dier.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Te laat: de 72 uur zijn voorbij.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Er ging iets mis. Probeer het opnieuw.</value></data>
 </root>

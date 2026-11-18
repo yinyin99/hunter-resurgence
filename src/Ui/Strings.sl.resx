@@ -1553,4 +1553,21 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.ErrDisk" xml:space="preserve"><value>Strežnik skupnosti trenutno nima prostora za poročila. Raje shranite poročilo.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Poročila ni bilo mogoče shraniti v Prenose. Raje ga pošljite.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Strežnika skupnosti ni bilo mogoče doseči. Poskusite znova ali raje shranite poročilo.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Nagači</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>še {0} h</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>še {0} min</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Montirana lobanja</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Žival lahko nagačite za svojo kočo*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Žival lahko nagačite ali ustvarite montažo lobanje za svojo kočo*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Za razstavljanje potrebujete kočo, vendar se shranijo, če je še nimate</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Nagačenje je uspelo. Nagačena žival je poslana upravitelju trofej.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Lobanja je uspešno montirana. Montaža lobanje je poslana upravitelju trofej.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Nagačeno</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Lobanja montirana</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Razstavite jo v trofejni koči v igri.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Premalo em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Premalo gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Za to žival je že narejeno.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Prepozno: 72 ur je minilo.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Nekaj je šlo narobe. Poskusite znova.</value></data>
 </root>
