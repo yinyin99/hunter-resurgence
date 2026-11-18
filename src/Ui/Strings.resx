@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>The game was not found. Check its folder in the settings.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>The game could not be started.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam and sign in, then try again.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Starting Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Start without Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Started without Steam: Steam achievements are off for this session.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND A MULTIPLAYER GAME</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find a game or host...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Clear</value></data>
@@ -1464,6 +1467,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>The game is in a OneDrive folder; a plain folder like C:\Games works best.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>The game is on a network drive; a local folder works best.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam is not signed in.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam is not signed in: the game will start without Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blocked a game file ({0}): allow it in Windows Security.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Low disk space on {0} ({1} left).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>The game is already running: close it, then start it from here.</value></data>

@@ -1,0 +1,44 @@
+@implements IDisposable
+@inject ILauncherBridge Bridge
+@inject ModalService Modal
+@inject HostMode Mode
+
+@* the start's Steam state (docs/website.md#starting-without-steam): while the launcher waits for Steam, "Starting Steam…" with the button that skips the wait; after a start without Steam one plain line. A bar fixed at the bottom
+   for the page, and one inside the dialog while a dialog is open (the join map starts the game while it is open, and an open modal makes the page behind it inert). *@
+@if (Inside == (Modal.Type is not null))
+{
+    @if (Bridge.WaitingForSteam)
+    {
+        <div class="steam-start @Position" role="status">
+            <span class="text">@L["Launch.StartingSteam"]</span>
+            <button type="button" class="btn btn-inverse" id="start-without-steam" @onclick="Bridge.StartWithoutSteam">@L["Launch.StartWithoutSteam"]</button>
+        </div>
+    }
+    else if (Bridge.LastStartMode == "nosteam")
+    {
+        <div class="steam-start @Position" id="no-steam-note" role="status"><span class="text">@L["Launch.NoSteamNote"]</span></div>
+    }
+}
+
+@code {
+    /// <summary>The copy inside the open dialog.</summary>
+    [Parameter] public bool Inside { get; set; }
+
+    // above the work-in-progress banner of the website
+    string Position => Mode.Launcher ? "" : "above-wip";
+
+    Action? changed;
+
+    protected override void OnInitialized()
+    {
+        changed = () => _ = InvokeAsync(StateHasChanged);
+        Bridge.StartStateChanged += changed;
+        Modal.Changed += changed;
+    }
+
+    public void Dispose()
+    {
+        Bridge.StartStateChanged -= changed;
+        Modal.Changed -= changed;
+    }
+}

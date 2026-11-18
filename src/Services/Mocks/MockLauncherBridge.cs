@@ -4,12 +4,14 @@ namespace Resurgence.Services.Mocks;
 
 /// <param name="mock">Development states of the "Game folder" window: "folder:two" (a second install seen), "folder:manual" (chosen by the player), "folder:gone" (the chosen folder lost the game), "folder:none" (no game; a start says so),
 /// "folder:refuse" (the picker refuses the folder). States of the game check (docs/website.md#the-game-check): "check:old", "check:updating", "check:newer", "check:files", "check:path", "check:steam",
-/// "check:setup", "check:windows", "check:disk", "check:running" (one problem each) and "check:many" (an old game, a path and a disk warning). Opening Steam "fixes" the problem, as the player would in Steam.</param>
+/// "check:setup", "check:windows", "check:disk", "check:running" (one problem each) and "check:many" (an old game, a path and a disk warning). Opening Steam "fixes" the problem, as the player would in Steam.
+/// Steam states of a start (docs/website.md#starting-without-steam): "steam:none" (Steam is not installed: the start goes on without it at once) and "steam:wait" (Steam is not signed in: the start waits for it 20 seconds or until "Start without Steam"); "check:steam" is the first one.</param>
 public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? mock = null) : ILauncherBridge
 {
     const string Steam = @"C:\Program Files (x86)\Steam\steamapps\common\Hunter", Chosen = @"D:\Games\Hunter";
 
-    string? check = mock is { } m && m.StartsWith("check:") ? m[6..] : null;
+    string? check = mock switch { { } m when m.StartsWith("check:") => m[6..], "steam:none" or "steam:wait" => "steam", _ => null };
+    readonly ManualResetEventSlim skipWait = new();
 
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync() => Task.FromResult(Checks());
 
@@ -17,7 +19,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     {
         InstallCheck Ok(string id) => new(id, "ok", "Check.Ok");
         InstallCheck Problem(string id, string level, string text, string? fix = null, params (string, string)[] args) => new(id, level, text, args.ToDictionary(a => a.Item1, a => a.Item2), fix);
-        var steam = Problem("steam", "block", "Check.Steam.SignedOut", "open-steam");
+        var steam = Problem("steam", "warn", "Check.Steam.Fallback", "open-steam"); // a warning: the game starts without Steam
         var old = Problem("version", "block", "Check.Version.Old", "open-steam");
         var path = Problem("path", "warn", "Check.Path.NonAscii", "choose-folder", ("path", @"C:\Users\Zoë\Games\Hunter"));
         var disk = Problem("disk", "warn", "Check.Disk.Low", null, ("drive", "C:"), ("free", "600 MB"));
@@ -69,9 +71,24 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     public Result StartGame(string url)
     {
         log.LogInformation("start game {Url}", url);
-        // as the launcher: the game, Steam and the running game keep their older keys, version, files and setup say the check's text
-        return Checks().FirstOrDefault(c => c.Level == "block") is { } blocked ? Result.Fail(blocked.Id switch { "game" => "Launch.NoGame", "steam" => "Launch.NoSteam", "running" => "Launch.AlreadyRunning", _ => blocked.Text }) : Result.Success;
+        // as the launcher: the game and the running game keep their older keys, version, files and setup say the check's text
+        if (Checks().FirstOrDefault(c => c.Level == "block") is { } blocked) return Result.Fail(blocked.Id switch { "game" => "Launch.NoGame", "running" => "Launch.AlreadyRunning", _ => blocked.Text });
+        if (mock == "steam:wait" && check == "steam")
+        {
+            skipWait.Reset();
+            WaitingForSteam = true;
+            StartStateChanged?.Invoke();
+            skipWait.Wait(TimeSpan.FromSeconds(20)); // the launcher's longest wait
+            WaitingForSteam = false;
+        }
+        LastStartMode = check == "steam" ? "nosteam" : "steam";
+        StartStateChanged?.Invoke();
+        return Result.Success;
     }
+    public bool WaitingForSteam { get; private set; }
+    public void StartWithoutSteam() => skipWait.Set();
+    public event Action? StartStateChanged;
+    public string? LastStartMode { get; private set; }
     /// <summary>No game runs here: the old five seconds.</summary>
     public async Task<bool> WhenGameExitsAsync() { await Task.Delay(5000); LastRun = new(DateTimeOffset.Now.AddSeconds(-5), TimeSpan.FromSeconds(5), 0, true); return true; }
     public void ToggleDevTools() => log.LogInformation("toggle dev tools");

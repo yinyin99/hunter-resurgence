@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>Spillet blev ikke fundet. Tjek dets mappe i indstillingerne.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, log ind, og prøv igen.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Starter Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Start uden Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Startet uden Steam: Steam-præstationer er slået fra i denne session.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>FIND ET MULTIPLAYER-SPIL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Find et spil eller en vært...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Ryd</value></data>
@@ -1464,6 +1467,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spillet ligger i en OneDrive-mappe; en almindelig mappe som C:\Games fungerer bedst.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Spillet ligger på et netværksdrev; en lokal mappe fungerer bedst.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam er ikke logget ind.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam er ikke logget ind: spillet starter uden Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blokerede en spilfil ({0}): tillad den i Windows-sikkerhed.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lidt ledig plads på {0} ({1} tilbage).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Spillet kører allerede: luk det, og start det så herfra.</value></data>

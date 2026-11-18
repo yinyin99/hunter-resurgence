@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>Spelet hittades inte. Kontrollera dess mapp i inställningarna.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spelet kunde inte startas.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Starta Steam, logga in och försök igen.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Startar Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Starta utan Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Startat utan Steam: Steam-prestationer är avstängda under den här sessionen.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>HITTA ETT FLERSPELARSPEL</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Hitta ett spel eller en värd...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Rensa</value></data>
@@ -1464,6 +1467,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spelet ligger i en OneDrive-mapp; en vanlig mapp som C:\Games fungerar bäst.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Spelet ligger på en nätverksenhet; en lokal mapp fungerar bäst.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam är inte inloggat.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam är inte inloggat: spelet startar utan Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blockerade en spelfil ({0}): tillåt den i Windows-säkerhet.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskutrymme på {0} ({1} kvar).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Spelet körs redan: stäng det och starta det sedan härifrån.</value></data>

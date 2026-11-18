@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>Igre ni bilo mogoče najti. Preverite njeno mapo v nastavitvah.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Igre ni bilo mogoče zagnati.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Zaženite Steam, se prijavite in poskusite znova.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Zagon Steama …</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Zaženi brez Steama</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Zagnano brez Steama: Steamovi dosežki so v tej seji izklopljeni.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>NAJDI SKUPINSKI LOV</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Poišči igro ali gostitelja ...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Počisti</value></data>
@@ -1464,6 +1467,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Igra je v mapi OneDrive; najbolje deluje navadna mapa, kot je C:\Games.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Igra je na omrežnem pogonu; najbolje deluje lokalna mapa.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam ni prijavljen.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam ni prijavljen: igra se bo zagnala brez Steama.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows je blokiral datoteko igre ({0}): dovolite jo v Varnosti sistema Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Malo prostora na disku {0} (ostaja {1}).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Igra že teče: zaprite jo in jo nato zaženite od tukaj.</value></data>

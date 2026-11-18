@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>No se encontró el juego. Comprueba su carpeta en los ajustes.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>No se pudo iniciar el juego.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Inicia Steam, inicia sesión e inténtalo de nuevo.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Iniciando Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Iniciar sin Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Iniciado sin Steam: los logros de Steam están desactivados en esta sesión.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>ENCONTRAR UNA PARTIDA MULTIJUGADOR</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Busca una partida o un host…</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Borrar</value></data>
@@ -1464,6 +1467,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>El juego está en una carpeta de OneDrive; lo mejor es una carpeta sencilla como C:\Games.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>El juego está en una unidad de red; lo mejor es una carpeta local.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam no tiene la sesión iniciada.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam no tiene la sesión iniciada: el juego se iniciará sin Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bloqueó un archivo del juego ({0}): permítelo en Seguridad de Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Queda poco espacio en {0} ({1} libres).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>El juego ya se está ejecutando: ciérralo y luego inícialo desde aquí.</value></data>

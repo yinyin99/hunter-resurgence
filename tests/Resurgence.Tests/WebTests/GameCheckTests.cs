@@ -54,7 +54,8 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:old", "block", "The game is not up to date: update it in Steam.", "Open Steam")]
     [InlineData("check:updating", "block", "Steam is still updating the game.", "Open Steam")]
     [InlineData("check:files", "block", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
-    [InlineData("check:steam", "block", "Steam is not signed in.", "Open Steam")]
+    [InlineData("check:steam", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
+    [InlineData("steam:none", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
     [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", null)]
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]
@@ -208,6 +209,7 @@ public sealed class GameCheckTests : UiContext
         Assert.Equal("Check.Version.Old", new MockLauncherBridge(NullLogger(), "check:old").StartGame("x").Error);
         Assert.Equal("Launch.NoGame", new MockLauncherBridge(NullLogger(), "folder:none").StartGame("x").Error);
         Assert.True(new MockLauncherBridge(NullLogger(), "check:path").StartGame("x").Ok); // a warning does not stop it
+        Assert.True(new MockLauncherBridge(NullLogger(), "check:steam").StartGame("x").Ok); // nor does a Steam that is not signed in: the game starts without it
     }
 
     static ILogger<MockLauncherBridge> NullLogger() => Microsoft.Extensions.Logging.Abstractions.NullLogger<MockLauncherBridge>.Instance;

@@ -39,4 +39,12 @@ public interface ILauncherBridge
     string ReportConsent { get; set; }
     /// <summary>Runs every install check (#631) and returns one result per check, in the order of the Id list; never throws.</summary>
     Task<IReadOnlyList<InstallCheck>> CheckInstallAsync();
+    /// <summary>True while a start waits for Steam to sign in (at most 20 s); the UI shows "Starting Steam…" and a Start without Steam button.</summary>
+    bool WaitingForSteam { get; }
+    /// <summary>Ends the wait at once: this start goes on without Steam.</summary>
+    void StartWithoutSteam();
+    /// <summary>Raised when WaitingForSteam or LastStartMode changes (any thread).</summary>
+    event Action? StartStateChanged;
+    /// <summary>"steam" or "nosteam" for the last start, null before any.</summary>
+    string? LastStartMode { get; }
 }

@@ -5,7 +5,8 @@
 
 @* one native <dialog> for every modal: the browser gives it the top layer, an inert page behind and focus handling (shell.js dialog).
    The content is rendered once the dialog is open, so a dialog that focuses a field when it appears finds it visible. *@
-<dialog @ref="dialog" class="modal @Modal.Backdrop">@if (shown && Modal.Type is { } type) { <DynamicComponent Type="type" Parameters="Modal.Parameters" /> }</dialog>
+<dialog @ref="dialog" class="modal @Modal.Backdrop">@if (shown && Modal.Type is { } type) { <DynamicComponent Type="type" Parameters="Modal.Parameters" /> }<SteamStart Inside="true" /></dialog>
+<SteamStart />
 
 @code {
     ElementReference dialog;

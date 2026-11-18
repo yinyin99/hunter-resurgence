@@ -233,6 +233,9 @@
   <data name="Launch.NoGame" xml:space="preserve"><value>Jocul nu a fost găsit. Verifică folderul lui în setări.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Jocul nu a putut fi pornit.</value></data>
   <data name="Launch.NoSteam" xml:space="preserve"><value>Pornește Steam, autentifică-te și încearcă din nou.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Se pornește Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Pornește fără Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Pornit fără Steam: realizările Steam sunt dezactivate în această sesiune.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>GĂSIȚI UN JOC MULTIPLAYER</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Găsiți un joc sau o gazdă...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Ștergeți</value></data>
@@ -1464,6 +1467,7 @@ Numele:</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Jocul se află într-un folder OneDrive; un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Jocul se află pe o unitate de rețea; un folder local funcționează cel mai bine.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam nu este autentificat.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam nu este autentificat: jocul va porni fără Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a blocat un fișier al jocului ({0}): permite-l în Securitate Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Spațiu redus pe disc pe {0} ({1} rămași).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Jocul rulează deja: închide-l, apoi pornește-l de aici.</value></data>
