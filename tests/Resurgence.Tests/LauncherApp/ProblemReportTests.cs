@@ -333,9 +333,39 @@ public class ProblemReportTests
         var crash = Path.Combine(temp.Path, "wer");
         Files.Write(Path.Combine(crash, "a.hdmp"), "heap");
         Files.Write(Path.Combine(crash, "a.mdmp"), "mini");
+        File.SetLastWriteTimeUtc(Path.Combine(crash, "a.hdmp"), DateTime.UtcNow.AddMinutes(-1)); // the newest of the two, so only the rule leaves it out
+        File.SetLastWriteTimeUtc(Path.Combine(crash, "a.mdmp"), DateTime.UtcNow.AddMinutes(-2));
         var entries = Read(Make(temp, g.Install, runs: () => ran, dumps: _ => Directory.GetFiles(crash)).Build("exitcode").Path);
         Assert.Equal("mini", entries["game/a.mdmp"]);
         Assert.DoesNotContain("game/a.hdmp", entries.Keys);
+    }
+
+    [Fact]
+    public void ADumpThatVanishedOrCannotBeOpenedGivesWayToTheNextOneAndTheReportStillBuilds()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        IReadOnlyList<GameRun> ran = [new(DateTimeOffset.UtcNow.AddHours(-1), TimeSpan.FromSeconds(3), 3, true)];
+        var dir = Path.Combine(temp.Path, "dumps");
+        string Dump(string name, string text, int minutesAgo)
+        {
+            var path = Path.Combine(dir, name);
+            Files.Write(path, text);
+            File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddMinutes(-minutesAgo));
+            return path;
+        }
+        var gone = Dump("client.exe.3.dmp", "gone", 1);
+        var locked = Dump("client.exe.2.dmp", "locked", 2);
+        Dump("client.exe.1.dmp", "third", 3);
+        // the newest is deleted after it was listed and the next one is locked: the report does not fail, the third is used
+        IEnumerable<string> Listing(string _) { yield return gone; yield return locked; yield return Path.Combine(dir, "client.exe.1.dmp"); File.Delete(gone); }
+        using (new FileStream(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) // listed and measured, but cannot be read
+        {
+            var report = Make(temp, g.Install, runs: () => ran, dumps: Listing).Build("exitcode");
+            Assert.Equal("third", Read(report.Path)["game/client.exe.1.dmp"]);
+            Assert.Contains("game/client.exe.3.dmp", report.Missing);
+            Assert.Contains("game/client.exe.2.dmp", report.Missing);
+        }
     }
 
     [Fact]

@@ -1574,7 +1574,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Exit.Title" xml:space="preserve"><value>Hra se hned zavřela</value></data>
   <data name="Exit.Steam" xml:space="preserve"><value>Hru se nepodařilo spustit, ani se Steamem, ani bez něj.</value></data>
   <data name="Exit.Blocked" xml:space="preserve"><value>Windows hru zablokoval.</value></data>
-  <data name="Exit.BlockedHow" xml:space="preserve"><value>Povolte ji v Zabezpečení Windows (Inteligentní řízení aplikací nebo váš bezpečnostní program).</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Povolte ji v Zabezpečení Windows (Smart App Control nebo váš bezpečnostní program).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>Chybí součást Windows, kterou hra potřebuje.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>Nainstalovat součásti hry</value></data>
   <data name="Exit.Closed" xml:space="preserve"><value>Hra se zavřela sama.</value></data>

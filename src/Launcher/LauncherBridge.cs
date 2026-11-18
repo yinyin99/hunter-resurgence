@@ -221,7 +221,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         {
             game.Game.Dispose();
             CarryGraphics(false);
-            game = Launch(g, url, param, false);
+            game = Launch(g, url, param, false) is { } retry ? retry with { Retried = true } : null;
             if (game is null) return Result.Fail("Launch.StartFailed");
             withSteam = false;
         }
@@ -256,7 +256,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             if (!isRunning(g.ClientExe)) return null;
         }
         // the run: when it started (seen, without a held process), how long it ran, its exit code and whether it ever showed a window (without a held process it is looked up again while it is not found yet)
-        var (at, ran, mode) = held is null ? (DateTimeOffset.Now, Stopwatch.StartNew(), lastStartMode) : (held.At, held.Ran, held.Mode);
+        var (at, ran, mode, retried) = held is null ? (DateTimeOffset.Now, Stopwatch.StartNew(), lastStartMode, false) : (held.At, held.Ran, held.Mode, held.Retried);
         var game = held?.Game;
         var window = false;
         try
@@ -271,15 +271,15 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
             var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
-            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, mode) : null);
+            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null);
         }
         finally { game?.Dispose(); }
     }
 
-    /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry, so Steam was not what failed), blocked (app control), runtime (a DLL not found), closed (exit 0), crash (anything else).</summary>
-    internal static string Cause(int code, string? mode) => code switch
+    /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry after a start with Steam that quit with 16010 too: both were tried), blocked (app control), runtime (a DLL not found), closed (exit 0), crash (anything else).</summary>
+    internal static string Cause(int code, bool retried) => code switch
     {
-        SteamMissing when mode == "nosteam" => "steam",
+        SteamMissing when retried => "steam",
         Blocked => "blocked",
         DllNotFound => "runtime",
         0 => "closed",
@@ -308,7 +308,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     /// <summary>The process of the last start, kept for the watch; the watch takes it.</summary>
     Started? started;
 
-    sealed record Started(GameProcess Game, string Mode, DateTimeOffset At, Stopwatch Ran);
+    /// <param name="Retried">a start with Steam quit with 16010 and this process is the start without Steam that followed it</param>
+    sealed record Started(GameProcess Game, string Mode, DateTimeOffset At, Stopwatch Ran, bool Retried = false);
 
     public bool WaitingForSteam => waitingForSteam;
     public string? LastStartMode => lastStartMode;
