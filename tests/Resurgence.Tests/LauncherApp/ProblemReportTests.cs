@@ -270,7 +270,9 @@ public class ProblemReportTests
         Files.Write(Path.Combine(dumps, "client.exe.2.dmp"), "newer dump");
         File.SetLastWriteTimeUtc(Path.Combine(dumps, "client.exe.1.dmp"), DateTime.UtcNow.AddHours(-1));
         string? asked = null;
-        var report = Make(temp, g.Install, dumps: exe => { asked = exe; return Directory.GetFiles(dumps); }).Build("exitcode");
+        // the failed run started 30 minutes ago: the dump of an hour ago is another crash's
+        IReadOnlyList<GameRun> ran = [new(DateTimeOffset.UtcNow.AddMinutes(-30), TimeSpan.FromSeconds(3), 3, true)];
+        var report = Make(temp, g.Install, runs: () => ran, dumps: exe => { asked = exe; return Directory.GetFiles(dumps); }).Build("exitcode");
 
         Assert.Equal("client.exe", asked); // the exe's file name: only that program's dumps
         var entries = Read(report.Path);
@@ -279,9 +281,12 @@ public class ProblemReportTests
         Assert.Contains("game/client.exe.2.dmp", report.Files);
         Assert.Contains("\"game/client.exe.2.dmp\"", entries["report.json"]);
 
-        // no dump (or a probe that fails) is no entry and no failure
-        Assert.DoesNotContain(Read(Make(temp, g.Install, dumps: _ => []).Build("manual").Path).Keys, k => k.EndsWith(".dmp"));
-        Assert.Contains("crash dump", Make(temp, g.Install, dumps: _ => throw new IOException()).Build("manual").Missing);
+        // no dump, no run, a run that started after the dump, or a probe that fails: no entry and no failure
+        Assert.DoesNotContain(Read(Make(temp, g.Install, runs: () => ran, dumps: _ => []).Build("manual").Path).Keys, k => k.EndsWith(".dmp"));
+        Assert.DoesNotContain(Read(Make(temp, g.Install, dumps: _ => Directory.GetFiles(dumps)).Build("manual").Path).Keys, k => k.EndsWith(".dmp"));
+        IReadOnlyList<GameRun> later = [new(DateTimeOffset.UtcNow.AddMinutes(5), TimeSpan.FromSeconds(3), 3, true)];
+        Assert.DoesNotContain(Read(Make(temp, g.Install, runs: () => later, dumps: _ => Directory.GetFiles(dumps)).Build("manual").Path).Keys, k => k.EndsWith(".dmp"));
+        Assert.Contains("crash dump", Make(temp, g.Install, runs: () => ran, dumps: _ => throw new IOException()).Build("manual").Missing);
     }
 
     [Fact]
@@ -289,10 +294,11 @@ public class ProblemReportTests
     {
         using var temp = new TempDir("resurgence-test-");
         var g = NewGame(temp);
+        IReadOnlyList<GameRun> ran = [new(DateTimeOffset.UtcNow.AddHours(-1), TimeSpan.FromSeconds(3), 3, true)];
         var big = Path.Combine(temp.Path, "dumps", "client.exe.1.dmp");
         Directory.CreateDirectory(Path.GetDirectoryName(big)!);
         using (var f = File.Create(big)) f.SetLength(Diagnostics.DumpMax + 1);
-        var skipped = Make(temp, g.Install, dumps: _ => [big]).Build("exitcode");
+        var skipped = Make(temp, g.Install, runs: () => ran, dumps: _ => [big]).Build("exitcode");
         Assert.DoesNotContain(skipped.Files, f => f.EndsWith(".dmp"));
         Assert.Contains(skipped.Missing, m => m.Contains("client.exe.1.dmp") && m.Contains("32 MiB"));
 
@@ -300,7 +306,7 @@ public class ProblemReportTests
         var noise = new byte[6 * 1024 * 1024];
         new Random(7).NextBytes(noise);
         File.WriteAllBytes(big, noise);
-        var dropped = Make(temp, g.Install, dumps: _ => [big]).Build("exitcode");
+        var dropped = Make(temp, g.Install, runs: () => ran, dumps: _ => [big]).Build("exitcode");
         Assert.InRange(dropped.Bytes, 1, Diagnostics.Limit);
         Assert.DoesNotContain(dropped.Files, f => f.EndsWith(".dmp"));
         Assert.Contains(dropped.Missing, m => m.Contains("client.exe.1.dmp") && m.Contains("size limit"));

@@ -12,7 +12,7 @@ using Resurgence.Services;
 namespace Resurgence.Launcher;
 
 /// <summary>Builds the problem report zip (docs/launcher.md, "Report a problem"): what the game wrote, its settings, the Windows crash events, what runs beside it and the launcher's last starts.
-/// Nothing that carries a sign-in goes in: <c>jwt.json</c> is never read and every line that looks like a credential is replaced (<see cref="Scrub"/>). A file that is missing or locked is
+/// Nothing that carries a sign-in goes in, except the crash dump: <c>jwt.json</c> is never read and every line of every text that looks like a credential is replaced (<see cref="Scrub"/>); the crash dump is the one file that is not cleaned (it is memory of the game). A file that is missing or locked is
 /// listed in <see cref="ProblemReport.Missing"/>, never an error. The probes are delegates (the default is this PC) so that a test needs no Windows.</summary>
 /// <param name="install">The game's install; null: no game folder to read.</param>
 /// <param name="settingsFiles">The game's settings files (the graphics and options files in %APPDATA%).</param>
@@ -78,8 +78,9 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var checks = installChecks is null ? null : Try(() => installChecks(), missing, "install checks");
         var system = SystemText(missing, exe, checks);
         var events = exe is null ? "no game folder" : EventsText(missing, exe);
-        var run = JsonSerializer.Serialize(Try(() => runs(), missing, "runs.json") ?? [], RunHistory.Json);
-        var dump = exe is null ? null : Dump(missing, exe);
+        var history = Try(() => runs(), missing, "runs.json") ?? [];
+        var run = JsonSerializer.Serialize(history, RunHistory.Json);
+        var dump = exe is null ? null : Dump(missing, exe, history.Count > 0 ? history[^1].Start : null);
         ProblemReport r;
         for (var cap = LogBytes; ; )
         {
@@ -90,30 +91,41 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         }
     }
 
-    /// <summary>The game exe's newest crash dump if it is at most <see cref="DumpMax"/> (listed in <c>missing</c> when it is larger); null when there is none.</summary>
-    string? Dump(List<string> missing, string exe)
+    /// <summary>The game exe's newest crash dump written after the start of the last run (an older one belongs to another crash; no run, no dump), if it is at most <see cref="DumpMax"/> (listed in <c>missing</c> when it is larger); null when there is none.</summary>
+    string? Dump(List<string> missing, string exe, DateTimeOffset? since)
     {
-        var newest = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).OrderByDescending(File.GetLastWriteTimeUtc).Take(1).ToList(), missing, "crash dump")?.FirstOrDefault();
+        if (since is null) return null;
+        var newest = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).OrderByDescending(File.GetLastWriteTimeUtc).Take(1).ToList(), missing, "crash dump")?.FirstOrDefault();
         if (newest is null || new FileInfo(newest).Length <= DumpMax) return newest;
         missing.Add($"game/{Path.GetFileName(newest)} (over 32 MiB)");
         return null;
     }
 
     /// <summary>Where Windows keeps the dumps of a crashed program: the LocalDumps folder (the default <c>%LOCALAPPDATA%\CrashDumps</c> or the one the registry names, for all programs or for the exe) as <c>&lt;exe&gt;.&lt;id&gt;.dmp</c>, and the
-    /// folders of Windows Error Reporting's report archive named after the exe.</summary>
+    /// report folders of Windows Error Reporting (<c>ReportArchive</c> and <c>ReportQueue</c>, in <c>ProgramData</c> and the user's profile) named after the exe. A folder that cannot be read is skipped, the others are still read.</summary>
     internal static IEnumerable<string> FindDumps(string exe)
     {
+        var found = new List<string>();
+        static void Each(Action read) { try { read(); } catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Security.SecurityException) { } }
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var folders = new List<string> { Path.Combine(local, "CrashDumps") };
         const string Key = @"SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps";
         foreach (var path in new[] { Key, Key + "\\" + exe })
-            using (var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(path))
+            Each(() =>
+            {
+                using var k = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(path);
                 if (k?.GetValue("DumpFolder") is string d) folders.Add(Environment.ExpandEnvironmentVariables(d));
-        foreach (var folder in folders.Where(Directory.Exists))
-            foreach (var f in Directory.EnumerateFiles(folder, exe + ".*.dmp")) yield return f;
-        foreach (var archive in new[] { Environment.SpecialFolder.CommonApplicationData, Environment.SpecialFolder.LocalApplicationData }.Select(s => Path.Combine(Environment.GetFolderPath(s), "Microsoft", "Windows", "WER", "ReportArchive")).Where(Directory.Exists))
-            foreach (var report in Directory.EnumerateDirectories(archive, $"*_{exe}_*"))
-                foreach (var f in Directory.EnumerateFiles(report).Where(p => Path.GetExtension(p) is ".dmp" or ".mdmp" or ".hdmp")) yield return f;
+            });
+        foreach (var folder in folders) Each(() => found.AddRange(Directory.EnumerateFiles(folder, exe + ".*.dmp")));
+        var wer = new[] { Environment.SpecialFolder.CommonApplicationData, Environment.SpecialFolder.LocalApplicationData }.Select(s => Path.Combine(Environment.GetFolderPath(s), "Microsoft", "Windows", "WER"));
+        foreach (var root in wer)
+            foreach (var kind in new[] { "ReportArchive", "ReportQueue" })
+                Each(() =>
+                {
+                    foreach (var report in Directory.EnumerateDirectories(Path.Combine(root, kind), $"*_{exe}_*"))
+                        Each(() => found.AddRange(Directory.EnumerateFiles(report).Where(p => Path.GetExtension(p) is ".dmp" or ".mdmp" or ".hdmp")));
+                });
+        return found;
     }
 
     ProblemReport Zip(string trigger, int cap, List<string> missing, string system, string events, string runsJson, IReadOnlyList<InstallCheck>? checks, string? dump)
