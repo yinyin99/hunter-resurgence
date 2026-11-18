@@ -11,7 +11,7 @@ li a { position: relative; display: block; height: 64px; box-sizing: border-box;
 li.on a { background: var(--surface-4); }
 li a ::deep .av { position: absolute; left: 8px; top: 12px; }
 li { margin: 0 0 6px; }
-.who { display: block; color: var(--accent); }
+.who { display: block; color: var(--primary); }
 li.on .who { color: var(--accent-text); }
 .last { display: block; }
 .dot { position: absolute; right: 8px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
@@ -21,10 +21,10 @@ textarea { display: block; width: 100%; height: 58px; padding: 8px 10px; font: 3
 .send { margin: 10px 0 0; padding: 4px 8px; border: 0; border-radius: var(--r-1); background: #b3301a; font-size: 14px; line-height: 20px; color: #fff; cursor: pointer; }
 .send:disabled { opacity: .7; cursor: default; }
 .count { float: right; margin-top: 10px; font-size: 13px; line-height: 16px; color: var(--text-2); }
-.error { clear: both; margin: 8px 0 0; font-size: 12px; color: var(--accent); }
+.error { clear: both; margin: 8px 0 0; font-size: 12px; color: var(--primary); }
 .thread { clear: both; padding-top: 20px; }
 .you, .me { margin: 0 0 18px; }
-.h { display: block; margin: 0 0 4px; font-size: 14px; line-height: 14px; color: var(--accent); }
+.h { display: block; margin: 0 0 4px; font-size: 14px; line-height: 14px; color: var(--primary); }
 .you .h { text-align: right; }
 .body { position: relative; display: flex; align-items: flex-start; gap: 12px; }
 .msg { flex: 1; }

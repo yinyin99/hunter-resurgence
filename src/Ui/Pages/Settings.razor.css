@@ -11,7 +11,7 @@
 .bar { margin: 0; padding: 0 8px; background: linear-gradient(#262626, #1e1e1e); font-size: 17.5px; line-height: 40px; font-weight: 400; color: #fff; }
 .pane { padding: 16px; min-height: 240px; }
 .info { margin: 2px 0 8px; font-size: 15px; line-height: 20px; color: var(--text-2); }
-.pane a { color: var(--accent); }
+.pane a { color: var(--primary); }
 h5 { margin: 12px 0 8px; font-size: 17.5px; line-height: 20px; font-weight: 400; color: #fff; }
 .avatars { display: grid; grid-template-columns: repeat(6, 62px); gap: 35px 32px; }
 .pick { position: relative; display: block; padding: 0; border: 1px solid #555; background: none; cursor: pointer; }

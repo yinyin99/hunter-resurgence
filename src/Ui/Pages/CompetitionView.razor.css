@@ -14,7 +14,7 @@ h1 { position: absolute; left: 25px; bottom: 92px; margin: 0; font-size: var(--f
 dt { font-size: 18px; line-height: 26px; font-weight: 300; color: var(--text-3); }
 dd { margin: 0; font-size: 30px; line-height: 40px; font-weight: 300; color: var(--text-2); }
 h3 { margin: 18px 0 10px; font-size: var(--fs-h3); line-height: 34px; font-weight: 400; color: var(--text-1); }
-h4 { margin: 28px 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--accent); }
+h4 { margin: 28px 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--primary); }
 p { margin: 0 0 6px; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .prizes { display: flex; margin: 0; padding: 0; list-style: none; font-size: 14px; }
 .prizes li { width: 240px; line-height: 24px; }
