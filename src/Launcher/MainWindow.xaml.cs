@@ -53,12 +53,12 @@ public partial class MainWindow : Window
             if (d == CloseChoice.CloseGame)
             {
                 // the forwarder runs until the launcher exits, so the game can still end its hunt on the server while it closes
-                Hide();
+                WindowState = WindowState.Minimized; // still in the taskbar while the game closes, so no second copy is started by mistake
                 try { await GameFiles.StopClientAsync(Settings.Load().ClientExe, TimeSpan.FromSeconds(10)); }
                 finally { closing = true; Close(); }
                 return;
             }
-            closing = true; // the game ended while the question was open
+            closing = true; // the game ended before the dialog opened
             Close();
         }
         finally { asking = false; }

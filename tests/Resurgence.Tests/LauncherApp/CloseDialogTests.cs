@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Diagnostics;
 using Resurgence.Launcher;
 
@@ -46,7 +47,7 @@ public class CloseDialogTests
     public async Task AGameThatStaysIsStoppedAfterTheGraceTime()
     {
         // a console program has no window to close, so only the stop ends it
-        var p = Process.Start(new ProcessStartInfo("ping.exe", "-n 60 127.0.0.1") { CreateNoWindow = true, RedirectStandardOutput = true })!;
+        var p = Process.Start(new ProcessStartInfo("ping.exe", "-n 60 127.0.0.1") { CreateNoWindow = true })!;
         var id = p.Id;
         await GameFiles.StopAsync([p], TimeSpan.FromMilliseconds(300));
         Assert.Throws<ArgumentException>(() => Process.GetProcessById(id)); // gone
@@ -55,7 +56,7 @@ public class CloseDialogTests
     static void Sta(Action body)
     {
         Exception? failed = null;
-        var t = new Thread(() => { try { body(); } catch (Exception e) { failed = e; } });
+        var t = new Thread(() => { try { Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en"); body(); } catch (Exception e) { failed = e; } });
         t.SetApartmentState(ApartmentState.STA);
         t.Start();
         t.Join();

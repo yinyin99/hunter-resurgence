@@ -12,10 +12,11 @@ public partial class CloseDialog : Window
     readonly Func<TimeSpan> elapsed;
     readonly DispatcherTimer timer;
 
-    /// <param name="elapsed">Time since the dialog opened; null: a stopwatch that starts now.</param>
+    /// <param name="elapsed">Time since the dialog appeared; null: a stopwatch that starts when it is drawn.</param>
     public CloseDialog(Func<TimeSpan>? elapsed = null)
     {
-        var watch = Stopwatch.StartNew();
+        var watch = new Stopwatch();
+        ContentRendered += (_, _) => watch.Start();
         this.elapsed = elapsed ?? (() => watch.Elapsed);
         InitializeComponent();
         Title = Kit.S("App.Name");
@@ -45,6 +46,4 @@ public partial class CloseDialog : Window
     public string YesLabel => (string)Yes.Content;
 
     void OnYes(object sender, RoutedEventArgs e) => DialogResult = true;
-
-    void OnNo(object sender, RoutedEventArgs e) => DialogResult = false;
 }

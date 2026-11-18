@@ -1519,7 +1519,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dieses Konto darf sich nicht anmelden.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dieses Formular stammt nicht von diesem Server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
-  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchtest du den Launcher und das Spiel wirklich schließen?</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs des Spiels an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Die Dateien werden gesammelt …</value></data>

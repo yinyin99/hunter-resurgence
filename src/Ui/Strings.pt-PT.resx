@@ -1519,7 +1519,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta não pode iniciar sessão.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
-  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tem a certeza de que quer fechar o launcher e o jogo?</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tens a certeza de que queres fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Comunicar um problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envia os registos do jogo para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A reunir os ficheiros…</value></data>
