@@ -1,4 +1,4 @@
-/* Theme variables of the old interface (values 1:1); components use the variables, never literals. */
+/* Theme variables of the old interface (the text colours are raised where the old ones were not readable: 4.5:1 on every surface); components use the variables, never literals. */
 
 @font-face { font-family: Roboto; font-weight: 300; font-display: swap; src: url(fonts/roboto-300.woff2) format("woff2"); }
 @font-face { font-family: Roboto; font-weight: 400; font-display: swap; src: url(fonts/roboto-400.woff2) format("woff2"); }
@@ -32,15 +32,24 @@
     /* text */
     --fg-body: #BBB;
     --fg-heading: #EEE;
-    --fg-muted: #999;
-    --fg-muted-2: #888;
-    --fg-muted-3: #666;
+    --fg-muted: #B8B8B8;
+    --fg-muted-2: #B3B3B3;
+    --fg-muted-3: #B3B3B3;
+    /* orange/red TEXT on surfaces lighter than --surface-3 (4.68:1 on #444) */
+    --accent-text: #ff9a6c;
+    /* scrollbar thumbs: not text, so they stay dim */
+    --scroll-thumb: #666;
 
     /* accents, controls, status */
     --accent: #F9560D;
+    /* the accent as a background under white text (4.52:1); --accent itself stays for text and lines on dark surfaces */
+    --accent-bg: #d1480b;
     --accent-hover: #fb8a58;
     --primary: #f9370d;
     --primary-hover: #e72d06;
+    /* the primary as a background under white text: 4.50 and 5.75; --primary stays for text on dark surfaces (5.0 on #111) */
+    --primary-bg: #e1320c;
+    --primary-bg-hover: #c32a05;
     --launcher-accent: #ff4700;
     --menu-hover-from: #333;
     --menu-hover-to: #222;
@@ -49,7 +58,7 @@
     --pill-ems: #E7BE3D;
     --amber: #F0AD4E;
     --pill-balance-fg: #CCC;
-    --badge: #F00;
+    --badge: #D00;
     --online: #95D338;
     --online-2: #7CB37A;
     --success: #7ECE28;
@@ -57,7 +66,7 @@
     --link-blue: #7aaffa;
     --notice-from: #60ADC2;
     --notice-to: #275179;
-    --tab-fg: #AAA;
+    --tab-fg: #B3B3B3;
     --tab-active: #fbcb36;
     --dist-short: #47DD01;
     --dist-mid: #FFFF00;
@@ -89,15 +98,15 @@
     --fs-h3: 24.5px;
     --fs-h4: 17.5px;
     --fs-h5: 14px;
-    --fs-h6: 11.9px;
+    --fs-h6: 12px;
     --fs-page-title: 28px;
     --fs-menu: 15px;
     --ls-menu: 2px;
     --fs-statusbar: 16px;
     --fs-btn: 14px;
     --fs-btn-lg: 17.5px;
-    --fs-btn-sm: 11.9px;
-    --fs-tooltip: 11px;
+    --fs-btn-sm: 12px;
+    --fs-tooltip: 12px;
 
     /* layout */
     --w-container: 1220px;
@@ -120,9 +129,9 @@
     --su-btn: linear-gradient(#ffbb8e 0%, #f60 39%, #f60 100%);
     --su-btn-hover: linear-gradient(#ffcb9e 0%, #ff7610 39%, #ff7610 100%);
     --su-btn-border: rgba(64, 52, 33, .83);
-    --su-btn-disabled: linear-gradient(#ccc 0%, #808080 50%, #505050 100%);
-    --su-link: #de5900;
-    --su-link-hover: #913a00;
+    --su-btn-disabled: linear-gradient(#808080 0%, #505050 100%);
+    --su-link: #ff7a22;
+    --su-link-hover: #ffa05a;
     --su-focus: #f60;
     --su-focus-glow: rgba(255, 102, 0, .6);
     --su-invalid: red;
@@ -131,14 +140,14 @@
     --su-input-bg: hsla(0, 0%, 100%, .95);
     --su-input-fg: #444;
     --su-input-bd: #444;
-    --su-placeholder: #aaa;
+    --su-placeholder: #6b6b6b;
     --su-dialog-bg: rgba(58, 49, 40, .91);
     --su-dialog-bd: #000;
     --su-dialog-rule: #655b4c;
     --su-dialog-head: #eee;
-    --su-error: #e65656;
+    --su-error: #ff9a9a;
     --su-login-error: rgba(255, 50, 50, .8);
-    --su-link-button: #005826;
+    --su-link-button: #002f14;
     --su-progress-well: rgba(0, 0, 0, .5);
     --su-progress-bar: #5cb85c;
     --su-radius-btn: 6px;
@@ -148,8 +157,8 @@
     --text-1: #eee;
     --text-2: #ddd;
     --text-3: #bbb;
-    --text-4: #999;
-    --text-5: #666;
+    --text-4: #B8B8B8;
+    --text-5: #B3B3B3;
     --surface-0: #000;
     --surface-1: #111;
     --surface-2: #161616;
@@ -166,7 +175,7 @@
     --r-3: 8px;
     --r-pill: 999px;
     --tint-1: rgba(255, 255, 255, .025);
-    --tint-2: rgba(255, 255, 255, .06);
+    --tint-2: rgba(255, 255, 255, .04);
     --t-fast: 100ms;
     --t-base: 160ms;
     --t-slow: 240ms;
@@ -211,9 +220,9 @@ a:hover { color: var(--accent-hover); }
     transition: background-color var(--t-fast) var(--ease), transform var(--t-fast) var(--ease), filter var(--t-fast) var(--ease);
 }
 .btn:active { transform: translateY(1px); filter: brightness(.9); }
-.btn-primary { background-color: var(--primary); color: #fff; }
+.btn-primary { background-color: var(--primary-bg); color: #fff; }
 .btn-inverse { background-color: var(--surface-7); color: #fff; }
-.btn-primary:hover { background-color: var(--primary-hover); color: #fff; }
+.btn-primary:hover { background-color: var(--primary-bg-hover); color: #fff; }
 
 .icon { width: 1em; height: 1em; fill: currentColor; vertical-align: -.125em; }
 
@@ -251,10 +260,12 @@ a { transition: color var(--t-fast) var(--ease); }
 .pop { position: fixed; position-anchor: auto; inset: auto; top: anchor(bottom); left: anchor(left); min-width: max(158px, anchor-size(width)); margin: 4px 0 0; padding: 6px 0; border: 0; border-radius: var(--r-2); background: var(--surface-3); overflow: auto; }
 .pop li { margin: 0; padding: 0; list-style: none; }
 .pop li button { display: block; box-sizing: border-box; width: 100%; padding: 3px 20px; border: 0; background: none; color: var(--fg-muted); font: inherit; line-height: 20px; text-align: left; cursor: pointer; transition: background-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease); }
-.pop li button:hover, .pop li button:focus-visible { background: var(--accent); color: #fff; outline: 0; }
+.pop li button:hover, .pop li button:focus-visible { background: var(--accent-bg); color: #fff; outline: 0; }
 
 /* the grey card of the small dialogs (alert, buy) and the x of every modal */
 .dialog-card { border-top: 1px solid #5a5a5a; border-radius: var(--r-3); background: var(--surface-7); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--text-1); animation: dialog-in var(--t-base) var(--ease); }
+.dialog-card a:not(.btn) { color: var(--accent-text); }
+.dialog-card a:not(.btn):hover { color: #fff; }
 @keyframes dialog-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
 @keyframes dialog-fade { from { opacity: 0; } }
 .close { border: 0; border-radius: var(--r-2); background: none; cursor: pointer; opacity: .8; transition: opacity var(--t-fast) var(--ease); }
@@ -306,7 +317,7 @@ a { transition: color var(--t-fast) var(--ease); }
         linear-gradient(to bottom right, transparent calc(50% - 1px), var(--field-bd) 50%, transparent calc(50% + 1px)),
         #2a2a2a;
     color: var(--fg-muted-2);
-    font-size: 11px;
+    font-size: 12px;
 }
 
 /* the operator's picture in its slot (docs/images.md): contain never crops a picture of another shape */
@@ -341,7 +352,7 @@ html:has(.shell.launcher)::-webkit-scrollbar { width: 8px; height: 6px; }
 html:has(.shell.launcher)::-webkit-scrollbar-button:start:decrement,
 html:has(.shell.launcher)::-webkit-scrollbar-button:end:increment { height: 0; background-color: #222; }
 html:has(.shell.launcher)::-webkit-scrollbar-track-piece { background-color: #222; }
-html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical { height: 50px; background-color: var(--fg-muted-3); }
+html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical { height: 50px; background-color: var(--scroll-thumb); }
 html:has(.shell.launcher)::-webkit-scrollbar-thumb:vertical:hover { background-color: rgba(255, 255, 255, .3); transition: background-color .2s linear; }
 html:has(.shell.launcher)::-webkit-scrollbar-thumb:horizontal { width: 50px; background-color: #333; }
 
@@ -366,8 +377,8 @@ html:has(.su) { overflow: hidden; }
 .p3 .su-gift .item { left: 35px; top: 46px; }
 .p4 .su-gift .item { left: 56px; top: 74px; }
 
-.su-btn { box-sizing: border-box; display: inline-block; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: #fff; font: 400 14px/43px var(--font-signup); text-align: center; text-shadow: 0 1px 1px rgba(0, 0, 0, .45); cursor: pointer; }
-.su-btn:hover { background: var(--su-btn-hover); color: #fff; }
+.su-btn { box-sizing: border-box; display: inline-block; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: #1a1a1a; font: 400 14px/43px var(--font-signup); text-align: center; cursor: pointer; }
+.su-btn:hover { background: var(--su-btn-hover); color: #1a1a1a; }
 .su-btn.medium { height: 45px; padding: 0 10px; font-size: 16px; }
 .su-btn.large { height: 58px; padding: 0 15px; font-size: 18px; line-height: 56px; }
 .su-btn:disabled, .su-btn.disabled { background: var(--su-btn-disabled); color: #eee; cursor: default; }
@@ -415,7 +426,7 @@ html:has(.su) { overflow: hidden; }
 .su-dice { position: absolute; left: 458px; top: 365px; width: 52px; height: 40px; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: var(--su-link-button); font-size: 22px; cursor: pointer; }
 .p1 .su-input { position: absolute; left: 520px; top: 367px; width: 186px; }
 .su-bubble::before { content: ""; position: absolute; left: -8px; top: 10px; border: 7px solid transparent; border-left: 0; border-right: 8px solid #fff; }
-.su-bubble { position: absolute; left: 730px; top: 367px; box-sizing: border-box; height: 34px; padding: 6px 10px; border: 1px solid #000; background: #fff; color: red; font: 400 13px/20px var(--font-signup); text-align: center; }
+.su-bubble { position: absolute; left: 730px; top: 367px; box-sizing: border-box; height: 34px; padding: 6px 10px; border: 1px solid #000; background: #fff; color: #c00; font: 400 13px/20px var(--font-signup); text-align: center; }
 .p1 .su-name > .su-btn { position: absolute; left: 605px; top: 476px; transform: translateX(-50%); }
 .su-names { position: absolute; left: 200px; top: 365px; width: 240px; margin: 0; padding: 0; list-style: none; background: #fff; }
 .su-names button { display: block; box-sizing: border-box; width: 100%; height: 42px; padding: 0 12px; border: 0; border-bottom: 1px solid #ddd; background: #fff; color: #444; font: 400 13px var(--font-signup); text-align: left; cursor: pointer; }
@@ -437,7 +448,7 @@ html:has(.su) { overflow: hidden; }
 .su-dialog .su-actions .su-btn { margin: 0 4px; }
 .su-dialog .su-hint, .su-dialog .su-link { text-shadow: none; }
 .su-dialog .su-login-error { margin-bottom: 10px; }
-.su-required { display: block; margin-bottom: 2px; color: var(--su-error); font-size: 11px; line-height: 14px; text-align: right; }
+.su-required { display: block; margin-bottom: 2px; color: var(--su-error); font-size: 12px; line-height: 14px; text-align: right; }
 .su-alert { margin: 0 0 12px; padding: 6px 10px; border: 1px solid #ebccd1; border-radius: 4px; background: #f2dede; color: #a94442; font-size: 13px; line-height: 18px; }
 .su-dialog.tutorial label { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; margin: 0 0 8px; text-align: right; font: 700 12px/18px var(--font-signup); }
 .su-dialog.tutorial select { justify-self: start; font-size: 12px; }

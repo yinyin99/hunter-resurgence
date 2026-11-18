@@ -4,7 +4,7 @@
 .buy b { font-weight: 400; color: var(--text-2); }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 .text { margin: 0 0 20px; font-size: 12px; line-height: 20px; color: var(--text-2); }
-.own { color: #e0301e; }
+.own { color: #f4503d; }
 th, td { padding: 4px 5px; }
 th:nth-child(2), td:nth-child(2) { width: 20%; text-align: center; }
 th:nth-child(3), td:nth-child(3) { width: 15%; text-align: center; }
@@ -14,4 +14,4 @@ a { color: var(--accent); }
 .total { display: flex; justify-content: space-between; margin: 20px 5px 0; padding: 10px 18px; background: var(--surface-2); font-size: 17px; line-height: 24px; font-weight: 700; color: var(--text-3); }
 .total + .total { margin-top: 4px; }
 .total b { color: var(--text-2); }
-.save b { color: #e01010; }
+.save b { color: #f4503d; }
