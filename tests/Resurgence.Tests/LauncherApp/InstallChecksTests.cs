@@ -171,12 +171,13 @@ public class InstallChecksTests
     }
 
     [Fact]
-    public async Task SteamNotSignedInBlocksWithTheSteamButton()
+    public async Task SteamNotSignedInWarnsThatTheGameStartsWithoutItAndBlocksOnlyWithoutAGame()
     {
         using var t = new TempDir("checks-");
         var r = await Check(Make(Game(t), steam: false), "steam");
-        Assert.Equal(("block", "Check.Steam.SignedOut", "open-steam"), (r.Level, r.Text, r.Fix));
+        Assert.Equal(("warn", "Check.Steam.Fallback", "open-steam"), (r.Level, r.Text, r.Fix));
         Assert.Equal("ok", (await Check(Make(Game(t), steam: true), "steam")).Level);
+        Assert.Equal("block", (await Check(Make(null, steam: false), "steam")).Level); // no game: nothing to start without Steam either
     }
 
     [Fact]
@@ -329,7 +330,7 @@ public class InstallChecksTests
             _ => Make(g),
         };
         var started = 0;
-        var b = new LauncherBridge(() => g, Rest, _ => false, _ => { started++; return true; }, () => true, null, checks: checks);
+        var b = new LauncherBridge(() => g, Rest, _ => false, _ => { started++; return LauncherFakes.Alive(); }, LauncherFakes.Signed, null, checks: checks);
         var result = b.StartGame("srv://x");
         Assert.Equal(blocked, result.Error);
         Assert.Equal(blocked is null ? 1 : 0, started);
@@ -346,7 +347,7 @@ public class InstallChecksTests
     public void OnlyHttpsAndSteamAddressesAreOpenedAndTheAppIdIsFilledIn(string url, string? opened)
     {
         var seen = new List<string>();
-        new LauncherBridge(() => null, Rest, _ => false, _ => true, () => true, "42", openFolder: seen.Add).OpenExternal(url);
+        new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, "42", openFolder: seen.Add).OpenExternal(url);
         Assert.Equal(opened is null ? [] : [opened], seen);
     }
 
@@ -354,9 +355,9 @@ public class InstallChecksTests
     public void AnAddressThatNeedsTheAppIdIsIgnoredWithoutOneAndAFailureToOpenIsIgnored()
     {
         var seen = new List<string>();
-        new LauncherBridge(() => null, Rest, _ => false, _ => true, () => true, null, openFolder: seen.Add).OpenExternal("steam://nav/games/details/{steam_app_id}");
+        new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, openFolder: seen.Add).OpenExternal("steam://nav/games/details/{steam_app_id}");
         Assert.Empty(seen);
-        new LauncherBridge(() => null, Rest, _ => false, _ => true, () => true, "42", openFolder: _ => throw new System.ComponentModel.Win32Exception()).OpenExternal("steam://open/main"); // must not throw
+        new LauncherBridge(() => null, Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, "42", openFolder: _ => throw new System.ComponentModel.Win32Exception()).OpenExternal("steam://open/main"); // must not throw
     }
 
     [Fact]
@@ -364,7 +365,7 @@ public class InstallChecksTests
     {
         using var t = new TempDir("checks-");
         var g = Game(t);
-        var b = new LauncherBridge(() => g, Rest, _ => true, _ => true, () => true, null, checks: Make(g, running: true));
+        var b = new LauncherBridge(() => g, Rest, _ => true, LauncherFakes.Up, LauncherFakes.Signed, null, checks: Make(g, running: true));
         Assert.Equal("block", (await b.CheckInstallAsync()).Single(r => r.Id == "running").Level);
         Assert.Equal("ok", (await b.CheckInstallAsync()).Single(r => r.Id == "running").Level);
     }
