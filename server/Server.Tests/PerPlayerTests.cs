@@ -402,7 +402,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAServerHarvestIsInTheOwnTrophiesAboveEveryRestoredIdAndEachCanBeTaxidermized()
+    public async Task TestATaxidermizedServerHarvestIsInTheOwnTrophiesAboveEveryRestoredIdAndARestoredOneCannotBe()
     {
         using (var con = state.Store.Open(ME))
         {
@@ -420,19 +420,19 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         // Trophy/list stays the restored rows only
         var page = await Api(Replay.TROPHY_LIST, tokenA, "user_id=7");
         Eq("""[2, [{"id": 1, "name": "first"}, {"id": 500, "name": "listed"}]]""", T(page["total"], page["trophies"]));
-        var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
+        async Task<JsonArray> Own() => JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
+        Eq("""[9]""", new JsonArray((await Own()).Select(t => t!["id"]!.DeepClone()).ToArray()));  // the server kill is not a trophy until it is taxidermized
+        async Task<JsonNode> Harvest(int id) => JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/harvest/" + id, tokenA)).Body)!;
+        Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/9/taxidermize", tokenA, "currency=gold")).Status);  // a restored harvest: never
+        Assert.False((bool)(await Harvest(9))["taxidermized"]!);
+        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/10/taxidermize", tokenA, "currency=gold")).Status);
+        Assert.True((bool)(await Harvest(10))["taxidermized"]!);
+        Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/11/taxidermize", tokenA, "currency=gold")).Status);
+        var own = await Own();
         var row = own[1]!.AsObject();
         Eq("""[2, 9, 10]""", T(own.Count, own[0]!["id"], row["id"]));  // the server kill got an id above the restored 9
         Assert.Equal(fields, row.Select(kv => kv.Key));
         Eq("""[false, "MULE_DEER", 50000, 0.9, 46658, false]""", T(row["hidden"], row["species_define"], row["weight"], row["scale"], row["antlers_seed"], row["is_skull"]));
-
-        async Task<JsonNode> Harvest(int id) => JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/harvest/" + id, tokenA)).Body)!;
-        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/9/taxidermize", tokenA)).Status);
-        Assert.True((bool)(await Harvest(9))["taxidermized"]!);
-        Assert.False((bool)(await Harvest(10))["taxidermized"]!);  // the server kill is its own
-        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/10/taxidermize", tokenA)).Status);
-        Assert.True((bool)(await Harvest(10))["taxidermized"]!);
-        Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/11/taxidermize", tokenA)).Status);
     }
 
     [Fact]

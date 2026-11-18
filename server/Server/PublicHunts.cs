@@ -71,8 +71,9 @@ public sealed partial class State
     /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
     /// per-type sums, no pickups), `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` `{title, description}` of the thresholds the hunt earned
     /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists as earned between its start and its end. `kills` are
-    /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. Null for an unknown hunt.</summary>
-    public JsonObject? PublicHunt(long account, long? id)
+    /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. For the player's own page
+    /// (<paramref name="own"/>) a kill made here also has `taxidermy: {end, ems, gms, skull, done}` (<see cref="TaxidermyOffers"/>); a restored kill and anyone else's page have none. Null for an unknown hunt.</summary>
+    public JsonObject? PublicHunt(long account, long? id, bool own = false)
     {
         if (JsonNode.Parse(ExpeditionReply(account, "null"u8.ToArray(), id is { } i ? Encoding.UTF8.GetBytes($"expedition_id={i}") : null)) is not JsonObject reply || reply["expedition"] is not JsonObject e)
             return null;
@@ -113,17 +114,21 @@ public sealed partial class State
         })]);
         var view = reply["stats"] is JsonObject stats && stats["data"] is JsonObject ? StatisticsView(stats) : null;
         string ItemOf(JsonObject? hit, string key) => ItemName(hit?[key]);
+        var offers = own ? TaxidermyOffers(account) : new();
         JsonNode? Kill(JsonNode? node)
         {
             var k = node as JsonObject ?? [];
             var hit = (k["hits"] as JsonArray)?.LastOrDefault() as JsonObject;
             var info = k["kill"] as JsonObject;
             var killId = Integer(k["id"]);
-            return new JsonObject
+            var kill = new JsonObject
             {
                 ["id"] = killId, ["species"] = Py.IsStr(k["speciesName"]) ? Py.Str(k["speciesName"]) : "#" + Py.Str(k["species"]), ["weapon"] = ItemOf(hit, "weapon_id"), ["ammo"] = ItemOf(hit, "ammo_id"),
                 ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null, ["photo"] = C(info?["photo"]),
             };
+            if (offers.TryGetValue(killId, out var offer))
+                kill["taxidermy"] = offer;
+            return kill;
         }
         return new JsonObject
         {

@@ -99,6 +99,27 @@ public static class AdminApi
                               + "stay as they are. Repeating pays nothing more. dry_run (default true) reports without writing.")
              .ProducesProblem(404).ProducesProblem(503);
 
+        admin.MapGet("/taxidermies", Results<Ok<JsonArray>, ProblemHttpResult> ([Description(AccountDoc)] string? account) =>
+                state is null ? NoState() : ResolveAccount(state, account) is not { } id ? NoAccount(account!) : TypedResults.Ok(state.Taxidermies(id)))
+             .WithName("GetTaxidermies").WithSummary("The account's taxidermized harvests, newest first")
+             .WithDescription("`[{kill, species, harvested, done: taxidermy|skull, currency: em|gm, paid, ts}]`; `currency`, `paid` and `ts` (Unix seconds) are null for a harvest the game marked taxidermized before the price existed.")
+             .ProducesProblem(404).ProducesProblem(503);
+
+        admin.MapPost("/taxidermies/{kill:long}/undo", Results<Ok<TaxidermyUndone>, ProblemHttpResult> (long kill, [Description(AccountDoc)] string? account, [Description("true (default): give the price back")] bool? refund) =>
+            {
+                if (state is null)
+                    return NoState();
+                if (ResolveAccount(state, account) is not { } id)
+                    return NoAccount(account!);
+                return state.UndoTaxidermy(id, kill, refund ?? true) is { } undone
+                    ? TypedResults.Ok(new TaxidermyUndone(kill, undone.Currency, undone.Amount))
+                    : TypedResults.Problem($"harvest {kill} is not taxidermized", statusCode: 404, title: "Not taxidermized");
+            })
+             .WithName("UndoTaxidermy").WithSummary("Take a taxidermy back")
+             .WithDescription("The harvest is no longer taxidermized (nor a skull), so it leaves the lodge editor's trophy list and can be bought again within its window; the price is given back with a wallet row "
+                              + "(`refund` false keeps it). Nothing happens to a lodge slot that held it.")
+             .ProducesProblem(404).ProducesProblem(503);
+
         admin.MapPost("/spawn", Results<Ok<Spawner.Entry>, ValidationProblem, ProblemHttpResult> (Spawner.Request req) =>
             {
                 var errors = Spawner.Validate(req);
@@ -210,5 +231,6 @@ public static class AdminApi
     public sealed record SpawnList(List<Spawner.Entry> Entries, List<Spawner.Applied> Applied);
     public sealed record SpawnRemoved(int Removed);
     public sealed record RescoreResult(long Account, int Rescored, int Paid, long Gms);
+    public sealed record TaxidermyUndone(long Kill, [property: Description("em or gm, null for a harvest marked before the price existed")] string? Currency, [property: Description("What was given back, 0 for none")] long Refunded);
     public sealed record SpawnWake(long? PopulationId, int? Group);
 }
