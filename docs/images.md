@@ -15,17 +15,33 @@ The website and the launcher draw every picture of the original screens in a *sl
 
 ## Missing pictures
 
-`GET /images-missing.json` lists every slot the website drew as its labelled box since it started, as `{"<key>": "<page>"}` sorted by key. The file to add is `<key>.<png|jpg|jpeg|gif|webp|webm>` in `IMAGES_DIR`.
+`GET /images-missing.json` lists every slot the website and the launcher can draw that has no file in `IMAGES_DIR`, without visiting a page, with counts. The file to add is `<key>.<png|jpg|jpeg|gif|webp|webm>`.
 
 ```
 curl -s https://<site>/images-missing.json
 ```
 
-- A slot is listed only once a page has drawn it: open the pages, and their tabs and dialogs, whose pictures are to be checked. A dialog's slot gives the page under it. Each key keeps the first page it was seen on.
-- A key built from page data (`item-<id>` …) is listed as the concrete key (`item-12`).
-- On a signed-in page only the first segment of the path is kept (`/messages`, `/bank`), because the list is public.
-- The list is in memory: restarting `web`, which adding files needs too, clears it. It holds 10,000 keys at most.
-- The launcher draws the same slots from the same folder, but its own pages (`/dashboard`, `/launch-map`, `/servers`, `/tutorials`: `reserve-<NN>`, `map-<NN>` …) are sent to `/feed` by the website, so their slots are not listed; the Inventory covers them. A Development run (`dotnet run --project src/Web`) on a copy of the folder lists them too after opening those pages with `?mode=launcher`.
+```json
+{
+  "total": 478, "present": 1,
+  "areas": { "decoration": { "total": 25, "present": 1 }, "reserves and maps": { "total": 45, "present": 0 } },
+  "missing": { "decoration": [ { "key": "logo-rating-2", "size": "62x82", "page": "Footer" } ] },
+  "seenWithoutFile": { "ach-badge-early-bird": "/profile" }
+}
+```
+
+- `total` is the number of slots the manifest expects (`src/Ui/AssetSlots.cs`), `present` how many of them have a file, `areas` the same per area: `avatars`, `bank`, `competitions`, `decoration`, `dogs`, `help`, `missions`, `news`, `profile`, `reserves and maps`, `rewards`, `score sheet`, `species`, `store`. `missing` has the rest by area, sorted by key, with the slot's main `size` (`WxH`, empty when the page sets it) and the `page` or component that draws it; an area with nothing missing is left out.
+- The manifest holds the fixed names of the code, and expands each name built from data with the website's own services: store items and bundles (`item-<id>`, `bundle-<id>`; with a community server `store-item-<id>`, `store-bundle-<id>`: the catalogue the store shows, so the server must answer; the sitemap does the same), species (`species-<name>`, the leaderboards' species), reserves (`reserve-<NN>`, `map-<NN>`, from the reserve list: 01 to 12), the marker kinds (`marker-<kind>` and `marker-<kind>-active`, which is optional: without it the selected marker keeps its picture), avatars (`avatar-<id>`, the account's choices), tutorial videos (`video-<id>`), competitions (`competition-hero-<id>`) and the feed's own posts, the bank's packs and memberships, the day missions' pictures and the fixed sets (`rank-<score, animals, weapons, collectables>`, `ach-<animals, weapons, exploration, day-mission>`, `paw-badge-<easy, medium, hard>`, `competition-<board, weight>`, `logo-rating-<1-4>`). The launcher's pages are in it (`reserve-<NN>`, `map-<NN>`, the markers, the avatars). The pictures of the mock alone (the bank, the day missions' people, `profile-banner`) are left out on a site with a community server (`HostMode.Live`).
+- The list is computed when it is asked for: the folder is read once at start, so adding a file needs a restart of `web` (`docker compose restart web`) before it leaves the list, and the catalogue is the store's cache (5 minutes).
+- **Listed when drawn**: names that come from a player's profile, which the website cannot list without that player (`ach-icon-<icon>`, `ach-badge-<title>`, `skill-<name>`, `statistics-<define>`, `trophy-<image>`, `weapon-<name>`, `ammo-<name>`, `collectable-<name>`, `photo-<id>`, `profile-bg-<name>`, `dog-skill-<skill>-<level>`, `dog-trophy-ribbon-<n>`, `antler-diagram-<species>`, `antler-guide-<species>`, `rank-<id>`, and the live site's `avatar-<id>` of the game's list, which the server gives only to a signed-in player). They are in the manifest as patterns without a source, so a page that draws one without a file puts it in `seenWithoutFile`, as `{"<key>": "<page>"}` sorted by key. So does any slot the manifest does not know at all (the test below should keep that empty). A key keeps the first page it was seen on; on a signed-in page only the first segment of the path is kept (`/messages`, `/bank`), because the list is public. It is in memory, cleared by a restart of `web`, and holds 10,000 keys at most; the open pages, tabs and dialogs fill it.
+- `reserve-<NN>-<event>` (the event badge of a reserve) is asked for only while the community server's event runs and its file exists ([launcher.md](launcher.md#seasonal-events)), so it is in neither list.
+
+### A new slot or pattern
+
+`AssetSlotsTests` reads every `<AssetSlot Name=…>` of `src/Ui/**/*.razor`, the map's own names (`map-`, `marker-`, `reserve-`, `page-bg`) and fails for a literal name, or the literal start of a name built from data (`"ach-" + x`, `$"video-{id}"`), that `AssetSlots` does not have. A name held in a variable (`Name="@slot"`) is not read: its pattern is added by hand. In `src/Ui/AssetSlots.cs`:
+
+- a fixed name: one `L(key, area, size, page)` line in `Literals`;
+- a name built from data: one `Pattern(prefix, area, size, page, keys)` in `Patterns`, `prefix` the literal start as the `.razor` file writes it, `keys` the function that returns the names from the website's services (add the service to `AssetSources` and to the `/images-missing.json` handler in `src/Web/Program.cs`). Without `keys` the pattern is listed when drawn.
 
 ## Inventory
 
@@ -86,7 +102,7 @@ With the values the mock services give, the slots have 640 distinct keys, and th
 | `reserve-<NN>-<event>` | 70×70 | LaunchMap | 5 of 5 for `halloween_2026` (`reserve-01-halloween-2026`, 02, 03, 09, 10: the game's reserves 0, 1, 2, 8 and 9 of the event): the event's badge, drawn instead of `reserve-<NN>` only while the community server's event runs for that reserve and the player plays seasonal events ([launcher.md](launcher.md#seasonal-events)). The event name goes through `AssetImages.Key` like any slot name, so `halloween_2026` is `halloween-2026`; a reserve or event without a file keeps the normal badge, and the slot is never asked for outside the event, so `/images-missing.json` does not list it |
 | `map-<NN>` (MapPlaceholder) | the map | LaunchMap, JoinMapModal | 12 of 12: the original's one world map (zoom 5 tiles) cut to a square around each reserve's border (6% margin, a square near the world's edge slid inward), scaled to 1500 px at most; the same square is the facts file's `reserves[].map`, the server's marker positions are percent of it. The boxes of the join map (704×608) stretch it |
 | `marker-<kind>` (MapPlaceholder) | 24×24 | LaunchMap, JoinMapModal (the reserve maps; the score sheet's map keeps icons) | 9 of 10: the original's map marker sprite, one 32×32 picture a kind (the feeder is the sprite's broadcast feeder, the bait the barrel); `caller` has none yet, so it is drawn as its icon. Lodge, campsite, tower and interest are the server's starts, tent, treestand, groundblind and caller the player's own placed items (`GET /account/placed`, [server.md](server.md#the-launch-map)); bait and feeder are the mock's |
-| `marker-<kind>-active` (MapPlaceholder) | 24×24 | LaunchMap (the selected or hovered marker) | 9 of 10: the sprite's second row, the red one. Optional: without it the selected marker keeps its picture, and it is not listed in `/images-missing.json` |
+| `marker-<kind>-active` (MapPlaceholder) | 24×24 | LaunchMap (the selected or hovered marker) | 9 of 10: the sprite's second row, the red one. Optional: without it the selected marker keeps its picture; `/images-missing.json` lists it like any slot |
 | `map-bg` (MapPlaceholder) | the map | SheetTab | no: the original score map was a map centred on the kill's position; no single picture fits |
 | `species-<name>` | 135×135, 118×118 | Leaderboards | 59 of 59 |
 | `rank-<animals, weapons, collectables>` | 114×114, 40×40 | RanksTab (the mock; the live site draws `rank-<id>` in the rows) | 3 of 3 (the overview rows show them at 40×40) |
