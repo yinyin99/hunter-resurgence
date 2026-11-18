@@ -17,7 +17,7 @@ public static class MockServices
         .AddSingleton<IMissionsService, MockMissionsService>()
         .AddSingleton<ICompetitionsService, MockCompetitionsService>()
         .AddSingleton<ILeaderboardsService, MockLeaderboardsService>()
-        .AddSingleton<IProfileService>(sp => new MockProfileService(null, sp.GetRequiredService<IFriendsService>()))
+        .AddSingleton<IProfileService>(sp => new MockProfileService(null, sp.GetRequiredService<IFriendsService>(), sp.GetRequiredService<MockWalletState>()))
         .AddSingleton<IFriendsService, MockFriendsService>()
         .AddSingleton<IMessagesService, MockMessagesService>()
         .AddSingleton<IInventoryService, MockInventoryService>()

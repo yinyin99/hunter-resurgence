@@ -180,6 +180,33 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return Result.Fail("Mis.Failed");
     }
+    /// <summary><c>POST /account/harvests/&lt;kill&gt;/taxidermize</c> as the signed-in player (<see cref="ServerAccountApi.Harvests"/>): the server's refusals are told plainly (a wallet too low, bought already, too late).</summary>
+    public async Task<Result<TaxidermyDone>> TaxidermizeAsync(long killId, string product, string currency)
+    {
+        if (cookie.Value is null) return Result<TaxidermyDone>.Fail("Taxidermy.Failed");
+        var path = $"{ServerAccountApi.Harvests}/{killId}{ServerAccountApi.TaxidermizeSuffix}";
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Post, path);
+            request.Headers.Add("X-Requested-With", "XMLHttpRequest");
+            request.Content = JsonContent.Create(new { product, currency });
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerTaxidermized>() is { } d) return Result<TaxidermyDone>.Success(new(d.Done, d.Ems, d.Gms));
+            log.LogWarning("The server refused {Path} ({Status})", path, (int)response.StatusCode);
+            return Result<TaxidermyDone>.Fail(response.StatusCode switch
+            {
+                HttpStatusCode.PaymentRequired => currency == "gms" ? "Taxidermy.NotEnoughGms" : "Taxidermy.NotEnoughEms",
+                HttpStatusCode.Conflict => "Taxidermy.Already",
+                HttpStatusCode.Gone => "Taxidermy.TooLate",
+                _ => "Taxidermy.Failed",
+            });
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason})", path, e.Message);
+        }
+        return Result<TaxidermyDone>.Fail("Taxidermy.Failed");
+    }
     /// <summary><c>GET /account/gallery/zip</c> as the signed-in player: their own gallery as a zip. Empty when the server does not answer (the handle is not asked: only the own gallery is downloaded).</summary>
     public async Task<byte[]> GalleryZipAsync(string handle)
     {
@@ -258,7 +285,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                 [.. (h.Collectables ?? []).Select(p => new Pickup(p.Name, p.Score, Utc(p.Ts)))],
                 [.. (h.Achievements ?? []).Select(a => new Achievement(a.Title, a.Description, DateOnly.FromDateTime(Utc(h.End ?? h.Start))))],
                 h.DistanceKm, (int)Math.Clamp(h.Seconds, 0, int.MaxValue), h.Antlers ?? [],
-                [.. (h.Kills ?? []).Select(k => new Kill(k.Id, k.Species, k.Weapon, k.Ammo, k.DistanceM, k.Score, k.WeightKg, Utc(k.When), null, k.Sheet))])
+                [.. (h.Kills ?? []).Select(k => new Kill(k.Id, k.Species, k.Weapon, k.Ammo, k.DistanceM, k.Score, k.WeightKg, Utc(k.When), k.Taxidermy is { } t ? new(t.End.ToUniversalTime(), t.Ems, t.Gms, t.Skull, t.Done) : null, k.Sheet))])
             : null;
     /// <summary><c>GET /hunters/&lt;handle&gt;/hunts?page=n</c>: one page of 40. A failed answer is an empty page.</summary>
     public async Task<Page<HistoryRow>> HistoryAsync(string handle, int page) =>

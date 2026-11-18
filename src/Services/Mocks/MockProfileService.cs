@@ -1,7 +1,9 @@
 namespace Resurgence.Services.Mocks;
 
-/// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.</summary>
-public sealed class MockProfileService(string? mock = null, IFriendsService? friends = null) : IProfileService
+/// <summary>Hunter01 is the signed-in player (empty bars, gallery and trophies); any other handle is a top player with full bars. Mock "profile:photos" gives the signed-in player a gallery.
+/// The kills of the own hunts 1 to 4 back show the taxidermy states (the older ones are too late); it is paid from <paramref name="wallet"/> (the circuit's, so the status bar follows).
+/// Mock "taxidermy:late", "taxidermy:already" and "taxidermy:fail" make every purchase refused that way.</summary>
+public sealed class MockProfileService(string? mock = null, IFriendsService? friends = null, MockWalletState? wallet = null) : IProfileService
 {
     const string Own = "Hunter01";
 
@@ -142,14 +144,41 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
             [new(100000200 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 120.0 + n, 100.0 + n, 85.0 + n, start.AddMinutes(20))]);
     }
 
-    // the kills of the player's last two expeditions can still be mounted: the offer runs out a day after the kill
+    const int TaxidermyEms = 10, TaxidermyGms = 2000;
+    const long FirstKill = 100000200;
+    readonly Dictionary<long, string> taxidermized = [];
+
+    // the own hunts 1 to 4 back: allowed with 71 h left and a skull, allowed with 2 h left and no skull, taxidermized, skull mounted; the older ones are past the 72 hours
+    TaxidermyOffer? Offer(int n, long kill) => taxidermized.GetValueOrDefault(kill) is { } done ? new(DateTime.UtcNow, TaxidermyEms, TaxidermyGms, n % 2 == 1, done) : n switch
+    {
+        1 => new(DateTime.UtcNow.AddHours(71.5), TaxidermyEms, TaxidermyGms, true),
+        2 => new(DateTime.UtcNow.AddHours(2.5), TaxidermyEms, TaxidermyGms),
+        3 => new(DateTime.UtcNow.AddHours(40), TaxidermyEms, TaxidermyGms, true, "taxidermy"),
+        4 => new(DateTime.UtcNow.AddHours(10), TaxidermyEms, TaxidermyGms, true, "skull"),
+        _ => null,
+    };
+
     public Task<Expedition?> ExpeditionAsync(string handle, long? id)
     {
         // an id outside the made-up history (the captured one is a real id) shows the nearest entry
         var n = id is null ? 0 : (int)Math.Clamp(Latest - id.Value, 0, 54);
         var e = Make(id ?? Latest, n);
-        if (handle == Own && n is 1 or 2) e = e with { Kills = e.Kills.Select(k => k with { Taxidermy = new(DateTime.UtcNow.AddHours(24 - n * 5), 120, 2000) }).ToList() };
+        if (handle == Own) e = e with { Kills = [.. e.Kills.Select(k => k with { Taxidermy = Offer((int)(k.Id - FirstKill), k.Id) })] };
         return Task.FromResult<Expedition?>(e);
+    }
+
+    public Task<Result<TaxidermyDone>> TaxidermizeAsync(long killId, string product, string currency)
+    {
+        var n = (int)(killId - FirstKill);
+        var state = wallet ??= new();
+        if (mock == "taxidermy:late") return Task.FromResult(Result<TaxidermyDone>.Fail("Taxidermy.TooLate"));
+        if (mock == "taxidermy:already" || taxidermized.ContainsKey(killId) || n is 3 or 4) return Task.FromResult(Result<TaxidermyDone>.Fail("Taxidermy.Already"));
+        if (n >= 5) return Task.FromResult(Result<TaxidermyDone>.Fail("Taxidermy.TooLate"));
+        if (mock == "taxidermy:fail" || n is not (1 or 2) || product == "skull" && n % 2 == 0) return Task.FromResult(Result<TaxidermyDone>.Fail("Taxidermy.Failed"));
+        var gms = currency == "gms";
+        if (!state.Spend(gms, gms ? TaxidermyGms : TaxidermyEms, "Taxidermy (immediate)")) return Task.FromResult(Result<TaxidermyDone>.Fail(gms ? "Taxidermy.NotEnoughGms" : "Taxidermy.NotEnoughEms"));
+        taxidermized[killId] = product;
+        return Task.FromResult(Result<TaxidermyDone>.Success(new(product, state.Ems, state.Gms)));
     }
 
     public Task<Page<HistoryRow>> HistoryAsync(string handle, int page)

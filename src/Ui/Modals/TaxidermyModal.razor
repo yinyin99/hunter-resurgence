@@ -1,0 +1,59 @@
+@implements IDisposable
+@inject ModalService Modal
+@inject IProfileService Profile
+
+@* the confirmation of a taxidermy: one row per product with its em$ and gm$ button (the in-game page's, docs/website.md); the server's refusal is told on the error line *@
+<div class="tax dialog-card" role="dialog" aria-modal="true">
+    <button class="close" aria-label="@L["Store.Close"]" @onclick="Modal.Close">&times;</button>
+    @if (bought is null)
+    {
+        <h2>@L["Taxidermy.Button"]</h2>
+        <p class="line">@L.Term(Kill.Species) - @Fmt.Score(Kill.Score)</p>
+        <p class="line">@L[Offer.Skull ? "Taxidermy.MessageSkull" : "Taxidermy.MessageNoSkull"]</p>
+        @Row("taxidermy", L["Stat.Taxidermy"])
+        @if (Offer.Skull) { @Row("skull", L["Taxidermy.Skull"]) }
+        @if (error is not null) { <div class="su-login-error" role="alert">@L[error]</div> }
+        <p class="note">@L["Taxidermy.Note"]</p>
+    }
+    else
+    {
+        <h2>@L[bought == "skull" ? "Taxidermy.SkullDone" : "Taxidermy.Done"]</h2>
+        <p class="line">@L["Taxidermy.Lodge"]</p>
+    }
+</div>
+
+@code {
+    readonly CancellationTokenSource gone = new();
+    string? bought, error;
+    bool pending;
+
+    [Parameter, EditorRequired] public Kill Kill { get; set; } = null!;
+    [Parameter, EditorRequired] public TaxidermyOffer Offer { get; set; } = null!;
+    /// <summary>Raised with what was bought, so the hunt's row shows its badge.</summary>
+    [Parameter] public EventCallback<string> Bought { get; set; }
+
+    RenderFragment Row(string product, string name) => @<div class="row"><span class="name">@name</span>
+        <button class="btn btn-primary" id="@(product)-ems" disabled="@pending" @onclick='() => Pay(product, "ems")'>@Offer.Ems.ToString("N0") em$</button>
+        <button class="btn btn-primary" id="@(product)-gms" disabled="@pending" @onclick='() => Pay(product, "gms")'>@Offer.Gms.ToString("N0") gm$</button></div>;
+
+    // the buttons stay disabled while the request runs; after the thanks (4 s) the dialog closes by itself
+    async Task Pay(string product, string currency)
+    {
+        if (pending) return;
+        (pending, error) = (true, null);
+        var r = await Profile.TaxidermizeAsync(Kill.Id, product, currency);
+        pending = false;
+        if (r.Value is not { } done) { error = r.Error; return; }
+        bought = done.Done;
+        await Bought.InvokeAsync(bought);
+        StateHasChanged();
+        try
+        {
+            await Task.Delay(4000, gone.Token);
+            Modal.Close();
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => gone.Cancel();
+}

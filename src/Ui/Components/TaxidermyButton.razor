@@ -1,44 +1,26 @@
-@implements IDisposable
 @inject ModalService Modal
-@inject HostMode Mode
 
-@* own kill of the last 24 hours: the taxidermy through the buy window until the offer ends (the old page counted down every second) *@
-@if (left > TimeSpan.Zero && !Mode.Live)
+@* a harvest of the player's own: the button with the time left (hours, the server's window is 72), then the badge of what was bought (docs/website.md) *@
+@if (done is not null)
 {
-    <button type="button" class="btn btn-primary" @onclick="Buy">@L["Stat.Taxidermy"] <small>@Fmt.Elapsed(L, (int)left.TotalSeconds)</small></button>
+    <span class="done">@L[done == "skull" ? "Taxidermy.SkullBadge" : "Taxidermy.Badge"]</span>
+}
+else if (left > TimeSpan.Zero)
+{
+    <button type="button" class="btn btn-primary" @onclick="Open">@L["Taxidermy.Button"] <small>@(left.TotalHours >= 1 ? L["Taxidermy.HoursLeft", (int)left.TotalHours] : L["Taxidermy.MinutesLeft", Math.Max(1, (int)left.TotalMinutes)])</small></button>
 }
 
 @code {
     TimeSpan left;
-    CancellationTokenSource? stop;
+    string? done;
 
     [Parameter, EditorRequired] public Kill Kill { get; set; } = null!;
     [Parameter, EditorRequired] public TaxidermyOffer Offer { get; set; } = null!;
 
-    protected override void OnParametersSet() => left = Offer.End - DateTime.UtcNow;
+    protected override void OnParametersSet() => (left, done) = (Offer.End - DateTime.UtcNow, Offer.Done);
 
-    // after the first paint, so the page does not wait for the countdown
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    void Open() => Modal.Show<TaxidermyModal>(new Dictionary<string, object?>
     {
-        if (!firstRender) return;
-        stop = new();
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
-        try
-        {
-            while (left > TimeSpan.Zero && await timer.WaitForNextTickAsync(stop.Token))
-            {
-                left = Offer.End - DateTime.UtcNow;
-                StateHasChanged();
-            }
-        }
-        catch (OperationCanceledException) { }
-    }
-
-    // the item ids of the old store: 744 is the trophy
-    void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
-    {
-        ["Id"] = 744, ["Name"] = $"{L["Stat.Taxidermy"]} {L.Term(Kill.Species)}", ["Ems"] = Offer.Ems, ["Gms"] = Offer.Gms
+        ["Kill"] = Kill, ["Offer"] = Offer, ["Bought"] = EventCallback.Factory.Create<string>(this, d => done = d)
     });
-
-    public void Dispose() => stop?.Cancel();
 }

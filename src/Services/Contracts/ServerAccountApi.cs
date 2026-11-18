@@ -40,6 +40,10 @@ public static class ServerAccountApi
     public const string SetAvatar = "/account/avatar";
     /// <summary>GET with the cookie: <c>/ems</c> and <c>/gms</c> (query <c>offset</c>) 200 a page of <see cref="ServerWalletRow"/>, newest first, 50 at most; <c>/spent</c> 200 <see cref="ServerSpent"/>.</summary>
     public const string Wallet = "/account/wallet";
+    /// <summary><c>/account/harvests/&lt;kill&gt;/taxidermize</c>: POST with <c>X-Requested-With</c> and the JSON <c>{"product": "taxidermy"|"skull", "currency": "ems"|"gms"}</c> buys the taxidermy or the skull
+    /// mount of the player's own harvest: 200 <see cref="ServerTaxidermized"/>; 402 <c>{"error": "not_enough", "currency"}</c>; 409 <c>{"error": "already"}</c>; 410 <c>{"error": "too_late"}</c>; 404 for a harvest that is not theirs, unknown or restored; 400 for a bad body.</summary>
+    public const string Harvests = "/account/harvests";
+    public const string TaxidermizeSuffix = "/taxidermize";
     /// <summary>GET with the cookie: 200 the player's saved loadouts, <see cref="ServerLoadout"/>, ascending by id.</summary>
     public const string Loadouts = "/account/loadouts";
     /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>

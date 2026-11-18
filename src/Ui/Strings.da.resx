@@ -1546,4 +1546,21 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.ErrDisk" xml:space="preserve"><value>Fællesskabsserveren har ikke plads til rapporter lige nu. Gem rapporten i stedet.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Rapporten kunne ikke gemmes i Downloads. Send den i stedet.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Fællesskabsserveren kunne ikke nås. Prøv igen, eller gem rapporten i stedet.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Udstop</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} t tilbage</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} min tilbage</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Monteret kranie</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Du kan udstoppe dit dyr til din jagthytte*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Du kan udstoppe dit dyr eller lave en kraniemontering til din jagthytte*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Du skal bruge en jagthytte for at vise dem frem, men de gemmes, hvis du ikke har en endnu</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Udstopningen lykkedes. Det udstoppede dyr er sendt til trofæstyringen.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Kraniet er monteret. Kraniemonteringen er sendt til trofæstyringen.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Udstoppet</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Kranie monteret</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Vis det frem i din trofæhytte i spillet.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Ikke nok em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Ikke nok gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Allerede gjort for dette dyr.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>For sent: de 72 timer er gået.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Noget gik galt. Prøv igen.</value></data>
 </root>

@@ -1546,4 +1546,21 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Report.ErrDisk" xml:space="preserve"><value>A közösségi szerveren most nincs hely jelentéseknek. Inkább mentsd el a jelentést.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>A jelentést nem sikerült a Letöltések mappába menteni. Inkább küldd el.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>A közösségi szerver nem érhető el. Próbáld újra, vagy inkább mentsd el a jelentést.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Preparálás</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} óra van hátra</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} perc van hátra</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Felszerelt koponya</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Preparáltathatod az állatodat a vadászházadhoz*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Preparáltathatod az állatodat, vagy koponyatrófeát készíttethetsz a vadászházadhoz*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* A kiállításukhoz vadászház kell, de ha még nincs, eltároljuk őket</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>A preparálás sikerült. A preparált állat a trófeakezelőbe került.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>A koponya felszerelése sikerült. A koponyatrófea a trófeakezelőbe került.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Preparálva</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Koponya felszerelve</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Állítsd ki a játékbeli trófeacsarnokodban.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Nincs elég em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Nincs elég gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Ennél az állatnál ez már megtörtént.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Túl késő: a 72 óra letelt.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Valami elromlott. Próbáld újra.</value></data>
 </root>

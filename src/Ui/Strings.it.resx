@@ -1546,4 +1546,21 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.ErrDisk" xml:space="preserve"><value>Il server della community non ha spazio per i rapporti in questo momento. Salva invece il rapporto.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Non è stato possibile salvare il rapporto in Download. Invialo invece.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Impossibile raggiungere il server della community. Riprova, oppure salva invece il rapporto.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Impaglia</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} h rimaste</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} min rimasti</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Teschio montato</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Puoi impagliare il tuo animale per la tua lodge*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Puoi impagliare il tuo animale o creare un teschio montato per la tua lodge*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Ti serve una lodge per esporli, ma vengono conservati se non ne hai ancora una</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Tassidermia riuscita. L'animale impagliato è stato inviato al gestore dei trofei.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Teschio montato con successo. Il teschio montato è stato inviato al gestore dei trofei.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Impagliato</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Teschio montato</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Esponilo nella tua Trophy Lodge nel gioco.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>em$ insufficienti</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>gm$ insufficienti</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Già fatto per questo animale.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Troppo tardi: le 72 ore sono passate.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Qualcosa è andato storto. Riprova.</value></data>
 </root>

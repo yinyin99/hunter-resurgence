@@ -148,7 +148,14 @@ public sealed record ServerPickup(string Name, double Score, long Ts);
 
 /// <param name="When">The harvest time, Unix seconds.</param>
 /// <param name="Sheet">Whether the kill has a score sheet to open.</param>
-public sealed record ServerKill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, long When, bool Sheet);
+/// <param name="Taxidermy">Only on the signed-in player's own harvests that can be taxidermized or already were.</param>
+public sealed record ServerKill(long Id, string Species, string Weapon, string Ammo, double DistanceM, double Score, double WeightKg, long When, bool Sheet, ServerTaxidermy? Taxidermy = null);
+
+/// <summary>The taxidermy of a harvest of <see cref="ServerKill"/>: <c>End</c> is the harvest plus 72 hours (ISO, UTC), <c>Done</c> is taxidermy or skull once bought.</summary>
+public sealed record ServerTaxidermy(DateTime End, int Ems, int Gms, bool Skull, string? Done);
+
+/// <summary>The 200 reply of <see cref="ServerAccountApi.Harvests"/>: what was bought and the wallet after it.</summary>
+public sealed record ServerTaxidermized(string Done, int Ems, int Gms);
 
 /// <summary>A kill's score sheet of <see cref="ServerSessionApi.ScoreSuffix"/>, <see cref="ScoreSheet"/> on the wire; <c>When</c> is Unix seconds.</summary>
 public sealed record ServerSheet(string Kind, string Species, SheetFact[] Facts, SheetRow[] Rows, ServerAbnormal[] Abnormal, SheetFact[] Sums, string Weapon, bool Scope, string Ammo, double DistanceM,

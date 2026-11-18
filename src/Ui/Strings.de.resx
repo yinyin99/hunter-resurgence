@@ -1546,4 +1546,21 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.ErrDisk" xml:space="preserve"><value>Der Community-Server hat gerade keinen Platz für Berichte. Speichere den Bericht stattdessen.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Der Bericht konnte nicht in Downloads gespeichert werden. Sende ihn stattdessen.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Der Community-Server war nicht erreichbar. Versuche es erneut oder speichere den Bericht stattdessen.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Präparieren</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>noch {0} Std.</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>noch {0} Min.</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Montierter Schädel</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Du kannst dein Tier für deine Lodge präparieren lassen*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Du kannst dein Tier präparieren lassen oder eine Schädelmontage für deine Lodge erstellen*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Du brauchst eine Lodge, um sie auszustellen, aber sie werden aufbewahrt, falls du noch keine besitzt</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Präparation erfolgreich. Das präparierte Tier wurde an den Trophäenmanager gesendet.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Schädel erfolgreich montiert. Die Schädelmontage wurde an den Trophäenmanager gesendet.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Präpariert</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Schädel montiert</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Stelle es in deiner Trophäen-Lodge im Spiel aus.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Nicht genügend em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Nicht genügend gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Für dieses Tier bereits erledigt.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Zu spät: die 72 Stunden sind vorbei.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Etwas ist schiefgelaufen. Bitte versuche es erneut.</value></data>
 </root>

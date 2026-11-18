@@ -54,7 +54,7 @@ static class LauncherServices
         services.AddSingleton<IMissionsService>(new MockMissionsService(mock));
         services.AddSingleton<IFriendsService>(new MockFriendsService(mock));
         services.AddSingleton<IMessagesService>(new MockMessagesService(mock));
-        services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>()));
+        services.AddSingleton<IProfileService>(sp => new MockProfileService(mock, sp.GetRequiredService<IFriendsService>(), sp.GetRequiredService<MockWalletState>()));
         if (server is not null) AddServerServices(services, server);
         services.AddScoped<ModalService>();
         services.AddScoped<ILanguageSwitcher, LauncherLanguageSwitcher>();

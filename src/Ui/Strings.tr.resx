@@ -1546,4 +1546,21 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.ErrDisk" xml:space="preserve"><value>Topluluk sunucusunda şu anda raporlar için yer yok. Bunun yerine raporu kaydedin.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Rapor İndirilenler'e kaydedilemedi. Bunun yerine gönderin.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Topluluk sunucusuna ulaşılamadı. Yeniden deneyin veya bunun yerine raporu kaydedin.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Doldur</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} sa. kaldı</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} dk. kaldı</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Monte edilmiş kafatası</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Hayvanını kulübeni için doldurabilirsin*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Hayvanını doldurabilir veya kulübeni için kafatası montajı yaptırabilirsin*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Sergilemek için bir kulübeye ihtiyacın var, ama henüz yoksa saklanırlar</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Doldurma başarılı. Doldurulan hayvan Trofe Yöneticisine gönderildi.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Kafatası başarıyla monte edildi. Kafatası montajı Trofe Yöneticisine gönderildi.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Dolduruldu</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Kafatası monte edildi</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Oyundaki trofe kulübende sergile.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Yeterli em$ yok</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Yeterli gm$ yok</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Bu hayvan için zaten yapıldı.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Çok geç: 72 saat doldu.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Bir şeyler ters gitti. Lütfen tekrar dene.</value></data>
 </root>

@@ -439,4 +439,41 @@ public class ServerProfileServiceTests
         var p = await service.ProfileAsync(handle);
         Assert.Equal((friend, pending), (p!.Friend, p.RequestPending));
     }
+    [Fact]
+    public async Task AnOwnHarvestCarriesItsTaxidermyOffer()
+    {
+        var hunt = await Make(new Fake(_ => Json(HttpStatusCode.OK, Hunt.Replace("\"sheet\":false", "\"sheet\":true,\"taxidermy\":{\"end\":\"2026-11-20T10:00:00Z\",\"ems\":10,\"gms\":2000,\"skull\":true,\"done\":null}")))).ExpeditionAsync("fox", 12);
+        Assert.Equal(new TaxidermyOffer(new DateTime(2026, 11, 20, 10, 0, 0, DateTimeKind.Utc), 10, 2000, true), Assert.Single(hunt!.Kills).Taxidermy);
+        Assert.Null(Assert.Single((await Make(new Fake(_ => Json(HttpStatusCode.OK, Hunt))).ExpeditionAsync("fox", 12))!.Kills).Taxidermy);  // not offered: another player's, restored
+    }
+
+    [Fact]
+    public async Task ATaxidermyIsPostedForTheKillAndAnswersWithTheWallet()
+    {
+        var body = "";
+        var fake = new Fake(r => { body = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"done":"skull","ems":90,"gms":1000}"""); });
+        var result = await Make(fake).TaxidermizeAsync(5, "skull", "ems");
+        var request = Assert.Single(fake.Seen);
+        Assert.Equal((HttpMethod.Post, "/account/harvests/5/taxidermize", true), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Contains("X-Requested-With")));
+        Assert.Equal("""{"product":"skull","currency":"ems"}""", body);
+        Assert.Equal(new TaxidermyDone("skull", 90, 1000), result.Value);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.PaymentRequired, "gms", "Taxidermy.NotEnoughGms")]
+    [InlineData(HttpStatusCode.PaymentRequired, "ems", "Taxidermy.NotEnoughEms")]
+    [InlineData(HttpStatusCode.Conflict, "ems", "Taxidermy.Already")]
+    [InlineData(HttpStatusCode.Gone, "ems", "Taxidermy.TooLate")]
+    [InlineData(HttpStatusCode.NotFound, "ems", "Taxidermy.Failed")]
+    [InlineData(HttpStatusCode.BadRequest, "ems", "Taxidermy.Failed")]
+    public async Task ARefusedTaxidermyIsToldPlainly(HttpStatusCode code, string currency, string key)
+    {
+        var r = await Make(new Fake(_ => Json(code, "{}"))).TaxidermizeAsync(5, "taxidermy", currency);
+        Assert.Equal((false, key), (r.Ok, r.Error));
+    }
+
+    [Fact]
+    public async Task ATaxidermyWithoutASessionIsNotSent() =>
+        Assert.Equal("Taxidermy.Failed", (await new ServerProfileService(new HttpClient(new Fake(_ => throw new InvalidOperationException("no request"))) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new Fox(), new MockProfileService(), NullLogger<ServerProfileService>.Instance).TaxidermizeAsync(5, "taxidermy", "ems")).Error);
 }

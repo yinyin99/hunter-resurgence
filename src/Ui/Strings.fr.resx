@@ -1546,4 +1546,21 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Report.ErrDisk" xml:space="preserve"><value>Le serveur communautaire n'a pas de place pour des rapports en ce moment. Enregistrez plutôt le rapport.</value></data>
   <data name="Report.ErrSave" xml:space="preserve"><value>Le rapport n'a pas pu être enregistré dans Téléchargements. Envoyez-le plutôt.</value></data>
   <data name="Report.ErrNetwork" xml:space="preserve"><value>Le serveur communautaire est injoignable. Réessayez, ou enregistrez plutôt le rapport.</value></data>
+  <data name="Taxidermy.Button" xml:space="preserve"><value>Naturaliser</value></data>
+  <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} h restantes</value></data>
+  <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} min restantes</value></data>
+  <data name="Taxidermy.Skull" xml:space="preserve"><value>Crâne monté</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Vous pouvez faire naturaliser votre animal pour votre loge*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Vous pouvez faire naturaliser votre animal ou créer un crâne monté pour votre loge*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Il vous faut une loge pour les exposer, mais ils sont conservés si vous n'en avez pas encore</value></data>
+  <data name="Taxidermy.Done" xml:space="preserve"><value>Taxidermie réussie. L'animal naturalisé a été envoyé au gestionnaire de trophées.</value></data>
+  <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Crâne monté avec succès. Le crâne monté a été envoyé au gestionnaire de trophées.</value></data>
+  <data name="Taxidermy.Badge" xml:space="preserve"><value>Naturalisé</value></data>
+  <data name="Taxidermy.SkullBadge" xml:space="preserve"><value>Crâne monté</value></data>
+  <data name="Taxidermy.Lodge" xml:space="preserve"><value>Exposez-le dans votre loge des trophées en jeu.</value></data>
+  <data name="Taxidermy.NotEnoughEms" xml:space="preserve"><value>Pas assez de em$</value></data>
+  <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Pas assez de gm$</value></data>
+  <data name="Taxidermy.Already" xml:space="preserve"><value>Déjà fait pour cet animal.</value></data>
+  <data name="Taxidermy.TooLate" xml:space="preserve"><value>Trop tard : les 72 heures sont écoulées.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Une erreur s'est produite. Veuillez réessayer.</value></data>
 </root>
