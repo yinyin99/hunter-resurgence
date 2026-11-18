@@ -2,9 +2,9 @@
 .menu { flex: none; width: 300px; background: var(--surface-2); }
 .menu h3 { margin: 0; padding: 0 12px; background: linear-gradient(#262626, #1e1e1e); font-size: 17.5px; line-height: 40px; font-weight: 400; color: #fff; }
 .menu ul { margin: 0; padding: 0 0 6px; list-style: none; }
-.menu a, .menu span { display: block; padding: 0 12px; font-size: 14px; line-height: 40px; color: var(--fg-muted-2); }
-.menu li.off span { cursor: default; }
-.menu a:hover { color: var(--text-3); }
+.menu a, .menu span { display: block; padding: 0 12px; font-size: 14px; line-height: 40px; color: var(--text-1); }
+.menu li.off span { color: var(--fg-disabled); cursor: default; }
+.menu a:hover { color: #fff; background: var(--surface-4); }
 .menu li.on { background: var(--surface-3); }
 .menu li.on a { color: #fff; }
 .panel { flex: 1; min-width: 0; overflow: hidden; }

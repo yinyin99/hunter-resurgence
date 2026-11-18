@@ -252,6 +252,89 @@ public class LauncherBridgeTests
         Assert.Null(new SteamProbes(() => true, () => true, () => true).PlannedMode());
         Assert.Null(new SteamProbes(() => true, () => false, () => true).PlannedMode());
     }
+
+    [Fact]
+    public async Task StartWithoutSteamWhileOurSteamIsStartingStopsItAndStartsWithoutSteam()
+    {
+        using var s = new Start();
+        var stopped = 0;
+        var b = new LauncherBridge(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return LauncherFakes.Alive(); }, new(() => true, () => false, () => true, () => stopped++), "123",
+            poll: TimeSpan.FromMilliseconds(5), steamWait: TimeSpan.FromMinutes(5));
+        var start = Task.Run(() => b.StartGame("srv://x"));
+        while (!b.WaitingForSteam) await Task.Delay(1);
+        b.StartWithoutSteam();
+        Assert.True((await start.WaitAsync(TimeSpan.FromSeconds(10))).Ok);
+        Assert.Equal(["nosteam"], s.Modes);
+        Assert.Equal(1, stopped);
+
+        // the 20 s running out leaves Steam alone (the player may be typing a sign-in code): nothing is stopped
+        stopped = 0;
+        using var late = new Start();
+        Assert.True(late.Bridge(new(() => true, () => false, () => true, () => stopped++)).StartGame("srv://x").Ok);
+        Assert.Equal(["nosteam"], late.Modes);
+        Assert.Equal(0, stopped);
+    }
+
+    [Fact]
+    public void ASteamThatIsSignedInIsNeverStoppedWhetherItWasThereOrSignsInDuringTheWait()
+    {
+        using var s = new Start();
+        var stopped = 0;
+        // running and signed in before the launcher: not started, not stopped
+        Assert.True(s.Bridge(new(() => true, () => true, () => true, () => stopped++)).StartGame("srv://x").Ok);
+        // signs in during the wait: Steam mode as before
+        using var wait = new Start();
+        var signedIn = false;
+        Assert.True(wait.Bridge(new(() => true, () => signedIn, () => { signedIn = true; return true; }, () => stopped++)).StartGame("srv://x").Ok);
+        Assert.Equal(["steam", "steam"], s.Modes.Concat(wait.Modes));
+        Assert.Equal(0, stopped);
+    }
+
+    [Fact]
+    public void ACarriedGraphicsFileKeepsAOneTimeBackupOfTheFileItOverwrites()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var (steam, noSteam) = (Path.Combine(temp.Path, "pSettings_steam_live.cfg"), Path.Combine(temp.Path, "pSettings_live.cfg"));
+        Write(noSteam, "N", 10);
+        Write(steam, "S", 5);
+        Assert.Null(GameFiles.CarryGraphics(new(null, null, "pSettings_steam_live.cfg"), temp.Path, false));
+        Assert.Equal("N", File.ReadAllText(noSteam + GameFiles.BackupSuffix));
+        Assert.Equal("S", File.ReadAllText(noSteam));
+    }
+
+    /// <summary>The launcher's graphics files in a temp %APPDATA%: the file of <c>/steam</c> and the one without; a start is made and the files are read back.</summary>
+    static (string Steam, string NoSteam) StartWithGraphics(bool steamUp, Action<string, string> arrange, params int?[] exits)
+    {
+        using var s = new Start();
+        using var temp = new TempDir("resurgence-test-");
+        var (steam, noSteam) = (Path.Combine(temp.Path, "pSettings_steam_live.cfg"), Path.Combine(temp.Path, "pSettings_live.cfg"));
+        arrange(steam, noSteam);
+        var i = 0;
+        var b = new LauncherBridge(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, _ => { var code = i < exits.Length ? exits[i] : null; i++; return new GameProcess(() => false, () => code); },
+            new(() => steamUp, () => steamUp, () => true), null, poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20), appData: temp.Path, settings: new(null, null, "pSettings_steam_live.cfg"));
+        Assert.True(b.StartGame("srv://x").Ok);
+        return (File.Exists(steam) ? File.ReadAllText(steam) : "-", File.Exists(noSteam) ? File.ReadAllText(noSteam) : "-");
+    }
+
+    static void Write(string path, string text, int minutesAgo) { File.WriteAllText(path, text); File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddMinutes(-minutesAgo)); }
+
+    [Fact]
+    public void TheGraphicsFileOfTheStartModeTakesTheOtherModesWhenMissingOrOlderAndTheNewestWins()
+    {
+        // missing no-steam file: copied before a start without Steam (the settings of the player's /steam file are not lost)
+        Assert.Equal(("S", "S"), StartWithGraphics(false, (steam, _) => Write(steam, "S", 5)));
+        // a newer /steam file replaces the older one
+        Assert.Equal(("S", "S"), StartWithGraphics(false, (steam, noSteam) => { Write(noSteam, "N", 10); Write(steam, "S", 5); }));
+        // a newer no-steam file is kept by a start without Steam, and carried to the /steam file before a start with Steam
+        Assert.Equal(("S", "N"), StartWithGraphics(false, (steam, noSteam) => { Write(steam, "S", 10); Write(noSteam, "N", 5); }));
+        Assert.Equal(("N", "N"), StartWithGraphics(true, (steam, noSteam) => { Write(steam, "S", 10); Write(noSteam, "N", 5); }));
+        // a missing /steam file is made from the other before a start with Steam
+        Assert.Equal(("N", "N"), StartWithGraphics(true, (_, noSteam) => Write(noSteam, "N", 5)));
+        // no files: nothing is made
+        Assert.Equal(("-", "-"), StartWithGraphics(false, (_, _) => { }));
+        // the retry without Steam (16010) does the same before its start
+        Assert.Equal(("S", "S"), StartWithGraphics(true, (steam, _) => Write(steam, "S", 5), 16010));
+    }
 }
 
 /// <summary>Fakes for the bridge's seams.</summary>
