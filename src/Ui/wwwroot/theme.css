@@ -173,9 +173,7 @@
     --ease: cubic-bezier(.2, 0, 0, 1);
     --focus: 2px solid var(--accent);
 
-    /* roles of the taxidermy dialog and row; white text on each fill measures 4.5:1 or more */
-    --accent-solid: #c62806;      /* the one primary action of a view: white 5.7:1 */
-    --accent-solid-hover: #b92505; /* white 6.3:1 */
+    /* roles of the taxidermy dialog (the main action's fill is --primary); white text on each fill measures 4.5:1 or more */
     --neutral-solid: #666;         /* a peer action inside a dialog: white 5.7:1 */
     --neutral-solid-hover: #707070; /* white 5.0:1 */
     --neutral-solid-edge: #8c8c8c;  /* its edge against the inset row surface (#333): 3.6:1 */

@@ -43,7 +43,7 @@
     RenderFragment Product(string product, string name) => @<div class="product">
         <div class="row">
             <span class="name">@name</span>
-            <button class="btn" id="@(product)-ems" disabled="@pending" @onclick='() => Pay(product, "ems")'>@Offer.Ems.ToString("N0") em$</button>
+            <button class="btn ems" id="@(product)-ems" disabled="@pending" @onclick='() => Pay(product, "ems")'>@Offer.Ems.ToString("N0") em$</button>
             <button class="btn" id="@(product)-gms" disabled="@pending" @onclick='() => Pay(product, "gms")'>@Offer.Gms.ToString("N0") gm$</button>
         </div>
         @if (failed == product && error is not null) { <p class="err" role="alert"><Icon Name="xmark" /> @L[error]</p> }
