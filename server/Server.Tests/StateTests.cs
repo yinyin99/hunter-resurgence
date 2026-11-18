@@ -81,7 +81,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestConnectNamesEveryCatalogueItem()
     {
-        // the client dereferences nothing when it creates a placed item whose id `items_locale` lacks (the event tents): the catalogue's and the install's items are all listed, the sample's entries as they are
+        // the game closes when it creates a placed item whose id `items_locale` lacks (the event tents): the catalogue's and the install's items are all listed, the sample's entries as they are
         var connect = CONNECT;
         connect["items_locale"] = JsonNode.Parse("""[{"define": "OLD", "item_id": 10, "name": "Old Bullet", "variationName": "Black"}]""");
         var own = new State(Path.Combine(tmp, "own.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, itemDefs: ITEM_DEFS);

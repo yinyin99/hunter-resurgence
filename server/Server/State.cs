@@ -738,8 +738,8 @@ public sealed partial class State
         foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
             if (!items.ContainsKey(Py.L(i!["id"])))
                 installItems[Py.L(i["id"])] = i.AsObject();
-        // The client looks an item's name up in `items_locale` when it creates a placed item and dereferences nothing when the id is missing: a placed
-        // event tent crashes the game on entering its reserve. The sample (and a recording from before an event) lists no item newer than itself, so every catalogue item is added.
+        // The game looks an item's name up in `items_locale` when it creates a placed item and closes when the id is missing: a placed
+        // event tent closes the game on entering its reserve. The sample (and a recording from before an event) lists no item newer than itself, so every catalogue item is added.
         if (connect["items_locale"] is JsonArray names)
         {
             var named = names.OfType<JsonObject>().Select(n => Py.L(n["item_id"])).ToHashSet();
