@@ -12,7 +12,7 @@
 .btn { padding: 2px 5px; font-size: var(--fs-btn-sm); line-height: 16px; font-weight: 500; }
 .empty { color: var(--fg-muted); }
 .results .title { margin: 5px 10px 15px; }
-.notice { margin: 0 10px; padding: 10px; background: #d9edf7; color: #3a87ad; text-align: center; border-radius: var(--radius); }
+.notice { margin: 0 10px; padding: 10px; background: #d9edf7; color: #2b6a8c; text-align: center; border-radius: var(--radius); }
 .cycle-bar { display: flex; align-items: center; justify-content: space-between; }
 .cycle-bar .title { margin: 0; }
 .cycle { padding: 0 10px; border: 0; background: none; color: #ccc; font: inherit; cursor: pointer; }
