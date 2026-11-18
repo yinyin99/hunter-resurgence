@@ -64,8 +64,9 @@ public static class Steam
     }
 
     /// <summary>
-    /// Asks the Steam that <see cref="StartSilent"/> started to exit (<c>steam.exe -shutdown</c>, never a kill, so an update or a sign-in is not cut). Only while that very process still runs: when it has gone (Steam
-    /// restarted itself to update, or handed over to another Steam) nobody can prove which process is the launcher's, and nothing is stopped. Does not wait.
+    /// Asks the Steam that <see cref="StartSilent"/> started to exit (<c>steam.exe -shutdown</c>, never a kill). Called only when the player presses Start without Steam, never when the wait runs out (the player may be
+    /// typing a sign-in code). Only while that very process still runs: when it has gone (Steam restarted itself to update, or handed over to another Steam) nobody can prove which process is the launcher's, and nothing
+    /// is stopped. Does not wait.
     /// </summary>
     public static void StopStarted()
     {

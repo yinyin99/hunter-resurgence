@@ -41,7 +41,7 @@ public sealed class OptionsSettings(Dictionary<string, int> values)
 
 /// <summary>
 /// Reads and writes the two settings files of the game in %APPDATA%. Only the edited values change; every other byte stays (files are handled as Latin-1,
-/// which maps every byte to one char). The client reads them once at start, so nothing is written while it runs.
+/// which maps every byte to one char). The client reads them once at start, so nothing is written while it runs. Before every start <see cref="CarryGraphics"/> also replaces the start mode's graphics file by the newest one.
 /// </summary>
 public static class GameFiles
 {
@@ -246,6 +246,8 @@ public static class GameFiles
         {
             if (!source.Exists || (target.Exists && target.LastWriteTimeUtc >= source.LastWriteTimeUtc)) return null;
             Directory.CreateDirectory(target.DirectoryName!);
+            var backup = target.FullName + BackupSuffix;
+            if (target.Exists && !File.Exists(backup)) File.Copy(target.FullName, backup);
             source.CopyTo(target.FullName, true);
             return null;
         }

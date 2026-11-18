@@ -267,12 +267,12 @@ public class LauncherBridgeTests
         Assert.Equal(["nosteam"], s.Modes);
         Assert.Equal(1, stopped);
 
-        // the 20 s running out is the same
+        // the 20 s running out leaves Steam alone (the player may be typing a sign-in code): nothing is stopped
         stopped = 0;
         using var late = new Start();
         Assert.True(late.Bridge(new(() => true, () => false, () => true, () => stopped++)).StartGame("srv://x").Ok);
         Assert.Equal(["nosteam"], late.Modes);
-        Assert.Equal(1, stopped);
+        Assert.Equal(0, stopped);
     }
 
     [Fact]
@@ -288,6 +288,18 @@ public class LauncherBridgeTests
         Assert.True(wait.Bridge(new(() => true, () => signedIn, () => { signedIn = true; return true; }, () => stopped++)).StartGame("srv://x").Ok);
         Assert.Equal(["steam", "steam"], s.Modes.Concat(wait.Modes));
         Assert.Equal(0, stopped);
+    }
+
+    [Fact]
+    public void ACarriedGraphicsFileKeepsAOneTimeBackupOfTheFileItOverwrites()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var (steam, noSteam) = (Path.Combine(temp.Path, "pSettings_steam_live.cfg"), Path.Combine(temp.Path, "pSettings_live.cfg"));
+        Write(noSteam, "N", 10);
+        Write(steam, "S", 5);
+        Assert.Null(GameFiles.CarryGraphics(new(null, null, "pSettings_steam_live.cfg"), temp.Path, false));
+        Assert.Equal("N", File.ReadAllText(noSteam + GameFiles.BackupSuffix));
+        Assert.Equal("S", File.ReadAllText(noSteam));
     }
 
     /// <summary>The launcher's graphics files in a temp %APPDATA%: the file of <c>/steam</c> and the one without; a start is made and the files are read back.</summary>

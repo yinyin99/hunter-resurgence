@@ -21,11 +21,11 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     Settings? settings = null, ILogger? log = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
-    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
+    public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: log)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -239,8 +239,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
-    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again. A start without
-    /// Steam after that wait leaves Steam closed: the Steam this start launched, still without anybody signed in, is asked to exit (<see cref="SteamProbes.StopStarted"/>); never one that ran before.
+    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again. Only the player's press
+    /// of Start without Steam leaves Steam closed: the Steam this start launched, still without anybody signed in, is asked to exit (<see cref="SteamProbes.StopStarted"/>; never one that ran before). When the 20 s
+    /// run out Steam is left alone, the player may be typing a sign-in code.
     /// </summary>
     bool SteamUp()
     {
@@ -258,7 +259,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
                 if (skipSteam.Wait(step)) return Abandon();
                 if (steam.SignedIn()) return true;
             }
-            return Abandon();
+            return false;
         }
         finally
         {
