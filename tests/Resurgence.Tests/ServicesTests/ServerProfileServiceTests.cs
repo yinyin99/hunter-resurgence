@@ -454,7 +454,7 @@ public class ServerProfileServiceTests
         var fake = new Fake(r => { body = r.Content!.ReadAsStringAsync().Result; return Json(HttpStatusCode.OK, """{"done":"skull","ems":90,"gms":1000}"""); });
         var result = await Make(fake).TaxidermizeAsync(5, "skull", "ems");
         var request = Assert.Single(fake.Seen);
-        Assert.Equal((HttpMethod.Post, "/account/harvests/5/taxidermize", true), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Contains("X-Requested-With")));
+        Assert.Equal((HttpMethod.Post, "/account/harvests/5/taxidermize", true, "abc"), (request.Method, request.RequestUri!.AbsolutePath, request.Headers.Contains("X-Requested-With"), request.Headers.GetValues("Cookie").Single().Split('=')[1]));
         Assert.Equal("""{"product":"skull","currency":"ems"}""", body);
         Assert.Equal(new TaxidermyDone("skull", 90, 1000), result.Value);
     }

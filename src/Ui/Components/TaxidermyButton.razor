@@ -1,3 +1,4 @@
+@implements IDisposable
 @inject ModalService Modal
 
 @* a harvest of the player's own: the button with the time left (hours, the server's window is 72), then the badge of what was bought (docs/website.md) *@
@@ -17,7 +18,28 @@ else if (left > TimeSpan.Zero)
     [Parameter, EditorRequired] public Kill Kill { get; set; } = null!;
     [Parameter, EditorRequired] public TaxidermyOffer Offer { get; set; } = null!;
 
+    CancellationTokenSource? stop;
+
     protected override void OnParametersSet() => (left, done) = (Offer.End - DateTime.UtcNow, Offer.Done);
+
+    // after the first paint, once a minute: the hours left count down and the button goes when the offer ends, without a reload
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        stop = new();
+        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+        try
+        {
+            while (left > TimeSpan.Zero && await timer.WaitForNextTickAsync(stop.Token))
+            {
+                left = Offer.End - DateTime.UtcNow;
+                StateHasChanged();
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => stop?.Cancel();
 
     void Open() => Modal.Show<TaxidermyModal>(new Dictionary<string, object?>
     {

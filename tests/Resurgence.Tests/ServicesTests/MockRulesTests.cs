@@ -36,7 +36,7 @@ public class MockRulesTests
     [Fact]
     public async Task AnExpeditionIdOutsideTheHistoryShowsTheNearestEntry() => Assert.NotNull(await new MockProfileService().ExpeditionAsync("h", long.MaxValue));
     [Fact]
-    public async Task ATaxidermyIsPaidOnceFromTheWalletAndShowsItsBadge()
+    public async Task ATaxidermyIsPaidOnceFromTheWalletAndTheHuntKeepsItsDone()
     {
         var wallet = new MockWalletState();
         var profile = new MockProfileService(null, null, wallet);

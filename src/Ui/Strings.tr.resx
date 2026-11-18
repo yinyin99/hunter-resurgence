@@ -1553,8 +1553,8 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>{0} sa. kaldı</value></data>
   <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>{0} dk. kaldı</value></data>
   <data name="Taxidermy.Skull" xml:space="preserve"><value>Monte edilmiş kafatası</value></data>
-  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Hayvanını kulübeni için doldurabilirsin*</value></data>
-  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Hayvanını doldurabilir veya kulübeni için kafatası montajı yaptırabilirsin*</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Hayvanını kulüben için doldurabilirsin*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Hayvanını doldurabilir veya kulüben için kafatası montajı yaptırabilirsin*</value></data>
   <data name="Taxidermy.Note" xml:space="preserve"><value>* Sergilemek için bir kulübeye ihtiyacın var, ama henüz yoksa saklanırlar</value></data>
   <data name="Taxidermy.Done" xml:space="preserve"><value>Doldurma başarılı. Doldurulan hayvan Trofe Yöneticisine gönderildi.</value></data>
   <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Kafatası başarıyla monte edildi. Kafatası montajı Trofe Yöneticisine gönderildi.</value></data>

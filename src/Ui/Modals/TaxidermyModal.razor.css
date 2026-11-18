@@ -11,7 +11,7 @@ h2 { margin: 0; font-size: 24px; line-height: 30px; font-weight: 500; color: var
 .row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, minmax(96px, 120px)); align-items: center; gap: 8px; padding: 8px; border-radius: calc(var(--r-2) + 8px); background: var(--surface-6); }
 .name { padding-inline-start: 8px; font-size: 16px; line-height: 22px; font-weight: 500; color: var(--text-1); overflow-wrap: anywhere; }
 /* the em$ button is the main action's colour (--primary-bg, white 4.5:1); the gm$ button is the neutral fill (white 5.7:1, edge 3.6:1) */
-.btn { box-sizing: border-box; min-height: 40px; border: 1px solid var(--neutral-solid-edge); background-color: var(--neutral-solid); color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; text-align: center; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
+.btn { box-sizing: border-box; min-height: 40px; border: 1px solid var(--neutral-solid-edge); background-color: var(--neutral-solid); color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; text-align: center; transition-property: background-color, scale; transition-duration: var(--t-base); transition-timing-function: var(--ease); }
 .btn:disabled { opacity: .5; cursor: default; }
 .btn.ems { border-color: var(--primary-bg); background-color: var(--primary-bg); }
 @media (hover: hover) { .btn:hover:not(:disabled) { background-color: var(--neutral-solid-hover); } .btn.ems:hover:not(:disabled) { background-color: var(--primary-bg-hover); } .close:hover { background-color: var(--tint-2); } }
