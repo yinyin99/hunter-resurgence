@@ -99,4 +99,3 @@ label.use { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-w
 .alert { padding: 10px 14px; border-radius: var(--r-3); background: rgba(240, 128, 128, .12); color: #ffd0d0; }
 .btn-danger { background-color: #b33; color: #fff; }
 .btn-danger:hover { background-color: #c44; }
-.btn-danger:disabled { opacity: .65; }
