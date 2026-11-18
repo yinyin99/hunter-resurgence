@@ -232,7 +232,9 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Игра уже запущена.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Игра не найдена. Проверьте её папку в настройках.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Не удалось запустить игру.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Запустите Steam, войдите в аккаунт и повторите попытку.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>Запуск Steam…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Запустить без Steam</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Запущено без Steam: достижения Steam в этом сеансе отключены.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>НАЙТИ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Найти игру или хост...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Очистить</value></data>
@@ -1464,6 +1466,8 @@
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Игра находится в папке OneDrive; лучше всего работает простая папка, например C:\Games.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>Игра находится на сетевом диске; лучше всего работает локальная папка.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Вход в Steam не выполнен.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>Вход в Steam не выполнен: игра запустится без Steam.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam не установлен: игра запустится без Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows заблокировал файл игры ({0}): разрешите его в Безопасности Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Мало места на диске {0} (осталось {1}).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Игра уже запущена: закройте её, затем запустите отсюда.</value></data>

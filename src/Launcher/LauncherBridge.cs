@@ -10,14 +10,18 @@ namespace Resurgence.Launcher;
 /// <param name="appData">%APPDATA%; the game's cache is under its product folder.</param>
 /// <param name="pictures">The Pictures folder; the game's screenshots are under its product folder.</param>
 /// <param name="clearBrowser">Clears the launcher's own browser cache.</param>
-public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, bool> start, Func<bool> steamReady, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
+/// <param name="start">Starts the client; null when it does not start.</param>
+/// <param name="steam">What a start asks of Steam (docs/launcher.md, "Starting the game").</param>
+/// <param name="poll">The step of every wait: for the game to appear, for Steam to sign in, for the client to quit.</param>
+/// <param name="steamWait">How long a start waits for a Steam that is installed but has nobody signed in (20 s).</param>
+/// <param name="quitWithin">How long a start with Steam is watched for the client to quit at once (5 s).</param>
+public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
-    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null) : ILauncherBridge
+    Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
-        GameFiles.ClientRunning, Start,
-        () => Steam.SignedIn(Steam.ActiveAccount, Steam.StartSilent, TimeSpan.FromSeconds(60), TimeSpan.FromSeconds(1)), env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
+        GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks)
@@ -27,7 +31,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     {
         var history = new RunHistory(RunHistory.PathNextTo(env.PrefsPath));
         // the graphics and options files the Game settings dialog edits (GameSettingsService)
-        var settings = new[] { env.Settings.GraphicsFile, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
+        var settings = new[] { env.Settings.GraphicsFile, env.Settings.GraphicsFileNoSteam, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
         var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
         // Build runs off the UI thread (ProblemReporter.BuildAsync), so waiting for the checks is fine here
         return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult()), env.Prefs, env.Save, http, cookie);
@@ -36,8 +40,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     /// <summary>The last game start this watcher saw; null before any.</summary>
     public GameRun? LastRun { get; private set; }
 
-    /// <summary>The client's arguments: the server, a random number with bit 128 clear, and the Steam flag.</summary>
-    public static string Arguments(string url, int param) => $"/connect:{url} /param:{param & int.MaxValue & ~128} /steam";
+    /// <summary>The client's arguments: the server, a random number with bit 128 clear, and <c>/steam</c> when the game starts with Steam.</summary>
+    public static string Arguments(string url, int param, bool steam) => $"/connect:{url} /param:{param & int.MaxValue & ~128}{(steam ? " /steam" : "")}";
 
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
@@ -148,12 +152,24 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (isRunning(g.ClientExe)) return Result.Fail("Launch.AlreadyRunning");
         // version, files and setup block a start with the dashboard's text; ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
         if (checks?.RunAsync(false, true).GetAwaiter().GetResult().FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
-        // the client asks Steam to start it again (running Steam's launch option) unless Steam is up and the app id is given
-        if (!steamReady()) return Result.Fail("Launch.NoSteam");
-        // the exe's own folder: the client finds its data and writes its logs relative to the working folder
-        var info = new ProcessStartInfo(g.ClientExe, Arguments(url, Random.Shared.Next())) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
-        if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
-        return start(info) ? Result.Success : Result.Fail("Launch.StartFailed");
+        var param = Random.Shared.Next();
+        // this start has no mode yet: the last one's must not show while it waits for Steam or if it fails
+        lastStartMode = null;
+        StartStateChanged?.Invoke();
+        var withSteam = SteamUp();
+        using var game = Launch(g, url, param, withSteam);
+        if (game is null) return Result.Fail("Launch.StartFailed");
+        // the client quit at once because Steam is not there: once more without Steam, and never again
+        if (withSteam && QuitEarly(game) == SteamMissing)
+        {
+            using var again = Launch(g, url, param, false);
+            if (again is null) return Result.Fail("Launch.StartFailed");
+            withSteam = false;
+        }
+        // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
+        lastStartMode = withSteam ? "steam" : "nosteam";
+        StartStateChanged?.Invoke();
+        return Result.Success;
     }
 
     /// <summary>The client's process is watched by its exe: Steam may start it a few seconds after <see cref="StartGame"/>, so it is awaited for up
@@ -176,7 +192,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
                 window |= game?.WindowVisible() == true;
             // the run ends when the exe is gone or the process held has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
             } while (isRunning(g.ClientExe) && game?.ExitCode() is null && await Delay(step));
-            var run = LastRun = new GameRun(start, ran.Elapsed, game?.ExitCode(), window);
+            var run = LastRun = new GameRun(start, ran.Elapsed, game?.ExitCode(), window, lastStartMode);
             history?.Add(run);
         }
         finally { game?.Dispose(); }
@@ -198,9 +214,67 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         set { if (reports is null) rest.ReportConsent = value; else reports.Consent = value; }
     }
 
-    static bool Start(ProcessStartInfo i)
+    // ponytail: one start at a time (the UI disables its button while one runs)
+    readonly ManualResetEventSlim skipSteam = new();
+    volatile bool waitingForSteam;
+    string? lastStartMode;
+
+    public bool WaitingForSteam => waitingForSteam;
+    public string? LastStartMode => lastStartMode;
+    public event Action? StartStateChanged;
+    public void StartWithoutSteam() { if (waitingForSteam) skipSteam.Set(); }
+
+    /// <summary>The exit code of a client that quit with Steam missing.</summary>
+    const int SteamMissing = 16010;
+
+    /// <summary>
+    /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
+    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again.
+    /// </summary>
+    bool SteamUp()
     {
-        try { using var p = Process.Start(i); return p is not null; }
-        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return false; }
+        if (!steam.Installed()) return false;
+        if (steam.SignedIn()) return true;
+        if (!steam.Start()) return false;
+        skipSteam.Reset();
+        waitingForSteam = true;
+        StartStateChanged?.Invoke();
+        try
+        {
+            var step = poll ?? TimeSpan.FromSeconds(1);
+            for (var waited = TimeSpan.Zero; waited < (steamWait ?? TimeSpan.FromSeconds(20)); waited += step)
+            {
+                if (skipSteam.Wait(step)) return false;
+                if (steam.SignedIn()) return true;
+            }
+            return false;
+        }
+        finally
+        {
+            waitingForSteam = false;
+            StartStateChanged?.Invoke();
+        }
+    }
+
+    /// <summary>Starts the client in the exe's own folder (it finds its data and writes its logs relative to the working folder); null when it does not start.</summary>
+    GameProcess? Launch(GameInstall g, string url, int param, bool withSteam)
+    {
+        var info = new ProcessStartInfo(g.ClientExe, Arguments(url, param, withSteam)) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
+        // with the app id set the client does not ask Steam to start it again (that would run Steam's launch option), in either mode
+        if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
+        return start(info);
+    }
+
+    /// <summary>Watches a client started with Steam for <c>quitWithin</c> (5 s) or until its window shows: its exit code when it quit, else null.</summary>
+    int? QuitEarly(GameProcess game)
+    {
+        var step = poll ?? TimeSpan.FromSeconds(1);
+        for (var waited = TimeSpan.Zero; waited < (quitWithin ?? TimeSpan.FromSeconds(5)); waited += step)
+        {
+            if (game.ExitCode() is { } code) return code;
+            if (game.WindowVisible()) return null;
+            Thread.Sleep(step);
+        }
+        return game.ExitCode();
     }
 }

@@ -36,7 +36,7 @@ h3 { margin: 0 0 6px; font-size: 21px; line-height: 28px; font-weight: 300; text
 .legend ::deep .icon { margin-right: 6px; color: var(--fg-muted-2); }
 .pane ul { margin: 0 -10px 12px; padding: 0; list-style: none; }
 .pane li a { display: block; position: relative; padding: 0 10px; font-size: 13px; line-height: 40px; }
-.pane li.current a { background: var(--surface-6); }
+.pane li.current a { background: var(--surface-6); color: #fff; }
 .pane li.current a::after { content: ""; position: absolute; right: -8px; top: 12px; border: 8px solid transparent; border-left-color: var(--line-2); border-right: 0; }
 .no-tents { margin: 0; font-size: 12px; line-height: 20px; color: var(--fg-muted-2); }
 .stage > ::deep .map { flex: 1; }

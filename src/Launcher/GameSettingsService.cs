@@ -3,20 +3,38 @@ using Resurgence.Services;
 
 namespace Resurgence.Launcher;
 
-/// <summary>The Game settings dialog on the game's real files (<see cref="GameFiles"/>). Nothing is written while the client runs.</summary>
-public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs) : IGameSettingsService
+/// <summary>
+/// The Game settings dialog on the game's real files (<see cref="GameFiles"/>). Nothing is written while the client runs. The client reads another graphics file with <c>/steam</c> than without
+/// (<see cref="Settings.GraphicsFileNoSteam"/>): the file of the mode the game starts in is read and written, both when <paramref name="plannedMode"/> cannot tell
+/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null).
+/// </summary>
+public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs, Func<string?>? plannedMode = null) : IGameSettingsService
 {
     static readonly GameOptions None = new(false, false, new(0, 0, 0), 0, 0, 0, 0, 0, null, null);
 
-    string? GraphicsPath => settings.GraphicsFile is { } f ? Path.Combine(appData, f) : null;
+    /// <summary>The graphics files the game may start with, the one of <c>/steam</c> first.</summary>
+    IEnumerable<string> GraphicsPaths()
+    {
+        if (settings.GraphicsFile is not { } steam) return [];
+        var noSteam = settings.GraphicsFileNoSteam;
+        return (plannedMode?.Invoke() switch { "nosteam" => new[] { noSteam ?? steam }, _ => [steam, noSteam] }).OfType<string>().Select(f => Path.Combine(appData, f));
+    }
+
     string? OptionsPath => settings.OptionsFile is { } f && settings.OptionsKeyPrefix is not null ? Path.Combine(appData, f) : null;
 
     public Task<GameSettings> ReadAsync()
     {
         var modes = GameFiles.DisplayModes().Select(m => new Resolution(m.W, m.H, m.Hz)).ToList();
-        if (GraphicsPath is not { } gp) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.NotConfigured"));
-        var (g, problem) = GameFiles.ReadGraphics(gp);
-        if (g is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.BadFormat"));
+        var paths = GraphicsPaths().ToList();
+        if (paths.Count == 0) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.NotConfigured"));
+        GraphicsSettings? g = null;
+        foreach (var gp in paths)
+        {
+            // with two files the first that exists is shown (Save writes both)
+            var (read, problem) = GameFiles.ReadGraphics(gp);
+            if (read is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.BadFormat"));
+            if ((g = read) is not null) break;
+        }
         g ??= GameFiles.DefaultGraphics();  // the game never writes this file: Save creates it
         // the options file is optional: without it the contextual help switch is simply not offered
         var o = OptionsPath is { } op ? GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value : null;
@@ -31,11 +49,14 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         if (GameFiles.ClientRunning(settings.ClientExe)) return Task.FromResult(Result.Fail("GameSettings.ClientRunning"));
         try
         {
-            if (GraphicsPath is not { } gp) return Task.FromResult(Result.Fail("GameSettings.NotConfigured"));
-            var (g, problem) = GameFiles.ReadGraphics(gp);
-            if (g is null && problem != FileProblem.Missing) return Task.FromResult(Result.Fail("GameSettings.BadFormat"));
-            if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics(), options));
-            else GameFiles.WriteGraphics(gp, ToGraphics(g, options));
+            var paths = GraphicsPaths().ToList();
+            if (paths.Count == 0) return Task.FromResult(Result.Fail("GameSettings.NotConfigured"));
+            // every file the game may start with gets the choices, so they apply either way; each keeps what the dialog does not show
+            var read = paths.Select(gp => (gp, GameFiles.ReadGraphics(gp))).ToList();
+            if (read.Any(r => r.Item2.Value is null && r.Item2.Problem != FileProblem.Missing)) return Task.FromResult(Result.Fail("GameSettings.BadFormat"));
+            foreach (var (gp, (g, _)) in read)
+                if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics(), options));
+                else GameFiles.WriteGraphics(gp, ToGraphics(g, options));
             if (OptionsPath is { } op && GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value is { } o && options.ContextualHelp is { } help && o.Has("ContextualHelp"))
             {
                 o.Set("ContextualHelp", help ? 1 : 0);

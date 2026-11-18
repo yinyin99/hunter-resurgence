@@ -1,0 +1,77 @@
+@implements IAsyncDisposable
+@inject ILauncherBridge Bridge
+@inject ModalService Modal
+@inject IJSRuntime JS
+
+@* the start's Steam state (docs/website.md#starting-without-steam): a panel floating in the middle of the window, the page behind stays usable. While the launcher waits for Steam: "Starting Steam…" with the button that
+   skips the wait. After a start without Steam: one plain line that goes at the next click anywhere or after 10 seconds. One copy for the page, one inside the dialog while a dialog is open (the join map starts the game
+   while it is open, and an open modal makes the page behind it inert). *@
+@if (Inside == (Modal.Type is not null))
+{
+    @if (Bridge.WaitingForSteam)
+    {
+        <div class="steam-start" role="status">
+            <span class="text">@L["Launch.StartingSteam"]</span>
+            <button type="button" class="btn btn-inverse" id="start-without-steam" @onclick="Bridge.StartWithoutSteam">@L["Launch.StartWithoutSteam"]</button>
+        </div>
+    }
+    else if (NoteShown)
+    {
+        <div class="steam-start" id="no-steam-note" role="status"><span class="text">@L["Launch.NoSteamNote"]</span></div>
+    }
+}
+
+@code {
+    /// <summary>The copy inside the open dialog.</summary>
+    [Parameter] public bool Inside { get; set; }
+
+    static readonly TimeSpan NoteFor = TimeSpan.FromSeconds(10);
+
+    Action? changed, started;
+    bool armed;           // the click listener and the timer of the note shown now are set
+    CancellationTokenSource? timer;
+    IJSObjectReference? module;
+    DotNetObjectReference<SteamStart>? self;
+
+    bool NoteShown => Bridge.LastStartMode == "nosteam" && !Modal.SteamNoteGone;
+
+    protected override void OnInitialized()
+    {
+        changed = () => _ = InvokeAsync(StateHasChanged);
+        started = () => { timer?.Cancel(); Modal.SteamNoteGone = false; changed(); };
+        Bridge.StartStateChanged += started;
+        Modal.Changed += changed;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!(NoteShown && !Bridge.WaitingForSteam && Inside == (Modal.Type is not null))) { armed = false; return; }
+        if (armed) return;
+        armed = true;
+        timer?.Cancel();
+        timer = new();
+        var token = timer.Token;
+        _ = Task.Delay(NoteFor, token).ContinueWith(_ => Dismiss(), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+        module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await module.InvokeVoidAsync("onceClick", self ??= DotNetObjectReference.Create(this));
+    }
+
+    /// <summary>Called by shell.js at the next click, and by the timer; a click while the start still waits for Steam leaves the wait alone.</summary>
+    [JSInvokable]
+    public Task Dismiss() => InvokeAsync(() =>
+    {
+        if (!armed) return; // a stale click listener or timer: no note is waiting to go
+        Modal.SteamNoteGone = true;
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        Bridge.StartStateChanged -= started;
+        Modal.Changed -= changed;
+        timer?.Cancel();
+        self?.Dispose();
+        try { if (module is not null) await module.DisposeAsync(); }
+        catch (JSDisconnectedException) { } // the tab closed: the module is gone with its circuit
+    }
+}

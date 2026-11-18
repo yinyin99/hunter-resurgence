@@ -14,6 +14,10 @@ public sealed class SettingsMenuTests : UiContext
     {
         public List<string> Asked { get; } = [];
         public bool IsSteam => false;
+        public bool WaitingForSteam => false;
+        public void StartWithoutSteam() { }
+        public event Action? StartStateChanged { add { } remove { } }
+        public string? LastStartMode => null;
         public Result OpenFolder(string kind) { Asked.Add("open " + kind); return Result.Fail(error); }
         public Result ShowFile(string path) => Result.Success;
         public GameInstallInfo GameInstall => new(null, null, []);
