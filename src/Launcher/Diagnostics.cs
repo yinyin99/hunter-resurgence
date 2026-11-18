@@ -22,7 +22,7 @@ namespace Resurgence.Launcher;
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
 /// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
 /// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
-/// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest one written after the last run's start that opens and fits the report limit goes into the zip.</param>
+/// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest one written after the last run's start, of up to 32 MiB (a full-memory .hdmp gives way to a .dmp or .mdmp of the same crash), that opens and fits the report limit goes into the zip.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
     Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
     Func<string, IEnumerable<string>>? dumps = null)
@@ -70,7 +70,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>The player's own name and profile path first (they may hold spaces), then any other profile folder.</summary>
     internal static string Scrub(string text, Regex? own) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : ProfileName.Replace(own?.Replace(l, OwnReplacement) ?? l, "<user>")));
 
-    /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt without the crash dump (it cannot be cut), then with each file cut to a quarter, until it fits.</summary>
+    /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with the next newest crash dump (it cannot be cut), then without one, then with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)
     {
         var missing = new List<string>();

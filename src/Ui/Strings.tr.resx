@@ -1574,7 +1574,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Exit.Title" xml:space="preserve"><value>Oyun hemen kapandı</value></data>
   <data name="Exit.Steam" xml:space="preserve"><value>Oyun Steam ile de Steam olmadan da başlatılamadı.</value></data>
   <data name="Exit.Blocked" xml:space="preserve"><value>Windows oyunu engelledi.</value></data>
-  <data name="Exit.BlockedHow" xml:space="preserve"><value>Windows Güvenliği'nde izin verin (Akıllı Uygulama Denetimi veya güvenlik programınız).</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Windows Güvenliği'nde izin verin (Smart App Control veya güvenlik programınız).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>Oyunun ihtiyaç duyduğu bir Windows bileşeni eksik.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>Oyunun bileşenlerini yükle</value></data>
   <data name="Exit.Closed" xml:space="preserve"><value>Oyun kendiliğinden kapandı.</value></data>

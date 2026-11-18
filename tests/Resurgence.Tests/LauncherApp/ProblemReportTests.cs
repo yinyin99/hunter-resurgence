@@ -357,7 +357,7 @@ public class ProblemReportTests
         var gone = Dump("client.exe.3.dmp", "gone", 1);
         var locked = Dump("client.exe.2.dmp", "locked", 2);
         Dump("client.exe.1.dmp", "third", 3);
-        // the newest is deleted after it was listed: the report does not fail, the next one is tried
+        // the newest is deleted after it was listed and the next one is locked: the report does not fail, the third is used
         IEnumerable<string> Listing(string _) { yield return gone; yield return locked; yield return Path.Combine(dir, "client.exe.1.dmp"); File.Delete(gone); }
         using (new FileStream(locked, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) // listed and measured, but cannot be read
         {
