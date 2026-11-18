@@ -40,5 +40,7 @@ h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line-2
 .line { margin: 0; line-height: 20px; color: #fff; font-weight: 500; }
 .line.gap { margin-top: 10px; }
 .players-title { margin-top: 24px; }
-.player { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
-.player .score { width: 100%; text-align: right; color: #fff; }
+.player { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.player ::deep .asset-slot { flex: none; }
+.player a { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.player .score { flex: none; white-space: nowrap; color: #fff; }

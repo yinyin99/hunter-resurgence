@@ -207,10 +207,10 @@ install/          the operator's own copy of the game's install folder
 recordings/       the operator's recordings (server.md)
 mirror/           the saved static pages (server.md)
 variants.json     optional
-images/           the slot pictures (images.md), mounted read-only in `web`
+images/           the slot pictures (images.md), mounted read-only in `web`; the game's avatars `avatar-<id>.png` too (server.md#avatars)
 ```
 
-`images/` may be empty: every picture is then its labelled box. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC; `web` reads the folder at start, so restart it after a change:
+`images/` may be empty: every picture is then its labelled box, and the game's avatars are a miss (a broken picture in the game). The game's avatars are the files `avatar-<id>.png` of the avatar list (the same ones the website draws): the server reads them from `images/` (the `images_dir` setting, default `images`, next to `settings.json`) at each request, with no restart; `web` reads the folder at start, so restart it after a change. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC:
 
 ```
 ssh deploy@<vps> "mkdir -p '<server dir>/images' && rm -f '<server dir>/images'/*"
@@ -222,7 +222,7 @@ ssh deploy@<vps> "cd ~/web && docker compose restart web"
 
 - `web_host`: the website's public domain, `<domain>` (`SITE_DOMAIN`). The server and the website share it: the website forwards the browser's `Host`, and the server's cookies and Steam return links are made for it.
 - the other host keys: `game_web_host` (required) and the rest, the game's real host names (the ones the operator's recordings show); a key left out is a placeholder ([server.md](server.md#run-it)).
-- `install_dir`: `install`; `data_dir`: `/data` (the volume); `recordings_dir`, `mirror_dir`, `variants_file` as in the folder above.
+- `install_dir`: `install`; `data_dir`: `/data` (the volume); `recordings_dir`, `mirror_dir`, `images_dir`, `variants_file` as in the folder above.
 - `listeners`: `[{ "address": "0.0.0.0", "port": 8080 }]`: plain HTTP, no `cert`, no `admin` (the admin API is for a person at the machine and is never behind the proxy).
 - `trusted_proxies`: `["172.30.10.2"]`, Caddy's address; `host_header`: `X-Game-Host`.
 
