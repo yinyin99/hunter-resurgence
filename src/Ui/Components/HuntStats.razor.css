@@ -7,4 +7,4 @@ ul { margin: 0 0 14px; padding-left: 20px; font-size: 14px; color: var(--text-2)
 .misc td:first-child { width: 44%; }
 .gap { margin-top: 20px; }
 .kills { margin: 0 0 14px; }
-.kills a { color: var(--primary); }
+.kills a { color: var(--accent-text); }

@@ -13,8 +13,8 @@
 .tabs.sub a:hover, .tabs.sub li.active a { color: #fff; }
 .tabs.sub li.active a { padding-bottom: 6px; border-bottom: 2px solid var(--accent); }
 
-.tabs.pills a { margin: 2px 2px 2px 0; padding: 8px 12px; border-radius: var(--r-pill); font-size: 13px; line-height: 15px; color: var(--primary); }
-.tabs.pills a:hover { color: #fa603f; }
+.tabs.pills a { margin: 2px 2px 2px 0; padding: 8px 12px; border-radius: var(--r-pill); font-size: 13px; line-height: 15px; color: var(--accent-text); }
+.tabs.pills a:hover { color: #fff; }
 .tabs.pills li.active a { background: var(--primary); color: #fff; }
 
 .tabs.strip { margin: 0 0 15px; border-bottom: 1px solid var(--line); }
