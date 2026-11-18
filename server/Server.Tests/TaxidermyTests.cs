@@ -173,6 +173,55 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         Eq("""[[20, false], [23, true]]""", new JsonArray(rows.Select(t => (JsonNode?)T(t!["id"], t["is_skull"])).ToArray()));
     }
 
+    /// <summary>The taxidermy went live 10 hours ago: harvests 22 (73 h old) and 23 (71 h old) were made before, 20 and 21 (1 h old) after; the grace window of the old ones ends 62 hours from now.</summary>
+    void GoneLive()
+    {
+        var (start, end) = (DateTimeOffset.UtcNow.AddHours(-10).ToUnixTimeSeconds(), DateTimeOffset.UtcNow.AddHours(62).ToUnixTimeSeconds());
+        using var con = state.Store.Open();
+        con.Exec("UPDATE taxidermy_grace SET start = ?, grace_end = ?", start, end);
+        using var mine = state.Store.Open(ME);
+        mine.Begin();
+        PlayerRows.AddTrophy(mine, "/game/user/trophies", "5", O("""{"id": 5, "species": 1, "hidden": false}"""));
+        mine.Commit();
+    }
+
+    [Fact]
+    public async Task AHarvestMadeBeforeTheTaxidermyWentLiveHasAWindowThatEndsAtTheGraceEnd()
+    {
+        GoneLive();
+        async Task<long[]> Editor() => [.. JsonNode.Parse((await server.SendAsync("GET", V2, "/game/user/trophies", [("Authorization", "Bearer " + tokenMe)])).Body)!.AsArray().Select(t => (long)t!["id"]!)];
+        var (grace, offers) = (state.Store.TaxidermyGrace().End, state.TaxidermyOffers(ME));
+        Assert.Equal(grace, new DateTimeOffset(DateTime.Parse((string)offers[22]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds());  // old: the grace end, not harvest + 72 h
+        Assert.Equal(grace, new DateTimeOffset(DateTime.Parse((string)offers[23]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds());
+        Assert.InRange(DateTime.Parse((string)offers[20]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).Subtract(DateTime.UtcNow).TotalHours, 70.9, 71.1);  // new: 72 h from the harvest (1 h ago)
+        Eq("[5, 22, 23]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // the restored trophy, and the old harvests while the window is open
+        Assert.Equal(200, await Status(22, tokenMe, Gold));  // 73 hours old, yet inside the grace window
+        Assert.Equal(172, Em());
+        Assert.Equal(409, await Status(22, tokenMe, Gold));
+        state.Clock = () => Py.Now() + 63 * 3600;  // the grace window is over; kill 20 (1 h old) has 8 hours left
+        Assert.Equal(410, await Status(23, tokenMe, Gold));
+        Assert.Equal(200, await Status(20, tokenMe, Gold));
+        Eq("[5, 20, 22]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // taxidermized ones stay, the old one that was not is gone, the restored one is untouched
+    }
+
+    [Fact]
+    public void TheFirstStartWithTheTaxidermyStoresTheGraceEndOnce()
+    {
+        var file = Path.Combine(tmp, "old.db");
+        var first = new Store(file);
+        Assert.Equal((0L, 0L), first.TaxidermyGrace());  // a new database has no older harvest
+        using (var con = first.Open())
+        {
+            con.Exec("DROP TABLE taxidermy_grace");
+            con.Exec("PRAGMA user_version = 27");
+        }
+        var before = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var (start, end) = new Store(file).TaxidermyGrace();
+        Assert.InRange(start, before, before + 5);
+        Assert.Equal(start + 72 * 3600, end);
+        Assert.Equal((start, end), new Store(file).TaxidermyGrace());  // later starts keep it
+    }
+
     [Fact]
     public async Task ThePlayersOwnPageBuysWithEitherCurrencyAndTellsWhyItRefuses()
     {

@@ -12,10 +12,18 @@ public sealed partial class State
     public const string TAXIDERMY = "taxidermy", SKULL = "skull";
     const long TaxidermyItem = 744, SkullItem = 1111;  // the store items the wallet row names
 
-    /// <summary>When the window of a harvest page ends (Unix seconds); null for a page without a time.</summary>
-    static long? TaxidermyEnd(JsonObject page) =>
-        DateTimeOffset.TryParse((string?)page["timestamp"], CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at)
-            ? at.AddHours(TaxidermyHours).ToUnixTimeSeconds() : null;
+    /// <summary>When a harvest's taxidermized page was made (Unix seconds); null for a page without a time.</summary>
+    static long? Harvested(JsonObject page) =>
+        DateTimeOffset.TryParse((string?)page["timestamp"], CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : null;
+
+    /// <summary>When the window of a harvest page ends (Unix seconds): 72 hours after the harvest, but for a harvest made before the taxidermy went live (<see cref="Store.TaxidermyGrace"/>) the end of
+    /// the grace window, 72 hours after that day. Null for a page without a time.</summary>
+    static long? TaxidermyEnd(JsonObject page, (long Start, long End) grace) =>
+        Harvested(page) is { } at ? at < grace.Start ? grace.End : at + TaxidermyHours * 3600L : null;
+
+    /// <summary>Whether a harvest is in the lodge editor's list: once taxidermized, or while the grace window of a harvest made before the taxidermy went live is open.</summary>
+    bool InEditor(JsonObject page, (long Start, long End) grace) =>
+        TaxidermyDone(page) is not null || Harvested(page) < grace.Start && Clock() <= grace.End;
 
     /// <summary>What a harvest page has become: <see cref="SKULL"/> or <see cref="TAXIDERMY"/> once done (also a harvest the game marked before the price existed), else null.</summary>
     static string? TaxidermyDone(JsonObject page) => !Py.Truthy(page["taxidermized"]) ? null : Py.Truthy(page["is_skull"]) ? SKULL : TAXIDERMY;
@@ -31,7 +39,7 @@ public sealed partial class State
             return (404, "unknown");
         if (TaxidermyDone(page) is not null)
             return (409, "already");
-        if (TaxidermyEnd(page) is not { } end || Clock() > end)
+        if (TaxidermyEnd(page, Store.TaxidermyGrace()) is not { } end || Clock() > end)
             return (410, "too_late");
         var skull = product == SKULL;
         if (skull && !facts.HasSkull((string?)page["species_define"]))
@@ -58,10 +66,11 @@ public sealed partial class State
     public Dictionary<long, JsonObject> TaxidermyOffers(long account)
     {
         var (ems, gms) = facts.TaxidermyPrice();
+        var grace = Store.TaxidermyGrace();
         using var con = Con(account);
         var offers = new Dictionary<long, JsonObject>();
         foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a"))
-            if (JsonNode.Parse((string)r[1]) is JsonObject page && TaxidermyEnd(page) is { } end)
+            if (JsonNode.Parse((string)r[1]) is JsonObject page && TaxidermyEnd(page, grace) is { } end)
                 offers[(long)r[0]] = new JsonObject
                 {
                     ["end"] = DateTimeOffset.FromUnixTimeSeconds(end).UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture), ["ems"] = ems, ["gms"] = gms,
