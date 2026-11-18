@@ -1529,7 +1529,10 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.Send" xml:space="preserve"><value>Enviar</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Enviando…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Salvo como {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Enviado. Referência: {0} (informe no Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Enviado.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Informe esta referência no Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copiado</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Não foi possível mostrar o arquivo no Explorador.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Enviar automaticamente após uma inicialização com falha</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Relatório de problema enviado: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>

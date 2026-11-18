@@ -1529,7 +1529,10 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Report.Send" xml:space="preserve"><value>Skicka</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Skickar…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Sparad som {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Skickad. Referens: {0} (ange den på Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Skickad.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Ange denna referens på Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopierat</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Filen kunde inte visas i Utforskaren.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Skicka automatiskt efter en misslyckad start</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problemrapport skickad: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunde inte skickas: {0}</value></data>

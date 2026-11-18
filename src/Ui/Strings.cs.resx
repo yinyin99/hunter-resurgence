@@ -1529,7 +1529,10 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Report.Send" xml:space="preserve"><value>Odeslat</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Odesílám…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Uloženo jako {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Odesláno. Odkaz: {0} (uveďte ho na Discordu)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Odesláno.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Uveďte tento odkaz na Discordu</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Zkopírováno</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Soubor se nepodařilo zobrazit v Průzkumníku.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Po neúspěšném spuštění odeslat automaticky</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Hlášení o problému odesláno: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Hlášení o problému se nepodařilo odeslat: {0}</value></data>

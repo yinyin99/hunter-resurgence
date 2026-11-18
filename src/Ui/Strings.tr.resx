@@ -1529,7 +1529,10 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.Send" xml:space="preserve"><value>Gönder</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Gönderiliyor…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>{0} olarak kaydedildi</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Gönderildi. Referans: {0} (Discord'da belirtin)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Gönderildi.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Bu referansı Discord’da belirtin</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopyalandı</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Dosya Gezgin’de gösterilemedi.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Başarısız bir başlatmadan sonra otomatik gönder</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Sorun raporu gönderildi: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
