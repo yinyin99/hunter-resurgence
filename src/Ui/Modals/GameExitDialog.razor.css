@@ -1,0 +1,14 @@
+/* spacing 8 / 16 / 24: 8 between the message and its how-to, 16 between the icon and the title, 24 between the groups; no separator line. Text is --text-1 as in the taxidermy dialog. */
+.exit { position: absolute; inset: 0; box-sizing: border-box; width: min(440px, calc(100% - 32px)); height: fit-content; margin: auto; padding: 24px; color: var(--text-1); text-align: start; }
+header { display: flex; align-items: center; gap: 16px; margin-block-end: 24px; }
+.mark { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--surface-6); color: var(--accent-text); font-size: 20px; }
+h2 { margin: 0; font-size: 22px; line-height: 28px; font-weight: 500; color: var(--text-1); }
+section { display: flex; flex-direction: column; gap: 8px; margin-block-end: 24px; }
+p { margin: 0; font-size: 16px; line-height: 22px; color: var(--text-1); }
+.message { font-weight: 500; }
+/* the how-to or the error is a surface of its own; radius = button radius + padding as in the taxidermy rows */
+.how { padding: 12px 16px; border-inline-start: 3px solid var(--accent); border-radius: var(--r-2); background: var(--surface-6); }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { box-sizing: border-box; min-height: 40px; padding: 8px 16px; font-size: 16px; font-weight: 500; transition-property: background-color, scale; transition-duration: var(--t-base); transition-timing-function: var(--ease); }
+.btn:active { transform: none; filter: none; }
+@media (prefers-reduced-motion: no-preference) { .btn:active:not(:disabled) { scale: .96; } }

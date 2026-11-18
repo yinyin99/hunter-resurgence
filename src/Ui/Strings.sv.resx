@@ -1570,4 +1570,16 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Taxidermy.Already" xml:space="preserve"><value>Redan gjort för det här djuret.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>För sent: de 72 timmarna har gått.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Något gick fel. Försök igen.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Spelet stängdes direkt</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Spelet kunde inte starta, varken med eller utan Steam.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows blockerade spelet.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Tillåt det i Windows-säkerhet (Smart App Control eller ditt säkerhetsprogram).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>En Windows-komponent som spelet behöver saknas.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Installera spelets komponenter</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Spelet stängdes av sig självt.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Kontrollera datorns klocka och din anslutning.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Spelet stoppades.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Skicka en problemrapport</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Öppna Windows-säkerhet</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Spelmappen har inga komponenter att installera: verifiera spelet i Steam.</value></data>
 </root>

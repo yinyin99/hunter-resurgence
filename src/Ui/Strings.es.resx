@@ -1570,4 +1570,16 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Taxidermy.Already" xml:space="preserve"><value>Ya está hecho para este animal.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Demasiado tarde: han pasado las 72 horas.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Algo ha salido mal. Inténtalo de nuevo.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>El juego se cerró enseguida</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>El juego no pudo iniciarse, ni con Steam ni sin él.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows bloqueó el juego.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Permítalo en Seguridad de Windows (Smart App Control o su programa de seguridad).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Falta un componente de Windows que el juego necesita.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Instalar los componentes del juego</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>El juego se cerró solo.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Compruebe el reloj de su PC y su conexión.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>El juego se detuvo.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Enviar un informe del problema</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Abrir Seguridad de Windows</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>La carpeta del juego no tiene componentes que instalar: verifique el juego en Steam.</value></data>
 </root>

@@ -1,0 +1,48 @@
+@inject ModalService Modal
+@inject ILauncherBridge Bridge
+
+@* "The game closed right away": the game the launcher started ended within seconds (GameExit.Early). The cause is the message, its how-to or error a group of its own, and one action per cause
+   (docs/website.md, "The game closed right away"); a real hunt opens "Done hunting for now?" instead *@
+<div class="exit dialog-card" role="alertdialog" aria-modal="true" aria-labelledby="exit-title">
+    <header>
+        <span class="mark"><Icon Name="@icon" /></span>
+        <h2 id="exit-title">@L["Exit.Title"]</h2>
+    </header>
+    <section>
+        <p class="message">@L[message]</p>
+        @if (how is not null) { <p class="how">@L[how]</p> }
+        @if (error is not null) { <p class="how" id="exit-error" role="alert">@error</p> }
+    </section>
+    <div class="actions">
+        @switch (Exit.Cause)
+        {
+            case "blocked":
+                <button class="btn btn-primary" id="exit-security" @onclick="@(() => Bridge.OpenExternal("windowsdefender://appbrowser"))">@L["Exit.OpenSecurity"]</button>
+                break;
+            case "runtime":
+                <button class="btn btn-primary" id="exit-runtimes" @onclick="RunRuntimes">@L["Exit.RunRuntimes"]</button>
+                break;
+            case "closed":
+                break;
+            default: // steam, crash
+                <button class="btn btn-primary" id="exit-report" @onclick="OpenReport">@L["Exit.Report"]</button>
+                break;
+        }
+        <button class="btn @(Exit.Cause == "closed" ? "btn-primary" : null)" id="exit-ok" autofocus @onclick="Modal.Close">@L["Alert.Ok"]</button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public GameExit Exit { get; set; } = null!;
+
+    string? error;
+
+    string icon => Exit.Cause switch { "blocked" => "shield-halved", "runtime" => "download", "closed" => "clock", "crash" => "bug", _ => "triangle-exclamation" };
+    string message => Exit.Cause switch { "steam" => "Exit.Steam", "blocked" => "Exit.Blocked", "runtime" => "Exit.Runtime", "closed" => "Exit.Closed", _ => "Exit.Crash" };
+    string? how => Exit.Cause switch { "blocked" => "Exit.BlockedHow", "closed" => "Exit.ClosedCheck", _ => null };
+
+    void RunRuntimes() => error = Bridge.RunGameRuntimes() is { Ok: false } failed ? L[failed.Error ?? "Launch.Failed"].Value : null;
+
+    // the failed start's trigger (GameRun.Trigger), as the Done window offers it; a crash always has one, "short" only guards a run the launcher did not record
+    void OpenReport() => Modal.Show<ReportModal>(new Dictionary<string, object?> { [nameof(ReportModal.Trigger)] = Bridge.LastRun?.Trigger ?? "short" });
+}

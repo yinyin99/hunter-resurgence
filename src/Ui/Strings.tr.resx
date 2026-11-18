@@ -1570,4 +1570,16 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Taxidermy.Already" xml:space="preserve"><value>Bu hayvan için zaten yapıldı.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Çok geç: 72 saat doldu.</value></data>
   <data name="Taxidermy.Failed" xml:space="preserve"><value>Bir şeyler ters gitti. Lütfen tekrar dene.</value></data>
+  <data name="Exit.Title" xml:space="preserve"><value>Oyun hemen kapandı</value></data>
+  <data name="Exit.Steam" xml:space="preserve"><value>Oyun Steam ile de Steam olmadan da başlatılamadı.</value></data>
+  <data name="Exit.Blocked" xml:space="preserve"><value>Windows oyunu engelledi.</value></data>
+  <data name="Exit.BlockedHow" xml:space="preserve"><value>Windows Güvenliği'nde izin verin (Akıllı Uygulama Denetimi veya güvenlik programınız).</value></data>
+  <data name="Exit.Runtime" xml:space="preserve"><value>Oyunun ihtiyaç duyduğu bir Windows bileşeni eksik.</value></data>
+  <data name="Exit.RunRuntimes" xml:space="preserve"><value>Oyunun bileşenlerini yükle</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Oyun kendiliğinden kapandı.</value></data>
+  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Bilgisayarınızın saatini ve bağlantınızı kontrol edin.</value></data>
+  <data name="Exit.Crash" xml:space="preserve"><value>Oyun durdu.</value></data>
+  <data name="Exit.Report" xml:space="preserve"><value>Sorun raporu gönder</value></data>
+  <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows Güvenliği'ni aç</value></data>
+  <data name="Launch.NoRuntimes" xml:space="preserve"><value>Oyun klasöründe yüklenecek bileşen yok: oyunu Steam'de doğrulayın.</value></data>
 </root>

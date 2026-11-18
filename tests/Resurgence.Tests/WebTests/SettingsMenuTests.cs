@@ -27,7 +27,8 @@ public sealed class SettingsMenuTests : UiContext
         public Result ClearCache(string kind) { Asked.Add("clear " + kind); return Result.Fail(error); }
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;
-        public Task<bool> WhenGameExitsAsync() => Task.FromResult(true);
+        public Task<GameExit?> WhenGameExitsAsync() => Task.FromResult<GameExit?>(new(0, 1800, "steam", false, null));
+        public Result RunGameRuntimes() => Result.Success;
         public void ToggleDevTools() { }
         public void RestartLauncher() { }
         public GameRun? LastRun => null;
