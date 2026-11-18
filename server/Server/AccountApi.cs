@@ -244,6 +244,32 @@ public static class AccountApi
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/harvests/{kill}/taxidermize", async (HttpContext ctx, string kill) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                if (ctx.Request.ContentLength is null or > 1024) return Json(400, new JsonObject { ["error"] = "invalid" });
+                JsonObject? body = null;
+                try { body = JsonNode.Parse(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync()) as JsonObject; }
+                catch (System.Text.Json.JsonException) { }
+                var (product, currency) = ((body?["product"] as JsonValue)?.TryGetValue<string>(out var p) == true ? p : null, (body?["currency"] as JsonValue)?.TryGetValue<string>(out var c) == true ? c : null);
+                if (product is not (State.TAXIDERMY or State.SKULL) || currency is not ("ems" or "gms"))
+                    return Json(400, new JsonObject { ["error"] = "invalid" });
+                if (!long.TryParse(kill, NumberStyles.None, CultureInfo.InvariantCulture, out var id))
+                    return Json(404, new JsonObject { ["error"] = "unknown" });
+                var (status, error) = state.Taxidermize(account, id, product, currency == "gms" ? "gm" : "em");
+                if (status != 200)
+                    return Json(status, status == 402 ? new JsonObject { ["error"] = error, ["currency"] = currency } : new JsonObject { ["error"] = error });
+                var wallet = state.Wallet(account);
+                return Json(200, new JsonObject { ["done"] = product, ["ems"] = wallet["em"] is { } em ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm ? Py.L(gm) : 0 });
+            })
+            .WithName("AccountTaxidermize").WithSummary("Taxidermize or mount the skull of the player's own harvest (JSON `product`, `currency`)")
+            .WithDescription("`{product: taxidermy|skull, currency: ems|gms}` (the `hr_session` cookie, header `X-Requested-With`): the price of the facts file (10 em$ or 2,000 gm$) is taken, the wallet gets the store item's row (`Taxidermy (immediate)`, "
+                             + "or the skull mount's) and the game its new balance with the next heartbeat. 200 `{done, ems, gms}` (the wallet after); 402 `{error: not_enough, currency}`; 409 `{error: already}` (once only, either product); "
+                             + "410 `{error: too_late}` (72 hours after the harvest); 404 for a kill that is unknown, a restored one or another player's; 400 for a body that is not as shown or a skull for a species that has none. "
+                             + "The harvest's `taxidermy` field of `GET /hunters/<handle>/hunts/<id>` tells what is offered.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/wallet/spent", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WalletSpent(account))
                 : Refuse(401, "signed_out", "Sign in first."))

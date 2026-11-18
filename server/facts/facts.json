@@ -569,6 +569,7 @@
   "free_ammo": {"items": [10,14,69,113], "boxes": 3},
   "wallet": {"em":1000,"gm":15000}
  },
+ "taxidermy": {"ems": 10, "gms": 2000},
  "ranks": {
   "cap": 1000,
   "rows": [

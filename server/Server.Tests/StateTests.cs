@@ -250,11 +250,11 @@ public class InventoryTests : StateTestBase
         var page = Reply(state.HarvestReply(ME, 1)!);
         Eq("""["MULE_DEER", 0, 64350, 0, 2, 20817, false]""", T(page["species_define"], page["gender"], page["weight"],
                                                                 page["texture_id"], page["reserve_id"], page["antlers_seed"], page["taxidermized"]));
-        Assert.True(state.Taxidermize(ME, 1));
+        Assert.Equal(200, state.Taxidermize(ME, 1, State.TAXIDERMY, "em").Status);
         var taxidermized = Reply(state.HarvestReply(ME, 1)!)["taxidermized"];
         Assert.True(Py.IsBool(taxidermized) && (bool)taxidermized!);
         Assert.Null(state.HarvestReply(ME, 2));
-        Assert.False(state.Taxidermize(ME, 2));
+        Assert.Equal(404, state.Taxidermize(ME, 2, State.TAXIDERMY, "em").Status);
 
         var reply = Reply(state.ExpeditionReply(ME, "{\"replayed\": 1}"u8.ToArray()));
         var expedition = reply["expedition"]!;

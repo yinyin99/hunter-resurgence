@@ -37,7 +37,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             }
             PlayerRows.AddTrophy(con, "/game/user/trophies", "21", O("""{"id": 21, "species": 1, "hidden": false}"""));
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "21", O("""{"id": 21, "species": 1, "hidden": false}"""));
-            con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, 30, ?)", """{"species": 2, "score": 5}""");
+            con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, 30, ?)", """{"species": 2, "score": 5, "taxidermized": true}""");  // only a taxidermized harvest is a trophy
             con.Commit();
         }
         server = await Loopback.StartAsync(new Game(new HarTable(), Cfg, state, tmp), tmp);

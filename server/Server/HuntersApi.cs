@@ -1,4 +1,4 @@
-// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public, no cookie. The website's
+// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public (only a hunt page also reads the cookie: the signed-in player's own taxidermy offers). The website's
 // server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
@@ -16,6 +16,7 @@ public static class HuntersApi
     {
         var state = game.State!;
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
+        long? SignedIn(HttpContext ctx) => SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } c ? state.Store.ResolveWebSession(c) : null;
         if (!state.Online) return;
         var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
 
@@ -127,13 +128,16 @@ public static class HuntersApi
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
-        group.MapGet("/{handle}/hunts/{id}", (string handle, string id) => state.PublicAccount(handle) is { } account && (id == "latest" ? state.PublicHunt(account, null) : long.TryParse(id, out var n) ? state.PublicHunt(account, n) : null) is { } hunt
+        group.MapGet("/{handle}/hunts/{id}", (string handle, string id, HttpContext ctx) => state.PublicAccount(handle) is { } account
+                && (id == "latest" ? state.PublicHunt(account, null, SignedIn(ctx) == account) : long.TryParse(id, out var n) ? state.PublicHunt(account, n, SignedIn(ctx) == account) : null) is { } hunt
                 ? Json(200, hunt)
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterHunt").WithSummary("One hunt of a hunter: its statistics and its kills")
             .WithDescription("`{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}` of `Public_user/expedition` (`id` a hunt id, or `latest`): `weapons` and `animals` are the "
                              + "rows of `/hunters/<handle>/statistics` for the hunt (empty while it is open, `end` null), `collectables`, `achievements` and `antlers` are empty, `kills` are `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` "
-                             + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). 404 for a handle that is unknown or banned, and for a hunt that is unknown.")
+                             + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). On the signed-in player's own hunt (the `hr_session` cookie of the handle) a kill made here also has "
+                             + "`taxidermy: {end, ems, gms, skull, done}`: `end` (ISO UTC) is 72 hours after the harvest, `ems` and `gms` the price, `skull` whether the species has a skull to mount, `done` `taxidermy`, `skull` or null; "
+                             + "a restored kill and anyone else's view have none. 404 for a handle that is unknown or banned, and for a hunt that is unknown.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/score/{kill}", (string handle, string kill) => state.PublicAccount(handle) is { } id && long.TryParse(kill, out var killId) && state.PublicSheet(id, killId) is { } sheet
