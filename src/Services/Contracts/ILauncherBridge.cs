@@ -23,7 +23,7 @@ public interface ILauncherBridge
     Result StartGame(string url);
     /// <summary>Completes when the game the launcher started LAST has closed (after a 16010 fallback: the retry's process, never an exited one). Null when the game never appeared.</summary>
     Task<GameExit?> WhenGameExitsAsync();
-    /// <summary>Runs the Visual C++ and DirectX redistributables found in the game folder (<c>_CommonRedist</c> or the install's redist folder), one after the other; Windows asks for the rights of each. A failure is a <see cref="Result"/> whose Error is a text key (<c>Launch.NoRuntimes</c> when there are none).</summary>
+    /// <summary>Installs what Steam's first-time setup would, from the redistributables found in the game folder (<c>_CommonRedist</c> or the install's redist folder) or Steam's shared ones: Visual C++ 2010 and 2005 (x86) and DirectX June 2010, one after the other; Windows asks for the rights of each. A failure is a <see cref="Result"/> whose Error is a text key (<c>Launch.NoRuntimes</c> when there are none).</summary>
     Result RunGameRuntimes();
     /// <summary>Ctrl+D in the launcher window.</summary>
     void ToggleDevTools();

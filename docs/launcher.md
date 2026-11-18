@@ -117,11 +117,11 @@ Real today:
   |---|---|---|
   | `steam` | 16010 of the start without Steam that followed a start with Steam that quit with 16010 too: the game could not start with or without Steam. Any other 16010 (a start that never tried Steam, or one with Steam that was not retried) is a `crash` | "Send a problem report" |
   | `blocked` | 3236495362: Windows app control (Smart App Control or a security program) blocked the game | opens Windows Security (`windowsdefender://appbrowser`) |
-  | `runtime` | 3221225781: a DLL is not found, a Windows component the game needs is missing | "Install the game's components": `RunGameRuntimes` |
+  | `runtime` | 3221225781: a DLL is not found, a Windows component the game needs is missing | "Install the game's components": `RunGameRuntimes`, which installs what Steam's first-time setup would |
   | `closed` | 0: the game closed by itself (the PC's clock, the connection) | check the clock and the connection |
   | `crash` | any other code (for example 3221226505, stack buffer overrun) | "Send a problem report" |
 
-  `RunGameRuntimes` runs the installers it finds, one after the other and off the UI thread (Windows asks for the rights of each; saying no ends the rest): in the first of the game folder's `_CommonRedist` and `redist` folders, then Steam's shared `Steamworks Shared\_CommonRedist` next to the game's library folder, that has any, the Visual C++ ones of the newest folder (by name, x64 first) and DirectX's `DXSETUP.exe`. Older Visual C++ generations are left out (every one is one more prompt). Without any it answers `Launch.NoRuntimes`.
+  `RunGameRuntimes` installs what Steam's first-time setup installs for the game, which the launcher skips by starting the exe itself: the 32-bit client imports Visual C++ 2010 (and its python DLL Visual C++ 2005) and DirectX June 2010 (the 2015-2022 DLLs ship in the game folder). It runs, one after the other and off the UI thread (Windows asks for the rights of each; saying no ends the rest), only the ones present, in the first of the game folder's `_CommonRedist` and `redist` folders, then Steam's shared `Steamworks Shared\_CommonRedist` next to the game's library folder, that has any: `vcredist/2010/vcredist_x86.exe` (`/passive /norestart`: progress, no questions), `vcredist/2005/vcredist_x86.exe` (no switch: its only quiet one hides the progress), then `DirectX/*/DXSETUP.exe` (`/silent`). The x64, 2012 and 2022 ones are never run. Without any it answers `Launch.NoRuntimes`.
 - **The player kit** (only with an `https://` `server_url`): setup, Remove and the forwarder; see [The player kit](#the-player-kit).
 - **Pictures**: from the website at `server_url`, see [images.md](images.md).
 

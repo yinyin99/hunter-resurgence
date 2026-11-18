@@ -16,11 +16,11 @@ namespace Resurgence.Launcher;
 /// <param name="steamWait">How long a start waits for a Steam that is installed but has nobody signed in (20 s).</param>
 /// <param name="quitWithin">How long a start with Steam is watched for the client to quit at once (5 s).</param>
 /// <param name="earlyWithin">A game that ends within this long of its start closed right away (20 s).</param>
-/// <param name="runInstaller">Runs one redistributable and completes when it is done (Windows asks for its rights); null: the mock's.</param>
+/// <param name="runInstaller">Runs one redistributable with its switches and completes when it is done (Windows asks for its rights); null: the mock's.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
-    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, Task>? runInstaller = null) : ILauncherBridge
+    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -149,13 +149,12 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     const string AppControl = "windowsdefender://appbrowser";
 
     /// <summary>
-    /// Runs the redistributables of the game folder one after the other, off the calling thread (a rejected rights prompt ends the rest). <c>Launch.NoRuntimes</c> when there are none. ponytail: the newest Visual C++ set
-    /// and DirectX only; every older generation would be a prompt more.
+    /// Runs the installers <see cref="Runtimes"/> picks one after the other, off the calling thread (a rejected rights prompt ends the rest). <c>Launch.NoRuntimes</c> when there are none.
     /// </summary>
     public Result RunGameRuntimes()
     {
         if (runInstaller is null) return rest.RunGameRuntimes();
-        IReadOnlyList<string> files;
+        IReadOnlyList<(string File, string Args)> files;
         try { files = install() is { } g ? Runtimes(g.Folder) : []; }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException) { return Result.Fail("Launch.NoRuntimes"); }
         if (files.Count == 0) return Result.Fail("Launch.NoRuntimes");
@@ -165,8 +164,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         {
             try
             {
-                foreach (var file in files)
-                    try { await runInstaller(file); }
+                foreach (var (file, args) in files)
+                    try { await runInstaller(file, args); }
                     catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { log?.LogWarning("A game component was not installed: {Error}", e.Message); return; }
             }
             finally { Interlocked.Exchange(ref installing, 0); }
@@ -177,24 +176,27 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     int installing;
 
     /// <summary>
-    /// The installers of the first redist folder that has any (<c>_CommonRedist</c> or <c>redist</c> in the game folder, else Steam's shared <c>_CommonRedist</c> beside the game's library folder): the Visual C++ ones
-    /// of the newest folder (by name, x64 first) and DirectX's <c>DXSETUP.exe</c>.
+    /// What Steam's first-time setup installs for the 32-bit game, from the first redist folder that has any (<c>_CommonRedist</c> or <c>redist</c> in the game folder, else Steam's shared <c>_CommonRedist</c> beside the
+    /// game's library folder), in this order and only the ones present: Visual C++ 2010 and 2005 (<c>vcredist/&lt;year&gt;/vcredist_x86.exe</c>), then DirectX's <c>DirectX/*/DXSETUP.exe</c>. Never the x64, 2012 or 2022 ones
+    /// (the game ships the 2015-2022 DLLs). <c>/passive</c> (progress, no questions) is the 2010 installer's documented switch, <c>/silent</c> DXSETUP's; the 2005 installer has no switch that keeps its progress.
     /// </summary>
-    internal static IReadOnlyList<string> Runtimes(string folder)
+    internal static IReadOnlyList<(string File, string Args)> Runtimes(string folder)
     {
         foreach (var root in new[] { "_CommonRedist", "redist", Path.Combine("..", "Steamworks Shared", "_CommonRedist") }.Select(r => Path.GetFullPath(Path.Combine(folder, r))).Where(Directory.Exists))
         {
-            var vc = Directory.EnumerateFiles(root, "*redist*.exe", SearchOption.AllDirectories).GroupBy(Path.GetDirectoryName).MaxBy(g => g.Key, StringComparer.OrdinalIgnoreCase);
-            var found = vc?.Order(StringComparer.OrdinalIgnoreCase).ToList() ?? [];
-            found.AddRange(Directory.EnumerateFiles(root, "DXSETUP.exe", SearchOption.AllDirectories));
+            var found = new List<(string, string)>();
+            foreach (var (year, args) in new[] { ("2010", "/passive /norestart"), ("2005", "") })
+                if (Path.Combine(root, "vcredist", year, "vcredist_x86.exe") is var vc && File.Exists(vc)) found.Add((vc, args));
+            if (Path.Combine(root, "DirectX") is var dx && Directory.Exists(dx))
+                found.AddRange(Directory.EnumerateFiles(dx, "DXSETUP.exe", SearchOption.AllDirectories).Order(StringComparer.OrdinalIgnoreCase).Select(f => (f, "/silent")));
             if (found.Count > 0) return found;
         }
         return [];
     }
 
-    static async Task RunInstaller(string path)
+    static async Task RunInstaller(string path, string args)
     {
-        using var p = Process.Start(new ProcessStartInfo(path) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(path) });
+        using var p = Process.Start(new ProcessStartInfo(path, args) { UseShellExecute = true, WorkingDirectory = Path.GetDirectoryName(path) });
         if (p is not null) await p.WaitForExitAsync();
     }
     public void ToggleDevTools() => rest.ToggleDevTools();
