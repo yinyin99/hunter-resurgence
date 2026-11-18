@@ -1529,7 +1529,10 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.Send" xml:space="preserve"><value>Lähetä</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Lähetetään…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Tallennettu nimellä {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Lähetetty. Viite: {0} (kerro se Discordissa)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Lähetetty.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Kerro tämä viite Discordissa</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopioitu</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Tiedostoa ei voitu näyttää Resurssienhallinnassa.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Lähetä automaattisesti epäonnistuneen käynnistyksen jälkeen</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Ongelmaraportti lähetetty: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>

@@ -23,6 +23,7 @@ public class ServerServersServiceTests
         public List<string> Started { get; } = [];
         public bool IsSteam => false;
         public Result OpenFolder(string kind) => Result.Success;
+        public Result ShowFile(string path) => Result.Success;
         public GameInstallInfo GameInstall => new(null, null, []);
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }

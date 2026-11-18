@@ -1529,7 +1529,10 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Sending…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Saved as {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Sent. Reference: {0} (give it on Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sent.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Give this reference on Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>The file could not be shown in Explorer.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatically after a failed start</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problem report sent: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>The problem report could not be sent: {0}</value></data>

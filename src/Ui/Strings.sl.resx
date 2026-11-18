@@ -1529,7 +1529,10 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.Send" xml:space="preserve"><value>Pošlji</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Pošiljanje…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Shranjeno kot {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Poslano. Referenca: {0} (navedite jo na Discordu)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Poslano.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Navedite to referenco na Discordu</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopirano</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Datoteke ni bilo mogoče prikazati v Raziskovalcu.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Samodejno pošlji po neuspešnem zagonu</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Poročilo o težavi poslano: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Poročila o težavi ni bilo mogoče poslati: {0}</value></data>
