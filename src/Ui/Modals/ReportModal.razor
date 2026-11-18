@@ -64,6 +64,7 @@
     ReportSent? sent;
     string? saved;
     string? showError;
+    int copies;
     bool auto, sending, saveFailed, copied;
     readonly CancellationTokenSource gone = new();
 
@@ -80,6 +81,7 @@
     // Downloads may not be writable
     void Save()
     {
+        showError = null;
         try { (saved, saveFailed) = (Bridge.SaveReport(report!), false); }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException) { (saved, saveFailed) = (null, true); }
     }
@@ -95,11 +97,12 @@
             await shell.InvokeVoidAsync("copy", sent!.Reference);
         }
         catch (JSException) { return; } // the clipboard refused: the reference stays selectable in the box
+        var click = ++copies;
         copied = true;
         StateHasChanged();
         try { await Task.Delay(TimeSpan.FromSeconds(2), gone.Token); }
         catch (OperationCanceledException) { return; }
-        copied = false;
+        if (click == copies) copied = false; // a later click keeps its own 2 seconds
     }
 
     async Task Send()

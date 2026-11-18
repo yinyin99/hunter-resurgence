@@ -12,12 +12,12 @@ namespace Resurgence.Tests.WebTests;
 /// <summary>The problem report's first-launch consent, the Settings entry, and the "Done hunting for now?" window after a failed start (docs/launcher.md#report-a-problem).</summary>
 public sealed class ProblemReportTests : UiContext
 {
-    sealed class Bridge(string consent = "unset", GameRun? run = null, ReportSent? answer = null, bool saveFails = false) : ILauncherBridge
+    sealed class Bridge(string consent = "unset", GameRun? run = null, ReportSent? answer = null, bool saveFails = false, bool showFails = false) : ILauncherBridge
     {
         public bool IsSteam => false;
         public Result OpenFolder(string kind) => Result.Success;
         public List<string> Shown { get; } = [];
-        public Result ShowFile(string path) { Shown.Add(path); return Result.Success; }
+        public Result ShowFile(string path) { Shown.Add(path); return showFails ? Result.Fail("Report.ErrShow") : Result.Success; }
         public GameInstallInfo GameInstall => new(null, null, []);
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }
@@ -233,6 +233,18 @@ public sealed class ProblemReportTests : UiContext
         cut.Find("#report-save").Click();
         cut.Find("#report-show").Click();
         Assert.Equal([@"C:\Downloads\report.zip"], bridge.Shown);
+        Assert.Empty(cut.FindAll("[role=alert]"));
+    }
+
+    [Fact]
+    public void AnExplorerFailureIsSaidAndSaveClearsIt()
+    {
+        Use(new Bridge(showFails: true));
+        var cut = Render<ReportModal>();
+        cut.WaitForElement("#report-save").Click();
+        cut.Find("#report-show").Click();
+        Assert.Contains("could not be shown", cut.Find("[role=alert]").TextContent);
+        cut.Find("#report-save").Click();
         Assert.Empty(cut.FindAll("[role=alert]"));
     }
 
