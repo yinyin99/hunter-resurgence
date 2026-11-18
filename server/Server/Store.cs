@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 27;
+    public const int Version = 28;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -388,6 +388,8 @@ public sealed class Store
                     """);
             }
             if (version < 27) con.Script(CrashReports);
+            if (version < 28)  // the first start with the taxidermy: every harvest made until now has a window of 72 hours from now
+                con.Script(TaxidermyGraceTable + $"INSERT INTO taxidermy_grace SELECT {Now()}, {Now() + State.TaxidermyHours * 3600L} WHERE NOT EXISTS (SELECT 1 FROM taxidermy_grace);");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
