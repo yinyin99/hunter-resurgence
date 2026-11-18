@@ -15,6 +15,7 @@ namespace Resurgence.Server;
 public static class GameApi
 {
     static readonly Regex Harvest = new(@"\A/game/user/harvest/(\d+)(/taxidermize)?\z", RegexOptions.ECMAScript);
+    static readonly Regex HarvestCurrent = new(@"\A/v1/harvest/(\d+)(/taxidermize)\z", RegexOptions.ECMAScript);  // the current build's taxidermy: the web host's /v1 path, answered as the API host's
     static readonly Regex ScorePath = new(@"\A/user/[^/]+/score/\z", RegexOptions.ECMAScript);
     static readonly Regex Lodges = new(@"\A(?:/v1)?/game/user/(\d+)/lodges(?:/(\d+))?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
     static readonly Regex LodgeEdit = new(@"\A(?:/v1)?/game/user/lodges/(\d+)(/settings)?\z", RegexOptions.ECMAScript | RegexOptions.IgnoreCase);
@@ -405,7 +406,7 @@ public static class GameApi
             var apiv2 = Group(app, game.Apiv2, "Game API v2 (apiv2_host)");
             var harvest = Handle(game, r =>
             {
-                var m = Harvest.Match(r.Path);
+                var m = Harvest.Match(r.Path) is { Success: true } old ? old : HarvestCurrent.Match(r.Path);
                 if (!m.Success || !long.TryParse(m.Groups[1].Value, out var id))
                     return null;
                 var taxidermize = m.Groups[2].Success;
@@ -416,8 +417,8 @@ public static class GameApi
                     return r.Method is "GET" or "POST" ? Denied(game, r) : null;
                 if (r.Method == "GET" && !taxidermize && s.HarvestReply(a, id) is { Length: > 0 } page)
                     return new(200, [("Content-Type", "application/vnd.game.user.trophy_lodge.harvest+json"), .. Cors(r.Header)], page, "state");
-                if (r.Method == "POST" && taxidermize && s.Taxidermize(a, id))
-                    return new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state");
+                if (r.Method == "POST" && taxidermize)
+                    return TaxidermyReply(r, TaxidermyRequest(r.Body) is { } t ? s.Taxidermize(a, id, t.Product, t.Currency) : (400, "invalid"));
                 return null;
             });
             apiv2.MapGet("/game/user/harvest/{id}", harvest)
@@ -427,9 +428,12 @@ public static class GameApi
                  .Produces(200, contentType: "application/vnd.game.user.trophy_lodge.harvest+json");
             apiv2.MapPost("/game/user/harvest/{id}/taxidermize", harvest)
                  .WithName("Taxidermize").WithSummary("Taxidermize a harvested trophy")
-                 .WithDescription("Marks it taxidermized; no gold charged (taxidermy price not modelled).")
+                 .WithDescription("The game's purchase of a taxidermy or, with `is_skull`, a skull mount for a harvest made here (body `{currency: gold|silver, is_skull?}`, JSON or form): takes the price of the facts file in em$ (gold) or gm$ (silver), "
+                                  + "writes the store item's wallet row and sends the new balance with the next heartbeat. 200 with no body; 404 for a harvest that is unknown, restored or another player's, 409 `already`, "
+                                  + "410 `too_late` (72 hours after the harvest, or after the day the taxidermy went live for an older one), 400 `no_skull` or `invalid`, 402 `not_enough`, each with `{error}`. Also `POST /v1/harvest/<id>/taxidermize` (the current build).")
                  .PathParams(("id", "harvest id (= kill id)"))
                  .Produces(200, contentType: "text/plain");
+            api.MapPost("/v1/harvest/{id}/taxidermize", harvest).ExcludeFromDescription();  // the current build's path of the same purchase
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
@@ -642,6 +646,33 @@ public static class GameApi
         var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
         return form.TryGetValue(name, out var v) ? v[0] : Py.ParseQs(r.Query).TryGetValue(name, out var q) ? q[0] : null;
     }
+
+    /// <summary>The game's taxidermy body: `currency` (`gold` is em$, `silver` gm$) and, for a skull mount, `is_skull` true. JSON, or the form the current build's JSON becomes on its way here; null for anything else.</summary>
+    static (string Product, string Currency)? TaxidermyRequest(byte[] body)
+    {
+        string? currency = null;
+        var skull = false;
+        try
+        {
+            if (JsonNode.Parse(body) is JsonObject json)
+            {
+                currency = json["currency"] is JsonValue c && c.TryGetValue<string>(out var text) ? text : null;
+                skull = json["is_skull"] is JsonValue k && k.TryGetValue<bool>(out var flag) && flag;
+            }
+        }
+        catch (JsonException)
+        {
+            var form = Py.ParseQs(Encoding.UTF8.GetString(body));
+            currency = form.TryGetValue("currency", out var c) ? c[0] : null;
+            skull = form.TryGetValue("is_skull", out var k) && k[0] is "true" or "True" or "1";
+        }
+        return currency?.ToLowerInvariant() switch { "gold" => (skull ? State.SKULL : State.TAXIDERMY, "em"), "silver" => (skull ? State.SKULL : State.TAXIDERMY, "gm"), _ => null };
+    }
+
+    /// <summary>The game's answer to a taxidermy: 200 with no body, else the status and `{error}`.</summary>
+    static Reply TaxidermyReply(Req r, (int Status, string? Error) outcome) =>
+        outcome.Status == 200 ? new(200, [("Content-Type", "text/plain"), .. Cors(r.Header)], [], "state")
+        : new(outcome.Status, [("Content-Type", "application/json"), .. Cors(r.Header)], Py.DumpBytes(new JsonObject { ["error"] = outcome.Error }), "state");
 
     /// <summary>The old launcher's own calls to the game server, answered without any recording: nothing in them is
     /// read but their success. The Steam ticket of `token` is not checked (checking it needs a Steam Web API key, which the server does not have).</summary>

@@ -357,8 +357,8 @@ public class AccountIsolationTests : StateTestBase
         Eq("[50000, 72270, 10000]", T(Reply(state.HarvestReply(A, 1)!)["weight"], Reply(state.HarvestReply(B, 1)!)["weight"],
                                       Reply(state.HarvestReply(B, 2)!)["weight"]));
         Assert.Null(state.HarvestReply(A, 2));
-        Assert.False(state.Taxidermize(A, 2));
-        Assert.True(state.Taxidermize(B, 2));
+        Assert.Equal(404, state.Taxidermize(A, 2, State.TAXIDERMY, "em").Status);
+        Assert.Equal(200, state.Taxidermize(B, 2, State.TAXIDERMY, "em").Status);
         Assert.False((bool)Reply(state.HarvestReply(B, 1)!)["taxidermized"]!);
         var (killsA, killsB) = (ExpeditionOf(A)["kills"]!.AsArray(), ExpeditionOf(B)["kills"]!.AsArray());
         Assert.Equal([1L], killsA.Select(k => (long)k!["id"]!));
@@ -561,8 +561,10 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         // A has no kill 1: not B's page, and never a recorded one: the endpoint's empty reply
         var other = await Send("GET", "apiv2.test", "/game/user/harvest/1", null, null, Bearer(tokenA));
         Assert.Equal((404, "empty"), (other.Status, other.Source));
-        Assert.Equal("empty", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenA))).Source);
-        Assert.Equal("state", (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, null, Bearer(tokenB))).Source);
+        (string, string)[] json = [("Content-Type", "application/json")];
+        var (mine404, mine200) = (await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, """{"currency": "gold"}""", [.. Bearer(tokenA), .. json]),
+                                  await Send("POST", "apiv2.test", "/game/user/harvest/1/taxidermize", null, """{"currency": "gold"}""", [.. Bearer(tokenB), .. json]));
+        Assert.Equal([(404, "state"), (200, "state")], [(mine404.Status, mine404.Source), (mine200.Status, mine200.Source)]);  // A has no kill 1 to taxidermize
         Assert.Equal("state", (await Send("OPTIONS", "apiv2.test", "/game/user/harvest/1", null, null, [.. Bearer(tokenB), ("Origin", "https://web.test")])).Source);
     }
 

@@ -122,7 +122,7 @@ public sealed partial class State
                 if (trophies is null)
                 {
                     trophies = [];
-                    foreach (var row in TrophyRows(account))
+                    foreach (var row in TrophyRows(account, all: true))
                         trophies.TryAdd(Py.Str(row?["id"]), row);
                 }
                 slot["trophy_details"] = trophies.GetValueOrDefault(Py.Str(id))?.DeepClone();

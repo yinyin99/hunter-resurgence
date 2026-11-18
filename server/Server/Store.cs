@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 27;
+    public const int Version = 28;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -143,6 +143,10 @@ public sealed class Store
         CREATE INDEX IF NOT EXISTS crash_reports_ts ON crash_reports (ts);
         """;
 
+    // when the taxidermy went live and when the window of the harvests made before it ends (TaxidermyGrace); one row, shared by all players, so not in PlayerTables.
+    // A new database has no older harvest: start 0.
+    const string TaxidermyGraceTable = "CREATE TABLE IF NOT EXISTS taxidermy_grace (start INTEGER NOT NULL, grace_end INTEGER NOT NULL);";
+
     // a player's count toward each community mission of an event, and whether the reward was paid; shared by all players, so not in PlayerTables
     const string CommunityProgress = $"""
         CREATE TABLE IF NOT EXISTS community_progress (
@@ -266,6 +270,14 @@ public sealed class Store
     /// <summary>A pooled connection for one account (null: only the shared tables, accounts and tokens).</summary>
     public Db Open(long? account = null) => new(connectionString, account);
 
+    /// <summary>When the taxidermy went live (Unix seconds; 0 for a database made with it) and when the window ends for the harvests made before then.</summary>
+    public (long Start, long End) TaxidermyGrace()
+    {
+        using var con = Open();
+        var row = con.Rows("SELECT start, grace_end FROM taxidermy_grace")[0];
+        return ((long)row[0], (long)row[1]);
+    }
+
     /// <summary>A consistent copy of the whole database beside it (`VACUUM INTO`, file name `&lt;db&gt;.bak-&lt;UTC time&gt;`); returns its path.</summary>
     public string Backup()
     {
@@ -292,6 +304,7 @@ public sealed class Store
                 throw new InvalidOperationException("the database predates accounts: delete it and start again");
             con.Script(Schema);
             con.Script(IdCounter);
+            con.Script(TaxidermyGraceTable + "INSERT INTO taxidermy_grace VALUES (0, 0);");
         }
         else
         {
@@ -375,6 +388,8 @@ public sealed class Store
                     """);
             }
             if (version < 27) con.Script(CrashReports);
+            if (version < 28)  // the first start with the taxidermy: every harvest made until now has a window of 72 hours from now
+                con.Script(TaxidermyGraceTable + $"INSERT INTO taxidermy_grace SELECT {Now()}, {Now() + State.TaxidermyHours * 3600L} WHERE NOT EXISTS (SELECT 1 FROM taxidermy_grace);");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

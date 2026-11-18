@@ -112,7 +112,10 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
         var user = await server.SendAsync("POST", "api.test", Replay.PUBLIC_USER, FormHeader, Encoding.ASCII.GetBytes($"hostname={Handle}"));
         Eq("2", JsonNode.Parse(user.Body)!["hunterscore"]);
 
-        // the game's own trophy list is the caller's: the player's two, the second account's none (Trophy/list rows are of their own kind: the restored ones)
+        // the game's own trophy list is the caller's: the player's restored one, then the kill once it is taxidermized in the harvest window (the second account has none; Trophy/list rows are of their own kind: the restored ones)
+        Eq("[50]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
+        Assert.Equal(200, (await server.SendAsync("POST", "game_web.test", "/v1/harvest/51/taxidermize", [("Content-Type", "application/json"), ("Authorization", "Bearer " + token)],
+            """{"currency": "gold"}"""u8.ToArray())).Status);
         Eq("[50, 51]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
         Assert.Empty(await OwnTrophies(otherToken));
 

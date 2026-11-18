@@ -27,10 +27,11 @@ namespace Resurgence.Launcher;
 /// <param name="freeBytes">Free bytes on the drive of a path; null when unknown.</param>
 /// <param name="temp">The temp folder.</param>
 /// <param name="blocks">The Windows events of the last 7 days that tell of a blocked file, each formatted.</param>
+/// <param name="steamInstalled">Whether Steam is installed for this user; null: not asked (a Steam that is not signed in is then the only reading).</param>
 /// <param name="portUser">The name of the other program that listens on a port (80, 443: the forwarder of the player kit needs both) or null when it is free; null: the ports are not checked.</param>
 public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Func<Task<long?>> serverBuild, Func<bool> steamSignedIn, Func<string?> setup, Func<string, bool> isRunning,
     Func<GameInstall, string?>? manifest = null, Func<string, bool>? isNetwork = null, Func<IEnumerable<string>>? oneDrive = null, Func<string, long?>? freeBytes = null, string? temp = null,
-    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null)
+    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null)
 {
     const long LowBytes = 1L << 30;
     const int LongPath = 200, Archives = 12;
@@ -46,7 +47,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         var http = s.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) } : null;
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
-            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null);
+            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed);
     }
 
     /// <summary>Runs the checks off the calling thread.</summary>
@@ -66,7 +67,11 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             version,
             Run("files", Files),
             Info("path", PathCheck),
-            Safe("steam", () => steamSignedIn() ? Ok("steam") : new("steam", "block", "Check.Steam.SignedOut", null, "open-steam")),
+            // the game starts without Steam when it is not installed or not signed in: a warning, a block only when there is no game to start
+            Safe("steam", () => steamSignedIn() ? Ok("steam")
+                : g is null ? new("steam", "block", "Check.Steam.SignedOut", null, "open-steam")
+                : steamInstalled?.Invoke() == false ? new("steam", "warn", "Check.Steam.NotInstalled")
+                : new("steam", "warn", "Check.Steam.Fallback", null, "open-steam")),
             Safe("setup", () => setup() is { } key ? new("setup", "block", key, null, "setup") : PortInUse() ?? Ok("setup")),
             Info("windows", Windows),
             Info("disk", Disk),

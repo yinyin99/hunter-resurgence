@@ -1,4 +1,4 @@
-.steam-opt { position: absolute; top: 83px; left: calc(50% - 310px); box-sizing: border-box; width: var(--w-gamesettings); max-height: min(600px, calc(100vh - 103px)); padding: 20px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--fg-muted-3) transparent; }
+.steam-opt { position: absolute; top: 83px; left: calc(50% - 310px); box-sizing: border-box; width: var(--w-gamesettings); max-height: min(600px, calc(100vh - 103px)); padding: 20px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scroll-thumb) transparent; }
 h1 { margin: 0 0 16px; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
 p, li { font-size: 16px; line-height: 22px; color: var(--text-2); }
 p { margin: 0 0 20px; }

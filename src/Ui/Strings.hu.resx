@@ -232,7 +232,9 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>A játék már fut.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>A játék nem található. Ellenőrizd a mappáját a beállításokban.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>A játékot nem sikerült elindítani.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Indítsd el a Steamet, jelentkezz be, és próbáld újra.</value></data>
+  <data name="Launch.StartingSteam" xml:space="preserve"><value>A Steam indítása…</value></data>
+  <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Indítás Steam nélkül</value></data>
+  <data name="Launch.NoSteamNote" xml:space="preserve"><value>Steam nélkül elindítva: a Steam-teljesítmények ki vannak kapcsolva ebben a munkamenetben.</value></data>
   <data name="Servers.Title" xml:space="preserve"><value>TÖBBJÁTÉKOS MÓD KERESÉSE</value></data>
   <data name="Servers.Search" xml:space="preserve"><value>Keress játékot vagy házigazdát...</value></data>
   <data name="Servers.Clear" xml:space="preserve"><value>Törlés</value></data>
@@ -1464,6 +1466,8 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>A játék egy OneDrive-mappában van; egy egyszerű mappa, például a C:\Games működik a legjobban.</value></data>
   <data name="Check.Path.Network" xml:space="preserve"><value>A játék hálózati meghajtón van; egy helyi mappa működik a legjobban.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>A Steam nincs bejelentkezve.</value></data>
+  <data name="Check.Steam.Fallback" xml:space="preserve"><value>A Steam nincs bejelentkezve: a játék Steam nélkül indul el.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>A Steam nincs telepítve: a játék Steam nélkül indul el.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>A Windows blokkolt egy játékfájlt ({0}): engedélyezd a Windows Biztonságban.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Kevés a szabad hely itt: {0} ({1} maradt).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>A játék már fut: zárd be, majd innen indítsd el.</value></data>

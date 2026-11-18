@@ -22,6 +22,10 @@ public class ServerServersServiceTests
     {
         public List<string> Started { get; } = [];
         public bool IsSteam => false;
+        public bool WaitingForSteam => false;
+        public void StartWithoutSteam() { }
+        public event Action? StartStateChanged { add { } remove { } }
+        public string? LastStartMode => null;
         public Result OpenFolder(string kind) => Result.Success;
         public Result ShowFile(string path) => Result.Success;
         public GameInstallInfo GameInstall => new(null, null, []);

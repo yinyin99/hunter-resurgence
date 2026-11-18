@@ -50,16 +50,18 @@ public static class Steam
         catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return false; }
     }
 
-    /// <summary>True when somebody is signed in to Steam; when Steam is not running it is started first, and waited for up to the timeout.</summary>
-    public static bool SignedIn(Func<uint> account, Func<bool> startSteam, TimeSpan timeout, TimeSpan poll)
-    {
-        if (account() != 0) return true;
-        if (!startSteam()) return false;
-        for (var end = DateTime.UtcNow + timeout; DateTime.UtcNow < end;)
-        {
-            Thread.Sleep(poll);
-            if (account() != 0) return true;
-        }
-        return false;
-    }
+    /// <summary>True when steam.exe is in the Steam folder of this user.</summary>
+    public static bool Installed() => InstallPath() is { } dir && File.Exists(Path.Combine(dir, "steam.exe"));
+}
+
+/// <summary>What a start asks of Steam; the seam of <see cref="LauncherBridge"/>: a test passes fakes.</summary>
+/// <param name="Installed">Steam is installed for this user.</param>
+/// <param name="SignedIn">Somebody is signed in to Steam (does not start it).</param>
+/// <param name="Start">Starts Steam minimized; false when it does not start.</param>
+public sealed record SteamProbes(Func<bool> Installed, Func<bool> SignedIn, Func<bool> Start)
+{
+    public static SteamProbes Real { get; } = new(Steam.Installed, () => Steam.ActiveAccount() != 0, Steam.StartSilent);
+
+    /// <summary>The mode the game starts in if started now: "nosteam" when Steam is not installed, else null (a start with Steam can still fall back to none: 16010, a late Steam).</summary>
+    public string? PlannedMode() => !Installed() ? "nosteam" : null;
 }

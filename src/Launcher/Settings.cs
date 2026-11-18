@@ -14,6 +14,13 @@ public sealed record Settings(string? SteamAppId, string? ClientExe, string? Gra
     public static string FilePath => Path.Combine(Environment.ProcessPath is { } p && !Path.GetFileNameWithoutExtension(p).Equals("dotnet", StringComparison.OrdinalIgnoreCase)
         ? Path.GetDirectoryName(p)! : AppContext.BaseDirectory, "settings.json");
 
+    /// <summary>
+    /// The graphics file of a start without <c>/steam</c>: <c>graphics_file</c> with "_steam" taken out of its name (<c>&lt;product&gt;Settings_steam_live.cfg</c> becomes <c>&lt;product&gt;Settings_live.cfg</c>);
+    /// null when the name has no "_steam" (one file for both modes).
+    /// </summary>
+    public string? GraphicsFileNoSteam => GraphicsFile is { } f && Path.GetFileName(f) is var name && name.Contains("_steam", StringComparison.Ordinal)
+        ? Path.Combine(Path.GetDirectoryName(f)!, name.Replace("_steam", "", StringComparison.Ordinal)) : null;
+
     public bool Configured => SteamAppId is not null && ClientExe is not null;
 
     public static Settings Load(string? path = null)

@@ -253,4 +253,15 @@ public sealed class Facts
         var free = Obj("start")["free_ammo"] as JsonObject ?? [];
         return ([.. (free["items"] as JsonArray ?? []).Select(Py.L)], free["boxes"] is { } b ? Py.L(b) : 0);
     }
+
+    /// <summary>What a taxidermy or a skull mount costs, <c>taxidermy.ems</c> and <c>taxidermy.gms</c> (a price of 0 makes it free; the original's 10 em$ and 2,000 gm$ when the file has none).</summary>
+    public (long Ems, long Gms) TaxidermyPrice()
+    {
+        var price = Obj("taxidermy");
+        return (price["ems"] is { } e ? Py.L(e) : 10, price["gms"] is { } g ? Py.L(g) : 2000);
+    }
+
+    /// <summary>Whether the species (its define, e.g. <c>MULE_DEER</c>) has a skull to mount: it is on the lodge catalogue's skull page.</summary>
+    public bool HasSkull(string? define) =>
+        define is not null && (LodgeCatalogue("skull") as JsonArray ?? []).Any(s => (string?)s?["define"] == define);
 }

@@ -14,6 +14,17 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
     public int? ExitCode() => exitCode();
     public void Dispose() => dispose?.Invoke();
 
+    /// <summary>Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.</summary>
+    public static GameProcess? Start(ProcessStartInfo info)
+    {
+        try
+        {
+            if (Process.Start(info) is not { } p) return null;
+            return new(() => !p.HasExited && HasVisibleWindow((uint)p.Id), () => p.HasExited ? p.ExitCode : null, p.Dispose);
+        }
+        catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return null; }
+    }
+
     /// <summary>The process named like the client exe (without extension), or null; the same match as <see cref="GameFiles.ClientRunning"/>.</summary>
     public static GameProcess? Find(string clientExe)
     {

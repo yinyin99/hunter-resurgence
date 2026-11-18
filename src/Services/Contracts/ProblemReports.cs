@@ -2,7 +2,8 @@ namespace Resurgence.Services;
 
 /// <summary>One game start the launcher watched.</summary>
 /// <param name="WindowSeen">A visible top-level window of the game was seen while it ran.</param>
-public sealed record GameRun(DateTimeOffset Start, TimeSpan Ran, int? ExitCode, bool WindowSeen)
+/// <param name="Mode">"steam" or "nosteam": how the launcher started it; null when it did not say (older records).</param>
+public sealed record GameRun(DateTimeOffset Start, TimeSpan Ran, int? ExitCode, bool WindowSeen, string? Mode = null)
 {
     /// <summary>short, exitcode or nowindow when this run looks failed; null for a normal run.</summary>
     public string? Trigger => !WindowSeen ? "nowindow" : ExitCode is { } c && c != 0 ? "exitcode" : Ran < TimeSpan.FromSeconds(60) ? "short" : null;

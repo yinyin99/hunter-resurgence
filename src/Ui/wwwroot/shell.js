@@ -69,6 +69,11 @@ export function onceMouse(ref) {
     return () => document.removeEventListener('mousemove', h);
 }
 
+// Calls ref.Dismiss() once, at the next click anywhere (capture phase: the click still does what it was for); a ref that is gone by then is ignored.
+export function onceClick(ref) {
+    document.addEventListener('click', () => ref.invokeMethodAsync('Dismiss').catch(() => { }), { capture: true, once: true });
+}
+
 // Opens or closes the modal host's <dialog>. Modal: the page behind is inert and focus stays inside. Escape does nothing, as in the old app
 // (a dialog that wants it handles the key itself); a browser that closes the dialog anyway after repeated Escape gets it opened again.
 // Called after every render of the host: once the content is there and nothing inside has focus, the [autofocus] element gets it (no ring).
