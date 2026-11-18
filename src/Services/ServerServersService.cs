@@ -67,7 +67,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return [];
     }
 
-    /// <summary>The player's own placed tents, callers, blinds and stands in a reserve (<see cref="ServerAccountApi.Placed"/>); none when signed out or when the server does not answer.</summary>
+    /// <summary>The player's own placed items in a reserve (<see cref="ServerAccountApi.Placed"/>); none when signed out or when the server does not answer.</summary>
     async Task<MapMarker[]> PlacedAsync(int reserve)
     {
         if (cookie.Value is null) return [];
@@ -93,6 +93,9 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         "caller" => new MapMarker(-(int)i.Id, MarkerKind.Caller, i.Name, i.X, i.Y),
         "groundblind" => new MapMarker(-(int)i.Id, MarkerKind.GroundBlind, i.Name, i.X, i.Y),
         "treestand" => new MapMarker(-(int)i.Id, MarkerKind.TreeStand, i.Name, i.X, i.Y),
+        "tripod" => new MapMarker(-(int)i.Id, MarkerKind.Tripod, i.Name, i.X, i.Y),
+        "deployabletower" => new MapMarker(-(int)i.Id, MarkerKind.DeployableTower, i.Name, i.X, i.Y),
+        "climbing" => new MapMarker(-(int)i.Id, MarkerKind.Climbing, i.Name, i.X, i.Y),
         _ => null,
     };
 

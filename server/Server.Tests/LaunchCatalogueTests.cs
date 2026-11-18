@@ -32,7 +32,7 @@ public class LaunchCatalogueTests : StateTestBase
              "price": 10, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 0}, "hidden": 0}
             """));
         foreach (var gear in new[] { Gear(901, "TENT02", "Test Tent"), Gear(902, "TREE_STAND01", "Test Stand"), Gear(903, "ELECTRONIC_CALLER", ""), Gear(904, "GROUND_BLIND01", "Test Blind"),
-                                     Gear(905, "CLIMBING_GEAR_01", "Test Climbing Gear") })
+                                     Gear(905, "CLIMBING_GEAR_01", "Test Climbing Gear"), Gear(908, "TRIPOD_STAND01", "Test Tripod"), Gear(909, "DEPLOYABLE_HUNTING_TOWER_01", "Test Tower") })
             app["items"]!.AsArray().Add(gear);
         return app;
     }
@@ -240,14 +240,16 @@ public class LaunchCatalogueTests : StateTestBase
     }
 
     [Fact]
-    public async Task ThePlacedTentsCallersBlindsAndStandsOfThePlayerAreListedAtTheirPlace()
+    public async Task EveryKindOfPlacedItemOfThePlayerIsListedAtItsPlaceWithItsOwnKind()
     {
         await using var server = await Start(facts: MapFacts);
         Place(501, 901, 1, 500_000, 500_000);        // a tent in the middle of the first reserve's map
         Place(502, 902, 1, -500_000, 1_500_000);     // a stand at its left edge, at the bottom
         Place(503, 903, 1, 1_500_000, -500_000);     // a caller the catalogue has no name for, at the right edge, at the top
         Place(504, 904, 2, -6_420_000, 3_310_000);   // a blind where the second reserve's lodge is
-        Place(505, 905, 1, 0, 0);                    // climbing gear is not on the map
+        Place(505, 905, 1, 0, 0);                    // a climbing rope in the corner of the first reserve's map
+        Place(508, 908, 1, 500_000, -500_000);       // a tripod and a deployable tower: kinds of their own, not the stand's
+        Place(509, 909, 1, 1_000_000, 1_000_000);
         using (var con = state.Store.Open(ME))
         {
             con.Begin();
@@ -264,7 +266,10 @@ public class LaunchCatalogueTests : StateTestBase
             {"items": [{"id": 501, "reserve": 1, "kind": "tent", "name": "Test Tent", "x": 50, "y": 50},
                        {"id": 502, "reserve": 1, "kind": "treestand", "name": "Test Stand", "x": 0, "y": 100},
                        {"id": 503, "reserve": 1, "kind": "caller", "name": "Caller", "x": 100, "y": 0},
-                       {"id": 504, "reserve": 2, "kind": "groundblind", "name": "Test Blind", "x": {{lodge["x"]}}, "y": {{lodge["y"]}}}]}
+                       {"id": 504, "reserve": 2, "kind": "groundblind", "name": "Test Blind", "x": {{lodge["x"]}}, "y": {{lodge["y"]}}},
+                       {"id": 505, "reserve": 1, "kind": "climbing", "name": "Test Climbing Gear", "x": 25, "y": 25},
+                       {"id": 508, "reserve": 1, "kind": "tripod", "name": "Test Tripod", "x": 50, "y": 0},
+                       {"id": 509, "reserve": 1, "kind": "deployabletower", "name": "Test Tower", "x": 75, "y": 75}]}
             """, JsonNode.Parse(reply.Body));  // the second reserve's map is the square round its starts, so the blind has the lodge's own percent
     }
 

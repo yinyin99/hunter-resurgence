@@ -28,7 +28,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     public Task<IReadOnlyList<Reserve>> ReservesAsync() =>
         Task.FromResult<IReadOnlyList<Reserve>>(Enumerable.Range(1, 12).Select(i => new Reserve(i, $"Reserve {i:00}")).ToList());
 
-    /// <summary>Two lodges (ids 1 and 2), a tent-capable campsite, towers, feeders, stands and points of interest at fixed spots; with mock "tents" two tents of the player.</summary>
+    /// <summary>Two lodges (ids 1 and 2), a tent-capable campsite, towers, feeders, one of each placed kind (stand, blind, tripod, tower, rope, caller) and points of interest at fixed spots; with mock "tents" two tents of the player.</summary>
     public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
         Task.FromResult<IReadOnlyList<MapMarker>>(
         [
@@ -37,6 +37,8 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
             new(7, MarkerKind.Campsite, "Campsite", 52, 44), new(8, MarkerKind.Interest, "Point of interest", 18, 66), new(9, MarkerKind.Bait, "Bait barrel", 66, 82),
             new(10, MarkerKind.Interest, "Point of interest", 84, 24),
             new(12, MarkerKind.Feeder, "Feeder", 40, 74), new(13, MarkerKind.Feeder, "Feeder", 74, 52), new(14, MarkerKind.TreeStand, "Tree stand", 30, 46), new(15, MarkerKind.GroundBlind, "Ground blind", 58, 28),
+            new(17, MarkerKind.Tripod, "Tripod stand", 22, 38), new(18, MarkerKind.DeployableTower, "Deployable hunting tower", 62, 48), new(19, MarkerKind.Climbing, "Climbing rope", 34, 70),
+            new(20, MarkerKind.Caller, "Electronic caller", 56, 60),
             .. mock == "tents" ? (MapMarker[])[new(11, MarkerKind.Tent, "Tent One", 48, 66), new(16, MarkerKind.Tent, "Tent Two", 80, 44)] : [],
         ]);
 

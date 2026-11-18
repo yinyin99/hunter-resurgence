@@ -89,6 +89,9 @@ public class ServerServersServiceTests
                    {"id": 502, "reserve": 2, "kind": "treestand", "name": "Test Stand", "x": 20, "y": 30},
                    {"id": 503, "reserve": 2, "kind": "caller", "name": "Caller", "x": 70, "y": 80},
                    {"id": 504, "reserve": 2, "kind": "groundblind", "name": "Test Blind", "x": 5, "y": 6},
+                   {"id": 507, "reserve": 2, "kind": "tripod", "name": "Test Tripod", "x": 21, "y": 31},
+                   {"id": 508, "reserve": 2, "kind": "deployabletower", "name": "Test Tower", "x": 22, "y": 32},
+                   {"id": 509, "reserve": 2, "kind": "climbing", "name": "Test Rope", "x": 23, "y": 33},
                    {"id": 505, "reserve": 1, "kind": "tent", "name": "Tent of another reserve", "x": 1, "y": 2},
                    {"id": 506, "reserve": 2, "kind": "decoy", "name": "Not on the map", "x": 1, "y": 1}]}
         """;
@@ -100,7 +103,8 @@ public class ServerServersServiceTests
     {
         var fake = new Fake(AnswerWithPlaced);
         Assert.Equal(["101 Lodge Lodge 1 10.25,79.5", "102 Tower Tower 1 50,20", "103 Campsite Campsite 1 60,60", "104 Interest Old Mill 90,20",
-                      "-501 Tent Test Tent 50,60.5", "-502 TreeStand Test Stand 20,30", "-503 Caller Caller 70,80", "-504 GroundBlind Test Blind 5,6"],
+                      "-501 Tent Test Tent 50,60.5", "-502 TreeStand Test Stand 20,30", "-503 Caller Caller 70,80", "-504 GroundBlind Test Blind 5,6",
+                      "-507 Tripod Test Tripod 21,31", "-508 DeployableTower Test Tower 22,32", "-509 Climbing Test Rope 23,33"],
             (await Make(fake, new Bridge()).MarkersAsync(2)).Select(m => FormattableString.Invariant($"{m.Id} {m.Kind} {m.Name} {m.X},{m.Y}")));
         Assert.Equal("hr_session=secret", fake.Seen.Single(s => s.Path == ServerAccountApi.Placed).Cookie);
         Assert.Equal(["-505"], (await Make(new Fake(AnswerWithPlaced), new Bridge()).MarkersAsync(1)).Select(m => m.Id.ToString()));

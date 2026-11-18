@@ -297,9 +297,9 @@ public static class AccountApi
         group.MapGet("/placed", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.PlacedItems(account))
                 : Refuse(401, "signed_out", "Sign in first."))
-            .WithName("AccountPlaced").WithSummary("The player's own placed tents, callers, blinds and stands, for the launcher's map")
+            .WithName("AccountPlaced").WithSummary("The player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes, for the launcher's map")
             .WithDescription("`{items: [{id, reserve, kind, name, x, y}]}`: `id` is the item's guid (the number `POST /auth/launch` takes as `tent` for a tent), `reserve` the web's reserve number, `kind` one of "
-                             + "`tent`, `caller`, `groundblind`, `treestand`, `name` the catalogue's, `x` and `y` percent of the reserve's map picture, as the starts of `GET /catalog/reserves`. "
+                             + "`tent`, `caller`, `groundblind`, `treestand`, `tripod`, `deployabletower`, `climbing`, `name` the catalogue's, `x` and `y` percent of the reserve's map picture, as the starts of `GET /catalog/reserves`. "
                              + "Only items in slot 23 with a position and a reserve.")
             .Produces(200, contentType: "application/json");
 
