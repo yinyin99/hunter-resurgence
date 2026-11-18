@@ -85,6 +85,9 @@ public partial class AssetSlotsTests
         Assert.Contains("marker-treestand-active", keys);
         Assert.Contains("avatar-54", keys);
         Assert.Contains("em-pack", keys);
+        Assert.Contains("recruit-hero", keys);
+        Assert.Contains("competition-board", keys);
+        Assert.Contains("marker-bait", keys);
         Assert.Contains(keys, k => k.StartsWith("species-"));
         Assert.Contains(keys, k => k.StartsWith("video-"));
         Assert.Contains(keys, k => k.StartsWith("competition-hero-"));
@@ -95,12 +98,18 @@ public partial class AssetSlotsTests
     public async Task TheLiveSiteUsesTheStoreNamesAndHidesTheMocksOnlyPictures()
     {
         var s = Sources(live: true);
-        var keys = (await AssetSlots.ExpectedAsync(s)).Select(e => e.Key).ToHashSet();
+        var expected = await AssetSlots.ExpectedAsync(s);
+        var keys = expected.Select(e => e.Key).ToHashSet();
         var item = (await s.Store.ItemsAsync("all", "", 1)).Rows[0];
         Assert.Contains($"store-item-{item.Id}", keys);
         Assert.DoesNotContain($"item-{item.Id}", keys);
         Assert.DoesNotContain("em-pack", keys);
         Assert.DoesNotContain(keys, k => k.StartsWith("mission-giver-"));
+        // /competitions and /invite-friends are mock-only pages (LauncherGuard.MockData), and the server never sends the bait and feeder markers
+        Assert.DoesNotContain(expected, e => e.Area == "competitions");
+        Assert.DoesNotContain("recruit-hero", keys);
+        Assert.DoesNotContain(keys, k => k.StartsWith("marker-bait") || k.StartsWith("marker-feeder"));
+        Assert.Contains("marker-tripod-active", keys);
     }
 
     [Fact]

@@ -35,7 +35,7 @@ public static class AssetSlots
         L("bg-hero", "decoration", "980x550", "Feed"), L("browser-bg", "decoration", "1280x760", "BrowserNotice"), L("page-bg", "decoration", "", "ShellLayout"),
         L("frame-leather", "decoration", "1280x760", "SignupLayout"), L("gift-frame", "decoration", "561x288", "Signup Page2 to Page5"),
         L("gift-shotgun", "decoration", "467x99", "Signup Page2"), L("gift-licenses", "decoration", "476x193", "Signup Page3"), L("gift-membership", "decoration", "441x149", "Signup Page4"),
-        L("paper-notice", "decoration", "", "Paper"), L("icon-store", "decoration", "46x46", "MenuBar"), L("recruit-hero", "decoration", "940x310", "InviteFriends"),
+        L("paper-notice", "decoration", "", "Paper"), L("icon-store", "decoration", "46x46", "MenuBar"), L("recruit-hero", "decoration", "940x310", "InviteFriends", mockOnly: true),
         L("signup-bg-1", "decoration", "1200x674", "SignupCard"), L("signup-bg-2", "decoration", "1200x674", "SignupCard"), L("signup-bg-3", "decoration", "1200x674", "SignupCard"),
         L("signup-bg-4", "decoration", "1200x674", "SignupCard"), L("signup-bg-5", "decoration", "1200x674", "SignupCard"),
         L("avatar-default", "avatars", "", "every place that draws a player"),
@@ -97,13 +97,14 @@ public static class AssetSlots
         // the reserves the server's catalogue holds (the website's mock: 01 to 12); marker kinds are the enum's
         new("reserve-", "reserves and maps", "70x70", "LaunchMap", async s => (await s.Servers.ReservesAsync()).Select(r => $"reserve-{r.Id:00}")),
         new("map-", "reserves and maps", "", "LaunchMap, JoinMapModal", async s => (await s.Servers.ReservesAsync()).Select(r => $"map-{r.Id:00}")),
-        new("marker-", "reserves and maps", "24x24", "LaunchMap, JoinMapModal", _ => Task.FromResult<IEnumerable<string>>(
-            [.. Enum.GetNames<MarkerKind>().Select(k => "marker-" + k.ToLowerInvariant()).SelectMany(k => new[] { k, k + "-active" })])),  // -active is optional (docs/images.md)
+        // bait and feeder are the mock's only: the server never sends them
+        new("marker-", "reserves and maps", "24x24", "LaunchMap, JoinMapModal", s => Task.FromResult<IEnumerable<string>>(
+            [.. Enum.GetNames<MarkerKind>().Where(k => !s.Mode.Live || k is not (nameof(MarkerKind.Bait) or nameof(MarkerKind.Feeder))).Select(k => "marker-" + k.ToLowerInvariant()).SelectMany(k => new[] { k, k + "-active" })])),  // -active is optional (docs/images.md)
         new("avatar-", "avatars", "60x60", "Settings, everywhere a player is drawn", async s => (await s.Account.AvatarsAsync()).Where(a => a.Id.StartsWith("avatar-", StringComparison.Ordinal)).Select(a => a.Id)),
         new("video-", "help", "185x138", "Help, VideoModal", async s => (await s.Help.TutorialsAsync()).SelectMany(t => t.Videos).Select(v => "video-" + v.Id)),
         new("competition-hero-", "news", "805x380", "Feed", _ => Task.FromResult<IEnumerable<string>>([.. NewsPosts.All.Select(p => p.Picture)])),  // before the competitions: the first listing of a key wins
-        new("competition-hero-", "competitions", "980x340", "CompetitionView", CompetitionHeroes),
-        new("competition-", "competitions", "45x45", "CompetitionTable", Values("competition-", "board", "weight")),
+        new("competition-hero-", "competitions", "980x340", "CompetitionView", MockOnly(CompetitionHeroes)),  // the live site sends /competitions to the feed
+        new("competition-", "competitions", "45x45", "CompetitionTable", MockOnly(Values("competition-", "board", "weight"))),
         new("em-pack-", "bank", "100x80", "BankModal", MockOnly(async s => (await s.Bank.CatalogAsync()).EmPacks.Select(p => "em-pack-" + p.Ems))),
         new("membership-", "bank", "100x70", "BankModal", MockOnly(Values("membership-", "starter", "special", "basic"))),
         new("paw-badge-", "missions", "100x111", "DailyMissions", Values("paw-badge-", "easy", "medium", "hard")),
@@ -181,7 +182,8 @@ public sealed class MissingList(AssetImages images)
                 if ((h = held) is null || now >= h.Until)
                 {
                     var expected = await AssetSlots.ExpectedAsync(sources);
-                    h = held = new(now + (expected.Any(e => e.Area == "store") ? Lifetime : Retry), AssetSlots.Report(expected, images), [.. expected.Select(e => e.Key)]);
+                    var failed = !expected.Any(e => e.Area == "store") || !expected.Any(e => e.Area == "species"); // the store or the boards did not answer
+                    h = held = new(now + (failed ? Retry : Lifetime), AssetSlots.Report(expected, images), [.. expected.Select(e => e.Key)]);
                 }
             }
             finally { gate.Release(); }

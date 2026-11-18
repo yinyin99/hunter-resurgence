@@ -28,6 +28,18 @@ public sealed class MapPlaceholderTests : UiContext
         Assert.DoesNotContain("marker-tower", images.Missing.Keys);
     }
 
+    // every kind of the player's placed items has a slot of its own: a tripod and a tower are not the stand's picture
+    [Fact]
+    public void EveryPlacedKindDrawsItsOwnSlot()
+    {
+        var kinds = new[] { MarkerKind.Tent, MarkerKind.TreeStand, MarkerKind.Tripod, MarkerKind.DeployableTower, MarkerKind.GroundBlind, MarkerKind.Climbing, MarkerKind.Caller };
+        Services.AddSingleton(new AssetImages(kinds.ToDictionary(k => $"marker-{k.ToString().ToLowerInvariant()}.png", _ => "1")));
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, kinds.Select((k, i) => new MapMarker(-i, k, k.ToString(), 10 + i, 10)).ToArray()).Add(m => m.Reserve, 5));
+
+        Assert.Equal(["marker-tent", "marker-treestand", "marker-tripod", "marker-deployabletower", "marker-groundblind", "marker-climbing", "marker-caller"],
+            cut.FindAll("button.marker img").Select(i => i.GetAttribute("alt")));
+    }
+
     // a decimal percent is written with a point in a culture that writes a comma
     [Fact]
     public void ThePositionIsAPercentWithAPointForTheDecimals()

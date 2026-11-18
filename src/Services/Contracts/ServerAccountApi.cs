@@ -52,7 +52,7 @@ public static class ServerAccountApi
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
     public const string Inventory = "/account/inventory";
-    /// <summary>GET with the cookie: 200 <see cref="ServerPlaced"/>, the player's own placed tents, callers, blinds and stands.</summary>
+    /// <summary>GET with the cookie: 200 <see cref="ServerPlaced"/>, the player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes.</summary>
     public const string Placed = "/account/placed";
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
@@ -100,7 +100,7 @@ public sealed record ServerInventoryItem(int Id, string Name, string Variant, st
 public sealed record ServerInventory(ServerInventoryItem[] Items);
 
 /// <summary>An item of <see cref="ServerAccountApi.Placed"/>: <c>Id</c> is its guid (what <see cref="ServerLaunchApi.Launch"/> takes as <c>tent</c>), <c>Reserve</c> the web's reserve number,
-/// <c>Kind</c> tent, caller, groundblind or treestand, <c>X</c> and <c>Y</c> percent of the reserve's map picture like a <see cref="ServerStart"/>.</summary>
+/// <c>Kind</c> tent, caller, groundblind, treestand, tripod, deployabletower or climbing, <c>X</c> and <c>Y</c> percent of the reserve's map picture like a <see cref="ServerStart"/>.</summary>
 public sealed record ServerPlacedItem(long Id, int Reserve, string Kind, string Name, double X, double Y);
 
 public sealed record ServerPlaced(ServerPlacedItem[] Items);

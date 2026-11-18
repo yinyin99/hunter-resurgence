@@ -1891,7 +1891,8 @@ public sealed partial class State
     static readonly (string Kind, string Word, System.Text.RegularExpressions.Regex Rx)[] PlacedKinds =
     [
         ("tent", "Tent", TentDefine), ("caller", "Caller", new("ELECTRONIC_CALLER")), ("groundblind", "Blind", new("GROUND_BLIND|WATERFOWL_BLIND")),
-        ("treestand", "Stand", new("TREE_STAND|TRIPOD_STAND|DEPLOYABLE_HUNTING_TOWER")),
+        ("treestand", "Stand", new("TREE_STAND")), ("tripod", "Tripod", new("TRIPOD_STAND")), ("deployabletower", "Tower", new("DEPLOYABLE_HUNTING_TOWER")),
+        ("climbing", "Rope", new("CLIMBING_GEAR")),
     ];
 
     /// <summary>The map kind of a catalogue item (or an install definition), or null for an item the map does not show.</summary>
@@ -1905,8 +1906,8 @@ public sealed partial class State
         return null;
     }
 
-    /// <summary>`GET /account/placed`: the player's own placed tents, callers, blinds and stands that have a position and a reserve, `{items: [{id, reserve, kind, name, x, y}]}`: `id` the
-    /// item's guid, `reserve` the web's number, `kind` `tent`, `caller`, `groundblind` or `treestand`, `name` the catalogue's (else the kind's word), `x` and `y` percent of the reserve's
+    /// <summary>`GET /account/placed`: the player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes that have a position and a reserve, `{items: [{id, reserve, kind, name, x, y}]}`: `id` the
+    /// item's guid, `reserve` the web's number, `kind` one of <see cref="PlacedKinds"/>, `name` the catalogue's (else the kind's word), `x` and `y` percent of the reserve's
     /// map picture as in <see cref="LaunchCatalogue"/>.</summary>
     public JsonObject PlacedItems(long account)
     {
