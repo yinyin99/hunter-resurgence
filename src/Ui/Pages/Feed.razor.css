@@ -13,7 +13,7 @@ h3 { margin: 0 0 14px; font-size: var(--fs-h3); line-height: 30px; text-transfor
 article { margin-bottom: 19px; }
 h4 { margin: 0; font-size: var(--fs-h4); line-height: 24px; color: var(--accent); }
 p { margin: 0; }
-.when { margin-bottom: 10px; font-size: 11px; line-height: 16px; color: var(--fg-muted-2); }
+.when { margin-bottom: 10px; font-size: 12px; line-height: 16px; color: var(--fg-muted-2); }
 .excerpt { color: var(--fg-muted-2); }
 .news ::deep span { color: var(--accent); }
 .hero .referrer { position: absolute; left: 215px; top: 248px; width: 550px; text-align: center; font-size: 14px; line-height: 20px; color: #fff; }
