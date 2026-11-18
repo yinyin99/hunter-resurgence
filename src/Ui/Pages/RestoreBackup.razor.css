@@ -14,7 +14,7 @@
 .steps .cur button { border-bottom-color: var(--accent); color: #fff; }
 .steps .done button { border-bottom-color: #7ece28; color: var(--text-2); }
 .num { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-6); color: #fff; font-size: 13px; font-weight: 500; }
-.cur .num { background: var(--accent); color: #111; }
+.cur .num { background: var(--accent); }
 .done .num { background: #7ece28; color: #111; }
 .lab { min-width: 0; overflow-wrap: anywhere; }
 
