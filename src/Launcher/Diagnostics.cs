@@ -22,7 +22,7 @@ namespace Resurgence.Launcher;
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
 /// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
 /// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
-/// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest of up to 32 MiB goes into the zip.</param>
+/// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest one written after the last run's start that opens and fits the report limit goes into the zip.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
     Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
     Func<string, IEnumerable<string>>? dumps = null)
@@ -85,8 +85,11 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         // the newest dump that fits first; one that would push the zip over the limit (it cannot be cut) gives way to the next, then to none
         foreach (var dump in candidates)
         {
-            if ((r = Zip(trigger, LogBytes, new(missing), system, events, run, checks, dump)).Bytes <= Limit) return r;
-            missing.Add($"game/{Path.GetFileName(dump)} (the report would be over the size limit)");
+            r = Zip(trigger, LogBytes, new(missing), system, events, run, checks, dump);
+            var name = $"game/{Path.GetFileName(dump)}";
+            if (!r.Files.Contains(name)) missing.Add(name); // it could not be opened: the next one
+            else if (r.Bytes <= Limit) return r;
+            else missing.Add($"{name} (the report would be over the size limit)");
         }
         for (var cap = LogBytes; ; cap /= 4)
             if ((r = Zip(trigger, cap, new(missing), system, events, run, checks, null)).Bytes <= Limit || cap < 4096) return r;
@@ -95,19 +98,24 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     const int DumpTries = 3;
 
     /// <summary>The game exe's crash dumps written after the start of the last run (an older one belongs to another crash; no run, no dump), newest first, at most <see cref="DumpTries"/>; a dump over <see cref="DumpMax"/>
-    /// is listed in <c>missing</c> and skipped. A full-memory <c>.hdmp</c> gives way to a <c>.dmp</c> or <c>.mdmp</c> of the same crash (the same folder).</summary>
+    /// or one that is gone is listed in <c>missing</c> and skipped; never throws. A full-memory <c>.hdmp</c> gives way to a <c>.dmp</c> or <c>.mdmp</c> of the same crash (the same folder).</summary>
     List<string> Dumps(List<string> missing, string exe, DateTimeOffset? since)
     {
         if (since is null) return [];
-        var all = Try(() => (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).ToList(), missing, "crash dump") ?? [];
-        var small = new List<string>();
-        foreach (var f in all.OrderByDescending(File.GetLastWriteTimeUtc))
+        return Try(() =>
         {
-            if (new FileInfo(f).Length > DumpMax) missing.Add($"game/{Path.GetFileName(f)} (over 32 MiB)");
-            else small.Add(f);
-        }
-        static bool Heap(string f) => Path.GetExtension(f).Equals(".hdmp", StringComparison.OrdinalIgnoreCase);
-        return small.Where(f => !Heap(f) || !small.Any(o => !Heap(o) && Path.GetDirectoryName(o) == Path.GetDirectoryName(f))).Take(DumpTries).ToList();
+            var small = new List<string>();
+            foreach (var f in (dumps ?? FindDumps)(exe).Where(File.Exists).Where(f => File.GetLastWriteTimeUtc(f) >= since.Value.UtcDateTime).ToList().OrderByDescending(File.GetLastWriteTimeUtc))
+            {
+                long length;
+                try { length = new FileInfo(f).Length; }
+                catch (Exception e) when (e is IOException or UnauthorizedAccessException) { missing.Add($"game/{Path.GetFileName(f)}"); continue; } // gone since it was listed
+                if (length > DumpMax) missing.Add($"game/{Path.GetFileName(f)} (over 32 MiB)");
+                else small.Add(f);
+            }
+            static bool Heap(string f) => Path.GetExtension(f).Equals(".hdmp", StringComparison.OrdinalIgnoreCase);
+            return small.Where(f => !Heap(f) || !small.Any(o => !Heap(o) && Path.GetDirectoryName(o) == Path.GetDirectoryName(f))).Take(DumpTries).ToList();
+        }, missing, "crash dump") ?? [];
     }
 
     /// <summary>Where Windows keeps the dumps of a crashed program: the LocalDumps folder (the default <c>%LOCALAPPDATA%\CrashDumps</c> or the one the registry names, for all programs or for the exe) as <c>&lt;exe&gt;.&lt;id&gt;.dmp</c>, and the

@@ -245,8 +245,8 @@ public class LauncherBridgeTests
     }
 
     /// <summary>A bridge whose starts end as the test says (Steam installed and signed in); the watch must never look the game up by name.</summary>
-    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null) =>
-        new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
+    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null) =>
+        new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, steam ?? LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
             find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin);
 
     [Fact]
@@ -280,6 +280,17 @@ public class LauncherBridgeTests
     }
 
     [Fact]
+    public async Task A16010OfAStartThatNeverTriedSteamIsACrash()
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => false, () => 16010), steam: new(() => false, () => false, () => true));
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal(["nosteam"], s.Modes);
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal((16010, "nosteam", true, "crash"), (exit.ExitCode, exit.Mode, exit.Early, exit.Cause));
+    }
+
+    [Fact]
     public async Task AGameThatRanLongerThanTheLimitIsNotEarly()
     {
         using var s = new Start();
@@ -295,14 +306,14 @@ public class LauncherBridgeTests
     }
 
     [Theory]
-    [InlineData(16010, "nosteam", "steam")]
-    [InlineData(16010, "steam", "crash")] // a start with Steam that quit after the retry window: nothing was retried
-    [InlineData(3236495362, "nosteam", "blocked")]
-    [InlineData(3221225781, "steam", "runtime")]
-    [InlineData(0, "steam", "closed")]
-    [InlineData(3221226505, "steam", "crash")]
-    [InlineData(1, "nosteam", "crash")]
-    public void TheCauseFollowsTheExitCode(long code, string mode, string cause) => Assert.Equal(cause, LauncherBridge.Cause(unchecked((int)code), mode));
+    [InlineData(16010, true, "steam")]
+    [InlineData(16010, false, "crash")] // Steam was not both tried and retried: a start with Steam that quit after the retry window, or one that never tried Steam
+    [InlineData(3236495362, true, "blocked")]
+    [InlineData(3221225781, false, "runtime")]
+    [InlineData(0, false, "closed")]
+    [InlineData(3221226505, false, "crash")]
+    [InlineData(1, true, "crash")]
+    public void TheCauseFollowsTheExitCode(long code, bool retried, string cause) => Assert.Equal(cause, LauncherBridge.Cause(unchecked((int)code), retried));
 
     [Fact]
     public async Task TheRuntimesOfTheGameFolderRunOneAfterTheOtherAndNoneIsAnError()
