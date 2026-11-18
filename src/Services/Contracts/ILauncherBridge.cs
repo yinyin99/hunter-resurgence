@@ -29,6 +29,14 @@ public interface ILauncherBridge
     void RestartLauncher();
     /// <summary>The last game start the launcher watched; null before any.</summary>
     GameRun? LastRun { get; }
+    /// <summary>True while a start waits for Steam to sign in (at most 20 s); the UI shows "Starting Steam…" and a Start without Steam button.</summary>
+    bool WaitingForSteam { get; }
+    /// <summary>Ends the wait at once: this start goes on without Steam.</summary>
+    void StartWithoutSteam();
+    /// <summary>Raised when <see cref="WaitingForSteam"/> or <see cref="LastStartMode"/> changes (any thread).</summary>
+    event Action? StartStateChanged;
+    /// <summary>"steam" or "nosteam" for the last start, null before any. A start that quit with 16010 (Steam missing) and was tried again reads "nosteam".</summary>
+    string? LastStartMode { get; }
     /// <summary>Builds the problem report zip (never throws; a missing file is listed as missing).</summary>
     Task<ProblemReport> BuildReportAsync(string trigger);
     /// <summary>Sends a built report to the community server.</summary>

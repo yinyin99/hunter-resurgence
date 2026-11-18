@@ -26,14 +26,14 @@ public class FolderActionTests : IDisposable
     public void Dispose() => temp.Dispose();
 
     LauncherBridge Bridge(bool installed = true, bool running = false, Func<Task>? clearBrowser = null) =>
-        new(() => installed ? new(game, exe) : null, new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), _ => running, _ => true, () => true, null,
+        new(() => installed ? new(game, exe) : null, new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), _ => running, LauncherFakes.Up, LauncherFakes.Signed, null,
             openFolder: opened.Add, appData: appData, pictures: pictures, clearBrowser: clearBrowser);
 
     [Fact]
     public void ShowFileSelectsAnExistingFileAndRefusesAMissingOne()
     {
         var shown = new List<string>();
-        var b = new LauncherBridge(() => null, new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), _ => false, _ => true, () => true, null, showFile: shown.Add);
+        var b = new LauncherBridge(() => null, new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance), _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, showFile: shown.Add);
         var zip = Path.Combine(temp.Path, "report.zip");
         File.WriteAllText(zip, "x");
         Assert.True(b.ShowFile(zip).Ok);

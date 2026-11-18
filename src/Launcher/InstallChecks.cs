@@ -66,7 +66,8 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             version,
             Run("files", Files),
             Info("path", PathCheck),
-            Safe("steam", () => steamSignedIn() ? Ok("steam") : new("steam", "block", "Check.Steam.SignedOut", null, "open-steam")),
+            // the game starts without Steam when it is not signed in: a warning, a block only when there is no game to start
+            Safe("steam", () => steamSignedIn() ? Ok("steam") : new("steam", g is null ? "block" : "warn", g is null ? "Check.Steam.SignedOut" : "Check.Steam.Fallback", null, "open-steam")),
             Safe("setup", () => setup() is { } key ? new("setup", "block", key, null, "setup") : PortInUse() ?? Ok("setup")),
             Info("windows", Windows),
             Info("disk", Disk),
