@@ -205,6 +205,23 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task AMountedHarvestKeepsItsDetailsInItsLodgeAfterTheWindowEnded()
+    {
+        GoneLive();
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            PlayerRows.AddLodge(con, "/game/user/lodges", "3", O("""{"id": 3, "name": "cabin", "locked": false, "style_id": 1, "animal_slots": [{"slot_id": 0, "trophy_id": 22, "pose_id": 1}], "weapon_slots": []}"""));
+            con.Commit();
+        }
+        state.Clock = () => Py.Now() + 63 * 3600;  // the grace window is over and kill 22 was never taxidermized
+        var lodges = JsonNode.Parse((await server.SendAsync("GET", V2, $"/game/user/{ME}/lodges", [("Authorization", "Bearer " + tokenMe)])).Body)!.AsArray();
+        Eq("""[22, "MULE_DEER"]""", T(lodges[0]!["animal_slots"]![0]!["trophy_details"]!["id"], lodges[0]!["animal_slots"]![0]!["trophy_details"]!["species_define"]));
+        var editor = JsonNode.Parse((await server.SendAsync("GET", V2, "/game/user/trophies", [("Authorization", "Bearer " + tokenMe)])).Body)!.AsArray();
+        Assert.DoesNotContain(editor, t => (long)t!["id"]! == 22);  // yet it is not in the editor's list
+    }
+
+    [Fact]
     public void TheFirstStartWithTheTaxidermyStoresTheGraceEndOnce()
     {
         var file = Path.Combine(tmp, "old.db");

@@ -344,8 +344,8 @@ public sealed partial class State
 
     /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
     /// server that is taxidermized or whose grace window is open (<see cref="InEditor"/>), in the restored shape (`hidden` as the player set it), each with the lodge slot that holds it now (<see cref="Mount"/>).
-    /// A new kill id is above every restored id (see Heartbeat).</summary>
-    List<JsonNode?> TrophyRows(long account)
+    /// A new kill id is above every restored id (see Heartbeat). <paramref name="all"/>: every harvest, for the `trophy_details` of a lodge slot (a harvest that is mounted stays shown in its lodge).</summary>
+    List<JsonNode?> TrophyRows(long account, bool all = false)
     {
         var rows = Restored(account, "trophies", "/game/user/trophies");
         using var con = Con(account);
@@ -353,7 +353,7 @@ public sealed partial class State
         foreach (var r in con.Rows("SELECT kill_id, body, hidden FROM harvests WHERE account_id = $a ORDER BY kill_id"))
         {
             var body = JsonNode.Parse((string)r[1])!;
-            if (body is not JsonObject page || !InEditor(page, grace)) continue;
+            if (body is not JsonObject page || !all && !InEditor(page, grace)) continue;
             var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = (long)r[2] != 0 };
             foreach (var field in TrophyFields)
                 row[field] = C(body[field]);

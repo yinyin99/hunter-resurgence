@@ -266,7 +266,7 @@ public static class AccountApi
             .WithName("AccountTaxidermize").WithSummary("Taxidermize or mount the skull of the player's own harvest (JSON `product`, `currency`)")
             .WithDescription("`{product: taxidermy|skull, currency: ems|gms}` (the `hr_session` cookie, header `X-Requested-With`): the price of the facts file (10 em$ or 2,000 gm$) is taken, the wallet gets the store item's row (`Taxidermy (immediate)`, "
                              + "or the skull mount's) and the game its new balance with the next heartbeat. 200 `{done, ems, gms}` (the wallet after); 402 `{error: not_enough, currency}`; 409 `{error: already}` (once only, either product); "
-                             + "410 `{error: too_late}` (72 hours after the harvest); 404 for a kill that is unknown, a restored one or another player's; 400 for a body that is not as shown or a skull for a species that has none. "
+                             + "410 `{error: too_late}` (72 hours after the harvest, for a harvest made before the taxidermy went live 72 hours after that day); 404 for a kill that is unknown, a restored one or another player's; 400 for a body that is not as shown or a skull for a species that has none. "
                              + "The harvest's `taxidermy` field of `GET /hunters/<handle>/hunts/<id>` tells what is offered.")
             .Produces(200, contentType: "application/json");
 

@@ -116,7 +116,7 @@ public static class AdminApi
                     : TypedResults.Problem($"harvest {kill} is not taxidermized", statusCode: 404, title: "Not taxidermized");
             })
              .WithName("UndoTaxidermy").WithSummary("Take a taxidermy back")
-             .WithDescription("The harvest is no longer taxidermized (nor a skull), so it leaves the lodge editor's trophy list and can be bought again within its 72 hours; the price is given back with a wallet row "
+             .WithDescription("The harvest is no longer taxidermized (nor a skull), so it leaves the lodge editor's trophy list and can be bought again within its window; the price is given back with a wallet row "
                               + "(`refund` false keeps it). Nothing happens to a lodge slot that held it.")
              .ProducesProblem(404).ProducesProblem(503);
 
