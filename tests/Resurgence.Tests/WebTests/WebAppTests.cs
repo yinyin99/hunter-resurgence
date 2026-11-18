@@ -78,7 +78,9 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
     [Fact]
     public async Task TheMissingListHoldsEverySlotBeforeAnyPageIsVisited()
     {
-        using var json = System.Text.Json.JsonDocument.Parse(await Html(await Get(Client(), "/images-missing.json")));
+        var response = await Get(Client(), "/images-missing.json");
+        Assert.Equal("public, max-age=300", response.Headers.CacheControl?.ToString()); // public, so Cloudflare may keep it (docs/images.md)
+        using var json = System.Text.Json.JsonDocument.Parse(await Html(response));
         var root = json.RootElement;
         Assert.Equal(0, root.GetProperty("present").GetInt32());
         Assert.True(root.GetProperty("total").GetInt32() > 100);

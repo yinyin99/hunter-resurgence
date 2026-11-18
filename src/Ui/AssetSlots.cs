@@ -60,7 +60,7 @@ public static class AssetSlots
     /// <summary>The list of the mock only: the live site draws none of these (HostMode.Live).</summary>
     static Func<AssetSources, Task<IEnumerable<string>>> MockOnly(Func<AssetSources, Task<IEnumerable<string>>> keys) => s => s.Mode.Live ? None : keys(s);
 
-    // ponytail: the store, the boards and the competitions are walked per request (the store is cached 5 minutes); cache the list if the endpoint is fetched often
+    // the store, the boards and the competitions are walked whenever MissingList recomputes (once an hour)
     static async Task<IEnumerable<string>> ItemKeys(AssetSources s)
     {
         List<string> keys = [];
@@ -153,5 +153,39 @@ public static class AssetSlots
             missing.GroupBy(e => e.Area).OrderBy(g => g.Key, StringComparer.Ordinal).ToDictionary(g => g.Key,
                 g => (IReadOnlyList<MissingSlot>)[.. g.OrderBy(e => e.Key, StringComparer.Ordinal).Select(e => new MissingSlot(e.Key, e.Size, e.Page))]),
             images.Missing.Where(m => !known.Contains(m.Key)).ToDictionary(m => m.Key, m => m.Value));
+    }
+}
+
+/// <summary>The reply of /images-missing.json, with its manifest part (<see cref="AssetSlots.Report"/>) kept for <see cref="Lifetime"/>: the folder is read once at start, so it changes only when the catalogue does,
+/// and the endpoint is public. Only <c>seenWithoutFile</c> is built per request, from the runtime list. A start of the website refreshes it at once. A reply computed while the store was empty (the server not answering)
+/// is kept for <see cref="Retry"/> only, so a failure does not stay for an hour.</summary>
+public sealed class MissingList(AssetImages images)
+{
+    public static readonly TimeSpan Lifetime = TimeSpan.FromHours(1);
+    public static readonly TimeSpan Retry = TimeSpan.FromSeconds(10);
+
+    sealed record Held(DateTime Until, MissingReport Report, HashSet<string> Known);
+
+    readonly SemaphoreSlim gate = new(1, 1);
+    volatile Held? held;
+
+    public async Task<MissingReport> GetAsync(AssetSources sources)
+    {
+        var now = DateTime.UtcNow;
+        var h = held;
+        if (h is null || now >= h.Until)
+        {
+            await gate.WaitAsync();
+            try
+            {
+                if ((h = held) is null || now >= h.Until)
+                {
+                    var expected = await AssetSlots.ExpectedAsync(sources);
+                    h = held = new(now + (expected.Any(e => e.Area == "store") ? Lifetime : Retry), AssetSlots.Report(expected, images), [.. expected.Select(e => e.Key)]);
+                }
+            }
+            finally { gate.Release(); }
+        }
+        return h.Report with { SeenWithoutFile = images.Missing.Where(m => !h.Known.Contains(m.Key)).ToDictionary(m => m.Key, m => m.Value) };
     }
 }

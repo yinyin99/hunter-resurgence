@@ -194,12 +194,15 @@ app.MapStaticAssets();
 // the launcher's list of the pictures (docs/images.md): {"<file>":"<version>"}; {} without IMAGES_DIR
 app.MapGet("/images.json", () => imageIndex);
 // every slot of the manifest without a file, by area, and the slots a page drew without one that the manifest does not know (docs/images.md#missing-pictures); the data patterns
-// are expanded from the site's own services, asked with the browser's host as the sitemap does
+// are expanded from the site's own services, asked with the browser's host as the sitemap does. Public, so the manifest part is kept for an hour (MissingList) and Cloudflare may keep a reply for 5 minutes
+var missingList = new MissingList(images);
 app.MapGet("/images-missing.json", async (HttpRequest r, ServerCookie cookie, HostMode mode, IStoreService store, ILeaderboardsService boards, IHelpService help, ICompetitionsService competitions,
     IBankService bank, IAccountService account, IServersService servers) =>
 {
     cookie.Host = r.Host.Value;
-    return AssetSlots.Report(await AssetSlots.ExpectedAsync(new(mode, store, boards, help, competitions, bank, account, servers)), images);
+    var report = await missingList.GetAsync(new(mode, store, boards, help, competitions, bank, account, servers));
+    r.HttpContext.Response.Headers.CacheControl = "public, max-age=300";
+    return report;
 });
 // the public pages for search engines (docs/website.md#search-engines); the server answers its public lists for the website's own host only, as Routes.razor sets it for a page
 app.MapGet("/sitemap.xml", async (HttpRequest r, ServerCookie cookie, IStoreService store, ILeaderboardsService boards) =>

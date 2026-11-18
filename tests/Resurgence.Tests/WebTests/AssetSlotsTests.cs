@@ -123,4 +123,17 @@ public partial class AssetSlotsTests
         Assert.Equal(("62x82", "Footer"), (rating.Size, rating.Page));
         Assert.Equal(new Dictionary<string, string> { ["new-slot-of-a-page"] = "/store" }, report.SeenWithoutFile);
     }
+
+    [Fact]
+    public async Task TheManifestPartIsKeptButWhatPagesDrewIsFresh()
+    {
+        var images = new AssetImages(new Dictionary<string, string>());
+        var list = new MissingList(images);
+        var first = await list.GetAsync(Sources(live: false));
+        images.NoteMissing("new-slot-of-a-page", "/store");
+        var second = await list.GetAsync(Sources(live: true)); // the live site has no em-pack: a recomputed manifest would have one slot fewer
+        Assert.Equal(first.Total, second.Total);
+        Assert.Empty(first.SeenWithoutFile);
+        Assert.Equal("/store", second.SeenWithoutFile["new-slot-of-a-page"]);
+    }
 }
