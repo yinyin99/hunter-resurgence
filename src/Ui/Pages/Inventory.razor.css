@@ -4,6 +4,6 @@
 .card { padding: 10px; box-sizing: border-box; background: var(--surface-3); }
 .card ::deep .pic { display: block; margin: 0 auto 10px; }
 .name { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
-.variant { display: block; font-size: 12px; line-height: 16px; color: var(--text-5); }
+.variant { display: block; font-size: 12px; line-height: 16px; color: var(--fg-muted-2); }
 .units, .equipped { margin: 6px 0 0; font-size: 12px; line-height: 16px; color: var(--text-3); }
 .none { margin: 0; padding: 10px; background: var(--surface-3); font-size: 14px; color: var(--text-3); }

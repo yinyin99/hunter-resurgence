@@ -4,13 +4,13 @@
 .buy { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0 0 12px; font-size: 18px; line-height: 40px; color: var(--fg-muted-2); font-variant-numeric: tabular-nums; }
 .buy .gms { font-size: 16px; }
 .buy b { font-size: 20px; font-weight: 400; color: var(--text-2); }
-.buy b.sale { color: #e01010; }
+.buy b.sale { color: #f4503d; }
 .buy s { margin: 0 14px 0 0; text-decoration: none; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: var(--text-3); }
 .data { margin: 0 0 20px; }
 .data p { margin: 0; font-size: 14px; line-height: 20px; }
-.item ::deep .own { margin: 0 0 8px; font-size: 12px; line-height: 16px; color: #e0301e; }
+.item ::deep .own { margin: 0 0 8px; font-size: 12px; line-height: 16px; color: #f4503d; }
 .text { margin: 0; font-size: 14px; line-height: 20px; font-weight: 300; white-space: pre-line; color: var(--text-2); }
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 30px 0 0; align-items: start; }
 @media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
