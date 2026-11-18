@@ -1543,7 +1543,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Bir şeyler mi ters gitti? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Sorun raporları gönderilsin mi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini bize gönderebilir.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dosyaları göster</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Otomatik gönder</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Her seferinde sor</value></data>

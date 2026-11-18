@@ -1543,7 +1543,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa, jotta voimme korjata ongelman.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa ja pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>

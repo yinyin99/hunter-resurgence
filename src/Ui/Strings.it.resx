@@ -1543,7 +1543,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>Non è stato possibile inviare il rapporto sul problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Qualcosa è andato storto? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Inviare i rapporti sui problemi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci i suoi log così possiamo risolvere.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci i suoi log e l'ultimo dump di arresto anomalo del gioco così possiamo risolvere.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostra i file</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Invia automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Chiedimelo ogni volta</value></data>

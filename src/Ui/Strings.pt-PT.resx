@@ -1543,7 +1543,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Algo correu mal? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar, o launcher pode enviar-nos os registos para o corrigirmos.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar, o launcher pode enviar-nos os registos e o último despejo de falha do jogo para o corrigirmos.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostrar ficheiros</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar de cada vez</value></data>
