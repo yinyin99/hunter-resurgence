@@ -1519,7 +1519,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ez a fiók nem jelentkezhet be.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ez az űrlap nem erről a szerverről származik.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>A játék fut. Az indító bezárása megszakítja a játék kapcsolatát a közösségi szerverrel. Nyitva marad az indító?&#10;&#10;Igen: marad nyitva. Nem: kis méretre állítás.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék naplóit a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A fájlok összegyűjtése…</value></data>

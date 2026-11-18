@@ -1519,7 +1519,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dit account mag niet inloggen.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dit formulier komt niet van deze server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>De game draait. Als je de launcher sluit, verbreekt de game de verbinding met de communityserver. De launcher open houden?&#10;&#10;Ja: open houden. Nee: minimaliseren.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs van het spel naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>De bestanden worden verzameld…</value></data>

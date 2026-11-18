@@ -1519,7 +1519,7 @@
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Этой учётной записи вход запрещён.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Игра запущена. Если закрыть лаунчер, игра отключится от сервера сообщества. Оставить лаунчер открытым?&#10;&#10;Да: оставить открытым. Нет: свернуть.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы игры на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Сбор файлов…</value></data>

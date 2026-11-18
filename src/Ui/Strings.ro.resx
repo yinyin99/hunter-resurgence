@@ -1519,7 +1519,7 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont nu se poate conecta.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Jocul rulează. Închiderea launcherului îl deconectează de la serverul comunității. Păstrezi launcherul deschis?&#10;&#10;Da: păstrează-l deschis. Nu: minimizează-l.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur vrei să închizi launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele jocului serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Se adună fișierele…</value></data>

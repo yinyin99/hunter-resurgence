@@ -1519,7 +1519,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä tili ei saa kirjautua sisään.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
-  <data name="Launcher.CloseWhileRunning" xml:space="preserve"><value>Peli on käynnissä. Jos suljet launcherin, peli katkaisee yhteyden yhteisöpalvelimeen. Pidetäänkö launcher auki?&#10;&#10;Kyllä: pidä auki. Ei: pienennä.</value></data>
+  <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin lokit yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Kootaan tiedostoja…</value></data>
