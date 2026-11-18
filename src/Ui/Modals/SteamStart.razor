@@ -2,6 +2,7 @@
 @inject ILauncherBridge Bridge
 @inject ModalService Modal
 @inject HostMode Mode
+@inject NavigationManager Nav
 
 @* the start's Steam state (docs/website.md#starting-without-steam): while the launcher waits for Steam, "Starting Steam…" with the button that skips the wait; after a start without Steam one plain line. A bar fixed at the bottom
    for the page, and one inside the dialog while a dialog is open (the join map starts the game while it is open, and an open modal makes the page behind it inert). *@
@@ -9,14 +10,14 @@
 {
     @if (Bridge.WaitingForSteam)
     {
-        <div class="steam-start @Position" role="status">
+        <div class="steam-start @Position @Variant" role="status"><div class="inner">
             <span class="text">@L["Launch.StartingSteam"]</span>
             <button type="button" class="btn btn-inverse" id="start-without-steam" @onclick="Bridge.StartWithoutSteam">@L["Launch.StartWithoutSteam"]</button>
-        </div>
+        </div></div>
     }
-    else if (Bridge.LastStartMode == "nosteam")
+    else if (Bridge.LastStartMode == "nosteam" && !dismissed)
     {
-        <div class="steam-start @Position" id="no-steam-note" role="status"><span class="text">@L["Launch.NoSteamNote"]</span></div>
+        <div class="steam-start @Position @Variant note" id="no-steam-note" role="status" @onclick="() => dismissed = true"><div class="inner"><span class="text">@L["Launch.NoSteamNote"]</span></div></div>
     }
 }
 
@@ -27,18 +28,24 @@
     // above the work-in-progress banner of the website
     string Position => Mode.Launcher ? "" : "above-wip";
 
+    // development comparison of the two looks: ?variant=center puts the line in the middle of the window (removed once one is chosen)
+    string Variant => Mode.Dev && Nav.Uri.Contains("variant=center") ? "center" : "";
+
     Action? changed;
+    bool dismissed; // a click on the note hides it until the next start
+    Action? started;
 
     protected override void OnInitialized()
     {
         changed = () => _ = InvokeAsync(StateHasChanged);
-        Bridge.StartStateChanged += changed;
+        started = () => { dismissed = false; changed(); };
+        Bridge.StartStateChanged += started;
         Modal.Changed += changed;
     }
 
     public void Dispose()
     {
-        Bridge.StartStateChanged -= changed;
+        Bridge.StartStateChanged -= started;
         Modal.Changed -= changed;
     }
 }
