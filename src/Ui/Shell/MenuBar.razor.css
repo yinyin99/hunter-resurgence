@@ -9,7 +9,7 @@
 .hunt-now li a { display: block; padding: 5px 10px; color: #fff; font-size: 16px; line-height: 20px; transition: background-color var(--t-fast) var(--ease); }
 .hunt-now li a:hover, .hunt-now li a:focus-visible { background: var(--accent-bg); outline: 0; }
 .store { position: relative; display: block; box-sizing: border-box; height: 30px; margin-top: 10px; padding: 5px 17px 5px 38px; border-radius: var(--r-2); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
-.store { margin-left: 30px; background-color: var(--store-blue); color: #000; }
+.store { margin-left: 30px; background-color: var(--store-blue); }
 .store:hover { background: linear-gradient(#333, #222); color: #fff; }
 .store ::deep .coin { position: absolute; left: -23px; top: -8px; border-radius: 50%; }
 .items { display: flex; margin: 0 0 0 15px; padding: 0; list-style: none; line-height: 51px; white-space: nowrap; }
