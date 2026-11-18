@@ -1529,7 +1529,10 @@ Numele:</value></data>
   <data name="Report.Send" xml:space="preserve"><value>Trimite</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Se trimite…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Salvat ca {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Trimis. Referință: {0} (comunicați-o pe Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Trimis.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Comunicați această referință pe Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Copiat</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Fișierul nu a putut fi afișat în Explorer.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Trimite automat după o pornire eșuată</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Raport de problemă trimis: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>

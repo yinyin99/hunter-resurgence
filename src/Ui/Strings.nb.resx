@@ -1529,7 +1529,10 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Report.Send" xml:space="preserve"><value>Send</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Sender…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Lagret som {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Sendt. Referanse: {0} (oppgi den på Discord)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Sendt.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Oppgi denne referansen på Discord</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Kopiert</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Filen kunne ikke vises i Utforsker.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Send automatisk etter en mislykket start</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Problemrapport sendt: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>

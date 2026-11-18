@@ -1529,7 +1529,10 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Report.Send" xml:space="preserve"><value>Wyślij</value></data>
   <data name="Report.Sending" xml:space="preserve"><value>Wysyłanie…</value></data>
   <data name="Report.Saved" xml:space="preserve"><value>Zapisano jako {0}</value></data>
-  <data name="Report.Sent" xml:space="preserve"><value>Wysłano. Numer referencyjny: {0} (podaj go na Discordzie)</value></data>
+  <data name="Report.Sent" xml:space="preserve"><value>Wysłano.</value></data>
+  <data name="Report.Give" xml:space="preserve"><value>Podaj ten numer referencyjny na Discordzie</value></data>
+  <data name="Report.Copied" xml:space="preserve"><value>Skopiowano</value></data>
+  <data name="Report.ErrShow" xml:space="preserve"><value>Nie udało się pokazać pliku w Eksploratorze.</value></data>
   <data name="Report.AutoToggle" xml:space="preserve"><value>Wysyłaj automatycznie po nieudanym uruchomieniu</value></data>
   <data name="Report.AutoSent" xml:space="preserve"><value>Raport o problemie wysłany: {0}</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Nie udało się wysłać raportu o problemie: {0}</value></data>

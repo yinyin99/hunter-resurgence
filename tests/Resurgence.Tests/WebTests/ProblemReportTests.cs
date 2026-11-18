@@ -1,4 +1,5 @@
 using Bunit;
+using Microsoft.JSInterop;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
 using Resurgence.Ui;
@@ -15,6 +16,8 @@ public sealed class ProblemReportTests : UiContext
     {
         public bool IsSteam => false;
         public Result OpenFolder(string kind) => Result.Success;
+        public List<string> Shown { get; } = [];
+        public Result ShowFile(string path) { Shown.Add(path); return Result.Success; }
         public GameInstallInfo GameInstall => new(null, null, []);
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }
@@ -185,9 +188,52 @@ public sealed class ProblemReportTests : UiContext
         Assert.Contains(@"C:\Downloads\report.zip", cut.Find("#report-saved").TextContent);
 
         cut.Find("#report-send").Click();
-        cut.WaitForAssertion(() => Assert.Contains("p7-0a1b2c3d", cut.Find("#report-reference").TextContent));
+        cut.WaitForAssertion(() => Assert.Equal("p7-0a1b2c3d", cut.Find("#report-reference").GetAttribute("value")));
+        Assert.Equal("Give this reference on Discord", cut.Find("#report-give").TextContent);
+        Assert.DoesNotContain("p7-0a1b2c3d", cut.Find("#report-sent").TextContent);  // the reference stands alone in its box
         Assert.Equal(1, bridge.Sent);
         Assert.True(cut.Find("#report-send").HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void CopyPutsExactlyTheReferenceOnTheClipboardAndSaysCopiedFor2Seconds()
+    {
+        var shell = JSInterop.SetupModule("./_content/Resurgence.Ui/shell.js");
+        shell.SetupVoid("copy", _ => true).SetVoidResult();
+        Use(new Bridge());
+        var cut = Render<ReportModal>();
+        cut.WaitForElement("#report-send").Click();
+        cut.WaitForElement("#report-copy").Click();
+        Assert.Equal("p7-0a1b2c3d", Assert.Single(shell.Invocations["copy"]).Arguments.Single());
+        cut.WaitForAssertion(() => Assert.Equal("Copied", cut.Find("#report-copy").TextContent));
+        cut.WaitForAssertion(() => Assert.Equal("Copy", cut.Find("#report-copy").TextContent), TimeSpan.FromSeconds(4));
+    }
+
+    [Fact]
+    public void ARefusedClipboardLeavesTheReferenceSelectableAndSaysNothingCopied()
+    {
+        var shell = JSInterop.SetupModule("./_content/Resurgence.Ui/shell.js");
+        shell.SetupVoid("copy", _ => true).SetException(new JSException("refused"));
+        Use(new Bridge());
+        var cut = Render<ReportModal>();
+        cut.WaitForElement("#report-send").Click();
+        cut.WaitForElement("#report-copy").Click();
+        shell.VerifyInvoke("copy");
+        Assert.Equal("Copy", cut.Find("#report-copy").TextContent);
+        Assert.True(cut.Find("#report-reference").HasAttribute("readonly"));
+    }
+
+    [Fact]
+    public void OpenFolderShowsTheSavedFile()
+    {
+        var bridge = Use(new Bridge());
+        var cut = Render<ReportModal>();
+        cut.WaitForElement("#report-save");
+        Assert.Empty(cut.FindAll("#report-show"));  // nothing to show before Save
+        cut.Find("#report-save").Click();
+        cut.Find("#report-show").Click();
+        Assert.Equal([@"C:\Downloads\report.zip"], bridge.Shown);
+        Assert.Empty(cut.FindAll("[role=alert]"));
     }
 
     [Fact]
