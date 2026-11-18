@@ -7,7 +7,7 @@
 .hunt-now ul { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility var(--t-base); position: absolute; top: 31px; left: 0; width: 300px; margin: 0; padding: 0; overflow: hidden; list-style: none; background: var(--surface-4); border-radius: 0 var(--r-2) var(--r-2) var(--r-2); box-shadow: 0 5px 14px rgba(0, 0, 0, .6); z-index: 200; }
 .hunt-now:hover ul, .hunt-now:focus-within ul { visibility: visible; opacity: 1; transform: none; }
 .hunt-now li a { display: block; padding: 5px 10px; color: #fff; font-size: 16px; line-height: 20px; transition: background-color var(--t-fast) var(--ease); }
-.hunt-now li a:hover, .hunt-now li a:focus-visible { background: var(--accent-bg); outline: 0; }
+.hunt-now li a:hover, .hunt-now li a:focus-visible { background: var(--accent); outline: 0; }
 .store { position: relative; display: block; box-sizing: border-box; height: 30px; margin-top: 10px; padding: 5px 17px 5px 38px; border-radius: var(--r-2); box-shadow: 2px 2px rgba(0, 0, 0, .4); color: #fff; line-height: 20px; text-transform: uppercase; white-space: nowrap; }
 .store { margin-left: 30px; background-color: var(--store-blue); }
 .store:hover { background: linear-gradient(#333, #222); color: #fff; }
