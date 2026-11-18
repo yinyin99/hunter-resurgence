@@ -257,7 +257,7 @@ public class RestoreTests : StateTestBase
         Assert.Equal(before8, Snapshot(8));
         Assert.NotEqual(before7, Snapshot(ME));
         Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
-        Eq("""{"em": 1.0, "gm": 15000.0}""", state.Wallet(ME));
+        Eq("""{"em": 182.0, "gm": 15000.0}""", state.Wallet(ME));  // the zip's 1 em$ is under the account's unspent start em$
         Eq("7", state.Store.AccountJson(ME)["user_id"]);  // the account keeps its id
     }
 
@@ -317,6 +317,18 @@ public class RestoreTests : StateTestBase
         var result = Restorer.Import(state, Zip(TestZip.Own("\"ems\":5.5,\"gms\":2.0")), null, tmp);
         Eq("""{"em": 5.5, "gm": 15000.0}""", state.Wallet(1001));
         Assert.Contains("wallet: gm raised from 2 to 15000", result.Report);
+    }
+
+    [Theory]
+    [InlineData(1000, 1000)]  // the start em$ not spent: kept
+    [InlineData(300, 300)]    // the rest of it after a purchase: kept, never refilled
+    [InlineData(4000, 1000)]  // more than the start: only the start em$ is kept
+    public void TestARestoreKeepsTheStartEmTheAccountHasNotSpent(double before, double after)
+    {
+        state.Give(ME, "em", before - (double)(state.Wallet(ME)?["em"] ?? 0.0));
+        var result = Restorer.Import(state, Zip(TestZip.Own("\"ems\":6.0,\"gms\":20000.0")), ME, tmp);
+        Eq($$"""{"em": {{after}}.0, "gm": 20000.0}""", state.Wallet(ME));
+        Assert.Contains($"wallet: em raised from 6 to {after}", result.Report);
     }
 
     [Fact]
