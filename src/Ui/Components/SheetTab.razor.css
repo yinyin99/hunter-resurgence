@@ -8,7 +8,7 @@
 .guide > ::deep .asset-slot { position: absolute; left: 20px; top: 60px; }
 .guide.big > ::deep .asset-slot { left: 60px; top: 56px; }
 .abn { position: absolute; right: 0; top: 52px; width: 114px; border-collapse: collapse; font-size: 10px; text-align: center; }
-.abn th { padding: 5px 2px; background: #d8c9b3; font-size: 9px; font-weight: 400; white-space: nowrap; color: #666; }
+.abn th { padding: 5px 2px; background: #d8c9b3; font-size: 9px; font-weight: 400; white-space: nowrap; color: #444; }
 .abn td { padding: 4px; height: 17px; border-bottom: 1px solid #e8dcc8; background: #f7f3ec; color: #555; }
 .abn .sub td { background: #f0ebe3; text-align: left; }
 table { border-collapse: collapse; }
@@ -25,7 +25,7 @@ td { padding: 4px 10px; line-height: 16px; border: 1px solid #efe6d6; background
 .shot { width: 100%; margin: 6px 0 12px; font-size: 10px; }
 .shot th { background: none; padding: 4px 2px; text-align: center; color: #000; }
 .shot td { border: 0; padding: 4px 2px; text-align: center; background: none; }
-.shot a, .info a { color: var(--primary); }
+.shot a, .info a { color: #b81f0a; }
 .info { display: flex; gap: 2px; padding: 0 8px 12px; }
 dl { display: grid; grid-template-columns: 1fr 1fr; width: 458px; margin: 0; }
 dl div { margin: 0 0 6px; }
