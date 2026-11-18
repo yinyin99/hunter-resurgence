@@ -232,4 +232,23 @@ public static class GameFiles
         public ushort dmLogPixels;
         public uint dmBitsPerPel, dmPelsWidth, dmPelsHeight, dmDisplayFlags, dmDisplayFrequency, dmICMMethod, dmICMIntent, dmMediaType, dmDitherType, dmReserved1, dmReserved2, dmPanningWidth, dmPanningHeight;
     }
+
+    /// <summary>
+    /// Before a start: the graphics file of the start's mode (<c>/steam</c> or not, <see cref="Settings.GraphicsFileNoSteam"/>) is replaced by the other mode's when it is missing or older, so the newest settings
+    /// follow the player to the mode he starts in. Nothing when the two are one file, the other is missing or there is no graphics_file. A copy that fails is returned as its message (the start goes on).
+    /// </summary>
+    public static string? CarryGraphics(Settings settings, string appData, bool withSteam)
+    {
+        if (settings.GraphicsFile is not { } steam || settings.GraphicsFileNoSteam is not { } noSteam) return null;
+        var (from, to) = withSteam ? (noSteam, steam) : (steam, noSteam);
+        FileInfo source = new(Path.Combine(appData, from)), target = new(Path.Combine(appData, to));
+        try
+        {
+            if (!source.Exists || (target.Exists && target.LastWriteTimeUtc >= source.LastWriteTimeUtc)) return null;
+            Directory.CreateDirectory(target.DirectoryName!);
+            source.CopyTo(target.FullName, true);
+            return null;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return e.Message; }
+    }
 }
