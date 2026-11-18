@@ -6,7 +6,7 @@ namespace Resurgence.Launcher;
 /// <summary>
 /// The Game settings dialog on the game's real files (<see cref="GameFiles"/>). Nothing is written while the client runs. The client reads another graphics file with <c>/steam</c> than without
 /// (<see cref="Settings.GraphicsFileNoSteam"/>): the file of the mode the game starts in is read and written, both when <paramref name="plannedMode"/> cannot tell
-/// (<see cref="SteamProbes.PlannedMode"/>: "steam", "nosteam" or null).
+/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null).
 /// </summary>
 public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs, Func<string?>? plannedMode = null) : IGameSettingsService
 {
@@ -17,7 +17,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     {
         if (settings.GraphicsFile is not { } steam) return [];
         var noSteam = settings.GraphicsFileNoSteam;
-        return (plannedMode?.Invoke() switch { "steam" => new[] { steam }, "nosteam" => [noSteam ?? steam], _ => [steam, noSteam] }).OfType<string>().Select(f => Path.Combine(appData, f));
+        return (plannedMode?.Invoke() switch { "nosteam" => new[] { noSteam ?? steam }, _ => [steam, noSteam] }).OfType<string>().Select(f => Path.Combine(appData, f));
     }
 
     string? OptionsPath => settings.OptionsFile is { } f && settings.OptionsKeyPrefix is not null ? Path.Combine(appData, f) : null;

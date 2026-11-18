@@ -29,9 +29,9 @@ public class InstallChecksTests
     static string Manifest(long build, int flags = 4) => $"\"AppState\"\n{{\n\t\"appid\"\t\t\"1\"\n\t\"StateFlags\"\t\t\"{flags}\"\n\t\"buildid\"\t\t\"{build}\"\n}}\n";
 
     static InstallChecks Make(GameInstall? g, string? manifest = null, long? server = null, bool steam = true, string? setup = null, bool running = false, Func<string, bool>? network = null,
-        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null) =>
+        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null) =>
         new(() => g, "1", serverBuild ?? (() => Task.FromResult(server)), steamSignedIn ?? (() => steam), () => setup, _ => running, _ => manifest, network ?? (_ => false), () => oneDrive ?? [],
-            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports);
+            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null);
 
     static async Task<InstallCheck> Check(InstallChecks c, string id, bool opening = false) => (await c.RunAsync(opening)).Single(r => r.Id == id);
 
@@ -177,6 +177,8 @@ public class InstallChecksTests
         var r = await Check(Make(Game(t), steam: false), "steam");
         Assert.Equal(("warn", "Check.Steam.Fallback", "open-steam"), (r.Level, r.Text, r.Fix));
         Assert.Equal("ok", (await Check(Make(Game(t), steam: true), "steam")).Level);
+        var none = await Check(Make(Game(t), steam: false, installed: false), "steam"); // not installed: its own text, and no Open Steam button that would do nothing
+        Assert.Equal(("warn", "Check.Steam.NotInstalled", null), (none.Level, none.Text, none.Fix));
         Assert.Equal("block", (await Check(Make(null, steam: false), "steam")).Level); // no game: nothing to start without Steam either
     }
 

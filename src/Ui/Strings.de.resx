@@ -1467,6 +1467,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Check.Path.Network" xml:space="preserve"><value>Das Spiel liegt auf einem Netzlaufwerk; ein lokaler Ordner funktioniert am besten.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam ist nicht angemeldet.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam ist nicht angemeldet: Das Spiel startet ohne Steam.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ist nicht installiert: Das Spiel startet ohne Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows hat eine Spieldatei blockiert ({0}): erlauben Sie sie in der Windows-Sicherheit.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Wenig Speicherplatz auf {0} ({1} frei).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Das Spiel läuft schon: schließen Sie es und starten Sie es dann von hier aus.</value></data>

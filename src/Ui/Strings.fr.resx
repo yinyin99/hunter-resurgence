@@ -1467,6 +1467,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Check.Path.Network" xml:space="preserve"><value>Le jeu est sur un lecteur réseau ; un dossier local fonctionne mieux.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam n'est pas connecté.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam n'est pas connecté : le jeu se lancera sans Steam.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam n'est pas installé : le jeu se lancera sans Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a bloqué un fichier du jeu ({0}) : autorisez-le dans Sécurité Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Peu d'espace disque sur {0} ({1} restants).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Le jeu est déjà lancé : fermez-le, puis démarrez-le d'ici.</value></data>

@@ -62,6 +62,6 @@ public sealed record SteamProbes(Func<bool> Installed, Func<bool> SignedIn, Func
 {
     public static SteamProbes Real { get; } = new(Steam.Installed, () => Steam.ActiveAccount() != 0, Steam.StartSilent);
 
-    /// <summary>The mode the game starts in if started now: "nosteam" when Steam is not installed, "steam" when somebody is signed in, null when it depends on the wait for Steam.</summary>
-    public string? PlannedMode() => !Installed() ? "nosteam" : SignedIn() ? "steam" : null;
+    /// <summary>The mode the game starts in if started now: "nosteam" when Steam is not installed, else null (a start with Steam can still fall back to none: 16010, a late Steam).</summary>
+    public string? PlannedMode() => !Installed() ? "nosteam" : null;
 }

@@ -1467,6 +1467,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Check.Path.Network" xml:space="preserve"><value>A játék hálózati meghajtón van; egy helyi mappa működik a legjobban.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>A Steam nincs bejelentkezve.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>A Steam nincs bejelentkezve: a játék Steam nélkül indul el.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>A Steam nincs telepítve: a játék Steam nélkül indul el.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>A Windows blokkolt egy játékfájlt ({0}): engedélyezd a Windows Biztonságban.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Kevés a szabad hely itt: {0} ({1} maradt).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>A játék már fut: zárd be, majd innen indítsd el.</value></data>

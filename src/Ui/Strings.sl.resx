@@ -1467,6 +1467,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Path.Network" xml:space="preserve"><value>Igra je na omrežnem pogonu; najbolje deluje lokalna mapa.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam ni prijavljen.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam ni prijavljen: igra se bo zagnala brez Steama.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ni nameščen: igra se bo zagnala brez Steama.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows je blokiral datoteko igre ({0}): dovolite jo v Varnosti sistema Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Malo prostora na disku {0} (ostaja {1}).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Igra že teče: zaprite jo in jo nato zaženite od tukaj.</value></data>

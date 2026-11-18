@@ -161,7 +161,11 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         {
             using var again = Launch(g, url, param, false);
             if (again is null) return Result.Fail("Launch.StartFailed");
+            withSteam = false;
         }
+        // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
+        lastStartMode = withSteam ? "steam" : "nosteam";
+        StartStateChanged?.Invoke();
         return Result.Success;
     }
 
@@ -255,8 +259,6 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var info = new ProcessStartInfo(g.ClientExe, Arguments(url, param, withSteam)) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
         // with the app id set the client does not ask Steam to start it again (that would run Steam's launch option), in either mode
         if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
-        lastStartMode = withSteam ? "steam" : "nosteam";
-        StartStateChanged?.Invoke();
         return start(info);
     }
 

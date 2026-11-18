@@ -55,7 +55,7 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:updating", "block", "Steam is still updating the game.", "Open Steam")]
     [InlineData("check:files", "block", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:steam", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
-    [InlineData("steam:none", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
+    [InlineData("steam:none", "warn", "Steam is not installed: the game will start without Steam.", null)]
     [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", null)]
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]

@@ -10,7 +10,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
 {
     const string Steam = @"C:\Program Files (x86)\Steam\steamapps\common\Hunter", Chosen = @"D:\Games\Hunter";
 
-    string? check = mock switch { { } m when m.StartsWith("check:") => m[6..], "steam:none" or "steam:wait" => "steam", _ => null };
+    string? check = mock switch { { } m when m.StartsWith("check:") => m[6..], "steam:wait" => "steam", "steam:none" => "steam-none", _ => null };
     readonly ManualResetEventSlim skipWait = new();
 
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync() => Task.FromResult(Checks());
@@ -20,6 +20,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
         InstallCheck Ok(string id) => new(id, "ok", "Check.Ok");
         InstallCheck Problem(string id, string level, string text, string? fix = null, params (string, string)[] args) => new(id, level, text, args.ToDictionary(a => a.Item1, a => a.Item2), fix);
         var steam = Problem("steam", "warn", "Check.Steam.Fallback", "open-steam"); // a warning: the game starts without Steam
+        var noSteam = Problem("steam", "warn", "Check.Steam.NotInstalled"); // not installed: nothing to open
         var old = Problem("version", "block", "Check.Version.Old", "open-steam");
         var path = Problem("path", "warn", "Check.Path.NonAscii", "choose-folder", ("path", @"C:\Users\Zoë\Games\Hunter"));
         var disk = Problem("disk", "warn", "Check.Disk.Low", null, ("drive", "C:"), ("free", "600 MB"));
@@ -35,7 +36,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
             },
             check == "files" ? Problem("files", "block", "Check.Files.Missing", "verify-files", ("file", "pc3.arc")) : Ok("files"),
             check is "path" or "many" ? path : Ok("path"),
-            check == "steam" ? steam : Ok("steam"),
+            check == "steam" ? steam : check == "steam-none" ? noSteam : Ok("steam"),
             check == "setup" ? Problem("setup", "block", "Kit.NoHosts", "setup") : Ok("setup"),
             check == "windows" ? Problem("windows", "warn", "Check.Windows.Blocked", null, ("file", "crashreport.dll")) : Ok("windows"),
             check is "disk" or "many" ? disk : Ok("disk"),
@@ -81,7 +82,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
             skipWait.Wait(TimeSpan.FromSeconds(20)); // the launcher's longest wait
             WaitingForSteam = false;
         }
-        LastStartMode = check == "steam" ? "nosteam" : "steam";
+        LastStartMode = check is "steam" or "steam-none" ? "nosteam" : "steam";
         StartStateChanged?.Invoke();
         return Result.Success;
     }

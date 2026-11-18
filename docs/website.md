@@ -79,10 +79,10 @@ A refused start (`ModalService.StartFailed`, `StartFailedDialog`) says the same:
 The launcher starts the game with Steam when it can and without it otherwise ([launcher.md](launcher.md#what-is-real-and-what-is-mock)). The UI shows two things of it, whichever of the four places started the game (the launch map, the multiplayer list and its join map, the tutorials, the sign-up's first tutorial): `SteamStart`, drawn by `ModalHost`.
 
 - While a start waits for Steam to sign in (`ILauncherBridge.WaitingForSteam`, at most 20 seconds): a bar at the bottom of the window, "Starting Steam…", with the button "Start without Steam" (`StartWithoutSteam()`), which ends the wait at once. The bar is inside the open dialog when one is open (the join map starts the game while it is open, and an open dialog makes the page behind it inert), else on the page; on the website, whose mock is the only source of this state, it sits above the work-in-progress banner.
-- After a start that went on without Steam (`LastStartMode` is `nosteam`): one plain line in the same place, "Started without Steam: Steam achievements are off for this session." (`Launch.NoSteamNote`). No dialog to answer; it goes at the next start with Steam.
-- The game check shows a Steam that is not signed in as a warning, `Check.Steam.Fallback` ("Steam is not signed in: the game will start without Steam."), with the Open Steam button.
+- After a start that went on without Steam (`LastStartMode` is `nosteam`, set once the game has really started): one plain line in the same place, hidden by a click until the next start, "Started without Steam: Steam achievements are off for this session." (`Launch.NoSteamNote`). No dialog to answer; it goes at the next start with Steam.
+- The game check shows a Steam that is not signed in as a warning, `Check.Steam.Fallback` ("Steam is not signed in: the game will start without Steam."), with the Open Steam button; a Steam that is not installed has its own text, `Check.Steam.NotInstalled`, and no button.
 
-Keys: `Launch.StartingSteam`, `Launch.StartWithoutSteam`, `Launch.NoSteamNote`, `Check.Steam.Fallback`. `SteamStart` follows `ILauncherBridge.StartStateChanged`, which the bridge may raise from any thread.
+Keys: `Launch.StartingSteam`, `Launch.StartWithoutSteam`, `Launch.NoSteamNote`, `Check.Steam.Fallback`, `Check.Steam.NotInstalled`. `SteamStart` follows `ILauncherBridge.StartStateChanged`, which the bridge may raise from any thread.
 
 ## Backup tool
 

@@ -1467,6 +1467,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Check.Path.Network" xml:space="preserve"><value>Il gioco si trova su un'unità di rete; una cartella locale funziona meglio.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steam non ha effettuato l'accesso.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steam non ha effettuato l'accesso: il gioco si avvierà senza Steam.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam non è installato: il gioco si avvierà senza Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows ha bloccato un file del gioco ({0}): consentilo in Sicurezza di Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Poco spazio su disco su {0} ({1} rimasti).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Il gioco è già in esecuzione: chiudilo, poi avvialo da qui.</value></data>

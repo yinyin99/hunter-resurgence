@@ -34,7 +34,6 @@ public class GameSettingsServiceTests
     }
 
     [Theory]
-    [InlineData("steam", true, false)]
     [InlineData("nosteam", false, true)]
     [InlineData(null, true, true)]
     public async Task TheFileOfTheComingModeIsWrittenBothWhenItIsUnknown(string? mode, bool steamFile, bool noSteamFile)

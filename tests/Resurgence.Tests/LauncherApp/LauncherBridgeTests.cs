@@ -76,7 +76,9 @@ public class LauncherBridgeTests
         {
             var exe = Path.Combine(dir, "client.exe");
             File.WriteAllText(exe, "");
-            Assert.Equal("Launch.StartFailed", new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => null, LauncherFakes.Signed, null).StartGame("srv://x").Error);
+            var failing = new LauncherBridge(() => new(dir, exe), Rest, _ => false, _ => null, LauncherFakes.Signed, null);
+            Assert.Equal("Launch.StartFailed", failing.StartGame("srv://x").Error);
+            Assert.Null(failing.LastStartMode); // a start that failed says nothing of Steam
         }
         finally { Directory.Delete(dir, true); }
     }
@@ -225,10 +227,10 @@ public class LauncherBridgeTests
     }
 
     [Fact]
-    public void ThePlannedModeIsNoSteamWithoutSteamSteamSignedInOrUnknownWhileSignedOut()
+    public void ThePlannedModeIsNoSteamOnlyWithoutSteamElseUnknownBecauseAStartWithSteamCanFallBack()
     {
         Assert.Equal("nosteam", new SteamProbes(() => false, () => false, () => true).PlannedMode());
-        Assert.Equal("steam", new SteamProbes(() => true, () => true, () => true).PlannedMode());
+        Assert.Null(new SteamProbes(() => true, () => true, () => true).PlannedMode());
         Assert.Null(new SteamProbes(() => true, () => false, () => true).PlannedMode());
     }
 }

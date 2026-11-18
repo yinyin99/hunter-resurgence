@@ -1467,6 +1467,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Check.Path.Network" xml:space="preserve"><value>Peli on verkkoasemalla; paikallinen kansio toimii parhaiten.</value></data>
   <data name="Check.Steam.SignedOut" xml:space="preserve"><value>Steamiin ei ole kirjauduttu.</value></data>
   <data name="Check.Steam.Fallback" xml:space="preserve"><value>Steamiin ei ole kirjauduttu: peli käynnistyy ilman Steamia.</value></data>
+  <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ei ole asennettuna: peli käynnistyy ilman Steamia.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows esti pelin tiedoston ({0}): salli se Windowsin suojauksessa.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Levytila on vähissä asemalla {0} ({1} jäljellä).</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Peli on jo käynnissä: sulje se ja käynnistä se sitten täältä.</value></data>
