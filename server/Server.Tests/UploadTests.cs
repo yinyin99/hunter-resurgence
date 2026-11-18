@@ -168,7 +168,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1001L, state.Store.ResolveToken(token));
         Assert.Equal(1001L, state.Store.ResolveWebSession(cookie));
         Eq("1001", state.Store.AccountJson(1001)["user_id"]);
-        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
+        Eq("""{"em": 182.0, "gm": 20000.25}""", state.Wallet(1001));  // the account's unspent start em$ (182) is over the zip's 12.5
         Assert.Equal(1L, Count(1001, "pending"));
         Assert.Equal(0L, Count(player, "pending"));
         Assert.Equal(1L, Count(1001, "restore_audit"));
@@ -219,7 +219,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             Assert.Equal((409, "already"), (refused.Status, refused.Kind));
             Assert.Contains("can be restored once", refused.Message);
         }
-        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));  // nothing changed
+        Eq("""{"em": 182.0, "gm": 20000.25}""", state.Wallet(1001));  // nothing changed
         Assert.True(state.Store.AccountExists(other));
         Assert.Equal(0L, Count(other, "restore_audit"));
         // and now an upload of that user id is refused at once
@@ -410,7 +410,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         var done = Operator.Approve(listed.Id);
         Assert.Equal((200, "restored"), (done.Status, done.Kind));
         Assert.Equal(1001L, state.Store.AccountBySteam(Steam));
-        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(1001));
+        Eq("""{"em": 182.0, "gm": 20000.25}""", state.Wallet(1001));
         Assert.Equal(1L, Count(1001, "restore_audit"));
     }
 
@@ -457,7 +457,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.True(state.Store.AccountExists(player));  // the account keeps its own user id, not the backup's
         Assert.False(state.Store.AccountExists(1001));
         Assert.Equal(hunts, Count(player, "expeditions"));
-        Eq("""{"em": 12.5, "gm": 20000.25}""", state.Wallet(player));
+        Eq("""{"em": 182.0, "gm": 20000.25}""", state.Wallet(player));
         Assert.Equal("sample", state.Store.HandleOf(player));
         Assert.Equal(player, state.Store.RestoredBy(1001));  // the backup's user id is still used up
         Assert.Equal(0L, Count(player, "uploads"));
