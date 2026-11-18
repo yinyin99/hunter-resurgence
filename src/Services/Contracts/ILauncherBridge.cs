@@ -21,8 +21,10 @@ public interface ILauncherBridge
     void OpenExternal(string url);
     /// <summary>Starts the game client; a failure is a <see cref="Result"/> whose Error is a text key.</summary>
     Result StartGame(string url);
-    /// <summary>Completes when the game started by <see cref="StartGame"/> has closed: true, the "Done hunting for now?" window opens; false when the game never appeared.</summary>
-    Task<bool> WhenGameExitsAsync();
+    /// <summary>Completes when the game the launcher started LAST has closed (after a 16010 fallback: the retry's process, never an exited one). Null when the game never appeared.</summary>
+    Task<GameExit?> WhenGameExitsAsync();
+    /// <summary>Runs the Visual C++ and DirectX redistributables found in the game folder (<c>_CommonRedist</c> or the install's redist folder), one after the other; Windows asks for the rights of each. A failure is a <see cref="Result"/> whose Error is a text key (<c>Launch.NoRuntimes</c> when there are none).</summary>
+    Result RunGameRuntimes();
     /// <summary>Ctrl+D in the launcher window.</summary>
     void ToggleDevTools();
     /// <summary>The launcher has updated itself: start the new one.</summary>
