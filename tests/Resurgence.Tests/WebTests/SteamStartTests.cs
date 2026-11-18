@@ -70,4 +70,26 @@ public sealed class SteamStartTests : UiContext
         page.WaitForAssertion(() => Assert.Empty(page.FindAll("#no-steam-note")));
         inside.WaitForAssertion(() => Assert.NotEmpty(inside.FindAll("#no-steam-note")));
     }
+
+    [Fact]
+    public async Task TheNoteGoesAtAClickAndComesBackAtTheNextStartAndAClickDuringTheWaitLeavesTheWaitAlone()
+    {
+        var bridge = Use("steam:wait");
+        var cut = Render<SteamStart>();
+        var start = Task.Run(() => bridge.StartGame("x"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#start-without-steam")));
+        await cut.InvokeAsync(() => cut.Instance.Dismiss()); // a click elsewhere while it waits: nothing waits to go
+        Assert.NotEmpty(cut.FindAll("#start-without-steam"));
+        bridge.StartWithoutSteam();
+        await start;
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#no-steam-note"))); // the note is still shown after the wait
+
+        await cut.InvokeAsync(() => cut.Instance.Dismiss());
+        cut.WaitForAssertion(() => Assert.Empty(cut.FindAll("#no-steam-note")));
+
+        Task.Run(() => bridge.StartGame("x")); // the next start: its wait, then its note
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#start-without-steam")));
+        bridge.StartWithoutSteam();
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#no-steam-note")));
+    }
 }

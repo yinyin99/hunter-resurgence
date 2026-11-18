@@ -1,10 +1,2 @@
-/* fixed at the bottom, as the website's banner; on the website it sits above that banner. Bright body-size text (#EEE on #141312, 16:1) */
-.steam-start { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9001; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 10px; border-top: 1px solid var(--accent); background: var(--bg-bar-bottom); color: var(--fg-heading); font-size: var(--fs-body); line-height: var(--lh-body); }
-.steam-start.above-wip { bottom: 29px; }
-.inner { display: contents; }
-
-/* variant ?variant=center: a panel in the middle of the window over a dimmed page; the note has no button: it fades out by itself, a click hides it */
-.steam-start.center { top: 0; bottom: 0; padding: 0; border: 0; background: rgba(0, 0, 0, .6); }
-.steam-start.center .inner { display: flex; flex-direction: column; align-items: center; gap: 18px; max-width: 460px; padding: 28px 36px; border: 1px solid var(--accent); border-radius: 6px; background: var(--bg-bar-bottom); text-align: center; font-size: 18px; line-height: 26px; }
-.steam-start.center.note { background: none; animation: note-away 1s 10s forwards; }
-@keyframes note-away { to { opacity: 0; visibility: hidden; } }
+/* a panel floating in the middle of the window; there is no backdrop, so the page behind stays visible and clickable. Bright body-size text: #EEE on #141312, 16:1 */
+.steam-start { position: fixed; top: 50%; left: 50%; z-index: 9001; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 18px; max-width: 460px; padding: 28px 36px; border: 1px solid var(--accent); border-radius: 6px; background: var(--bg-bar-bottom); box-shadow: 0 15px 35px rgba(0, 0, 0, .6); color: var(--fg-heading); text-align: center; font-size: 18px; line-height: 26px; }
