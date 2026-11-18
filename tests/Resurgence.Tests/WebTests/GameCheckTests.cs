@@ -166,7 +166,6 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:old", "Check.Version.Old", "The game is not up to date: update it in Steam.", "Open Steam")]
     [InlineData("check:files", "Check.Files.Missing", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:setup", "Kit.NoHosts", "The hosts file has no block from setup (not run, or removed), so the game still talks to its own servers.", "Set up")]
-    [InlineData("check:steam", "Launch.NoSteam", "Start Steam and sign in, then try again.", "Open Steam")]
     [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", null)]
     [InlineData("folder:none", "Launch.NoGame", "The game was not found. Check its folder in the settings.", "Choose folder…")]
     [InlineData(null, "Launch.StartFailed", "The game could not be started.", null)]

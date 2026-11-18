@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Il gioco è già in esecuzione.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Gioco non trovato. Controlla la sua cartella nelle impostazioni.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Impossibile avviare il gioco.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Avvia Steam, accedi e riprova.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Avvio di Steam…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Avvia senza Steam</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Avviato senza Steam: gli obiettivi di Steam sono disattivati in questa sessione.</value></data>

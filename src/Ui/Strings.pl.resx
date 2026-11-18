@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Gra jest już uruchomiona.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Nie znaleziono gry. Sprawdź jej folder w ustawieniach.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Nie udało się uruchomić gry.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Uruchom Steam, zaloguj się i spróbuj ponownie.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Uruchamianie Steama…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Uruchom bez Steama</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Uruchomiono bez Steama: osiągnięcia Steam są wyłączone w tej sesji.</value></data>

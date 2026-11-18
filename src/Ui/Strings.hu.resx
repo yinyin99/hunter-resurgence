@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>A játék már fut.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>A játék nem található. Ellenőrizd a mappáját a beállításokban.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>A játékot nem sikerült elindítani.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Indítsd el a Steamet, jelentkezz be, és próbáld újra.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>A Steam indítása…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Indítás Steam nélkül</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Steam nélkül elindítva: a Steam-teljesítmények ki vannak kapcsolva ebben a munkamenetben.</value></data>

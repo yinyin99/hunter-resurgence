@@ -19,6 +19,6 @@
         var check = Error.StartsWith("Check.") || Error.StartsWith("Kit.") ? (await Bridge.CheckInstallAsync()).FirstOrDefault(c => c.Level == "block" && c.Text == Error) : null;
         // the problem is gone by now and its text needs its values: the general text instead of a sentence with holes
         text = check is null && L[Error].Value.Contains("{0}") ? L["Launch.StartFailed"].Value : L.Text(Error, check?.Args);
-        fix = check?.Fix ?? Error switch { "Launch.NoGame" => "choose-folder", "Launch.NoSteam" => "open-steam", _ => null };
+        fix = check?.Fix ?? Error switch { "Launch.NoGame" => "choose-folder", _ => null };
     }
 }

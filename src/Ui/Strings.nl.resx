@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Het spel draait al.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Het spel is niet gevonden. Controleer de map in de instellingen.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Het spel kon niet worden gestart.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, log in en probeer het opnieuw.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Steam wordt gestart…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Starten zonder Steam</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Gestart zonder Steam: Steam-prestaties staan uit voor deze sessie.</value></data>

@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Oyun zaten çalışıyor.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Oyun bulunamadı. Klasörünü ayarlardan kontrol edin.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Oyun başlatılamadı.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Steam'i başlatın, oturum açın ve tekrar deneyin.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Steam başlatılıyor…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Steam olmadan başlat</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Steam olmadan başlatıldı: Steam başarımları bu oturumda kapalı.</value></data>

@@ -232,7 +232,6 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kjører allerede.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Fant ikke spillet. Sjekk mappen i innstillingene.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
-  <data name="Launch.NoSteam" xml:space="preserve"><value>Start Steam, logg inn og prøv igjen.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Starter Steam…</value></data>
   <data name="Launch.StartWithoutSteam" xml:space="preserve"><value>Start uten Steam</value></data>
   <data name="Launch.NoSteamNote" xml:space="preserve"><value>Startet uten Steam: Steam-prestasjoner er av i denne økten.</value></data>
