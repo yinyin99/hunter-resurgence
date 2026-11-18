@@ -323,14 +323,40 @@ public class LauncherBridgeTests
         Directory.CreateDirectory(game);
         var ran = new List<string>();
         var done = new SemaphoreSlim(0);
-        var b = new LauncherBridge(() => new(game, Path.Combine(game, "client.exe")), Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, runInstaller: f => { ran.Add(Path.GetRelativePath(game, f).Replace('\\', '/')); done.Release(); return Task.CompletedTask; });
+        var b = new LauncherBridge(() => new(game, Path.Combine(game, "client.exe")), Rest, _ => false, LauncherFakes.Up, LauncherFakes.Signed, null, runInstaller: (f, a) => { ran.Add($"{Path.GetRelativePath(game, f).Replace('\\', '/')} {a}".Trim()); done.Release(); return Task.CompletedTask; });
         Assert.Equal("Launch.NoRuntimes", b.RunGameRuntimes().Error);
 
-        foreach (var f in new[] { "_CommonRedist/vcredist/2010/vcredist_x64.exe", "_CommonRedist/vcredist/2022/VC_redist.x86.exe", "_CommonRedist/vcredist/2022/VC_redist.x64.exe", "_CommonRedist/DirectX/Jun2010/DXSETUP.exe", "_CommonRedist/readme.txt" })
-            Files.Touch(Path.Combine(game, f));
+        // a tree with every year and architecture: only the 32-bit 2010 and 2005 and DirectX are run
+        foreach (var year in new[] { "2005", "2008", "2010", "2012", "2013", "2015", "2022" })
+            foreach (var arch in new[] { "x86", "x64" })
+                Files.Touch(Path.Combine(game, "_CommonRedist", "vcredist", year, $"vcredist_{arch}.exe"));
+        Files.Touch(Path.Combine(game, "_CommonRedist/vcredist/2022/VC_redist.x86.exe"));
+        Files.Touch(Path.Combine(game, "_CommonRedist/DirectX/Jun2010/DXSETUP.exe"));
+        Files.Touch(Path.Combine(game, "_CommonRedist/readme.txt"));
         Assert.True(b.RunGameRuntimes().Ok);
         for (var i = 0; i < 3; i++) Assert.True(await done.WaitAsync(TimeSpan.FromSeconds(10)));
-        Assert.Equal(["_CommonRedist/vcredist/2022/VC_redist.x64.exe", "_CommonRedist/vcredist/2022/VC_redist.x86.exe", "_CommonRedist/DirectX/Jun2010/DXSETUP.exe"], ran);
+        Assert.Equal(["_CommonRedist/vcredist/2010/vcredist_x86.exe /passive /norestart", "_CommonRedist/vcredist/2005/vcredist_x86.exe", "_CommonRedist/DirectX/Jun2010/DXSETUP.exe /silent"], ran);
+    }
+
+    [Fact]
+    public void ARuntimeThatIsNotThereIsSkippedAndTheSteamFolderIsTheLastRoot()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var game = Path.Combine(temp.Path, "steamapps", "common", "game");
+        var shared = Path.Combine(temp.Path, "steamapps", "common", "Steamworks Shared", "_CommonRedist");
+        Directory.CreateDirectory(game);
+        Files.Touch(Path.Combine(shared, "vcredist/2022/VC_redist.x86.exe"));
+        Files.Touch(Path.Combine(shared, "vcredist/2012/vcredist_x86.exe"));
+        Assert.Empty(LauncherBridge.Runtimes(game));
+
+        Files.Touch(Path.Combine(shared, "vcredist/2005/vcredist_x86.exe"));
+        Files.Touch(Path.Combine(shared, "vcredist/2010/vcredist_x64.exe"));
+        Files.Touch(Path.Combine(shared, "DirectX/Jun2010/DXSETUP.exe"));
+        Assert.Equal([Path.Combine(shared, "vcredist", "2005", "vcredist_x86.exe"), Path.Combine(shared, "DirectX", "Jun2010", "DXSETUP.exe")], LauncherBridge.Runtimes(game).Select(r => r.File));
+
+        // a redist folder of the game wins over Steam's
+        Files.Touch(Path.Combine(game, "redist", "vcredist", "2010", "vcredist_x86.exe"));
+        Assert.Equal([Path.Combine(game, "redist", "vcredist", "2010", "vcredist_x86.exe")], LauncherBridge.Runtimes(game).Select(r => r.File));
     }
 
     [Fact]
