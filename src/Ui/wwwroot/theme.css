@@ -58,7 +58,7 @@
     --pill-ems: #E7BE3D;
     --amber: #F0AD4E;
     --pill-balance-fg: #CCC;
-    --badge: #D00;
+    --badge: #F00;
     --online: #95D338;
     --online-2: #7CB37A;
     --success: #7ECE28;
@@ -129,7 +129,7 @@
     --su-btn: linear-gradient(#ffbb8e 0%, #f60 39%, #f60 100%);
     --su-btn-hover: linear-gradient(#ffcb9e 0%, #ff7610 39%, #ff7610 100%);
     --su-btn-border: rgba(64, 52, 33, .83);
-    --su-btn-disabled: linear-gradient(#808080 0%, #505050 100%);
+    --su-btn-disabled: linear-gradient(#ccc 0%, #808080 50%, #505050 100%);
     --su-link: #ff7a22;
     --su-link-hover: #ffa05a;
     --su-focus: #f60;
@@ -140,14 +140,14 @@
     --su-input-bg: hsla(0, 0%, 100%, .95);
     --su-input-fg: #444;
     --su-input-bd: #444;
-    --su-placeholder: #6b6b6b;
+    --su-placeholder: #aaa;
     --su-dialog-bg: rgba(58, 49, 40, .91);
     --su-dialog-bd: #000;
     --su-dialog-rule: #655b4c;
     --su-dialog-head: #eee;
     --su-error: #ff9a9a;
     --su-login-error: rgba(255, 50, 50, .8);
-    --su-link-button: #002f14;
+    --su-link-button: #005826;
     --su-progress-well: rgba(0, 0, 0, .5);
     --su-progress-bar: #5cb85c;
     --su-radius-btn: 6px;
@@ -175,7 +175,7 @@
     --r-3: 8px;
     --r-pill: 999px;
     --tint-1: rgba(255, 255, 255, .025);
-    --tint-2: rgba(255, 255, 255, .04);
+    --tint-2: rgba(255, 255, 255, .06);
     --t-fast: 100ms;
     --t-base: 160ms;
     --t-slow: 240ms;
@@ -383,8 +383,8 @@ html:has(.su) { overflow: hidden; }
 .p3 .su-gift .item { left: 35px; top: 46px; }
 .p4 .su-gift .item { left: 56px; top: 74px; }
 
-.su-btn { box-sizing: border-box; display: inline-block; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: #1a1a1a; font: 400 14px/43px var(--font-signup); text-align: center; cursor: pointer; }
-.su-btn:hover { background: var(--su-btn-hover); color: #1a1a1a; }
+.su-btn { box-sizing: border-box; display: inline-block; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: #fff; font: 400 14px/43px var(--font-signup); text-align: center; text-shadow: 0 1px 1px rgba(0, 0, 0, .45); cursor: pointer; }
+.su-btn:hover { background: var(--su-btn-hover); color: #fff; }
 .su-btn.medium { height: 45px; padding: 0 10px; font-size: 16px; }
 .su-btn.large { height: 58px; padding: 0 15px; font-size: 18px; line-height: 56px; }
 .su-btn:disabled, .su-btn.disabled { background: var(--su-btn-disabled); color: #eee; cursor: default; }
@@ -432,7 +432,7 @@ html:has(.su) { overflow: hidden; }
 .su-dice { position: absolute; left: 458px; top: 365px; width: 52px; height: 40px; border: 1px solid var(--su-btn-border); border-radius: var(--su-radius-btn); background: var(--su-btn); color: var(--su-link-button); font-size: 22px; cursor: pointer; }
 .p1 .su-input { position: absolute; left: 520px; top: 367px; width: 186px; }
 .su-bubble::before { content: ""; position: absolute; left: -8px; top: 10px; border: 7px solid transparent; border-left: 0; border-right: 8px solid #fff; }
-.su-bubble { position: absolute; left: 730px; top: 367px; box-sizing: border-box; height: 34px; padding: 6px 10px; border: 1px solid #000; background: #fff; color: #c00; font: 400 13px/20px var(--font-signup); text-align: center; }
+.su-bubble { position: absolute; left: 730px; top: 367px; box-sizing: border-box; height: 34px; padding: 6px 10px; border: 1px solid #000; background: #fff; color: red; font: 400 13px/20px var(--font-signup); text-align: center; }
 .p1 .su-name > .su-btn { position: absolute; left: 605px; top: 476px; transform: translateX(-50%); }
 .su-names { position: absolute; left: 200px; top: 365px; width: 240px; margin: 0; padding: 0; list-style: none; background: #fff; }
 .su-names button { display: block; box-sizing: border-box; width: 100%; height: 42px; padding: 0 12px; border: 0; border-bottom: 1px solid #ddd; background: #fff; color: #444; font: 400 13px var(--font-signup); text-align: left; cursor: pointer; }
