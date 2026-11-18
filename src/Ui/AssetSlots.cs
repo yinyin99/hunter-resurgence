@@ -182,8 +182,7 @@ public sealed class MissingList(AssetImages images)
                 if ((h = held) is null || now >= h.Until)
                 {
                     var expected = await AssetSlots.ExpectedAsync(sources);
-                    var failed = !expected.Any(e => e.Area == "store") || !expected.Any(e => e.Area == "species"); // the store or the boards did not answer
-                    h = held = new(now + (failed ? Retry : Lifetime), AssetSlots.Report(expected, images), [.. expected.Select(e => e.Key)]);
+                    h = held = new(now + (expected.Any(e => e.Area == "store") ? Lifetime : Retry), AssetSlots.Report(expected, images), [.. expected.Select(e => e.Key)]);
                 }
             }
             finally { gate.Release(); }
