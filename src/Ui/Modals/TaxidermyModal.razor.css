@@ -10,11 +10,11 @@ h2 { margin: 0; font-size: 24px; line-height: 30px; font-weight: 500; color: var
 /* the row is a surface of its own (inset, --surface-6) so the name and its two prices read as one unit; radius = button radius + padding */
 .row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, minmax(96px, 120px)); align-items: center; gap: 8px; padding: 8px; border-radius: calc(var(--r-2) + 8px); background: var(--surface-6); }
 .name { padding-inline-start: 8px; font-size: 16px; line-height: 22px; font-weight: 500; color: var(--text-1); overflow-wrap: anywhere; }
-/* the em$ button is the main action's colour (--primary, white 4.6:1); the gm$ button is the neutral fill (white 5.7:1, edge 3.6:1) */
+/* the em$ button is the main action's colour (--primary-bg, white 4.5:1); the gm$ button is the neutral fill (white 5.7:1, edge 3.6:1) */
 .btn { box-sizing: border-box; min-height: 40px; border: 1px solid var(--neutral-solid-edge); background-color: var(--neutral-solid); color: #fff; font-size: 16px; font-variant-numeric: tabular-nums; text-align: center; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
 .btn:disabled { opacity: .5; cursor: default; }
-.btn.ems { border-color: var(--primary); background-color: var(--primary); }
-@media (hover: hover) { .btn:hover:not(:disabled) { background-color: var(--neutral-solid-hover); } .btn.ems:hover:not(:disabled) { background-color: var(--primary-hover); } .close:hover { background-color: var(--tint-2); } }
+.btn.ems { border-color: var(--primary-bg); background-color: var(--primary-bg); }
+@media (hover: hover) { .btn:hover:not(:disabled) { background-color: var(--neutral-solid-hover); } .btn.ems:hover:not(:disabled) { background-color: var(--primary-bg-hover); } .close:hover { background-color: var(--tint-2); } }
 .btn:active { transform: none; filter: none; }
 @media (prefers-reduced-motion: no-preference) { .btn:active:not(:disabled) { scale: .96; } }
 @media (max-width: 420px) { .row { grid-template-columns: 1fr 1fr; } .name { grid-column: 1 / -1; } }

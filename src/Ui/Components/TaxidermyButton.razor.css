@@ -1,6 +1,6 @@
-/* the primary action of the row: white on --primary (4.6:1); the hours left are the same white, set off by a hairline */
-.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; background-color: var(--primary); color: #fff; white-space: nowrap; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
-@media (hover: hover) { .btn:hover { background-color: var(--primary-hover); } }
+/* the primary action of the row: white on --primary-bg (4.5:1); the hours left are the same white, set off by a hairline */
+.btn { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; background-color: var(--primary-bg); color: #fff; white-space: nowrap; transition-property: background-color, scale; transition-duration: 150ms; transition-timing-function: ease-out; }
+@media (hover: hover) { .btn:hover { background-color: var(--primary-bg-hover); } }
 .btn:active { transform: none; filter: none; }
 @media (prefers-reduced-motion: no-preference) { .btn:active { scale: .96; } }
 .left { padding-inline-start: 8px; border-inline-start: 1px solid rgba(255, 255, 255, .6); font-size: 13px; }
