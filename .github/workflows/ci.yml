@@ -182,8 +182,11 @@ jobs:
           [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8081/images/x.svg)" = 404 ]
           curl -sf http://localhost:8081/images.json | grep -q '"logo-bar.png":"[0-9a-f]*"' # the launcher's list (docs/images.md)
           if curl -sf http://localhost:8081/images.json | grep -q 'x.svg'; then exit 1; fi
-          curl -sf http://localhost:8081/images-missing.json | grep -q '"logo-rating-2":"/feed"' # a box /feed drew (docs/images.md)
-          if curl -sf http://localhost:8081/images-missing.json | grep -q '"logo-rating-1"'; then exit 1; fi
+          curl -sf http://localhost:8081/images-missing.json -o missing.json # every slot of the manifest without a file, whatever page was visited (docs/images.md)
+          grep -q '"key":"logo-rating-2"' missing.json
+          grep -q '"key":"reserve-12"' missing.json # a slot of the launcher's pages
+          grep -q '"present":2,' missing.json # logo-rating-1 and logo-bar have their files
+          if grep -q '"key":"logo-rating-1"' missing.json || grep -q '"key":"logo-bar"' missing.json; then exit 1; fi
           [ "$(curl -sf http://localhost:8080/images.json)" = '{}' ]
           docker exec web sh -c 'touch /home/app/.aspnet/DataProtection-Keys/probe && rm /home/app/.aspnet/DataProtection-Keys/probe' # the app user keeps the cookie-signing keys across deploys (src/Web/Dockerfile)
       - if: failure()

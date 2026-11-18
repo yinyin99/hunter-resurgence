@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Resurgence.Ui;
 
-/// <summary>The operator's pictures for the asset slots: one file per slot name, served at /images/ by the website (IMAGES_DIR, docs/images.md); the launcher gets the website's list from /images.json. None: every slot is its labelled box. The slots drawn without a picture are listed at /images-missing.json.</summary>
+/// <summary>The operator's pictures for the asset slots: one file per slot name, served at /images/ by the website (IMAGES_DIR, docs/images.md); the launcher gets the website's list from /images.json. None: every slot is its labelled box. /images-missing.json lists the slots of <see cref="AssetSlots"/> without a file, and under seenWithoutFile the ones pages drew without one that it does not know.</summary>
 public sealed class AssetImages
 {
     /// <summary>The file types served; no SVG, because an SVG opened directly from our origin can run script. A .webm plays as a muted looping video (the original landing page's background).</summary>
@@ -28,7 +28,7 @@ public sealed class AssetImages
     /// <summary>The URL of the picture of slot <paramref name="name"/>, or null (the box).</summary>
     public string? Url(string name) => urls.GetValueOrDefault(Key(name));
 
-    /// <summary>Notes that slot <paramref name="name"/> was drawn as its box on the page at <paramref name="path"/> (the URL path, no query); the first page of each key is kept, 10 000 keys at most. A signed-in page keeps only its first segment (/messages/&lt;handle&gt; → /messages), because the list is public. Read by /images-missing.json (docs/images.md).</summary>
+    /// <summary>Notes that slot <paramref name="name"/> was drawn as its box on the page at <paramref name="path"/> (the URL path, no query); the first page of each key is kept, 10 000 keys at most. A signed-in page keeps only its first segment (/messages/&lt;handle&gt; → /messages), because the list is public. Read by /images-missing.json (docs/images.md): the keys <see cref="AssetSlots"/> does not list.</summary>
     public void NoteMissing(string name, string path)
     {
         var key = Key(name);

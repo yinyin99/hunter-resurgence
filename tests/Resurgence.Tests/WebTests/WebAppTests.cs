@@ -76,6 +76,22 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
     public async Task WithoutOperatorPicturesTheListIsEmpty() => Assert.Equal("{}", await Html(await Get(Client(), "/images.json")));
 
     [Fact]
+    public async Task TheMissingListHoldsEverySlotBeforeAnyPageIsVisited()
+    {
+        var response = await Get(Client(), "/images-missing.json");
+        Assert.Equal("public, max-age=300", response.Headers.CacheControl?.ToString()); // public, so Cloudflare may keep it (docs/images.md)
+        using var json = System.Text.Json.JsonDocument.Parse(await Html(response));
+        var root = json.RootElement;
+        Assert.Equal(0, root.GetProperty("present").GetInt32());
+        Assert.True(root.GetProperty("total").GetInt32() > 100);
+        var missing = root.GetProperty("missing");
+        Assert.Contains(missing.GetProperty("decoration").EnumerateArray(), m => m.GetProperty("key").GetString() == "logo-rating-2" && m.GetProperty("page").GetString() == "Footer");
+        Assert.Contains(missing.GetProperty("reserves and maps").EnumerateArray(), m => m.GetProperty("key").GetString() == "reserve-12"); // a launcher page's slot
+        Assert.Equal(root.GetProperty("total").GetInt32(), root.GetProperty("areas").EnumerateObject().Sum(a => a.Value.GetProperty("total").GetInt32()));
+        Assert.Equal(System.Text.Json.JsonValueKind.Object, root.GetProperty("seenWithoutFile").ValueKind);
+    }
+
+    [Fact]
     public void WithoutServerUrlTheSessionIsAMock() =>
         Assert.IsType<Resurgence.Services.Mocks.MockSessionService>(Resolve(site, typeof(ISessionService)));
 
