@@ -253,6 +253,43 @@ public class LauncherBridgeTests
         Assert.Null(new SteamProbes(() => true, () => false, () => true).PlannedMode());
     }
 
+    [Fact]
+    public async Task StartWithoutSteamWhileOurSteamIsStartingStopsItAndStartsWithoutSteam()
+    {
+        using var s = new Start();
+        var stopped = 0;
+        var b = new LauncherBridge(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return LauncherFakes.Alive(); }, new(() => true, () => false, () => true, () => stopped++), "123",
+            poll: TimeSpan.FromMilliseconds(5), steamWait: TimeSpan.FromMinutes(5));
+        var start = Task.Run(() => b.StartGame("srv://x"));
+        while (!b.WaitingForSteam) await Task.Delay(1);
+        b.StartWithoutSteam();
+        Assert.True((await start.WaitAsync(TimeSpan.FromSeconds(10))).Ok);
+        Assert.Equal(["nosteam"], s.Modes);
+        Assert.Equal(1, stopped);
+
+        // the 20 s running out is the same
+        stopped = 0;
+        using var late = new Start();
+        Assert.True(late.Bridge(new(() => true, () => false, () => true, () => stopped++)).StartGame("srv://x").Ok);
+        Assert.Equal(["nosteam"], late.Modes);
+        Assert.Equal(1, stopped);
+    }
+
+    [Fact]
+    public void ASteamThatIsSignedInIsNeverStoppedWhetherItWasThereOrSignsInDuringTheWait()
+    {
+        using var s = new Start();
+        var stopped = 0;
+        // running and signed in before the launcher: not started, not stopped
+        Assert.True(s.Bridge(new(() => true, () => true, () => true, () => stopped++)).StartGame("srv://x").Ok);
+        // signs in during the wait: Steam mode as before
+        using var wait = new Start();
+        var signedIn = false;
+        Assert.True(wait.Bridge(new(() => true, () => signedIn, () => { signedIn = true; return true; }, () => stopped++)).StartGame("srv://x").Ok);
+        Assert.Equal(["steam", "steam"], s.Modes.Concat(wait.Modes));
+        Assert.Equal(0, stopped);
+    }
+
     /// <summary>The launcher's graphics files in a temp %APPDATA%: the file of <c>/steam</c> and the one without; a start is made and the files are read back.</summary>
     static (string Steam, string NoSteam) StartWithGraphics(bool steamUp, Action<string, string> arrange, params int?[] exits)
     {

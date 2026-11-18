@@ -239,7 +239,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
-    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again.
+    /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again. A start without
+    /// Steam after that wait leaves Steam closed: the Steam this start launched, still without anybody signed in, is asked to exit (<see cref="SteamProbes.StopStarted"/>); never one that ran before.
     /// </summary>
     bool SteamUp()
     {
@@ -254,16 +255,22 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var step = poll ?? TimeSpan.FromSeconds(1);
             for (var waited = TimeSpan.Zero; waited < (steamWait ?? TimeSpan.FromSeconds(20)); waited += step)
             {
-                if (skipSteam.Wait(step)) return false;
+                if (skipSteam.Wait(step)) return Abandon();
                 if (steam.SignedIn()) return true;
             }
-            return false;
+            return Abandon();
         }
         finally
         {
             waitingForSteam = false;
             StartStateChanged?.Invoke();
         }
+    }
+
+    bool Abandon()
+    {
+        if (!steam.SignedIn()) steam.StopStarted?.Invoke();
+        return false;
     }
 
     /// <summary>Starts the client in the exe's own folder (it finds its data and writes its logs relative to the working folder); null when it does not start.</summary>
