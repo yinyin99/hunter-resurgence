@@ -93,8 +93,6 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the missions page is the account's too: the server's missions, their progress and the page's writes and the daily missions
     builder.Services.Replace(ServiceDescriptor.Scoped<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(),
         sp.GetRequiredService<ILogger<ServerMissionsService>>())));
-    // the seasonal events setting is the account's, with the event that runs now (the Settings menu)
-    builder.Services.Replace(ServiceDescriptor.Scoped<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>())));
     // the one-time Discord invitation is remembered with the account
     builder.Services.Replace(ServiceDescriptor.Scoped<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>())));
     // the main page's online line: the server's public counts
