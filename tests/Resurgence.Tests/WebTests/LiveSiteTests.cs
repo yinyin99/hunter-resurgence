@@ -373,7 +373,7 @@ public sealed class LiveSiteTests : UiContext
     [InlineData("halloffame", "/")]
     [InlineData("antlers/single", "/leaderboards/score")]
     [InlineData("bustthrough", "/")]
-    public void TheLiveBoardsAreTheServersThree(string path, string landed)
+    public void TheLiveBoardsAreTheServersSix(string path, string landed)
     {
         Services.AddSingleton<ILeaderboardsService>(new ServerLeaderboardsService(
             new HttpClient(new Answer(HttpStatusCode.OK, """{"page": 1, "pages": 1, "total": 0, "rows": []}""")) { BaseAddress = new Uri("http://server.test") }, new ServerCookie(), NullLogger<ServerLeaderboardsService>.Instance));
