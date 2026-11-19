@@ -48,7 +48,7 @@ public sealed partial class State
                 var types = new Dictionary<string, long>();  // lodge id -> type (0: none usable yet)
                 foreach (var r in con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
                     if (types.GetValueOrDefault((string)r[0]) == 0)
-                        types[(string)r[0]] = JsonNode.Parse((string)r[1]) is JsonObject node && long.TryParse(Py.Str(node["lodge_type_id"]), out var type) ? type : 0;
+                        types[(string)r[0]] = JsonNode.Parse((string)r[1]) is JsonObject node && (TryKey(node["lodge_type_id"], out var type) || Py.IsStr(node["lodge_type_id"]) && long.TryParse((string)node["lodge_type_id"]!, out type)) ? type : 0;
                 var have = types.Values.GroupBy(t => t).ToDictionary(g => g.Key, g => g.Count());
                 foreach (var r in con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id"))
                     if (facts.LodgeOfItem((long)r[0]) is { } type)

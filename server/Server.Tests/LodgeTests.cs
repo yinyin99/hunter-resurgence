@@ -351,13 +351,14 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         state.CreateAccount(11, "matching");
         state.CreateAccount(12, "huge");
         state.CreateAccount(5, "broken");
-        foreach (var (account, units) in new[] { (VIEWER, 1), (10, 2), (11, 1), (12, 2), (5, 1) })
+        state.CreateAccount(14, "both");
+        foreach (var (account, units) in new[] { (VIEWER, 1), (10, 2), (11, 1), (12, 2), (5, 1), (14, 2) })
         {
             using var con = state.Store.Open(account);
             for (var guid = 1; guid <= units; guid++)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, 780, 0, '{}', NULL)", guid);
         }
-        foreach (var (account, id, type, source) in new[] { (10L, "7", "780", "/game/user/lodge"), (10, "8", "\"x\"", "/game/user/lodges"), (11, "9", "\"780\"", "/game/user/lodges"), (11, "9", "780", "/game/user/lodge"), (12, "9223372036854775807", "780", "/game/user/lodges") })
+        foreach (var (account, id, type, source) in new[] { (10L, "7", "780", "/game/user/lodge"), (10, "8", "\"x\"", "/game/user/lodges"), (11, "9", "\"780\"", "/game/user/lodges"), (11, "9", "780", "/game/user/lodge"), (14, "3", "780.0", "/game/user/lodges"), (14, "3", "780", "/game/user/lodge"), (5, "2", "[1]", "/game/user/lodges"), (12, "9223372036854775807", "780", "/game/user/lodges") })
         {
             using var con = state.Store.Open(account);
             PlayerRows.AddLodge(con, source, id, O($$"""{"id": {{id}}, "name": "mine", "lodge_type_id": {{type}}}"""));  // 10's lodge 7 has no list row: it still counts
@@ -378,7 +379,8 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             using var con = state.Store.Open(account);
             return (long)con.Scalar("SELECT COUNT(*) FROM lodges WHERE account_id = $a AND source = '/game/user/lodges' AND CAST(json_extract(node, '$.lodge_type_id') AS INTEGER) = 780")!;
         }
-        Assert.Equal([1, 1, 1, 1], [Count(VIEWER), Count(10), Count(11), Count(12)]);  // 10's lodge 7 (detail only) counts and 10 gained one; 11 matched; 12's lodge id cannot be followed: left as it was
+        Assert.Equal([1, 1, 1, 1], [Count(VIEWER), Count(10), Count(11), Count(12)]);
+        Assert.Equal(2, Count(14));  // two items, one lodge with both rows (a type of 780.0): exactly one more  // 10's lodge 7 (detail only) counts and 10 gained one; 11 matched; 12's lodge id cannot be followed: left as it was
         var made = (await Read(V2, "/game/user/lodges", viewer)).AsArray().Single()!;
         Eq("""["Rustic Lodge", 780, false]""", T(made["name"], made["lodge_type_id"], made["locked"]));
         Eq("""[1, [], []]""", T(made["id"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["animal_slots"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["weapon_slots"]));
