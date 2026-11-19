@@ -266,12 +266,12 @@ public class ServerProfileServiceTests
         """;
 
     [Fact]
-    public async Task RankBarsOfAKindAreTheRowsByNameCountedToTheCap()
+    public async Task RankBarsOfAKindAreTheRowsByNameWithTheWholeCountAndTheBarFullAtTheCap()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Ranks));
         var bars = await Make(fake).RanksAsync("fox", "animals");
         Assert.Equal("/hunters/fox/ranks", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal([("Alpine Ibex", 25, 25, 1000, 2L), ("Red Fox", 1000, 1000, 1000, 1L)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total, b.Id)));  // the id of the rank's picture
+        Assert.Equal([("Alpine Ibex", 25, 25, 1000, 2L), ("Red Fox", 1500, 1000, 1000, 1L)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total, b.Id)));  // the number is the whole count, the bar fills at the cap; the id of the rank's picture
     }
 
     [Fact]

@@ -262,7 +262,7 @@ public sealed class LiveSiteTests : UiContext
     }
 
     const string Ranks = """
-        {"cap":1000,"ranks":[{"id":2,"category":"animals","name":"Red Fox","value":1500},{"id":1,"category":"animals","name":"Alpine Ibex","value":7},
+        {"cap":1000,"ranks":[{"id":2,"category":"animals","name":"Red Fox","value":4212},{"id":1,"category":"animals","name":"Alpine Ibex","value":7},
                              {"id":41,"category":"weapons","name":"Rifle","value":3},{"id":38,"category":"collectables","name":"Mushrooms","value":0}],
          "milestones":[]}
         """;
@@ -277,7 +277,7 @@ public sealed class LiveSiteTests : UiContext
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox").Add(r => r.Sub, "animals"));
         cut.WaitForAssertion(() => Assert.Equal(["Alpine Ibex", "Red Fox"], cut.FindAll("div.what h4").Select(h => h.TextContent)));
-        Assert.Equal(["7", "1000"], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // a count counts to the cap
+        Assert.Equal(["7", 4212.ToString("N0")], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // the number is the whole count, the bar stops at the cap
         Assert.Equal(["width:0%", "width:100%"], cut.FindAll("div.what .bar i").Select(i => i.GetAttribute("style")));
         Assert.Equal(["rank-1", "rank-2"], cut.FindAll("div.row .asset-slot").Select(s => s.GetAttribute("aria-label")));  // each rank's own picture, by its game id
     }
