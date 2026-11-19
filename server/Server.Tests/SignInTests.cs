@@ -165,7 +165,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     static readonly JsonObject Cfg = new(HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     static readonly (string, string)[] Json = [("Content-Type", "application/json")];
-    const string Default = "https://avatar.test/256/1000000.png";  // a new account's picture: the first of the list below, on the avatar base of the fixture's account
+    const string Default = "https://gameserver.test/media/avatar/256/1000000.png";  // a new account's picture: the first of the list below, on this server's game host (the list names another)
     static JsonArray AvatarList() => (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000001, "url": "https://avatar.test/256/1000001.png", "gender": "f"}]""")!;
     readonly FakeSteam fake = new();
     Loopback server = null!;
@@ -514,7 +514,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(401, (await Get("web.test", "/account/messages/thread?handle=Fern")).Status);
     }
 
-    const string Picked = "https://avatar.test/256/1000001.png";
+    const string Picked = "https://gameserver.test/media/avatar/256/1000001.png";
 
     Task<Reply> ChooseAvatar(string form, params (string, string)[] headers) =>
         server.SendAsync("POST", "web.test", "/account/avatar", [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes(form));

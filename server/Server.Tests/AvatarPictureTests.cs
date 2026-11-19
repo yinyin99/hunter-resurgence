@@ -46,6 +46,43 @@ public class AvatarPictureTests : StateTestBase, IAsyncLifetime
     [Fact]
     public async Task AListedAvatarWithoutAFileIsTheDefaultPicture() => Assert.Equal(Default, (await Get(Web, "/media/avatar/256/1000003.png")).Body);
 
+    [Fact]
+    public async Task TheStockCopyServesAnAvatarWithoutAnOperatorFileAndTheSenderIconToo()
+    {
+        var stock = Directory.CreateDirectory(Path.Combine(images, "avatars", "256")).FullName;
+        File.WriteAllBytes(Path.Combine(stock, "1000003.png"), [4, 4]);
+        File.WriteAllBytes(Path.Combine(stock, "1000002.png"), [8]);  // the operator's avatar-1000002.png wins
+        File.WriteAllBytes(Path.Combine(stock, $"{State.SenderAvatar}.png"), [6, 6]);
+        Assert.Equal([4, 4], (await Get(Web, "/media/avatar/256/1000003.png")).Body);
+        Assert.Equal(Listed, (await Get(Web, "/media/avatar/256/1000002.png")).Body);
+        Assert.Equal([6, 6], (await Get(Web, $"/media/avatar/256/{State.SenderAvatar}.png")).Body);
+        Assert.Equal(404, (await Get(Web, "/media/avatar/256/10000001.png")).Status);
+    }
+
+    [Fact]
+    public void AvatarsAreHandedOutOnThisServersGameHostWhateverHostTheListNames()
+    {
+        state.CreateAccount(5, "new");
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.Store.AvatarUrl(5));  // the list names avatar.test
+        Assert.True(state.SetAvatar(5, 1000002));
+        Assert.Equal($"{BASE}/media/avatar/256/1000002.png", state.Store.AvatarUrl(5));
+        state.Store.SetAvatar(5, "https://avatar.test/256/1000003.png", null);  // a row from before: the original's address
+        Assert.Equal($"{BASE}/media/avatar/256/1000003.png", state.AvatarUrl(5, "https://web.test"));  // the pages are never told it
+    }
+
+    [Fact]
+    public void TheStartMovesASavedAddressOfTheOriginalsHostToThisServer()
+    {
+        foreach (var id in new[] { 51, 52, 53 }) state.CreateAccount(id, $"p{id}");
+        state.Store.SetAvatar(51, "https://avatar.test/256/1000002.png", null);  // the list's own address
+        state.Store.SetAvatar(53, "https://other.test/photos/53/avatar.jpg", null);  // not an avatar of the list
+        state.MigrateListedAvatarUrls();
+        state.MigrateListedAvatarUrls();  // idempotent
+        Assert.Equal($"{BASE}/media/avatar/256/1000002.png", state.Store.AvatarUrl(51));
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.Store.AvatarUrl(52));
+        Assert.Equal("https://other.test/photos/53/avatar.jpg", state.Store.AvatarUrl(53));
+    }
+
     [Theory]
     [InlineData(Web, "/media/avatar/256/1000001.png")]  // a file, but not an avatar of the list
     [InlineData(Web, "/media/avatar/256/1000004.png")]
