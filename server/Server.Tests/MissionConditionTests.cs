@@ -328,5 +328,31 @@ public class MissionConditionTests : StateTestBase
             .Select(r => string.Join("/", r.Select(v => v.ToString())).Replace(" ", "")));  // the first objective is open and not earlier: a harvest after the upgrade can finish it
     }
 
+    [Fact]
+    public void TestAHarvestAfterTheUpgradeIsNotPaidTwiceByTheRollbackAndTheStartThatFollows()
+    {
+        string Two(bool strict) => "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{\"text\": \"10 gm$\"}], \"objectives\": ["
+            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " from over 50 meters" : "")}\"}}, {{\"id\": 1, \"title\": \"Harvest a Test Deer{(strict ? " from over 100 meters" : "")}\"}}]}}]}}";
+        state = New("twice.db", Two(strict: false));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));  // 20 m: the earlier rules finish the first objective
+        using (var con = state.Store.Open())
+        {
+            foreach (var column in new[] { "since", "seen", "kept", "earlier" })
+                con.Exec($"ALTER TABLE missions DROP COLUMN {column}");
+            con.Exec("DROP TABLE mission_rollbacks");
+            con.Exec("PRAGMA user_version = 29");
+        }
+        var strict = New("twice.db", Two(strict: true));
+        state = strict;
+        Hb(Shot(2, distance: 15000));  // 150 m, after the upgrade: finishes the second objective and the mission
+        Assert.Equal("1", Completed(of: strict));
+        var wallet = Gm(strict);
+        Assert.Equal("reopened 1 objectives in 1 missions", strict.RollbackMissions(apply: true).Last());  // the 150 m harvest belongs to the first objective: the second is reopened
+        Assert.Equal(0, strict.ConfirmMissions());  // and that harvest is not given to the second again
+        Eq("""{"state": 2, "objectives": [0]}""", Reply(strict.MissionsReply(ME)!)["states"]!["1"]);
+        Assert.Equal(wallet, Gm(strict));
+    }
+
     static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);
 }

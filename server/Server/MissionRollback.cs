@@ -174,9 +174,9 @@ public sealed partial class State
             if (drop.Count == 0)
                 continue;
             reopened.Add((id, state, drop));
-            if (apply)  // what a row of an earlier schema finished stays earlier (a harvest after the upgrade is not given to it again), minus what is reopened
+            if (apply)  // a row of an earlier schema: what its replay finishes with a harvest up to `seen` is earlier (a later harvest is not given to it again), what is reopened is not
                 con.Exec("UPDATE missions SET state = 2, objectives = ?, earlier = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(held.Where(d => !drop.Contains(d)))),
-                         Py.Dumps(List((mark.Since is null ? mark.EarlierIds.Union(held) : mark.EarlierIds).Except(drop))), id);
+                         Py.Dumps(List(mark.Since is null ? met.Where(x => x.At <= mark.Seen && held.Contains(x.Objective.Id)).Select(x => x.Objective.Id) : mark.EarlierIds.Except(drop))), id);
         }
         var lost = reopened.Where(r => r.Was == 3).Select(r => r.Mission).ToHashSet();
         var kept = before.Where(b => missions[b].Dependencies.Any(lost.Contains)).ToList();
