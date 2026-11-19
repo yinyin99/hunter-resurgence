@@ -175,10 +175,12 @@ public class HarvestScoreTests : StateTestBase
         // a doe scored before the fix took the buck's antlers: a stored score above 0 that was paid
         using (var con = state.Store.Open(ME))
             con.Exec("UPDATE harvests SET body = json_set(body, '$.score', 500, '$.score_type', 'typical') WHERE account_id = $a AND kill_id = (SELECT MAX(kill_id) FROM kills WHERE account_id = $a)");
+        using (var con = state.Store.Open(ME))  // the doe's reward, as it was paid
+            con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids) SELECT $a, 0, 'gm', 123, 0, 'CSS Reward (Animal Id: ' || MAX(kill_id) || ')', '[]' FROM kills WHERE account_id = $a");
         var wallet = state.Wallet(ME)["gm"]!.GetValue<double>();
         var killed = state.Rescore(ME, dryRun: true).Single();
         var one = Assert.Single(killed.Harvests);
-        Assert.Equal((sp, 500.0, 0.0, 0L), (one.Species, one.OldScore, one.NewScore, one.GmsPaid));
+        Assert.Equal((sp, 500.0, 0.0, 123L), (one.Species, one.OldScore, one.NewScore, one.GmsPaid));
         Assert.Empty(state.Rescore(ME, dryRun: true, onlyKill: 1).Single().Harvests);  // one kill alone: the buck is not the one
         Assert.Single(state.Rescore(ME, dryRun: true, onlyKill: one.Kill).Single().Harvests);
         Assert.Equal(0, state.Rescore(ME, dryRun: false).Single().Paid);

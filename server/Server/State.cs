@@ -359,7 +359,7 @@ public sealed partial class State
     }
 
     /// <summary>(event 7, event 22) of a kill: the latest spawn of its individual before its event 3, and the latest event 22 after that spawn
-    /// (individual ids are reused across hunts, and a female sends no event 22: an older animal's measurements are not hers); {} when missing.</summary>
+    /// (individual ids are reused across hunts, and a female deer sends no event 22: an older animal's measurements are not hers); {} when missing.</summary>
     public static (JsonObject E7, JsonObject E22) KillEvents(Db con, JsonNode? individual, string harvest)
     {
         JsonObject Latest(long ev)
