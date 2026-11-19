@@ -360,7 +360,9 @@ public sealed partial class State
             if (named.Count > 0 || aliased.Length > 0)
                 Take(ref sn, Duck, out _);  // `Mallard duck`
             Take(ref sn, SpeciesOf, out _);  // `one of any species of Ptarmigan`
-            if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named).Except(like)]));
+            if (except && named.Count == 0 && like.Length == 0)
+                sn += " animals_except ";  // no species after `any animal except`: the word stays, the objective is not understood
+            else if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named).Except(like)]));
             else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
             else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
             if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);

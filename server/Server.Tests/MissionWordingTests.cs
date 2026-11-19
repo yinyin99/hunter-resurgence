@@ -112,7 +112,7 @@ public class MissionWordingTests : MissionTestBase
         Hb(Shot(5, species: 6));
         Assert.Equal("1,2,3,4,5", Completed());
 
-        state = New("except.db", Catalogue(["Harvest any animal except an Elk", "Harvest a Test Fox and a Test Deer"]));  // the short name is left out whatever the mission lists; "and" is two animals
+        state = New("except.db", Catalogue(["Harvest any animal except an Elk", "Harvest a Test Fox and a Test Deer", "Harvest any animal except with a rifle"]));  // the short name is left out whatever the mission lists; "and" is two animals; nothing is left out by the third
         ActivateAll();
         Hb(Shot(1, species: 3));
         Hb(Shot(2, species: 4));
