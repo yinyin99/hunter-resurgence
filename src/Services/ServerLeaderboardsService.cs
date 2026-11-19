@@ -64,11 +64,11 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
             if (response.StatusCode is not (System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.NotFound))
-                log.LogWarning("The server answered {Path} with {Status}: an empty board", path, (int)response.StatusCode);
+                log.LogWarning("The server answered a board request with {Status}: an empty board", (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
-            log.LogWarning("The server did not answer {Path} ({Reason}): an empty board", path, e.Message);
+            log.LogWarning("The server did not answer a board request ({Reason}): an empty board", e.Message);
         }
         return null;
     }
