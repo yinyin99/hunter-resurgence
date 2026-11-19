@@ -211,10 +211,10 @@ images/           the slot pictures (images.md), mounted read-only in `web`; the
 avatar-uploads/  optional: the saved thumbnails of the players' uploaded avatars, `242/<uid>.jpg` (server.md, `avatar_uploads_dir`); `/srv` already holds it, no mount to add
 ```
 
-`images/` may be empty: every picture is then its labelled box, and the game's avatars are a miss (a broken picture in the game). The game's avatars are the files `avatar-<id>.png` of the avatar list (the same ones the website draws): the server reads them from `images/` (the `images_dir` setting, default `images`, next to `settings.json`) at each request, with no restart; `web` reads the folder at start, so restart it after a change. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC:
+`images/` may be empty: every picture is then its labelled box, and the game's avatars are a miss (a broken picture in the game). The game's avatars are the files `avatar-<id>.png` of the avatar list (the same ones the website draws): the server reads them from `images/` (and, for an id with no such file, the stock copy `images/avatars/256/<id>.png`; the `images_dir` setting, default `images`, next to `settings.json`) at each request, with no restart; `web` reads the folder at start, so restart it after a change. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC:
 
 ```
-ssh deploy@<vps> "mkdir -p '<server dir>/images' && rm -f '<server dir>/images'/*"
+ssh deploy@<vps> "mkdir -p '<server dir>/images' && find '<server dir>/images' -mindepth 1 -maxdepth 1 -type f -delete"
 tar -C <pictures folder> -cf - . | ssh deploy@<vps> "tar -C '<server dir>/images' -xf -"
 ssh deploy@<vps> "cd ~/web && docker compose restart web"
 ```

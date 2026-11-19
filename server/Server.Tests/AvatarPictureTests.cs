@@ -70,6 +70,19 @@ public class AvatarPictureTests : StateTestBase, IAsyncLifetime
         Assert.Equal($"{BASE}/media/avatar/256/1000003.png", state.AvatarUrl(5, "https://web.test"));  // the pages are never told it
     }
 
+    [Fact]
+    public void TheStartMovesASavedAddressOfTheOriginalsHostToThisServer()
+    {
+        foreach (var id in new[] { 51, 52, 53 }) state.CreateAccount(id, $"p{id}");
+        state.Store.SetAvatar(51, "https://avatar.test/256/1000002.png", null);  // the list's own address
+        state.Store.SetAvatar(53, "https://other.test/photos/53/avatar.jpg", null);  // not an avatar of the list
+        state.MigrateListedAvatarUrls();
+        state.MigrateListedAvatarUrls();  // idempotent
+        Assert.Equal($"{BASE}/media/avatar/256/1000002.png", state.Store.AvatarUrl(51));
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.Store.AvatarUrl(52));
+        Assert.Equal("https://other.test/photos/53/avatar.jpg", state.Store.AvatarUrl(53));
+    }
+
     [Theory]
     [InlineData(Web, "/media/avatar/256/1000001.png")]  // a file, but not an avatar of the list
     [InlineData(Web, "/media/avatar/256/1000004.png")]

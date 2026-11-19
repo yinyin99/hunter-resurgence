@@ -107,6 +107,15 @@ public sealed partial class State
             }
     }
 
+    /// <summary>Once, at start: an account whose `avatar_url` is an avatar of the list under another address (the original's avatar host, which the game no longer reaches) gets this server's address
+    /// (<see cref="ListedAvatarUrl"/>) in its `avatar_url` and its restored profile's `avatar`. Its other values stay. Idempotent: a second run finds none.</summary>
+    public void MigrateListedAvatarUrls()
+    {
+        foreach (var (account, url) in Store.AvatarUrls())
+            if (new ItemCatalogue(items, avatars).AvatarId(url) is { } id && ListedAvatarUrl(id) is var ours && url != ours)
+                Store.SetAvatar(account, ours, null);
+    }
+
     /// <summary>Once, at start: an account that never restored anything and whose `gender` disagrees with its listed avatar gets the avatar's gender. Idempotent: a second run finds none.</summary>
     public void MigrateAvatarGenders()
     {

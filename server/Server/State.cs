@@ -712,7 +712,7 @@ public sealed partial class State
         eventAmmo = [.. this.facts.SpeciesAmmo.Values.SelectMany(a => a).Distinct().Select(a => (JsonNode)a)];
         var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
-        // the recorded account's picture is `<base>/256/<id>.png`: the original's avatar host, where an uploaded avatar is still fetched from when `avatar_uploads` is unset (AvatarFetchUrl); every picture this server hands out is on its own host (MediaUrl)
+        // the recorded account's picture is `<base>/256/<id>.png`: where an uploaded avatar is fetched from when `avatar_uploads` is unset (AvatarFetchUrl); every picture this server hands out is on its own host (MediaUrl)
         avatarBase = avatarUrl.IndexOf("/256/", StringComparison.Ordinal) is var cut and > 0 ? avatarUrl[..cut] : $"{scheme}://{netloc}";
         var byDefine = new Dictionary<string, JsonObject>();
         foreach (var d in Arr(itemDefs))

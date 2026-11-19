@@ -31,7 +31,7 @@ public class AvatarLinksTests : StateTestBase
 
     public AvatarLinksTests() =>
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false,
-            avatars: (JsonArray)JsonNode.Parse($$"""[{"id": 1000000, "url": "{{Stock}}"}, {"id": 1000042, "url": "https://other.test/a.png"}]""")!);
+            avatars: (JsonArray)JsonNode.Parse($$"""[{"id": 1000000, "url": "{{Stock}}"}, {"id": 1000042, "url": "https://other.test/256/1000042.png"}]""")!);
 
     long Row(long account)
     {
@@ -119,7 +119,7 @@ public class AvatarLinksTests : StateTestBase
         Assert.Equal($"{BASE}/photos/1001/avatar.jpg", AvatarUrl(1001));
 
         var stock = new AvatarHost();
-        await Approved(TestZip.Own(uid: "1002", handle: "other", avatar: "https://other.test/a.png"), new PictureLinks([Host], stock));  // an avatar of the list: the player chose it
+        await Approved(TestZip.Own(uid: "1002", handle: "other", avatar: "https://other.test/256/1000042.png"), new PictureLinks([Host], stock));  // an avatar of the list: the player chose it
         Assert.Empty(stock.Asked);
         Assert.Equal($"{BASE}/media/avatar/256/1000042.png", AvatarUrl(1002));
     }
