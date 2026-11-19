@@ -26,7 +26,7 @@ public sealed class AvatarHost : HttpMessageHandler
 public class AvatarLinksTests : StateTestBase
 {
     int steam;
-    const string Host = "avatar.test", Stock = "https://avatar.test/256/1000000.png", Default = "https://avatar.test/256/1000000.png";
+    const string Host = "avatar.test", Stock = "https://avatar.test/256/1000000.png", Default = "https://gameserver.test/media/avatar/256/1000000.png";  // the list names the original's host; this server hands out its own
     const string Dead = "https://site.example/media/avatar/uploads/thumb/242x242/12345.jpg?v=3";
 
     public AvatarLinksTests() =>
@@ -96,7 +96,7 @@ public class AvatarLinksTests : StateTestBase
         var stock = new AvatarHost();
         await Approved(TestZip.Own(uid: "1002", handle: "other", avatar: "https://other.test/a.png"), new PictureLinks([Host], stock));  // an avatar of the list: the player chose it
         Assert.Empty(stock.Asked);
-        Assert.Equal("https://other.test/a.png", AvatarUrl(1002));
+        Assert.Equal($"{BASE}/media/avatar/256/1000042.png", AvatarUrl(1002));
     }
 
     [Fact]

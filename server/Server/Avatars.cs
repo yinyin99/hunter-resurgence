@@ -1,4 +1,4 @@
-// Player avatars: the picture of an account is one of the game's avatars (`avatar_url` is `<base>/256/<id>.png`, `face` the id) or the one imported from its backup
+// Player avatars: the picture of an account is one of the game's avatars (`avatar_url` is this server's `<game host>/media/avatar/256/<id>.png`, `face` the id) or the one imported from its backup
 // (`photos/<account>/avatar.jpg`, served at the photo link). What a page is told of it, and the player's own choice.
 using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
@@ -20,7 +20,13 @@ public sealed partial class State
 
     bool IsListedAvatar(string? url) => new ItemCatalogue(items, avatars).AvatarId(url) is not null;
 
-    string ListedAvatarUrl(long id) => $"{avatarBase}/256/{id}.png";
+    /// <summary>The game's pictures next to the avatars (the notice icon, the notice sender's avatar) and the stock avatars: on this server's own game host, never the original's.</summary>
+    string MediaUrl(string path) => $"{baseUrl}/media/avatar/{path}";
+
+    /// <summary>The id of the notice sender's picture: not an avatar of the list, but served beside them (`/media/avatar/256/10000000.png`).</summary>
+    public const long SenderAvatar = 10000000;
+
+    string ListedAvatarUrl(long id) => MediaUrl($"256/{id}.png");
 
     bool HasImportedAvatar(long account) => File.Exists(Path.Combine(AccountPhotos(account), ImportedAvatar));
 
@@ -59,7 +65,7 @@ public sealed partial class State
 
     /// <summary>The `avatar_url` an account has after a restore: the zip's address for an avatar of the game's list, the imported picture's link when the zip holds it or it was fetched (`fetched`), else the default avatar.</summary>
     internal string RestoredAvatarUrl(Restored read, long account, bool fetched = false) =>
-        read.Model.Profile.AvatarUrl is { } url && IsListedAvatar(url) ? url
+        new ItemCatalogue(items, avatars).AvatarId(read.Model.Profile.AvatarUrl) is { } id ? ListedAvatarUrl(id)
         : fetched || ImportedAvatarOf(read) is not null ? PhotoUrl(account, ImportedAvatar) : ListedAvatarUrl(DefaultAvatar);
 
     /// <summary>The avatar of an account as a page draws it: a URL on `site` (the website's) for the imported picture, the game's address for an avatar of the list; null for anything else
@@ -69,7 +75,7 @@ public sealed partial class State
         if (Store.AvatarUrl(account) is not { Length: > 0 } url) return null;
         if (url.EndsWith($"{PHOTO_PREFIX}{account}/{ImportedAvatar}", StringComparison.Ordinal))
             return HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null;
-        return IsListedAvatar(url) ? url : null;
+        return new ItemCatalogue(items, avatars).AvatarId(url) is { } id ? ListedAvatarUrl(id) : null;
     }
 
     /// <summary>`GET /account/avatars`: `{current, ids, imported}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars and the imported picture's link (null without one).</summary>

@@ -90,8 +90,8 @@ public class RestoreTests : StateTestBase
         // a restore again that holds no picture: the default avatar, and the imported picture is gone
         Restorer.Import(state, Zip(TestZip.Own(), "again.zip"), null, tmp);
         Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));
-        Assert.Equal("https://avatar.test/256/1000000.png", (string)Connect(1001)["account"]!["avatar_url"]!);
-        Assert.Equal("https://avatar.test/256/1000000.png", state.AvatarUrl(1001, "https://web.test"));
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", (string)Connect(1001)["account"]!["avatar_url"]!);
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.AvatarUrl(1001, "https://web.test"));
     }
 
     [Fact]
@@ -106,14 +106,14 @@ public class RestoreTests : StateTestBase
     }
 
     [Fact]
-    public void AnAvatarOfTheListStaysTheZipsAddressEvenWithItsPicture()
+    public void AnAvatarOfTheListIsThisServersAddressEvenWithItsPicture()
     {
-        state = StateWithAvatars("listed.db", "https://other.test/a.png");  // the zip's picture /a.png is the avatar 1000042
-        Restorer.Import(state, Zip(TestZip.Own().Media("images/avatars.example_a.png", Uploaded)), null, tmp);
+        state = StateWithAvatars("listed.db", "https://other.test/256/1000042.png");  // the zip's picture /256/1000042.png is the avatar 1000042
+        Restorer.Import(state, Zip(TestZip.Own(avatar: "https://avatars.example/256/1000042.png").Media("images/avatars.example_256_1000042.png", Uploaded)), null, tmp);
         var account = Connect(1001)["account"]!;
-        Eq("""["https://avatars.example/a.png", 1000042]""", T(account["avatar_url"], account["face"]));
+        Eq($$"""["{{BASE}}/media/avatar/256/1000042.png", 1000042]""", T(account["avatar_url"], account["face"]));
         Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));  // not the player's own picture
-        Assert.Equal("https://avatars.example/a.png", state.AvatarUrl(1001, "https://web.test"));
+        Assert.Equal($"{BASE}/media/avatar/256/1000042.png", state.AvatarUrl(1001, "https://web.test"));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class RestoreTests : StateTestBase
         state = StateWithAvatars("webhost.db");
         state.CreateAccount(5, "old");
         state.Store.SetAvatar(5, "https://site.test/media/avatar/256/1000000.png", null);  // the list names it https://avatar.test/256/1000000.png
-        Assert.Equal("https://site.test/media/avatar/256/1000000.png", state.AvatarUrl(5, "https://web.test"));
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.AvatarUrl(5, "https://web.test"));  // this server's address, whatever host the stored one names
         state.Store.SetAvatar(5, "https://site.test/media/avatar/256/11000000.png", null);  // no avatar of the list
         Assert.Null(state.AvatarUrl(5, "https://web.test"));
     }
@@ -297,7 +297,7 @@ public class RestoreTests : StateTestBase
         Eq("""["9001", "9101"]""", new JsonArray(reply["inventory"]!["items"]!.AsArray().Take(2).Select(i => At(i, "guid")).ToArray()));
         Eq("""{"x": 3144645, "y": -999, "z": 10001}""", reply["inventory"]!["items"]![1]!["position"]);
         // hunterscore: the computed value, the zip's statistics hold no ethical kills
-        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://avatar.test/256/1000000.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
+        Eq("""{"handle": "sample", "user_id": 1001, "account_id": 1001, "hostname": "sample", "gender": 1, "hunterscore": 0, "membership": 0, "avatar_url": "https://gameserver.test/media/avatar/256/1000000.png", "face": 1000000, "facebook_enabled": false, "share_on_facebook": false}""",
            reply["account"]);
         var stats = reply["user_stats"]!;
         Eq("""{"collectables": {}, "weapon": {}, "animal": {"5": {"kills": 2}}, "daily_missions": {}, "distance": 12.5, "duration": 3600}""", stats["user_stats"]);

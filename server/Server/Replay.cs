@@ -577,14 +577,18 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
         static readonly Regex HostAvatar = new(@"\A/256/([1-9]\d{0,17})\.png\z", RegexOptions.ECMAScript);
 
         /// <summary>The picture of one of the game's avatars, `/media/avatar/256/&lt;id&gt;.png` on the game web host and `/256/&lt;id&gt;.png` on the avatar host (the avatar list's own address):
-        /// the operator's `avatar-&lt;id&gt;.png` in `images_dir`, else the default avatar's. Only an id of the list is read, so the path never leaves the folder; null for anything else, or no picture at all.</summary>
+        /// the operator's `avatar-&lt;id&gt;.png` in `images_dir`, else the stock copy `avatars/256/&lt;id&gt;.png` there, else the default avatar's. Only an id of the list (or the notice sender's, <see cref="State.SenderAvatar"/>) is read, so the path never leaves the folder; null for anything else, or no picture at all.</summary>
         string? AvatarPicture(Req r)
         {
             if (State is null || Cfg["images_dir"]?.GetValue<string>() is not { } dir) return null;
             var m = r.Host == GameWeb ? WebAvatar.Match(r.Path) : r.Host == S(Cfg, "avatar_host").ToLowerInvariant() ? HostAvatar.Match(r.Path) : null;
-            if (m is not { Success: true } || !State.AvatarIds.Contains(long.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture))) return null;
-            string Picture(string id) => System.IO.Path.Combine(dir, $"avatar-{id}.png");
-            return new[] { Picture(m.Groups[1].Value), Picture(State.DefaultAvatar.ToString(System.Globalization.CultureInfo.InvariantCulture)) }.FirstOrDefault(File.Exists);
+            if (m is not { Success: true }) return null;
+            var num = long.Parse(m.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
+            if (num != State.SenderAvatar && !State.AvatarIds.Contains(num)) return null;
+            string Own(string id) => System.IO.Path.Combine(dir, $"avatar-{id}.png");
+            string Stock(string id) => System.IO.Path.Combine(dir, "avatars", "256", $"{id}.png");
+            var fallback = State.DefaultAvatar.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return new[] { Own(m.Groups[1].Value), Stock(m.Groups[1].Value), Own(fallback), Stock(fallback) }.FirstOrDefault(File.Exists);
         }
 
         /// <summary>Everything the player state does not answer, in order: archive file pinned to the URL's directory,
