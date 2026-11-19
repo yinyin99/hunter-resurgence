@@ -56,7 +56,7 @@ public sealed partial class State
                             GrantLodge(con, (long)r[0], type);
                 con.Commit();
             }
-            catch (Exception e) when (e is InvalidCastException or OverflowException or FormatException or JsonException)
+            catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
             {
                 Console.WriteLine($"lodges: account {account} left as it was ({e.Message})");
             }
