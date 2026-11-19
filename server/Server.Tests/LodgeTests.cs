@@ -259,8 +259,13 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         var listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
         Eq("[21, 40, 30]", new JsonArray(listed.Select(t => (JsonNode?)t!["id"]!.DeepClone()).ToArray()));
         Eq("""[7, "ELK", 9.5, true, false, 6, 1, 2]""", T(listed[1]!["species"], listed[1]!["species_define"], listed[1]!["score"], listed[1]!["is_skull"], listed[1]!["hidden"], listed[1]!["lodge_id"], listed[1]!["slot_id"], listed[1]!["pose_id"]));
+        // the player moves 40 to another slot and takes 21 down: the game's save drops the slots' details, the list keeps the animals
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/6", owner, """{"animal_slots": [{"slot_id": 5, "trophy_id": 40, "pose_id": 1}]}"""));
+        listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
+        Eq("""[[21, null], [40, 5], [30, null]]""", new JsonArray(listed.Select(t => (JsonNode?)T(t!["id"], t["slot_id"])).ToArray()));
+        Eq("\"ELK\"", (await Read(V2, $"/game/user/{OWNER}/lodges/6", viewer))["animal_slots"]![0]!["trophy_details"]!["species_define"]);
         Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/40", owner, """{"hidden": true}"""));
-        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/40", owner, """{"hidden": true}"""));  // now a row of its own
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/40", owner, """{"hidden": true}"""));  // twice: still one row
         Assert.Equal(404, (await Call("PUT", V2, "/game/user/trophies/41", owner, """{"hidden": true}""")).Status);
         listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
         Eq("[[21, false], [40, true], [30, false]]", new JsonArray(listed.Select(t => (JsonNode?)T(t!["id"], t["hidden"])).ToArray()));
