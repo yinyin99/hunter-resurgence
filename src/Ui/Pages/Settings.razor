@@ -41,7 +41,7 @@
                 <div class="avatars">
                     @foreach (var a in avatars.Where(a => a.Locked))
                     {
-                        <a class="pick locked" href="/store/item/224" title="@L["Set.AvatarLocked"]"><AssetSlot Name="@a.Id" Width="60" Height="60" /><Icon Name="lock" /><span>@a.Name</span></a>
+                        <a class="pick locked" href="/store/item/@a.Item" title="@L["Set.AvatarLocked"]"><AssetSlot Name="@a.Id" Width="60" Height="60" /><Icon Name="lock" /><span>@a.Name</span></a>
                     }
                 </div>
             </div>

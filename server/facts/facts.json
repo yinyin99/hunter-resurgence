@@ -709,6 +709,7 @@
    {"id":402,"difficulty":3,"title":"Hunt a Black Bear","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["ID 4 tracks from a Black Bear","Then harvest a Black Bear"]}
   ]
  },
+ "store_avatars": [{"item":224,"id":1000024,"name":"Laura Francese","gender":"f"}],
  "trophy_lodge": {
   "lodges": [{"item":746,"engine":1,"name":"Classy Lodge"},{"item":780,"engine":3,"name":"Rustic Lodge"},{"item":846,"engine":5,"name":"Tropical Lodge"},{"item":1149,"engine":6,"name":"Texas Lodge"}],
   "catalogue": {
