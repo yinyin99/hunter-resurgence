@@ -14,9 +14,10 @@ public sealed partial class State
 {
     enum Kind { Other, Harvest, Track, Spot, Arrive, Start }
 
-    /// <summary>What an objective needs: its kind, the species (catalogue id, 0 to 99) and gender (0 male, 1 female) its title names (null: any), how many
-    /// clues of one animal (tracks), whether it counts only after the objectives before it, its title in <see cref="Normalise"/>d words (a place), and, for a harvest
-    /// or a spot, the conditions its title asks of the kill (<see cref="Reader"/>); `Unknown` when it has words the server does not understand: it is never met.</summary>
+    /// <summary>What an objective needs: its kind, the species (catalogue id, 0 to 99) and gender (0 male, 1 female) its title names (null: any; a title that names several species, a short
+    /// name of some, or any animal but some, has a `Species` test instead), how many clues of one animal (tracks), whether it counts only after the objectives before it, its title in
+    /// <see cref="Normalise"/>d words (a place), and, for a harvest or a spot (a clue: its reserve), the conditions its title asks of the kill (<see cref="Reader"/>); `Unknown` when it
+    /// has words the server does not understand: it is never met.</summary>
     sealed record Rule(Kind Kind, long? Species, long? Gender, int Count, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
 
     sealed record Objective(long Id, string Title, Rule Rule);
@@ -24,7 +25,13 @@ public sealed partial class State
     /// <summary>`Gm` and `Em` are the sums of the `N gm$` and `N em$` entries of `rewards`; the other entries (items, a trophy) are not paid.</summary>
     sealed record MissionDef(long Id, string Title, bool SingleExpedition, long[] Dependencies, long Gm, long Em, Objective[] Objectives);
 
-    static readonly Regex OrderedWord = new(@"\A\s*(then|finally|first|after)\b[\s,:-]*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    // `Then`, `Finally`, `First`, `Lastly`, `After that,` and `After spotting the Wolves,` (up to the comma) put the objective after the ones before it
+    static readonly Regex OrderedWord = new(@"\A\s*(?:(?:then|finally|first|lastly)\b|after\b[^,:]*(?=[,:])|after\b)[\s,:-]*", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    // `At any point during the same hunt,` and `At any time,` say nothing; `At any point while in <reserve>,` names the reserve
+    static readonly Regex AtAny = new(@"\A\s*at any (?:point|time)\b(?:\s+(?:(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)|while\s+in\s+(?<r>[^,:]+)))?\s*[,:]?\s*",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex GoTo = new(@"\A(?:(?:head|go|travel)(?: over| out)? to|make it to)\b", RegexOptions.CultureInvariant);
+    static readonly Regex AudioClue = new(@"\baudio clues?\b", RegexOptions.CultureInvariant);
     static readonly Regex TrackWord = new(@"\b(tracks?|droppings?|calls?|blood|bedding|feeding|footprints?|footsteps?|clues?|scat)\b", RegexOptions.CultureInvariant);
     static readonly Regex ClueCount = new(@"\b(\d+) (?:\w+ ){0,4}?(?:tracks?|droppings?|clues?|footprints?|footsteps?)\b", RegexOptions.CultureInvariant);
     static readonly Regex Reward = new(@"\A\s*(\d+)\s*(gm|em)\$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -68,26 +75,39 @@ public sealed partial class State
 
         var reader = new Reader(names, items.Values, reserves);
 
-        Rule RuleOf(string title)
+        Rule RuleOf(string title, long[]? own = null)
         {
             var ordered = OrderedWord.Match(title);
-            var text = Normalise(title[ordered.Length..]);
+            var rest = title[ordered.Length..];
+            var lead = AtAny.Match(rest);
+            rest = rest[lead.Length..];
+            var body = lead.Groups["r"].Success ? rest.TrimEnd().TrimEnd('.') + " in " + lead.Groups["r"].Value : rest;  // the reserve is read like one at the end of the title
+            var text = Normalise(body);
             var first = text.Split(' ')[0];
             var kind = first switch
             {
-                "harvest" => Kind.Harvest,
+                "harvest" or "take" or "kill" => Kind.Harvest,
                 "spot" => Kind.Spot,
                 "arrive" or "visit" or "walk" => Kind.Arrive,
+                "head" or "go" or "travel" or "make" when GoTo.IsMatch(text) => Kind.Arrive,
                 "start" => Kind.Start,
-                "locate" or "id" or "identify" or "find" when TrackWord.IsMatch(text) => Kind.Track,
+                "begin" when text.StartsWith("begin at ", StringComparison.Ordinal) => Kind.Start,
+                "locate" or "id" or "identify" or "find" or "register" when TrackWord.IsMatch(text) => Kind.Track,
                 _ => Kind.Other,
             };
             long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
             long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
             var count = kind == Kind.Track && ClueCount.Match(text) is { Success: true } m && int.TryParse(m.Groups[1].Value, out var clues) ? Math.Clamp(clues, 1, 100) : 1;
-            var (tests, unknown) = kind is Kind.Harvest or Kind.Spot ? reader.Read(title) : (Array.Empty<Test>(), false);
-            // a spot has no weapon, hit or harvest: only its stand, its reserve and its name can be checked
-            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named));
+            Test[] tests = [];
+            var unknown = false;
+            if (kind is Kind.Harvest or Kind.Spot)
+                (tests, unknown) = reader.Read(body, own);
+            else if (kind == Kind.Track)
+                tests = reader.ReservesIn(body);
+            if (tests.Any(t => t.Check == Check.Species))
+                species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
+            // a spot has no weapon, hit or harvest: only its stand, its reserve, its species and its name can be checked
+            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species));
             return new Rule(kind, species, gender, count, ordered.Success, text, tests, unknown);
         }
 
@@ -103,7 +123,7 @@ public sealed partial class State
             var listed = Ids(d["species"]).Select(x => x % 100).Distinct().ToArray();
             Rule Build(string title)
             {
-                var rule = RuleOf(title);  // a named animal's title names no species: the mission's own one does
+                var rule = RuleOf(title, listed);  // a named animal's title names no species: the mission's own one does
                 return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
             }
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,
@@ -114,8 +134,8 @@ public sealed partial class State
             missionGroups[Py.L(g["id"])] = Ids(g["missions"]);
         foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
             lodgeNames[Py.L(loc["id"])] = [.. new[] { loc["name"], loc["define"] }.Where(Py.IsStr).Select(n => Normalise((string)n!)).Where(n => n.Length > 0)];
-        LoadDailyMissions(RuleOf);
-        LoadCommunity(RuleOf);
+        LoadDailyMissions(title => RuleOf(title));
+        LoadCommunity(title => RuleOf(title));
     }
 
     static long[] Ids(JsonNode? n) => [.. Arr(n).Where(x => TryKey(x, out _)).Select(Py.L).Distinct()];
@@ -332,12 +352,13 @@ public sealed partial class State
                 : con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ? ORDER BY id DESC LIMIT 1", e["individual"])
                     .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
             (animalSpecies, gender) = AnimalOf(animal, kind == Kind.Harvest ? e["extended_species"] : animal["species"]);
-            kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : null;
+            kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, animal);
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
         Advance(con, kind, rule =>
             kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
             : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill))
+              && (kind != Kind.Track || !AudioClue.IsMatch(rule.Text) || Is(e["track_type"], 9))
               && (kind != Kind.Track || rule.Count <= 1 || (long)con.Scalar(
                     "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ? AND id > COALESCE("
                     + "(SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)", e["individual"])! >= rule.Count),
