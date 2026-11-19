@@ -221,9 +221,38 @@ public static class GameApi
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("LeaderboardPersonal").WithSummary("A player's personal bests of a season")
-               .WithDescription("`{status, data: [{specie, score, distance}]}` of the `user_id` and `season_no`: the restored reply as saved, and for season 0 (all time) with the best score and the longest range of this server's scored kills "
-                                + "where they beat it (any account's on a community server, `{status: done, data: []}` for an unknown, banned or recorded user id); a local server replays the recording for other players.")
+               .WithDescription("`{status, data: [{specie, score, distance}]}` of the `user_id` and `season_no` (0 all time, 1 the restored harvests, 2 and later this server's seasons, [docs/server.md](server.md#leaderboards-and-seasons)): "
+                                + "the best score and the longest range of each species among the account's harvests of that season, `{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score`, `species}` "
+                                + "(any account's on a community server, `{status: done, data: []}` for an unknown, banned or recorded user id and for a season with none); a local server replays the recording for other players.")
                .Body<PersonalForm>(Form).Produces(200, contentType: "application/json");
+            // the boards of the original's pages: public, community server only, the current season (leaderboards_all, leaderboard_details, current_personal) or an ended one (hall of fame)
+            var site = $"https://{game.Web}";
+            api.MapExactPost(game, LEADERBOARDS_ALL, r => !s.Online ? null : FormValue(r, "type") is { } type && (type == "1" || type == "2")
+                    ? new(200, JsonAnyOrigin(), s.BoardsAllReply(type == "2", site), "state") : null)
+               .WithName("LeaderboardsAll").WithSummary("The species boards of the current season: the best 5 of each")
+               .WithDescription("`[{id, define, name, scoretype, total, records: [{id, animal_id, rank, scoretype, score, scoreType, user: {id, handle, avatar}}]}]` for `type` 1 (score) or 2 (range, `score` in metres), one block per species with a ranked hunter. "
+                                + "`id` and `animal_id` of a record are the kill's id (a restored one's original id). Community server only.")
+               .Body<BoardTypeForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, LEADERBOARD_DETAILS, r => !s.Online ? null : FormValue(r, "type") is { } type && (type == "1" || type == "2") && long.TryParse(FormValue(r, "species"), out var species)
+                    && s.BoardDetailsReply(type == "2", species, site) is { } details ? new(200, JsonAnyOrigin(), details, "state") : null)
+               .WithName("LeaderboardDetails").WithSummary("One species' board of the current season: the best 100")
+               .WithDescription("`{id, define, name, scoretype, total, position, records: [...]}` as LeaderboardsAll, up to 100 records; `position` null. Community server only; a species the catalogue lacks is not answered.")
+               .Body<BoardDetailsForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, HALL_OF_FAME, r => !s.Online ? null
+                    : new(200, JsonAnyOrigin(), s.HallOfFameReply(long.TryParse(FormValue(r, "season_no"), out var n) ? n : null, site), "state"))
+               .WithName("LeaderboardsHallOfFame").WithSummary("The Hall of Fame of an ended season")
+               .WithDescription("`[{speciesId, score, range}]`, the best score (`score` a text) and the best range of each species of the season `season_no` (default the one before the current season); `[]` for the current season, 0 and a season that does not exist. A species with no winner is left out. Community server only.")
+               .Body<SeasonNoForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, CURRENT_PERSONAL, r => !s.Online ? null
+                    : new(200, JsonAnyOrigin(), s.CurrentPersonalReply(long.TryParse(FormValue(r, "user_id"), out var id) ? id : -1), "state"))
+               .WithName("LeaderboardCurrentPersonal").WithSummary("A player's places on the boards of the current season")
+               .WithDescription("`[{species_id, score: {total, rank, animal_id, score}, distance_min: {...}}]` of the `user_id`, one row per species it is ranked in (`total` and `rank` its place, `score` the score or the range in metres); `[]` for an unknown, banned or recorded user id. Community server only.")
+               .Body<UserForm>(Form).Produces(200, contentType: "application/json");
+            // the season the original's pages read: the current one
+            api.MapExactPost(game, APPLICATION, r => !s.Online ? null : game.Recorded(r) is { Tier: >= 1 } hit ? new(hit.Status, hit.Headers, s.WithSeason(hit.Body), "patch") : null)
+               .WithName("Application").WithSummary("The application catalogue, with the current leaderboard season")
+               .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)); a local server replays it unchanged.")
+               .Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
                 ? new(hit.Status, hit.Headers, SplashWithNotice(hit.Body), "patch")
@@ -816,6 +845,10 @@ public static class GameApi
     public sealed record LangForm(string lang);
 
     public sealed record TokenForm(string? oauth_access_token);
+
+    public sealed record BoardTypeForm([property: Description("1 score, 2 range")] long type);
+    public sealed record BoardDetailsForm([property: Description("1 score, 2 range")] long type, [property: Description("Species id")] long species);
+    public sealed record SeasonNoForm([property: Description("Season number; default the one before the current")] long? season_no);
 
     public sealed record SkillNumbers(
         [property: Description("Weapon id → level plus fraction")] Dictionary<string, double> weapon,

@@ -496,33 +496,35 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             con.Begin();
             PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=0.json",
                 O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(50000, "60.0000", 900)}}, "distance": {{Best(120000, "40.0000", 901)}}}, {"specie": 77, "score": {{Best(1000, "5.5000", 902)}}, "distance": {{Best(1000, "5.5000", 902)}}}, {"specie": 78, "score": 5, "distance": "far"}, {"specie": {"x": 1}, "score": {"score": "9"} }, {"specie": 79, "score": {"score": "NaN", "distance": "Infinity"} }]}"""));
-            PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=1.json", JsonNode.Parse("[1]"));  // a reply that is no object: a backup holds whatever the player sent, like the last row above
-            PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=3.json", O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(1, "1.0000", 1)}}, "distance": {{Best(1, "1.0000", 1)}}}]}"""));
+            PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=3.json", O($$"""{"status": "done", "data": [{"specie": 1, "score": {{Best(1, "1.0000", 1)}}, "distance": {{Best(1, "1.0000", 1)}}}]}"""));  // an original season's saved reply: no season here
             con.Commit();
         }
-        // no kill yet: the restored replies as saved; another season, and a season that was not saved, likewise
+        // no kill yet: Season 0 and Season 1 hold the restored bests as saved (their time is 2023: Season 1); Season 2 and a season that does not exist are empty
         var before = await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=0");
         Eq("\"60.0000\"", before["data"]![0]!["score"]!["score"]);
-        Eq("\"1.0000\"", (await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=3"))["data"]![0]!["score"]!["score"]);
+        Eq(before, await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=1"));
         Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=2"));
-        Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=1"));
+        Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=3"));
 
         state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());
         state.HeartbeatReply(8, Events(AccountIsolationTests.Harvest(71, 50000)));  // a kill 96.14 m away with the rifle 5
         using (var con = state.Store.Open(8))
             con.Exec("UPDATE harvests SET body = json_set(body, '$.score', 70.25) WHERE account_id = $a");
 
-        // the kill beats the restored score, not the restored range; season 0 only
+        // the kill beats the restored score, not the restored range; Season 0 and Season 2 (alone: it is this server's kill)
         var all = await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=0");
         Eq("\"done\"", all["status"]);
         var row = all["data"]!.AsArray();
-        Eq("""[1, 77, 78]""", T(row[0]!["specie"], row[1]!["specie"], row[2]!["specie"]));
+        Eq("""[1, 77, 79]""", T(row[0]!["specie"], row[1]!["specie"], row[2]!["specie"]));
         var score = row[0]!["score"]!;
         Eq("""["70.2500", 96140, 5, 1, 1]""", T(score["score"], score["distance"], score["weapon_id"], score["animal_id"], score["species"]));
         Assert.True((long)score["confirm_ts"]! > 1700000000);
         Eq(Best(120000, "40.0000", 901), row[0]!["distance"]);
         Eq(Best(1000, "5.5000", 902), row[1]!["score"]);
-        Eq("\"1.0000\"", (await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=3"))["data"]![0]!["score"]!["score"]);
+        var two = (await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=2"))["data"]!.AsArray();
+        Eq("""[1, "70.2500", "70.2500"]""", T(two[0]!["specie"], two[0]!["score"]!["score"], two[0]!["distance"]!["score"]));
+        Assert.Single(two);
+        Eq("\"60.0000\"", (await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=8&season_no=1"))["data"]![0]!["score"]!["score"]);  // the kill is not in Season 1
         // anyone's by user id; an unknown one, and a player's own one that has nothing, are empty
         Eq("\"70.2500\"", (await Api(Replay.LEADERBOARD_PERSONAL, tokenB, "user_id=8&season_no=0"))["data"]![0]!["score"]!["score"]);
         Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=99&season_no=0"));

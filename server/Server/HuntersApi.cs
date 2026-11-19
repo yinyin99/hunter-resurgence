@@ -9,6 +9,9 @@ public static class HuntersApi
 {
     public const int PageSize = 30;
 
+    /// <summary>The species boards: the rows of the overview for each species, the hunters of a species' page in all and a page of them.</summary>
+    public const int OverviewTop = 3, SpeciesTop = 100, SpeciesPage = 25;
+
     static Reply Json(int status, JsonNode body) =>
         new(status, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
@@ -165,9 +168,61 @@ public static class HuntersApi
             .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")
             .Produces(200, contentType: "image/jpeg").Produces(404);
 
-        app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
-            .MapGet("/{kind}", (string kind, HttpContext ctx) =>
+        var boards = app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
+
+        // the season a request asks for: `season` (0 all time, else a stored one), the current one when missing; null for none such
+        long? SeasonOf(HttpContext ctx)
+        {
+            var seasons = state.Store.Seasons();
+            var q = ctx.Request.Query["season"].ToString();
+            return q == "" ? seasons[^1].No : long.TryParse(q, out var n) && (n == 0 || seasons.Any(s => s.No == n)) ? n : null;
+        }
+        JsonObject RowJson(State.BoardRow r) => new()
+        {
+            ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Value, ["weapon"] = r.Weapon?.DeepClone() ?? 0, ["weaponName"] = state.WeaponName(r.Weapon),
+            ["ts"] = r.Ts, ["kill"] = r.Kill, ["avatar"] = state.AvatarUrl(r.Account, site),
+        };
+        Reply NoSuchSeason() => Json(404, new JsonObject { ["error"] = "no such season" });
+
+        boards.MapGet("/seasons", () =>
             {
+                var seasons = state.Store.Seasons();
+                return Json(200, new JsonObject
+                {
+                    ["current"] = seasons[^1].No,
+                    ["seasons"] = new JsonArray([.. seasons.Select(s => (JsonNode?)new JsonObject { ["no"] = s.No, ["start"] = s.Start, ["end"] = s.End })]),
+                });
+            })
+            .WithName("LeaderboardSeasons").WithSummary("The seasons of the species boards")
+            .WithDescription("`{current, seasons: [{no, start, end}]}`, oldest first: `start` and `end` Unix seconds (both inclusive), `end` null for the current season. Season 0 (all time) is not listed; every board and the Hall of Fame also take it.")
+            .Produces(200, contentType: "application/json");
+
+        boards.MapGet("/halloffame", (HttpContext ctx) => SeasonOf(ctx) is not { } season ? NoSuchSeason()
+                : Json(200, new JsonObject
+                {
+                    ["rows"] = new JsonArray([.. state.HallOfFame(season).Select(h => (JsonNode?)new JsonObject
+                    {
+                        ["id"] = h.Species, ["species"] = state.SpeciesLabel(h.Species),
+                        ["score"] = h.Score is { } s ? RowJson(s) : null, ["range"] = h.Range is { } r ? RowJson(r) : null,
+                    })]),
+                }))
+            .WithName("LeaderboardHallOfFame").WithSummary("The Hall of Fame of an ended season")
+            .WithDescription("`{rows: [{id, species, score: Row, range: Row}]}`, species id order: the best score and the best range of each species of the ended season `season`; `rows` is empty for season 0 (all time) and the current season, which have no Hall of Fame. "
+                             + "`Row` is `{rank, handle, value, weapon, weaponName, ts, kill, avatar}` as on the boards. 404 for a season that does not exist.")
+            .QueryParams(("season", "the season number"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        boards.MapGet("/{kind}", (string kind, HttpContext ctx) =>
+            {
+                if (kind is "score" or "range")
+                    return SeasonOf(ctx) is not { } season ? NoSuchSeason()
+                        : Json(200, new JsonObject
+                        {
+                            ["boards"] = new JsonArray([.. state.Boards(kind == "range", season).Select(b => (JsonNode?)new JsonObject
+                            {
+                                ["species"] = b.Key, ["name"] = state.SpeciesLabel(b.Key), ["top"] = new JsonArray([.. b.Value.Take(OverviewTop).Select(r => (JsonNode?)RowJson(r))]),
+                            })]),
+                        });
                 if (!Store.GameIds.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
                 var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
                 var board = state.Store.GameBoard(kind, state.LocalAccount);
@@ -181,9 +236,44 @@ public static class HuntersApi
                     ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Score, ["avatar"] = state.AvatarUrl(r.Id, site) })]),
                 });
             })
-            .WithName("GameBoard").WithSummary("One page of a minigame's board: lanebandit or bustthrough")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, value, avatar}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. 404 for another kind.")
-            .QueryParams(("page", "1 for the first"))
+            .WithName("GameBoard").WithSummary("The species boards of a season (score or range), or one page of a minigame's board (lanebandit or bustthrough)")
+            .WithDescription($"`score` and `range`: `{{boards: [{{species, name, top: [Row]}}]}}`, one per species with a ranked hunter in `season` (0 all time, the current season when missing), species id order, the best {OverviewTop} each; "
+                             + "`Row` is `{rank, handle, value, weapon, weaponName, ts, kill, avatar}` (`value` the score, or the range in metres; `weapon` the item id, `weaponName` its name or \"\"; `ts` the kill's Unix seconds; `kill` its id for `/hunters/<handle>/score/<kill>`, 0 for a restored kill). "
+                             + $"`lanebandit` and `bustthrough`: `{{page, pages, total, rows: [{{rank, handle, value, avatar}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. "
+                             + "404 for another kind and for a season that does not exist.")
+            .QueryParams(("season", "the season number"), ("page", "1 for the first (minigames)"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        boards.MapGet("/{kind}/{species:long}", (string kind, long species, HttpContext ctx) =>
+            {
+                if (kind is not ("score" or "range")) return Json(404, new JsonObject { ["error"] = "no such board" });
+                if (SeasonOf(ctx) is not { } season) return NoSuchSeason();
+                var all = state.Boards(kind == "range", season).GetValueOrDefault(species) ?? [];
+                var total = Math.Min(all.Count, SpeciesTop);
+                var pages = Math.Max(1, (total + SpeciesPage - 1) / SpeciesPage);
+                var page = Math.Min(int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1, pages);
+                return Json(200, new JsonObject
+                {
+                    ["page"] = page, ["pages"] = pages, ["total"] = total,
+                    ["rows"] = new JsonArray([.. all.Take(total).Skip((page - 1) * SpeciesPage).Take(SpeciesPage).Select(r => (JsonNode?)RowJson(r))]),
+                });
+            })
+            .WithName("SpeciesBoard").WithSummary("One page of the top 100 of a species' score or range board")
+            .WithDescription($"`{{page, pages, total, rows: [Row]}}`: the best {SpeciesTop} hunters of the species `species` (its id) in `season` (0 all time, the current season when missing), {SpeciesPage} rows a page; `Row` as on the overview. A species nobody ranks: `total` 0, `rows` empty. 404 for a kind other than `score` or `range` and for a season that does not exist.")
+            .QueryParams(("season", "the season number"), ("page", "1 for the first"))
+            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+
+        boards.MapGet("/{kind}/{species:long}/me", (string kind, long species, HttpContext ctx) =>
+            {
+                if (kind is not ("score" or "range")) return Json(404, new JsonObject { ["error"] = "no such board" });
+                if (SignedIn(ctx) is not { } account) return Json(401, new JsonObject { ["error"] = "sign in" });
+                if (SeasonOf(ctx) is not { } season) return NoSuchSeason();
+                return (state.Boards(kind == "range", season).GetValueOrDefault(species) ?? []).FirstOrDefault(r => r.Account == account) is { } row
+                    ? Json(200, RowJson(row)) : Json(404, new JsonObject { ["error"] = "not ranked" });
+            })
+            .WithName("SpeciesBoardMe").WithSummary("The signed-in hunter's place on a species' board")
+            .WithDescription("`Row` of the hunter the session cookie (`hr_session`) names, with its place on the whole board (also beyond the top 100); 404 when it has no ranked harvest of the species in the season, 401 when signed out.")
+            .QueryParams(("season", "the season number"))
+            .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json").Produces(404, contentType: "application/json");
     }
 }

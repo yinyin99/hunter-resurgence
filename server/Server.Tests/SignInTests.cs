@@ -761,7 +761,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
         Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{Default}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
-        Assert.Equal(404, (await Get("web.test", "/leaderboards/score")).Status);
+        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers")).Status);
     }
 
     [Fact]
