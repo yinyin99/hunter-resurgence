@@ -344,7 +344,7 @@ public sealed partial class State
 
     static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
 
-    /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
+    /// <summary>`/game/user/trophies`: the restored rows, the animals mounted in the restored lodges and the harvests made here.</summary>
     public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
     /// <summary>Trophy/list for the form's user_id: one page (`offset`, `limit`) of the restored trophies (rows of their own kind) of the player's own

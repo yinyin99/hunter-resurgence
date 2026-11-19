@@ -272,6 +272,23 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnAnimalOfARestoredLodgeCanBeHiddenBeforeAnySave()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 7, "name": "seven", "animal_slots": [{"slot_id": 0, "trophy_id": 50, "pose_id": 1, "trophy_details": {"species": 7}}], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "7", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "7", lodge.DeepClone());
+            con.Commit();
+        }
+        Assert.Equal(404, (await Call("PUT", V2, "/game/user/trophies/51", owner, """{"hidden": true}""")).Status);
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/50", owner, """{"hidden": true}"""));
+        var listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
+        Eq("[[21, false], [50, true], [30, false]]", new JsonArray(listed.Select(t => (JsonNode?)T(t!["id"], t["hidden"])).ToArray()));
+    }
+
+    [Fact]
     public async Task TestAJsonContentTypeIsNotTurnedIntoAFormOnTheGameWebHost()
     {
         Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/lodges/3/settings", owner, """{"name": "json", "locked": true, "style_id": null}""", "application/json; charset=UTF-8"));
