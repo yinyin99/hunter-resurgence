@@ -69,6 +69,31 @@ public class AvatarLinksTests : StateTestBase
     }
 
     [Fact]
+    public async Task ASavedCopyOfTheUploadedAvatarIsReadBeforeTheHostIsAsked()
+    {
+        var saved = Path.Combine(tmp, "avatar-uploads");
+        Directory.CreateDirectory(Path.Combine(saved, "242"));
+        File.WriteAllBytes(Path.Combine(saved, "242", "12345.jpg"), TestZip.Jpeg("saved12345"));
+        var host = new AvatarHost();
+        await Approved(TestZip.Own(avatar: Dead), new PictureLinks([], host) { AvatarDir = saved });  // no host is allowed: the copy is enough
+        Assert.Empty(host.Asked);
+        Assert.Equal(TestZip.Jpeg("saved12345"), File.ReadAllBytes(state.PhotoFile("/photos/1001/avatar.jpg")!));
+    }
+
+    [Fact]
+    public async Task AUidWithoutASavedCopyIsFetchedFromTheHostAsBefore()
+    {
+        var saved = Path.Combine(tmp, "avatar-uploads");
+        Directory.CreateDirectory(Path.Combine(saved, "242"));
+        File.WriteAllBytes(Path.Combine(saved, "242", "777.jpg"), TestZip.Jpeg("other"));  // another player's
+        File.WriteAllBytes(Path.Combine(saved, "242", "12345.jpg"), [1, 2, 3]);  // not a JPEG: not taken
+        var host = new AvatarHost();
+        await Approved(TestZip.Own(avatar: Dead), new PictureLinks([Host], host) { AvatarDir = saved });
+        Assert.Equal(["/uploads/thumb/242x242/12345.jpg"], host.Asked);
+        Assert.Equal(TestZip.Jpeg("avatar12345"), File.ReadAllBytes(state.PhotoFile("/photos/1001/avatar.jpg")!));
+    }
+
+    [Fact]
     public async Task ARefusedHostOrANonJpegBodyKeepsTheDefaultAvatarWithTheWarning()
     {
         var refused = new AvatarHost();

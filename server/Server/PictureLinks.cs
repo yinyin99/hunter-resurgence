@@ -34,7 +34,27 @@ public sealed class PictureLinks
     }
 
     /// <summary>The allow-list of the settings (`picture_link_hosts`, empty by default: nothing is fetched).</summary>
-    public static PictureLinks FromCfg(JsonObject cfg) => new((cfg["picture_link_hosts"] as JsonArray ?? []).Select(h => (string)h!));
+    public static PictureLinks FromCfg(JsonObject cfg) => new((cfg["picture_link_hosts"] as JsonArray ?? []).Select(h => (string)h!)) { AvatarDir = (string?)cfg["avatar_uploads_dir"] };
+
+    /// <summary>The operator's saved copies of the uploaded avatars (`avatar_uploads_dir`): `242/&lt;uid&gt;.jpg`. The link of such a thumbnail, `/uploads/thumb/242x242/&lt;uid&gt;.jpg` on any host, is read from here first and fetched only when the file is missing; no host list is needed for it.</summary>
+    public string? AvatarDir { get; init; }
+
+    static readonly System.Text.RegularExpressions.Regex Thumb = new(@"/uploads/thumb/242x242/([0-9]{1,18})\.jpg\z", System.Text.RegularExpressions.RegexOptions.ECMAScript);
+
+    ReadOnlyMemory<byte>? LocalAvatar(string url)
+    {
+        // the uid is digits only, so the path never leaves the folder
+        if (AvatarDir is null || !Uri.TryCreate(url.StartsWith("//", StringComparison.Ordinal) ? "https:" + url : url, UriKind.Absolute, out var uri) || Thumb.Match(uri.AbsolutePath) is not { Success: true } m) return null;
+        var file = new FileInfo(Path.Combine(AvatarDir, "242", m.Groups[1].Value + ".jpg"));
+        if (!file.Exists || file.Length > MaxBytes) return null;
+        try
+        {
+            var bytes = File.ReadAllBytes(file.FullName);
+            if (!IsJpeg(bytes)) return null;
+            return new ReadOnlyMemory<byte>(bytes);
+        }
+        catch (IOException) { return null; }
+    }
 
     /// <summary>The name of a link's picture in the pictures zip: the hash of the link as the save wrote it.</summary>
     public static string EntryName(string url) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(url))) + ".jpg";
@@ -43,7 +63,7 @@ public sealed class PictureLinks
     /// `budget`: how long all of it may take (default: the time of an upload request, which a proxy cuts after about 100 seconds; links not fetched by then are left for a later call).</summary>
     public async Task<int> Fetch(IEnumerable<string> urls, string path, TimeSpan? budget = null)
     {
-        if (hosts.Count == 0) return 0;
+        if (hosts.Count == 0 && AvatarDir is null) return 0;
         HashSet<string> have = [];
         if (File.Exists(path))
             using (var old = ZipFile.OpenRead(path)) have = [.. old.Entries.Select(e => e.Name)];
@@ -91,10 +111,11 @@ public sealed class PictureLinks
     }
 
     /// <summary>One picture under the same rules as <see cref="Fetch"/>; null when it is refused or fails.</summary>
-    public Task<ReadOnlyMemory<byte>?> Download(string url) => hosts.Count == 0 ? Task.FromResult<ReadOnlyMemory<byte>?>(null) : Get(url, CancellationToken.None);
+    public Task<ReadOnlyMemory<byte>?> Download(string url) => hosts.Count == 0 && AvatarDir is null ? Task.FromResult<ReadOnlyMemory<byte>?>(null) : Get(url, CancellationToken.None);
 
     async Task<ReadOnlyMemory<byte>?> Get(string url, CancellationToken total)
     {
+        if (LocalAvatar(url) is { } saved) return saved;
         try
         {
             using var cancel = CancellationTokenSource.CreateLinkedTokenSource(total);
