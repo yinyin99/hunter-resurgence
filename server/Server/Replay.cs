@@ -416,6 +416,8 @@ public static class Replay
              ("'https://static.' + getObj().getServer()", "window.location.origin")];
         /// <summary>The picture addresses of the lodge editor and of the item pictures the script builds: the game answers `/static/img/...` from its archives alone, so they are asked for under `/content/` instead. The one on a fixed host (the gun racks' icons) has no address builder.</summary>
         static readonly Regex FixedPictureHost = new(@"'https://static\.[\w.-]+/static/img/(?=lodge/)", RegexOptions.ECMAScript), PictureDir = new(@"/static/img/(?=lodge/|items/)", RegexOptions.ECMAScript);
+        /// <summary>The dragged picture (a `position: fixed` element) is placed at the mouse's position divided by 0.9, the zoom the editor's own style puts on its container; <see cref="FrameScript"/> sets that zoom to 1, so the picture would show 11% further right and down than the mouse. The division is dropped (the mouse's position as it is: the fixed element is not scaled by any zoom, the map's own being cancelled for it by the frame style). The drop is not affected: it reads the mouse and the targets' rectangles.</summary>
+        static readonly Regex DragGhost = new(@"(offset\.[xy]) / 0\.9\b", RegexOptions.ECMAScript);
         // The page's reads of the lodge lists carry no token, but the routes here need the player's (an unlisted account's own lodges included), and the page calls the game's
         // functions (`window.hunter`) as if each answered at once, while in this build each answers with a promise (the locale then fails on `.split`, a label on `.replace`, and the page stays empty).
         // Before the script runs, the frame page therefore: wraps `fetch` so each request to this origin that has no token gets the game's own (asked at each call; a missing or failing bridge only skips it);
@@ -480,7 +482,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
             // Latin1 keeps every byte of the rest of a file as it was
             if (AppScript.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppUrls, ref warnedApp, "the lodge editor's server addresses") is { } app)
-                return NoCache(reply, Encoding.Latin1.GetBytes(PictureDir.Replace(FixedPictureHost.Replace(app, "'/content/"), "/content/")));
+                return NoCache(reply, Encoding.Latin1.GetBytes(DragGhost.Replace(PictureDir.Replace(FixedPictureHost.Replace(app, "'/content/"), "/content/"), "$1")));
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
