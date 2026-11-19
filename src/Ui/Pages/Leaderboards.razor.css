@@ -6,7 +6,7 @@
 .head.species h3 { margin: 48px 0 0; font-size: 24px; line-height: 30px; font-weight: 400; color: #fff; }
 .head.species select { margin: 0 20px 0 auto; }
 .mine { margin: 0 0 21px; }
-.rank-label { display: inline-block; box-sizing: border-box; width: 140px; height: 35px; background: #b3dcf5; font-size: 14px; line-height: 35px; text-align: center; color: #6a8aa0; }
+.rank-label { display: inline-block; box-sizing: border-box; width: 140px; height: 35px; background: #b3dcf5; font-size: 14px; line-height: 35px; text-align: center; color: #12405e; }
 .norank { margin: 0 0 20px; padding: 13px 0 8px; border-top: 1px solid var(--line); font-size: 22px; line-height: 30px; text-align: center; color: var(--text-2); }
 .board { width: 100%; margin: 0 0 20px; border-collapse: collapse; }
 .board th { padding: 8px; font-size: 14px; line-height: 20px; font-weight: 100; color: var(--text-1); text-align: center; }
