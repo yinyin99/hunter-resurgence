@@ -37,7 +37,7 @@ public sealed partial class State
             foreach (var row in Restored(account, "trophies", "/game/user/trophies").Concat(MountedRows(account)).OfType<JsonObject>().DistinctBy(r => Py.Str(r["id"])).Where(NotHidden))
                 if (Py.IsNum(row["species"]) && Num(row["score"]) is > 0 and var score)
                 {
-                    var ts = Py.IsStr(row["timestamp"]) && DateTimeOffset.TryParse((string)row["timestamp"]!, null, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : (long)Num(row["timestamp"]);
+                    var ts = Py.IsStr(row["timestamp"]) && DateTimeOffset.TryParse((string)row["timestamp"]!, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : (long)Num(row["timestamp"]);
                     var rec = new JsonObject  // no distance (it stays off the range boards) and no weapon
                     {
                         ["distance"] = 0, ["confirm_ts"] = ts, ["weapon_id"] = null, ["animal_id"] = C(row["id"]), ["gender"] = C(row["gender"]), ["texture"] = C(row["texture_id"]),

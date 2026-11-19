@@ -137,7 +137,13 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         var hall = (await Json("/leaderboards/halloffame?season=1"))["rows"]!.AsArray();
         Eq("""["hotel", "india"]""", T(hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
         Eq("""["hotel", null]""", T(hall[1]!["score"]!["handle"], hall[1]!["range"]));
-        Eq("""["", 70.401]""", T((await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!["weaponName"], (await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!["value"]));  // weapon unknown
+        var top = (await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!;
+        Eq("""["", 70.401]""", T(top["weaponName"], top["value"]));  // weapon unknown
+        // a trophy the owner hid is in the list as hidden while its lodge still shows it: it ranks nowhere
+        Claimed(42, "juliet", [(5, Rabbit, 99, kill)], [(5, Rabbit, 99, kill)]);
+        using (var con = state.Store.Open(42))
+            con.Exec("UPDATE trophies SET node = json_set(node, '$.hidden', json('true')) WHERE account_id = $a");
+        Assert.Equal("hotel:12", await Board("score", Rabbit, 1));
     }
 
     [Fact]
