@@ -15,6 +15,10 @@ public static class HuntersApi
     static Reply Json(int status, JsonNode body) =>
         new(status, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
+    /// <summary>An anonymous board reply: the same for everyone, so a browser or proxy may keep it as long as the server keeps the board (<see cref="State.Boards"/>). `Vary: Accept`: the website's pages share these URLs and the reverse proxy picks by the header.</summary>
+    static Reply PublicJson(JsonNode body) =>
+        new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("Vary", "Accept"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
+
     public static void MapHunters(this WebApplication app, Game game)
     {
         var state = game.State!;
@@ -205,7 +209,7 @@ public static class HuntersApi
             .Produces(200, contentType: "application/json");
 
         boards.MapGet("/halloffame", (HttpContext ctx) => SeasonOf(ctx) is not { } season ? NoSuchSeason()
-                : Json(200, new JsonObject
+                : PublicJson(new JsonObject
                 {
                     ["rows"] = new JsonArray([.. state.HallOfFame(season).Select(h => (JsonNode?)new JsonObject
                     {
@@ -223,7 +227,7 @@ public static class HuntersApi
             {
                 if (kind is "score" or "range")
                     return SeasonOf(ctx) is not { } season ? NoSuchSeason()
-                        : Json(200, new JsonObject
+                        : PublicJson(new JsonObject
                         {
                             ["boards"] = new JsonArray([.. state.Boards(kind == "range", season).Select(b => (JsonNode?)new JsonObject
                             {
@@ -259,7 +263,7 @@ public static class HuntersApi
                 var total = Math.Min(all.Count, SpeciesTop);
                 var pages = Math.Max(1, (total + SpeciesPage - 1) / SpeciesPage);
                 var page = Math.Min(int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1, pages);
-                return Json(200, new JsonObject
+                return PublicJson(new JsonObject
                 {
                     ["page"] = page, ["pages"] = pages, ["total"] = total,
                     ["rows"] = new JsonArray([.. all.Take(total).Skip((page - 1) * SpeciesPage).Take(SpeciesPage).Select(r => (JsonNode?)RowJson(r))]),

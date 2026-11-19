@@ -15,6 +15,8 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     public async ValueTask InitializeAsync()
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        var tick = Py.Now();
+        state.Clock = () => tick += 7200;  // every board read is past the kept boards, so a test sees its latest data; the tests of the kept boards fix the clock
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
         table.Entries[new("POST", "api.test", Replay.APPLICATION, null)] = new Replay.Hit(2, "", 200, [("Content-Type", "application/json")], """{"season": 46, "items": []}"""u8.ToArray());
@@ -165,7 +167,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("""[1, "Test Deer", "alpha", "alpha"]""", T(hall[0]!["id"], hall[0]!["species"], hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
         Assert.Single(hall);
         // Season 2 ends when the next starts
-        Assert.NotNull(state.Store.StartSeason(Second + 1000));
+        Assert.NotNull(state.StartSeason(Second + 1000));
         Harvest(22, 3, Deer, "75", Second + 1000, cm: 20000);  // the first second of Season 3
         var two = (await Json("/leaderboards/halloffame?season=2"))["rows"]!.AsArray();
         Eq("""[[1, "charlie", "charlie"], [17, "charlie", "golf"]]""", new JsonArray([.. two.Select(r => (JsonNode?)new JsonArray(r!["id"]!.DeepClone(), r["score"]!["handle"]!.DeepClone(), r["range"]!["handle"]!.DeepClone()))]));
@@ -202,7 +204,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("""[1, 1, 1, 70.0, 100.0]""", T(mine[0]!["species_id"], mine[0]!["score"]!["total"], mine[0]!["score"]!["rank"], mine[0]!["score"]!["score"], mine[0]!["distance_min"]!["score"]));
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=25"));  // banned
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=999"));
-        Assert.NotNull(state.Store.StartSeason(Second + 1000));
+        Assert.NotNull(state.StartSeason(Second + 1000));
         Eq("""{"season": 3, "items": []}""", await Call(Replay.APPLICATION, ""));
     }
 
@@ -229,11 +231,59 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheBoardsAreKeptAMinuteAndAnEndedSeasonsAnHour()
+    {
+        Scene();
+        var now = Py.Now();
+        state.Clock = () => now;
+        var first = await Get($"/leaderboards/score/{Deer}");
+        Assert.Equal("public, max-age=60", first.Headers.Single(h => h.Name == "Cache-Control").Value);
+        Assert.Equal("charlie:70", await Board("score", Deer));
+        state.CreateAccount(30, "hotel");
+        Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
+        now += 59;
+        Assert.Equal("charlie:70", await Board("score", Deer));  // kept
+        Assert.Same(state.Boards(false, 2), state.Boards(false, 2));
+        now += 2;
+        Assert.Equal("hotel:90 charlie:70", await Board("score", Deer));  // expired: the new harvest shows
+        Assert.Equal("no-store", (await Get("/hunters/alpha/best")).Headers.Single(h => h.Name == "Cache-Control").Value);
+        // an ended season: an hour
+        Assert.NotNull(state.StartSeason((long)now - 10));
+        Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
+        state.CreateAccount(31, "india");
+        Harvest(31, 1, Deer, "95", Second + 20, cm: 1000);
+        now += 3599;
+        Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
+        now += 2;
+        Assert.Equal("india:95 hotel:90 charlie:70", await Board("score", Deer, 2));
+    }
+
+    [Fact]
+    public async Task TestStartingASeasonDropsTheKeptBoardsAndReadsAtOnceComputeOnce()
+    {
+        Scene();
+        state.Clock = () => Second + 100;
+        Assert.Equal("charlie:70", await Board("score", Deer));
+        state.CreateAccount(30, "hotel");
+        Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
+        Assert.Equal("charlie:70", await Board("score", Deer));  // kept
+        Assert.NotNull(state.StartSeason(Second + 50));
+        Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
+        // hiding a harvest takes it off the boards at once
+        Assert.Equal(200, state.HideTrophy(30, 1, """{"hidden": true}"""u8.ToArray()));
+        Assert.Equal("charlie:70", await Board("score", Deer, 2));
+        var hall = await Get("/leaderboards/halloffame?season=2");
+        Assert.Equal(["public, max-age=60", "Accept"], new[] { "Cache-Control", "Vary" }.Select(n => hall.Headers.Single(h => h.Name == n).Value));
+        var boards = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() => state.Boards(true, 0))));
+        Assert.All(boards, b => Assert.Same(boards[0], b));
+    }
+
+    [Fact]
     public void TestASeasonStartsAfterTheCurrentOnesStartOnly()
     {
-        Assert.Null(state.Store.StartSeason(Second));
-        Assert.Null(state.Store.StartSeason(Second - 5));
-        Assert.Equal(new Store.Season(3, Second + 1, null), state.Store.StartSeason(Second + 1));
+        Assert.Null(state.StartSeason(Second));
+        Assert.Null(state.StartSeason(Second - 5));
+        Assert.Equal(new Store.Season(3, Second + 1, null), state.StartSeason(Second + 1));
         Assert.Equal(Second, state.Store.Seasons()[1].End);  // closed one second before the next starts
     }
 
