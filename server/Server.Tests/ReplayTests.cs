@@ -226,6 +226,26 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestMissionsAndEditorPagesFillTheWindowInsteadOfAFixedBox()
+    {
+        var f = Path.Combine(mirror, "game_web.test", "client/index.html");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllText(f, "<html><head><link href=\"/static/app/9.9.9/client.css\"></head><body></body></html>");
+        var reply = await R("GET", "game_web.test", "/client");
+        var page = Encoding.UTF8.GetString(reply.Body);
+        Assert.EndsWith("</style></head><body></body></html>", page);  // after the page's own style sheets, in the head
+        Assert.Contains("body#client_missions_page #main #page_body{box-sizing:border-box;width:100%;max-width:75rem;height:100%;margin:0 auto;display:flex;flex-direction:column}", page);
+        Assert.Contains("body#client_missions_page #main #page_body #ajax_content{flex:1 1 0;min-height:0;max-height:none}", page);  // the list takes the height left in the box, its scrollbar stays inside
+        Assert.Contains("html body#lodge_edit #main,html body#client_missions_page #main{flex:1 1 0;min-height:0;height:auto}", page);  // the frame is no longer cut off under the tab bar
+        Assert.Contains("fieldset label:not([for=\"hide-completed\"]){display:block;width:auto}", page);  // the filters' labels stay above their controls (Search too) in a wide box
+        var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
+        Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
+        Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
+        File.WriteAllText(f, "<html><body></body></html>");  // a page without a head is served as it is
+        Same(("<html><body></body></html>"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/client"));
+    }
+
+    [Fact]
     public async Task TestThePageCopiesAnAmmunitionStackAsItIs()
     {
         var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.6/client.js");
@@ -255,8 +275,13 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<style>._2nkM,._2m_7,._1bAk,.XHcy,._3Y-A,._35mG{zoom:1}html,body{min-height:100%}body{background:#050505 linear-gradient(rgba(40,41,43,.65),rgba(7,5,12,.3))}body .OjlL,body ._15Yq{background:none}</style><script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
-        Assert.EndsWith(".then(go,go);})();</script>", page);
+        Assert.StartsWith("<style>._2nkM,._2m_7,._1bAk,.XHcy,._3Y-A,._35mG{zoom:1}html,body{min-height:100%}body{background:#050505 linear-gradient(rgba(40,41,43,.65),rgba(7,5,12,.3))}body .OjlL,body ._15Yq{background:none;box-sizing:border-box;padding:2vmin}body .TfqS,body ._1P0L{box-sizing:border-box;width:100%;max-width:80rem;max-height:100%;overflow:auto}", page);  // the panel is the window's size, not a fixed box
+        Assert.Contains("</style><script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
+        Assert.DoesNotContain("px", page[..page.IndexOf("</style>", StringComparison.Ordinal)]);  // no fixed size in the style
+        Assert.Contains("body .TfqS ._2nkM,body ._1P0L .XHcy{height:auto}", page);  // both scripts' names
+        Assert.Contains("body ._2JVh ._2Ubp,body ._2JVh .w3T7,body ._3eN0 ._30FN,body ._3eN0 ._1UXP{zoom:calc(1/var(--z,1))}", page);  // the tooltips stay where the icon's measured position puts them inside the zoomed map
+        Assert.Contains("img[src*=\"lodge/layouts/\"]", page);  // the map is scaled to the room that is left
+        Assert.EndsWith("g();})();</script>", page);
         Assert.DoesNotContain("<script src=\"/dist/main.js\">", page);  // the page's own tag is replaced: the script is added once the answers are in, under the new token
         Assert.Contains("s.src=\"/dist/main.js?t=urls2\"", page);
         Assert.Contains("window.hunter.getAuthToken()", page);
