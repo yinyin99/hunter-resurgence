@@ -43,14 +43,14 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     }
 
     /// <summary><c>GET /hunters/&lt;handle&gt;/ranks</c>: for "overview" the hunterscore and the three categories as bars of what the rows add up to (each row counts to the cap), else
-    /// the rows of the kind (animals, weapons or collectables) by name, each with its count (up to the cap) as level and as the way to the cap. A failed answer is no bars.</summary>
+    /// the rows of the kind (animals, weapons or collectables) by name, each with its whole count as level and its count up to the cap as the way to the cap (the bar fills at the cap, the number does not stop there). A failed answer is no bars.</summary>
     public async Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind)
     {
         if (await GetRanksAsync(handle) is not { } r) return [];
         RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
         if (kind != "overview")
             return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
-                .Select(x => new RankBar(x.Name, Count(Math.Min(x.Value, r.Cap)), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
+                .Select(x => new RankBar(x.Name, Count(x.Value), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
         return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
                 Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
     }
