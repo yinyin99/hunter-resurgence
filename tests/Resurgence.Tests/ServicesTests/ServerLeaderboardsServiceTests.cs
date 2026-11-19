@@ -39,7 +39,7 @@ public class ServerLeaderboardsServiceTests
         Assert.Equal("site.test", request.Headers.Host);
     }
 
-    const string Row = """{"rank": 1, "handle": "Owl", "value": 123.4567, "weapon": 77, "weaponName": "Test Bow", "ts": 1760000000, "kill": 9, "avatar": null}""";
+    const string Row = """{"rank": 1, "handle": "Owl", "value": 123.4567, "weapon": "not a number", "weaponName": "Test Bow", "ts": 1760000000, "kill": 9, "avatar": null}""";
 
     [Fact]
     public async Task SeasonsAreTheServersWithTheCurrentOne()

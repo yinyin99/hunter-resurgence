@@ -36,13 +36,10 @@
         }
         break;
     default:
-        @if (!Mode.Live)
-        {
-            <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
-                <option value="0">@L["Stat.AllTime"]</option>
-                @foreach (var n in Enumerable.Range(1, seasons)) { <option value="@n">@L["Stat.Season", n]</option> }
-            </select>
-        }
+        <select class="field-light" id="season" disabled="@(best?.Status == "disabled")" value="@season" @onchange="Season">
+            <option value="0">@L["Stat.AllTime"]</option>
+            @foreach (var n in Enumerable.Range(1, seasons)) { <option value="@n">@L["Stat.Season", n]</option> }
+        </select>
         @if (best is not null) { @Best() }
         break;
 }
@@ -59,19 +56,19 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    // the live site offers the lifetime statistics, the history and the all-time personal bests: there is no last hunt pill (the history's first hunt is that hunt, and a hunt of the history opens as its own page), and the server has no seasons
+    // the live site offers the lifetime statistics, the history and the personal bests by season: there is no last hunt pill (the history's first hunt is that hunt, and a hunt of the history opens as its own page)
     IReadOnlyList<(string Key, string Label)> pills => Mode.Live ? subs[1..] : subs;
     string sub => Mode.Live ? Sub is "history" or "best" ? Sub : "lifetime" : Sub == "latest" ? "" : subs.Any(s => s.Key == Sub) ? Sub! : "";
 
     protected override async Task OnParametersSetAsync()
     {
-        season = Mode.Live ? 0 : Arg ?? 0;
+        season = Arg ?? 0;
         switch (sub)
         {
             case "": last = await Service.ExpeditionAsync(Handle, null); break;
             case "lifetime": totals = await Service.TotalsAsync(Handle); break;
             case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
-            default: (best, seasons) = (await Service.BestAsync(Handle, season), Mode.Live ? 0 : (await Seasons.SeasonsAsync()).Current); break;
+            default: (best, seasons) = (await Service.BestAsync(Handle, season), (await Seasons.SeasonsAsync()).Current); break;
         }
     }
 

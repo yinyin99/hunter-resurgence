@@ -62,15 +62,15 @@ public sealed record ServerGameRow(int Rank, string Handle, long Value, string? 
 /// <summary>One page of a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
 public sealed record ServerGameBoard(int Page, int Pages, int Total, ServerGameRow[] Rows);
 
-/// <summary>A season of <see cref="ServerSeasons"/>: its times are Unix seconds; <c>Start</c> is null for a season with no start (the first) and <c>End</c> for the current season.</summary>
+/// <summary>A season of <see cref="ServerSeasons"/>: its times are Unix seconds; <c>End</c> is null for the current season, and <c>Start</c> for a season the server gives no start.</summary>
 public sealed record ServerSeason(int No, long? Start, long? End);
 
 /// <summary>The seasons of <see cref="ServerSessionApi.Leaderboards"/>; all time (0) is not listed.</summary>
 public sealed record ServerSeasons(int Current, ServerSeason[] Seasons);
 
-/// <summary>A place on a species board: <c>Value</c> is the score or the distance in metres, <c>Weapon</c> the weapon's item id and <c>WeaponName</c> its name ("" when unknown),
+/// <summary>A place on a species board: <c>Value</c> is the score or the distance in metres, <c>WeaponName</c> the weapon's name ("" when unknown),
 /// <c>Ts</c> the kill's Unix seconds, <c>Kill</c> the id of its sheet (0 for none).</summary>
-public sealed record ServerRow(int Rank, string Handle, double Value, long Weapon, string? WeaponName, long Ts, long Kill, string? Avatar = null);
+public sealed record ServerRow(int Rank, string Handle, double Value, string? WeaponName, long Ts, long Kill, string? Avatar = null);
 
 /// <summary>A species and its best three places of the overview of a species board.</summary>
 public sealed record ServerSpeciesBoard(int Species, string Name, ServerRow[] Top);

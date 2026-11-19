@@ -14,7 +14,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
 
     static bool Species(string kind) => kind is "score" or "range";
 
-    static Ranked Row(ServerRow r) => new(r.Rank, r.Handle, r.Value, (int)r.Kill, Avatars.Slot(r.Avatar), r.WeaponName ?? "", r.Ts > 0 ? DateTimeOffset.FromUnixTimeSeconds(r.Ts) : null);
+    static Ranked Row(ServerRow r) => new(r.Rank, r.Handle, r.Value, r.Kill, Avatars.Slot(r.Avatar), r.WeaponName ?? "", r.Ts > 0 ? DateTimeOffset.FromUnixTimeSeconds(r.Ts) : null);
 
     public async Task<(int Current, IReadOnlyList<Season> Seasons)> SeasonsAsync() =>
         await GetAsync<ServerSeasons>($"{ServerSessionApi.Leaderboards}/seasons") is { Seasons: not null } s

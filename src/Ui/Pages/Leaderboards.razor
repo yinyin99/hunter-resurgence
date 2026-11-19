@@ -198,7 +198,7 @@ else
     // a species of the hall of fame may have only one of the two winners
     RenderFragment HallSide(string heading, string board, Ranked? r) => @<text>
         <h6>@L[heading]</h6>
-        @if (r is null || r.Handle.Length == 0) { <span class="v">@(r is null ? "–" : Fmt.Board(board, r.Value))</span> }
+        @if (r is null) { <span class="v">–</span> }
         else
         {
             <AssetSlot Name="@r.Avatar" Width="160" Height="160" />

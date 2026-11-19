@@ -920,7 +920,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served, Avatar: "avatar-1000000"), await sessions.CurrentAsync());
 
         var boards = new Resurgence.Services.ServerLeaderboardsService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerLeaderboardsService>.Instance);
-        var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1)).Rows);
+        var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1, 0)).Rows);
         Assert.Equal(new Resurgence.Services.Ranked(1, "Hunter_One", served, Avatar: "avatar-1000000"), row);
 
         var profiles = new Resurgence.Services.ServerProfileService(http, browser, sessions, new Resurgence.Services.Mocks.MockProfileService(),

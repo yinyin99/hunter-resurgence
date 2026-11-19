@@ -239,11 +239,11 @@ public class ServerProfileServiceTests
     public void TheTrophiesTabHasAServerSource() => Assert.Contains("trophies", ServerProfileService.Tabs);
 
     [Fact]
-    public async Task PersonalBestsAreTheServersRowsOfTheHandleForAnySeason()
+    public async Task PersonalBestsAreTheServersRowsOfTheHandleForTheSeason()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"rows":[{"species":"Red Fox","score":50.5,"range":60.25,"weapon":"Test Rifle","ts":1700000500,"kill":9}]}"""));
         var best = await Make(fake).BestAsync("fox", 3);
-        Assert.Equal("/hunters/fox/best", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
+        Assert.Equal("/hunters/fox/best?season=3", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
         Assert.Equal("done", best.Status);
         Assert.Equal(new BestRow("Red Fox", 50.5, 60.25, "Test Rifle", new DateTime(2023, 11, 14, 22, 21, 40, DateTimeKind.Utc), 9), Assert.Single(best.Rows));
     }

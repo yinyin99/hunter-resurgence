@@ -35,7 +35,7 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Works now | Not yet |
 |---|---|
 | Sign in with Steam: one account for the launcher, website and game | Offline / LAN play on your own PC |
-| Hunt on all 12 reserves; pick the start on a map and the time of day | Competitions and season boards |
+| Hunt on all 12 reserves; pick the start on a map and the time of day | Competitions and antler boards |
 | Multiplayer: host a game or join one from the launcher's list (2 to 8 hunters, friends only or open, optional password) | Bait-site pages in the game |
 | Every species licensed for every player, for now | Full in-game map tiles |
 | A free start kit (two weapons, ammunition, binoculars); the free ammunition is topped up at every hunt start | |

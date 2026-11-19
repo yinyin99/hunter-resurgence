@@ -4,7 +4,7 @@ namespace Resurgence.Services;
 /// <param name="Avatar">The slot or link of the hunter's picture (<see cref="Avatars.Slot"/>).</param>
 /// <param name="Weapon">Name of the weapon of the kill; "" when unknown or not on the board.</param>
 /// <param name="When">Time of the kill; null when the board shows none.</param>
-public sealed record Ranked(int Rank, string Handle, double Value, int Sheet = 0, string Avatar = Avatars.Default, string Weapon = "", DateTimeOffset? When = null);
+public sealed record Ranked(int Rank, string Handle, double Value, long Sheet = 0, string Avatar = Avatars.Default, string Weapon = "", DateTimeOffset? When = null);
 
 /// <summary>A season of the species boards: 1 is the restored harvests (up to the community server's start), later ones the server's. <see cref="End"/> is null for the current one. Season 0, all time, is none of these.</summary>
 public sealed record Season(int No, DateTimeOffset Start, DateTimeOffset? End);
