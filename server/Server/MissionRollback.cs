@@ -165,7 +165,7 @@ public sealed partial class State
                 continue;
             var mark = marks[id];
             var held = state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
-            bool Judged(long d) => m.Objectives.First(o => o.Id == d).Rule is { Kind: Kind.Harvest, Unknown: false };
+            bool Judged(long d) => !m.Objectives.First(o => o.Id == d).Rule.Unknown;
             var harvestHeld = held.Where(d => IsHarvest(m, d) && !mark.KeptIds.Contains(d)).ToList();
             notUnderstood += harvestHeld.Count(d => !Judged(d));
             var checkable = harvestHeld.Where(Judged).ToList();

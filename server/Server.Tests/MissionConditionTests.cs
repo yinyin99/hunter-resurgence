@@ -375,5 +375,21 @@ public class MissionConditionTests : StateTestBase
         Eq("""{"state": 2, "objectives": [1]}""", Reply(strict.MissionsReply(ME)!)["states"]!["1"]);  // the one it cannot judge stays finished
     }
 
+    [Fact]
+    public void TestAnObjectiveTheRollbackCannotJudgeDoesNotBlockTheOrderedOneBehindIt()
+    {
+        // the unread objective is first; the ordered one behind it is met by the stored harvest, so it must not be reopened
+        string Catalogue(bool strict) => "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{\"text\": \"10 gm$\"}], \"objectives\": ["
+            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " while prone" : "")}\"}}, {{\"id\": 1, \"title\": \"Then, harvest a Test Deer{(strict ? " from under 40 meters" : "")}\"}}]}}]}}";
+        state = New("ordered.db", Catalogue(strict: false));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));
+        Hb(Shot(2, distance: 2000));
+        Assert.Equal("1", Completed());
+        var strict = New("ordered.db", Catalogue(strict: true));
+        Assert.Equal("reopened 0 objectives in 0 missions; kept: not understood 1 finished objectives", strict.RollbackMissions(apply: true).Last());
+        Assert.Equal("1", Completed(of: strict));
+    }
+
     static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);
 }
