@@ -385,7 +385,7 @@ The species boards rank every hunter's best harvests, per species, by **score** 
 | Season | Holds |
 |---|---|
 | 0 | all time: every harvest of seasons 1 and later |
-| 1 | up to 2026-11-11 23:59:59 UTC: the harvests of the restored accounts that a restore brought, with their original time. These are the saved all-time bests of each species (the best score and the best range, `Leaderboard/personal` of season 0 as the backup saved it); the saved replies of the original's own seasons are not read |
+| 1 | up to 2026-11-11 23:59:59 UTC: the harvests of the restored accounts that a restore brought, with their original time. These are the saved all-time bests of each species (the best score and the best range, `Leaderboard/personal` of season 0 as the backup saved it); the saved replies of the original's own seasons are not read. An account with no saved bests (a claimed archive account has none) brings its restored trophy list and the animals mounted in its restored lodges instead (a trophy in both counts once, a hidden one not at all): the best score of each species counts, with the trophy's own time. These rows have no shot distance, so they rank on the score boards and the Hall of Fame's score only, never on a range board, and their weapon is unknown |
 | 2 | from 2026-11-12 00:00:00 UTC, the first day of the community server: this server's harvests (`harvests`). The current season until the operator starts the next |
 | 3 and later | this server's harvests made from the day the operator started it |
 
