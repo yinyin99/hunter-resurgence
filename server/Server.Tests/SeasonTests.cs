@@ -1,0 +1,232 @@
+using System.Text.Json.Nodes;
+using Resurgence.Server;
+using static Resurgence.Server.Tests.Fixtures;
+
+namespace Resurgence.Server.Tests;
+
+/// <summary>The species boards by season (docs/server.md#leaderboards-and-seasons): the season of a harvest, what is left out, the pages, the Hall of Fame and the season start. Invented data, written to the tables.</summary>
+public class SeasonTests : StateTestBase, IAsyncLifetime
+{
+    static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+    static readonly long Second = Store.SecondSeasonStart;  // 2026-11-12 00:00:00 UTC
+    const long Deer = 1, Rabbit = 17;
+    Loopback server = null!;
+
+    public async ValueTask InitializeAsync()
+    {
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        var table = new Replay.HarTable();
+        table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        table.Entries[new("POST", "api.test", Replay.APPLICATION, null)] = new Replay.Hit(2, "", 200, [("Content-Type", "application/json")], """{"season": 46, "items": []}"""u8.ToArray());
+        server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+    }
+
+    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+
+    static string Iso(long ts) => DateTimeOffset.FromUnixTimeSeconds(ts).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    /// <summary>An account whose backup was restored: its saved all-time bests for a species (one kill for the score and the range), killed at `ts`.</summary>
+    void Restored(long id, string handle, long species, string score, long mm, long ts)
+    {
+        state.CreateAccount(id, handle);
+        var rec = $$"""{"distance": {{mm}}, "confirm_ts": {{ts}}, "weapon_id": 5, "animal_id": 900, "gender": 0, "texture": 0, "score": "{{score}}", "species": {{species}}}""";
+        using var con = state.Store.Open(id);
+        con.Begin();
+        PlayerRows.SetExtra(con, "Leaderboard_personal__user_id=8__season_no=0.json", JsonNode.Parse($$"""{"status": "done", "data": [{"specie": {{species}}, "score": {{rec}}, "distance": {{rec}}}]}"""));
+        con.Commit();
+    }
+
+    /// <summary>A harvest of this server (the kill, its last hit `cm` centimetres away with the rifle 5, the page with its score and time).</summary>
+    void Harvest(long id, long kill, long species, string score, long ts, long cm = 0, bool hidden = false)
+    {
+        var e3 = $$"""{"event": 3, "individual": {{kill}}, "extended_species": {{species}}}""";
+        using var con = state.Store.Open(id);
+        if (cm > 0)
+            con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, 1, ?)", $$"""{"event": 1, "individual": {{kill}}, "distance_cms": {{cm}}, "weapon_id": 5}""");
+        con.Exec("INSERT INTO events (account_id, event, body) VALUES ($a, 3, ?)", e3);
+        con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)", kill, kill, species, e3);
+        con.Exec("INSERT INTO harvests (account_id, kill_id, body, hidden) VALUES ($a, ?, ?, ?)", kill, $$"""{"score": {{score}}, "species": {{species}}, "timestamp": "{{Iso(ts)}}"}""", hidden ? 1 : 0);
+    }
+
+    async Task<Reply> Get(string path, params (string, string)[] headers) => await server.SendAsync("GET", "web.test", path, headers);
+
+    async Task<JsonNode> Json(string path) => JsonNode.Parse((await Get(path)).Body)!;
+
+    /// <summary>The handles of a species' board in rank order, "handle:value".</summary>
+    async Task<string> Board(string kind, long species, long? season = null) =>
+        string.Join(" ", (await Json($"/leaderboards/{kind}/{species}" + (season is { } s ? $"?season={s}" : "")))["rows"]!.AsArray()
+            .Select(r => $"{r!["handle"]}:{r["value"]!.GetValue<double>().ToString(System.Globalization.CultureInfo.InvariantCulture)}"));
+
+    /// <summary>Four hunters of the same species: a restored one of 2025, a restored one on the last second of Season 1, a hunter of this server on the first second of Season 2, and the left out ones.</summary>
+    void Scene()
+    {
+        Restored(20, "alpha", Deer, "60.0000", 120000, new DateTimeOffset(2025, 6, 1, 12, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds());
+        Restored(21, "bravo", Deer, "50.0000", 80000, Second - 1);
+        state.CreateAccount(22, "charlie");
+        Harvest(22, 1, Deer, "70", Second, cm: 10000);
+        state.CreateAccount(23, "delta");
+        Harvest(23, 1, Deer, "99", Second + 5, cm: 99000, hidden: true);  // hidden by its owner
+        state.CreateAccount(24, "echo");
+        Harvest(24, 1, Deer, "0", Second + 5, cm: 99000);  // refused: no score
+        state.CreateAccount(25, "foxtrot");
+        Harvest(25, 1, Deer, "80", Second + 5, cm: 99000);
+        using var con = state.Store.Open();
+        con.Exec("UPDATE accounts SET banned = 1 WHERE id = 25");
+    }
+
+    [Fact]
+    public void TestAHarvestIsInTheSeasonItsKillTimeFallsIn()
+    {
+        var seasons = state.Store.Seasons();
+        Assert.Equal([new Store.Season(1, 0, Second - 1), new Store.Season(2, Second, null)], seasons);
+        Assert.Equal(1, Store.SeasonAt(seasons, Second - 1));  // 2026-11-11 23:59:59 UTC
+        Assert.Equal(2, Store.SeasonAt(seasons, Second));      // 2026-11-12 00:00:00 UTC
+        Assert.Equal(1, Store.SeasonAt(seasons, 0));
+        Assert.Equal(2, Store.SeasonAt(seasons, Second + 86400L * 3650));
+    }
+
+    [Fact]
+    public async Task TestTheBoardsOfEachSeasonHoldTheirOwnHarvests()
+    {
+        Scene();
+        // the restored 2025 harvest and the one of the last second: Season 1 and all time; the first second of this server: Season 2 and all time
+        Assert.Equal("alpha:60 bravo:50", await Board("score", Deer, 1));
+        Assert.Equal("charlie:70", await Board("score", Deer, 2));
+        Assert.Equal("charlie:70 alpha:60 bravo:50", await Board("score", Deer, 0));
+        Assert.Equal("charlie:70", await Board("score", Deer));  // no season: the current one
+        Assert.Equal("alpha:120 bravo:80", await Board("range", Deer, 1));
+        Assert.Equal("charlie:100", await Board("range", Deer, 2));
+        Assert.Equal("alpha:120 charlie:100 bravo:80", await Board("range", Deer, 0));
+        // a harvest of this server made before its first day is a Season 2 one: Season 1 holds the restored harvests only
+        Harvest(22, 2, Rabbit, "10", Second - 1, cm: 500);
+        Assert.Equal("", await Board("score", Rabbit, 1));
+        Assert.Equal("charlie:10", await Board("score", Rabbit, 2));
+        Assert.Equal(404, (await Get("/leaderboards/score/1?season=9")).Status);
+        Assert.Equal(404, (await Get("/leaderboards/score/1?season=x")).Status);
+        Assert.Equal(404, (await Get("/leaderboards/weight/1")).Status);
+    }
+
+    [Fact]
+    public async Task TestTheOverviewListsTheTopThreeOfEachSpeciesAndEachRowCarriesItsKill()
+    {
+        Scene();
+        for (var i = 0; i < 4; i++)
+        {
+            state.CreateAccount(30 + i, "rabbit" + i);
+            Harvest(30 + i, 1, Rabbit, (10 + i).ToString(), Second + 60, cm: 1000 + i);
+        }
+        var board = (await Json("/leaderboards/score?season=2"))["boards"]!.AsArray();
+        Eq("[1, 17]", T(board[0]!["species"], board[1]!["species"]));
+        Eq("""["Test Deer", "Test Rabbit"]""", T(board[0]!["name"], board[1]!["name"]));
+        Eq("""["rabbit3", "rabbit2", "rabbit1"]""", new JsonArray([.. board[1]!["top"]!.AsArray().Select(r => (JsonNode?)r!["handle"]!.DeepClone())]));
+        var row = board[0]!["top"]![0]!;
+        Eq("""[1, "charlie", 70.0, 5, "Test Rifle", 1]""", T(row["rank"], row["handle"], row["value"], row["weapon"], row["weaponName"], row["kill"]));
+        Assert.Equal(Second, (long)row["ts"]!);
+        var restored = (await Json("/leaderboards/range?season=1"))["boards"]![0]!["top"]![0]!;
+        Eq("""["alpha", 120.0, 0]""", T(restored["handle"], restored["value"], restored["kill"]));  // a restored kill has no sheet here
+    }
+
+    [Fact]
+    public async Task TestASpeciesBoardIsTheTopHundredInPagesOf25AndTheSignedInHunterSeesItsPlace()
+    {
+        for (var i = 1; i <= 27; i++)
+        {
+            state.CreateAccount(100 + i, "p" + i);
+            Harvest(100 + i, 1, Deer, i.ToString(), Second + i);
+        }
+        var page2 = await Json($"/leaderboards/score/{Deer}?page=2");
+        Eq("[2, 2, 27]", T(page2["page"], page2["pages"], page2["total"]));
+        Eq("""["p2", "p1"]""", new JsonArray([.. page2["rows"]!.AsArray().Select(r => (JsonNode?)r!["handle"]!.DeepClone())]));
+        Assert.Equal(26, (long)page2["rows"]![0]!["rank"]!);
+        Eq("[1, 1, 0]", T((await Json($"/leaderboards/score/{Rabbit}"))["page"], (await Json($"/leaderboards/score/{Rabbit}"))["pages"], (await Json($"/leaderboards/score/{Rabbit}"))["total"]));
+        var cookie = ("Cookie", "hr_session=" + state.Store.CreateWebSession(103, TimeSpan.FromHours(1)));
+        var me = JsonNode.Parse((await Get($"/leaderboards/score/{Deer}/me", cookie)).Body)!;
+        Eq("""[25, "p3", 3.0]""", T(me["rank"], me["handle"], me["value"]));
+        Assert.Equal(404, (await Get($"/leaderboards/score/{Rabbit}/me", cookie)).Status);  // not ranked
+        Assert.Equal(401, (await Get($"/leaderboards/score/{Deer}/me")).Status);
+        // beyond the 100: the place is still told (only 27 here, so the board's last)
+        var last = ("Cookie", "hr_session=" + state.Store.CreateWebSession(101, TimeSpan.FromHours(1)));
+        Assert.Equal(27, (long)JsonNode.Parse((await Get($"/leaderboards/score/{Deer}/me", last)).Body)!["rank"]!);
+    }
+
+    [Fact]
+    public async Task TestTheHallOfFameOfAnEndedSeasonHasTheBestScoreAndRangeOfEachSpecies()
+    {
+        Scene();
+        Harvest(22, 2, Rabbit, "10", Second + 10, cm: 500);
+        state.CreateAccount(26, "golf");
+        Harvest(26, 1, Rabbit, "5", Second + 20, cm: 2500);
+        // season 0 and the current one have none
+        Eq("[]", (await Json("/leaderboards/halloffame?season=0"))["rows"]);
+        Eq("[]", (await Json("/leaderboards/halloffame"))["rows"]);
+        // Season 1 has ended
+        var hall = (await Json("/leaderboards/halloffame?season=1"))["rows"]!.AsArray();
+        Eq("""[1, "Test Deer", "alpha", "alpha"]""", T(hall[0]!["id"], hall[0]!["species"], hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
+        Assert.Single(hall);
+        // Season 2 ends when the next starts
+        Assert.NotNull(state.Store.StartSeason(Second + 1000));
+        Harvest(22, 3, Deer, "75", Second + 1000, cm: 20000);  // the first second of Season 3
+        var two = (await Json("/leaderboards/halloffame?season=2"))["rows"]!.AsArray();
+        Eq("""[[1, "charlie", "charlie"], [17, "charlie", "golf"]]""", new JsonArray([.. two.Select(r => (JsonNode?)new JsonArray(r!["id"]!.DeepClone(), r["score"]!["handle"]!.DeepClone(), r["range"]!["handle"]!.DeepClone()))]));
+        Eq("[70.0, 100.0]", T(two[0]!["score"]!["value"], two[0]!["range"]!["value"]));
+        Assert.Equal("charlie:75", await Board("score", Deer, 3));
+        Assert.Equal("charlie:70", await Board("score", Deer, 2));
+        Assert.Equal(404, (await Get("/leaderboards/halloffame?season=4")).Status);
+        var seasons = await Json("/leaderboards/seasons");
+        Eq($$"""{"current": 3, "seasons": [{"no": 1, "start": 0, "end": {{Second - 1}}}, {"no": 2, "start": {{Second}}, "end": {{Second + 999}}}, {"no": 3, "start": {{Second + 1000}}, "end": null}]}""", seasons);
+    }
+
+    async Task<JsonNode> Call(string path, string body) => JsonNode.Parse((await server.SendAsync("POST", "api.test", path, [("Content-Type", "application/x-www-form-urlencoded")], System.Text.Encoding.ASCII.GetBytes(body))).Body)!;
+
+    [Fact]
+    public async Task TestTheCallsOfTheOriginalsPagesAnswerFromTheSameBoards()
+    {
+        Scene();
+        Eq("""{"season": 2, "items": []}""", await Call(Replay.APPLICATION, ""));  // the current season, not the recorded one
+        var all = (await Call(Replay.LEADERBOARDS_ALL, "type=1")).AsArray();
+        var block = all[0]!;
+        Eq("""[1, "mule_deer", "Test Deer (Typical)", 1, 1000]""", T(block["id"], block["define"], block["name"], block["scoretype"], block["total"]));
+        Assert.Single(all);
+        var record = block["records"]![0]!;
+        Eq("""[1, 1, 1, 1, 70.0, null, 22, "charlie"]""", T(record["id"], record["animal_id"], record["rank"], record["scoretype"], record["score"], record["scoreType"], record["user"]!["id"], record["user"]!["handle"]));
+        var range = await Call(Replay.LEADERBOARD_DETAILS, "type=2&species=1");
+        Eq("""[2, null, 100.0]""", T(range["scoretype"], range["position"], range["records"]![0]!["score"]));
+        Eq("[]", (await Call(Replay.LEADERBOARD_DETAILS, "type=1&species=17"))["records"]);
+        // the Hall of Fame: the season before the current one by default; a score is a text, a range a number
+        var hall = await Call(Replay.HALL_OF_FAME, "");
+        Eq("""[1, "60", null, 120.0]""", T(hall[0]!["speciesId"], hall[0]!["score"]!["score"], hall[0]!["range"]!["scoretype"], hall[0]!["range"]!["score"]));
+        Eq("[]", await Call(Replay.HALL_OF_FAME, "season_no=2"));
+        Eq("[]", await Call(Replay.HALL_OF_FAME, "season_no=0"));
+        var mine = (await Call(Replay.CURRENT_PERSONAL, "user_id=22")).AsArray();
+        Eq("""[1, 1, 1, 70.0, 100.0]""", T(mine[0]!["species_id"], mine[0]!["score"]!["total"], mine[0]!["score"]!["rank"], mine[0]!["score"]!["score"], mine[0]!["distance_min"]!["score"]));
+        Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=25"));  // banned
+        Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=999"));
+        Assert.NotNull(state.Store.StartSeason(Second + 1000));
+        Eq("""{"season": 3, "items": []}""", await Call(Replay.APPLICATION, ""));
+    }
+
+    [Fact]
+    public void TestASeasonStartsAfterTheCurrentOnesStartOnly()
+    {
+        Assert.Null(state.Store.StartSeason(Second));
+        Assert.Null(state.Store.StartSeason(Second - 5));
+        Assert.Equal(new Store.Season(3, Second + 1, null), state.Store.StartSeason(Second + 1));
+        Assert.Equal(Second, state.Store.Seasons()[1].End);  // closed one second before the next starts
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion28GetsTheSeasons()
+    {
+        var file = Path.Combine(tmp, "v28.db");
+        var store = new Store(file);
+        using (var con = store.Open())
+        {
+            con.Exec("DROP TABLE seasons");
+            con.Exec("PRAGMA user_version = 28");
+        }
+        var check = new Store(file);
+        Assert.Equal([1L, 2L], check.Seasons().Select(s => s.No));
+        using var con2 = check.Open();
+        Assert.Equal((long)Store.Version, con2.Scalar("PRAGMA user_version"));
+    }
+}

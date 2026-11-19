@@ -252,53 +252,6 @@ public sealed partial class State
 
     static double Num(JsonNode? n) => n is JsonValue v && double.TryParse(v.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : 0;
 
-    /// <summary>`Leaderboard/personal` of an account for a season: `{status: "done", data: [{specie, score, distance}]}`, one row per species whose `score` and `distance`
-    /// are the record kills (`{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score` as text, `species}`). A season is the restored reply as saved
-    /// (none: no rows); season 0 (all time) also takes this server's kills, scored ones only: a kill replaces a species' record when its score, or its last hit's
-    /// distance, is larger. The server has no seasons, so its kills count in season 0 only.</summary>
-    JsonObject PersonalBest(Db con, long season)
-    {
-        var saved = con.Rows("SELECT path, body FROM extras WHERE account_id = $a AND path LIKE 'Leaderboard!_personal!_!_%' ESCAPE '!'")
-            .Where(r => Regex.Match((string)r[0], @"__season_no=(\d+)\.json$") is { Success: true } m && m.Groups[1].Value == season.ToString(System.Globalization.CultureInfo.InvariantCulture))
-            .Select(r => JsonNode.Parse((string)r[1])).FirstOrDefault();
-        var data = new JsonArray();
-        foreach (var row in ((saved as JsonObject)?["data"] as JsonArray ?? []).OfType<JsonObject>())
-            data.Add(row.DeepClone());
-        if (season == 0)
-            // ponytail: every view reads the hit events of each scored kill (a scan of the account's events each); store the last hit on the harvest when that gets slow
-            foreach (var r in con.Rows("SELECT k.individual, k.harvest, h.body, k.kill_id FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
-                                       + " WHERE k.account_id = $a ORDER BY k.kill_id"))
-                try
-                {
-                    var page = Parse(r[2]);
-                    if (Num(page["score"]) <= 0 || !Py.IsNum(page["species"])) continue;
-                    var hits = KillHits(con, Py.FromSql(r[0]), (string)r[1]);
-                    var last = hits.Count > 0 ? hits[^1] : null;
-                    JsonObject Entry() => new()
-                    {
-                        ["distance"] = Times10(G(last ?? new JsonObject(), "distance_cms", 0)), ["confirm_ts"] = new DateTimeOffset(DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
-                            System.Globalization.DateTimeStyles.AssumeUniversal | System.Globalization.DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds(),
-                        ["weapon_id"] = C(last?["weapon_id"]), ["animal_id"] = (long)r[3], ["gender"] = C(page["gender"]), ["texture"] = C(page["texture_id"]),
-                        ["score"] = Py.Fixed(Num(page["score"]), 4), ["species"] = C(page["species"]),
-                    };
-                    var kill = Entry();
-                    var specie = Py.L(page["species"]);
-                    var best = data.OfType<JsonObject>().FirstOrDefault(b => Py.IsNum(b["specie"]) && Py.L(b["specie"]) == specie);
-                    if (best is null)
-                        data.Add(new JsonObject { ["distance"] = Entry(), ["score"] = kill, ["specie"] = specie });
-                    else
-                    {
-                        if (Num(kill["score"]) > Num((best["score"] as JsonObject)?["score"])) best["score"] = Entry();
-                        if (Num(kill["distance"]) > Num((best["distance"] as JsonObject)?["distance"])) best["distance"] = Entry();
-                    }
-                }
-                catch (Exception ex) when (ex is not Microsoft.Data.Sqlite.SqliteException)  // a value a player sent, of any kind: the kill is not counted
-                {
-                    Console.WriteLine($"personal bests: a kill is not counted: {ex.Message}");
-                }
-        return new JsonObject { ["status"] = "done", ["data"] = data };
-    }
-
     /// <summary>Leaderboard/personal for the form's user_id and season_no: any account's on a community server (null for a user id that is none), else the player's own.</summary>
     public byte[]? PersonalBestReply(long account, byte[] formBody)
     {
@@ -448,6 +401,7 @@ public sealed partial class State
         var reply = new JsonObject();
         foreach (var key in (string[])["items", "locale", "locations", "mission_groups", "missions", "reserves", "season", "species"])
             reply[key] = C(application[key]) ?? key switch { "locale" => JsonValue.Create("en_us"), "season" => JsonValue.Create(0), _ => new JsonArray() };
+        if (Online) reply["season"] = Store.Seasons().Last().No;  // the current leaderboard season, not the recorded one
         foreach (var sp in reply["species"]!.AsArray().OfType<JsonObject>())
             if (sp["ethicalAmmo"] is null && Py.L(sp["id"]) is >= 0 and var id && id < ethicalAmmo.Count)
                 sp["ethicalAmmo"] = C(ethicalAmmo[(int)id]);

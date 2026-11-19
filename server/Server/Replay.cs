@@ -53,6 +53,10 @@ public static class Replay
     public const string INVENTORY_DICT = "/v1/Inventory/dict";
     public const string TROPHY_LIST = "/v1/Trophy/list";
     public const string LEADERBOARD_PERSONAL = "/v1/Leaderboard/personal";
+    public const string CURRENT_PERSONAL = "/v1/Leaderboard/current_personal";
+    public const string LEADERBOARDS_ALL = "/v1/Page_content/leaderboards_all";
+    public const string LEADERBOARD_DETAILS = "/v1/Page_content/leaderboard_details";
+    public const string HALL_OF_FAME = "/v1/Page_content/leaderboards_hall_of_fame";
     public const string GALLERY_LIST = "/v1/Gallery/list";
     public const string GALLERY_DELETE = "/v1/Gallery/delete";
     public const string WALLET_TRANSACTIONS = "/v1/Wallet/transactions";
