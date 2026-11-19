@@ -15,8 +15,9 @@ public sealed partial class State
     enum Kind { Other, Harvest, Track, Spot, Arrive, Start }
 
     /// <summary>What an objective needs: its kind, the species (catalogue id, 0 to 99) and gender (0 male, 1 female) its title names (null: any), how many
-    /// clues of one animal (tracks), whether it counts only after the objectives before it, and its title in <see cref="Normalise"/>d words (a place).</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, int Count, bool Ordered, string Text);
+    /// clues of one animal (tracks), whether it counts only after the objectives before it, its title in <see cref="Normalise"/>d words (a place), and, for a harvest
+    /// or a spot, the conditions its title asks of the kill (<see cref="Reader"/>); `Unknown` when it has words the server does not understand: it is never met.</summary>
+    sealed record Rule(Kind Kind, long? Species, long? Gender, int Count, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
@@ -65,6 +66,8 @@ public sealed partial class State
             .Select(s => (Id: s.Key, Name: Normalise(((string)s.Value["name"]!).Split(" (")[0]))).Where(s => s.Name.Length > 0)
             .OrderByDescending(s => s.Name.Length).ToList();  // the longest name wins: "mule deer" before "deer"
 
+        var reader = new Reader(names, items.Values, reserves);
+
         Rule RuleOf(string title)
         {
             var ordered = OrderedWord.Match(title);
@@ -80,9 +83,12 @@ public sealed partial class State
                 _ => Kind.Other,
             };
             long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
-            long? gender = Regex.IsMatch(text, @"\bfemale\b") ? (long?)1 : Regex.IsMatch(text, @"\bmale\b") ? (long?)0 : null;
+            long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
             var count = kind == Kind.Track && ClueCount.Match(text) is { Success: true } m && int.TryParse(m.Groups[1].Value, out var clues) ? Math.Clamp(clues, 1, 100) : 1;
-            return new Rule(kind, species, gender, count, ordered.Success, text);
+            var (tests, unknown) = kind is Kind.Harvest or Kind.Spot ? reader.Read(title) : (Array.Empty<Test>(), false);
+            // a spot has no weapon, hit or harvest: only its stand, its reserve and its name can be checked
+            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named));
+            return new Rule(kind, species, gender, count, ordered.Success, text, tests, unknown);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -94,9 +100,15 @@ public sealed partial class State
                 if (Reward.Match(text) is { Success: true } paid && long.TryParse(paid.Groups[1].Value, out var amount))
                     if (paid.Groups[2].Value.Equals("gm", StringComparison.OrdinalIgnoreCase)) gm += amount;
                     else em += amount;
+            var listed = Ids(d["species"]).Select(x => x % 100).Distinct().ToArray();
+            Rule Build(string title)
+            {
+                var rule = RuleOf(title);  // a named animal's title names no species: the mission's own one does
+                return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
+            }
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,
                 [.. Arr(d["objectives"]).OfType<JsonObject>().Where(o => TryKey(o["id"], out _))
-                    .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), RuleOf(Py.Str(G(o, "title", ""))))).ToArray()]);
+                    .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), Build(Py.Str(G(o, "title", ""))))).ToArray()]);
         }
         foreach (var g in Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)))
             missionGroups[Py.L(g["id"])] = Ids(g["missions"]);
@@ -114,8 +126,10 @@ public sealed partial class State
 
     /// <summary>The account's mission rows and switches exist. The first time (no `mission_prefs` row) they come from the restored mission page
     /// (`Mission_missions.json` of `extras`): `completed` and `active` with the finished objectives of `states`, the three switches and the favourite
-    /// groups; ids without a definition are kept as they are. `available` is never stored. Call inside a transaction.</summary>
-    public static void EnsureMissions(Db con)
+    /// groups; ids without a definition are kept as they are. `available` is never stored. A restored completed mission is marked as restored (`kept` is `*`), a restored
+    /// active one keeps its finished objectives (`kept`), and the events up to `before` (default: the last one) are not the missions': they are older than the rows.
+    /// Call inside a transaction.</summary>
+    public static void EnsureMissions(Db con, long? before = null)
     {
         if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is not null)
             return;
@@ -127,12 +141,14 @@ public sealed partial class State
             foreach (var key in Switches)
                 prefs[key] = Py.Truthy(saved[key]) ? 1 : 0;
             prefs["favourites"] = List(Ids(saved["favourites"]));
-            var completed = Ids(saved["completed"]);
+            var (completed, seen) = (Ids(saved["completed"]), before ?? LastEvent(con));
             foreach (var id in completed)
-                con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives) VALUES ($a, ?, 3, '[]')", id);
+                con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives, since, seen, kept) VALUES ($a, ?, 3, '[]', NULL, ?, ?)", id, seen, RestoredMark);
             foreach (var id in Ids(saved["active"]).Except(completed))
-                con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives) VALUES ($a, ?, 2, ?)", id,
-                         Py.Dumps(List(Ids((saved["states"] as JsonObject)?[id.ToString()] is JsonObject st ? st["objectives"] : null))));
+            {
+                var done = Py.Dumps(List(Ids((saved["states"] as JsonObject)?[id.ToString()] is JsonObject st ? st["objectives"] : null)));
+                con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives, since, seen, kept, earlier) VALUES ($a, ?, 2, ?, ?, ?, ?, ?)", id, done, seen, seen, done, done);
+            }
         }
         con.Exec("INSERT INTO mission_prefs (account_id, body) VALUES ($a, ?)", Py.Dumps(prefs));
     }
@@ -155,8 +171,29 @@ public sealed partial class State
     IEnumerable<MissionDef> Available(Dictionary<long, (long State, List<long> Done)> rows) =>
         missions.Values.Where(m => !rows.ContainsKey(m.Id) && m.Dependencies.All(d => rows.TryGetValue(d, out var r) && r.State == 3)).OrderBy(m => m.Id);
 
-    static void Activate(Db con, long id) =>
-        con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives) VALUES ($a, ?, 2, '[]')", id);
+    /// <summary>What a row remembers besides its objectives: `Since`, the last event before the mission was activated here (null: not known, the row is older than schema 30);
+    /// `Seen`, the last event the mission's progress is not owed from (the harvests after it are the ones to check); `Kept`, the finished objectives a restore brought
+    /// (a JSON list), or `*` for a mission completed before the restore: those are never checked or reopened, no event of theirs exists; `Earlier`, the objectives finished
+    /// before `Seen` (a JSON list): no harvest after it finished them.</summary>
+    sealed record Mark(long? Since, long Seen, string Kept, string Earlier)
+    {
+        public bool Restored => Kept == RestoredMark;
+        public long[] KeptIds => Restored ? [] : Ids(JsonNode.Parse(Kept));
+        public long[] EarlierIds => Ids(JsonNode.Parse(Earlier));
+    }
+
+    const string RestoredMark = "*";
+
+    static Dictionary<long, Mark> Marks(Db con) =>
+        con.Rows("SELECT mission_id, since, seen, kept, earlier FROM missions WHERE account_id = $a")
+            .ToDictionary(r => (long)r[0], r => new Mark(r[1] as long?, (long)r[2], (string)r[3], (string)r[4]));
+
+    /// <summary>The mission becomes active; its progress counts the events after `at` (default: the last one stored).</summary>
+    static void Activate(Db con, long id, long? at = null)
+    {
+        var seen = at ?? LastEvent(con);
+        con.Exec("INSERT INTO missions (account_id, mission_id, state, objectives, since, seen) VALUES ($a, ?, 2, '[]', ?, ?)", id, seen, seen);
+    }
 
     // ---- the replies
 
@@ -285,20 +322,22 @@ public sealed partial class State
         var kind = Is(e["event"], 3) ? Kind.Harvest : Is(e["event"], 11) ? Kind.Spot : Is(e["event"], 12) ? Kind.Track : Is(e["event"], 101) ? Kind.Arrive : Kind.Other;
         if (kind == Kind.Other || (missions.Count == 0 && dailies.Count == 0 && community.Count == 0))
             return;
-        EnsureMissions(con);
+        var eventId = LastEvent(con);  // the event itself: the missions it meets are those activated before it
+        EnsureMissions(con, eventId - 1);
         long? animalSpecies = null, gender = null;
+        Kill? kill = null;
         if (kind != Kind.Arrive)
         {
             var animal = kind == Kind.Harvest ? KillEvents(con, e["individual"], Py.Dumps(e)).E7
                 : con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ? ORDER BY id DESC LIMIT 1", e["individual"])
                     .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
-            var number = kind == Kind.Harvest ? e["extended_species"] : animal["species"];
-            (animalSpecies, gender) = (Py.IsNum(number) ? Mod100(number) : null, Py.IsNum(animal["gender"]) ? Py.L(animal["gender"]) : null);
+            (animalSpecies, gender) = AnimalOf(animal, kind == Kind.Harvest ? e["extended_species"] : animal["species"]);
+            kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : null;
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
         Advance(con, kind, rule =>
             kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
-            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender)
+            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill))
               && (kind != Kind.Track || rule.Count <= 1 || (long)con.Scalar(
                     "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ? AND id > COALESCE("
                     + "(SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)", e["individual"])! >= rule.Count),
@@ -309,7 +348,7 @@ public sealed partial class State
                     same["amount"] = u["amount"]!.DeepClone();
                 else
                     updates.Add(u);
-            });
+            }, eventId);
     }
 
     /// <summary>A hunt starts at location `lodge` (Launch/start, inside its transaction): what a single-hunt mission had done is forgotten, then the
@@ -321,9 +360,9 @@ public sealed partial class State
         EnsureMissions(con);
         foreach (var (id, (state, done)) in MissionRows(con))
             if (state == 2 && done.Count > 0 && missions.TryGetValue(id, out var m) && m.SingleExpedition)
-                con.Exec("UPDATE missions SET objectives = '[]' WHERE account_id = $a AND mission_id = ?", id);
+                con.Exec("UPDATE missions SET objectives = '[]', kept = '[]', earlier = '[]' WHERE account_id = $a AND mission_id = ?", id);
         var names = lodge is { } l && lodgeNames.TryGetValue(l, out var n) ? n : [];
-        Advance(con, Kind.Start, rule => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)));
+        Advance(con, Kind.Start, rule => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
     }
 
     /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (an ordered objective only once every one before it is finished):
@@ -341,12 +380,14 @@ public sealed partial class State
         return null;
     }
 
-    /// <summary>For each active mission, finish its first unfinished objective of this kind that `meets` accepts; then the same for today's daily mission.</summary>
-    void Advance(Db con, Kind kind, Func<Rule, bool> meets, Action<JsonObject> now)
+    /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts; then the same
+    /// for today's daily mission.</summary>
+    void Advance(Db con, Kind kind, Func<Rule, bool> meets, Action<JsonObject> now, long eventId)
     {
+        var marks = Marks(con);
         foreach (var (id, (state, done)) in MissionRows(con))
         {
-            if (state != 2 || !missions.TryGetValue(id, out var m) || Meet(m, done, kind, meets) is not { } o)
+            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets) is not { } o)
                 continue;
             if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
@@ -361,8 +402,8 @@ public sealed partial class State
     }
 
     /// <summary>The last objective is finished: the mission is completed, its gm$ and em$ are paid (update 15 with the new balance, a wallet row each),
-    /// the toast follows, and the missions it unlocks are activated when the account's switches say so.</summary>
-    void Complete(Db con, MissionDef m, Action<JsonObject> now)
+    /// the toast follows, and the missions it unlocks are activated when the account's switches say so (counting the events after `at`, default the last one).</summary>
+    void Complete(Db con, MissionDef m, Action<JsonObject> now, long? at = null)
     {
         con.Exec("UPDATE missions SET state = 3, objectives = '[]' WHERE account_id = $a AND mission_id = ?", m.Id);
         foreach (var (currency, amount) in new[] { ("gm", m.Gm), ("em", m.Em) })
@@ -376,7 +417,7 @@ public sealed partial class State
         var favourites = Ids(prefs["favourites"]);
         foreach (var next in Available(MissionRows(con)).Where(n => n.Dependencies.Contains(m.Id)).ToList())
             if (!onlyFavourite || missionGroups.Any(g => favourites.Contains(g.Key) && g.Value.Contains(next.Id)))
-                Activate(con, next.Id);
+                Activate(con, next.Id, at);
     }
 
     void Toast(Db con, string text) => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject
