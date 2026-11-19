@@ -158,7 +158,7 @@ public sealed partial class State
     {
         ["id"] = r.Animal, ["animal_id"] = r.Animal, ["rank"] = r.Rank, ["scoretype"] = hall ? null : range ? 2 : 1,
         ["score"] = !range && hall ? r.Value.ToString(CultureInfo.InvariantCulture) : r.Value, ["scoreType"] = null,
-        ["user"] = new JsonObject { ["id"] = r.Account, ["handle"] = r.Handle, ["avatar"] = AvatarUrl(r.Account, site) },
+        ["user"] = new JsonObject { ["id"] = r.Account, ["handle"] = r.Handle, ["avatar"] = AvatarUrl(r.Account, site, game: true) },
     };
 
     JsonObject PageBoard(long species, List<BoardRow> rows, bool range, int top, string site) => new()

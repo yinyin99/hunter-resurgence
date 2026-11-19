@@ -166,6 +166,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     static readonly (string, string)[] Form = [("Content-Type", "application/x-www-form-urlencoded")];
     static readonly (string, string)[] Json = [("Content-Type", "application/json")];
     const string Default = "https://gameserver.test/media/avatar/256/1000000.png";  // a new account's picture: the first of the list below, on this server's game host (the list names another)
+    const string DefaultSite = "https://web.test/images/avatars/256/1000000.png";  // the same picture for a website reply: the website's own copy
     static JsonArray AvatarList() => (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000001, "url": "https://avatar.test/256/1000001.png", "gender": "f"}]""")!;
     readonly FakeSteam fake = new();
     Loopback server = null!;
@@ -288,7 +289,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         }
         var board = JsonNode.Parse((await Get("web.test", "/hunters")).Body)!;
         // equal hunterscores: the lower account id first
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{Default}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{Default}}"}]}""", board);
+        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{DefaultSite}}"}]}""", board);
         Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
         var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
         Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
@@ -515,6 +516,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     const string Picked = "https://gameserver.test/media/avatar/256/1000001.png";
+    const string PickedSite = "https://web.test/images/avatars/256/1000001.png";  // the website's copy: a browser cannot reach the game host
 
     Task<Reply> ChooseAvatar(string form, params (string, string)[] headers) =>
         server.SendAsync("POST", "web.test", "/account/avatar", [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes(form));
@@ -528,7 +530,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar', 1000000, '$.avatar_id', 1000000) WHERE id = ?", me);  // an account that has these copies of its avatar
         var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
-        Eq($$"""{"current": "{{Default}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""{"current": "{{DefaultSite}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
         Assert.Equal(401, (await Get("web.test", "/account/avatars")).Status);
         Assert.Equal(400, (await ChooseAvatar("id=1000001", ck)).Status);  // not from a page of this server
         Assert.Equal(401, (await ChooseAvatar("id=1000001", ("X-Requested-With", "XMLHttpRequest"))).Status);
@@ -539,12 +541,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
         var picked = await ChooseAvatar("id=1000001", xhr);
         Assert.Equal(200, picked.Status);
-        Eq($$"""{"current": "{{Picked}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse(picked.Body));
+        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "imported": null}""", JsonNode.Parse(picked.Body));
         // what the game reads at its next connect, and what the pages show right away
         var account = state.Store.AccountJson(me);
         Eq($$"""["{{Picked}}", 1000001, 1000001, 1000001]""", T(account["avatar_url"], account["face"], account["avatar"], account["avatar_id"]));
-        Assert.Equal(Picked, (string)JsonNode.Parse((await Get("web.test", "/hunters/one")).Body)!["avatar"]!);
-        Assert.Equal(Picked, (string)(await Me(cookie))!["avatar"]!);
+        Assert.Equal(PickedSite, (string)JsonNode.Parse((await Get("web.test", "/hunters/one")).Body)!["avatar"]!);
+        Assert.Equal(PickedSite, (string)(await Me(cookie))!["avatar"]!);
         Assert.Equal(0L, (long)account["gender"]!);  // the female avatar gives a female body
         Assert.Equal(200, (await ChooseAvatar("id=1000000", xhr)).Status);
         Assert.Equal(1L, (long)state.Store.AccountJson(me)["gender"]!);  // and the male one a male body
@@ -606,7 +608,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
         // a game avatar replaces it; the imported picture stays a choice
         Assert.Equal(200, (await ChooseAvatar("id=1000001", xhr)).Status);
-        Eq($$"""{"current": "{{Picked}}", "ids": [1000000, 1000001], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
         Assert.Equal(200, (await ChooseAvatar("id=imported", xhr)).Status);
         var account = state.Store.AccountJson(me);
         Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000000]""", T(account["avatar_url"], account["face"]));
@@ -629,11 +631,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         string?[] Avatars(JsonNode? list) => [.. list!.AsArray().Select(r => (string?)r!["avatar"])];
         async Task<JsonNode?> Read(string path, params (string, string)[] headers) => JsonNode.Parse((await Get("web.test", path, headers)).Body);
 
-        Assert.Equal([null, Picked], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
-        Assert.Equal([Picked], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
-        Assert.Equal([null, Picked], Avatars((await Read("/hunters/one/friends"))!["rows"]));
-        Assert.Equal([Picked, null, Default], Avatars((await Read("/hunters"))!["rows"]));  // by account id: Third, Fourth, one
-        Assert.Equal([Picked, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
+        Assert.Equal([null, PickedSite], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
+        Assert.Equal([PickedSite], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
+        Assert.Equal([null, PickedSite], Avatars((await Read("/hunters/one/friends"))!["rows"]));
+        Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters"))!["rows"]));  // by account id: Third, Fourth, one
+        Assert.Equal([PickedSite, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
         Assert.Null((await Read("/hunters/fourth"))!["avatar"]);
     }
 
@@ -757,9 +759,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             RestoredReads.Connect(con, reply, new JsonObject(), null);
         Eq("[70, 0]", T(reply["user_stats"]!["bust_through_score"], reply["user_stats"]!["lane_bandit_score"]));
         // equal scores: the lower account id first (fourth restored 300, fifth played 300); a 0, no score and a banned account are not on it
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{Default}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{Default}}"}]}""",
+        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{DefaultSite}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
-        Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{Default}}"}]}""",
+        Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{DefaultSite}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
         Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers")).Status);
     }

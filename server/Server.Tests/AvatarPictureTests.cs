@@ -67,7 +67,7 @@ public class AvatarPictureTests : StateTestBase, IAsyncLifetime
         Assert.True(state.SetAvatar(5, 1000002));
         Assert.Equal($"{BASE}/media/avatar/256/1000002.png", state.Store.AvatarUrl(5));
         state.Store.SetAvatar(5, "https://avatar.test/256/1000003.png", null);  // a row from before: the original's address
-        Assert.Equal($"{BASE}/media/avatar/256/1000003.png", state.AvatarUrl(5, "https://web.test"));  // the pages are never told it
+        Assert.Equal("https://web.test/images/avatars/256/1000003.png", state.AvatarUrl(5, "https://web.test"));  // a page is told the website's copy, never the original's host or the game host
     }
 
     [Fact]
