@@ -208,7 +208,7 @@ recordings/       the operator's recordings (server.md)
 mirror/           the saved static pages (server.md)
 variants.json     optional
 images/           the slot pictures (images.md), mounted read-only in `web`; the game's avatars `avatar-<id>.png` too (server.md#avatars), and the stock copies `avatars/256/<id>.png`
-avatar-uploads/  optional: the saved thumbnails of the players' uploaded avatars, `242/<uid>.jpg` (server.md, `avatar_uploads_dir`); `/srv` already holds it, no mount to add
+avatar-uploads/   optional: the saved thumbnails of the players' uploaded avatars, `242/<uid>.jpg` (server.md, `avatar_uploads_dir`); `/srv` already holds it, no mount to add
 ```
 
 `images/` may be empty: every picture is then its labelled box, and the game's avatars are a miss (a broken picture in the game). The game's avatars are the files `avatar-<id>.png` of the avatar list (the same ones the website draws): the server reads them from `images/` (and, for an id with no such file, the stock copy `images/avatars/256/<id>.png`; the `images_dir` setting, default `images`, next to `settings.json`) at each request, with no restart; `web` reads the folder at start, so restart it after a change. Create it as `deploy` before the first deploy that mounts it, else compose creates it as root and the copy below fails. The pictures are copied from the operator's PC:

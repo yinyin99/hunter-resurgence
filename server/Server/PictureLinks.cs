@@ -53,7 +53,7 @@ public sealed class PictureLinks
             if (!IsJpeg(bytes)) return null;
             return new ReadOnlyMemory<byte>(bytes);
         }
-        catch (IOException) { return null; }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return null; }  // a copy the server cannot read: the host is asked
     }
 
     /// <summary>The name of a link's picture in the pictures zip: the hash of the link as the save wrote it.</summary>
