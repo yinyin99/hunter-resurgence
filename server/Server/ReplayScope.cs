@@ -43,7 +43,7 @@ public static class ReplayScope
         Global("api", "/v1/(Campaign|Community_Campaign)/get_active_stylesheet"),
         Global("api", "/v1/Membership/get_type"),  // what each membership type gives
         Global("api", "/v1/Membership_Bundle/get_active"),  // the bundles on sale
-        Global("api", "/v1/Avatar/getAvatars"),  // every avatar is unlocked for everyone
+        Global("api", "/v1/Avatar/getAvatars"),  // the list: a community server adds the store's avatars, unlocked by the requesting account's items
         Global("api", "/v1/Challenge/get_challenges"),  // the challenge definitions
         Global("api", "/v1/Sidebar_Counter/getTemplate"),
         Global("gs", ProtocolLiterals.RpcBase + "/ping"),  // the client's ping

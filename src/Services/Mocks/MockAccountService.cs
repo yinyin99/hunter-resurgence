@@ -9,7 +9,7 @@ public sealed class MockAccountService : IAccountService
 
     // 54 pictures and one locked one
     public Task<IReadOnlyList<AvatarChoice>> AvatarsAsync() =>
-        Task.FromResult<IReadOnlyList<AvatarChoice>>([.. Enumerable.Range(1, 54).Select(i => new AvatarChoice($"avatar-{i:00}", $"Avatar {i}", false)), new("avatar-locked", "Locked Avatar", true)]);
+        Task.FromResult<IReadOnlyList<AvatarChoice>>([.. Enumerable.Range(1, 54).Select(i => new AvatarChoice($"avatar-{i:00}", $"Avatar {i}", false)), new("avatar-locked", "Locked Avatar", true, 224)]);
 
     public Task<Result> SetAvatarAsync(string id) { avatar = id; Changed?.Invoke(); return Task.FromResult(Result.Success); }
 

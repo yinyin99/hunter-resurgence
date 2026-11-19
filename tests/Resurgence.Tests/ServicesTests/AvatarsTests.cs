@@ -54,6 +54,13 @@ public class AvatarsTests
         Assert.Equal("site.test", request.Headers.Host);
     }
 
+    [Fact]
+    public async Task AStoreAvatarTheAccountDoesNotOwnIsLockedWithItsItem()
+    {
+        var service = Account(new Fake(_ => Json(HttpStatusCode.OK, """{"current":null,"ids":[1000000],"locked":[{"id":1000099,"item":19,"name":"Invented Hunter"}],"imported":null}""")));
+        Assert.Equal([new AvatarChoice("avatar-1000000", "1000000", false), new AvatarChoice("avatar-1000099", "Invented Hunter", true, 19)], await service.AvatarsAsync());
+    }
+
     [Theory]
     [InlineData("avatar-1000001", "id=1000001")]
     [InlineData("https://site.test/photos/7/avatar.jpg", "id=imported")]

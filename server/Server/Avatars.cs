@@ -14,6 +14,17 @@ public sealed partial class State
     /// <summary>The ids of the game's avatars, in the order of the recorded list (empty without one).</summary>
     public List<long> AvatarIds => [.. avatars.OfType<JsonObject>().Select(a => a["id"]).Where(n => Py.IsNum(n)).Select(n => Py.L(n))];
 
+    /// <summary>The avatars of the list: id, the catalogue item that unlocks it (null: free) and name.</summary>
+    List<(long Id, long? Item, string? Name)> AvatarEntries => [.. avatars.OfType<JsonObject>().Where(a => Py.IsNum(a["id"]))
+        .Select(a => (Py.L(a["id"]), Py.IsNum(a["unlock_item_id"]) ? Py.L(a["unlock_item_id"]) : (long?)null, a["name"] is JsonValue n && n.TryGetValue<string>(out var s) ? s : null))];
+
+    /// <summary>The ids of the catalogue items the account owns.</summary>
+    HashSet<long> OwnedItemIds(long account)
+    {
+        using var con = Con(account);
+        return [.. con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a").Select(r => (long)r[0]!)];
+    }
+
     /// <summary>The game's `gender` of a listed avatar (`m` is 1, `f` is 0); null for an avatar the list lacks or gives none.</summary>
     long? AvatarGender(long id) => avatars.OfType<JsonObject>().FirstOrDefault(a => a["id"] is JsonValue v && v.TryGetValue<long>(out var n) && n == id)?["gender"] is JsonValue g
         && g.TryGetValue<string>(out var s) ? s switch { "m" => 1, "f" => 0, _ => null } : null;
@@ -78,18 +89,42 @@ public sealed partial class State
         return new ItemCatalogue(items, avatars).AvatarId(url) is { } id ? game ? ListedAvatarUrl(id) : $"{site}/images/avatars/256/{id}.png" : null;
     }
 
-    /// <summary>`GET /account/avatars`: `{current, ids, imported}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars and the imported picture's link (null without one).</summary>
-    public JsonObject AvatarChoices(long account, string site) => new()
+    /// <summary>The list's avatars the account can choose (key true: the free ones and those whose item it owns) and the others (key false: locked).</summary>
+    ILookup<bool, (long Id, long? Item, string? Name)> AvatarsByUnlock(long account)
     {
-        ["current"] = AvatarUrl(account, site), ["ids"] = new JsonArray([.. AvatarIds.Select(id => (JsonNode)id)]),
-        ["imported"] = HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null,
-    };
+        var owned = OwnedItemIds(account);
+        return AvatarEntries.ToLookup(e => e.Item is not { } item || owned.Contains(item));
+    }
 
-    /// <summary>`POST /account/avatar`: the player's avatar becomes the game's avatar `id`, or the imported picture for null. False, and nothing changed, for an id that is not in the list
+    /// <summary>`GET /account/avatars`: `{current, ids, locked, imported}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars it can choose (the free ones, and a store avatar once the account owns its item),
+    /// the others as `[{id, item, name}]` (`item` the store item that unlocks it) and the imported picture's link (null without one).</summary>
+    public JsonObject AvatarChoices(long account, string site)
+    {
+        var parts = AvatarsByUnlock(account);
+        return new()
+        {
+            ["current"] = AvatarUrl(account, site), ["ids"] = new JsonArray([.. parts[true].Select(e => (JsonNode)e.Id)]),
+            ["locked"] = new JsonArray([.. parts[false].Select(e => (JsonNode)new JsonObject { ["id"] = e.Id, ["item"] = e.Item, ["name"] = e.Name })]),
+            ["imported"] = HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null,
+        };
+    }
+
+    /// <summary>`Avatar/getAvatars`: the list with each avatar's `unlocked` true for a free one and for a store avatar whose item the account owns (null: nobody signed in, every store avatar is locked); null without a list.</summary>
+    public byte[]? AvatarListReply(long? account)
+    {
+        if (avatars.Count == 0) return null;
+        var owned = account is { } a ? OwnedItemIds(a) : [];
+        var list = (JsonArray)avatars.DeepClone();
+        foreach (var entry in list.OfType<JsonObject>())
+            entry["unlocked"] = !Py.IsNum(entry["unlock_item_id"]) || owned.Contains(Py.L(entry["unlock_item_id"]));
+        return Py.DumpBytes(list);
+    }
+
+    /// <summary>`POST /account/avatar`: the player's avatar becomes the game's avatar `id`, or the imported picture for null. False, and nothing changed, for an id that is not in the list, a store avatar whose item the account does not own
     /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture leaves it. It writes what a restore does: `avatar_url`, `face` (the default avatar for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
     public bool SetAvatar(long account, long? id)
     {
-        if (id is null ? !HasImportedAvatar(account) : !AvatarIds.Contains(id.Value)) return false;
+        if (id is null ? !HasImportedAvatar(account) : !AvatarsByUnlock(account)[true].Any(e => e.Id == id.Value)) return false;
         Store.SetAvatar(account, id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar), id ?? DefaultAvatar, id is { } l ? AvatarGender(l) : null);
         return true;
     }

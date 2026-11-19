@@ -41,6 +41,7 @@ public sealed class Facts
             Py.L(d["cooldown"]), (string)d["color"]!, Py.L(d["reward_id"]), Py.L(d["reward"])))];
         DailyTemplates = [.. (daily["templates"] as JsonArray ?? []).Select(t => new DailyTemplate(Py.L(t!["id"]), Py.L(t["difficulty"]), (string)t["title"]!,
             Py.L(t["giver"]!["id"]), (string)t["giver"]!["alias"]!, [.. t["objectives"]!.AsArray().Select(o => (string)o!)]))];
+        StoreAvatars = [.. Arr("store_avatars").Select(a => new StoreAvatar(Py.L(a!["item"]), Py.L(a["id"]), (string)a["name"]!, (string)a["gender"]!))];
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));
@@ -85,6 +86,11 @@ public sealed class Facts
     public readonly long[] DailyCycle;
     public readonly DailyDifficulty[] DailyDifficulties;
     public readonly DailyTemplate[] DailyTemplates;
+
+    /// <summary>An avatar the store sells (`store_avatars`): the catalogue item that unlocks it, the id of its picture (`256/<id>.png`), its name and its `gender` (`m` or `f`).</summary>
+    public sealed record StoreAvatar(long Item, long Id, string Name, string Gender);
+    /// <summary>The avatars the store sells, which the avatar list lacks (empty when the file has none).</summary>
+    public readonly StoreAvatar[] StoreAvatars;
 
     /// <summary>The names of the reserves (in id order, joined by ", ") whose `species` holds the species id.</summary>
     public string ReserveNames(long species) => string.Join(", ", Arr("reserves").Where(r => (r!["species"] as JsonArray ?? []).Any(s => Py.L(s) == species))
