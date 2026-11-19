@@ -60,7 +60,8 @@ public sealed partial class State
             Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1,
             Check.NoScope => NumOf(last, "scope_id") == -1,
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
-            Check.Named => NumOf(k.E7, "special") is { } special && special != 0 && (double.IsInfinity(t.Min) || Near(k, t.Min, t.Max)),
+            // a title with a place is met by its species (and gender) there; one without a place, by an animal that carries `special`
+            Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             _ => false,
         };
     }

@@ -95,9 +95,10 @@ public class MissionConditionTests : StateTestBase
         state.NoteLaunch(ME, "start=101&reserve=2"u8.ToArray());
         Hb(Shot(4));
         Assert.Equal("1,2,3,4,5,6,7,8,9,10,11,12,14,16,17,18", Completed());
-        Hb(Shot(5, special: 0, x: 6300, z: 6300));  // an ordinary animal at 150 m and 100 % is not "Patient Zero"
+        Hb(Shot(5, special: 0, x: 0, z: 0));  // an ordinary animal at 150 m and 100 %, but elsewhere, is not "Patient Zero"
+        Hb(Shot(7, special: 0, distance: 8000, x: 6300, z: 6300));  // at the place, under 100 m
         Assert.DoesNotContain("13", Completed().Split(','));
-        Hb(Shot(6, special: 9, x: 6300, z: 6300));  // a named animal near the title's coordinates
+        Hb(Shot(6, special: 0, x: 6300, z: 6300));  // an ordinary animal of the mission's kind at the place, over 100 m, with 100 % value
         Assert.Contains("13", Completed().Split(','));
         Assert.DoesNotContain("15", Completed().Split(','));  // "while prone" is not understood: no kill meets it
     }
