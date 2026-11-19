@@ -242,6 +242,31 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAnAnimalOfARestoredLodgeIsInTheEditorsListOnceAndCanBeHidden()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();  // a public restore has no `/game/user/trophies`: 21 has a row, 40 only its lodge's details, 41 no details at all
+            var lodge = O("""
+                {"id": 6, "name": "six", "animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 1, "trophy_details": {"id": 21, "species": 1}},
+                                                          {"slot_id": 1, "trophy_id": 40, "pose_id": 2, "trophy_details": {"species": 7, "species_define": "ELK", "score": 9.5, "is_skull": true}},
+                                                          {"slot_id": 2, "trophy_id": 41, "pose_id": 1}], "weapon_slots": []}
+                """);
+            PlayerRows.AddLodge(con, "/game/user/lodges", "6", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "6", lodge.DeepClone());
+            con.Commit();
+        }
+        var listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
+        Eq("[21, 40, 30]", new JsonArray(listed.Select(t => (JsonNode?)t!["id"]!.DeepClone()).ToArray()));
+        Eq("""[7, "ELK", 9.5, true, false, 6, 1, 2]""", T(listed[1]!["species"], listed[1]!["species_define"], listed[1]!["score"], listed[1]!["is_skull"], listed[1]!["hidden"], listed[1]!["lodge_id"], listed[1]!["slot_id"], listed[1]!["pose_id"]));
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/40", owner, """{"hidden": true}"""));
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/trophies/40", owner, """{"hidden": true}"""));  // now a row of its own
+        Assert.Equal(404, (await Call("PUT", V2, "/game/user/trophies/41", owner, """{"hidden": true}""")).Status);
+        listed = Reply(Encoding.UTF8.GetBytes((await Call("GET", V2, "/game/user/trophies", owner)).Body)).AsArray();
+        Eq("[[21, false], [40, true], [30, false]]", new JsonArray(listed.Select(t => (JsonNode?)T(t!["id"], t["hidden"])).ToArray()));
+    }
+
+    [Fact]
     public async Task TestAJsonContentTypeIsNotTurnedIntoAFormOnTheGameWebHost()
     {
         Assert.Equal((200, ""), await Call("PUT", Web, "/v1/game/user/lodges/3/settings", owner, """{"name": "json", "locked": true, "style_id": null}""", "application/json; charset=UTF-8"));

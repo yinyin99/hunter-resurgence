@@ -170,7 +170,7 @@ public sealed partial class State
         return rows.Count > 0 ? 200 : 404;
     }
 
-    /// <summary>`PUT trophies/<id>` `{hidden}`: show or hide one of the account's trophies (a restored row, or a harvest made here) on its
+    /// <summary>`PUT trophies/<id>` `{hidden}`: show or hide one of the account's trophies (a restored row, an animal of a restored lodge, or a harvest made here) on its
     /// public views. Statuses as <see cref="SaveLodge"/>.</summary>
     public int HideTrophy(long account, long id, byte[] body)
     {
@@ -194,6 +194,12 @@ public sealed partial class State
                 con.Exec("UPDATE trophies SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(row), r[0]);
                 found++;
             }
+        if (found == 0 && MountedRows(account).FirstOrDefault(r => Py.Str(r["id"]) == id.ToString()) is { } mounted)  // an animal of a public restore's lodge has no row yet: it gets one
+        {
+            mounted["hidden"] = hidden;
+            PlayerRows.AddTrophy(con, "/game/user/trophies", id.ToString(), mounted);
+            found++;
+        }
         con.Commit();
         DropBoards();  // a hidden harvest leaves the boards at once
         return found > 0 ? 200 : 404;
