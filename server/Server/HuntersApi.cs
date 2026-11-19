@@ -105,12 +105,19 @@ public static class HuntersApi
                              + "have an earn time, `unlocked` counts them all, `recent` the last ten by earn time (`date` UTC, yyyy-MM-dd); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
-        group.MapGet("/{handle}/best", (string handle) => state.PublicAccount(handle) is { } id
-                ? Json(200, state.PublicBest(id))
-                : Json(404, new JsonObject { ["error"] = "not found" }))
-            .WithName("HunterBest").WithSummary("A hunter's all-time personal bests, one per species")
-            .WithDescription("`{rows: [{species, score, range, weapon, ts, kill}]}`, one per species with a best score: the restored bests (`Leaderboard/personal`, season 0) and this server's scored kills where they beat them; "
-                             + "`range` in metres, `ts` Unix seconds, `weapon` the item's name (\"\" when unknown); 404 for a handle that is unknown or banned.")
+        group.MapGet("/{handle}/best", (string handle, HttpContext ctx) =>
+            {
+                var seasons = state.Store.Seasons();
+                var q = ctx.Request.Query["season"].ToString();
+                long season = 0;
+                if (q != "" && !(long.TryParse(q, out season) && (season == 0 || seasons.Any(s => s.No == season))))
+                    return Json(404, new JsonObject { ["error"] = "no such season" });
+                return state.PublicAccount(handle) is { } id ? Json(200, state.PublicBest(id, season)) : Json(404, new JsonObject { ["error"] = "not found" });
+            })
+            .WithName("HunterBest").WithSummary("A hunter's personal bests of a season, one per species")
+            .WithDescription("`{rows: [{species, score, range, weapon, ts, kill}]}`, one per species with a best score in `season` (0 all time, the default; 1 the restored harvests, 2 and later this server's seasons, docs/server.md#leaderboards-and-seasons): "
+                             + "`range` in metres, `ts` Unix seconds, `weapon` the item's name (\"\" when unknown); 404 for a handle that is unknown or banned and for a season that does not exist.")
+            .QueryParams(("season", "the season number, 0 all time"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
@@ -179,7 +186,7 @@ public static class HuntersApi
         }
         JsonObject RowJson(State.BoardRow r) => new()
         {
-            ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Value, ["weapon"] = r.Weapon?.DeepClone() ?? 0, ["weaponName"] = state.WeaponName(r.Weapon),
+            ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Value, ["weaponName"] = state.WeaponName(r.Weapon),
             ["ts"] = r.Ts, ["kill"] = r.Kill, ["avatar"] = state.AvatarUrl(r.Account, site),
         };
         Reply NoSuchSeason() => Json(404, new JsonObject { ["error"] = "no such season" });
@@ -208,7 +215,7 @@ public static class HuntersApi
                 }))
             .WithName("LeaderboardHallOfFame").WithSummary("The Hall of Fame of an ended season")
             .WithDescription("`{rows: [{id, species, score: Row, range: Row}]}`, species id order: the best score and the best range of each species of the ended season `season`; `rows` is empty for season 0 (all time) and the current season, which have no Hall of Fame. "
-                             + "`Row` is `{rank, handle, value, weapon, weaponName, ts, kill, avatar}` as on the boards. 404 for a season that does not exist.")
+                             + "`Row` is `{rank, handle, value, weaponName, ts, kill, avatar}` as on the boards. 404 for a season that does not exist.")
             .QueryParams(("season", "the season number"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
@@ -238,7 +245,7 @@ public static class HuntersApi
             })
             .WithName("GameBoard").WithSummary("The species boards of a season (score or range), or one page of a minigame's board (lanebandit or bustthrough)")
             .WithDescription($"`score` and `range`: `{{boards: [{{species, name, top: [Row]}}]}}`, one per species with a ranked hunter in `season` (0 all time, the current season when missing), species id order, the best {OverviewTop} each; "
-                             + "`Row` is `{rank, handle, value, weapon, weaponName, ts, kill, avatar}` (`value` the score, or the range in metres; `weapon` the item id, `weaponName` its name or \"\"; `ts` the kill's Unix seconds; `kill` its id for `/hunters/<handle>/score/<kill>`, 0 for a restored kill). "
+                             + "`Row` is `{rank, handle, value, weaponName, ts, kill, avatar}` (`value` the score, or the range in metres; `weaponName` the weapon item's name or \"\"; `ts` the kill's Unix seconds; `kill` its id for `/hunters/<handle>/score/<kill>`, 0 for a restored kill). "
                              + $"`lanebandit` and `bustthrough`: `{{page, pages, total, rows: [{{rank, handle, value, avatar}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. "
                              + "404 for another kind and for a season that does not exist.")
             .QueryParams(("season", "the season number"), ("page", "1 for the first (minigames)"))

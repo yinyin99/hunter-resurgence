@@ -120,7 +120,8 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("""["Test Deer", "Test Rabbit"]""", T(board[0]!["name"], board[1]!["name"]));
         Eq("""["rabbit3", "rabbit2", "rabbit1"]""", new JsonArray([.. board[1]!["top"]!.AsArray().Select(r => (JsonNode?)r!["handle"]!.DeepClone())]));
         var row = board[0]!["top"]![0]!;
-        Eq("""[1, "charlie", 70.0, 5, "Test Rifle", 1]""", T(row["rank"], row["handle"], row["value"], row["weapon"], row["weaponName"], row["kill"]));
+        Eq("""[1, "charlie", 70.0, "Test Rifle", 1]""", T(row["rank"], row["handle"], row["value"], row["weaponName"], row["kill"]));
+        Assert.Null(row["weapon"]);
         Assert.Equal(Second, (long)row["ts"]!);
         var restored = (await Json("/leaderboards/range?season=1"))["boards"]![0]!["top"]![0]!;
         Eq("""["alpha", 120.0, 0]""", T(restored["handle"], restored["value"], restored["kill"]));  // a restored kill has no sheet here
@@ -203,6 +204,28 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=999"));
         Assert.NotNull(state.Store.StartSeason(Second + 1000));
         Eq("""{"season": 3, "items": []}""", await Call(Replay.APPLICATION, ""));
+    }
+
+    [Fact]
+    public async Task TestARestoredKillIsSeasonOneWhateverTimeItsBackupSaysAndAPersonalBestIsPerSeason()
+    {
+        // a backup's time is the player's: one in 2030 is still a restored kill, so Season 1 (not Season 2), and a weapon id that is no number leaves the board whole
+        Restored(20, "alpha", Deer, "60.0000", 120000, new DateTimeOffset(2030, 1, 1, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds());
+        using (var con = state.Store.Open(20))
+            con.Exec("UPDATE extras SET body = replace(body, '\"weapon_id\": 5', '\"weapon_id\": \"x\"') WHERE account_id = $a");
+        Harvest(20, 1, Deer, "70", Second + 5, cm: 5000);
+        Assert.Equal("alpha:60", await Board("score", Deer, 1));
+        Assert.Equal("alpha:70", await Board("score", Deer, 2));
+        Assert.Equal("alpha:70", await Board("score", Deer, 0));
+        var first = (await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!;
+        Eq("""["alpha", ""]""", T(first["handle"], first["weaponName"]));
+        // /hunters/<handle>/best: all time by default, a season on request, 404 for none
+        async Task<JsonNode> Best(string query) => (await Json("/hunters/alpha/best" + query))["rows"]![0]!;
+        Eq("[70.0, 50.0]", T((await Best(""))["score"], (await Best("?season=0"))["range"]));
+        Eq("[60.0, 120.0]", T((await Best("?season=1"))["score"], (await Best("?season=1"))["range"]));
+        Eq("[70.0, 50.0]", T((await Best("?season=2"))["score"], (await Best("?season=2"))["range"]));
+        Assert.Equal(404, (await Get("/hunters/alpha/best?season=9")).Status);
+        Assert.Equal(404, (await Get("/hunters/nobody/best?season=1")).Status);
     }
 
     [Fact]

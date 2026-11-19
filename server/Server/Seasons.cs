@@ -31,7 +31,7 @@ public sealed partial class State
                 if (row[key] is JsonObject rec && Py.IsNum(row["specie"]))
                 {
                     var ts = (long)Num(rec["confirm_ts"]);
-                    found.Add(new(Py.L(row["specie"]), Num(rec["score"]), Num(rec["distance"]), (JsonObject)rec.DeepClone(), ts, Store.SeasonAt(seasons, ts), 0));
+                    found.Add(new(Py.L(row["specie"]), Num(rec["score"]), Num(rec["distance"]), (JsonObject)rec.DeepClone(), ts, 1, 0));  // a restored kill is Season 1 whatever time its backup says
                 }
         foreach (var r in con.Rows("SELECT k.individual, k.harvest, h.body, k.kill_id FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                                    + " WHERE k.account_id = $a AND h.hidden = 0 ORDER BY k.kill_id"))

@@ -40,6 +40,7 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Every species licensed for every player, for now | Full in-game map tiles |
 | A free start kit (two weapons, ammunition, binoculars); the free ammunition is topped up at every hunt start | |
 | Kills, harvest, score sheets, gold and XP | |
+| Leaderboards by season: score and range per species, Hall of Fame, personal bests | |
 | Tutorial for new players | |
 | Store: buy with em$ and gm$, in the game and on the website; a page per item; it shows what you already own | |
 | Loadouts, saved and chosen at launch | |
@@ -71,7 +72,7 @@ Either way works even if you already hunted on the community server: hunts, kill
 Planned, with no dates:
 
 - Halloween 2026 trophies and community missions
-- Competitions and seasons
+- Competitions
 - The remaining in-game pages (bait sites, map tiles)
 - Offline / LAN play
 
