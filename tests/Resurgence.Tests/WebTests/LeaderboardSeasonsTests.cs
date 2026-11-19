@@ -1,5 +1,6 @@
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
+using Resurgence.Services;
 using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
@@ -62,5 +63,28 @@ public sealed class LeaderboardSeasonsTests : UiContext
         var empty = Board("halloffame", 2);
         Assert.Empty(empty.FindAll(".hof"));
         Assert.Single(empty.FindAll("p.norank"));
+    }
+    /// <summary>The server sends the species in id order; the page lists them A to Z.</summary>
+    sealed class Unsorted : ILeaderboardsService
+    {
+        static readonly string[] Names = ["Whitetail Deer", "Alpine Ibex", "Mallard", "Bison"];
+        static readonly Ranked One = new(1, "a", 1);
+        public Task<(int Current, IReadOnlyList<Season> Seasons)> SeasonsAsync() =>
+            Task.FromResult<(int, IReadOnlyList<Season>)>((2, [new(1, DateTimeOffset.UnixEpoch, DateTimeOffset.UnixEpoch.AddDays(1)), new(2, DateTimeOffset.UnixEpoch.AddDays(1), null)]));
+        public Task<IReadOnlyList<Board>> BoardsAsync(string kind, int season) => Task.FromResult<IReadOnlyList<Board>>([.. Names.Select((n, i) => new Board(i, n, [One]))]);
+        public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([], 1, 1));
+        public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
+        public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([.. Names.Select(n => new HallEntry(n, One, One))]);
+    }
+
+    [Theory]
+    [InlineData("score", "section.tile h4")]
+    [InlineData("halloffame", ".hof h4")]
+    public void TheSpeciesAreListedAToZ(string path, string names)
+    {
+        Services.AddSingleton<ILeaderboardsService>(new Unsorted());
+        var cut = Board(path);
+
+        Assert.Equal(["Alpine Ibex", "Bison", "Mallard", "Whitetail Deer"], cut.FindAll(names).Select(h => h.TextContent.Trim()));
     }
 }

@@ -161,7 +161,7 @@ else
         switch (kind)
         {
             case "halloffame":
-                hall = await Service.HallAsync(season);
+                hall = [.. (await Service.HallAsync(season)).OrderBy(h => L.Term(h.Species), StringComparer.CurrentCultureIgnoreCase)];
                 break;
             case "hunterscore" or "lanebandit" or "bustthrough":
                 page = numbers.Length > 0 ? numbers[0] : 1;
@@ -169,7 +169,7 @@ else
                 mine = await Service.MyRankAsync(kind, 0, 0);
                 break;
             default:
-                boards = await Service.BoardsAsync(kind, season);
+                boards = [.. (await Service.BoardsAsync(kind, season)).OrderBy(b => L.Term(b.Name), StringComparer.CurrentCultureIgnoreCase)];
                 if (numbers.Length > 0)
                 {
                     (id, page) = (numbers[0], numbers.Length > 1 ? numbers[1] : 1);
