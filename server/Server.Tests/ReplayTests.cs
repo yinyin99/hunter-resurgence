@@ -275,7 +275,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
-        Assert.StartsWith("<style>._2nkM,._2m_7,._1bAk,.XHcy,._3Y-A,._35mG{zoom:1}html,body{min-height:100%}body{background:#050505 linear-gradient(rgba(40,41,43,.65),rgba(7,5,12,.3))}body .OjlL,body ._15Yq{background:none;box-sizing:border-box;padding:2vmin}body .TfqS,body ._1P0L{box-sizing:border-box;width:100%;max-width:80rem;max-height:100%;overflow:auto}", page);  // the panel is the window's size, not a fixed box
+        Assert.StartsWith("<style>._2nkM,._2m_7,._1bAk,.XHcy,._3Y-A,._35mG{zoom:1}html,body{min-height:100%}body{background:#050505 linear-gradient(rgba(40,41,43,.65),rgba(7,5,12,.3))}body .OjlL,body ._15Yq{background:none;box-sizing:border-box;padding:2vmin}body .TfqS.fit,body ._1P0L.fit{box-sizing:border-box;width:100%;max-width:80rem;max-height:100%;overflow:auto}", page);  // the editor's panel is the window's size, not a fixed box; the other pages' panels are not touched
         Assert.Contains("</style><script>(function(){var n=window.hunter,f=window.fetch,g=0,u,z=function(x){u=x;};window.setURL=z;", page);  // before the script runs: requests that carry no token get the player's, and the game's functions that answer with a promise are made to answer at once
         Assert.DoesNotContain("px", page[..page.IndexOf("</style>", StringComparison.Ordinal)]);  // no fixed size in the style
         Assert.Contains("body .TfqS ._2nkM,body ._1P0L .XHcy{height:auto}", page);  // both scripts' names
