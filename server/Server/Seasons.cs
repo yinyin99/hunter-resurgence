@@ -1,5 +1,5 @@
 // The leaderboards by season (docs/server.md#leaderboards-and-seasons): every hunter's best harvests, sorted per species by score and by range, for one season or for all time (season 0).
-// A harvest counts in the season its kill time falls in (the `seasons` table). Season 1 holds the restored harvests (the saved personal bests, with their original time), Season 2 and
+// A harvest counts in the season its kill time falls in (the `seasons` table). Season 1 holds the restored harvests (the saved personal bests with their original time, else the restored trophies of a claimed account), Season 2 and
 // later this server's own harvests (`harvests`); hidden harvests, refused ones (score 0) and banned accounts are left out. One row per hunter and species on each board.
 using System.Globalization;
 using System.Text.Json.Nodes;
@@ -17,8 +17,8 @@ public sealed partial class State
     /// <summary>One place on a board.</summary>
     public sealed record BoardRow(long Rank, long Account, string Handle, double Value, JsonNode? Weapon, long Ts, long Kill, long Animal);
 
-    /// <summary>The kills of an account that may rank, with their seasons: the restored personal bests (the saved reply of season 0: each species' best score and best range, as the game saved them)
-    /// and this server's harvests that are not hidden and have a score.
+    /// <summary>The kills of an account that may rank, with their seasons: the restored personal bests (the saved reply of season 0: each species' best score and best range, as the game saved them),
+    /// else (an archive claim has none) its restored trophies, listed and mounted, by score alone; and this server's harvests that are not hidden and have a score.
     /// ponytail: every view reads the hit events of each scored kill (a scan of the account's events each); store the last hit on the harvest when that gets slow.</summary>
     List<Cand> Candidates(Db con, IReadOnlyList<Store.Season> seasons)
     {
@@ -32,6 +32,18 @@ public sealed partial class State
                 {
                     var ts = (long)Num(rec["confirm_ts"]);
                     found.Add(new(Py.L(row["specie"]), Num(rec["score"]), Num(rec["distance"]), (JsonObject)rec.DeepClone(), ts, 1, 0));  // a restored kill is Season 1 whatever time its backup says
+                }
+        if (found.Count == 0 && con.Account is { } account)  // no saved bests (an archive claim): the restored trophy list and the animals mounted in the restored lodges, one row per trophy id, score only
+            foreach (var row in Restored(account, "trophies", "/game/user/trophies").Concat(MountedRows(account)).OfType<JsonObject>().DistinctBy(r => Py.Str(r["id"])).Where(NotHidden))
+                if (Py.IsNum(row["species"]) && Num(row["score"]) is > 0 and var score)
+                {
+                    var ts = Py.IsStr(row["timestamp"]) && DateTimeOffset.TryParse((string)row["timestamp"]!, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : (long)Num(row["timestamp"]);
+                    var rec = new JsonObject  // no distance (it stays off the range boards) and no weapon
+                    {
+                        ["distance"] = 0, ["confirm_ts"] = ts, ["weapon_id"] = null, ["animal_id"] = C(row["id"]), ["gender"] = C(row["gender"]), ["texture"] = C(row["texture_id"]),
+                        ["score"] = Py.Fixed(score, 4), ["species"] = C(row["species"]),
+                    };
+                    found.Add(new(Py.L(row["species"]), score, 0, rec, ts, 1, 0));
                 }
         foreach (var r in con.Rows("SELECT k.individual, k.harvest, h.body, k.kill_id FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                                    + " WHERE k.account_id = $a AND h.hidden = 0 ORDER BY k.kill_id"))

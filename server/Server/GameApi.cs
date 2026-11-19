@@ -253,6 +253,11 @@ public static class GameApi
                .WithName("Application").WithSummary("The application catalogue, with the current leaderboard season")
                .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)); a local server replays it unchanged.")
                .Produces(200, contentType: "application/json");
+            api.MapExactPost(game, AVATARS, r => !s.Online || s.AvatarListReply(s.Authenticate(r.Tokens())) is not { } list ? null : new(200, JsonAnyOrigin(), list, "state"))
+               .WithName("Avatars").WithSummary("The game's avatars, the store's included")
+               .WithDescription("`[{id, define, name, url, gender, unlocked, unlock_item_id}]`: the recorded list, then the avatars the store sells ([docs/server.md](server.md#avatars)); `unlocked` is true for a free avatar (`unlock_item_id` null) "
+                                + "and for a store avatar whose item the request's account owns (without a token: false). A local server replays the recording.")
+               .Produces(200, contentType: "application/json");
         }
         api.MapExactPost(game, SPLASH, r => game.Recorded(r) is { Tier: >= 1 } hit
                 ? new(hit.Status, hit.Headers, SplashWithNotice(hit.Body), "patch")

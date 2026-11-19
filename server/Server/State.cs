@@ -717,6 +717,13 @@ public sealed partial class State
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
         // the recorded account's picture is `<base>/256/<id>.png`: where an uploaded avatar is fetched from when `avatar_uploads` is unset (AvatarFetchUrl); every picture this server hands out is on its own host (MediaUrl)
         avatarBase = avatarUrl.IndexOf("/256/", StringComparison.Ordinal) is var cut and > 0 ? avatarUrl[..cut] : $"{scheme}://{netloc}";
+        if (this.avatars.Count > 0)  // the list sold avatars lack: a store avatar of the facts file whose item the catalogue has, locked until the account owns the item
+            foreach (var a in this.facts.StoreAvatars.Where(a => items.ContainsKey(a.Item) && !AvatarIds.Contains(a.Id)))
+                this.avatars.Add(JsonNode.Parse(new JsonObject  // parsed, like the recorded entries: every reader of the list takes a number as it comes from a file
+                {
+                    ["unlock_item_id"] = a.Item, ["name"] = a.Name, ["unlocked"] = false, ["url"] = $"{avatarBase}/256/{a.Id}.png",
+                    ["gender"] = a.Gender, ["id"] = a.Id, ["define"] = items[a.Item]["define"]?.DeepClone(),
+                }.ToJsonString()));
         var byDefine = new Dictionary<string, JsonObject>();
         foreach (var d in Arr(itemDefs))
         {
