@@ -72,12 +72,42 @@ public sealed partial class State
         return new JsonObject { ["status"] = "done", ["data"] = data };
     }
 
+    /// <summary>How long a computed board is kept: a minute, an hour for an ended season (its harvests are all in).</summary>
+    static readonly TimeSpan BoardTtl = TimeSpan.FromMinutes(1), EndedBoardTtl = TimeSpan.FromHours(1);
+
+    sealed record CachedBoards(Lazy<SortedDictionary<long, List<BoardRow>>> Boards, double Expires);
+
+    readonly System.Collections.Concurrent.ConcurrentDictionary<(bool Range, long Season), CachedBoards> boardCache = new();
+
+    /// <summary>Start the next season (<see cref="Store.StartSeason"/>) and drop the kept boards: the ended season's are final now, the current one's are the new one's.</summary>
+    public Store.Season? StartSeason(long now)
+    {
+        var started = Store.StartSeason(now);
+        boardCache.Clear();
+        return started;
+    }
+
     /// <summary>The boards of a season (0: all time) by species id: the score board (`range` false) or the range board, every hunter with a best above 0 (a banned account and the recorded
-    /// player's are left out), best first, a tie to the earlier kill, then the lower account id. The callers cut the top.
-    /// ponytail: scans every account on each call (the per-player tables are read one connection each, as <see cref="Store.GameBoard"/>); keep the result a few seconds when the accounts grow into the thousands.</summary>
+    /// player's are left out), best first, a tie to the earlier kill, then the lower account id. The callers cut the top and must not change them: the result is kept for <see cref="BoardTtl"/>
+    /// (<see cref="EndedBoardTtl"/> for an ended season), and callers that miss at the same time share one computation.</summary>
     public SortedDictionary<long, List<BoardRow>> Boards(bool range, long season)
     {
-        var seasons = Store.Seasons();
+        var key = (range, season);
+        var now = Clock();
+        if (!boardCache.TryGetValue(key, out var kept) || kept.Expires <= now)
+        {
+            var seasons = Store.Seasons();
+            var ended = seasons.FirstOrDefault(s => s.No == season)?.End is { } end && end < now;
+            var fresh = new CachedBoards(new(() => ComputeBoards(range, season, seasons)), now + (ended ? EndedBoardTtl : BoardTtl).TotalSeconds);
+            kept = boardCache.AddOrUpdate(key, fresh, (_, old) => old.Expires > now ? old : fresh);
+        }
+        try { return kept.Boards.Value; }
+        catch { boardCache.TryRemove(KeyValuePair.Create(key, kept)); throw; }  // a failed computation is not kept
+    }
+
+    /// <summary>ponytail: scans every account (the per-player tables are read one connection each, as <see cref="Store.GameBoard"/>); a harvest shows when the kept board expires, store the last hit on the harvest when the scan itself gets slow.</summary>
+    SortedDictionary<long, List<BoardRow>> ComputeBoards(bool range, long season, IReadOnlyList<Store.Season> seasons)
+    {
         List<(long Id, string Handle)> accounts;
         using (var con = Store.Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", LocalAccount).Select(r => ((long)r[0], (string)r[1]))];

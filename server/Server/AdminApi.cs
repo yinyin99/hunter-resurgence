@@ -101,7 +101,7 @@ public static class AdminApi
 
         admin.MapPost("/season/start", Results<Ok<Store.Season>, ProblemHttpResult> () =>
                 state is null ? NoState()
-                : state.Store.StartSeason((long)state.Clock()) is { } season ? TypedResults.Ok(season)
+                : state.StartSeason((long)state.Clock()) is { } season ? TypedResults.Ok(season)
                 : TypedResults.Problem("the current season started this second or later", statusCode: 409, title: "Season too young"))
              .WithName("StartSeason").WithSummary("Close the current leaderboard season and start the next")
              .WithDescription("The current season ends one second before now and the next number starts now (`{no, start, end}` of the new one, `end` null); harvests made from now on rank in it. Proposed rhythm: the first day of March, June, September and December. "
