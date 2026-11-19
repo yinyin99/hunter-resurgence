@@ -225,6 +225,7 @@ ssh deploy@<vps> "cd ~/web && docker compose restart web"
 - the other host keys: `game_web_host` (required) and the rest, the game's real host names (the ones the operator's recordings show); a key left out is a placeholder ([server.md](server.md#run-it)).
 - `install_dir`: `install`; `data_dir`: `/data` (the volume); `recordings_dir`, `mirror_dir`, `images_dir`, `variants_file` as in the folder above.
 - `listeners`: `[{ "address": "0.0.0.0", "port": 8080 }]`: plain HTTP, no `cert`, no `admin` (the admin API is for a person at the machine and is never behind the proxy).
+  The admin commands that matter on the VPS are therefore command-line ones, run in the running container, e.g. `cd ~/web && docker compose exec -T server dotnet server.dll admin rescore --account <id> --kill <kill id>` (a dry run; `--apply` writes: take a [backup](#backups) first; [server.md](server.md#admin-api)).
 - `trusted_proxies`: `["172.30.10.2"]`, Caddy's address; `host_header`: `X-Game-Host`.
 
 `docker compose up -d` after any change of `settings.json` (the server reads it at start). The server image is public like the website's and contains no game files.
