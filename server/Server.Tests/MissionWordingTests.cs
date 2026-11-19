@@ -111,6 +111,14 @@ public class MissionWordingTests : MissionTestBase
         Hb(Shot(4, species: 7));
         Hb(Shot(5, species: 6));
         Assert.Equal("1,2,3,4,5", Completed());
+
+        state = New("except.db", Catalogue(["Harvest any animal except an Elk", "Harvest a Test Fox and a Test Deer"]));  // the short name is left out whatever the mission lists; "and" is two animals
+        ActivateAll();
+        Hb(Shot(1, species: 3));
+        Hb(Shot(2, species: 4));
+        Hb(Shot(3, species: 5));
+        Hb(Shot(4, species: 1));
+        Assert.Equal("1", Completed());
     }
 
     [Fact]
@@ -145,6 +153,15 @@ public class MissionWordingTests : MissionTestBase
         Assert.Equal("1,2,3,4,5,6,8,9", Completed());  // the HV, not the HP
         Hb(Shot(8, ammunition: 73));
         Assert.Equal("1,2,3,4,5,6,7,8,9", Completed());
+
+        state = New("classes.db", Catalogue(["Harvest a Test Deer with any weapon except a longbow", "Harvest a Test Deer with any gun", "Harvest a Test Deer (no crossbows)", "Harvest a Test Deer with a sight"]));
+        ActivateAll();
+        Hb(Shot(1, weapon: 62));  // a longbow is left out of the first, is no gun, and is no crossbow
+        Assert.Equal("3", Completed());
+        Hb(Shot(2, weapon: 64));  // a crossbow: the second is no gun, the third refuses it
+        Assert.Equal("1,3", Completed());
+        Hb(Shot(3, weapon: 50, scope: 80));  // "a sight" is no sight of the catalogue: never met
+        Assert.Equal("1,2,3", Completed());
     }
 
     [Fact]
@@ -155,20 +172,21 @@ public class MissionWordingTests : MissionTestBase
             "Harvest a Test Deer without using a stand",                                                                                 // 1
             "Harvest a Test Deer without using a platform or blind",                                                                     // 2
             "Harvest a Test Deer. Stands, blinds, towers and shooting tripod rests are not allowed.",                                    // 3
-            "Harvest a Test Deer with lung and/or heartshots only",                                                                      // 4 every shot
+            "Harvest a Test Deer with lung and/or heartshots only",                                                                      // 4 every shot has an organ
             "Harvest a Test Deer without hitting the skull",                                                                             // 5
-            "Harvest a Test Deer without penetrating any bones. Only organs may be hit.",                                                // 6
+            "Harvest a Test Deer without penetrating any bones.",                                                                        // 6
             "Harvest a Test Deer with a heart shot. Other organs may be hit, but the heart must be hit with the killing shot.",          // 7 the killing hit
+            "Harvest a Test Deer. Only organs may be hit.",                                                                              // 8 no bone, a shot at no organ is none
         ]));
         ActivateAll();
         Hb(Shot(1, location: 3, organs: [Heart | Skull]));
         Assert.Equal("7", Completed());
         Hb(Shot(2, location: 2, organs: [Spine, LeftLung]));  // a bone first, then a lung
         Assert.Equal("5,7", Completed());
-        Hb(Shot(3, location: 5, organs: [LeftLung]));
-        Assert.Equal("4,5,6,7", Completed());
+        Hb(Shot(3, location: 5, organs: [0, LeftLung]));  // a shot at no organ first, then a lung
+        Assert.Equal("5,6,7", Completed());
         Hb(Shot(4, location: 0, organs: [LeftLung]));  // from no stand at all
-        Assert.Equal("1,2,3,4,5,6,7", Completed());
+        Assert.Equal("1,2,3,4,5,6,7,8", Completed());
     }
 
     [Fact]

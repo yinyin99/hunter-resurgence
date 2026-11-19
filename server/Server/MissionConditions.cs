@@ -53,7 +53,7 @@ public sealed partial class State
             Check.Permitted => !k.Scored.Value.Disqualified,
             Check.OneShot => hits.Count == 1,
             Check.Organ => NumOf(last, "organ2") is { } bits && t.Ids!.Any(m => ((long)bits & m) == m),
-            Check.OrganOnly => hits.Count > 0 && NumOf(last, "organ2") is > 0 && hits.All(h => NumOf(h, "organ2") is { } b && ((long)b & ~t.Ids!.Aggregate(0L, (a, m) => a | m)) == 0),
+            Check.OrganOnly => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is > 0 and var b && ((long)b & ~t.Ids!.Aggregate(0L, (a, m) => a | m)) == 0),
             Check.OrganAvoid => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is { } b && t.Ids!.All(m => ((long)b & m) == 0)),
             Check.Value => In(t, NumOf(k.E3, "harvest_value")),
             Check.Distance => In(t, NumOf(last, "distance_cms") / 100),
@@ -125,7 +125,7 @@ public sealed partial class State
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
             Coordinates = new(@"\(\s*x\s*:[^)]*\)", Rx),
             Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
-            Notes = new(@"\b(?:other organs may be hit|only organs may be hit|no other vital organs or bones should be hit|to blame it for making the noise)\b\.?|\(no crossbows?\)", Rx),
+            Notes = new(@"\b(?:other organs may be hit|no other vital organs or bones should be hit|to blame it for making the noise)\b\.?", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
@@ -158,6 +158,8 @@ public sealed partial class State
             Duck = new(@"\sducks?(?=\s)", Rx),
             Alias = new(@"(?<=\s)(?<a>elk|whitetail|blacktail|pintail|ptarmigan)(?=\s)", Rx),
             ExceptWeapon = new(@"\sexcept\s+(?:an?\s+|the\s+)?(?<c>shotguns?|rifles?|handguns?|revolvers?|pistols?|muzzleloaders?|crossbows?|longbows?|bows?)(?=\s)", Rx),
+            NoCrossbows = new(@"\s(?:no|without)\s+crossbows?(?=\s)", Rx),
+            OnlyOrgans = new(@"\bonly organs may be hit\b\.?", Rx),
             AvoidAmmo = new(@"\swithout\s+using\s+any\s+type\s+of\s+(?<w>buckshot|slugs?|birdshot)(?:\s+(?:shells?|ammo|ammunition|rounds?))?(?=\s)", Rx),
             AvoidState = new(@"\sthe\s+[a-z0-9]+(?:\s+[a-z0-9]+)?\s+should\s+not\s+be\s+(?<s>(?:running away|charging|fleeing)(?:\s+or\s+(?:running away|charging|fleeing))*)(?:\s+you)?(?=\s)", Rx),
             Examples = new(@"(?<=\b(?:shotguns?|rifles?|handguns?|revolvers?|pistols?|bows?|crossbows?))\s*\((?<list>[^()]*)\)", Rx);
@@ -223,7 +225,7 @@ public sealed partial class State
             {
                 var any = string.Join('|', this.species.Select(s => Regex.Escape(s.Name)));  // the longest name first: "mule deer" before "deer"
                 speciesName = new Regex(@"(?<![a-z0-9])(?:" + any + @")(?![a-z0-9])", Rx);
-                speciesList = new Regex(@"(?<=\s)(?:" + any + @")(?:\s+(?:or|and)\s+(?:an?\s+|the\s+)?(?:" + any + @"))*(?=\s)", Rx);
+                speciesList = new Regex(@"(?<=\s)(?:" + any + @")(?:\s+or\s+(?:an?\s+|the\s+)?(?:" + any + @"))*(?=\s)", Rx);  // "and" is two animals, not one of two
             }
             var ammoItems = new List<(long Id, string Core, string Note)>();
             var ammoWords = new Dictionary<long, HashSet<string>>();
@@ -307,6 +309,7 @@ public sealed partial class State
                 s = spelling.Replace(s, name);
             s = Verb.Replace(s, " ");
             s = Notes.Replace(s, " ");
+            if (Take(ref s, OnlyOrgans, out _)) tests.Add(new(Check.OrganOnly, Ids: [Organs]));  // every hit has organs and none a bone
             // weapons listed as examples of the class before them (`any semi-auto shotgun (20 GA Semi-Automatic Shotgun, ...)`) say nothing more: when each is part of an item's name
             s = Examples.Replace(s, m => m.Groups["list"].Value.Split(',').All(p => Words(p) is { Length: > 0 } w && weapons.Any(x => (" " + x.Name + " ").Contains(" " + w + " ", StringComparison.Ordinal))) ? " " : m.Value);
             var place = Place.Match(s);  // a coordinate with a fraction is in thousands of metres (6.273 is 6273), a whole one in metres
@@ -345,17 +348,17 @@ public sealed partial class State
                 foreach (Match m in speciesName!.Matches(list.Value))
                     named.AddRange(species.Where(x => x.Name == m.Value).Select(x => x.Id));
             }
-            long[] aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
+            long[] like = [], aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
             if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias)
             {
                 sn = sn[..alias.Index] + " " + sn[(alias.Index + alias.Length)..];
-                var like = species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id).ToArray();
+                like = [.. species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id)];
                 aliased = like.Intersect(own ?? []).ToArray() is { Length: > 0 } mine ? mine : like;
             }
             if (named.Count > 0 || aliased.Length > 0)
                 Take(ref sn, Duck, out _);  // `Mallard duck`
             Take(ref sn, SpeciesOf, out _);  // `one of any species of Ptarmigan`
-            if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named)]));
+            if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named).Except(like)]));
             else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
             else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
             if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);
@@ -366,9 +369,13 @@ public sealed partial class State
             if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
                 weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
             var refused = Take(ref sn, ExceptWeapon, out var exceptWeapon) ? weapons.Where(w => WeaponOf(w, exceptWeapon, [])).Select(w => w.Id).ToHashSet() : [];  // `any rifle except a muzzleloader`
+            if (Take(ref sn, NoCrossbows, out _))  // `(no crossbows)`
+                refused.UnionWith(weapons.Where(w => w.Words.Contains("crossbow")).Select(w => w.Id));
             if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
             while (WeaponNoun.Match(sn) is { Success: true } noun)
                 weaponIds.UnionWith(TakeWords(ref sn, noun, 6, WeaponsOf));
+            if (refused.Count > 0 && weaponIds.Count == 0)
+                weaponIds.UnionWith(weapons.Select(w => w.Id));  // `any weapon except a rifle`: every weapon but those
             weaponIds.ExceptWith(refused);
             if (Take(ref sn, AvoidAmmo, out var noAmmo))  // `without using any type of buckshot`
                 tests.Add(new(Check.NotAmmo, Ids: [.. ammo.Where(a => a.Core.Split(' ').Contains(noAmmo.Groups["w"].Value.TrimEnd('s'))).Select(a => a.Id)]));
@@ -388,7 +395,15 @@ public sealed partial class State
                 if (ReplaceFirst(ref sn, " " + name + " "))
                     sightIds.UnionWith(ids);
             while (SightNoun.Match(sn) is { Success: true } noun)  // `an Aimpoint sight`
-                sightIds.UnionWith(TakeWords(ref sn, noun, 4, (phrase, _) => Content(phrase) is { Length: > 0 } p ? sights.Where(w => p.All(w.Words.Contains)).Select(w => w.Id) : []));
+            {
+                var found = TakeWords(ref sn, noun, 4, (phrase, _) => Content(phrase) is { Length: > 0 } p ? sights.Where(w => p.All(w.Words.Contains)).Select(w => w.Id) : []);
+                if (found.Length == 0 && sightIds.Count == 0)
+                {
+                    sn += " sight ";  // a sight that is none of the items: the word stays, the objective is not understood
+                    break;
+                }
+                sightIds.UnionWith(found);
+            }
             if (Take(ref sn, HeartKilling, out _)) tests.Add(new(Check.Organ, Ids: [1]));
             while (Take(ref sn, Avoid, out var avoid))
                 tests.Add(new(Check.OrganAvoid, Ids: AvoidMasks(avoid.Groups["o"].Value)));
@@ -454,7 +469,7 @@ public sealed partial class State
                 "muzzleloader" => w.Class == "Muzzleloaders",
                 "revolver" or "pistol" => w.Class == "Handguns" && w.Words.Contains(word),
                 "crossbow" or "longbow" => w.Words.Contains(word),
-                "gun" => true,
+                "gun" => w.Class != "Bows & Crossbows" && !w.Words.Contains("crossbow"),
                 _ => w.Class == "Bows & Crossbows" && (noun.Groups["x"].Success || w.Words.Contains("bow")),
             };
             return fits && words.All(w.Words.Contains);
@@ -481,6 +496,9 @@ public sealed partial class State
         // the bits of a hit's `organ2` (bit n is 1 << n): heart 0, right lung 1, left lung 2, liver 3, brain 4, intestines 5, the spine 10, 21 and 22, the shoulder blade 23, the neck
         // bones 24 to 26, the skull 28, the hip bone 29
         static long Bits(params int[] bits) => bits.Aggregate(0L, (m, b) => m | 1L << b);
+
+        // the soft organs of a hit's `organ2`: every bit but the bones (and the antlers' 27)
+        static readonly long Organs = Bits([.. Enumerable.Range(0, 30).Where(b => b is not (10 or 21 or 22 or 23 or 24 or 25 or 26 or 27 or 28 or 29))]);
 
         // a mask is met when all its bits are: the heart, either lung, a double lung shot both, the brain
         static HashSet<long> OrganMasks(string words) =>
