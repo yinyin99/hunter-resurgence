@@ -27,6 +27,16 @@ public class AdminApiTests : IAsyncLifetime
         DeleteDir(tmp);
     }
 
+    [Fact]
+    public void RescoreCommandLineTakesAccountKillAndApplyAndKillNeedsAnAccount()
+    {
+        Assert.Equal((null, null, false), AdminApi.ParseRescoreArgs([]));
+        Assert.Equal(("alice", 5L, true), AdminApi.ParseRescoreArgs(["--apply", "--kill", "5", "--account", "alice"]));
+        Assert.Equal(("12", null, false), AdminApi.ParseRescoreArgs(["--account", "12"]));
+        foreach (var bad in new[] { "--kill 5", "--kill x --account 1", "--kill 0 --account 1", "--account", "--account 1 --account 2", "--apply --apply", "--dry-run", "1" })
+            Assert.Null(AdminApi.ParseRescoreArgs(bad.Split(' ')));
+    }
+
     Task<HttpResponseMessage> Post(string path, object body) => server.Http.PostAsJsonAsync($"http://localhost{path}", body);
 
     [Fact]

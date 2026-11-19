@@ -213,6 +213,25 @@ public static class AdminApi
         : long.TryParse(who, out var id) && state.Store.AccountExists(id) ? id
         : state.Store.AccountByHandle(who);
 
+    /// <summary>The arguments after `admin rescore`: `[--account <id or handle>] [--kill <id>] [--apply]` in any order; null when they are not that
+    /// (an unknown or repeated option, a missing or non-numeric value, `--kill` without `--account`: kill ids are per account).</summary>
+    public static (string? Account, long? Kill, bool Apply)? ParseRescoreArgs(string[] a)
+    {
+        string? account = null;
+        long? kill = null;
+        var apply = false;
+        for (var i = 0; i < a.Length; i++)
+            if (a[i] == "--apply" && !apply)
+                apply = true;
+            else if (a[i] == "--account" && account is null && i + 1 < a.Length && !string.IsNullOrWhiteSpace(a[i + 1]))
+                account = a[++i];
+            else if (a[i] == "--kill" && kill is null && i + 1 < a.Length && long.TryParse(a[i + 1], out var k) && k > 0)
+                (kill, i) = (k, i + 1);
+            else
+                return null;
+        return kill is not null && account is null ? null : (account, kill, apply);
+    }
+
     static ProblemHttpResult NoAccount(string who) =>
         TypedResults.Problem($"no account {who}", statusCode: 404, title: "Unknown account");
 
