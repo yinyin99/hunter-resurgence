@@ -37,22 +37,8 @@
                     <section class="tile panel hof">
                         <h4>@L.Term(h.Species)</h4>
                         <AssetSlot Name="@($"species-{h.Species}")" Width="135" Height="135" />
-                        <h6>@L["Board.Score"]</h6>
-                        @if (h.Score.Handle.Length > 0)
-                        {
-                            <AssetSlot Name="@h.Score.Avatar" Width="160" Height="160" />
-                            <a href="/profile/@h.Score.Handle">@h.Score.Handle</a>
-                            <a href="/profile/@h.Score.Handle/score/@h.Score.Sheet" class="v">@Fmt.Board("score", h.Score.Value)</a>
-                        }
-                        else { <span class="v">@Fmt.Board("score", h.Score.Value)</span> }
-                        <h6>@L["Board.Range"]</h6>
-                        @if (h.Range.Handle.Length > 0)
-                        {
-                            <AssetSlot Name="@h.Range.Avatar" Width="160" Height="160" />
-                            <a href="/profile/@h.Range.Handle">@h.Range.Handle</a>
-                            <a href="/profile/@h.Range.Handle/score/@h.Range.Sheet" class="v">@Fmt.Board("range", h.Range.Value)</a>
-                        }
-                        else { <span class="v">@Fmt.Board("range", h.Range.Value)</span> }
+                        @HallSide("Board.Score", "score", h.Score)
+                        @HallSide("Board.Range", "range", h.Range)
                     </section>
                 }
             </div>
@@ -208,6 +194,19 @@ else
     RenderFragment SeasonSelect(IReadOnlyList<int> nos) => @<select class="field-light" id="leaderboard-season-selector" aria-label="@L["Board.Season"]" @onchange="PickSeason">
         @foreach (var n in nos) { <option value="@n" selected="@(n == season)">@SeasonLabel(n)</option> }
     </select>;
+
+    // a species of the hall of fame may have only one of the two winners
+    RenderFragment HallSide(string heading, string board, Ranked? r) => @<text>
+        <h6>@L[heading]</h6>
+        @if (r is null || r.Handle.Length == 0) { <span class="v">@(r is null ? "–" : Fmt.Board(board, r.Value))</span> }
+        else
+        {
+            <AssetSlot Name="@r.Avatar" Width="160" Height="160" />
+            <a href="/profile/@r.Handle">@r.Handle</a>
+            @if (r.Sheet > 0) { <a href="/profile/@r.Handle/score/@r.Sheet" class="v">@Fmt.Board(board, r.Value)</a> }
+            else { <span class="v">@Fmt.Board(board, r.Value)</span> }
+        }
+    </text>;
 
     void PickSeason(ChangeEventArgs e)
     {

@@ -13,7 +13,7 @@ public sealed record Season(int No, DateTimeOffset Start, DateTimeOffset? End);
 public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);
 
 /// <summary>Winner of a past season for one species: best score and best range.</summary>
-public sealed record HallEntry(string Species, Ranked Score, Ranked Range);
+public sealed record HallEntry(string Species, Ranked? Score, Ranked? Range);
 
 /// <summary>Species boards and the hall of fame answer for a season: 0 all time, else a <see cref="Season"/>'s number. The other boards ignore it.</summary>
 public interface ILeaderboardsService

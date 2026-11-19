@@ -28,7 +28,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
 
     public async Task<IReadOnlyList<HallEntry>> HallAsync(int season) =>
         await GetAsync<ServerHall>($"{ServerSessionApi.Leaderboards}/halloffame?season={season}") is { Rows: not null } h
-            ? [.. h.Rows.Select(x => new HallEntry(x.Species, Row(x.Score), Row(x.Range)))]
+            ? [.. h.Rows.Select(x => new HallEntry(x.Species, x.Score is { } s ? Row(s) : null, x.Range is { } r ? Row(r) : null))]
             : [];
 
     public async Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)

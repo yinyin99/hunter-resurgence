@@ -81,7 +81,7 @@ public sealed record ServerSpeciesBoards(ServerSpeciesBoard[] Boards);
 public sealed record ServerRowsPage(int Page, int Pages, int Total, ServerRow[] Rows);
 
 /// <summary>The best score and the best range of a species in an ended season.</summary>
-public sealed record ServerHallRow(int Id, string Species, ServerRow Score, ServerRow Range);
+public sealed record ServerHallRow(int Id, string Species, ServerRow? Score, ServerRow? Range);
 
 public sealed record ServerHall(ServerHallRow[] Rows);
 

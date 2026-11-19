@@ -76,7 +76,7 @@ public class ServerLeaderboardsServiceTests
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, $$"""{"rows": [{"id": 5, "species": "Moose", "score": {{Row}}, "range": {{Row}}}]}"""));
         var hall = Assert.Single(await Make(fake).HallAsync(1));
-        Assert.Equal(("Moose", "Owl", 123.4567), (hall.Species, hall.Score.Handle, hall.Score.Value));
+        Assert.Equal(("Moose", "Owl", 123.4567), (hall.Species, hall.Score!.Handle, hall.Score.Value));
         Assert.Equal("/leaderboards/halloffame?season=1", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
     }
 
