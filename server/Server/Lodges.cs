@@ -195,6 +195,7 @@ public sealed partial class State
                 found++;
             }
         con.Commit();
+        DropBoards();  // a hidden harvest leaves the boards at once
         return found > 0 ? 200 : 404;
     }
 }
