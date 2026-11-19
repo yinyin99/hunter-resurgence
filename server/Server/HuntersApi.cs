@@ -15,9 +15,9 @@ public static class HuntersApi
     static Reply Json(int status, JsonNode body) =>
         new(status, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
-    /// <summary>An anonymous board reply: the same for everyone, so a browser or proxy may keep it as long as the server keeps the board (<see cref="State.Boards"/>).</summary>
+    /// <summary>An anonymous board reply: the same for everyone, so a browser or proxy may keep it as long as the server keeps the board (<see cref="State.Boards"/>). `Vary: Accept`: the website's pages share these URLs and the reverse proxy picks by the header.</summary>
     static Reply PublicJson(JsonNode body) =>
-        new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
+        new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("Vary", "Accept"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
     public static void MapHunters(this WebApplication app, Game game)
     {

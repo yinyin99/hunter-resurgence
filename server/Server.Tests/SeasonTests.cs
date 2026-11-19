@@ -237,7 +237,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         var now = Py.Now();
         state.Clock = () => now;
         var first = await Get($"/leaderboards/score/{Deer}");
-        Assert.Equal("public, max-age=60", first.Headers.Single(h => h.Item1 == "Cache-Control").Item2);
+        Assert.Equal("public, max-age=60", first.Headers.Single(h => h.Name == "Cache-Control").Value);
         Assert.Equal("charlie:70", await Board("score", Deer));
         state.CreateAccount(30, "hotel");
         Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
@@ -246,7 +246,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Same(state.Boards(false, 2), state.Boards(false, 2));
         now += 2;
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer));  // expired: the new harvest shows
-        Assert.Equal("no-store", (await Get("/hunters/alpha/best")).Headers.Single(h => h.Item1 == "Cache-Control").Item2);
+        Assert.Equal("no-store", (await Get("/hunters/alpha/best")).Headers.Single(h => h.Name == "Cache-Control").Value);
         // an ended season: an hour
         Assert.NotNull(state.StartSeason((long)now - 10));
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
@@ -269,6 +269,11 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Equal("charlie:70", await Board("score", Deer));  // kept
         Assert.NotNull(state.StartSeason(Second + 50));
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
+        // hiding a harvest takes it off the boards at once
+        Assert.Equal(200, state.HideTrophy(30, 1, """{"hidden": true}"""u8.ToArray()));
+        Assert.Equal("charlie:70", await Board("score", Deer, 2));
+        var hall = await Get("/leaderboards/halloffame?season=2");
+        Assert.Equal(["public, max-age=60", "Accept"], new[] { "Cache-Control", "Vary" }.Select(n => hall.Headers.Single(h => h.Name == n).Value));
         var boards = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() => state.Boards(true, 0))));
         Assert.All(boards, b => Assert.Same(boards[0], b));
     }

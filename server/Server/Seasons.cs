@@ -77,13 +77,21 @@ public sealed partial class State
 
     sealed record CachedBoards(Lazy<SortedDictionary<long, List<BoardRow>>> Boards, double Expires);
 
-    readonly System.Collections.Concurrent.ConcurrentDictionary<(bool Range, long Season), CachedBoards> boardCache = new();
+    readonly System.Collections.Concurrent.ConcurrentDictionary<(bool Range, long Season, int Epoch), CachedBoards> boardCache = new();
+    int boardEpoch;
+
+    /// <summary>Drop the kept boards, for a change that must show at once: a season start, a deleted account, a hidden harvest. A board that is being computed meanwhile is not kept (the epoch is part of its key).</summary>
+    public void DropBoards()
+    {
+        Interlocked.Increment(ref boardEpoch);
+        boardCache.Clear();
+    }
 
     /// <summary>Start the next season (<see cref="Store.StartSeason"/>) and drop the kept boards: the ended season's are final now, the current one's are the new one's.</summary>
     public Store.Season? StartSeason(long now)
     {
         var started = Store.StartSeason(now);
-        boardCache.Clear();
+        DropBoards();
         return started;
     }
 
@@ -92,7 +100,7 @@ public sealed partial class State
     /// (<see cref="EndedBoardTtl"/> for an ended season), and callers that miss at the same time share one computation.</summary>
     public SortedDictionary<long, List<BoardRow>> Boards(bool range, long season)
     {
-        var key = (range, season);
+        var key = (range, season, Volatile.Read(ref boardEpoch));
         var now = Clock();
         if (!boardCache.TryGetValue(key, out var kept) || kept.Expires <= now)
         {
