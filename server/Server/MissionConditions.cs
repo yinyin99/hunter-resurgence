@@ -1,5 +1,6 @@
-// What a mission objective's title asks of a harvest beyond its kind, species and gender: the weapon or ammunition, the shot, the harvest value, the distance, the
-// score, the weight, the animal's state, the stand, the scope, the reserve, a named animal. The title is the objective's only definition (docs/server.md,
+// What a mission objective's title asks of a harvest beyond its kind: the species (when it names several or a short name), the weapon, ammunition or sight, the
+// shot and the organs it may or may not hit, the harvest value, the distance, the score, the weight, the animal's state, the player's stance and stand, the reserve,
+// a named animal. The title is the objective's only definition (docs/server.md,
 // "Missions"), so <see cref="Reader"/> reads those conditions from its English words; a title with words it does not understand is `Unknown`, and an unknown
 // objective is never met. The checks run over the events of the kill (<see cref="Kill"/>).
 using System.Globalization;
@@ -10,10 +11,11 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, Permitted, OneShot, Organ, Value, Distance, Weight, Score, State, FirstState, Stand, Scope, NoScope, Reserve, Named }
+    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species }
 
-    /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (weapon, ammunition, animal state,
-    /// stand `location`, reserve) or, for `Organ`, the accepted bit masks: one is met when the shot went through all its organs.</summary>
+    /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
+    /// animal state, stance, stand `location`, reserve), the refused ones (`NotAmmo`, `NotState`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
+    /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one.</summary>
     sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
 
     /// <summary>A kill as the conditions see it: its harvest (event 3) and spawn (event 7), its hits (event 1, in order; a spot's own event 11), the reserve of the hunt it
@@ -47,21 +49,27 @@ public sealed partial class State
         {
             Check.Weapon => Has(NumOf(last, "weapon_id")),
             Check.Ammo => Has(NumOf(last, "ammunition_id")),
+            Check.NotAmmo => NumOf(last, "ammunition_id") is { } ammunition && !t.Ids!.Contains((long)ammunition),
             Check.Permitted => !k.Scored.Value.Disqualified,
             Check.OneShot => hits.Count == 1,
             Check.Organ => NumOf(last, "organ2") is { } bits && t.Ids!.Any(m => ((long)bits & m) == m),
+            Check.OrganOnly => hits.Count > 0 && NumOf(last, "organ2") is > 0 && hits.All(h => NumOf(h, "organ2") is { } b && ((long)b & ~t.Ids!.Aggregate(0L, (a, m) => a | m)) == 0),
+            Check.OrganAvoid => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is { } b && t.Ids!.All(m => ((long)b & m) == 0)),
             Check.Value => In(t, NumOf(k.E3, "harvest_value")),
             Check.Distance => In(t, NumOf(last, "distance_cms") / 100),
             Check.Weight => In(t, NumOf(k.E7, "weight_grams") / 1000),
             Check.Score => In(t, k.Scored.Value.Score),
             Check.State => Has(NumOf(last, "animal_state")),
+            Check.NotState => NumOf(last, "animal_state") is { } state && !t.Ids!.Contains((long)state),
             Check.FirstState => Has(NumOf(first, "animal_state")),
+            Check.Pose => NumOf(last, "pose") is { } pose && t.Ids!.Contains((long)pose & 15),  // the low nibble: 0 stand, 1 crouch, 2 prone
             Check.Stand => Has(NumOf(last, "location")),
-            Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1,
+            Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1 && (t.Ids is null || t.Ids.Contains((long)scope)),
             Check.NoScope => NumOf(last, "scope_id") == -1,
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
             // a title with a place is met by its species (and gender) there; one without a place, by an animal that carries `special`
             Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
+            Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
             _ => false,
         };
     }
@@ -87,6 +95,9 @@ public sealed partial class State
     /// <summary>A spotted animal (event 11, stored as event `eventId`) as a kill with one hit: the spot itself, which carries the player's stand.</summary>
     Kill SpotOf(Db con, JsonObject e11, long eventId, JsonObject e7) => new(new JsonObject(), e7, () => [e11], ReserveAt(con, eventId), () => (false, null));
 
+    /// <summary>A found clue (event 12, stored as event `eventId`) as a kill with no hit: only the reserve of its hunt can be checked.</summary>
+    Kill ClueOf(Db con, long eventId, JsonObject e7) => new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null));
+
     /// <summary>The species (0 to 99) and gender of an animal: the harvest's `extended_species` (or the spawn's `species`) and the spawn's `gender`.</summary>
     static (long? Species, long? Gender) AnimalOf(JsonObject e7, JsonNode? number) =>
         (Py.IsNum(number) ? Mod100(number) : null, Py.IsNum(e7["gender"]) ? Py.L(e7["gender"]) : null);
@@ -107,15 +118,14 @@ public sealed partial class State
             @"(?:(?:from|at)\s+)?(?:(?<gt>" + Gt + ")|(?<ge>" + Ge + ")|(?<lt>" + Lt + ")|(?<le>" + Le + @"))\s+(?:(?:a|an|the|of|distance|weight|range|weighing)\s+)*" + Number + @"\s*" + unit
             + @"\b|" + Number + @"\s*" + unit + @"\b\s+(?:or|and)\s+(?:(?<more>" + MoreWords + ")|(?<less>" + LessWords + @"))\b", Rx);
 
-        static Regex Between(string unit) => new(@"between\s+(?<a>\d+(?:[.,]\d+)?)\s*(?:" + unit + @"\s*)?(?:and|to|-)\s*(?<b>\d+(?:[.,]\d+)?)\s*" + unit + @"\b", Rx);
+        static Regex Between(string unit) => new(@"(?:between|(?:(?:at|from)\s+)?(?:a\s+)?range\s+of)\s+(?<a>\d+(?:[.,]\d+)?)\s*(?:" + unit + @"\s*)?(?:and|to|-)\s*(?<b>\d+(?:[.,]\d+)?)\s*" + unit + @"\b", Rx);
 
         static readonly Regex
-            OrderedStart = new(@"\A\s*(?:then|finally|first|after)\b[\s,:-]*", Rx),
-            Verb = new(@"\A\s*(?:harvest|spot)\b", Rx),
+            Verb = new(@"\A\s*(?:harvest|take|kill|spot)\b", Rx),
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
             Coordinates = new(@"\(\s*x\s*:[^)]*\)", Rx),
             Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
-            Notes = new(@"\b(?:other organs may be hit|no other vital organs or bones should be hit)\b\.?", Rx),
+            Notes = new(@"\b(?:other organs may be hit|only organs may be hit|no other vital organs or bones should be hit|to blame it for making the noise)\b\.?|\(no crossbows?\)", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
@@ -123,76 +133,127 @@ public sealed partial class State
             PlacePhrase = new(@"\b(?:by|at|near|around|last seen at|in)\s+[^()\d]*?\(\s*x\s*:[^)]*\)", Rx),
             Distance = Quantity(Metres), Kg = Quantity(Kilos), Lb = Quantity(Pounds), BetweenMetres = Between(Metres), BetweenKg = Between(Kilos),
             DistanceWords = new(@"\b(?:(?:from|at)\s+)?(?:a\s+)?distance(?:\s+of)?\b", Rx),
-            WeightWords = new(@"\b(?:weighing|weigh|weights?|a weight(?: of)?)\b", Rx),
-            ScoreAfter = new(@"(?:(?:with|having|bringing in|and|of)\s+)?(?:an?\s+)?(?:trophy\s+)?scor(?:e|ing|in)\s+(?:of\s+)?(?:(?:(?<gt>" + Gt + ")|(?<ge>" + Ge + ")|(?<lt>" + Lt + ")|(?<le>" + Le
+            WeightWords = new(@"\b(?:weighing|weighin|weigh|weights?|a weight(?: of)?)\b", Rx),
+            WeightPlain = new(@"\bweight\s+(?:of\s+)?(?:(?<gt>" + Gt + ")|(?<ge>" + Ge + ")|(?<lt>" + Lt + ")|(?<le>" + Le + @"))\s+" + Number + @"\b", Rx),
+            ScoreAfter = new(@"(?:(?:with|having|bringing in|and|of)\s+)?(?:an?\s+)?(?:(?:trophy|total)\s+)?scor(?:e|ing|in)\s+(?:of\s+)?(?:(?:(?<gt>" + Gt + ")|(?<ge>" + Ge + ")|(?<lt>" + Lt + ")|(?<le>" + Le
                 + @"))\s+(?:a\s+|an\s+|the\s+)*)?" + Number + @"(?:\s+(?:or|and)\s+(?:(?<more>" + MoreWords + ")|(?<less>" + LessWords + @")))?(?:\s*points?)?\b", Rx),
             ScoreBefore = new(@"(?:with\s+|and\s+|of\s+)?(?:(?<gt>" + Gt + ")|(?<ge>" + Ge + ")|(?<lt>" + Lt + ")|(?<le>" + Le + @"))\s+(?:an?\s+)?" + Number + @"\s*points?(?:\s+score)?\b", Rx),
             Permitted = new(@"\b(?:any\s+)?(?:permitted|ethical)\b", Rx),
-            OneShot = new(@"\b(?:(?:with|in|using|by)\s+)?(?:an?\s+)?(?:one|single|1)[ -]shots?\b", Rx),
-            Organ = new(@"\b(?:(?:with|using|by|in|through|to|on)\s+)*(?:an?\s+|the\s+)*(?:(?:shot|hit)\s+(?:(?:to|through|in|on)\s+)*(?:the\s+)*)?(?<o>double lung|(?:(?:heart ?(?=shot)|heart|lungs?)(?:\s+(?:and or|or|and))?\s*)+|brain)(?:\s+shots?)?\b", Rx),
+            OneShot = new(@"\b(?:(?:killed|killing)\s+(?:it\s+)?)?(?:(?:with|in|using|by)\s+)?(?:an?\s+)?(?:one|single|1)[ -](?:shots?|arrows?|bolts?)\b", Rx),
+            HeartKilling = new(@"\b(?:the\s+)?heart\s+must\s+be\s+(?:the\s+)?(?:hit\s+)?(?:with\s+the\s+)?killing\s+(?:shot|hit)\b\.?", Rx),
+            Avoid = new(@"\b(?:without\s+(?:hitting|penetrating|damaging|touching)\s+(?:it\s+in\s+)?(?:the\s+|any\s+)?(?<o>skull|liver|intestines?|bones?)|(?:the\s+)?(?<o>skull|liver|intestines?|bones?)\s+must\s+not\s+be\s+hit)\b\.?", Rx),
+            Organ = new(@"\b(?:(?:with|using|by|in|through|to|on|hitting)\s+)*(?:an?\s+|the\s+)*(?:(?:shot|hit)\s+(?:(?:to|through|in|on)\s+)*(?:the\s+)*)?(?<o>double lung|(?:(?:heart ?(?=shot)|heart|lungs?|brain)(?:\s+(?:and or|or|and))?\s*)+)(?:\s*shots?)?(?<only>\s+only)?\b", Rx),
             NoScope = new(@"\b(?:without(?:\s+a|\s+the|\s+using\s+a)?\s+scope|no\s+scope|using\s+only\s+iron\s+sights|with\s+iron\s+sights)\b", Rx),
-            Scoped = new(@"\b(?:an?\s+)?scoped\b", Rx),
-            WeaponNoun = new(@"\s(?<c>shotguns?|rifles?|handguns?|revolvers?|pistols?|muzzleloaders?|crossbows?|longbows?|bows?(?<x>\s+(?:including|or|and)\s+crossbows?)?)(?=\s)", Rx),
-            AmmoNoun = new(@"\s(?:ammo|ammunition|bullets?|rounds?)(?=\s)", Rx),
-            AmmoWord = new(@"\s(?<w>buckshot|slugs?|birdshot)(?:\s+(?:shells?|ammo|ammunition|rounds?))?(?=\s)", Rx);
+            Scoped = new(@"\b(?:an?\s+)?scoped\b|\b(?:with|using)\s+an?\s+scope\b", Rx),
+            WeaponNoun = new(@"\s(?<c>shotguns?|rifles?|handguns?|revolvers?|pistols?|muzzleloaders?|crossbows?|longbows?|guns?|bows?(?<x>\s+(?:including|or|and)\s+crossbows?)?)(?=\s)", Rx),
+            Traditional = new(@"\s(?:any\s+)?traditional\s+bows?(?=\s)", Rx),
+            AmmoNoun = new(@"\s(?:ammo|ammunition|bullets?|rounds?|arrows?|bolts)(?=\s)", Rx),
+            AmmoWord = new(@"\s(?<w>buckshot|slugs?|birdshot)(?:\s+(?:shells?|ammo|ammunition|rounds?))?(?=\s)", Rx),
+            MountedWith = new(@"\s(?:mounted|fitted|equipped)\s+with(?=\s)", Rx),
+            SightNoun = new(@"\ssights?(?=\s)", Rx),
+            ThatWas = new(@"\sthat\s+(?:was|were)\s+(?:shot|killed|hit)(?=\s)", Rx),
+            Stance = new(@"\s(?:while\s+)?(?<p>prone|crouching|crouched|standing upright|upright)(?=\s)", Rx),
+            ExceptAnimal = new(@"\s(?:any\s+)?animals?\s+except(?=\s)", Rx),
+            SpeciesOf = new(@"\s(?:one\s+of\s+)?(?:any\s+)?species\s+of(?=\s)", Rx),
+            Duck = new(@"\sducks?(?=\s)", Rx),
+            Alias = new(@"(?<=\s)(?<a>elk|whitetail|blacktail|pintail|ptarmigan)(?=\s)", Rx),
+            ExceptWeapon = new(@"\sexcept\s+(?:an?\s+|the\s+)?(?<c>shotguns?|rifles?|handguns?|revolvers?|pistols?|muzzleloaders?|crossbows?|longbows?|bows?)(?=\s)", Rx),
+            AvoidAmmo = new(@"\swithout\s+using\s+any\s+type\s+of\s+(?<w>buckshot|slugs?|birdshot)(?:\s+(?:shells?|ammo|ammunition|rounds?))?(?=\s)", Rx),
+            AvoidState = new(@"\sthe\s+[a-z0-9]+(?:\s+[a-z0-9]+)?\s+should\s+not\s+be\s+(?<s>(?:running away|charging|fleeing)(?:\s+or\s+(?:running away|charging|fleeing))*)(?:\s+you)?(?=\s)", Rx),
+            Examples = new(@"(?<=\b(?:shotguns?|rifles?|handguns?|revolvers?|pistols?|bows?|crossbows?))\s*\((?<list>[^()]*)\)", Rx);
 
-        const string Stand = @"(?:waterfowl blind|ground blind|blind|tree ?stand|tripod ?stand|shooting tripod rest|tripod rifle rest|rifle rest|tripod|hunting tower|tower)";
+        // spellings of the titles that are no item or species name: a typo, a short form (the title may keep its accents or not, as the platform's text normalising goes); a weight in a
+        // made-up unit is read from the kilograms the title gives after it
+        static readonly (Regex Spelling, string Name)[] Spellings =
+        [
+            (new(@"\banch(?=[uü]tz\b)", Rx), "ansch"), (new(@"\bsemi[- ]auto(?!matic)\b", Rx), "semi-automatic"), (new(@"\bcanada moose\b", Rx), "moose"),
+            (new(@"\.357 magnum\b(?!\s+(?:revolver|ammunition))", Rx), ".357 revolver"), (new(@"\d+ (?:[a-z]+ )?libras \(or (\d+(?:[.,]\d+)?) kg[^)]*\)", Rx), "$1 kg"),
+        ];
+
+        const string Stand = @"(?:waterfowl blinds?|ground blinds?|blinds?|tree ?stands?|tripod ?stands?|shooting tripod rests?|tripod rifle rests?|rifle rests?|tripods?|hunting towers?|towers?|platforms?|stands?)";
+        const string StandList = Stand + @"(?:\s+(?:(?:or|and)\s+)?(?:an?\s+|the\s+)?" + Stand + @")*";
         static readonly Regex
-            OnStand = new(@"\s(?:while\s+)?(?:from|in|on|inside|using)\s+(?:an?\s+|the\s+)?(?<s>" + Stand + @"(?:\s+(?:(?:or|and)\s+)?(?:an?\s+|the\s+)?" + Stand + @")*)(?=\s)", Rx),
-            OffStand = new(@"\s(?:without|with no|no|not using|not from)\s+(?:using\s+)?(?:an?\s+|the\s+)?" + Stand + @"(?:\s+(?:(?:or|and)\s+)?(?:an?\s+|the\s+)?" + Stand + @")*(?=\s)", Rx);
+            OnStand = new(@"\s(?:while\s+)?(?:from|in|on|inside|using)\s+(?:an?\s+|the\s+)?(?<s>" + StandList + @")(?=\s)", Rx),
+            OffStand = new(@"\s(?:without|with no|no|not using|not from)\s+(?:using\s+)?(?:an?\s+|the\s+)?" + StandList + @"(?=\s)", Rx),
+            NoStands = new(@"\s(?:an?\s+|the\s+)?" + StandList + @"\s+(?:is|are)\s+not\s+allowed(?=\s)", Rx);
 
-        static readonly string[] Stops = "a an the another any one final in with using from at and or of to while by during same hunt then finally first harvest spot killed shot taken kill take it its that is are be on when only just either each also second third fourth last more ammo ammunition rounds shells loaded bullet bullets s".Split(' ');
+        static readonly string[] Stops = "a an the another any one final in with using from at and or of to while by during same hunt then finally first harvest spot killed shot taken kill take it its that is are be on when only just either each also second third fourth last more ammo ammunition rounds shells loaded bullet bullets s weapon weapons but animal animals fine dandy anywhere".Split(' ');
 
         // an animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells
         static readonly (Regex Word, long[] States, bool First)[] States = [.. new (string, long[], bool)[]
         {
-            ("airborne", [6, 11], false), ("standing", [3], false), ("walking", [4], false), ("running", [5], false), ("moving", [4, 5, 10], false), ("charging", [9], false),
-            ("fleeing", [5, 10, 11, 15], false), ("unspooked", [1, 2, 3, 4, 6, 7, 8, 12], true), ("spooked", [5, 10, 11, 15, 16], true),
-        }.Select(x => (new Regex(@"\s(?:(?:while|when)\s+)?(?:it\s+(?:s|is)\s+)?" + x.Item1 + @"(?=\s)", Rx), x.Item2, x.Item3))];
+            ("airborne", [6, 11], false), ("standing", [3], false), ("walking", [4], false), ("running", [5], false), ("moving", [4, 5, 10], false),
+            (@"charging(?:\s+(?:at\s+)?you)?", [9], false), ("fleeing", [5, 10, 11, 15], false), ("swimming", [7], false),
+            (@"(?:emerging from|diving into)(?:\s+or\s+(?:emerging from|diving into))?\s+an?\s+burrow\s+exit", [13, 14, 15], false),
+            ("idle", [1, 2, 3, 8, 12], false), ("still", [1, 2, 3, 8, 12], false),
+            ("unspooked", [1, 2, 3, 4, 6, 7, 8, 12], true), ("spooked", [5, 10, 11, 15, 16], true),
+        }.Select(x => (new Regex(@"\s(?:(?:while|when)\s+)?(?:(?:it|the animal)\s+(?:s|is)\s+)?" + x.Item1 + @"(?=\s)", Rx), x.Item2, x.Item3))];
 
-        // the `location` of a hit: 1 hunting tower, 2 tree stand, 3 ground blind, 4 tripod, 5 waterfowl blind, 6 tripod rifle rest; a bare "blind" is a ground or a waterfowl blind
+        // the `location` of a hit: 1 hunting tower, 2 tree stand, 3 ground blind, 4 tripod, 5 waterfowl blind, 6 tripod rifle rest; a bare "blind" is a ground or a waterfowl blind,
+        // a bare "stand" any raised one but the ground blind, a "platform" any of them
         static IEnumerable<long> StandIds(string words)
         {
             bool Has(string pattern) => Regex.IsMatch(words, pattern, Rx);
-            if (Has("tower")) yield return 1;
-            if (Has("tree ?stand")) yield return 2;
-            if (Has("ground blind") || Has(@"(?<!ground |waterfowl )\bblind\b")) yield return 3;
-            if (Has(@"tripod ?stand|\btripod\b(?!\s+(?:rifle\s+)?rest)")) yield return 4;
-            if (Has("waterfowl blind") || Has(@"(?<!ground |waterfowl )\bblind\b")) yield return 5;
-            if (Has("rifle rest|tripod rest")) yield return 6;
+            var all = Has(@"\bplatforms?\b");
+            var raised = Has(@"(?<!tree ?|tripod ?)\bstands?\b");
+            if (all || raised || Has("tower")) yield return 1;
+            if (all || raised || Has("tree ?stand")) yield return 2;
+            if (all || Has("ground blind") || Has(@"(?<!ground |waterfowl )\bblind\b")) yield return 3;
+            if (all || raised || Has(@"tripod ?stand|\btripod\b(?!\s+(?:rifle\s+)?rest)")) yield return 4;
+            if (all || raised || Has("waterfowl blind") || Has(@"(?<!ground |waterfowl )\bblind\b")) yield return 5;
+            if (all || raised || Has("rifle rest|tripod rest")) yield return 6;
         }
 
         static readonly string[] Male = ["male", "buck", "bull", "stag", "rooster", "tom", "ram"], Female = ["female", "doe", "cow", "hen", "ewe"];
         public static readonly Regex MaleWord = new(@"\b(?:" + string.Join('|', Male) + @")\b", Rx), FemaleWord = new(@"\b(?:" + string.Join('|', Female) + @")\b", Rx);
 
         readonly (long Id, string Name)[] species;
-        readonly List<(string Name, long[] Ids)> weaponNames;
-        readonly List<(long Id, string Name, string Class, HashSet<string> Words)> weapons = [];
+        readonly Regex? speciesList, speciesName;
+        readonly List<(string Name, long[] Ids)> weaponNames, sightNames;
+        readonly List<(long Id, string Name, string Class, HashSet<string> Words)> weapons = [], sights = [];
         readonly (long Id, string Core, HashSet<string> Words)[] ammo;
+        readonly List<(Regex In, long[] Ids)> ammoNames;
         readonly (long Id, Regex In)[] reserves;
 
         /// <summary>The catalogue's species (normalised names), items and reserves.</summary>
         public Reader(IEnumerable<(long Id, string Name)> species, IEnumerable<JsonObject> items, IEnumerable<KeyValuePair<long, string?>> reserves)
         {
             this.species = [.. species.OrderByDescending(s => s.Name.Length)];
-            var names = new Dictionary<string, HashSet<long>>();
-            var ammoItems = new List<(long, string, HashSet<string>)>();
-            foreach (var i in items.Where(i => Py.IsNum(i["id"])))
+            if (this.species.Length > 0)
             {
-                var (id, cat) = (Py.L(i["id"]), Py.IsNum(i["cat"]) ? Py.L(i["cat"]) : -1);
-                if (cat == 1 && Py.IsStr(i["name"]))
-                {
-                    var name = Words((string)i["name"]!);
-                    weapons.Add((id, name, Py.Str(G(i, "subcat", null) is JsonObject sub ? G(sub, "name", "") : ""), [.. name.Split(' ')]));
-                    (names.TryGetValue(name, out var set) ? set : names[name] = []).Add(id);
-                }
-                else if (cat == 3 && Py.IsStr(i["name"]))
-                    ammoItems.Add((id, Core(Py.Str(i["name"])), [.. Words((string)i["name"]!).Split(' ')]));
+                var any = string.Join('|', this.species.Select(s => Regex.Escape(s.Name)));  // the longest name first: "mule deer" before "deer"
+                speciesName = new Regex(@"(?<![a-z0-9])(?:" + any + @")(?![a-z0-9])", Rx);
+                speciesList = new Regex(@"(?<=\s)(?:" + any + @")(?:\s+(?:or|and)\s+(?:an?\s+|the\s+)?(?:" + any + @"))*(?=\s)", Rx);
             }
-            weaponNames = [.. names.Where(kv => kv.Key.Length > 0).Select(kv => (kv.Key, kv.Value.ToArray())).OrderByDescending(n => n.Key.Length)];
-            ammo = [.. ammoItems.Where(a => a.Item2.Length > 0).OrderByDescending(a => a.Item2.Length)];
+            var ammoItems = new List<(long Id, string Core, string Note)>();
+            var ammoWords = new Dictionary<long, HashSet<string>>();
+            foreach (var i in items.Where(i => Py.IsNum(i["id"]) && Py.IsStr(i["name"])))
+            {
+                var (id, cat, full) = (Py.L(i["id"]), Py.IsNum(i["cat"]) ? Py.L(i["cat"]) : -1, (string)i["name"]!);
+                var name = Words(full);
+                if (cat is 1 or 2)
+                    (cat == 1 ? weapons : sights).Add((id, name, Py.Str(G(i, "subcat", null) is JsonObject sub ? G(sub, "name", "") : ""), [.. name.Split(' ')]));
+                else if (cat == 3)
+                {
+                    ammoItems.Add((id, Core(full), Regex.Match(full, @"\(([^)]*)\)") is { Success: true } note ? Words(note.Groups[1].Value) : ""));
+                    ammoWords[id] = [.. name.Split(' ')];
+                }
+            }
+            weaponNames = ByName(weapons);
+            sightNames = ByName(sights);
+            ammo = [.. ammoItems.Where(a => a.Core.Length > 0).Select(a => (a.Id, a.Core, ammoWords[a.Id])).OrderByDescending(a => a.Core.Length)];
+            // an ammunition is named by its core and, when the title gives it, the bracketed note after it (`7mm-08 Ammunition (HV)`); by the core alone it is every item of that core
+            ammoNames = [.. ammoItems.Where(a => a.Core.Length > 0)
+                .SelectMany(a => a.Note.Length > 0 ? new[] { (a.Core, Note: a.Note, a.Id), (a.Core, Note: "", a.Id) } : new[] { (a.Core, Note: "", a.Id) })
+                .GroupBy(a => (a.Core, a.Note)).OrderByDescending(g => g.Key.Core.Length + g.Key.Note.Length)
+                .Select(g => (new Regex(@"\s" + Regex.Escape(g.Key.Core) + @"(?:\s+(?:" + string.Join('|', Generic) + @"))*" + (g.Key.Note.Length > 0 ? @"\s+" + Regex.Escape(g.Key.Note) : "") + @"(?=\s)", Rx),
+                                g.Select(a => a.Id).ToArray()))];
             this.reserves = [.. reserves.Where(r => r.Value is not null).Select(r => (r.Key, new Regex(@"\s(?:in|at|on|from)(?:\s+the)?\s+" + Regex.Escape(Words(r.Value!)) + @"(?:\s+reserve)?(?=\s)", Rx)))];
         }
+
+        /// <summary>The items by name, the longest name first (items of one name are one entry: skins and variants share it).</summary>
+        static List<(string Name, long[] Ids)> ByName(IEnumerable<(long Id, string Name, string Class, HashSet<string> Words)> items) =>
+            [.. items.Where(i => i.Name.Length > 0).GroupBy(i => i.Name).Select(g => (g.Key, g.Select(i => i.Id).ToArray())).OrderByDescending(n => n.Key.Length)];
 
         /// <summary>Lower case without accents or apostrophes, `12GA` as `12 GA`, then <see cref="Normalise"/>d.</summary>
         static string Words(string s) => Normalise(Gauge.Replace(Fold(s), "$1 ga"));
@@ -230,13 +291,24 @@ public sealed partial class State
             return range is not null;
         }
 
+        /// <summary>The reserve test of a title (a clue's only condition): none when it names no reserve.</summary>
+        public Test[] ReservesIn(string title)
+        {
+            var s = " " + Words(title) + " ";
+            return [.. reserves.Where(r => r.In.IsMatch(s)).Take(1).Select(r => new Test(Check.Reserve, Ids: [r.Id]))];
+        }
+
         /// <summary>The conditions the title asks and whether it has words this reader does not understand (the words of a condition it could not read stay in the title).</summary>
-        public (Test[] Tests, bool Unknown) Read(string title)
+        public (Test[] Tests, bool Unknown) Read(string title, long[]? own = null)
         {
             var tests = new List<Test>();
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
-            s = Verb.Replace(OrderedStart.Replace(s, ""), " ");
+            foreach (var (spelling, name) in Spellings)
+                s = spelling.Replace(s, name);
+            s = Verb.Replace(s, " ");
             s = Notes.Replace(s, " ");
+            // weapons listed as examples of the class before them (`any semi-auto shotgun (20 GA Semi-Automatic Shotgun, ...)`) say nothing more: when each is part of an item's name
+            s = Examples.Replace(s, m => m.Groups["list"].Value.Split(',').All(p => Words(p) is { Length: > 0 } w && weapons.Any(x => (" " + x.Name + " ").Contains(" " + w + " ", StringComparison.Ordinal))) ? " " : m.Value);
             var place = Place.Match(s);  // a coordinate with a fraction is in thousands of metres (6.273 is 6273), a whole one in metres
             var quotes = Quoted.Matches(s).Select(q => (Q: q.Groups[1].Value, Weapons: WeaponsNamed(q.Groups[1].Value).ToArray())).ToList();
             if (quotes.Any(q => q.Weapons.Length == 0) && Coordinates.IsMatch(s))
@@ -252,6 +324,7 @@ public sealed partial class State
             if (Take(ref s, BetweenKg, out between)) { tests.Add(new(Check.Weight, Parse(between.Groups["a"].Value), Parse(between.Groups["b"].Value))); weight = true; }
             else if (Take(ref s, Kg, out var kg)) { weight = Bound(kg, 1, Check.Weight, tests); if (!weight) s += " " + kg.Value; }
             else if (Take(ref s, Lb, out var lb)) { weight = Bound(lb, 0.45359237, Check.Weight, tests); if (!weight) s += " " + lb.Value; }
+            else if (Take(ref s, WeightPlain, out var plain)) { weight = Bound(plain, 1, Check.Weight, tests); if (!weight) s += " " + plain.Value; }  // no unit: kilograms
             if (distance) s = DistanceWords.Replace(s, " ");
             if (weight) s = WeightWords.Replace(s, " ");
             if (Take(ref s, ScoreAfter, out var score)) { if (!Bound(score, 1, Check.Score, tests)) s += " " + score.Value; }
@@ -264,36 +337,74 @@ public sealed partial class State
                     tests.Add(new(Check.Reserve, Ids: [id]));
                     break;
                 }
-            foreach (var (_, name) in species)
-                if (ReplaceFirst(ref sn, " " + name + " "))
-                    break;
+            var except = Take(ref sn, ExceptAnimal, out _);
+            var named = new List<long>();
+            if (speciesList?.Match(sn) is { Success: true } list)
+            {
+                sn = sn[..list.Index] + " " + sn[(list.Index + list.Length)..];
+                foreach (Match m in speciesName!.Matches(list.Value))
+                    named.AddRange(species.Where(x => x.Name == m.Value).Select(x => x.Id));
+            }
+            long[] aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
+            if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias)
+            {
+                sn = sn[..alias.Index] + " " + sn[(alias.Index + alias.Length)..];
+                var like = species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id).ToArray();
+                aliased = like.Intersect(own ?? []).ToArray() is { Length: > 0 } mine ? mine : like;
+            }
+            if (named.Count > 0 || aliased.Length > 0)
+                Take(ref sn, Duck, out _);  // `Mallard duck`
+            Take(ref sn, SpeciesOf, out _);  // `one of any species of Ptarmigan`
+            if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named)]));
+            else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
+            else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
             if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);
             var weaponIds = new HashSet<long>();
             foreach (var (name, ids) in weaponNames)
                 if (ReplaceFirst(ref sn, " " + name + " "))
                     weaponIds.UnionWith(ids);
+            if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
+                weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
+            var refused = Take(ref sn, ExceptWeapon, out var exceptWeapon) ? weapons.Where(w => WeaponOf(w, exceptWeapon, [])).Select(w => w.Id).ToHashSet() : [];  // `any rifle except a muzzleloader`
+            if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
             while (WeaponNoun.Match(sn) is { Success: true } noun)
-            {
-                var ids = TakeWords(ref sn, noun, 6, (phrase, noun) => weapons.Where(w => WeaponOf(w, noun, phrase)).Select(w => w.Id));
-                weaponIds.UnionWith(ids);
-            }
+                weaponIds.UnionWith(TakeWords(ref sn, noun, 6, WeaponsOf));
+            weaponIds.ExceptWith(refused);
+            if (Take(ref sn, AvoidAmmo, out var noAmmo))  // `without using any type of buckshot`
+                tests.Add(new(Check.NotAmmo, Ids: [.. ammo.Where(a => a.Core.Split(' ').Contains(noAmmo.Groups["w"].Value.TrimEnd('s'))).Select(a => a.Id)]));
             var ammoIds = new HashSet<long>();
-            foreach (var (id, core, _) in ammo)
-                if (ReplaceFirst(ref sn, " " + core + " "))
-                    ammoIds.Add(id);
+            foreach (var (named_, ids) in ammoNames)
+                if (Take(ref sn, named_, out _))
+                    ammoIds.UnionWith(ids);
             while (AmmoNoun.Match(sn) is { Success: true } noun)
                 ammoIds.UnionWith(TakeWords(ref sn, noun, 4, (phrase, _) => phrase.Length == 0 ? [] : ammo.Where(a => phrase.All(a.Words.Contains)).Select(a => a.Id)));
             if (Take(ref sn, AmmoWord, out var word))
                 ammoIds.UnionWith(ammo.Where(a => a.Core.Split(' ').Contains(word.Groups["w"].Value.TrimEnd('s'))).Select(a => a.Id));
-            if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));
-            if (Take(ref sn, Organ, out var organ) && OrganMasks(organ.Groups["o"].Value) is { Count: > 0 } masks) tests.Add(new(Check.Organ, Ids: masks));
+            if (Take(ref sn, NoScope, out _)) tests.Add(new(Check.NoScope));  // before the sights: "iron sights" are no sight item
+            else if (Take(ref sn, Scoped, out _)) tests.Add(new(Check.Scope));
+            Take(ref sn, MountedWith, out _);
+            var sightIds = new HashSet<long>();
+            foreach (var (name, ids) in sightNames)
+                if (ReplaceFirst(ref sn, " " + name + " "))
+                    sightIds.UnionWith(ids);
+            while (SightNoun.Match(sn) is { Success: true } noun)  // `an Aimpoint sight`
+                sightIds.UnionWith(TakeWords(ref sn, noun, 4, (phrase, _) => Content(phrase) is { Length: > 0 } p ? sights.Where(w => p.All(w.Words.Contains)).Select(w => w.Id) : []));
+            if (Take(ref sn, HeartKilling, out _)) tests.Add(new(Check.Organ, Ids: [1]));
+            while (Take(ref sn, Avoid, out var avoid))
+                tests.Add(new(Check.OrganAvoid, Ids: AvoidMasks(avoid.Groups["o"].Value)));
+            if (Take(ref sn, Organ, out var organ) && OrganMasks(organ.Groups["o"].Value) is { Count: > 0 } masks)
+                tests.Add(new(organ.Groups["only"].Success ? Check.OrganOnly : Check.Organ, Ids: masks));
+            if (Take(ref sn, Stance, out var stance))
+                tests.Add(new(Check.Pose, Ids: [stance.Groups["p"].Value.StartsWith("prone", StringComparison.Ordinal) ? 2 : stance.Groups["p"].Value.StartsWith("crouch", StringComparison.Ordinal) ? 1 : 0]));
+            Take(ref sn, ThatWas, out _);
+            if (Take(ref sn, AvoidState, out var notNow))  // `the Puma should not be running away or charging you`
+                tests.Add(new(Check.NotState, Ids: AvoidedStates(notNow.Groups["s"].Value)));
             foreach (var (stateWord, states, first) in States)
                 if (Take(ref sn, stateWord, out _))
                     tests.Add(new(first ? Check.FirstState : Check.State, Ids: [.. states]));
-            if (Take(ref sn, OffStand, out _)) tests.Add(new(Check.Stand, Ids: [0]));
+            if (Take(ref sn, OffStand, out _) || Take(ref sn, NoStands, out _)) tests.Add(new(Check.Stand, Ids: [0]));
             else if (Take(ref sn, OnStand, out var stand)) tests.Add(new(Check.Stand, Ids: [.. StandIds(stand.Groups["s"].Value)]));
-            if (Take(ref sn, NoScope, out _)) tests.Add(new(Check.NoScope));
-            else if (Take(ref sn, Scoped, out _)) tests.Add(new(Check.Scope));
+            if (sightIds.Count > 0) tests.Add(new(Check.Scope, Ids: sightIds));
             if (weaponIds.Count > 0) tests.Add(new(Check.Weapon, Ids: weaponIds));
             if (ammoIds.Count > 0) tests.Add(new(Check.Ammo, Ids: ammoIds));
             return ([.. tests], sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(w => !Stops.Contains(w)));
@@ -314,8 +425,25 @@ public sealed partial class State
             return q.Length == 0 ? [] : weapons.Where(w => (" " + w.Name + " ").Contains(" " + q + " ", StringComparison.Ordinal)).Select(w => w.Id);
         }
 
+        static readonly string[] Articles = ["a", "an", "the", "any"];
+
+        static string[] Content(string[] phrase) => [.. phrase.Where(w => !Articles.Contains(w))];
+
+        // the alternatives of a phrase before a class noun (`any 243 or 223 rifle`): the name words of each, an empty phrase being one empty alternative
+        static string[][] Alternatives(string[] phrase) => [.. string.Join(' ', phrase).Split(" or ").Select(g => Content(g.Split(' ', StringSplitOptions.RemoveEmptyEntries)))];
+
+        /// <summary>The weapons of a class noun with the name words before it; with alternatives (`any .243 or .223 rifle`) the weapons of each, and none when one of them names none.</summary>
+        IEnumerable<long> WeaponsOf(string[] phrase, Match noun)
+        {
+            var groups = Alternatives(phrase);
+            if (groups.Length > 1 && groups.Any(g => g.Length == 0))
+                return [];
+            var found = groups.Select(g => weapons.Where(w => WeaponOf(w, noun, g)).Select(w => w.Id).ToArray()).ToArray();
+            return found.All(f => f.Length > 0) ? found.SelectMany(f => f) : [];
+        }
+
         // does the weapon fit a class noun and the name words before it? (a bare "bow" is not a crossbow; "bow or crossbow" is both)
-        static bool WeaponOf((long Id, string Name, string Class, HashSet<string> Words) w, Match noun, string[] phrase)
+        static bool WeaponOf((long Id, string Name, string Class, HashSet<string> Words) w, Match noun, string[] words)
         {
             var word = noun.Groups["c"].Value.Split(' ')[0].TrimEnd('s');
             var fits = word switch
@@ -326,9 +454,10 @@ public sealed partial class State
                 "muzzleloader" => w.Class == "Muzzleloaders",
                 "revolver" or "pistol" => w.Class == "Handguns" && w.Words.Contains(word),
                 "crossbow" or "longbow" => w.Words.Contains(word),
+                "gun" => true,
                 _ => w.Class == "Bows & Crossbows" && (noun.Groups["x"].Success || w.Words.Contains("bow")),
             };
-            return fits && phrase.All(w.Words.Contains);
+            return fits && words.All(w.Words.Contains);
         }
 
         /// <summary>Cuts the noun (a match in `s`) and the longest run of up to `most` words before it that `find` accepts (it gets the words and the noun) out of `s`; the ids it found.</summary>
@@ -345,10 +474,24 @@ public sealed partial class State
             return [];
         }
 
-        // the bits of a hit's `organ2`: heart 1, right lung 2, left lung 4, brain 16; a mask is met when all its bits are
+        // the `animal_state`s a title refuses: charging 9, running away (fleeing) 5, 10, 11 and 15
+        static HashSet<long> AvoidedStates(string words) =>
+            [.. (words.Contains("charging") ? new long[] { 9 } : []).Concat(words.Contains("running") || words.Contains("fleeing") ? [5, 10, 11, 15] : [])];
+
+        // the bits of a hit's `organ2` (bit n is 1 << n): heart 0, right lung 1, left lung 2, liver 3, brain 4, intestines 5, the spine 10, 21 and 22, the shoulder blade 23, the neck
+        // bones 24 to 26, the skull 28, the hip bone 29
+        static long Bits(params int[] bits) => bits.Aggregate(0L, (m, b) => m | 1L << b);
+
+        // a mask is met when all its bits are: the heart, either lung, a double lung shot both, the brain
         static HashSet<long> OrganMasks(string words) =>
-            words.Contains("double lung") ? [6] : words.Contains("brain") ? [16]
-            : [.. (words.Contains("heart") ? new long[] { 1 } : []).Concat(words.Contains("lung") ? [2, 4] : [])];
+            words.Contains("double lung") ? [Bits(1, 2)]
+            : [.. (words.Contains("heart") ? new[] { Bits(0) } : []).Concat(words.Contains("lung") ? [Bits(1), Bits(2)] : []).Concat(words.Contains("brain") ? [Bits(4)] : [])];
+
+        static HashSet<long> AvoidMasks(string word) => [word switch
+        {
+            "skull" => Bits(28), "liver" => Bits(3), var w when w.StartsWith("intestine", StringComparison.Ordinal) => Bits(5),
+            _ => Bits(10, 21, 22, 23, 24, 25, 26, 28, 29),  // the bones
+        }];
     }
 
     /// <summary>The coverage report of the catalogue's missions: how many objectives the server understands (its kind, species, gender and conditions), how many it does not,
@@ -366,6 +509,7 @@ public sealed partial class State
         var not = all.Where(x => !Understood(x.Objective.Rule)).ToList();
         yield return $"missions: {missions.Count}, objectives: {all.Count}";
         yield return $"understood: {all.Count - not.Count}, not understood: {not.Count} (never met until a version reads them)";
+        yield return $"missions fully readable: {missions.Count - not.Select(x => x.Mission).Distinct().Count()} of {missions.Count}";
         yield return "understood by kind: " + string.Join(", ", byKind);
         yield return "conditions read: " + string.Join(", ", all.SelectMany(x => x.Objective.Rule.Tests ?? []).GroupBy(t => t.Check).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}"));
         yield return "not understood: of a kind the server does not read " + not.Count(x => x.Objective.Rule.Kind == Kind.Other) + ", with a condition it does not read " + not.Count(x => x.Objective.Rule.Kind != Kind.Other);

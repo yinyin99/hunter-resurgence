@@ -7,7 +7,7 @@ namespace Resurgence.Server.Tests;
 
 /// <summary>What a mission objective's title asks of the kill (weapon, ammunition, shot, harvest value, distance, score, weight, state, stand, reserve, a named animal),
 /// an objective the server does not understand, the coverage report, what a later version confirms, and the rollback of what the lax rules finished. Invented catalogue and events.</summary>
-public class MissionConditionTests : StateTestBase
+public class MissionConditionTests : MissionTestBase
 {
     // ids 1 to n in this order; each is one objective that is its title
     static readonly string[] Titles =
@@ -26,60 +26,11 @@ public class MissionConditionTests : StateTestBase
         "Harvest a Test Deer in Test Reserve",                                                             // 12
         "Harvest \"Patient Zero\" by the large beach (X: 6.273, Y: 6.330) at over 100 meters with 100% Harvest Value.",  // 13 a named animal
         "Harvest a Test Deer without a scope",                                                             // 14
-        "Harvest a Test Deer while prone",                                                                 // 15 not understood
+        "Harvest a Test Deer while whistling",                                                             // 15 not understood
         "Harvest a Test Deer using any shotgun",                                                           // 16 a weapon class
         "Harvest an airborne Test Deer using Test Round ammunition",                                       // 17 both
         "Harvest a Test Deer with a heart shot",                                                           // 18
     ];
-
-    static string Catalogue(IEnumerable<string> titles, string extra = "") =>
-        "{\"missions\": [" + string.Join(",", titles.Select((t, i) =>
-            $"{{\"id\": {i + 1}, \"title\": {Py.Dumps(JsonValue.Create(t))}, \"dependencies\": [], \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": {Py.Dumps(JsonValue.Create(t))}}}]{extra}}}")) + "]}";
-
-    public MissionConditionTests()
-    {
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
-    }
-
-    /// <summary>A state on `file` whose catalogue is made of these missions (each: id, title, dependencies, gm, objectives) and a few weapons and ammunition.</summary>
-    State New(string file, string missions, int[]? permitted = null)
-    {
-        var app = APP;
-        app["missions"] = JsonNode.Parse(missions)!["missions"]!.DeepClone();
-        foreach (var item in new[]
-        {
-            """{"id": 50, "name": "Test Carbine", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 51, "name": "Test Shotgun", "cat": 1, "subcat": {"name": "Shotguns"}}""",
-            """{"id": 52, "name": "Test Round", "cat": 3}""", """{"id": 53, "name": "Test Slug Shells", "cat": 3}""",
-        })
-            app["items"]!.AsArray().Add(JsonNode.Parse(item));
-        var connect = CONNECT;
-        // no ammunition rule (every kill is permitted), or these ammunition ids only for species 1
-        connect["ethical"] = permitted is null ? new JsonArray() : new JsonArray([.. Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonArray([.. permitted.Where(_ => i == 1).Select(a => (JsonNode?)a)]))]);
-        connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
-        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
-    }
-
-    /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings and the harvest.</summary>
-    static JsonNode[] Shot(int individual, int weapon = 50, int ammunition = 52, int distance = 15000, long organ = 6, int animalState = 3, int location = 0, int scope = -1,
-                           int value = 100000, int grams = 90000, int hits = 1, int special = 0, int species = 1, int x = 0, int z = 0)
-    {
-        var events = new List<JsonNode> { O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 0, "weight_grams": {{grams}}, "texture": 0, "special": {{special}}}""") };
-        for (var i = 0; i < hits; i++)
-            events.Add(O($$"""
-                {"event": 1, "individual": {{individual}}, "weapon_id": {{weapon}}, "ammunition_id": {{ammunition}}, "distance_cms": {{distance}}, "organ1": 33, "organ2": {{organ}},
-                 "animal_state": {{animalState}}, "location": {{location}}, "scope_id": {{scope}}, "species": {{species + 1}}, "x": {{x}}, "z": {{z}}}
-                """));
-        events.Add(O($$"""{"event": 3, "individual": {{individual}}, "extended_species": {{species}}, "harvest_value": {{value}}, "trophy_integrity": 100000}"""));
-        return [.. events];
-    }
-
-    string Completed(long account = ME, State? of = null) => string.Join(",", Reply((of ?? state).MissionsReply(account)!)["completed"]!.AsArray().Select(i => (long)i!));
-
-    double Gm(State? of = null, long account = ME) => (of ?? state).Wallet(account)["gm"]!.GetValue<double>();
-
-    void ActivateAll(State? of = null) => (of ?? state).MissionCall(ME, "activate_all_available", []);
 
     [Fact]
     public void TestAnObjectiveIsMetOnlyByAKillThatMeetsEveryConditionOfItsTitle()
@@ -130,14 +81,15 @@ public class MissionConditionTests : StateTestBase
     [Fact]
     public void TestAnObjectiveWithWordsTheServerDoesNotReadIsNeverMetAndTheCoverageCountsIt()
     {
-        state = New("coverage.db", Catalogue(["Harvest a Test Deer", "Harvest a Test Deer while prone", "Take a Test Deer to a friend"]));
+        state = New("coverage.db", Catalogue(["Harvest a Test Deer", "Harvest a Test Deer while whistling", "Take a Test Deer to a friend"]));
         ActivateAll();
         Hb(Shot(1));
         Assert.Equal("1", Completed());
         var report = state.MissionCoverage().ToList();
         Assert.Equal("missions: 3, objectives: 3", report[0]);
         Assert.Equal("understood: 1, not understood: 2 (never met until a version reads them)", report[1]);
-        Assert.Equal(["objectives not understood, by mission:", "mission 2 objective 0: Harvest a Test Deer while prone", "mission 3 objective 0: Take a Test Deer to a friend"], report[^3..]);
+        Assert.Equal("missions fully readable: 1 of 3", report[2]);
+        Assert.Equal(["objectives not understood, by mission:", "mission 2 objective 0: Harvest a Test Deer while whistling", "mission 3 objective 0: Take a Test Deer to a friend"], report[^3..]);
     }
 
     [Fact]
