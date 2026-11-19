@@ -174,8 +174,9 @@ public sealed partial class State
             if (drop.Count == 0)
                 continue;
             reopened.Add((id, state, drop));
-            if (apply)
-                con.Exec("UPDATE missions SET state = 2, objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(held.Where(d => !drop.Contains(d)))), id);
+            if (apply)  // what a row of an earlier schema finished stays earlier (a harvest after the upgrade is not given to it again), minus what is reopened
+                con.Exec("UPDATE missions SET state = 2, objectives = ?, earlier = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(held.Where(d => !drop.Contains(d)))),
+                         Py.Dumps(List((mark.Since is null ? mark.EarlierIds.Union(held) : mark.EarlierIds).Except(drop))), id);
         }
         var lost = reopened.Where(r => r.Was == 3).Select(r => r.Mission).ToHashSet();
         var kept = before.Where(b => missions[b].Dependencies.Any(lost.Contains)).ToList();

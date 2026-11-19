@@ -300,5 +300,33 @@ public class MissionConditionTests : StateTestBase
         Assert.Equal("1", Completed(of: later));
     }
 
+    [Fact]
+    public void TestTheRollbackOfARowOfAnEarlierSchemaKeepsWhatItFinishedEarlierAndNotWhatItReopened()
+    {
+        // mission 1 has three objectives (the first over 100 m once the rules read it), mission 2 two; every harvest is at 20 m
+        string Catalogue(bool strict) => "{\"missions\": ["
+            + $"{{\"id\": 1, \"title\": \"Three\", \"dependencies\": [], \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " from over 100 meters" : "")}\"}}, "
+            + "{\"id\": 1, \"title\": \"Harvest a Test Deer\"}, {\"id\": 2, \"title\": \"Harvest a Test Deer\"}]},"
+            + $"{{\"id\": 2, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " from over 100 meters" : "")}\"}}, "
+            + "{\"id\": 1, \"title\": \"Harvest a Test Deer\"}]}]}";
+        state = New("earlier.db", Catalogue(strict: false));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));
+        Hb(Shot(2, distance: 2000));  // mission 2 is completed, mission 1 has two objectives finished
+        Assert.Equal("2", Completed());
+        using (var con = state.Store.Open())
+        {
+            foreach (var column in new[] { "since", "seen", "kept", "earlier" })
+                con.Exec($"ALTER TABLE missions DROP COLUMN {column}");
+            con.Exec("DROP TABLE mission_rollbacks");
+            con.Exec("PRAGMA user_version = 29");
+        }
+        var strict = New("earlier.db", Catalogue(strict: true));
+        Assert.Equal("reopened 2 objectives in 2 missions", strict.RollbackMissions(apply: true).Last());
+        using var check = strict.Store.Open(ME);
+        Assert.Equal(["1/2/[1]/[1]", "2/2/[1]/[1]"], check.Rows("SELECT mission_id, state, objectives, earlier FROM missions WHERE account_id = $a ORDER BY mission_id")
+            .Select(r => string.Join("/", r.Select(v => v.ToString())).Replace(" ", "")));  // the first objective is open and not earlier: a harvest after the upgrade can finish it
+    }
+
     static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);
 }
