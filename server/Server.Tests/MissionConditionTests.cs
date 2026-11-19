@@ -51,7 +51,7 @@ public class MissionConditionTests : MissionTestBase
         Assert.DoesNotContain("13", Completed().Split(','));
         Hb(Shot(6, special: 0, x: 6300, z: 6300));  // an ordinary animal of the mission's kind at the place, over 100 m, with 100 % value
         Assert.Contains("13", Completed().Split(','));
-        Assert.DoesNotContain("15", Completed().Split(','));  // "while prone" is not understood: no kill meets it
+        Assert.DoesNotContain("15", Completed().Split(','));  // "while whistling" is not understood: no kill meets it
     }
 
     [Fact]
@@ -310,9 +310,9 @@ public class MissionConditionTests : MissionTestBase
     [Fact]
     public void TestTheRollbackKeepsAFinishedObjectiveItCannotJudge()
     {
-        // the earlier rules finished both; the stricter reader understands the first (over 100 m) and not the second ("while prone")
+        // the earlier rules finished both; the stricter reader understands the first (over 100 m) and not the second ("while whistling")
         string Catalogue(bool strict) => "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{\"text\": \"10 gm$\"}], \"objectives\": ["
-            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " from over 100 meters" : "")}\"}}, {{\"id\": 1, \"title\": \"Harvest a Test Deer{(strict ? " while prone" : "")}\"}}]}}]}}";
+            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " from over 100 meters" : "")}\"}}, {{\"id\": 1, \"title\": \"Harvest a Test Deer{(strict ? " while whistling" : "")}\"}}]}}]}}";
         state = New("judge.db", Catalogue(strict: false));
         ActivateAll();
         Hb(Shot(1, distance: 2000));
@@ -332,7 +332,7 @@ public class MissionConditionTests : MissionTestBase
     {
         // the unread objective is first; the ordered one behind it is met by the stored harvest, so it must not be reopened
         string Catalogue(bool strict) => "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{\"text\": \"10 gm$\"}], \"objectives\": ["
-            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " while prone" : "")}\"}}, {{\"id\": 1, \"title\": \"Then, harvest a Test Deer{(strict ? " from under 40 meters" : "")}\"}}]}}]}}";
+            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer{(strict ? " while whistling" : "")}\"}}, {{\"id\": 1, \"title\": \"Then, harvest a Test Deer{(strict ? " from under 40 meters" : "")}\"}}]}}]}}";
         state = New("ordered.db", Catalogue(strict: false));
         ActivateAll();
         Hb(Shot(1, distance: 2000));
