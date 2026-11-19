@@ -349,13 +349,14 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     {
         state.CreateAccount(10, "restored");
         state.CreateAccount(11, "matching");
-        foreach (var (account, units) in new[] { (VIEWER, 1), (10, 2), (11, 1) })
+        state.CreateAccount(12, "huge");
+        foreach (var (account, units) in new[] { (VIEWER, 1), (10, 2), (11, 1), (12, 2) })
         {
             using var con = state.Store.Open(account);
             for (var guid = 1; guid <= units; guid++)
                 con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, 780, 0, '{}', NULL)", guid);
         }
-        foreach (var (account, id, type, source) in new[] { (10L, "7", "780", "/game/user/lodge"), (10, "8", "\"x\"", "/game/user/lodges"), (11, "9", "780", "/game/user/lodges") })
+        foreach (var (account, id, type, source) in new[] { (10L, "7", "780", "/game/user/lodge"), (10, "8", "\"x\"", "/game/user/lodges"), (11, "9", "780", "/game/user/lodges"), (12, "9223372036854775807", "780", "/game/user/lodges") })
         {
             using var con = state.Store.Open(account);
             PlayerRows.AddLodge(con, source, id, O($$"""{"id": {{id}}, "name": "mine", "lodge_type_id": {{type}}}"""));  // 10's lodge 7 has no list row: it still counts
@@ -367,7 +368,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             using var con = state.Store.Open(account);
             return (long)con.Scalar("SELECT COUNT(*) FROM lodges WHERE account_id = $a AND source = '/game/user/lodges' AND json_extract(node, '$.lodge_type_id') = 780")!;
         }
-        Assert.Equal([1, 1, 1], [Count(VIEWER), Count(10), Count(11)]);  // 10 had lodge 7 (detail only) and gained one; 11 matched and stayed
+        Assert.Equal([1, 2, 1, 1], [Count(VIEWER), Count(10), Count(11), Count(12)]);  // 10's lodge 7 (detail only) got its list row and 10 gained one; 11 matched and stayed; 12's lodge id cannot be followed: left as it was
         var made = (await Read(V2, "/game/user/lodges", viewer)).AsArray().Single()!;
         Eq("""["Rustic Lodge", 780, false]""", T(made["name"], made["lodge_type_id"], made["locked"]));
         Eq("""[1, [], []]""", T(made["id"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["animal_slots"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["weapon_slots"]));
