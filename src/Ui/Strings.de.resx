@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter-Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Ruhmeshalle früherer Saisons</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Saison {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Alle Zeiten</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Saison 1: vor dem Community-Server</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Saison 2: Community-Server</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Saison</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Beste Bewertungen aller Zeiten</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Beste Schussweiten aller Zeiten</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Hier ist noch niemand platziert</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Noch keine Saison ist zu Ende</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Beste Lane-Bandit-Bewertungen</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit ist ein cooles Retro-Arcade-Spiel, das Sie auf Ihrem Huntermate spielen können, um sich die Zeit zu vertreiben, während Sie auf das Erscheinen der Trophäe warten!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit erwerben</value></data>

@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Avcı skoru</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Geçen sezonun Onur Listesi</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezon {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Tüm zamanlar</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Sezon 1: topluluk sunucusundan önce</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Sezon 2: topluluk sunucusu</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Sezon</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Tüm zamanların en yüksek skorları</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Tüm zamanların en uzun mesafeleri</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Burada henüz kimse sıralamada değil</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Henüz hiçbir sezon sona ermedi</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>En yüksek Lane Bandit skorları</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit, Huntermate'inizde oynayabileceğiniz, avınızın ortaya çıkmasını beklerken eğlenceli vakit geçirmenizi sağlayan havalı bir retro atari oyunudur!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit'i edinin</value></data>

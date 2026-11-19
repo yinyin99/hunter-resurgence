@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Puntuación del Cazador</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Salón de la Fama de la temporada pasada</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Temporada {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Histórico</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Temporada 1: antes del servidor comunitario</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Temporada 2: servidor comunitario</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Temporada</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Mejores puntuaciones de todos los tiempos</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Mejores distancias de todos los tiempos</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Todavía no hay nadie clasificado aquí</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Aún no ha terminado ninguna temporada</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Mejores puntuaciones de Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>¡Lane Bandit es un genial juego arcade retro que puedes jugar en tu Huntermate para entretenerte mientras esperas a que aparezca ese trofeo!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Conseguir Lane Bandit</value></data>

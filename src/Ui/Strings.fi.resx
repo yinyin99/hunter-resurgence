@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Viime kauden kunniagalleria</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Kausi {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Kaikkien aikojen</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Kausi 1: ennen yhteisöpalvelinta</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Kausi 2: yhteisöpalvelin</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Kausi</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Kaikkien aikojen parhaat pisteet</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Kaikkien aikojen pisimmät etäisyydet</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Täällä ei ole vielä ketään sijoittuneena</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Yksikään kausi ei ole vielä päättynyt</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Parhaat Lane Bandit -tulokset</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Osta Lane Bandit</value></data>

@@ -36,7 +36,7 @@ public static class Seo
         paths.AddRange((await store.BundlesAsync()).Select(b => $"/store/bundle/{b.Id}"));
         for (int p = 1, pages = 1; p <= pages; p++)
         {
-            var board = await boards.RowsAsync("hunterscore", 0, p);
+            var board = await boards.RowsAsync("hunterscore", 0, p, 0);
             pages = board.Pages;
             paths.AddRange(board.Rows.Select(r => $"/profile/{Uri.EscapeDataString(r.Handle)}"));
         }

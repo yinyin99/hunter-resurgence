@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunterpoäng</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Hall of Fame för tidigare säsonger</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Säsong {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Genom tiderna</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Säsong 1: före community-servern</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Säsong 2: community-servern</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Säsong</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Toppoäng genom tiderna</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Längsta skott genom tiderna</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Ingen är rankad här ännu</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Ingen säsong har tagit slut ännu</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Högsta Lane Bandit-poäng</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit är ett coolt retro-arkadspel som du kan spela på din Huntermate för att hålla dig underhållen medan du väntar på att trofén ska dyka upp!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Skaffa Lane Bandit</value></data>

@@ -367,11 +367,11 @@ public sealed class LiveSiteTests : UiContext
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("ul.tabs")));
     }
 
-    // the community server has no seasons, species or antler boards: the live site offers the three it has, and another board's address goes to the hunterscore board
+    // the community server has no antler boards: the live site offers the six it has, and the address of an antler board goes to the score board
     [Theory]
-    [InlineData("score", "/leaderboards/hunterscore")]
-    [InlineData("halloffame/3", "/leaderboards/hunterscore")]
-    [InlineData("antlers/single", "/leaderboards/hunterscore")]
+    [InlineData("score", "/")]
+    [InlineData("halloffame", "/")]
+    [InlineData("antlers/single", "/leaderboards/score")]
     [InlineData("bustthrough", "/")]
     public void TheLiveBoardsAreTheServersThree(string path, string landed)
     {
@@ -383,7 +383,7 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<Leaderboards>(p => p.Add(l => l.Path, path));
 
         Assert.Equal(landed, "/" + nav.ToBaseRelativePath(nav.Uri));
-        Assert.Equal(["/leaderboards/hunterscore", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["/leaderboards/score", "/leaderboards/range", "/leaderboards/hunterscore", "/leaderboards/halloffame", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
     }
 
     // the live help keeps its support tab and the daily missions': the other tabs are the mock's, and their addresses go to /help

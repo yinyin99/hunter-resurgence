@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Hall of Fame des saisons précédentes</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Saison {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Tous les temps</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Saison 1 : avant le serveur communautaire</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Saison 2 : serveur communautaire</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Saison</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Meilleurs scores de tous les temps</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Meilleures distances de tous les temps</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Personne n’est encore classé ici</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Aucune saison n’est encore terminée</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit - Meilleurs scores</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit est un petit jeu d’arcade rétro auquel vous pouvez jouer sur votre HunterMate pour vous divertir en attendant que les animaux ne daignent se montrer !</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Acheter Lane Bandit</value></data>

@@ -36,7 +36,10 @@ public static class ServerSessionApi
     public const string ScoreSuffix = "/score";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. Public: no cookie needed.</summary>
     public const string GallerySuffix = "/gallery";
-    /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.
+    /// Under it, the species boards by season (<c>season</c> missing: the current one; 0: all time; no cookie needed but for <c>/me</c>):
+    /// <c>/seasons</c> 200 <see cref="ServerSeasons"/>; <c>/&lt;score|range&gt;</c> 200 <see cref="ServerSpeciesBoards"/>; <c>/&lt;score|range&gt;/&lt;species&gt;?page=n</c> 200 <see cref="ServerRowsPage"/>;
+    /// <c>/&lt;score|range&gt;/&lt;species&gt;/me</c> (with the cookie) 200 <see cref="ServerRow"/> or 404 when not ranked; <c>/halloffame</c> 200 <see cref="ServerHall"/>, none for all time and the current season.</summary>
     public const string Leaderboards = "/leaderboards";
 }
 
@@ -58,6 +61,29 @@ public sealed record ServerGameRow(int Rank, string Handle, long Value, string? 
 
 /// <summary>One page of a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
 public sealed record ServerGameBoard(int Page, int Pages, int Total, ServerGameRow[] Rows);
+
+/// <summary>A season of <see cref="ServerSeasons"/>: its times are Unix seconds; <c>Start</c> is null for a season with no start (the first) and <c>End</c> for the current season.</summary>
+public sealed record ServerSeason(int No, long? Start, long? End);
+
+/// <summary>The seasons of <see cref="ServerSessionApi.Leaderboards"/>; all time (0) is not listed.</summary>
+public sealed record ServerSeasons(int Current, ServerSeason[] Seasons);
+
+/// <summary>A place on a species board: <c>Value</c> is the score or the distance in metres, <c>Weapon</c> the weapon's item id and <c>WeaponName</c> its name ("" when unknown),
+/// <c>Ts</c> the kill's Unix seconds, <c>Kill</c> the id of its sheet (0 for none).</summary>
+public sealed record ServerRow(int Rank, string Handle, double Value, long Weapon, string? WeaponName, long Ts, long Kill, string? Avatar = null);
+
+/// <summary>A species and its best three places of the overview of a species board.</summary>
+public sealed record ServerSpeciesBoard(int Species, string Name, ServerRow[] Top);
+
+public sealed record ServerSpeciesBoards(ServerSpeciesBoard[] Boards);
+
+/// <summary>A page of the top 100 of a species.</summary>
+public sealed record ServerRowsPage(int Page, int Pages, int Total, ServerRow[] Rows);
+
+/// <summary>The best score and the best range of a species in an ended season.</summary>
+public sealed record ServerHallRow(int Id, string Species, ServerRow Score, ServerRow Range);
+
+public sealed record ServerHall(ServerHallRow[] Rows);
 
 /// <summary>A hunter's skills of <see cref="ServerSessionApi.SkillsSuffix"/>: every number is a level plus the fraction of its span (2.5: level 2, 50%).</summary>
 public sealed record ServerSkills(ServerSpeciesSkill[] Species, ServerWeaponSkill[] Weapons);

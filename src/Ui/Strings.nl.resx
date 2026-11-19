@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Hall of Fame van eerdere seizoenen</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Seizoen {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Alle tijden</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Seizoen 1: vóór de communityserver</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Seizoen 2: communityserver</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Seizoen</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Topscores aller tijden</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Topafstanden aller tijden</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Hier staat nog niemand in de ranglijst</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Er is nog geen seizoen afgelopen</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Topscores Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is een coole retro-arcadegame die je op je Huntermate kunt spelen om je te vermaken terwijl je wacht tot die trofee verschijnt!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Lane Bandit downloaden</value></data>

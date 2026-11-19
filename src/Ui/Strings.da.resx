@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Jægerscore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Tidligere sæsoners Hall of Fame</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sæson {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Gennem tiderne</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Sæson 1: før fællesskabsserveren</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Sæson 2: fællesskabsserveren</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Sæson</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Højeste scorer gennem tiderne</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Længste skud gennem tiderne</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Ingen er rangeret her endnu</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Ingen sæson er slut endnu</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Højeste Lane Bandit-scorer</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et fedt retro-arkadespil, som du kan spille på din Huntermate, så du har noget at underholde dig med, mens du venter på, at trofæet dukker op!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Hent Lane Bandit</value></data>
