@@ -35,6 +35,23 @@ public sealed partial class State
         PlayerRows.AddLodge(con, LodgeOne, id.ToString(), row);
     }
 
+    /// <summary>Once, at start: an account that owns more units of a lodge item than it has lodges of that type (a purchase made before the store added lodges, or a restore's inventory)
+    /// gets the missing lodges (<see cref="GrantLodge"/>). Idempotent: a second run finds none.</summary>
+    public void BackfillLodges()
+    {
+        foreach (var account in Store.AccountIds())
+        {
+            using var con = Con(account);
+            con.Begin();
+            var have = con.Rows("SELECT json_extract(node, '$.lodge_type_id') FROM lodges WHERE account_id = $a AND source = ? AND json_extract(node, '$.lodge_type_id') IS NOT NULL", LodgeList).GroupBy(r => Convert.ToInt64(r[0])).ToDictionary(g => g.Key, g => g.Count());
+            foreach (var r in con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id"))
+                if (facts.LodgeOfItem((long)r[0]) is { } type)
+                    for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
+                        GrantLodge(con, (long)r[0], type);
+            con.Commit();
+        }
+    }
+
     /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
     public byte[]? LodgeCatalogueReply(string key) => facts.LodgeCatalogue(key) is { } node ? Py.DumpBytes(node) : null;
 

@@ -345,6 +345,31 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public void TestTheStartAddsTheMissingLodgesOfOwnedLodgeItemsOnce()
+    {
+        state.CreateAccount(10, "restored");
+        foreach (var account in new[] { VIEWER, 10 })
+        {
+            using var con = state.Store.Open(account);
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, 1, 780, 0, '{}', NULL)");
+        }
+        using (var con = state.Store.Open(10))
+        {
+            var lodge = O("""{"id": 7, "name": "mine", "lodge_type_id": 780}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "7", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "7", lodge.DeepClone());
+        }
+        state.BackfillLodges();
+        state.BackfillLodges();  // idempotent
+        long Rows(long account)
+        {
+            using var con = state.Store.Open(account);
+            return (long)con.Scalar("SELECT COUNT(*) FROM lodges WHERE account_id = $a AND json_extract(node, '$.lodge_type_id') = 780")!;
+        }
+        Assert.Equal([2, 2], [Rows(VIEWER), Rows(10)]);  // the viewer got its lodge (the list's row and the single's); the restored lodge stayed alone
+    }
+
+    [Fact]
     public async Task TestALodgeBoughtInTheStoreIsListedEnteredAndEdited()
     {
         Eq("""{"price": 100.0, "success": true}""", Reply(state.BuyReply(OWNER, "item_id=780&amount=2&wallet=GOLD"u8.ToArray())));

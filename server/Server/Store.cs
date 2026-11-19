@@ -657,6 +657,13 @@ public sealed class Store
         return con.Scalar("SELECT archived_uid FROM claims WHERE account_id = ? AND state = 'restored'", id) as long?;
     }
 
+    /// <summary>The id of every account.</summary>
+    public List<long> AccountIds()
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT id FROM accounts").Select(r => (long)r[0])];
+    }
+
     /// <summary>The `avatar_url` of every account that has one, by user id.</summary>
     public List<(long Id, string Url)> AvatarUrls()
     {
