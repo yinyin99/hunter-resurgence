@@ -304,7 +304,7 @@ public sealed class LiveSiteTests : UiContext
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
         // hunterscore 1000 + 7 + 3 + 0 of 4 rows; animals 1007 of 2000 (a row counts 1000 at most), weapons 3 of 1000; collectables none
-        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
+        cut.WaitForAssertion(() => Assert.Equal([$"{1010:N0} / {4000:N0} (25%)", $"{1007:N0} / {2000:N0} (50%)", $"3 / {1000:N0} (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
     }
 
 
