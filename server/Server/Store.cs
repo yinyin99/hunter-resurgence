@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "challenges", "daily_missions"];
+         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 29;
+    public const int Version = 30;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -50,11 +50,21 @@ public sealed class Store
     // the account's missions: a row per active (state 2) or completed (3) mission, with the ids of its finished objectives in the
     // order they were finished (JSON); a mission without a row is not started. Ids may have no definition (a restored account's).
     // mission_prefs is the page's switches and favourite groups (JSON), one row per account once it has used missions.
+    // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
+    // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore.
     const string Missions = $"""
         CREATE TABLE missions (
             {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
+            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]',
             PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
         CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
+        {MissionRollbacks}
+        """;
+
+    // what a rollback of the missions (State.RollbackMissions) reopened for an account: JSON with the missions and objectives, and the missions it kept unlocked
+    const string MissionRollbacks = $"""
+        CREATE TABLE IF NOT EXISTS mission_rollbacks (id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, record TEXT NOT NULL);
+        CREATE INDEX IF NOT EXISTS mission_rollbacks_account ON mission_rollbacks (account_id, id);
         """;
 
     // the account's daily missions: one JSON row (frozen, the day of the streak and its date, the finished objectives, the broken streak, the days completed here)
@@ -428,6 +438,24 @@ public sealed class Store
             if (version < 28)  // the first start with the taxidermy: every harvest made until now has a window of 72 hours from now
                 con.Script(TaxidermyGraceTable + $"INSERT INTO taxidermy_grace SELECT {Now()}, {Now() + State.TaxidermyHours * 3600L} WHERE NOT EXISTS (SELECT 1 FROM taxidermy_grace);");
             if (version < 29) con.Script(SeasonsSeed);
+            if (version < 30)
+            {
+                con.Script(MissionRollbacks);
+                if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'since'")! == 0)
+                    con.Script("""
+                        ALTER TABLE missions ADD COLUMN since INTEGER;
+                        ALTER TABLE missions ADD COLUMN seen INTEGER NOT NULL DEFAULT 0;
+                        ALTER TABLE missions ADD COLUMN kept TEXT NOT NULL DEFAULT '[]';
+                        -- the rows are older than the events they will be checked against: only the events from now on are theirs
+                        UPDATE missions SET seen = COALESCE((SELECT MAX(id) FROM events WHERE events.account_id = missions.account_id), 0);
+                        -- what a restore brought stays as it was: a mission completed before it, and the finished objectives of an active one
+                        UPDATE missions SET kept = '*' WHERE state = 3 AND EXISTS (SELECT 1 FROM extras e, json_each(e.body, '$.completed') c
+                            WHERE e.account_id = missions.account_id AND e.path = 'Mission_missions.json' AND json_valid(e.body) AND c.value = missions.mission_id);
+                        UPDATE missions SET kept = COALESCE((SELECT json_extract(e.body, '$.states."' || missions.mission_id || '".objectives') FROM extras e
+                            WHERE e.account_id = missions.account_id AND e.path = 'Mission_missions.json' AND json_valid(e.body)
+                            AND EXISTS (SELECT 1 FROM json_each(e.body, '$.active') a WHERE a.value = missions.mission_id)), '[]') WHERE state = 2;
+                        """);
+            }
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
