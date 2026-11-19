@@ -16,7 +16,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}]""")!);
         var tick = Py.Now();
-        state.Clock = () => tick += 7200;  // every board read is past the kept boards, so a test sees its latest data; the tests of the kept boards fix the clock
+        state.Clock = () => tick += 90000;  // every board read is past the kept boards, so a test sees its latest data; the tests of the kept boards fix the clock
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
         table.Entries[new("POST", "api.test", Replay.APPLICATION, null)] = new Replay.Hit(2, "", 200, [("Content-Type", "application/json")], """{"season": 46, "items": []}"""u8.ToArray());
@@ -232,7 +232,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTheBoardsAreKeptAMinuteAndAnEndedSeasonsAnHour()
+    public async Task TestTheBoardsAreKept15MinutesAndAnEndedSeasons24Hours()
     {
         Scene();
         var now = Py.Now();
@@ -242,18 +242,18 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Equal("charlie:70", await Board("score", Deer));
         state.CreateAccount(30, "hotel");
         Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
-        now += 59;
+        now += 899;
         Assert.Equal("charlie:70", await Board("score", Deer));  // kept
         Assert.Same(state.Boards(false, 2), state.Boards(false, 2));
         now += 2;
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer));  // expired: the new harvest shows
         Assert.Equal("no-store", (await Get("/hunters/alpha/best")).Headers.Single(h => h.Name == "Cache-Control").Value);
-        // an ended season: an hour
+        // an ended season: 24 hours
         Assert.NotNull(state.StartSeason((long)now - 10));
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
         state.CreateAccount(31, "india");
         Harvest(31, 1, Deer, "95", Second + 20, cm: 1000);
-        now += 3599;
+        now += 86399;
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
         now += 2;
         Assert.Equal("india:95 hotel:90 charlie:70", await Board("score", Deer, 2));
