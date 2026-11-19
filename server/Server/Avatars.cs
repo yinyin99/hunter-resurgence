@@ -68,14 +68,14 @@ public sealed partial class State
         new ItemCatalogue(items, avatars).AvatarId(read.Model.Profile.AvatarUrl) is { } id ? ListedAvatarUrl(id)
         : fetched || ImportedAvatarOf(read) is not null ? PhotoUrl(account, ImportedAvatar) : ListedAvatarUrl(DefaultAvatar);
 
-    /// <summary>The avatar of an account as a page draws it: a URL on `site` (the website's) for the imported picture, the game's address for an avatar of the list; null for anything else
-    /// (an address that is none of the list, an imported picture that is gone), where the page shows its default.</summary>
+    /// <summary>The avatar of an account as a page draws it: a URL on `site` (the website's) for the imported picture, the website's copy `<site>/images/avatars/256/<id>.png` for an avatar of the list
+    /// (a browser cannot reach the game host); null for anything else (an address that is none of the list, an imported picture that is gone), where the page shows its default.</summary>
     public string? AvatarUrl(long account, string site)
     {
         if (Store.AvatarUrl(account) is not { Length: > 0 } url) return null;
         if (url.EndsWith($"{PHOTO_PREFIX}{account}/{ImportedAvatar}", StringComparison.Ordinal))
             return HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null;
-        return new ItemCatalogue(items, avatars).AvatarId(url) is { } id ? ListedAvatarUrl(id) : null;
+        return new ItemCatalogue(items, avatars).AvatarId(url) is { } id ? $"{site}/images/avatars/256/{id}.png" : null;
     }
 
     /// <summary>`GET /account/avatars`: `{current, ids, imported}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars and the imported picture's link (null without one).</summary>

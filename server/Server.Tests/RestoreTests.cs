@@ -91,7 +91,7 @@ public class RestoreTests : StateTestBase
         Restorer.Import(state, Zip(TestZip.Own(), "again.zip"), null, tmp);
         Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));
         Assert.Equal($"{BASE}/media/avatar/256/1000000.png", (string)Connect(1001)["account"]!["avatar_url"]!);
-        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.AvatarUrl(1001, "https://web.test"));
+        Assert.Equal("https://web.test/images/avatars/256/1000000.png", state.AvatarUrl(1001, "https://web.test"));
     }
 
     [Fact]
@@ -113,7 +113,7 @@ public class RestoreTests : StateTestBase
         var account = Connect(1001)["account"]!;
         Eq($$"""["{{BASE}}/media/avatar/256/1000042.png", 1000042]""", T(account["avatar_url"], account["face"]));
         Assert.Null(state.PhotoFile("/photos/1001/avatar.jpg"));  // not the player's own picture
-        Assert.Equal($"{BASE}/media/avatar/256/1000042.png", state.AvatarUrl(1001, "https://web.test"));
+        Assert.Equal("https://web.test/images/avatars/256/1000042.png", state.AvatarUrl(1001, "https://web.test"));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class RestoreTests : StateTestBase
         state = StateWithAvatars("webhost.db");
         state.CreateAccount(5, "old");
         state.Store.SetAvatar(5, "https://site.test/media/avatar/256/1000000.png", null);  // the list names it https://avatar.test/256/1000000.png
-        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", state.AvatarUrl(5, "https://web.test"));  // this server's address, whatever host the stored one names
+        Assert.Equal("https://web.test/images/avatars/256/1000000.png", state.AvatarUrl(5, "https://web.test"));  // the website's copy, whatever host the stored one names
         state.Store.SetAvatar(5, "https://site.test/media/avatar/256/11000000.png", null);  // no avatar of the list
         Assert.Null(state.AvatarUrl(5, "https://web.test"));
     }
