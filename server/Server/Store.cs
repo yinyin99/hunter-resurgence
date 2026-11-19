@@ -51,11 +51,12 @@ public sealed class Store
     // order they were finished (JSON); a mission without a row is not started. Ids may have no definition (a restored account's).
     // mission_prefs is the page's switches and favourite groups (JSON), one row per account once it has used missions.
     // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
-    // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore.
+    // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore; earlier: the
+    // objectives finished before `seen` (JSON): no harvest after it finished them.
     const string Missions = $"""
         CREATE TABLE missions (
             {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
-            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]',
+            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]', earlier TEXT NOT NULL DEFAULT '[]',
             PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
         CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
         {MissionRollbacks}
@@ -446,14 +447,16 @@ public sealed class Store
                         ALTER TABLE missions ADD COLUMN since INTEGER;
                         ALTER TABLE missions ADD COLUMN seen INTEGER NOT NULL DEFAULT 0;
                         ALTER TABLE missions ADD COLUMN kept TEXT NOT NULL DEFAULT '[]';
-                        -- the rows are older than the events they will be checked against: only the events from now on are theirs
+                        ALTER TABLE missions ADD COLUMN earlier TEXT NOT NULL DEFAULT '[]';
+                        -- the rows are older than the events they will be checked against: only the events from now on are theirs, and what an active mission has finished is earlier
                         UPDATE missions SET seen = COALESCE((SELECT MAX(id) FROM events WHERE events.account_id = missions.account_id), 0);
+                        UPDATE missions SET earlier = objectives WHERE state = 2;
                         -- what a restore brought stays as it was: a mission completed before it, and the finished objectives of an active one
                         UPDATE missions SET kept = '*' WHERE state = 3 AND EXISTS (SELECT 1 FROM extras e, json_each(e.body, '$.completed') c
                             WHERE e.account_id = missions.account_id AND e.path = 'Mission_missions.json' AND json_valid(e.body) AND c.value = missions.mission_id);
                         UPDATE missions SET kept = COALESCE((SELECT json_extract(e.body, '$.states."' || missions.mission_id || '".objectives') FROM extras e
                             WHERE e.account_id = missions.account_id AND e.path = 'Mission_missions.json' AND json_valid(e.body)
-                            AND EXISTS (SELECT 1 FROM json_each(e.body, '$.active') a WHERE a.value = missions.mission_id)), '[]') WHERE state = 2;
+                            AND EXISTS (SELECT 1 FROM json_each(e.body, '$.active') a WHERE a.value = missions.mission_id)), '[]') WHERE kept = '[]';
                         """);
             }
         }

@@ -28,6 +28,14 @@ public sealed partial class State
 
     static double? NumOf(JsonObject? o, string key) => o is not null && Py.IsNum(o[key]) ? Py.D(o[key]) : null;
 
+    /// <summary>Is the animal within 1000 m of the place (x, z in metres)? Its position is where its last hit found it, else where its spawn was sent from.
+    /// ponytail: the radius is a guess at "by the large beach"; a title's place has no extent.</summary>
+    static bool Near(Kill k, double x, double z)
+    {
+        var at = k.Hits.Value.LastOrDefault() is { } hit && NumOf(hit, "x") is not null ? hit : k.E7;
+        return NumOf(at, "x") is { } ax && NumOf(at, "z") is { } az && Math.Sqrt((ax - x) * (ax - x) + (az - z) * (az - z)) <= 1000;
+    }
+
     static bool In(Test t, double? v) => v is { } x && x >= t.Min && x <= t.Max;
 
     static bool Meets(Test t, Kill k)
@@ -52,7 +60,7 @@ public sealed partial class State
             Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1,
             Check.NoScope => NumOf(last, "scope_id") == -1,
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
-            Check.Named => NumOf(k.E7, "special") is { } special && special != 0,
+            Check.Named => NumOf(k.E7, "special") is { } special && special != 0 && (double.IsInfinity(t.Min) || Near(k, t.Min, t.Max)),
             _ => false,
         };
     }
@@ -105,6 +113,7 @@ public sealed partial class State
             Verb = new(@"\A\s*(?:harvest|spot)\b", Rx),
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
             Coordinates = new(@"\(\s*x\s*:[^)]*\)", Rx),
+            Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
             Notes = new(@"\b(?:other organs may be hit|no other vital organs or bones should be hit)\b\.?", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
@@ -206,6 +215,8 @@ public sealed partial class State
             return m.Success;
         }
 
+        static double Coordinate(string n) => Parse(n) is var v && (n.Contains('.') || n.Contains(',')) && Math.Abs(v) < 100 ? v * 1000 : v;
+
         static double Parse(string n) => double.Parse(n.Replace(',', '.'), CultureInfo.InvariantCulture);
 
         /// <summary>The quantity's test, or false (nothing added) when it has no word that says over or under.</summary>
@@ -225,11 +236,13 @@ public sealed partial class State
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
             s = Verb.Replace(OrderedStart.Replace(s, ""), " ");
             s = Notes.Replace(s, " ");
+            var place = Place.Match(s);  // a coordinate with a fraction is in thousands of metres (6.273 is 6273), a whole one in metres
             var quotes = Quoted.Matches(s).Select(q => (Q: q.Groups[1].Value, Weapons: WeaponsNamed(q.Groups[1].Value).ToArray())).ToList();
             if (quotes.Any(q => q.Weapons.Length == 0) && Coordinates.IsMatch(s))
                 s = PlacePhrase.Replace(s, " ", 1);  // a named animal is where its coordinates say: the words before them name the place
             s = Quoted.Replace(s, m => WeaponsNamed(m.Groups[1].Value).Any() ? " " + Words(m.Groups[1].Value) + " " : " ");
-            if (quotes.Any(q => q.Weapons.Length == 0)) tests.Add(new(Check.Named));
+            if (quotes.Any(q => q.Weapons.Length == 0))
+                tests.Add(place.Success ? new(Check.Named, Coordinate(place.Groups["x"].Value), Coordinate(place.Groups["y"].Value)) : new(Check.Named));
             s = SameHunt.Replace(Coordinates.Replace(Conversion.Replace(s, " "), " "), " ");
             if (Take(ref s, Hundred, out _)) tests.Add(new(Check.Value, 100000));
             var (distance, weight) = (false, false);
@@ -338,7 +351,7 @@ public sealed partial class State
     }
 
     /// <summary>The coverage report of the catalogue's missions: how many objectives the server understands (its kind, species, gender and conditions), how many it does not,
-    /// and the ids of the missions with an objective it does not (those objectives are never met). The `coverage` command prints it.</summary>
+    /// and the objectives it does not, with their mission ids (those objectives are never met). The `coverage` command prints it.</summary>
     public IEnumerable<string> MissionCoverage()
     {
         if (missions.Count == 0)
@@ -355,6 +368,8 @@ public sealed partial class State
         yield return "understood by kind: " + string.Join(", ", byKind);
         yield return "conditions read: " + string.Join(", ", all.SelectMany(x => x.Objective.Rule.Tests ?? []).GroupBy(t => t.Check).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}"));
         yield return "not understood: of a kind the server does not read " + not.Count(x => x.Objective.Rule.Kind == Kind.Other) + ", with a condition it does not read " + not.Count(x => x.Objective.Rule.Kind != Kind.Other);
-        yield return "missions with an objective not understood: " + string.Join(' ', not.Select(x => x.Mission).Distinct().Order());
+        yield return "objectives not understood, by mission:";
+        foreach (var x in not.OrderBy(x => x.Mission))
+            yield return $"mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";
     }
 }

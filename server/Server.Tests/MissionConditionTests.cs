@@ -44,7 +44,7 @@ public class MissionConditionTests : StateTestBase
     }
 
     /// <summary>A state on `file` whose catalogue is made of these missions (each: id, title, dependencies, gm, objectives) and a few weapons and ammunition.</summary>
-    State New(string file, string missions)
+    State New(string file, string missions, int[]? permitted = null)
     {
         var app = APP;
         app["missions"] = JsonNode.Parse(missions)!["missions"]!.DeepClone();
@@ -55,20 +55,21 @@ public class MissionConditionTests : StateTestBase
         })
             app["items"]!.AsArray().Add(JsonNode.Parse(item));
         var connect = CONNECT;
-        connect["ethical"] = new JsonArray();  // no ammunition rule: every kill is permitted
+        // no ammunition rule (every kill is permitted), or these ammunition ids only for species 1
+        connect["ethical"] = permitted is null ? new JsonArray() : new JsonArray([.. Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonArray([.. permitted.Where(_ => i == 1).Select(a => (JsonNode?)a)]))]);
         connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
         return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
     }
 
     /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings and the harvest.</summary>
     static JsonNode[] Shot(int individual, int weapon = 50, int ammunition = 52, int distance = 15000, long organ = 6, int animalState = 3, int location = 0, int scope = -1,
-                           int value = 100000, int grams = 90000, int hits = 1, int special = 0, int species = 1)
+                           int value = 100000, int grams = 90000, int hits = 1, int special = 0, int species = 1, int x = 0, int z = 0)
     {
         var events = new List<JsonNode> { O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 0, "weight_grams": {{grams}}, "texture": 0, "special": {{special}}}""") };
         for (var i = 0; i < hits; i++)
             events.Add(O($$"""
                 {"event": 1, "individual": {{individual}}, "weapon_id": {{weapon}}, "ammunition_id": {{ammunition}}, "distance_cms": {{distance}}, "organ1": 33, "organ2": {{organ}},
-                 "animal_state": {{animalState}}, "location": {{location}}, "scope_id": {{scope}}, "species": {{species + 1}}}
+                 "animal_state": {{animalState}}, "location": {{location}}, "scope_id": {{scope}}, "species": {{species + 1}}, "x": {{x}}, "z": {{z}}}
                 """));
         events.Add(O($$"""{"event": 3, "individual": {{individual}}, "extended_species": {{species}}, "harvest_value": {{value}}, "trophy_integrity": 100000}"""));
         return [.. events];
@@ -94,9 +95,9 @@ public class MissionConditionTests : StateTestBase
         state.NoteLaunch(ME, "start=101&reserve=2"u8.ToArray());
         Hb(Shot(4));
         Assert.Equal("1,2,3,4,5,6,7,8,9,10,11,12,14,16,17,18", Completed());
-        Hb(Shot(5, special: 0));  // an ordinary animal at 150 m and 100 % is not "Patient Zero"
+        Hb(Shot(5, special: 0, x: 6300, z: 6300));  // an ordinary animal at 150 m and 100 % is not "Patient Zero"
         Assert.DoesNotContain("13", Completed().Split(','));
-        Hb(Shot(6, special: 9));
+        Hb(Shot(6, special: 9, x: 6300, z: 6300));  // a named animal near the title's coordinates
         Assert.Contains("13", Completed().Split(','));
         Assert.DoesNotContain("15", Completed().Split(','));  // "while prone" is not understood: no kill meets it
     }
@@ -135,7 +136,7 @@ public class MissionConditionTests : StateTestBase
         var report = state.MissionCoverage().ToList();
         Assert.Equal("missions: 3, objectives: 3", report[0]);
         Assert.Equal("understood: 1, not understood: 2 (never met until a version reads them)", report[1]);
-        Assert.Equal("missions with an objective not understood: 2 3", report[^1]);
+        Assert.Equal(["objectives not understood, by mission:", "mission 2 objective 0: Harvest a Test Deer while prone", "mission 3 objective 0: Take a Test Deer to a friend"], report[^3..]);
     }
 
     [Fact]
@@ -226,9 +227,11 @@ public class MissionConditionTests : StateTestBase
             con.Commit();
         }
         state.MissionsReply(8);
+        using (var con = state.Store.Open(8))
+            con.Exec("UPDATE missions SET state = 3, objectives = '[]' WHERE account_id = $a AND mission_id = 2");  // the restored active mission was completed here
         using (var con = state.Store.Open())
         {
-            foreach (var column in new[] { "since", "seen", "kept" })
+            foreach (var column in new[] { "since", "seen", "kept", "earlier" })
                 con.Exec($"ALTER TABLE missions DROP COLUMN {column}");
             con.Exec("DROP TABLE mission_rollbacks");
             con.Exec("PRAGMA user_version = 29");
@@ -237,11 +240,64 @@ public class MissionConditionTests : StateTestBase
         var rows = new List<string>();
         foreach (var account in new long[] { ME, 8 })
             using (var con = store.Open(account))
-                rows.AddRange(con.Rows("SELECT account_id, mission_id, since, seen, kept FROM missions WHERE account_id = $a ORDER BY mission_id")
+                rows.AddRange(con.Rows("SELECT account_id, mission_id, since, seen, kept, earlier FROM missions WHERE account_id = $a ORDER BY mission_id")
                     .Select(r => string.Join("/", r.Select(v => v is DBNull ? "-" : v.ToString()))));
-        Assert.Equal([$"{ME}/1/-/3/[]", "8/1/-/0/*", "8/2/-/0/[0,3]"], rows.Select(r => r.Replace(" ", "")));  // 3: the last event of the account
+        Assert.Equal([$"{ME}/1/-/3/[]/[]", "8/1/-/0/*/[]", "8/2/-/0/[0,3]/[]"],  // the objectives a restore brought are kept even in a mission completed since
+             rows.Select(r => r.Replace(" ", "")));  // 3: the last event of the account
         using (var con = store.Open())
             Assert.Equal((long)Store.Version, con.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
+    public void TestPermittedAmmunitionScopeWeightInPoundsARangeOfMetresAndASpookedAnimal()
+    {
+        state = New("more.db", Catalogue(["Harvest a Test Deer using permitted ammunition", "Harvest a scoped Test Deer", "Harvest a Test Deer weighing at least 176 lbs",
+                                          "Harvest a Test Deer from between 30 and 50 meters", "Harvest a spooked Test Deer"]), permitted: [52]);
+        ActivateAll();
+        Hb(Shot(1, ammunition: 53, scope: -1, distance: 6000, grams: 70000));  // Test Slug Shells are not permitted on a deer; no scope; 60 m; 70 kg; calm
+        Assert.Equal("", Completed());
+        Hb(Shot(2, ammunition: 52, scope: 7, distance: 4000, grams: 80000, animalState: 5));  // permitted, scoped, 40 m, 80 kg (176 lbs is 79.8 kg), running
+        Assert.Equal("1,2,3,4,5", Completed());
+    }
+
+    [Fact]
+    public void TestANamedAnimalIsTheMissionsSpeciesNearItsCoordinatesAndASpotReadsItsStand()
+    {
+        state = New("named.db", Catalogue(["Harvest \"Patient Zero\" by the large beach (X: 6.273, Y: 6.330)", "Spot a Test Deer from a Tree Stand", "Spot a Test Deer without spooking it"], ", \"species\": [1]"));
+        ActivateAll();
+        Hb(Shot(1, special: 9, x: 0, z: 0));  // named, but 8 km away
+        Hb(Shot(2, special: 9, x: 6800, z: 6000, species: 17));  // named, near, not the mission's species
+        Assert.Equal("", Completed());
+        Hb(Shot(3, special: 9, x: 6800, z: 6000));
+        Assert.Equal("1", Completed());
+        Hb(O("""{"event": 7, "individual": 40, "species": 1, "gender": 0, "weight_grams": 50000, "texture": 0}"""),
+           O("""{"event": 11, "individual": 40, "milliseconds_viewed": 3000, "percentage": 80, "location": 0}"""));  // from the ground
+        Assert.Equal("1", Completed());
+        Hb(O("""{"event": 11, "individual": 40, "milliseconds_viewed": 3000, "percentage": 80, "location": 2}"""));  // from a tree stand; "without spooking it" is not read
+        Assert.Equal("1,2", Completed());
+    }
+
+    [Fact]
+    public void TestAMissionOfAnEarlierSchemaDoesNotGiveALaterHarvestToAnObjectiveItHadFinished()
+    {
+        string Two(string second) => "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [{\"text\": \"10 gm$\"}], \"objectives\": ["
+            + $"{{\"id\": 0, \"title\": \"Harvest a Test Deer\"}}, {{\"id\": 1, \"title\": \"{second}\"}}]}}]}}";
+        state = New("old.db", Two("Harvest a Test Deer using a gizmo"));
+        ActivateAll();
+        Hb(Shot(1));  // finishes the first objective
+        using (var con = state.Store.Open())
+        {
+            foreach (var column in new[] { "since", "seen", "kept", "earlier" })
+                con.Exec($"ALTER TABLE missions DROP COLUMN {column}");
+            con.Exec("DROP TABLE mission_rollbacks");
+            con.Exec("PRAGMA user_version = 29");
+        }
+        state = New("old.db", Two("Harvest a Test Deer using a gizmo"));  // schema 30: the finished objective is earlier
+        Hb(Shot(2));  // meets the carbine, but the server does not read the second objective yet
+        Assert.Equal("", Completed());
+        var later = New("old.db", Two("Harvest a Test Deer with the Test Carbine"));
+        Assert.Equal(1, later.ConfirmMissions());  // this harvest is the second objective's, not the first's again
+        Assert.Equal("1", Completed(of: later));
     }
 
     static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);

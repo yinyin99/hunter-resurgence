@@ -34,7 +34,10 @@ public sealed partial class State
         return met;
     }
 
-    static long[] StartOf(MissionDef m, IEnumerable<long> done, Mark mark) => [.. done.Where(d => !IsHarvest(m, d)).Concat(mark.KeptIds).Distinct()];
+    /// <summary>The objectives counted as done before the first harvest of a replay: those of other kinds and the ones a restore brought; for a confirmation also the ones finished
+    /// before the harvests it checks (a harvest after them did not finish those, and must not be given to them again).</summary>
+    static long[] StartOf(MissionDef m, IEnumerable<long> done, Mark mark, bool confirm) =>
+        [.. done.Where(d => !IsHarvest(m, d)).Concat(mark.KeptIds).Concat(confirm ? mark.EarlierIds : []).Distinct()];
 
     /// <summary>The first event of the account's latest hunt (0 before any).</summary>
     static long LatestHunt(Db con) => con.Scalar("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1") as long? ?? 0;
@@ -80,7 +83,7 @@ public sealed partial class State
             foreach (var (id, (_, done)) in work)
             {
                 var (m, mark) = (missions[id], marks[id]);
-                var met = Replay(m, StartOf(m, done, mark), harvests.Where(h => h.Id > Math.Max(mark.Seen, m.SingleExpedition ? hunt : 0)))
+                var met = Replay(m, StartOf(m, done, mark, confirm: true), harvests.Where(h => h.Id > Math.Max(mark.Seen, m.SingleExpedition ? hunt : 0)))
                     .Where(x => !done.Contains(x.Objective.Id)).ToList();
                 if (met.Count == 0)
                     continue;
@@ -165,7 +168,7 @@ public sealed partial class State
             var mine = harvests.Value.Where(h => h.Id > (mark.Since ?? 0)).ToList();
             // a single-hunt mission was finished in one hunt: the best of its hunts counts
             var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
-            var start = StartOf(m, held, mark);
+            var start = StartOf(m, held, mark, confirm: false);
             var met = runs.Select(r => Replay(m, start, r)).OrderByDescending(r => r.Count).FirstOrDefault() ?? [];
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
             if (drop.Count == 0)
