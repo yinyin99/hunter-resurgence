@@ -436,6 +436,24 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAServerKillIsAboveTheAnimalsOfARestoredLodge()
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();  // a public restore: no own trophy list, one animal in a lodge
+            var lodge = O("""{"id": 6, "name": "six", "animal_slots": [{"slot_id": 0, "trophy_id": 77, "pose_id": 1, "trophy_details": {"species": 1}}], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "6", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "6", lodge.DeepClone());
+            con.Commit();
+        }
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Hb(AccountIsolationTests.Harvest(71, 50000));
+        Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/78/taxidermize", tokenA, "currency=gold")).Status);  // the server kill is 78, not 77
+        var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
+        Eq("[77, 78]", new JsonArray(own.Select(t => t!["id"]!.DeepClone()).ToArray()));
+    }
+
+    [Fact]
     public async Task TestAnyAccountsPublicProfileIsReadWithoutAToken()
     {
         state.CreateAccount(9, "banned");

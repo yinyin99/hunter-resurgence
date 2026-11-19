@@ -153,6 +153,7 @@ public sealed partial class State
         }
         using var con = Con(account);
         con.Begin();
+        StoreMounted(con, account);  // before the slots are rewritten
         var rows = con.Rows("SELECT n, node FROM lodges WHERE account_id = $a AND source IN (?, ?) AND id = ?", LodgeList, LodgeOne, id.ToString());
         foreach (var r in rows)
             if (JsonNode.Parse((string)r[1]) is JsonObject node)
@@ -170,7 +171,7 @@ public sealed partial class State
         return rows.Count > 0 ? 200 : 404;
     }
 
-    /// <summary>`PUT trophies/<id>` `{hidden}`: show or hide one of the account's trophies (a restored row, or a harvest made here) on its
+    /// <summary>`PUT trophies/<id>` `{hidden}`: show or hide one of the account's trophies (a restored row, an animal of a restored lodge, or a harvest made here) on its
     /// public views. Statuses as <see cref="SaveLodge"/>.</summary>
     public int HideTrophy(long account, long id, byte[] body)
     {
@@ -186,6 +187,7 @@ public sealed partial class State
         if (sent is not JsonObject o || o["hidden"] is not JsonValue v || !v.TryGetValue<bool>(out var hidden)) return 400;
         using var con = Con(account);
         con.Begin();
+        StoreMounted(con, account);
         var found = con.Exec("UPDATE harvests SET hidden = ? WHERE account_id = $a AND kill_id = ?", hidden ? 1 : 0, id);
         foreach (var r in con.Rows("SELECT n, node FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/v1/Trophy/list') AND id = ?", id.ToString()))
             if (JsonNode.Parse((string)r[1]) is JsonObject row)

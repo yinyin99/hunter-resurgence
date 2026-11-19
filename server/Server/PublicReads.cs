@@ -295,12 +295,38 @@ public sealed partial class State
     static readonly string[] TrophyFields = ["species", "species_define", "score", "score_type", "is_skull", "gender", "weight", "scale", "reserve_id", "timestamp",
                                              "texture_id", "base_texture", "fur_texture", "antlers_seed", "antlers_score_percentage", "holed"];
 
-    /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then one row per harvest made on this
+    /// <summary>A trophy row for each animal slot of the restored lodges that carries `trophy_details`, in the restored shape: a public restore has no `/game/user/trophies` (the game sends it
+    /// to its owner only), but its lodges name the animals they hold.</summary>
+    List<JsonObject> MountedRows(long account) =>
+        [.. Restored(account, "lodges", LodgeOne).Concat(Restored(account, "lodges", LodgeList)).OfType<JsonObject>()
+            .SelectMany(l => (l["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+            .Where(s => s["trophy_id"] is not null && s["trophy_details"] is JsonObject)
+            .Select(s =>
+            {
+                var row = new JsonObject { ["id"] = C(s["trophy_id"]), ["hidden"] = false };
+                foreach (var field in TrophyFields)
+                    row[field] = C(s["trophy_details"]![field]);
+                return row;
+            })];
+
+    /// <summary>Give each animal of <see cref="MountedRows"/> that has no `/game/user/trophies` row one, in the caller's transaction: a lodge's slots are rewritten without their `trophy_details` when the game
+    /// saves the lodge, so the animal is kept as a row before that.</summary>
+    void StoreMounted(Db con, long account)
+    {
+        var listed = con.Rows("SELECT id FROM trophies WHERE account_id = $a AND source = '/game/user/trophies'").Select(r => (string)r[0]).ToHashSet();
+        foreach (var row in MountedRows(account))
+            if (listed.Add(Py.Str(row["id"])))
+                PlayerRows.AddTrophy(con, "/game/user/trophies", Py.Str(row["id"]), row);
+    }
+
+    /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then the animals mounted in the restored lodges that have no row (<see cref="MountedRows"/>), then one row per harvest made on this
     /// server that is taxidermized or whose grace window is open (<see cref="InEditor"/>), in the restored shape (`hidden` as the player set it), each with the lodge slot that holds it now (<see cref="Mount"/>).
     /// A new kill id is above every restored id (see Heartbeat). <paramref name="all"/>: every harvest, for the `trophy_details` of a lodge slot (a harvest that is mounted stays shown in its lodge).</summary>
     List<JsonNode?> TrophyRows(long account, bool all = false)
     {
         var rows = Restored(account, "trophies", "/game/user/trophies");
+        var listed = rows.Select(r => Py.Str(r?["id"])).ToHashSet();
+        rows.AddRange(MountedRows(account).Where(r => listed.Add(Py.Str(r["id"]))));
         using var con = Con(account);
         var grace = Store.TaxidermyGrace();
         foreach (var r in con.Rows("SELECT kill_id, body, hidden FROM harvests WHERE account_id = $a ORDER BY kill_id"))
@@ -318,7 +344,7 @@ public sealed partial class State
 
     static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
 
-    /// <summary>`/game/user/trophies`: the restored rows and the harvests made here.</summary>
+    /// <summary>`/game/user/trophies`: the restored rows, the animals mounted in the restored lodges and the harvests made here.</summary>
     public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
     /// <summary>Trophy/list for the form's user_id: one page (`offset`, `limit`) of the restored trophies (rows of their own kind) of the player's own

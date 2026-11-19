@@ -251,7 +251,8 @@ public sealed partial class State
             {
                 var harvest = Py.Dumps(e);
                 var killId = Math.Max(NextId(con, "kills", "kill_id"), (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/game/user/harvest')")!);
-                // a new kill id is above every restored harvest id. ponytail: kills that already exist, and kills made before a later restore, are not renumbered
+                killId = Math.Max(killId, (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(s.value, '$.trophy_id') AS INTEGER)), 0) + 1 FROM lodges l, json_each(l.node, '$.animal_slots') s WHERE l.account_id = $a")!);
+                // a new kill id is above every restored harvest id and every animal of a restored lodge. ponytail: kills that already exist, and kills made before a later restore, are not renumbered
                 con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
                          killId, e["individual"], e["extended_species"], harvest);
                 var (e7, disqualified, score, scoreType, css) = ScoreKill(con, e, harvest, trophy, ammoCheck);
