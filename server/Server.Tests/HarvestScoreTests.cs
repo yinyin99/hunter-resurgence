@@ -11,6 +11,7 @@ public class HarvestScoreTests : StateTestBase
     static readonly HashSet<string> MaleOnly = ["bc_deer", "elk", "moose", "cic_roe", "cic_red", "cic_fallow", "tines"];
     const int Ammo = 10;
     double gm = 33;  // CONNECT's balance
+    int seed;
 
     public HarvestScoreTests()
     {
@@ -29,9 +30,9 @@ public class HarvestScoreTests : StateTestBase
         """);
 
     /// <summary>One harvest of the species and gender: the kill's update 6 and whether the gm$ balance rose.</summary>
-    (JsonNode Update, bool Paid) Harvest(int species, int gender, int ammo = Ammo)
+    (JsonNode Update, bool Paid) Harvest(int species, int gender, int ammo = Ammo, int? individual = null)
     {
-        var ind = 1000 + species * 2 + gender;
+        var ind = individual ?? 1000 + species * 2 + gender;
         var fam = Facts.Default.Families.GetValueOrDefault(species);
         var e7 = O($$"""{"event": 7, "individual": {{ind}}, "species": {{species % 100}}, "gender": {{gender}}, "weight_grams": 200000}""");
         e7["feature"] = fam == "skull" ? (60000L << 16) | 60000 : 200000L * 1000;  // skull: width and length in 1/100 mm; the weight families: milligrams
@@ -56,7 +57,7 @@ public class HarvestScoreTests : StateTestBase
             events.Add(e22);
         }
         events.Add(O($$"""{"event": 1, "individual": {{ind}}, "ammunition_id": {{ammo}}, "weapon_id": 5, "animal_state": 3}"""));
-        events.Add(O($$"""{"event": 3, "individual": {{ind}}, "extended_species": {{species}} }"""));
+        events.Add(O($$"""{"event": 3, "individual": {{ind}}, "extended_species": {{species}}, "antlers_seed": {{++seed}} }"""));  // a seed makes each kill's event 3 unique, as a real one is
         var wallet = Hb([.. events]).Where(u => Py.Eq(u!["update"], 15) && Py.Eq(u["type"], "gm")).ToList();
         var score = Assert.Single(Hb(), u => Py.Eq(u!["update"], 6) && Py.Eq(u["individual"], ind))!;
         var paid = wallet.Count > 0 && Py.D(wallet[^1]!["amount"]) > gm;
@@ -146,11 +147,11 @@ public class HarvestScoreTests : StateTestBase
         string Pages() { using var con = state.Store.Open(ME); return string.Join("|", con.Rows("SELECT body FROM harvests WHERE account_id = $a ORDER BY kill_id").Select(r => (string)r[0])); }
         var pages = Pages();
 
-        var (_, rescored, paid, gms) = Assert.Single(state.Rescore(ME, dryRun: true));
+        var (_, rescored, paid, gms, _) = Assert.Single(state.Rescore(ME, dryRun: true));
         Assert.True(rescored == 1 && paid == 1 && gms > 0);
         Assert.True(pages == Pages() && before == state.Wallet(ME)["gm"]!.GetValue<double>());
 
-        Assert.Equal((rescored, paid, gms), Assert.Single(state.Rescore(ME, dryRun: false)) is var (_, r, p, g) ? (r, p, g) : default);
+        Assert.Equal((rescored, paid, gms), Assert.Single(state.Rescore(ME, dryRun: false)) is var (_, r, p, g, _) ? (r, p, g) : default);
         Assert.Equal(before + gms, state.Wallet(ME)["gm"]!.GetValue<double>());
         Assert.NotEqual(pages, Pages());
         using (var con = state.Store.Open(ME))
@@ -159,5 +160,29 @@ public class HarvestScoreTests : StateTestBase
         var second = Assert.Single(state.Rescore(ME, dryRun: false));
         Assert.Equal((0, 0, 0L), (second.Rescored, second.Paid, second.Gms));
         Assert.Equal(again, Pages());
+    }
+
+    [Fact]
+    public void ADoeWithTheIndividualIdOfAnEarlierBuckHasNoMeasurementsAndRescoreZeroesAHarvestThatTookThem()
+    {
+        var sp = Facts.Default.Families.First(f => f.Value == "bc_deer").Key;
+        var ind = 1000 + sp * 2;
+        var (buck, _) = Harvest(sp, 0);
+        Assert.True(Py.D(buck["score"]) > 0);
+        var (doe, paid) = Harvest(sp, 1, individual: ind);  // the id is reused in a later hunt; a doe sends no event 22
+        Eq("""[0, "No score", false]""", T(doe["score"], doe["score_text"], paid));
+
+        // a doe scored before the fix took the buck's antlers: a stored score above 0 that was paid
+        using (var con = state.Store.Open(ME))
+            con.Exec("UPDATE harvests SET body = json_set(body, '$.score', 500, '$.score_type', 'typical') WHERE account_id = $a AND kill_id = (SELECT MAX(kill_id) FROM kills WHERE account_id = $a)");
+        var wallet = state.Wallet(ME)["gm"]!.GetValue<double>();
+        var killed = state.Rescore(ME, dryRun: true).Single();
+        var one = Assert.Single(killed.Harvests);
+        Assert.Equal((sp, 500.0, 0.0, 0L), (one.Species, one.OldScore, one.NewScore, one.GmsPaid));
+        Assert.Empty(state.Rescore(ME, dryRun: true, onlyKill: 1).Single().Harvests);  // one kill alone: the buck is not the one
+        Assert.Single(state.Rescore(ME, dryRun: true, onlyKill: one.Kill).Single().Harvests);
+        Assert.Equal(0, state.Rescore(ME, dryRun: false).Single().Paid);
+        Assert.Empty(state.Rescore(ME, dryRun: false).Single().Harvests);  // the page now says 0
+        Assert.Equal(wallet, state.Wallet(ME)["gm"]!.GetValue<double>());  // nothing paid is taken back
     }
 }

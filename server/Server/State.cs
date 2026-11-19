@@ -358,7 +358,8 @@ public sealed partial class State
         return (e7, disqualified, score, type, css);
     }
 
-    /// <summary>(event 7, event 22) of a kill: the latest of each for its individual before its event 3; {} when missing.</summary>
+    /// <summary>(event 7, event 22) of a kill: the latest spawn of its individual before its event 3, and the latest event 22 after that spawn
+    /// (individual ids are reused across hunts, and a female sends no event 22: an older animal's measurements are not hers); {} when missing.</summary>
     public static (JsonObject E7, JsonObject E22) KillEvents(Db con, JsonNode? individual, string harvest)
     {
         JsonObject Latest(long ev)
@@ -366,7 +367,8 @@ public sealed partial class State
             var row = con.Rows(
                 "WITH k AS (SELECT MAX(id) AS id FROM events WHERE account_id = $a AND event = 3 AND body = ?2)"
                 + " SELECT body FROM events, k WHERE account_id = $a AND event = ?3 AND individual = ?1"
-                + " AND events.id < k.id ORDER BY events.id DESC LIMIT 1", individual, harvest, ev).FirstOrDefault();
+                + " AND events.id < k.id AND (?3 = 7 OR events.id > COALESCE((SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7"
+                + " AND individual = ?1 AND id < k.id), 0)) ORDER BY events.id DESC LIMIT 1", individual, harvest, ev).FirstOrDefault();
             return row is null ? new JsonObject() : Parse(row[0]);
         }
         return (Latest(7), Latest(22));
@@ -1683,44 +1685,51 @@ public sealed partial class State
         return true;
     }
 
-    /// <summary>Admin: score the stored harvests again with today's rules. A scorable harvest whose score differs gets its stored page
-    /// updated; its round(css) gm$ is paid when no wallet row for `CSS Reward (Animal Id: kill)` exists. Refused harvests (disqualified,
-    /// no score) stay as they are. One transaction per account; dry run writes nothing. (accountId, rescored, paid, gms) per account.</summary>
-    public List<(long Account, int Rescored, int Paid, long Gms)> Rescore(long? only, bool dryRun)
+    /// <summary>One harvest <see cref="Rescore"/> changed (or would): its stored score before and after, and the gm$ its kill was paid before (the reward is not taken back).</summary>
+    public sealed record RescoredHarvest(long Kill, long Species, double OldScore, double NewScore, long GmsPaid);
+
+    /// <summary>Admin: score the stored harvests again with today's rules. A harvest whose score differs gets its stored page updated (a scorable one that
+    /// now scores nothing too: its old score goes to 0); its round(css) gm$ is paid when no wallet row for `CSS Reward (Animal Id: kill)` exists, and a
+    /// reward already paid stays. Disqualified harvests stay as they are. One transaction per account; dry run writes nothing; a real run that changed a score
+    /// drops the kept boards. onlyKill (with `only`: kill ids are per account) rescores that kill alone. (accountId, rescored, paid, gms, the rescored harvests) per account.</summary>
+    public List<(long Account, int Rescored, int Paid, long Gms, List<RescoredHarvest> Harvests)> Rescore(long? only, bool dryRun, long? onlyKill = null)
     {
         List<long> ids;
         using (var all = Store.Open())
             ids = only is { } one ? [one] : all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
-        var result = new List<(long, int, int, long)>();
+        var result = new List<(long, int, int, long, List<RescoredHarvest>)>();
         foreach (var id in ids)
         {
             using var con = Con(id);
             con.Begin();
-            int rescored = 0, paid = 0;
+            int paid = 0;
             long gms = 0;
+            var changed = new List<RescoredHarvest>();
             foreach (var k in con.Rows("SELECT k.kill_id, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
-                                       + " WHERE k.account_id = $a ORDER BY k.kill_id"))
+                                       + " WHERE k.account_id = $a AND (?1 IS NULL OR k.kill_id = ?1) ORDER BY k.kill_id", onlyKill))
             {
                 var killId = (long)k[0];
                 var (_, disqualified, score, type, css) = ScoreKill(con, Parse(k[1]), (string)k[1], Trophy, AmmoCheck);
-                if (disqualified || !Py.Truthy(score))
-                    continue;
                 var page = Parse(k[2]);
-                if (!Py.Eq(page["score"], score) || !Py.Eq(page["score_type"], type ?? ""))
+                var scored = Py.Truthy(score);
+                if (disqualified || !scored && Num(page["score"]) <= 0)
+                    continue;
+                var reward = $"CSS Reward (Animal Id: {killId})";
+                if (!Py.Eq(page["score"], scored ? score : 0) || !Py.Eq(page["score_type"], type ?? ""))
                 {
-                    rescored++;
-                    page["score"] = C(score);
+                    changed.Add(new(killId, Py.L(page["species"]), Num(page["score"]), scored ? Num(score) : 0,
+                                    Convert.ToInt64(con.Scalar("SELECT COALESCE(SUM(amount), 0) FROM wallet_log WHERE account_id = $a AND summary = ?", reward))));
+                    page["score"] = scored ? C(score) : 0;
                     page["score_type"] = type ?? "";
                     if (!dryRun)
                         con.Exec("UPDATE harvests SET body = ? WHERE account_id = $a AND kill_id = ?", Py.Dumps(page), killId);
                 }
                 var amount = Py.RoundInt(css);
-                var summary = $"CSS Reward (Animal Id: {killId})";
-                if (amount <= 0 || con.Scalar("SELECT 1 FROM wallet_log WHERE account_id = $a AND summary = ?", summary) is not null)
+                if (amount <= 0 || con.Scalar("SELECT 1 FROM wallet_log WHERE account_id = $a AND summary = ?", reward) is not null)
                     continue;
                 if (!dryRun)
                 {
-                    if (AddCurrency(con, "gm", amount, summary) is not { } balance)
+                    if (AddCurrency(con, "gm", amount, reward) is not { } balance)
                         continue;
                     con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = C(balance), ["type"] = "gm", ["update"] = 15 }));
                 }
@@ -1728,8 +1737,10 @@ public sealed partial class State
                 gms += Convert.ToInt64(amount);
             }
             con.Commit();
-            result.Add((id, rescored, paid, gms));
+            result.Add((id, changed.Count, paid, gms, changed));
         }
+        if (!dryRun && result.Any(r => r.Item2 > 0))
+            DropBoards();
         return result;
     }
 
