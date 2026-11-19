@@ -456,6 +456,7 @@ async Task Serve()
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
     if (state is not null && state.ConfirmMissions() is > 0 and var confirmed)
         Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests made before this start");
+    if (state is not null && (bool?)settings.Cfg["offline_mode"] == false) state.BackfillLodges();  // a community server: the lodges its accounts' lodge items lack
     var certs = new List<X509Certificate2>();
     try
     {

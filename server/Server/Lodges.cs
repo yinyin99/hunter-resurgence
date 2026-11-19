@@ -43,7 +43,8 @@ public sealed partial class State
         {
             using var con = Con(account);
             con.Begin();
-            var have = con.Rows("SELECT json_extract(node, '$.lodge_type_id') FROM lodges WHERE account_id = $a AND source = ? AND json_extract(node, '$.lodge_type_id') IS NOT NULL", LodgeList).GroupBy(r => Convert.ToInt64(r[0])).ToDictionary(g => g.Key, g => g.Count());
+            var have = con.Rows("SELECT id, MIN(json_extract(node, '$.lodge_type_id')) FROM lodges WHERE account_id = $a AND source IN (?, ?) AND typeof(json_extract(node, '$.lodge_type_id')) = 'integer' GROUP BY id", LodgeList, LodgeOne)
+                .GroupBy(r => (long)r[1]).ToDictionary(g => g.Key, g => g.Count());  // lodges by type, each counted once by id whichever of its two rows exist
             foreach (var r in con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id"))
                 if (facts.LodgeOfItem((long)r[0]) is { } type)
                     for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
