@@ -99,6 +99,15 @@ public static class AdminApi
                               + "stay as they are. Repeating pays nothing more. dry_run (default true) reports without writing.")
              .ProducesProblem(404).ProducesProblem(503);
 
+        admin.MapPost("/season/start", Results<Ok<Store.Season>, ProblemHttpResult> () =>
+                state is null ? NoState()
+                : state.Store.StartSeason((long)state.Clock()) is { } season ? TypedResults.Ok(season)
+                : TypedResults.Problem("the current season started this second or later", statusCode: 409, title: "Season too young"))
+             .WithName("StartSeason").WithSummary("Close the current leaderboard season and start the next")
+             .WithDescription("The current season ends one second before now and the next number starts now (`{no, start, end}` of the new one, `end` null); harvests made from now on rank in it. Proposed rhythm: the first day of March, June, September and December. "
+                              + "The Hall of Fame of the ended season is then available. 409 when the current season started this second or later.")
+             .ProducesProblem(409).ProducesProblem(503);
+
         admin.MapGet("/taxidermies", Results<Ok<JsonArray>, ProblemHttpResult> ([Description(AccountDoc)] string? account) =>
                 state is null ? NoState() : ResolveAccount(state, account) is not { } id ? NoAccount(account!) : TypedResults.Ok(state.Taxidermies(id)))
              .WithName("GetTaxidermies").WithSummary("The account's taxidermized harvests, newest first")

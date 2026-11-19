@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 28;
+    public const int Version = 29;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -146,6 +146,15 @@ public sealed class Store
     // when the taxidermy went live and when the window of the harvests made before it ends (TaxidermyGrace); one row, shared by all players, so not in PlayerTables.
     // A new database has no older harvest: start 0.
     const string TaxidermyGraceTable = "CREATE TABLE IF NOT EXISTS taxidermy_grace (start INTEGER NOT NULL, grace_end INTEGER NOT NULL);";
+
+    // the leaderboard seasons (docs/server.md#leaderboards-and-seasons), shared by all players: `start` and `end` are Unix seconds, both inclusive; the current season has no end.
+    // Season 0 (all time) is never stored. Season 1 is everything up to the community server's first day (the restored harvests), 2 starts that day.
+    const string SeasonsTable = "CREATE TABLE IF NOT EXISTS seasons (no INTEGER PRIMARY KEY, start INTEGER NOT NULL, end INTEGER);";
+
+    /// <summary>When Season 2 starts: 2026-11-12 00:00:00 UTC, the day after the official servers' last.</summary>
+    public static readonly long SecondSeasonStart = new DateTimeOffset(2026, 11, 12, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+
+    static readonly string SeasonsSeed = SeasonsTable + $"INSERT OR IGNORE INTO seasons VALUES (1, 0, {SecondSeasonStart - 1}), (2, {SecondSeasonStart}, NULL);";
 
     // a player's count toward each community mission of an event, and whether the reward was paid; shared by all players, so not in PlayerTables
     const string CommunityProgress = $"""
@@ -278,6 +287,33 @@ public sealed class Store
         return ((long)row[0], (long)row[1]);
     }
 
+    /// <summary>A leaderboard season: `Start` and `End` in Unix seconds, both inclusive; `End` is null for the current one.</summary>
+    public sealed record Season(long No, long Start, long? End);
+
+    /// <summary>The seasons, oldest first (season 0, all time, is not stored); the last is the current one.</summary>
+    public List<Season> Seasons()
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT no, start, end FROM seasons ORDER BY no").Select(r => new Season((long)r[0], (long)r[1], r[2] as long?))];
+    }
+
+    /// <summary>The number of the season the Unix time falls in: the stored one it lies in; a time before the first starts is in the first, a time after the current one's start in the current.</summary>
+    public static long SeasonAt(IReadOnlyList<Season> seasons, long ts) =>
+        seasons.LastOrDefault(s => ts >= s.Start)?.No ?? seasons[0].No;
+
+    /// <summary>Close the current season at `now - 1` and open the next number at `now`; the new season, or null when `now` is not after the current one's start (an empty season).</summary>
+    public Season? StartSeason(long now)
+    {
+        var current = Seasons().Last();  // one server process (ADR 0001): nothing starts a season between this read and the write
+        if (now <= current.Start) return null;
+        using var con = Open();
+        con.Begin();
+        con.Exec("UPDATE seasons SET end = ? WHERE no = ?", now - 1, current.No);
+        con.Exec("INSERT INTO seasons VALUES (?, ?, NULL)", current.No + 1, now);
+        con.Commit();
+        return new(current.No + 1, now, null);
+    }
+
     /// <summary>A consistent copy of the whole database beside it (`VACUUM INTO`, file name `&lt;db&gt;.bak-&lt;UTC time&gt;`); returns its path.</summary>
     public string Backup()
     {
@@ -305,6 +341,7 @@ public sealed class Store
             con.Script(Schema);
             con.Script(IdCounter);
             con.Script(TaxidermyGraceTable + "INSERT INTO taxidermy_grace VALUES (0, 0);");
+            con.Script(SeasonsSeed);
         }
         else
         {
@@ -390,6 +427,7 @@ public sealed class Store
             if (version < 27) con.Script(CrashReports);
             if (version < 28)  // the first start with the taxidermy: every harvest made until now has a window of 72 hours from now
                 con.Script(TaxidermyGraceTable + $"INSERT INTO taxidermy_grace SELECT {Now()}, {Now() + State.TaxidermyHours * 3600L} WHERE NOT EXISTS (SELECT 1 FROM taxidermy_grace);");
+            if (version < 29) con.Script(SeasonsSeed);
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

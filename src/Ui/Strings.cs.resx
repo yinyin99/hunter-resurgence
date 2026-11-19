@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Lovecké skóre</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Síň slávy minulé sezóny</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezóna {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Všechny časy</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Sezóna 1: před komunitním serverem</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Sezóna 2: komunitní server</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Sezóna</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Nejlepší skóre všech dob</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Nejlepší vzdálenosti všech dob</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Zatím zde nikdo není umístěn</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Zatím neskončila žádná sezóna</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Nejlepší skóre v Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je skvělá retro arkáda, kterou si můžete zahrát na svém HunterMate a krátit si tak čas při čekání, až se objeví vysněná trofej!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Získat Lane Bandit</value></data>

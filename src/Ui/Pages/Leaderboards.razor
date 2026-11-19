@@ -28,32 +28,17 @@
         case "halloffame":
             <section class="panel head hall">
                 <h4>@L["Board.Past"]</h4>
-                <select class="field-light" id="leaderboard-season-selector" @onchange="PickSeason">
-                    @for (var n = 1; n < current; n++) { <option value="@n" selected="@(n == season)">@L["Board.SeasonN", n]</option> }
-                </select>
+                @if (ended.Count > 0) { @SeasonSelect(ended) }
             </section>
+            @if (hall.Count == 0) { <p class="norank">@L["Board.NoHall"]</p> }
             <div class="tiles four">
                 @foreach (var h in hall)
                 {
                     <section class="tile panel hof">
                         <h4>@L.Term(h.Species)</h4>
                         <AssetSlot Name="@($"species-{h.Species}")" Width="135" Height="135" />
-                        <h6>@L["Board.Score"]</h6>
-                        @if (h.Score.Handle.Length > 0)
-                        {
-                            <AssetSlot Name="@h.Score.Avatar" Width="160" Height="160" />
-                            <a href="/profile/@h.Score.Handle">@h.Score.Handle</a>
-                            <a href="/profile/@h.Score.Handle/score/@h.Score.Sheet" class="v">@Fmt.Board("score", h.Score.Value)</a>
-                        }
-                        else { <span class="v">@Fmt.Board("score", h.Score.Value)</span> }
-                        <h6>@L["Board.Range"]</h6>
-                        @if (h.Range.Handle.Length > 0)
-                        {
-                            <AssetSlot Name="@h.Range.Avatar" Width="160" Height="160" />
-                            <a href="/profile/@h.Range.Handle">@h.Range.Handle</a>
-                            <a href="/profile/@h.Range.Handle/score/@h.Range.Sheet" class="v">@Fmt.Board("range", h.Range.Value)</a>
-                        }
-                        else { <span class="v">@Fmt.Board("range", h.Range.Value)</span> }
+                        @HallSide("Board.Score", "score", h.Score)
+                        @HallSide("Board.Range", "range", h.Range)
                     </section>
                 }
             </div>
@@ -74,16 +59,20 @@
             <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind + "/" + n)" />
             break;
         default:
-            @if (id == 0)
+            @if (id is null)
             {
-                <section class="panel head"><h4>@L[kind == "range" ? "Board.TopRanges" : "Board.TopScores", season]</h4></section>
+                <section class="panel head hall">
+                    <h4>@(season == 0 ? L[kind == "range" ? "Board.TopRangesAll" : "Board.TopScoresAll"] : L[kind == "range" ? "Board.TopRanges" : "Board.TopScores", season])</h4>
+                    @SeasonSelect(all)
+                </section>
+                @if (boards.Count == 0) { <p class="norank">@L["Board.Empty"]</p> }
                 <div class="tiles two">
                     @foreach (var b in boards)
                     {
                         <section class="tile panel">
                             <h4>@L.Term(b.Name)</h4>
                             <table class="board small"><tbody>@foreach (var r in b.Top) { <RankRow R="r" Kind="@kind" Small="true" /> }</tbody></table>
-                            <a class="btn btn-inverse full" href="/leaderboards/@(kind.Replace("-", "/"))/@b.Id">@L["Board.Full"] <Icon Name="chevron-right" /></a>
+                            <a class="btn btn-inverse full" href="@($"/leaderboards/{kind.Replace("-", "/")}/{b.Id}{Q(season)}")">@L["Board.Full"] <Icon Name="chevron-right" /></a>
                         </section>
                     }
                 </div>
@@ -91,8 +80,9 @@
             else
             {
                 <section class="panel head species">
-                    <AssetSlot Name="@($"species-{boards.FirstOrDefault(b => b.Id == id)?.Name}")" Width="118" Height="118" />
-                    <h3>@L.Term(boards.FirstOrDefault(b => b.Id == id)?.Name ?? "")</h3>
+                    <AssetSlot Name="@($"species-{speciesName}")" Width="118" Height="118" />
+                    <h3>@L.Term(speciesName)</h3>
+                    @SeasonSelect(all)
                 </section>
                 @if (mine is not null || !Mode.Live)
                 {
@@ -100,8 +90,15 @@
                     @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
                     else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
                 }
-                <table class="board"><tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody></table>
-                <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind.Replace("-", "/") + "/" + id + "/" + n)" />
+                @if (rows.Count == 0) { <p class="norank">@L["Board.Empty"]</p> }
+                else
+                {
+                    <table class="board">
+                        <thead><tr><th>@L["Board.Rank"]</th><th></th><th class="hunter">@L["Board.Hunter"]</th><th>@L[kind == "range" ? "Board.Range" : "Board.Score"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.TimeOfHarvest"]</th></tr></thead>
+                        <tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody>
+                    </table>
+                }
+                <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind.Replace("-", "/") + "/" + id + "/" + n + Q(season))" />
             }
             break;
     }
@@ -118,13 +115,19 @@ else
     IReadOnlyList<Board> boards = [];
     IReadOnlyList<Ranked> rows = [];
     IReadOnlyList<HallEntry> hall = [];
+    /// <summary>The seasons the selector offers: 0, all time, and every season; <see cref="ended"/> the ended ones, the hall of fame's.</summary>
+    IReadOnlyList<int> all = [], ended = [];
     Ranked? mine;
-    string kind = "score", active = "";
-    int id, page = 1, pages = 1, season, current;
+    string kind = "score", active = "", speciesName = "";
+    int? id;
+    int page = 1, pages = 1, season, current;
     bool loaded;
 
-    /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double), then a species or antler id, then a page (a season for the hall of fame).</summary>
+    /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double), then a species or antler id, then a page.</summary>
     [Parameter] public string? Path { get; set; }
+
+    /// <summary>The season of a species board or the hall of fame: 0 is all time; missing is the current season (the hall's: the last ended one).</summary>
+    [SupplyParameterFromQuery(Name = "season")] public int? SeasonQuery { get; set; }
 
     protected override void OnInitialized()
     {
@@ -133,43 +136,47 @@ else
             (L["Board.Score"], "/leaderboards/score"), (L["Board.Range"], "/leaderboards/range"), (L["Board.HunterScore"], "/leaderboards/hunterscore"), (L["Board.HallOfFame"], "/leaderboards/halloffame"),
             (L["Board.LaneBandit"], "/leaderboards/lanebandit"), (L["Board.BustThrough"], "/leaderboards/bustthrough"), (L["Board.Single"], "/leaderboards/antlers/single"), (L["Board.Double"], "/leaderboards/antlers/double"),
         ];
-        // the community server has no seasons, species or antler boards: the live site offers the boards it has
+        // the community server has no antler boards: the live site offers the boards it has
         if (Mode.Live) tabs = [.. tabs.Where(t => ServerLeaderboardsService.Kinds.Contains(t.Href["/leaderboards/".Length..]))];
     }
 
     protected override async Task OnParametersSetAsync()
     {
         loaded = false;
-        var p = (Path ?? (Mode.Live ? "hunterscore" : "score")).Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var p = (Path ?? "score").Split('/', StringSplitOptions.RemoveEmptyEntries);
         var numbers = p.SkipWhile(s => !int.TryParse(s, out _)).Select(int.Parse).ToArray();
         kind = p[0] == "antlers" ? "antlers-" + (p.Length > 1 ? p[1] : "single") : p[0];
         if (Mode.Live && !ServerLeaderboardsService.Kinds.Contains(kind))
         {
-            Nav.NavigateTo("/leaderboards/hunterscore", replace: true);
+            Nav.NavigateTo("/leaderboards/score", replace: true);
             return;
         }
         active = tabs.FirstOrDefault(t => t.Href == "/leaderboards/" + kind.Replace("-", "/")).Href ?? tabs[0].Href;
-        season = current = await Service.SeasonAsync();
-        (id, page, mine, boards, rows) = (0, 1, null, [], []);
+        var (now, seasons) = await Service.SeasonsAsync();
+        current = now;
+        all = [0, .. seasons.Select(s => s.No).OrderBy(n => n)];
+        ended = [.. seasons.Where(s => s.End is not null).Select(s => s.No).OrderBy(n => n)];
+        season = SeasonQuery ?? (kind == "halloffame" ? ended.LastOrDefault() : now);
+        (id, page, mine, boards, rows) = (null, 1, null, [], []);
         switch (kind)
         {
             case "halloffame":
-                var past = numbers.Length > 0 ? numbers[0] : season - 1;
-                hall = await Service.HallAsync(past);
-                this.season = past;
+                hall = await Service.HallAsync(season);
                 break;
             case "hunterscore" or "lanebandit" or "bustthrough":
                 page = numbers.Length > 0 ? numbers[0] : 1;
-                (rows, page, pages) = Unpack(await Service.RowsAsync(kind, 0, page));
-                mine = await Service.MyRankAsync(kind, 0);
+                (rows, page, pages) = Unpack(await Service.RowsAsync(kind, 0, page, 0));
+                mine = await Service.MyRankAsync(kind, 0, 0);
                 break;
             default:
-                boards = await Service.BoardsAsync(kind);
+                boards = await Service.BoardsAsync(kind, season);
                 if (numbers.Length > 0)
                 {
                     (id, page) = (numbers[0], numbers.Length > 1 ? numbers[1] : 1);
-                    (rows, page, pages) = Unpack(await Service.RowsAsync(kind, id, page));
-                    mine = await Service.MyRankAsync(kind, id);
+                    (rows, page, pages) = Unpack(await Service.RowsAsync(kind, id.Value, page, season));
+                    mine = await Service.MyRankAsync(kind, id.Value, season);
+                    // a species nobody ranks in this season is not in its overview: its name is the all-time one
+                    speciesName = (boards.FirstOrDefault(b => b.Id == id) ?? (season == 0 ? null : (await Service.BoardsAsync(kind, 0)).FirstOrDefault(b => b.Id == id)))?.Name ?? "";
                 }
                 break;
         }
@@ -178,5 +185,32 @@ else
 
     static (IReadOnlyList<Ranked>, int, int) Unpack(Page<Ranked> p) => (p.Rows, p.Number, p.Pages);
 
-    void PickSeason(ChangeEventArgs e) => Nav.NavigateTo("/leaderboards/halloffame/" + e.Value);
+    /// <summary>The query of a season's address: none for the current season.</summary>
+    string Q(int n) => n == current ? "" : "?season=" + n;
+
+    // season 1 and 2 say where their harvests come from
+    string SeasonLabel(int n) => n switch { 0 => L["Board.SeasonAll"], 1 => L["Board.Season1"], 2 => L["Board.Season2"], _ => L["Board.SeasonN", n] };
+
+    RenderFragment SeasonSelect(IReadOnlyList<int> nos) => @<select class="field-light" id="leaderboard-season-selector" aria-label="@L["Board.Season"]" @onchange="PickSeason">
+        @foreach (var n in nos) { <option value="@n" selected="@(n == season)">@SeasonLabel(n)</option> }
+    </select>;
+
+    // a species of the hall of fame may have only one of the two winners
+    RenderFragment HallSide(string heading, string board, Ranked? r) => @<text>
+        <h6>@L[heading]</h6>
+        @if (r is null) { <span class="v">–</span> }
+        else
+        {
+            <AssetSlot Name="@r.Avatar" Width="160" Height="160" />
+            <a href="/profile/@r.Handle">@r.Handle</a>
+            @if (r.Sheet > 0) { <a href="/profile/@r.Handle/score/@r.Sheet" class="v">@Fmt.Board(board, r.Value)</a> }
+            else { <span class="v">@Fmt.Board(board, r.Value)</span> }
+        }
+    </text>;
+
+    void PickSeason(ChangeEventArgs e)
+    {
+        var n = int.Parse((string)e.Value!);
+        Nav.NavigateTo("/leaderboards/" + (kind == "halloffame" ? "halloffame?season=" + n : kind.Replace("-", "/") + (id is { } i ? "/" + i : "") + Q(n)));
+    }
 }

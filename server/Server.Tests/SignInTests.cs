@@ -761,7 +761,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
         Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{Default}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{Default}}"}]}""",
             JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
-        Assert.Equal(404, (await Get("web.test", "/leaderboards/score")).Status);
+        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers")).Status);
     }
 
     [Fact]
@@ -920,7 +920,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served, Avatar: "avatar-1000000"), await sessions.CurrentAsync());
 
         var boards = new Resurgence.Services.ServerLeaderboardsService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerLeaderboardsService>.Instance);
-        var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1)).Rows);
+        var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1, 0)).Rows);
         Assert.Equal(new Resurgence.Services.Ranked(1, "Hunter_One", served, Avatar: "avatar-1000000"), row);
 
         var profiles = new Resurgence.Services.ServerProfileService(http, browser, sessions, new Resurgence.Services.Mocks.MockProfileService(),

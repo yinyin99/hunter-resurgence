@@ -148,3 +148,7 @@ The small UDP server that introduces a joiner to a host behind a home router, so
 
 **Seasonal event**:
 A themed event the operator switches on for a window of time on some reserves, with its own creatures and missions. Each player can turn it off ("Play seasonal events").
+
+**Season**:
+A leaderboard period of the community server: 0 is all time, 1 the harvests restored from the original (up to 2026-11-11), 2 and later the server's own, each started by the operator. A harvest belongs to the season its kill time falls in; an ended season has a Hall of Fame.
+_Avoid_: seasonal event (a themed event of creatures and missions, not a leaderboard period)

@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Tabela de Onoare, sezonul trecut</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezonul {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Din toate timpurile</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Sezonul 1: înainte de serverul comunității</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Sezonul 2: serverul comunității</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Sezon</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Cele mai bune scoruri din toate timpurile</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Cele mai mari distanțe din toate timpurile</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Încă nu este nimeni clasat aici</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Niciun sezon nu s-a încheiat încă</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Cele mai bune scoruri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit este un joc arcade retro pe care îl puteți juca pe Huntermate pentru a vă distra cât așteptați să apară trofeul!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Obțineți Lane Bandit</value></data>

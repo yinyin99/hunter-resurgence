@@ -559,6 +559,14 @@
   <data name="Board.ScoreColumn" xml:space="preserve"><value>Lovske točke</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Dvorana slavnih pretekle sezone</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezona {0}</value></data>
+  <data name="Board.SeasonAll" xml:space="preserve"><value>Vseh časov</value></data>
+  <data name="Board.Season1" xml:space="preserve"><value>Sezona 1: pred strežnikom skupnosti</value></data>
+  <data name="Board.Season2" xml:space="preserve"><value>Sezona 2: strežnik skupnosti</value></data>
+  <data name="Board.Season" xml:space="preserve"><value>Sezona</value></data>
+  <data name="Board.TopScoresAll" xml:space="preserve"><value>Najboljši rezultati vseh časov</value></data>
+  <data name="Board.TopRangesAll" xml:space="preserve"><value>Najdaljše razdalje vseh časov</value></data>
+  <data name="Board.Empty" xml:space="preserve"><value>Tu še nihče nima uvrstitve</value></data>
+  <data name="Board.NoHall" xml:space="preserve"><value>Nobena sezona se še ni končala</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najboljši rezultati v igri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je kul retro arkadna igra, ki jo lahko igraš na svoji napravi Huntermate, da si krajšaš čas, medtem ko čakaš, da se pojavi trofeja!</value></data>
   <data name="Board.GetLane" xml:space="preserve"><value>Kupi Lane Bandit</value></data>

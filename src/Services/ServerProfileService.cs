@@ -311,9 +311,9 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return null;
     }
-    /// <summary><c>GET /hunters/&lt;handle&gt;/best</c>: the best score of each species, all time (the server has no seasons, so <paramref name="season"/> is not read). No rows, or a failed answer, is "empty".</summary>
+    /// <summary><c>GET /hunters/&lt;handle&gt;/best?season=&lt;n&gt;</c>: the best score of each species in the season (0, all time). No rows, a season the server does not have, or a failed answer is "empty".</summary>
     public async Task<PersonalBest> BestAsync(string handle, int season) =>
-        await GetAsync<ServerBest>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.BestSuffix}", "personal bests") is { Rows.Length: > 0 } b
+        await GetAsync<ServerBest>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.BestSuffix}?season={season}", "personal bests") is { Rows.Length: > 0 } b
             ? new("done", [.. b.Rows.Select(r => new BestRow(r.Species, r.Score, r.Range, r.Weapon, Utc(r.Ts), r.Kill))])
             : new("empty", []);
     public Task<Progress> ProgressAsync() => mock.ProgressAsync();
