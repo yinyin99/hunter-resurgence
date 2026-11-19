@@ -267,11 +267,11 @@ public class ReplayTests : IAsyncLifetime
         var cfg = (JsonObject)Cfg.DeepClone();
         cfg["install_dir"] = tmp;
         await using var own = await Loopback.StartAsync(new Game(table, cfg, null, mirror));
-        Put("dist/main.js", "function a(){return 'https://api.' + getObj().getServer() + '/v1';}function b(){return 'https://apiv2.' + getObj().getServer();}function c(){return 'https://static.' + getObj().getServer();}var i=s + '/static/img/lodge/slots/' + n,j='https://static.example.test/static/img/lodge/slots/' + m,k=s + '/static/img/items/256/' + n,l=s + '/static/img/map/' + n;");
+        Put("dist/main.js", "function a(){return 'https://api.' + getObj().getServer() + '/v1';}function b(){return 'https://apiv2.' + getObj().getServer();}function c(){return 'https://static.' + getObj().getServer();}var i=s + '/static/img/lodge/slots/' + n,j='https://static.example.test/static/img/lodge/slots/' + m,k=s + '/static/img/items/256/' + n,l=s + '/static/img/map/' + n;var g={top: this.props.offset.y / 0.9, left: this.props.offset.x / 0.9};");
         Put("static/app/9.9.9/webgui/index.html", "<script src=\"/dist/main.js\"></script>");
         var script = await own.SendAsync("GET", "game_web.test", "/dist/main.js");
         Assert.Equal("patch", script.Source);
-        Assert.Equal("function a(){return window.location.origin + '/v1';}function b(){return window.location.origin + '/v1';}function c(){return window.location.origin;}var i=s + '/content/lodge/slots/' + n,j='/content/lodge/slots/' + m,k=s + '/content/items/256/' + n,l=s + '/static/img/map/' + n;", Encoding.UTF8.GetString(script.Body));  // the lodge and item pictures are asked for under /content, which this server answers
+        Assert.Equal("function a(){return window.location.origin + '/v1';}function b(){return window.location.origin + '/v1';}function c(){return window.location.origin;}var i=s + '/content/lodge/slots/' + n,j='/content/lodge/slots/' + m,k=s + '/content/items/256/' + n,l=s + '/static/img/map/' + n;var g={top: this.props.offset.y, left: this.props.offset.x};", Encoding.UTF8.GetString(script.Body));  // the lodge and item pictures are asked for under /content, which this server answers; the dragged picture is at the mouse's position, not divided by the zoom the page no longer has
         Assert.Contains(("Cache-Control", "no-cache"), script.Headers);
         var frame = await own.SendAsync("GET", "game_web.test", "/static/app/9.9.9/webgui/index.html");
         var page = Encoding.UTF8.GetString(frame.Body);
