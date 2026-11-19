@@ -80,10 +80,13 @@ public static class AdminApi
              .ProducesProblem(409).ProducesProblem(503);
 
         admin.MapPost("/rescore", Results<Ok<RescoreResult[]>, ProblemHttpResult> ([Description("User id or handle; omitted: every account")] string? account,
-                                                                               [Description("true (default): report only, write nothing")] bool? dry_run) =>
+                                                                               [Description("true (default): report only, write nothing")] bool? dry_run,
+                                                                               [Description("Kill id of that account: that harvest alone")] long? kill) =>
             {
                 if (state is null)
                     return NoState();
+                if (kill is not null && string.IsNullOrWhiteSpace(account))
+                    return TypedResults.Problem("kill ids are per account: give the account too", statusCode: 400, title: "Account missing");
                 long? only = null;
                 if (!string.IsNullOrWhiteSpace(account))
                 {
@@ -91,13 +94,14 @@ public static class AdminApi
                         return NoAccount(account);
                     only = id;
                 }
-                return TypedResults.Ok(state.Rescore(only, dry_run ?? true).Select(r => new RescoreResult(r.Account, r.Rescored, r.Paid, r.Gms)).ToArray());
+                return TypedResults.Ok(state.Rescore(only, dry_run ?? true, kill).Select(r => new RescoreResult(r.Account, r.Rescored, r.Paid, r.Gms, r.Harvests)).ToArray());
             })
              .WithName("Rescore").WithSummary("Score stored harvests again and pay the gm$ they missed")
              .WithDescription("Each stored harvest is scored with today's rules. A changed score updates the harvest page; round(css) gm$ is paid "
-                              + "once per kill (never when a `CSS Reward (Animal Id: <kill>)` wallet row exists). Disqualified or unscorable harvests "
-                              + "stay as they are. Repeating pays nothing more. dry_run (default true) reports without writing.")
-             .ProducesProblem(404).ProducesProblem(503);
+                              + "once per kill (never when a `CSS Reward (Animal Id: <kill>)` wallet row exists) and a reward already paid is not taken back. "
+                              + "A harvest that now scores nothing gets 0. Disqualified harvests stay as they are. Repeating pays nothing more. "
+                              + "`harvests` lists each changed harvest with its old and new score and the gm$ its kill was paid. dry_run (default true) reports without writing; a real run drops the kept boards. kill (with account) rescores that harvest alone.")
+             .ProducesProblem(400).ProducesProblem(404).ProducesProblem(503);
 
         admin.MapPost("/season/start", Results<Ok<Store.Season>, ProblemHttpResult> () =>
                 state is null ? NoState()
@@ -239,7 +243,7 @@ public static class AdminApi
 
     public sealed record SpawnList(List<Spawner.Entry> Entries, List<Spawner.Applied> Applied);
     public sealed record SpawnRemoved(int Removed);
-    public sealed record RescoreResult(long Account, int Rescored, int Paid, long Gms);
+    public sealed record RescoreResult(long Account, int Rescored, int Paid, long Gms, List<State.RescoredHarvest> Harvests);
     public sealed record TaxidermyUndone(long Kill, [property: Description("em or gm, null for a harvest marked before the price existed")] string? Currency, [property: Description("What was given back, 0 for none")] long Refunded);
     public sealed record SpawnWake(long? PopulationId, int? Group);
 }
