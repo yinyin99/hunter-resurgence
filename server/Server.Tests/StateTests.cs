@@ -478,7 +478,7 @@ public class InventoryTests : StateTestBase
         var text = "Not permitted: Test Bullet may not be used on Test Rabbit. See your inbox.";
         Eq(new JsonArray(new JsonObject  // with the next heartbeat, once
         {
-            ["text"] = text, ["colour"] = 4294967040, ["destination"] = "https://avatar.test/doc_64.jpg", ["update"] = 3,
+            ["text"] = text, ["colour"] = 4294967040, ["destination"] = $"{BASE}/media/avatar/doc_64.jpg", ["update"] = 3,
             ["timer"] = -1, ["type"] = 100,
         }), Hb());
         Assert.Empty(Hb(O("""{"event": 3, "individual": 413, "extended_species": 17}""")));  // no gold

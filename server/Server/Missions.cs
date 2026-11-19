@@ -381,6 +381,6 @@ public sealed partial class State
 
     void Toast(Db con, string text) => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject
     {
-        ["text"] = text, ["colour"] = COLOUR, ["destination"] = $"{avatarBase}/doc_64.jpg", ["update"] = 3, ["timer"] = -1, ["type"] = 100,
+        ["text"] = text, ["colour"] = COLOUR, ["destination"] = MediaUrl("doc_64.jpg"), ["update"] = 3, ["timer"] = -1, ["type"] = 100,
     }));
 }
