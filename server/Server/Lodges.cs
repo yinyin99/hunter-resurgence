@@ -36,7 +36,7 @@ public sealed partial class State
     }
 
     /// <summary>Once, at start (community servers): an account that owns more units of a lodge item than it has lodges of that type (a purchase made before the store added lodges, or a restore's inventory)
-    /// gets the missing lodges (<see cref="GrantLodge"/>); a restored lodge of the type that has only one of its two rows gets the other, so the game lists it and opens it. Idempotent: a second run finds none.
+    /// gets the missing lodges (<see cref="GrantLodge"/>). A lodge counts once by id, with the first usable `lodge_type_id` of its rows (the list's first; a number or a whole-number text). Idempotent: a second run finds none.
     /// An account whose data fails is left as it was (its transaction is dropped) and the others go on.</summary>
     public void BackfillLodges()
     {
@@ -45,38 +45,18 @@ public sealed partial class State
             {
                 using var con = Con(account);
                 con.Begin();
-                var lodges = new Dictionary<string, (long Type, bool Listed, bool Single, JsonObject Node)>();  // by lodge id; the list's type wins
-                foreach (var r in con.Rows("SELECT id, source, node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
-                    if (JsonNode.Parse((string)r[2]) is JsonObject node)
-                    {
-                        var (_, listed, single, first) = lodges.GetValueOrDefault((string)r[0], (0L, false, false, node));
-                        lodges[(string)r[0]] = (Py.IsNum(first["lodge_type_id"]) ? Py.L(first["lodge_type_id"]) : 0, listed || (string)r[1] == LodgeList, single || (string)r[1] == LodgeOne, first);
-                    }
-                foreach (var (id, (_, listed, single, node)) in lodges.Where(l => facts.LodgeOfItem(l.Value.Type) is not null && l.Value.Listed != l.Value.Single))
-                {
-                    var copy = (JsonObject)node.DeepClone();
-                    if (listed)
-                    {
-                        copy["weapon_slots_unlocked"] = false;
-                        copy["animal_slots"] = new JsonArray();
-                        copy["weapon_slots"] = new JsonArray();
-                    }
-                    else
-                    {
-                        copy.Remove("weapon_slots_unlocked");
-                        copy.Remove("animal_slots");
-                        copy.Remove("weapon_slots");
-                    }
-                    PlayerRows.AddLodge(con, listed ? LodgeOne : LodgeList, id, copy);
-                }
-                var have = lodges.Values.GroupBy(l => l.Type).ToDictionary(g => g.Key, g => g.Count());
+                var types = new Dictionary<string, long>();  // lodge id -> type (0: none usable yet)
+                foreach (var r in con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
+                    if (types.GetValueOrDefault((string)r[0]) == 0)
+                        types[(string)r[0]] = JsonNode.Parse((string)r[1]) is JsonObject node && long.TryParse(Py.Str(node["lodge_type_id"]), out var type) ? type : 0;
+                var have = types.Values.GroupBy(t => t).ToDictionary(g => g.Key, g => g.Count());
                 foreach (var r in con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id"))
                     if (facts.LodgeOfItem((long)r[0]) is { } type)
                         for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
                             GrantLodge(con, (long)r[0], type);
                 con.Commit();
             }
-            catch (Exception e) when (e is InvalidCastException or OverflowException or FormatException)
+            catch (Exception e) when (e is InvalidCastException or OverflowException or FormatException or JsonException)
             {
                 Console.WriteLine($"lodges: account {account} left as it was ({e.Message})");
             }
