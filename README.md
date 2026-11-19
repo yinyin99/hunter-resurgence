@@ -35,11 +35,12 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Works now | Not yet |
 |---|---|
 | Sign in with Steam: one account for the launcher, website and game | Offline / LAN play on your own PC |
-| Hunt on all 12 reserves; pick the start on a map and the time of day | Competitions and season boards |
+| Hunt on all 12 reserves; pick the start on a map and the time of day | Competitions |
 | Multiplayer: host a game or join one from the launcher's list (2 to 8 hunters, friends only or open, optional password) | Bait-site pages in the game |
 | Every species licensed for every player, for now | Full in-game map tiles |
 | A free start kit (two weapons, ammunition, binoculars); the free ammunition is topped up at every hunt start | |
 | Kills, harvest, score sheets, gold and XP | |
+| Leaderboards by season: score and range per species, Hall of Fame, personal bests | |
 | Tutorial for new players | |
 | Store: buy with em$ and gm$, in the game and on the website; a page per item; it shows what you already own | |
 | Loadouts, saved and chosen at launch | |
@@ -71,7 +72,7 @@ Either way works even if you already hunted on the community server: hunts, kill
 Planned, with no dates:
 
 - Halloween 2026 trophies and community missions
-- Competitions and seasons
+- Competitions
 - The remaining in-game pages (bait sites, map tiles)
 - Offline / LAN play
 

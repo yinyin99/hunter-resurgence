@@ -259,13 +259,13 @@ public sealed partial class State
         return PublicReply(account, formBody, con => PersonalBest(con, season));
     }
 
-    /// <summary>The personal bests tab of an account, `GET /hunters/&lt;handle&gt;/best`: `rows` one per species of the all-time bests, `[{species, score, range, weapon, ts, kill}]`
+    /// <summary>The personal bests tab of an account, `GET /hunters/&lt;handle&gt;/best?season=`: `rows` one per species of the bests of the season (0: all time), `[{species, score, range, weapon, ts, kill}]`
     /// of the species' best score: its name, score, the range of that kill in metres, the weapon's name ("" when unknown), the time of the kill (Unix seconds) and its id.</summary>
-    public JsonObject PublicBest(long account)
+    public JsonObject PublicBest(long account, long season = 0)
     {
         JsonObject all;
         using (var con = Con(account))
-            all = PersonalBest(con, 0);
+            all = PersonalBest(con, season);
         return new JsonObject
         {
             ["rows"] = new JsonArray([.. all["data"]!.AsArray().OfType<JsonObject>().Where(r => r["score"] is JsonObject && Py.IsNum(r["specie"])).Select(r =>
