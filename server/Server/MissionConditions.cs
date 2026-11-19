@@ -125,7 +125,7 @@ public sealed partial class State
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
             Coordinates = new(@"\(\s*x\s*:[^)]*\)", Rx),
             Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
-            Notes = new(@"\b(?:other organs may be hit|no other vital organs or bones should be hit|to blame it for making the noise)\b\.?", Rx),
+            Notes = new(@"\b(?:other organs may be hit|to blame it for making the noise)\b\.?", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
@@ -157,9 +157,9 @@ public sealed partial class State
             SpeciesOf = new(@"\s(?:one\s+of\s+)?(?:any\s+)?species\s+of(?=\s)", Rx),
             Duck = new(@"\sducks?(?=\s)", Rx),
             Alias = new(@"(?<=\s)(?<a>elk|whitetail|blacktail|pintail|ptarmigan)(?=\s)", Rx),
-            ExceptWeapon = new(@"\sexcept\s+(?:an?\s+|the\s+)?(?<c>shotguns?|rifles?|handguns?|revolvers?|pistols?|muzzleloaders?|crossbows?|longbows?|bows?)(?=\s)", Rx),
-            NoCrossbows = new(@"\s(?:no|without)\s+crossbows?(?=\s)", Rx),
+            NoCrossbows = new(@"\(\s*no crossbows?\s*\)", Rx),
             OnlyOrgans = new(@"\bonly organs may be hit\b\.?", Rx),
+            OnlyNamed = new(@"\bno other vital organs or bones should be hit\b\.?", Rx),
             AvoidAmmo = new(@"\swithout\s+using\s+any\s+type\s+of\s+(?<w>buckshot|slugs?|birdshot)(?:\s+(?:shells?|ammo|ammunition|rounds?))?(?=\s)", Rx),
             AvoidState = new(@"\sthe\s+[a-z0-9]+(?:\s+[a-z0-9]+)?\s+should\s+not\s+be\s+(?<s>(?:running away|charging|fleeing)(?:\s+or\s+(?:running away|charging|fleeing))*)(?:\s+you)?(?=\s)", Rx),
             Examples = new(@"(?<=\b(?:shotguns?|rifles?|handguns?|revolvers?|pistols?|bows?|crossbows?))\s*\((?<list>[^()]*)\)", Rx);
@@ -310,6 +310,8 @@ public sealed partial class State
             s = Verb.Replace(s, " ");
             s = Notes.Replace(s, " ");
             if (Take(ref s, OnlyOrgans, out _)) tests.Add(new(Check.OrganOnly, Ids: [Organs]));  // every hit has organs and none a bone
+            var noCrossbows = Take(ref s, NoCrossbows, out _);  // `(no crossbows)`
+            var onlyNamed = Take(ref s, OnlyNamed, out _);  // `through the heart and/or lungs. No other vital organs or bones should be hit`
             // weapons listed as examples of the class before them (`any semi-auto shotgun (20 GA Semi-Automatic Shotgun, ...)`) say nothing more: when each is part of an item's name
             s = Examples.Replace(s, m => m.Groups["list"].Value.Split(',').All(p => Words(p) is { Length: > 0 } w && weapons.Any(x => (" " + x.Name + " ").Contains(" " + w + " ", StringComparison.Ordinal))) ? " " : m.Value);
             var place = Place.Match(s);  // a coordinate with a fraction is in thousands of metres (6.273 is 6273), a whole one in metres
@@ -362,15 +364,27 @@ public sealed partial class State
             else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
             else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
             if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);
+            // `except` ends what the title allows: the weapons named after it (a class, a name, a list of them) are the ones it refuses; what else is left of the tail is read as the rest of the title
+            var refused = new HashSet<long>();
+            if (sn.IndexOf(" except ", StringComparison.Ordinal) is var cut and >= 0)
+            {
+                var tail = sn[(cut + " except".Length)..];
+                sn = sn[..cut] + " ";
+                foreach (var (name, ids) in weaponNames)
+                    if (ReplaceFirst(ref tail, " " + name + " "))
+                        refused.UnionWith(ids);
+                while (WeaponNoun.Match(tail) is { Success: true } noun)
+                    refused.UnionWith(TakeWords(ref tail, noun, 6, WeaponsOf));
+                sn += refused.Count == 0 ? " except " + tail : tail;  // no weapon after it: the word stays, the objective is not understood
+            }
+            if (noCrossbows)
+                refused.UnionWith(weapons.Where(w => w.Words.Contains("crossbow")).Select(w => w.Id));
             var weaponIds = new HashSet<long>();
             foreach (var (name, ids) in weaponNames)
                 if (ReplaceFirst(ref sn, " " + name + " "))
                     weaponIds.UnionWith(ids);
             if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
                 weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
-            var refused = Take(ref sn, ExceptWeapon, out var exceptWeapon) ? weapons.Where(w => WeaponOf(w, exceptWeapon, [])).Select(w => w.Id).ToHashSet() : [];  // `any rifle except a muzzleloader`
-            if (Take(ref sn, NoCrossbows, out _))  // `(no crossbows)`
-                refused.UnionWith(weapons.Where(w => w.Words.Contains("crossbow")).Select(w => w.Id));
             if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
             while (WeaponNoun.Match(sn) is { Success: true } noun)
                 weaponIds.UnionWith(TakeWords(ref sn, noun, 6, WeaponsOf));
@@ -407,8 +421,11 @@ public sealed partial class State
             if (Take(ref sn, HeartKilling, out _)) tests.Add(new(Check.Organ, Ids: [1]));
             while (Take(ref sn, Avoid, out var avoid))
                 tests.Add(new(Check.OrganAvoid, Ids: AvoidMasks(avoid.Groups["o"].Value)));
-            if (Take(ref sn, Organ, out var organ) && OrganMasks(organ.Groups["o"].Value) is { Count: > 0 } masks)
-                tests.Add(new(organ.Groups["only"].Success ? Check.OrganOnly : Check.Organ, Ids: masks));
+            var organTaken = Take(ref sn, Organ, out var organ) && OrganMasks(organ.Groups["o"].Value) is { Count: > 0 };
+            if (organTaken)
+                tests.Add(new(organ.Groups["only"].Success || onlyNamed ? Check.OrganOnly : Check.Organ, Ids: OrganMasks(organ.Groups["o"].Value)));
+            else if (onlyNamed)
+                sn += " organs ";  // no organ named for it to be about: the words stay, the objective is not understood
             if (Take(ref sn, Stance, out var stance))
                 tests.Add(new(Check.Pose, Ids: [stance.Groups["p"].Value.StartsWith("prone", StringComparison.Ordinal) ? 2 : stance.Groups["p"].Value.StartsWith("crouch", StringComparison.Ordinal) ? 1 : 0]));
             Take(ref sn, ThatWas, out _);

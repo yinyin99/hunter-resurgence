@@ -162,6 +162,15 @@ public class MissionWordingTests : MissionTestBase
         Assert.Equal("1,3", Completed());
         Hb(Shot(3, weapon: 50, scope: 80));  // "a sight" is no sight of the catalogue: never met
         Assert.Equal("1,2,3", Completed());
+
+        state = New("lists.db", Catalogue(["Harvest a Test Deer with any weapon except a rifle and a shotgun", "Harvest a Test Deer (no crossbows or shotguns)", "Harvest a Test Deer with any gun except a muzzleloader and a Test Shotgun"]));
+        ActivateAll();
+        Hb(Shot(1, weapon: 51));  // a shotgun is refused by the first and the third; the second is not understood
+        Assert.Equal("", Completed());
+        Hb(Shot(2, weapon: 50));  // a rifle: refused by the first, fine for the third
+        Assert.Equal("3", Completed());
+        Hb(Shot(3, weapon: 62));  // a longbow: no rifle and no shotgun
+        Assert.Equal("1,3", Completed());
     }
 
     [Fact]
@@ -177,6 +186,7 @@ public class MissionWordingTests : MissionTestBase
             "Harvest a Test Deer without penetrating any bones.",                                                                        // 6
             "Harvest a Test Deer with a heart shot. Other organs may be hit, but the heart must be hit with the killing shot.",          // 7 the killing hit
             "Harvest a Test Deer. Only organs may be hit.",                                                                              // 8 no bone, a shot at no organ is none
+            "Harvest a Test Deer with a shot through the heart and/or lungs. No other vital organs or bones should be hit.",             // 9 the named organs only
         ]));
         ActivateAll();
         Hb(Shot(1, location: 3, organs: [Heart | Skull]));
@@ -186,7 +196,7 @@ public class MissionWordingTests : MissionTestBase
         Hb(Shot(3, location: 5, organs: [0, LeftLung]));  // a shot at no organ first, then a lung
         Assert.Equal("5,6,7", Completed());
         Hb(Shot(4, location: 0, organs: [LeftLung]));  // from no stand at all
-        Assert.Equal("1,2,3,4,5,6,7,8", Completed());
+        Assert.Equal("1,2,3,4,5,6,7,8,9", Completed());
     }
 
     [Fact]
