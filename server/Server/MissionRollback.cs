@@ -105,9 +105,10 @@ public sealed partial class State
 
     // ---- rolled back
 
-    /// <summary>The operator's rollback of what the lax rules finished: for every account (or `only`), each finished harvest objective of a mission activated here is checked
-    /// against the harvests made since its mission was activated (since the account's first event when that is not known, and, for a single-hunt mission, the best
-    /// single hunt); one that no harvest meets under the rules of this version is reopened, and a completed mission that loses one becomes active again. The missions
+    /// <summary>The operator's rollback of what the lax rules finished: for every account (or `only`), each finished harvest objective of a mission activated here that the
+    /// rules of this version fully understand is checked against the harvests made since its mission was activated (since the account's first event when that is not known,
+    /// and, for a single-hunt mission, the best single hunt); one that no harvest meets is reopened, and a completed mission that loses one becomes active again. An
+    /// objective whose title has words the server does not read cannot be judged: it stays finished (and is counted as kept). The missions
     /// a reopened one had made available are activated, so nobody is locked out. What the account was paid (gm$, em$, items) is not taken back, and the missions a restore
     /// brought are never touched: no event of theirs exists. With `apply` the rows are changed and a record of what was reopened is kept for the account (table
     /// `mission_rollbacks`); without it nothing is written. One line per account with a change, then a total.</summary>
@@ -121,12 +122,13 @@ public sealed partial class State
         List<long> accounts;
         using (var all = Store.Open())
             accounts = (only is { } one ? all.Rows("SELECT id FROM accounts WHERE id = ?", one) : all.Rows("SELECT id FROM accounts ORDER BY id")).Select(r => (long)r[0]).ToList();
-        long objectivesTotal = 0, missionsTotal = 0;
+        long objectivesTotal = 0, missionsTotal = 0, notUnderstood = 0;
         foreach (var account in accounts)
         {
             using var con = Con(account);
             con.Begin();
-            var (reopened, activated) = RollbackAccount(con, apply);
+            var (reopened, activated, kept) = RollbackAccount(con, apply);
+            notUnderstood += kept;
             if (reopened.Count == 0)
                 continue;
             if (apply)
@@ -144,31 +146,35 @@ public sealed partial class State
             yield return $"account {account}: " + string.Join("; ", reopened.Select(r => $"mission {r.Mission} ({(r.Was == 3 ? "completed, active again" : "active")}) objectives {string.Join(", ", r.Objectives)}"))
                 + (activated.Count > 0 ? $"; activated to stay unlocked: {string.Join(", ", activated)}" : "");
         }
-        yield return $"{(apply ? "reopened" : "would reopen")} {objectivesTotal} objectives in {missionsTotal} missions" + (apply ? "" : " (dry run: nothing written, --apply writes)");
+        yield return $"{(apply ? "reopened" : "would reopen")} {objectivesTotal} objectives in {missionsTotal} missions; kept: not understood {notUnderstood} finished objectives" + (apply ? "" : " (dry run: nothing written, --apply writes)");
     }
 
-    (List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated) RollbackAccount(Db con, bool apply)
+    (List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated, int KeptNotUnderstood) RollbackAccount(Db con, bool apply)
     {
         var reopened = new List<(long Mission, long Was, List<long> Objectives)>();
         if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
-            return (reopened, []);
+            return (reopened, [], 0);
         var (rows, marks) = (MissionRows(con), Marks(con));
         var before = Available(rows).Select(m => m.Id).ToList();
         var harvests = new Lazy<List<Harvest>>(() => HarvestsOf(con, 0));
         var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
+        var notUnderstood = 0;
         foreach (var (id, (state, done)) in rows)
         {
             if (!missions.TryGetValue(id, out var m) || marks[id].Restored)
                 continue;
             var mark = marks[id];
             var held = state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
-            var checkable = held.Where(d => IsHarvest(m, d) && !mark.KeptIds.Contains(d)).ToList();
+            bool Judged(long d) => !m.Objectives.First(o => o.Id == d).Rule.Unknown;
+            var harvestHeld = held.Where(d => IsHarvest(m, d) && !mark.KeptIds.Contains(d)).ToList();
+            notUnderstood += harvestHeld.Count(d => !Judged(d));
+            var checkable = harvestHeld.Where(Judged).ToList();
             if (checkable.Count == 0)
                 continue;
             var mine = harvests.Value.Where(h => h.Id > (mark.Since ?? 0)).ToList();
             // a single-hunt mission was finished in one hunt: the best of its hunts counts
             var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
-            var start = StartOf(m, held, mark, confirm: false);
+            var start = StartOf(m, held, mark, confirm: false).Concat(harvestHeld.Where(d => !Judged(d))).ToArray();  // what cannot be judged counts as done: it neither blocks nor takes a harvest
             var met = runs.Select(r => Replay(m, start, r)).OrderByDescending(r => r.Count).FirstOrDefault() ?? [];
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
             if (drop.Count == 0)
@@ -183,6 +189,6 @@ public sealed partial class State
         if (apply)
             foreach (var b in kept)
                 Activate(con, b);
-        return (reopened, kept);
+        return (reopened, kept, notUnderstood);
     }
 }

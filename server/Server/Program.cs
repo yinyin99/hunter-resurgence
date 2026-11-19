@@ -16,13 +16,15 @@ const string AdminUsage = """
     --account names another account (user id or handle); without it the local account gets it.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
+    admin rescore [--account <id or handle>] [--kill <id>] [--apply] scores the stored harvests again with today's rules (every account, one, or with --kill, that account's one harvest) and prints one JSON line per harvest whose score changes:
+    {account, kill, species, oldScore, newScore, gmsPaid}, then a line per account that changed or would be paid. Without --apply it writes nothing; --kill needs --account (kill ids are per account). gm$ already paid are not taken back.
     admin gallery-details [--account <id or handle>] sets the species, score and kill of every restored gallery picture (or of one account's), and restores the saved profile background and ribbon an account lacks, from the zips the server kept (restores/<account>/): nothing is fetched, added or removed;
     it prints one line per account: id, handle, pictures updated of pictures restored.
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
-    admin missions-rollback [--apply] [--account <id or handle>] reopens the mission objectives the earlier, laxer rules finished without their conditions: each finished harvest objective is checked again against the harvests
-    made since its mission was activated, and one that no harvest meets is reopened (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
+    admin missions-rollback [--apply] [--account <id or handle>] reopens the mission objectives the earlier, laxer rules finished without their conditions: each finished harvest objective whose title the server fully understands is checked again against the harvests
+    made since its mission was activated, and one that no harvest meets is reopened (one with words the server does not read stays finished and is counted as `kept: not understood` in the total line) (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
     missions completed before a restore are never touched. Without --apply it only prints one line per account with a change and a total, and writes nothing; --apply changes the rows and keeps a record per account (table mission_rollbacks).
     Run it once, with the server stopped, after `backup`.
     """;
@@ -116,6 +118,24 @@ Replay.HarTable Table(out List<string> hars)
 
 void Admin(string[] a)
 {
+    if (a.Length > 0 && a[0] == "rescore")
+    {
+        if (AdminApi.ParseRescoreArgs(a[1..]) is not var (name, kill, apply)) { Die(AdminUsage); return; }
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect and no connect sample in the install: nothing to seed the player state from"); return; }
+        long? only = null;
+        if (name is not null && (only = AdminApi.ResolveAccount(loaded, name)) is null) Die($"no account {name}");
+        foreach (var r in loaded.Rescore(only, !apply, kill))
+        {
+            foreach (var h in r.Harvests)
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, kill = h.Kill, species = h.Species, oldScore = h.OldScore, newScore = h.NewScore, gmsPaid = h.GmsPaid }));
+            if (r.Rescored > 0 || r.Paid > 0)
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, rescored = r.Rescored, paid = r.Paid, gms = r.Gms, applied = apply }));
+        }
+        Console.WriteLine(apply ? "applied (a running server keeps its boards 15 minutes, an ended season's 24 hours, or until it restarts)" : "dry run: nothing written; add --apply to write");
+        return;
+    }
     if (a.Length > 0 && a[0] == "gallery-details")
     {
         if (a[1..] is not ([] or ["--account", _])) Die(AdminUsage);
