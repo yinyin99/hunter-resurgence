@@ -108,6 +108,38 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Equal(404, (await Get("/leaderboards/weight/1")).Status);
     }
 
+    /// <summary>A claimed account: no saved bests, a trophy list and a lodge that mounts the animals `mounted` (id, species, score, time).</summary>
+    void Claimed(long id, string handle, (long Id, long Species, double Score, long Ts)[] listed, (long Id, long Species, double Score, long Ts)[] mounted)
+    {
+        state.CreateAccount(id, handle);
+        static string Num(double d) => d.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        static string Details((long Id, long Species, double Score, long Ts) t) => $$"""{"species": {{t.Species}}, "score": {{Num(t.Score)}}, "timestamp": {{t.Ts}}}""";
+        using var con = state.Store.Open(id);
+        con.Begin();
+        foreach (var t in listed) PlayerRows.AddTrophy(con, "/game/user/trophies", t.Id.ToString(), JsonNode.Parse($$"""{"id": {{t.Id}}, "hidden": false, "species": {{t.Species}}, "score": {{Num(t.Score)}}, "timestamp": {{t.Ts}}}"""));
+        var slots = string.Join(",", mounted.Select((t, i) => $$"""{"slot_id": {{i}}, "trophy_id": {{t.Id}}, "pose_id": 1, "trophy_details": {{Details(t)}}}"""));
+        PlayerRows.AddLodge(con, "/game/user/lodges", "3", JsonNode.Parse($$"""{"id": 3, "name": "three", "animal_slots": [{{slots}}], "weapon_slots": []}"""));
+        con.Commit();
+    }
+
+    [Fact]
+    public async Task TestAClaimedAccountRanksItsRestoredTrophiesOnTheScoreBoardsOnly()
+    {
+        var kill = new DateTimeOffset(2025, 5, 21, 12, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+        // the 70.4 deer is in the list and in the lodge (once); the 40 deer is in the list only; the rabbit is mounted only
+        Claimed(40, "hotel", [(1, Deer, 70.401, kill), (2, Deer, 40, kill)], [(1, Deer, 70.401, kill), (3, Rabbit, 12, kill)]);
+        Restored(41, "india", Deer, "60.0000", 90000, kill);  // saved bests win: a claimed rule does not apply
+        Assert.Equal("hotel:70.401 india:60", await Board("score", Deer, 1));
+        Assert.Equal("hotel:70.401 india:60", await Board("score", Deer, 0));
+        Assert.Equal("india:90", await Board("range", Deer, 1));  // no shot distance: off the range board
+        Assert.Equal("hotel:12", await Board("score", Rabbit, 1));
+        Assert.Equal("", await Board("range", Rabbit, 1));
+        var hall = (await Json("/leaderboards/halloffame?season=1"))["rows"]!.AsArray();
+        Eq("""["hotel", "india"]""", T(hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
+        Eq("""["hotel", null]""", T(hall[1]!["score"]!["handle"], hall[1]!["range"]));
+        Eq("""["", 70.401]""", T((await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!["weaponName"], (await Json($"/leaderboards/score/{Deer}?season=1"))["rows"]![0]!["value"]));  // weapon unknown
+    }
+
     [Fact]
     public async Task TestTheOverviewListsTheTopThreeOfEachSpeciesAndEachRowCarriesItsKill()
     {
