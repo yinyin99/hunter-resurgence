@@ -72,8 +72,8 @@ public sealed partial class State
         return new JsonObject { ["status"] = "done", ["data"] = data };
     }
 
-    /// <summary>How long a computed board is kept: a minute, an hour for an ended season (its harvests are all in).</summary>
-    static readonly TimeSpan BoardTtl = TimeSpan.FromMinutes(1), EndedBoardTtl = TimeSpan.FromHours(1);
+    /// <summary>How long a computed board is kept: 15 minutes, 24 hours for an ended season (its harvests are all in).</summary>
+    static readonly TimeSpan BoardTtl = TimeSpan.FromMinutes(15), EndedBoardTtl = TimeSpan.FromHours(24);
 
     sealed record CachedBoards(Lazy<SortedDictionary<long, List<BoardRow>>> Boards, double Expires);
 
