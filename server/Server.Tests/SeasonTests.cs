@@ -14,7 +14,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}]""")!);
         var tick = Py.Now();
         state.Clock = () => tick += 7200;  // every board read is past the kept boards, so a test sees its latest data; the tests of the kept boards fix the clock
         var table = new Replay.HarTable();
@@ -192,6 +192,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Single(all);
         var record = block["records"]![0]!;
         Eq("""[1, 1, 1, 1, 70.0, null, 22, "charlie"]""", T(record["id"], record["animal_id"], record["rank"], record["scoretype"], record["score"], record["scoreType"], record["user"]!["id"], record["user"]!["handle"]));
+        Assert.Equal($"{BASE}/media/avatar/256/1000000.png", (string?)record["user"]!["avatar"]);  // the game's page: the game host, not the website's copy
         var range = await Call(Replay.LEADERBOARD_DETAILS, "type=2&species=1");
         Eq("""[2, null, 100.0]""", T(range["scoretype"], range["position"], range["records"]![0]!["score"]));
         Eq("[]", (await Call(Replay.LEADERBOARD_DETAILS, "type=1&species=17"))["records"]);
