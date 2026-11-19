@@ -23,6 +23,10 @@ const string AdminUsage = """
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
+    admin missions-rollback [--apply] [--account <id or handle>] reopens the mission objectives the earlier, laxer rules finished without their conditions: each finished harvest objective is checked again against the harvests
+    made since its mission was activated, and one that no harvest meets is reopened (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
+    missions completed before a restore are never touched. Without --apply it only prints one line per account with a change and a total, and writes nothing; --apply changes the rows and keeps a record per account (table mission_rollbacks).
+    Run it once, with the server stopped, after `backup`.
     """;
 
 const string ImportUsage = """
@@ -129,7 +133,7 @@ void Admin(string[] a)
             if (r.Rescored > 0 || r.Paid > 0)
                 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, rescored = r.Rescored, paid = r.Paid, gms = r.Gms, applied = apply }));
         }
-        Console.WriteLine(apply ? "applied (a running server keeps its boards up to 15 minutes, or until it restarts)" : "dry run: nothing written; add --apply to write");
+        Console.WriteLine(apply ? "applied (a running server keeps its boards 15 minutes, an ended season's 24 hours, or until it restarts)" : "dry run: nothing written; add --apply to write");
         return;
     }
     if (a.Length > 0 && a[0] == "gallery-details")
@@ -155,6 +159,19 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.SweepAvatars(PictureLinks.FromCfg(settings.Cfg), only, dry).GetAwaiter().GetResult()) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "missions-rollback")
+    {
+        var apply = a.Contains("--apply");
+        var rest = a[1..].Where(x => x != "--apply").ToArray();
+        if (rest is not ([] or ["--account", _])) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
+        foreach (var line in loaded.RollbackMissions(apply, only)) Console.WriteLine(line);
         return;
     }
     if (a.Length > 0 && a[0] == "spawn")
@@ -340,6 +357,7 @@ void ClaimCommand(string[] a)
 // Default: the recordings answer and the player state is off. --no-recordings: the server as it starts without
 // recordings or mirror (player state from the install and the facts file, on a temporary database), so what is listed
 // as unanswered still needs a recording. Hosts are printed as their settings key (api, static, ...), never by name.
+// Last: the missions the catalogue defines and how many of their objectives the server understands (State.MissionCoverage).
 async Task Coverage(bool noRecordings)
 {
     var cfg = settings.Cfg;
@@ -352,6 +370,7 @@ async Task Coverage(bool noRecordings)
         if (noRecordings && state is null) Die("no connect sample in the install: nothing to start the player state from");
         await using var server = await Loopback.StartAsync(new Replay.Game(served, cfg, state, noRecordings ? Path.Combine(scratch!, "mirror") : settings.MirrorDir));
         await ReplayAll(server, cfg, hars);
+        MissionCoverage(cfg, table);
     }
     finally
     {
@@ -360,6 +379,22 @@ async Task Coverage(bool noRecordings)
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
             Directory.Delete(scratch, true);
         }
+    }
+}
+
+void MissionCoverage(JsonObject cfg, Replay.HarTable table)
+{
+    var scratch = Directory.CreateTempSubdirectory("coverage-missions").FullName;
+    try
+    {
+        Console.WriteLine("missions:");
+        foreach (var line in Replay.LoadState(cfg, table, scratch)?.MissionCoverage() ?? ["no recorded connect: no catalogue"])
+            Console.WriteLine("  " + line);
+    }
+    finally
+    {
+        Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+        Directory.Delete(scratch, true);
     }
 }
 
@@ -419,6 +454,8 @@ async Task Serve()
     Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)settings.Cfg["install_dir"]!).Count} entries");
     var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
+    if (state is not null && state.ConfirmMissions() is > 0 and var confirmed)
+        Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests made before this start");
     var certs = new List<X509Certificate2>();
     try
     {
