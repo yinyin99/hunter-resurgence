@@ -50,7 +50,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
         if (kind != "overview")
             return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
-                .Select(x => new RankBar(x.Name, Count(x.Value), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
+                .Select(x => new RankBar(x.Name, Math.Max(0, x.Value), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
         return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
                 Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
     }
