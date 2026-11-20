@@ -24,6 +24,14 @@ sealed class TestZip
         return this;
     }
 
+    /// <summary>Another body for a reply already added (by its path).</summary>
+    public TestZip Replace(string path, string json)
+    {
+        var at = files.FindIndex(f => f.Path == path);
+        files[at] = (path, files[at].Endpoint, json, files[at].Params);
+        return this;
+    }
+
     readonly List<(string Path, byte[] Body)> media = [];
 
     /// <summary>A saved picture or page (no JSON reply), listed in the manifest with its hash.</summary>

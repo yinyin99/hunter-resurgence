@@ -35,6 +35,42 @@ public sealed partial class State
         PlayerRows.AddLodge(con, LodgeOne, id.ToString(), row);
     }
 
+    /// <summary>At start (community servers): <see cref="BackfillLodges(long)"/> for every account.</summary>
+    public void BackfillLodges()
+    {
+        foreach (var account in Store.AccountIds())
+            BackfillLodges(account);
+    }
+
+    /// <summary>An account that owns more units of a lodge item than it has lodges of that type (a purchase made before the store added lodges, or a restore's inventory)
+    /// gets the missing lodges (<see cref="GrantLodge"/>). A lodge counts once by id, with the first usable `lodge_type_id` of its rows (the list's first; `780`, `780.0` or `"780"`).
+    /// Run at start and after each restore. Idempotent: a second run finds none. An account whose data fails is left as it was (its transaction is dropped).</summary>
+    public void BackfillLodges(long account)
+    {
+        try
+        {
+            using var con = Con(account);
+            con.Begin();
+            var types = new Dictionary<long, long>();  // lodge id -> type (0: none usable yet)
+            foreach (var r in con.Rows("SELECT CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
+            {
+                var id = (long)r[0];  // the allocator's reading of an id: "03" and "3.0" are one lodge
+                if (types.GetValueOrDefault(id) == 0)
+                    types[id] = JsonNode.Parse((string)r[1]) is JsonObject node && (TryKey(node["lodge_type_id"], out var type) || Py.IsStr(node["lodge_type_id"]) && long.TryParse((string)node["lodge_type_id"]!, out type)) ? type : 0;
+            }
+            var have = types.Values.GroupBy(t => t).ToDictionary(g => g.Key, g => g.Count());
+            foreach (var r in con.Rows("SELECT item_id, COUNT(*) FROM items WHERE account_id = $a GROUP BY item_id"))
+                if (facts.LodgeOfItem((long)r[0]) is { } type)
+                    for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
+                        GrantLodge(con, (long)r[0], type);
+            con.Commit();
+        }
+        catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
+        {
+            Console.WriteLine($"lodges: account {account} left as it was ({e.Message})");
+        }
+    }
+
     /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
     public byte[]? LodgeCatalogueReply(string key) => facts.LodgeCatalogue(key) is { } node ? Py.DumpBytes(node) : null;
 

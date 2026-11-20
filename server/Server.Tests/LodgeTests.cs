@@ -345,6 +345,44 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheStartAddsTheMissingLodgesOfOwnedLodgeItemsOnce()
+    {
+        state.CreateAccount(5, "broken");
+        state.CreateAccount(11, "matching");
+        state.CreateAccount(14, "both");
+        foreach (var (account, item, guid) in new[] { (VIEWER, 780, 1), (5, 780, 1), (11, 780, 1), (14, 780, 1), (14, 780, 2), (14, 846, 3) })  // 846: the tropical lodge
+        {
+            using var con = state.Store.Open(account);
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', NULL)", guid, item);
+        }
+        foreach (var (account, id, type, source) in new[] { (11L, "9", "\"780\"", "/game/user/lodges"), (11, "9", "", "/game/user/lodge"), (14, "03", "780.0", "/game/user/lodges"), (14, "3.0", "780", "/game/user/lodge") })
+        {
+            using var con = state.Store.Open(account);  // the type is only in the list row as a text for 11; 14's lodge is "03" in the list and "3.0" in the detail
+            PlayerRows.AddLodge(con, source, id, O($$"""{"id": {{(long)double.Parse(id)}}, "name": "mine", {{(type == "" ? "" : $"\"lodge_type_id\": {type},")}} "animal_slots": []}"""));
+        }
+        using (var con = state.Store.Open(5))
+            con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, '/game/user/lodges', '1', '{')");  // unreadable: that account is skipped, the others go on
+        string Rows(long account)
+        {
+            using var con = state.Store.Open(account);
+            return string.Join("|", con.Rows("SELECT source, node FROM lodges WHERE account_id = $a ORDER BY n").Select(r => r[0] + " " + r[1]));
+        }
+        var (before11, before5) = (Rows(11), Rows(5));
+        state.BackfillLodges();
+        state.BackfillLodges();  // idempotent
+        Assert.Equal([before11, before5], [Rows(11), Rows(5)]);  // the matching pair and the unreadable account are untouched
+        long Count(long account, int type = 780)
+        {
+            using var con = state.Store.Open(account);
+            return (long)con.Scalar("SELECT COUNT(*) FROM lodges WHERE account_id = $a AND source = '/game/user/lodges' AND CAST(json_extract(node, '$.lodge_type_id') AS INTEGER) = ?", type)!;
+        }
+        Assert.Equal([1, 2, 1], [Count(VIEWER), Count(14), Count(14, 846)]);  // a plain grant; two items and one lodge with both rows: exactly one more; and the other type's lodge
+        var made = (await Read(V2, "/game/user/lodges", viewer)).AsArray().Single()!;
+        Eq("""["Rustic Lodge", 780, false]""", T(made["name"], made["lodge_type_id"], made["locked"]));
+        Eq("""[1, [], []]""", T(made["id"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["animal_slots"], (await Read(V2, $"/game/user/{VIEWER}/lodges/1", owner))["weapon_slots"]));
+    }
+
+    [Fact]
     public async Task TestALodgeBoughtInTheStoreIsListedEnteredAndEdited()
     {
         Eq("""{"price": 100.0, "success": true}""", Reply(state.BuyReply(OWNER, "item_id=780&amount=2&wallet=GOLD"u8.ToArray())));
