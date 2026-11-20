@@ -355,10 +355,10 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             using var con = state.Store.Open(account);
             con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, 0, '{}', NULL)", guid, item);
         }
-        foreach (var (account, id, type, source) in new[] { (11L, "9", "\"780\"", "/game/user/lodges"), (11, "9", "", "/game/user/lodge"), (14, "03", "780.0", "/game/user/lodges"), (14, "3", "", "/game/user/lodge") })
+        foreach (var (account, id, type, source) in new[] { (11L, "9", "\"780\"", "/game/user/lodges"), (11, "9", "", "/game/user/lodge"), (14, "03", "780.0", "/game/user/lodges"), (14, "3.0", "780", "/game/user/lodge") })
         {
-            using var con = state.Store.Open(account);  // the type is only in the list row, as a text for 11 and as 780.0 for 14 (whose lodge is "03" in the list and 3 in the detail)
-            PlayerRows.AddLodge(con, source, id, O($$"""{"id": {{long.Parse(id)}}, "name": "mine", {{(type == "" ? "" : $"\"lodge_type_id\": {type},")}} "animal_slots": []}"""));
+            using var con = state.Store.Open(account);  // the type is only in the list row as a text for 11; 14's lodge is "03" in the list and "3.0" in the detail
+            PlayerRows.AddLodge(con, source, id, O($$"""{"id": {{(long)double.Parse(id)}}, "name": "mine", {{(type == "" ? "" : $"\"lodge_type_id\": {type},")}} "animal_slots": []}"""));
         }
         using (var con = state.Store.Open(5))
             con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, '/game/user/lodges', '1', '{')");  // unreadable: that account is skipped, the others go on
