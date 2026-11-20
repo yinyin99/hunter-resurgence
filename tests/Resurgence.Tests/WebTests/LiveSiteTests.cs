@@ -275,7 +275,7 @@ public sealed class LiveSiteTests : UiContext
     static void InEnglish(Action check)
     {
         var before = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
-        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("en-US", useUserOverride: false);
         try { check(); }
         finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = before; }
     }
