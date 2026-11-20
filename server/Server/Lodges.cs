@@ -45,10 +45,10 @@ public sealed partial class State
             {
                 using var con = Con(account);
                 con.Begin();
-                var types = new Dictionary<string, long>();  // lodge id -> type (0: none usable yet)
-                foreach (var r in con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
+                var types = new Dictionary<long, long>();  // lodge id -> type (0: none usable yet)
+                foreach (var r in con.Rows("SELECT CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC", LodgeList, LodgeOne, LodgeList))
                 {
-                    var id = double.TryParse((string)r[0], System.Globalization.CultureInfo.InvariantCulture, out var number) && number == Math.Floor(number) && Math.Abs(number) < 9E18 ? ((long)number).ToString() : (string)r[0];  // "03", "3.0" and 3 are one lodge
+                    var id = (long)r[0];  // the allocator's reading of an id: "03" and "3.0" are one lodge
                     if (types.GetValueOrDefault(id) == 0)
                         types[id] = JsonNode.Parse((string)r[1]) is JsonObject node && (TryKey(node["lodge_type_id"], out var type) || Py.IsStr(node["lodge_type_id"]) && long.TryParse((string)node["lodge_type_id"]!, out type)) ? type : 0;
                 }
