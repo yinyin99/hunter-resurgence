@@ -5,9 +5,9 @@ namespace Resurgence.Services;
 /// <see cref="Background"/> is the header picture the player chose on the live site, without its extension (null: none).</summary>
 public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false,
     IReadOnlySet<string>? Tabs = null, string? Avatar = null, string? Background = null);
-/// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, <see cref="Done"/> of <see cref="Total"/> the way to the next one;
+/// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, or on the live site the whole count (past the cap too), <see cref="Done"/> of <see cref="Total"/> the way to the next one;
 /// <see cref="Id"/> is the rank's game id, which names its picture (0: none, the mock's).</summary>
-public sealed record RankBar(string Name, int Level, int Done, int Total, long Id = 0);
+public sealed record RankBar(string Name, long Level, int Done, int Total, long Id = 0);
 public sealed record Achievement(string Title, string Description, DateOnly Date);
 /// <summary>The "Your progress" widget: score out of the next goal, rank and the newest achievement (null when none).</summary>
 public sealed record Progress(int Score, int Max, int Rank, Achievement? Latest);

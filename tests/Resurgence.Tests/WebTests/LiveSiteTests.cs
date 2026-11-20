@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using Bunit;
 using Microsoft.Extensions.DependencyInjection;
@@ -270,17 +271,26 @@ public sealed class LiveSiteTests : UiContext
     ServerProfileService RealRanks() => new(new HttpClient(new Server("""{"handle":"Fox","hunterscore":5,"rank":3}""", "{}", ranks: Ranks)) { BaseAddress = new Uri("http://server.test") },
         new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
 
+    /// <summary>The counts are written with the culture's thousands separator: pinned (with the UI culture, which picks the labels) to one that has it, so a machine without one cannot hide a missing format.</summary>
+    static void InEnglish(Action check)
+    {
+        var before = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("en-US", useUserOverride: false);
+        try { check(); }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = before; }
+    }
+
     [Fact]
-    public void TheRanksTabShowsTheServersCountsByAnimalName()
+    public void TheRanksTabShowsTheServersCountsByAnimalName() => InEnglish(() =>
     {
         Services.AddSingleton<IProfileService>(RealRanks());
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox").Add(r => r.Sub, "animals"));
         cut.WaitForAssertion(() => Assert.Equal(["Alpine Ibex", "Red Fox"], cut.FindAll("div.what h4").Select(h => h.TextContent)));
-        Assert.Equal(["7", 4212.ToString("N0")], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // the number is the whole count, the bar stops at the cap
+        Assert.Equal(["7", "4,212"], cut.FindAll("div.what .bar b").Select(b => b.TextContent));  // the number is the whole count, the bar stops at the cap
         Assert.Equal(["width:0%", "width:100%"], cut.FindAll("div.what .bar i").Select(i => i.GetAttribute("style")));
         Assert.Equal(["rank-1", "rank-2"], cut.FindAll("div.row .asset-slot").Select(s => s.GetAttribute("aria-label")));  // each rank's own picture, by its game id
-    }
+    });
 
     [Fact]
     public void TheTrophiesTabDrawsTheCompetitionPictureByItsFileName()
@@ -298,14 +308,14 @@ public sealed class LiveSiteTests : UiContext
     }
 
     [Fact]
-    public void TheRanksOverviewAddsTheRowsUpToTheCap()
+    public void TheRanksOverviewAddsTheRowsUpToTheCap() => InEnglish(() =>
     {
         Services.AddSingleton<IProfileService>(RealRanks());
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
         // hunterscore 1000 + 7 + 3 + 0 of 4 rows; animals 1007 of 2000 (a row counts 1000 at most), weapons 3 of 1000; collectables none
-        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
-    }
+        cut.WaitForAssertion(() => Assert.Equal(["1,010 / 4,000 (25%)", "1,007 / 2,000 (50%)", "3 / 1,000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
+    });
 
 
     [Fact]

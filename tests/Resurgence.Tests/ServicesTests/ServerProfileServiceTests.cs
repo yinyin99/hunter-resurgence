@@ -271,7 +271,15 @@ public class ServerProfileServiceTests
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Ranks));
         var bars = await Make(fake).RanksAsync("fox", "animals");
         Assert.Equal("/hunters/fox/ranks", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal([("Alpine Ibex", 25, 25, 1000, 2L), ("Red Fox", 1500, 1000, 1000, 1L)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total, b.Id)));  // the number is the whole count, the bar fills at the cap; the id of the rank's picture
+        Assert.Equal([("Alpine Ibex", 25L, 25, 1000, 2L), ("Red Fox", 1500L, 1000, 1000, 1L)], bars.Select(b => (b.Name, b.Level, b.Done, b.Total, b.Id)));  // the number is the whole count, the bar fills at the cap; the id of the rank's picture
+    }
+
+    [Fact]
+    public async Task ARankCountAboveIntMaxValueIsShownWhole()
+    {
+        const string ranks = """{"cap":1000,"ranks":[{"id":1,"category":"animals","name":"Red Fox","value":3000000000}],"milestones":[]}""";
+        var bar = Assert.Single(await Make(new Fake(_ => Json(HttpStatusCode.OK, ranks))).RanksAsync("fox", "animals"));
+        Assert.Equal((3000000000L, 1000, 1000), (bar.Level, bar.Done, bar.Total));
     }
 
     [Fact]
@@ -330,7 +338,7 @@ public class ServerProfileServiceTests
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Achievements));
         var summary = await Make(fake).AchievementSummaryAsync("fox");
         Assert.Equal("/hunters/fox/achievements", Assert.Single(fake.Seen).RequestUri!.AbsolutePath);
-        Assert.Equal(("Animals", 1, 4, 5), summary.Categories.Select(c => (c.Name, c.Level, c.Done, c.Total)).Single());
+        Assert.Equal(("Animals", 1L, 4, 5), summary.Categories.Select(c => (c.Name, c.Level, c.Done, c.Total)).Single());
         Assert.Equal(4, summary.Unlocked);
         Assert.Equal(("25 Mule Deer", "25 Mule Deer harvested.", new DateOnly(2023, 11, 15)), summary.Recent.Select(a => (a.Title, a.Description, a.Date)).Single());
     }
