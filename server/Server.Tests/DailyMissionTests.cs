@@ -20,8 +20,8 @@ public class DailyMissionTests : StateTestBase
            {"id": 3, "title": "Hard", "alias": "HARD", "cooldown": 10, "color": "red", "reward_id": 132, "reward": 1000}],
           "templates": [
            {"id": 11, "difficulty": 1, "title": "Spot a male Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Spot a male Test Deer"]},
-           {"id": 12, "difficulty": 1, "title": "ID tracks from a Test Wolf", "giver": {"id": 16, "alias": "OTHER_GIVER"}, "objectives": ["ID tracks from a Test Wolf"]},
-           {"id": 13, "difficulty": 2, "title": "Harvest a female Test Deer", "giver": {"id": 16, "alias": "OTHER_GIVER"}, "objectives": ["Harvest a female Test Deer"]},
+           {"id": 12, "difficulty": 1, "title": "ID tracks from a Test Wolf", "giver": {"id": 16, "alias": "OTHER_GIVER", "image": "sheriff_other_giver.jpg"}, "objectives": ["ID tracks from a Test Wolf"]},
+           {"id": 13, "difficulty": 2, "title": "Harvest a female Test Deer", "giver": {"id": 16, "alias": "OTHER_GIVER", "image": "sheriff_other_giver.jpg"}, "objectives": ["Harvest a female Test Deer"]},
            {"id": 14, "difficulty": 3, "title": "Hunt a Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["ID 2 tracks from a Test Deer", "Then spot a Test Deer"]}]}}
         """);
 
@@ -212,6 +212,7 @@ public class DailyMissionTests : StateTestBase
         Eq("""[1, "MULE_DEER"]""", T(TodayOf(calendar)["mission"]!["gender"], TodayOf(calendar)["mission"]!["species"]));  // a female mission: the page draws the female picture
         var web = state.WebDaily(ME)!["missions"]!.AsArray();
         Eq("""[1, "MULE_DEER", "other_giver", 0, null, null]""", T(web[3]!["gender"], web[3]!["species"], web[3]!["giver"], web[0]!["gender"], web[0]!["species"], web[0]!["giver"]));  // only today's day has a mission
+        Assert.Equal("sheriff_other_giver.jpg", (string)TodayOf(calendar)["character"]!["image"]!);  // the facts file's picture name, not one made from the alias
         var before = Gm();
         Hb(Easy());  // not the medium mission's objective
         Assert.Equal(before, Gm());

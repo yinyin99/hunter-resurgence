@@ -4,6 +4,7 @@
 .card:disabled { cursor: default; }
 .card h6 { margin: 0; height: 38px; font-size: 12px; line-height: 38px; font-weight: 700; text-align: center; color: #fff; background: linear-gradient(#4f9a1e, #2d6212); }
 .card.big h6 { background: linear-gradient(#6a77c8, #3f4c96); }
+.card:disabled h6 { background: var(--bg-column); color: var(--fg-disabled); } /* a day that cannot be opened: dimmed label (3.3:1 on #111), the paw and the reward stay as they are */
 .card.big { background: #1d2a3b; }
 .body { height: 162px; text-align: center; }
 .body ::deep .badge { display: block; box-sizing: border-box; margin: 8px auto 4px; }
@@ -17,7 +18,7 @@
 .detail h2 { margin: 0 0 22px; font-size: 28px; line-height: 36px; font-weight: 400; color: var(--primary); }
 .detail h3 { margin: 0 0 12px; font-size: 24px; line-height: 30px; font-weight: 400; color: var(--text-1); }
 .who { display: flex; gap: 16px; margin: 0 0 22px; }
-.who p, .detail li, .indent { margin: 0; font-size: 14px; line-height: 20px; font-weight: 300; color: var(--text-3); }
+.who p, .detail li, .indent { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); font-weight: 400; color: var(--text-1); }
 .who p { width: 470px; }
 .detail ::deep .pic { position: absolute; right: 18px; top: 84px; }
 .detail ol { margin: 0 0 30px; padding: 0 0 0 28px; }

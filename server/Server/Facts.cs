@@ -40,7 +40,7 @@ public sealed class Facts
         DailyDifficulties = [.. (daily["difficulties"] as JsonArray ?? []).Select(d => new DailyDifficulty(Py.L(d!["id"]), (string)d["title"]!, (string)d["alias"]!,
             Py.L(d["cooldown"]), (string)d["color"]!, Py.L(d["reward_id"]), Py.L(d["reward"])))];
         DailyTemplates = [.. (daily["templates"] as JsonArray ?? []).Select(t => new DailyTemplate(Py.L(t!["id"]), Py.L(t["difficulty"]), (string)t["title"]!,
-            Py.L(t["giver"]!["id"]), (string)t["giver"]!["alias"]!, [.. t["objectives"]!.AsArray().Select(o => (string)o!)]))];
+            Py.L(t["giver"]!["id"]), (string)t["giver"]!["alias"]!, (string?)t["giver"]!["image"] ?? ((string)t["giver"]!["alias"]!).ToLowerInvariant() + ".jpg", [.. t["objectives"]!.AsArray().Select(o => (string)o!)]))];
         StoreAvatars = [.. Arr("store_avatars").Select(a => new StoreAvatar(Py.L(a!["item"]), Py.L(a["id"]), (string)a["name"]!, (string)a["gender"]!))];
     }
 
@@ -80,8 +80,8 @@ public sealed class Facts
 
     /// <summary>A difficulty of the daily missions (`daily_missions.difficulties`): its id, names, the cooldown and colour the calendar shows, the id of its reward row and its gm$ reward in the first 16-day cycle.</summary>
     public sealed record DailyDifficulty(long Id, string Title, string Alias, long Cooldown, string Color, long RewardId, long Reward);
-    /// <summary>A daily mission template (`daily_missions.templates`): its id (a sequence of its own), difficulty id, title, the giver's character id and alias, and the English titles of its objectives.</summary>
-    public sealed record DailyTemplate(long Id, long Difficulty, string Title, long Giver, string GiverAlias, string[] Objectives);
+    /// <summary>A daily mission template (`daily_missions.templates`): its id (a sequence of its own), difficulty id, title, the giver's character id, alias and picture name (`image`, else the alias in lower case and `.jpg`), and the English titles of its objectives.</summary>
+    public sealed record DailyTemplate(long Id, long Difficulty, string Title, long Giver, string GiverAlias, string GiverImage, string[] Objectives);
     /// <summary>The difficulty id of each day of the streak cycle (`daily_missions.cycle`); empty when the file has no daily missions.</summary>
     public readonly long[] DailyCycle;
     public readonly DailyDifficulty[] DailyDifficulties;

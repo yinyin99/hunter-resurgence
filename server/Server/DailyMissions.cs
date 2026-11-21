@@ -235,7 +235,7 @@ public sealed partial class State
                 entry["rewards_translations"] = new JsonArray(new JsonObject { ["text"] = $"{DailyReward(index)} gm$" });
                 entry["character"] = new JsonObject
                 {
-                    ["id"] = d.Template.Giver, ["name"] = name, ["alias"] = d.Template.GiverAlias, ["description"] = name, ["image"] = d.Template.GiverAlias.ToLowerInvariant() + ".jpg",
+                    ["id"] = d.Template.Giver, ["name"] = name, ["alias"] = d.Template.GiverAlias, ["description"] = name, ["image"] = d.Template.GiverImage,
                 };
                 entry["mission"] = new JsonObject
                 {
