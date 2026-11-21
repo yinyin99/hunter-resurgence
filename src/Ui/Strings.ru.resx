@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Выбрать новый аватар</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Аватары, которые можно открыть</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Этот аватар заблокирован. Его можно открыть, купив в магазине.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Картинка</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>В игре</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Пока выбрана ваша картинка, голова, которую использует игра, отмечена надписью «В игре». Чтобы изменить её, выберите аватар из списка, а затем снова выберите свою картинку.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Добро пожаловать в {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Поздравляем, {0}! Ваш новый аккаунт {game} создан!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Если вы уже скачали и установили лаунчер и клиент игры, можно начинать играть! Если вы впервые в {game}, рекомендуем пройти обучение, прежде чем отправляться на первую настоящую охоту. Обучение научит всему, что нужно, чтобы самостоятельно освоиться в охотугодьях Эвергрин. Начните ниже.</value></data>

@@ -16,6 +16,11 @@ h5 { margin: 12px 0 8px; font-size: 17.5px; line-height: 20px; font-weight: 400;
 .avatars { display: grid; grid-template-columns: repeat(6, 62px); gap: 35px 32px; }
 .pick { position: relative; display: block; padding: 0; border: 1px solid #555; background: none; cursor: pointer; }
 .pick.on { border-color: var(--primary); }
+.pick.game { border-color: var(--success); }
+.pick .tag { position: absolute; top: 66px; left: -16px; width: calc(100% + 32px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 18px; text-align: center; color: var(--text-1); }
+.pick.game .tag { color: var(--success); }
+.hint { margin: 0 0 12px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.avatars:has(.tag) { padding-bottom: 20px; }
 .pick ::deep .asset-slot { display: block; }
 .locked ::deep .icon { position: absolute; left: 4px; top: 4px; width: 14px; height: 14px; color: var(--text-2); }
 .locked span { position: absolute; top: 66px; left: 0; width: 100%; font-size: 12px; line-height: 18px; text-align: center; color: var(--text-2); }

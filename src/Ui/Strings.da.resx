@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Vælg en ny avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarer, der kan låses op</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Denne avatar er låst. Du kan låse den op ved at købe den i butikken.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Billede</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>I spillet</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Når dit billede er valgt, er det hoved, spillet bruger, markeret „I spillet“. Vil du ændre det, så vælg en avatar fra listen og vælg derefter dit billede igen.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Velkommen til {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Tillykke, {0}! Din splinternye {game}-konto er oprettet!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Hvis du allerede har downloadet og installeret spillets launcher og klient, er du klar til at spille! Er du ny i {game}, anbefaler vi, at du gennemfører selvstudierne, før du går på din første rigtige jagt. Selvstudierne lærer dig alt, hvad du har brug for at vide for at klare dig selv i Evergreen Hunting Reserve. Kom i gang nedenfor.</value></data>

@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Valitse uusi avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avattavat avatarit</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Tämä avatar on lukittu. Voit avata sen ostamalla sen kaupasta.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Kuva</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>Pelissä</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Kun kuvasi on valittuna, pelin käyttämä pää on merkitty tekstillä ”Pelissä”. Vaihda se valitsemalla luettelosta avatar ja valitse sitten kuvasi uudelleen.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Tervetuloa peliin {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Onneksi olkoon, {0}! Uusi {game}-tilisi on luotu!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Jos olet jo ladannut ja asentanut pelin käynnistäjän ja asiakasohjelman, voit aloittaa pelaamisen! Jos {game} on sinulle uusi, suosittelemme pelaamaan harjoitukset läpi ennen ensimmäistä oikeaa metsästystäsi. Harjoituksissa opit kaiken, mitä tarvitset pärjätäksesi itse Evergreenin metsästysalueella. Aloita alta.</value></data>

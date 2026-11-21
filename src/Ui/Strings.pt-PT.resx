@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Seleciona um novo avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatares desbloqueáveis</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Este avatar está bloqueado. Podes desbloqueá-lo ao comprá-lo na loja.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Imagem</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>No jogo</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Enquanto a tua imagem estiver selecionada, a cabeça usada pelo jogo fica marcada com “No jogo”. Para a mudares, escolhe um avatar da lista e depois escolhe outra vez a tua imagem.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Bem-vindo a {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Parabéns, {0}! A tua nova conta {game} foi criada!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Se já transferiste e instalaste o launcher e o cliente do jogo, estás pronto para começar a jogar! Se és novo em {game}, recomendamos que faças os tutoriais antes da tua primeira caçada a sério. Os tutoriais ensinam tudo o que precisas de saber para te desenrascares sozinho na Evergreen Hunting Reserve. Começa abaixo.</value></data>

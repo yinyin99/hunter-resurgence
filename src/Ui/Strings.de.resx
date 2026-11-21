@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Neuen Avatar wählen</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Freischaltbare Avatare</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Dieser Avatar ist gesperrt. Sie können ihn im Shop freischalten.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Bild</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>Im Spiel</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Solange Ihr Bild gewählt ist, ist der Kopf, den das Spiel verwendet, mit „Im Spiel“ markiert. Um ihn zu ändern, wählen Sie einen Avatar aus der Liste und danach erneut Ihr Bild.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Willkommen bei {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Herzlichen Glückwunsch, {0}! Ihr brandneues Konto für {game} wurde erstellt!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Wenn Sie den Spiel-Launcher und den Client bereits heruntergeladen und installiert haben, können Sie loslegen! Wenn Sie neu bei {game} sind, empfehlen wir Ihnen, die Tutorials durchzuspielen, bevor Sie Ihre erste echte Jagd unternehmen. In den Tutorials lernen Sie alles, was Sie wissen müssen, um sich im Evergreen-Jagdreservat allein zurechtzufinden. Legen Sie unten los.</value></data>

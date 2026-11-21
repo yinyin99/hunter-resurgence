@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Yeni bir avatar seçin</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Kilidi açılabilir avatarlar</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Bu avatar kilitli. Mağazadan satın alarak kilidini açabilirsiniz.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Resim</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>Oyunda</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Resminiz seçiliyken oyunun kullandığı kafa “Oyunda” olarak işaretlenir. Değiştirmek için listeden bir avatar seçin, ardından resminizi yeniden seçin.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>{game} oyununa hoş geldiniz</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Tebrikler {0}, yepyeni {game} hesabınız oluşturuldu!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Oyun başlatıcısını ve istemciyi zaten indirip yüklediyseniz oynamaya başlamaya hazırsınız! {game} oyununda yeniyseniz, ilk gerçek avınıza çıkmadan önce eğitimleri oynamanızı öneririz. Eğitimler, Evergreen Av Rezervi'nde kendi başınıza başarılı olmak için bilmeniz gereken her şeyi size öğretecek. Aşağıdan başlayın.</value></data>

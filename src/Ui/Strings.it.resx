@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Seleziona un nuovo avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatar sbloccabili</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Questo avatar è bloccato. Puoi sbloccarlo acquistandolo nel negozio.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Immagine</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>In gioco</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Finché la tua immagine è selezionata, la testa usata dal gioco è contrassegnata con «In gioco». Per cambiarla, scegli un avatar dall’elenco e poi scegli di nuovo la tua immagine.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Benvenuto in {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Congratulazioni {0}, il tuo nuovo account {game} è stato creato!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Se hai già scaricato e installato il launcher e il client del gioco, sei pronto per iniziare a giocare! Se sei nuovo in {game}, ti consigliamo di completare i tutorial prima della tua prima vera battuta di caccia. I tutorial ti insegneranno tutto ciò che devi sapere per cavartela da solo nella Riserva di caccia Evergreen. Inizia qui sotto.</value></data>

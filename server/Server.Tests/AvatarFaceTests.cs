@@ -8,7 +8,7 @@ namespace Resurgence.Server.Tests;
 public class AvatarFaceTests : StateTestBase
 {
     public AvatarFaceTests() => state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES,
-        avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000007, "url": "https://avatar.test/256/1000007.png", "gender": "m"}, {"id": 1000009, "url": "https://avatar.test/256/1000009.png", "gender": "f"}, {"id": 1001007, "url": "https://avatar.test/256/1001007.png", "gender": "m"}, {"id": 1002007, "url": "https://avatar.test/256/1002007.png", "gender": "m"}, {"id": 1002009, "url": "https://avatar.test/256/1002009.png", "gender": "f"}]""")!);
+        avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000002, "url": "https://avatar.test/256/1000002.png", "gender": "m"}, {"id": 1000007, "url": "https://avatar.test/256/1000007.png", "gender": "m"}, {"id": 1000009, "url": "https://avatar.test/256/1000009.png", "gender": "f"}, {"id": 1001007, "url": "https://avatar.test/256/1001007.png", "gender": "m"}, {"id": 1002007, "url": "https://avatar.test/256/1002007.png", "gender": "m"}, {"id": 1002009, "url": "https://avatar.test/256/1002009.png", "gender": "f"}]""")!);
 
     long Of(long account, string key) => (long)state.Store.AccountJson(account)[key]!;
 
@@ -32,11 +32,42 @@ public class AvatarFaceTests : StateTestBase
     public void AnImportedPictureGetsTheDefaultFaceOfTheBodysGender()
     {
         state.CreateAccount(50, "a");
-        var photos = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Db)!, "photos", "50")).FullName;
-        File.WriteAllBytes(Path.Combine(photos, State.ImportedAvatar), [1]);
+        ImportPicture(50);
         Assert.True(state.SetAvatar(50, 1002009));
         Assert.True(state.SetAvatar(50, null));
         Assert.Equal((1000009L, 0L), (Of(50, "face"), Of(50, "gender")));  // the woman keeps her body and gets a female head
+    }
+
+    void ImportPicture(long account) =>
+        File.WriteAllBytes(Path.Combine(Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(Db)!, "photos", account.ToString())).FullName, State.ImportedAvatar), [1]);
+
+    [Fact]
+    public void TheOwnPictureKeepsTheChosenHeadAndGenderAndAListedChoiceStillSetsThem()
+    {
+        state.CreateAccount(50, "a");
+        ImportPicture(50);
+        Set(50, 1000002, 1);
+        Assert.True(state.SetAvatar(50, null));
+        Assert.Equal((1000002L, 1L), (Of(50, "face"), Of(50, "gender")));  // only the picture changes
+        Assert.Equal($"{BASE}/photos/50/{State.ImportedAvatar}", (string)state.Store.AccountJson(50)["avatar_url"]!);
+        Set(50, 1002007, 1);  // a picture id is no 3D head
+        Assert.True(state.SetAvatar(50, null));
+        Assert.Equal((1000000L, 1L), (Of(50, "face"), Of(50, "gender")));  // the default head of the gender
+        Assert.True(state.SetAvatar(50, 1000009));
+        Assert.Equal((1000009L, 0L), (Of(50, "face"), Of(50, "gender")));  // a listed choice sets both
+    }
+
+    [Fact]
+    public void TheChoicesTellTheHeadTheGameUsesAndWhetherThePictureIsTheOwn()
+    {
+        state.CreateAccount(50, "a");
+        ImportPicture(50);
+        Set(50, 1000002, 1);
+        var listed = state.AvatarChoices(50, "https://web.test");
+        Assert.Equal((1000002L, false), ((long)listed["face"]!, (bool)listed["own"]!));
+        Assert.True(state.SetAvatar(50, null));
+        var own = state.AvatarChoices(50, "https://web.test");
+        Assert.Equal((1000002L, true), ((long)own["face"]!, (bool)own["own"]!));
     }
 
     [Fact]

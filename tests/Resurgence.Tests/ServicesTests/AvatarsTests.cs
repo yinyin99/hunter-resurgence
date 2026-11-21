@@ -62,6 +62,15 @@ public class AvatarsTests
     }
 
     [Theory]
+    [InlineData(true, true)]
+    [InlineData(false, false)]
+    public async Task TheListedAvatarOfTheInGameHeadIsMarkedOnlyWhileTheOwnPictureIsSelected(bool own, bool marked)
+    {
+        var service = Account(new Fake(_ => Json(HttpStatusCode.OK, $$"""{"current":"https://site.test/photos/7/avatar.jpg","ids":[1000000,1000001],"imported":"https://site.test/photos/7/avatar.jpg","face":1000001,"own":{{(own ? "true" : "false")}}}""")));
+        Assert.Equal([false, marked, false], (await service.AvatarsAsync()).Select(a => a.InGame));
+    }
+
+    [Theory]
     [InlineData("avatar-1000001", "id=1000001")]
     [InlineData("https://site.test/photos/7/avatar.jpg", "id=imported")]
     public async Task AChoiceIsPostedWithTheServersId(string slot, string form)

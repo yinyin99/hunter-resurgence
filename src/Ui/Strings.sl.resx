@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Izberi nov avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarji za odklep</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Ta avatar je zaklenjen. Odkleneš ga lahko z nakupom v trgovini.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Slika</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>V igri</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Dokler je izbrana tvoja slika, je glava, ki jo uporablja igra, označena z »V igri«. Če jo želiš spremeniti, izberi avatar s seznama in nato znova izberi svojo sliko.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Dobrodošli v igri {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Čestitamo, {0}! Tvoj povsem nov račun za igro {game} je ustvarjen!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Če sta zaganjalnik in odjemalec igre že prenesena in nameščena, lahko začneš igrati! Če je igra {game} zate nova, priporočamo, da pred prvim pravim lovom opraviš vadnice. Vadnice te bodo naučile vsega, kar moraš vedeti, da se samostojno znajdeš v rezervatu Evergreen Hunting. Začni spodaj.</value></data>

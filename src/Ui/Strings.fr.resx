@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Sélectionnez un nouvel avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatars à débloquer</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Cet avatar est verrouillé. Vous pouvez le déverrouiller en l’achetant dans la boutique.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Image</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>En jeu</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Tant que votre image est sélectionnée, la tête utilisée par le jeu est marquée « En jeu ». Pour la changer, choisissez un avatar de la liste, puis choisissez de nouveau votre image.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Bienvenue dans {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Félicitations {0}, votre tout nouveau compte {game} a bien été créé !</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Si vous avez déjà téléchargé et installé le launcher et le client du jeu, vous pouvez commencer à jouer ! Si vous découvrez {game}, nous vous recommandons de suivre les tutoriels avant de partir pour votre première vraie chasse. Ils vous apprendront tout ce qu’il faut savoir pour vous débrouiller par vous-même dans la réserve de chasse d’Evergreen. Commencez ci-dessous.</value></data>

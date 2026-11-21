@@ -14,11 +14,11 @@ public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, M
 
     public async Task<Account> AccountAsync() => new(Avatars.Slot((await FetchAsync(http, cookie, log))?.Current));
 
-    /// <summary>The game's avatars the player can choose in the order of its list, then the imported picture when the player has one, then the store's avatars it has not unlocked (locked, with the store item that unlocks one); the avatar-<c>id</c> slots, the picture's link for the imported one.</summary>
+    /// <summary>The game's avatars the player can choose in the order of its list (while the imported picture is selected, the one whose id is the head the game uses is <c>InGame</c>), then the imported picture when the player has one, then the store's avatars it has not unlocked (locked, with the store item that unlocks one); the avatar-<c>id</c> slots, the picture's link for the imported one.</summary>
     public async Task<IReadOnlyList<AvatarChoice>> AvatarsAsync()
     {
         if (await FetchAsync(http, cookie, log) is not { } a) return [];
-        var choices = (a.Ids ?? []).Select(id => new AvatarChoice($"avatar-{id}", $"{id}", false)).ToList();
+        var choices = (a.Ids ?? []).Select(id => new AvatarChoice($"avatar-{id}", $"{id}", false, InGame: a.Own && a.Face == id)).ToList();
         if (a.Imported is not null) choices.Add(new(Avatars.Slot(a.Imported), "", false));
         choices.AddRange((a.Locked ?? []).Select(l => new AvatarChoice($"avatar-{l.Id}", l.Name ?? $"{l.Id}", true, l.Item)));
         return choices;

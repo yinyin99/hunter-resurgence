@@ -880,6 +880,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Kies een nieuwe avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Ontgrendelbare avatars</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Deze avatar is vergrendeld. Je kunt hem ontgrendelen door hem in de winkel te kopen.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Afbeelding</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>In het spel</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Zolang je afbeelding is gekozen, is het hoofd dat het spel gebruikt gemarkeerd met “In het spel”. Kies om het te wijzigen een avatar uit de lijst en kies daarna je afbeelding opnieuw.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Welkom bij {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gefeliciteerd {0}, je gloednieuwe {game}-account is aangemaakt!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Als je de launcher en de client van het spel al hebt gedownload en geïnstalleerd, kun je meteen beginnen met spelen! Ben je nieuw bij {game}? Dan raden we je aan eerst de lessen te doorlopen voordat je op je eerste echte jacht gaat. In de lessen leer je alles wat je moet weten om het zelf te redden in het Evergreen Hunting Reserve. Begin hieronder.</value></data>
