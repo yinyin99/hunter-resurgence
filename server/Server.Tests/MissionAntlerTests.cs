@@ -113,4 +113,32 @@ public class MissionAntlerTests : MissionTestBase
         // the first mission is met by the second kill, the second by the first: judged by its own rack each, none is reopened
         Assert.Equal("would reopen 0 objectives in 0 missions; kept: not understood 0 finished objectives (dry run: nothing written, --apply writes)", strict.RollbackMissions(apply: false).Last());
     }
+
+    [Fact]
+    public void TestTheGenderOfAnIndividualOfAnEarlierHuntIsNotTheNextHuntsWhenTheHarvestsAreAlike()
+    {
+        state = New("reuse-gender.db", Catalogue(["Harvest a Test Deer"]));
+        ActivateAll();
+        Launch();
+        Hb(Rack(Shot(1), 1, 5, 5));  // a buck
+        Launch();
+        Hb(Rack(Shot(1, gender: 1), 1, 5, 5));  // a doe of the same number, the same harvest event
+        Assert.Equal("1", Completed());
+        var strict = New("reuse-gender.db", Catalogue([Buck8]));
+        Assert.Equal("would reopen 0 objectives in 0 missions; kept: not understood 0 finished objectives (dry run: nothing written, --apply writes)", strict.RollbackMissions(apply: false).Last());
+    }
+
+    [Fact]
+    public void TestATrophyOfTheNextHuntIsNotTheHarvestOfAnEarlierOnes()
+    {
+        state = New("cross-hunt.db", Catalogue([Buck8]));
+        ActivateAll();
+        Launch();
+        Hb(Shot(1));  // a buck with no trophy event
+        Launch();
+        Hb(Rack(Shot(2), 1, 5, 5)[1]);  // the next hunt: a trophy event of the same number, no spawn of its own
+        var later = New("cross-hunt.db", Catalogue([Buck8]));
+        Assert.Equal(0, later.ConfirmMissions());
+        Assert.Equal("", Completed(of: later));
+    }
 }

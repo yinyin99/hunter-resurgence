@@ -88,23 +88,32 @@ public sealed partial class State
     static long? ReserveAt(Db con, long eventId) =>
         con.Scalar("SELECT reserve FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) as long?;
 
-    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits, its score and its antler points are read from the stored events when a condition asks.</summary>
+    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits, its score and its antler points are read from the stored events when a condition asks.
+    /// The animal is the one of that event: individual ids are reused by the next hunt, and two harvests may carry the same JSON.</summary>
     Kill KillOf(Db con, JsonObject e3, long eventId, JsonObject? e7 = null)
     {
-        var harvest = Py.Dumps(e3);
-        return new(e3, e7 ?? KillEvents(con, e3["individual"], harvest).E7, () => KillHits(con, e3["individual"], harvest), ReserveAt(con, eventId), () =>
+        var (individual, harvest) = (e3["individual"], Py.Dumps(e3));
+        return new(e3, e7 ?? SpawnBefore(con, individual, eventId), () => HitsBefore(con, individual, eventId), ReserveAt(con, eventId), () =>
         {
             var r = ScoreKill(con, e3, harvest, Trophy, AmmoCheck);
             return (r.Disqualified, Py.IsNum(r.Score) ? Py.D(r.Score) : null);
-        }, () => TypicalPoints(e3, TrophyOf(con, e3["individual"], eventId)));
+        }, () => TypicalPoints(e3, TrophyOf(con, individual, eventId)));
     }
 
-    /// <summary>The trophy event (22) of the animal of the harvest stored as event `harvestId`: the latest one of its individual after its spawn (the latest event 7 before the harvest) and
-    /// before the individual's next spawn, so a later hunt's animal of the same individual has its own; one sent after the harvest counts. {} when there is none.</summary>
+    // the event id after which the events of the animal `?1` of the event `?2` are: the later of its spawn (the latest event 7 before) and the first event of its hunt
+    const string AnimalFrom = "MAX(COALESCE((SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id < ?2), 0),"
+        + " COALESCE((SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0))";
+
+    /// <summary>The hits (event 1) on the animal of the harvest stored as event `harvestId`, in order.</summary>
+    static List<JsonObject> HitsBefore(Db con, JsonNode? individual, long harvestId) =>
+        [.. con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 1 AND individual = ?1 AND id < ?2 AND id > " + AnimalFrom + " ORDER BY id", individual, harvestId).Select(r => Parse(r[0]))];
+
+    /// <summary>The trophy event (22) of the animal of the harvest stored as event `harvestId`: the latest one of its individual after its spawn and in its hunt, and before the individual's
+    /// next spawn, so the animal of the same number in a later hunt has its own; one sent after the harvest counts. {} when there is none.</summary>
     static JsonObject TrophyOf(Db con, JsonNode? individual, long harvestId) =>
-        con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 22 AND individual = ?1"
-            + " AND id > COALESCE((SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id < ?2), 0)"
-            + " AND id < COALESCE((SELECT MIN(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id > ?2), 9223372036854775807) ORDER BY id DESC LIMIT 1",
+        con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 22 AND individual = ?1 AND id > " + AnimalFrom
+            + " AND id < COALESCE((SELECT MIN(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id > ?2), 9223372036854775807)"
+            + " AND id <= COALESCE((SELECT MIN(first_event) FROM expeditions WHERE account_id = $a AND first_event >= ?2), 9223372036854775807) ORDER BY id DESC LIMIT 1",
             individual, harvestId).Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
 
     /// <summary>The typical points of both antlers added (the `points` of the trophy event's `left_antler` and `right_antler`: the main beam and the tines, not the `abnormals`); null for a
@@ -134,17 +143,17 @@ public sealed partial class State
 
     // The `track_type` of an event 12 by the kind of clue it is. 0 (blood trail), 9 (a heard call) and 12 (bedding) are one id each. The other ids come in pairs of one species' clues: its
     // droppings, then its footprints (a trotting or a fleeing animal leaves the footprints' id too): 1 and 2 for a whitetail, 3 and 4 for a mule deer, 16 and 17 for a moose, 5 and 6 for a
-    // turkey, and so on up to 102 and 103 for a wood grouse. Each id but 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) is in the recorded clue
-    // events. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are in no kind: no objective is met by them.
+    // turkey, and so on up to 102 and 103 for a wood grouse. 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) are unverified entries, every other id is
+    // verified. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are in no kind: no objective is met by them.
     static readonly Dictionary<long, ClueKind> ClueKinds = ClueTable(
         (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]),
         (ClueKind.Droppings, [1, 3, 5, 7, 10, 14, 16, 18, 23, 25, 32, 34, 36, 38, 40, 44, 56, 58, 60, 62, 64, 66, 68, 70, 78, 80, 82, 84, 88, 92, 93, 94, 96, 98, 100, 102]),
         (ClueKind.Footprints, [2, 4, 6, 8, 11, 15, 17, 19, 21, 22, 24, 26, 28, 33, 35, 37, 39, 41, 45, 57, 59, 61, 63, 65, 67, 69, 71, 73, 79, 81, 83, 85, 89, 95, 97, 99, 101, 103]));
 
     /// <summary>The kind of the clue of event 12 `e12` by an animal of `species`; null for a whole `track_type` no kind is known for, and for any other value. The red deer's water bubbles (25)
-    /// and the wendigo's (32) use the ids of the roe deer's and the rabbits' droppings.</summary>
+    /// and the wendigo's (32) use the ids of the roe deer's and the rabbits' droppings: those two ids have a kind for a known animal only, and not for the red deer's and the wendigo's.</summary>
     static ClueKind? ClueKindOf(JsonObject e12, long? species) =>
-        NumOf(e12, "track_type") is { } type && type == Math.Floor(type) && (long)type is var id && (id, species) is not ((25, 12) or (32, 58)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
+        NumOf(e12, "track_type") is { } type && type == Math.Floor(type) && (long)type is var id && (id, species) is not ((25, 12) or (32, 58) or (25 or 32, null)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
 
     /// <summary>Is the clue `e12` of the animal `e7` one the test accepts: a clue of a known kind, of one of the kinds named, or of any known kind when it names none?</summary>
     static bool ClueIs(Test t, JsonObject e12, JsonObject e7) =>

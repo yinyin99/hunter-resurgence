@@ -255,6 +255,19 @@ public class DailyMissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheClueCountOfTheDaysMissionAddsUpOnlyTheCluesFoundSinceTheDayBegan()
+    {
+        SetDay(15);  // the hard mission: two tracks of a deer, then a spot
+        On(D0.AddDays(-1));
+        Hb(Spawn(1, 0), Track(), Track());  // the evening before, in the same hunt
+        On(D0);
+        Hb(Track());
+        Assert.Equal([false, false], Completed());  // one of today's
+        Hb(Track());
+        Assert.Equal([true, false], Completed());
+    }
+
+    [Fact]
     public void TestEachCompletedCycleAddsATenthToTheRewardsUpToDouble()
     {
         SetDay(31);  // the 32nd day: the 16th of the second cycle, hard, 10 % more; its block is days 29 to 35

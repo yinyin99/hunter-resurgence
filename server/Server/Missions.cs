@@ -345,7 +345,7 @@ public sealed partial class State
         Kill? kill = null;
         if (kind != Kind.Arrive)
         {
-            var animal = kind == Kind.Harvest ? KillEvents(con, e["individual"], Py.Dumps(e)).E7 : SpawnBefore(con, e["individual"], eventId);
+            var animal = SpawnBefore(con, e["individual"], eventId);
             (animalSpecies, gender) = AnimalOf(animal, kind == Kind.Harvest ? e["extended_species"] : animal["species"]);
             kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, e, animal);
         }
@@ -409,7 +409,7 @@ public sealed partial class State
             else
                 Complete(con, m, now);
         }
-        DailyAdvance(con, kind, rule => meets(rule, 0), now);
+        DailyAdvance(con, kind, meets, now);
         CommunityCount(con, kind, rule => meets(rule, 0));
     }
 
