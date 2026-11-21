@@ -42,18 +42,19 @@ public class AvatarFaceTests : StateTestBase
     [Fact]
     public void TheFixTakesTheFacesGenderAndMakesEveryFaceA3DFaceAndIsIdempotent()
     {
-        foreach (var id in new long[] { 50, 51, 52, 53, 54, 55, 56 }) state.CreateAccount(id, $"p{id}");
+        foreach (var id in new long[] { 50, 51, 52, 53, 54, 55, 56, 57 }) state.CreateAccount(id, $"p{id}");
         Set(50, 1000007, 0);  // body and face disagree
         Set(51, 1002007, 1);  // a picture, no 3D face
         Set(52, 1000024, 0);  // the store's head stays
         Set(53, 4242, 0);     // no listed avatar: its gender stays, a default face of it
         Set(55, 1000000, 0, $"{BASE}/photos/55/avatar.jpg");  // its own picture: the male face was the server's fill-in, the woman stays a woman
         Set(54, 1000009, 0);  // fine
+        Set(57, 1000000, 0, $"{BASE}/media/avatar/256/1000000.png");  // a restored profile's default address with the male face: the face's gender
         Set(56, 1000009, 0, $"{BASE}/media/avatar/256/1000000.png");  // a restore without a picture: the default address, a female face: stable
-        Assert.Equal("would fix: 1 body(ies) of another gender than their face, 3 face(s) that are no 3D face of their body", state.FixFaces(apply: false));
+        Assert.Equal("would fix: 2 body(ies) of another gender than their face, 3 face(s) that are no 3D face of their body", state.FixFaces(apply: false));
         Assert.Equal(0L, Of(50, "gender"));
         state.FixFaces(apply: true);
-        Assert.Equal([(1000007L, 1L), (1000007L, 1L), (1000024L, 0L), (1000009L, 0L), (1000009L, 0L), (1000009L, 0L), (1000009L, 0L)], new long[] { 50, 51, 52, 53, 54, 55, 56 }.Select(i => (Of(i, "face"), Of(i, "gender"))));
+        Assert.Equal([(1000007L, 1L), (1000007L, 1L), (1000024L, 0L), (1000009L, 0L), (1000009L, 0L), (1000009L, 0L), (1000009L, 0L), (1000000L, 1L)], new long[] { 50, 51, 52, 53, 54, 55, 56, 57 }.Select(i => (Of(i, "face"), Of(i, "gender"))));
         Assert.Equal("fixed: 0 body(ies) of another gender than their face, 0 face(s) that are no 3D face of their body", state.FixFaces(apply: true));
     }
 }
