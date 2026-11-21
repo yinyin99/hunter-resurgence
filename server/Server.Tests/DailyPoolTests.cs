@@ -30,6 +30,8 @@ public class DailyPoolTests : StateTestBase
 
     static readonly DateOnly D0 = new(2031, 3, 10);
 
+    void On(DateOnly date) => state.Clock = () => (date.DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0 + 43200;
+
     static JsonNode FactsJson() => JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "facts", "facts.json")))!;
 
     State New(Facts facts)
@@ -42,19 +44,19 @@ public class DailyPoolTests : StateTestBase
         return s;
     }
 
-    /// <summary>Every mission the calendar shows for new accounts over enough dates, when every day of the cycle has this difficulty.</summary>
-    Dictionary<long, JsonNode> Picked(long difficulty)
+    /// <summary>Every mission the calendar shows for new accounts over enough dates, when every day of the cycle has this difficulty: its account, date and entry.</summary>
+    Dictionary<long, (long Account, DateOnly Date, JsonNode Day)> Picked(long difficulty)
     {
         var json = FactsJson();
         json["daily_missions"]!["cycle"] = new JsonArray(difficulty);
         state = New(Facts.Parse(json.ToJsonString()));
-        var picked = new Dictionary<long, JsonNode>();
+        var picked = new Dictionary<long, (long, DateOnly, JsonNode)>();
         for (var i = 0; i < 40; i++)
         {
-            state.Clock = () => (D0.AddDays(i).DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0 + 43200;
+            On(D0.AddDays(i));
             state.CreateAccount(100 + i, "player" + i);
             var today = Reply(state.DailyCalendarReply(100 + i)!)["calendar"]!.AsArray().Single(e => (bool)e!["today"]!)!;
-            picked[(long)today["mission"]!["id"]!] = today;
+            picked[(long)today["mission"]!["id"]!] = (100 + i, D0.AddDays(i), today);
         }
         return picked;
     }
@@ -66,7 +68,7 @@ public class DailyPoolTests : StateTestBase
         var medium = Picked(2);
         foreach (var (id, difficulty, species, gender, reserves, giver, name, image) in Added)
         {
-            var day = (difficulty == 1 ? easy : medium)[id];  // an unreadable template is left out, so it would never be here
+            var day = (difficulty == 1 ? easy : medium)[id].Day;  // a template with no readable kind or species is left out, so it would never be here
             var (mission, character) = (day["mission"]!, day["character"]!);
             Eq($"""[{id}, "{species}", {gender}, "{reserves}", "{species}"]""", T(mission["id"], mission["species"], mission["gender"], mission["reserves"], day["species"]));
             Eq($$"""{"id": {{character["id"]}}, "name": "{{name}}", "alias": "{{giver}}", "description": "{{name}}", "image": "{{image}}"}""", character);
@@ -76,11 +78,35 @@ public class DailyPoolTests : StateTestBase
     [Fact]
     public void TestADroppingsClueAndAHarvestAreWrittenAsTheOriginalWritesThem()
     {
-        Eq("""["CLUE", "a.species() == c.species.PTARMIGAN_ROCK and e.trackType() == c.clue.DROPPINGS"]""", Objective(Picked(1)[324], 0));
-        Eq("""["CONFIRMKILL", "a.ethical() and a.killedBy(e.getUserId()) and a.species() == c.species.BLACK_BEAR and a.gender()== c.gender.FEMALE"]""", Objective(Picked(2)[510], 0));
-        // two clues of one species in the same hunt: a male's, then a female's
-        Eq("""["CLUE", "a.species() == c.species.RUSA_DEER and e.trackType() == c.clue.FOOTSTEPS and a.gender() == c.gender.MALE"]""", Objective(Picked(2)[381], 0));
-        Eq("""["CLUE", "a.species() == c.species.RUSA_DEER and e.trackType() == c.clue.FOOTSTEPS and a.gender() == c.gender.FEMALE"]""", Objective(Picked(2)[381], 1));
+        Eq("""["CLUE", "a.species() == c.species.PTARMIGAN_ROCK and e.trackType() == c.clue.DROPPINGS"]""", Objective(Picked(1)[324].Day, 0));
+        Eq("""["CONFIRMKILL", "a.ethical() and a.killedBy(e.getUserId()) and a.species() == c.species.BLACK_BEAR and a.gender()== c.gender.FEMALE"]""", Objective(Picked(2)[510].Day, 0));
+        // two clues of one species: a male's and a female's
+        Eq("""["CLUE", "a.species() == c.species.RUSA_DEER and e.trackType() == c.clue.FOOTSTEPS and a.gender() == c.gender.MALE"]""", Objective(Picked(2)[381].Day, 0));
+        Eq("""["CLUE", "a.species() == c.species.RUSA_DEER and e.trackType() == c.clue.FOOTSTEPS and a.gender() == c.gender.FEMALE"]""", Objective(Picked(2)[381].Day, 1));
+    }
+
+    /// <summary>The spots and clues the objectives ask for finish each mission: the reader understands every word of their titles (the harvest's title has the shape of the tested ones in DailyMissionTests).</summary>
+    [Fact]
+    public void TestTheAddedSpotAndClueMissionsAreCompletedByTheirAnimals()
+    {
+        var individual = 0;
+        foreach (var byDifficulty in Added.Where(a => a.Id != 510).GroupBy(a => a.Difficulty))
+        {
+            var picked = Picked(byDifficulty.Key);  // the state is the one of this difficulty's accounts
+            foreach (var (id, _, species, gender, _, _, _, _) in byDifficulty)
+            {
+                var (account, date, _) = picked[id];
+                On(date);
+                state.DailyActivate(account);
+                var speciesId = Species.Single(s => s.Define == species).Id;
+                foreach (var g in id == 381 ? new long[] { 0, 1 } : [gender])
+                    state.HeartbeatReply(account, Events(
+                        O($$"""{"event": 7, "individual": {{++individual}}, "species": {{speciesId}}, "gender": {{g}}, "weight_grams": 50000, "texture": 0}"""),
+                        id is 49 or 121 ? O($$"""{"event": 11, "individual": {{individual}}, "milliseconds_viewed": 3000, "percentage": 80}""") : O($$"""{"event": 12, "individual": {{individual}}, "track_type": 3}""")));
+                var today = Reply(state.DailyCalendarReply(account)!)["calendar"]!.AsArray().Single(e => (bool)e!["today"]!)!;
+                Assert.All(JsonNode.Parse((string)today["objectives"]!)!.AsArray(), o => Assert.NotNull(o!["objective_data"]!["completed"]));
+            }
+        }
     }
 
     static JsonNode Objective(JsonNode day, int index) => T(JsonNode.Parse((string)day["objectives"]!)![index]!["event_type"], JsonNode.Parse((string)day["objectives"]!)![index]!["objective_data"]!["conditions"]);
