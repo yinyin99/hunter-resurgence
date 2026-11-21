@@ -66,6 +66,22 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTracksBesideAnotherKindAreFootprintsEvenOnATrail()
+    {
+        state = New("listed.db", Catalogue(["Locate 2 Test Fox tracks or droppings from the same animal", "ID tracks, droppings or calls of a Test Deer"]));
+        ActivateAll();
+        Hb(Clue(1, 9, species: 5));
+        Hb(Clue(1, 0, species: 5));  // a call and a blood trail of one fox
+        Hb(Clue(2, 0));  // a blood trail of a deer
+        Hb(Clue(1, 1, species: 5));  // the fox's droppings: one clue of the kinds named
+        Assert.Equal("", Completed());
+        Hb(Clue(1, 2, species: 5));  // and its footprints
+        Assert.Equal("1", Completed());
+        Hb(Clue(2, 9));
+        Assert.Equal("1,2", Completed());
+    }
+
+    [Fact]
     public void TestOnlyTheElkTheMissionListsCountAndOnlyTheCluesAfterTheActivation()
     {
         state = New("elks.db", Catalogue(["Locate 2 Elk tracks"], ", \"species\": [3]"));  // the mission lists one of the two elk
