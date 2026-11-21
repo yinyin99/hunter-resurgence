@@ -454,7 +454,18 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
         /// <summary>After capturing a key the game calls `game.updateKeybinding(...)` or `game.overrideKeybinding(...)` on the in-game page, which only defines them on `window.ewcallback` (set later by the page's own script), so
         /// the options page never saw the key and never saved. The script defines both on `window.game` (an existing `game` and any member already set is kept) and forwards every argument to `window.ewcallback` when the call is made.</summary>
         const string KeybindingScript = "<script>(function(){var g=window.game||(window.game={});['updateKeybinding','overrideKeybinding'].forEach(function(n){if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}})})()</script>";
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + ClientStyle)];
+        /// <summary>The in-game page's mission buttons (Activate, Activate All, favourites, the automatic-activation and filter switches) POST to `/v1/mission/...` without the player's token, so the server answered token expired and the
+        /// page gave up. The script wraps the XHR the page's request library uses: a POST to a `/v1/mission/` path with no `oauth_access_token` waits for `HUNTER.getAccessToken()`, is re-opened with the token as a query field (which
+        /// `Req.Tokens` reads; no header, so no preflight) and sent with the same headers and body.</summary>
+        const string MissionTokenScript = "<script>(function(){var X=XMLHttpRequest.prototype,o=X.open,h=X.setRequestHeader,s=X.send;"
+            + "X.open=function(){this._a=arguments;this._h=[];return o.apply(this,arguments)};"
+            + "X.setRequestHeader=function(k,v){if(this._h)this._h.push([k,v]);return h.apply(this,arguments)};"
+            + "X.send=function(b){var x=this,a=x._a,u=a&&String(a[1]),H=window.HUNTER;"
+            + "if(!a||!/^post$/i.test(a[0])||!/\\/v1\\/mission\\//.test(u)||u.indexOf('oauth_access_token=')>=0||(typeof b==='string'&&b.indexOf('oauth_access_token=')>=0)||!H||typeof H.getAccessToken!=='function')return s.call(x,b);"
+            + "Promise.resolve().then(function(){return H.getAccessToken()}).then(function(t){if(!t)return s.call(x,b);"
+            + "o.call(x,a[0],u+(u.indexOf('?')<0?'?':'&')+'oauth_access_token='+encodeURIComponent(t),a[2]!==false,a[3],a[4]);"
+            + "x._h.forEach(function(p){h.call(x,p[0],p[1])});s.call(x,b)},function(){s.call(x,b)})}})()</script>";
+        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + MissionTokenScript + ClientStyle)];
 
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)

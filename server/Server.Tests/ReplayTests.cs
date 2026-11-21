@@ -241,6 +241,10 @@ public class ReplayTests : IAsyncLifetime
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "window\\.game=\\{\\}"));  // the key binding forwarder: once, defined only where the page has none, forwarding to ewcallback at call time
         Assert.Contains("if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}", page);
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
+        Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "X\\.send=function\\(b\\)"));  // the mission buttons' token: once, for POSTs to /v1/mission/ without one
+        Assert.Contains("/v1\\/mission\\//.test(u)", page);
+        Assert.Contains("H.getAccessToken()", page);
+        Assert.Contains("'oauth_access_token='+encodeURIComponent(t)", page);
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
