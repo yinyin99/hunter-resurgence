@@ -98,7 +98,7 @@ public sealed class DailyMissionsPageTests : UiContext
         var cut = Open(live: true, broken: false);
 
         Assert.Equal("Test Daily", cut.Find(".detail h2").TextContent);
-        Assert.Single(cut.FindAll("[aria-label='mission-giver-test_giver']"));
+        Assert.Single(cut.FindAll("[aria-label='mission-giver-test-giver']"));
         Assert.Single(cut.FindAll("[aria-label='mission-species-test-deer-f']"));  // the server's gender 1: the female picture
         Assert.Empty(cut.FindAll("p.broken").Where(p => p.TextContent.StartsWith("Your streak is broken")));
         Assert.NotEmpty(cut.FindAll("#activate-dm"));
