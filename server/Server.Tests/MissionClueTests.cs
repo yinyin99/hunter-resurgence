@@ -162,6 +162,22 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheRollbackOfAnActiveSingleHuntMissionKeepsWhatItsLatestHuntFinished()
+    {
+        state = New("one-hunt.db", """{"missions": [{"id": 1, "title": "One Hunt", "singleExpedition": true, "dependencies": [], "rewards": [{"text": "10 gm$"}], "objectives": [""" +
+            """{"id": 0, "title": "ID footprints from a Test Deer"}, {"id": 1, "title": "ID footprints from a Test Fox"}, {"id": 2, "title": "ID footprints from a Plains Elk"}]}]}""");
+        ActivateAll();
+        Launch();
+        Hb(Clue(1, 2));
+        Hb(Clue(2, 8, species: 3));  // the first hunt finishes the deer and the elk
+        Launch();
+        Hb(Clue(1, 2, species: 5));
+        Hb(Clue(2, 8, species: 3));  // the latest one the fox and the elk
+        Eq("""{"state": 2, "objectives": [1, 2]}""", Reply(state.MissionsReply(ME)!)["states"]!["1"]);
+        Assert.Equal("would reopen 0 objectives in 0 missions; kept: not understood 0 finished objectives (dry run: nothing written, --apply writes)", state.RollbackMissions(apply: false).Last());
+    }
+
+    [Fact]
     public void TestAClueTheVersionThatReadsItsTitleFindsAmongTheStoredOnesFinishesItAtTheStart()
     {
         state = New("clue-later.db", Catalogue(["ID a call from a Test Deer north of the Middle Tower"]));
