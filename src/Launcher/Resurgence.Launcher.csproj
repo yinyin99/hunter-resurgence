@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" Version="10.0.130" />
-    <PackageReference Include="System.Management" Version="10.0.15" />
+    <PackageReference Include="System.Management" Version="11.0.0" />
     <PackageReference Include="Velopack" Version="1.2.161" />
     <!-- the WPF SDK drops System.IO from the implicit usings -->
     <Using Include="System.IO" />
