@@ -352,13 +352,14 @@ On a community server `Mission/missions` and the calls the missions page sends a
 
 | Words of the title | Checked against |
 |---|---|
-| `tracks`, `track`, `footprints`, `footprint`, `footsteps` | a footprints clue |
+| `tracks`, `track`, `footprints`, `footprint`, `footsteps` | a footprints clue: the original's daily missions with these titles (`ID tracks from a Grey Wolf`) counted footprints only |
+| `tracks` of one animal's trail: a number of them with `Locate` or `Find` (`Locate 3 Elk tracks`) or `from the same animal` / `one and the same` (`Identify 3 Grey Wolf tracks from the same animal`) | a clue of any kind in the table below: a trail goes on with every clue of its animal (the footprints rule holds for `ID 3 tracks from a Moose`) |
 | `droppings`, `dropping`, `scat`, `a droppings track` | a droppings clue |
 | `call`, `audio clue`, `audio call`, `audio` | a heard call |
 | `blood`, `blood trail` | a blood trail |
 | `bedding`, `bed` | a bedding clue |
 | `any clue`, `a clue` | a clue of any kind in the table below |
-| several of the above (`footprints or droppings`, `tracks, droppings or calls`, `any clue (footprints, droppings, or audio)`) | a clue of any of the kinds named: the kinds in brackets after `any clue` are the ones it takes |
+| several of the above (`footprints or droppings`, `tracks, droppings or calls`, `any clue (footprints, droppings, or audio)`) | a clue of any of the kinds named (`tracks` among them are the footprints): the kinds in brackets after `any clue` are the ones it takes |
 | `3 tracks`, `five tracks`, `3 sets of tracks`, `from the same animal` | that many clues of those kinds of one animal in the hunt, after the mission was activated, the one just found counted (without a number, one) |
 | a species name, a short name (`Elk`, `Sitka`, `Ptarmigan`), `any species of Ptarmigan`, `any animal except ...`, a gender word, `in <reserve>` | as for a harvest: the species and gender of the animal's event 7, the reserve of the hunt |
 | `another`, `more`, `one more`, `second`, `third`, `a set of`, `a pile of`, `unique` | nothing: each clue finishes one objective, in order |

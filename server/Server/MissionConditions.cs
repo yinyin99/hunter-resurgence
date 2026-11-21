@@ -253,14 +253,15 @@ public sealed partial class State
         static readonly Regex
             ClueVerb = new(@"\A\s*(?:locate|identify|id|find|register)\b", Rx),
             ClueCount = new(@"\b(?<n>\d+|" + string.Join('|', NumberWords[2..11]) + @")\s+(?:\w+\s+){0,4}?(?:tracks?|droppings?|clues?|footprints?|footsteps?|calls?)\b", Rx),
-            ClueWord = new(@"\bclues?\b", Rx);
+            ClueWord = new(@"\bclues?\b", Rx), Tracks = new(@"\btracks?\b", Rx),
+            Trail = new(@"\A\s*(?:locate|find)\b|\bsame\s+animal\b|\bone\s+and\s+the\s+same\b", Rx);
 
-        // the words of a clue's kind, the most specific first (`blood trail` before `tracks`, `droppings track` before `track`)
+        // the words of a clue's kind, the most specific first (`blood trail` and `droppings track` before the `tracks` they end with)
         static readonly (Regex Word, ClueKind Kind)[] ClueWords =
         [
             (new(@"\bblood(?:\s+(?:trails?|tracks?))?\b", Rx), ClueKind.Blood), (new(@"\b(?:droppings?|scat)(?:\s+tracks?)?\b", Rx), ClueKind.Droppings),
             (new(@"\b(?:audio(?:\s+(?:clues?|calls?))?|calls?)\b", Rx), ClueKind.Call), (new(@"\b(?:bedding|beds?)\b", Rx), ClueKind.Bedding),
-            (new(@"\b(?:tracks?|footprints?|footsteps?)\b", Rx), ClueKind.Footprints),
+            (new(@"\b(?:footprints?|footsteps?)\b", Rx), ClueKind.Footprints),
         ];
 
         // an animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells
@@ -417,12 +418,14 @@ public sealed partial class State
         }
 
         /// <summary>The conditions of a clue objective's title (its first word is the verb: `ID`, `Locate`, ...): the reserve, the species and the gender as for a harvest, and a `Clue` test:
-        /// the kinds the title names (`tracks`, `footprints`, `droppings`, `call`, `audio clue`, `blood trail`, `bedding`; `any clue` alone names none: any), and how many clues of the
-        /// one animal it needs (a number before them, else one). A clue word it does not read, a place, `different` animals or any other word make it not understood.</summary>
+        /// the kinds the title names (`footprints`, `droppings`, `call`, `audio clue`, `blood trail`, `bedding`, `tracks`; `any clue` names none: any), and how many clues of the one animal it
+        /// needs (a number before them, else one). `tracks` are footprints, but the clues of one animal's trail (`Locate 3 ... tracks`, `3 tracks from the same animal`) are any clues. A clue
+        /// word it does not read, a place, `different` animals or any other word make it not understood.</summary>
         public (Test[] Tests, bool Unknown) ReadClue(string title, long[]? own = null)
         {
             var tests = new List<Test>();
-            var s = ClueVerb.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), " ");
+            var folded = Regex.Replace(Fold(title).Trim(), @"\s+", " ");
+            var s = ClueVerb.Replace(folded, " ");
             var sn = " " + Normalise(SameHunt.Replace(Coordinates.Replace(s, " "), " ")) + (Coordinates.IsMatch(s) ? " coordinates" : "") + " ";  // a place is not checked: coordinates leave it not understood
             TakeReserve(ref sn, tests);
             TakeSpecies(ref sn, own, tests);
@@ -437,7 +440,12 @@ public sealed partial class State
             foreach (var (word, kind) in ClueWords)
                 if (Take(ref sn, word, out _))
                     kinds.Add((long)kind);
-            var any = Take(ref sn, ClueWord, out _);
+            // `tracks` are footprints (the original's daily missions `ID tracks from ...` counted footprints only), but several of one animal followed as a trail (`Locate 3 ... tracks`,
+            // `3 tracks from the same animal`: a trail goes on with every clue of its animal) are any clues; listed with another kind (`tracks or droppings`) they are the footprints
+            var tracks = Take(ref sn, Tracks, out _);
+            if (tracks && (kinds.Count > 0 || count < 2 || !Trail.IsMatch(folded)))
+                kinds.Add((long)ClueKind.Footprints);
+            var any = Take(ref sn, ClueWord, out _) || tracks;
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
             tests.Add(new(Check.Clue, count, Ids: kinds));
