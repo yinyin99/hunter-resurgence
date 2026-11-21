@@ -76,6 +76,24 @@ public class SettingsTests : IDisposable
         }
     }
 
+    // a time without a zone is UTC, so "Monday 05:00" is the same instant on every server
+    [Fact]
+    public void TheHarvestGmBonusNeedsAMultiplierAboveZeroAndATime()
+    {
+        Assert.Null(Load(Minimal()).Cfg["harvest_gm_bonus"]);
+        var two = Minimal();
+        two["harvest_gm_bonus"] = JsonNode.Parse("""{"multiplier": 2, "until": "2026-11-23T05:00:00"}""");
+        var bonus = Load(two).Cfg["harvest_gm_bonus"]!;
+        Assert.Equal(2.0, (double)bonus["multiplier"]!);
+        Assert.Equal(new DateTimeOffset(2026, 11, 23, 5, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)bonus["until"]!);
+        foreach (var bad in new[] { """{"multiplier": 0, "until": "2026-11-23T05:00:00Z"}""", """{"multiplier": 2}""", """{"multiplier": 2, "until": "monday"}""", "2" })
+        {
+            var o = Minimal();
+            o["harvest_gm_bonus"] = JsonNode.Parse(bad);
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
     [Fact]
     public void AllLicensesDefaultsToTrueAndNeedsTrueOrFalse()
     {
