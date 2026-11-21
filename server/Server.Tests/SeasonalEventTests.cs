@@ -235,10 +235,10 @@ public class SeasonalEventTests : StateTestBase
     static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];
 
     [Theory]
-    [InlineData(0, "werewolf:50:werewolf,feral_hog:51:feral_hog")]
-    [InlineData(1, "werewolf:150:werewolf")]
-    [InlineData(2, "werewolf:250:werewolf")]
-    [InlineData(8, "werewolf:850:werewolf")]
+    [InlineData(0, "feral_hog:3:feral_hog,werewolf:9:werewolf")]
+    [InlineData(1, "werewolf:110:werewolf")]
+    [InlineData(2, "werewolf:208:werewolf")]
+    [InlineData(8, "werewolf:805:werewolf")]
     [InlineData(9, "werewolf:908:snowshoe_hare,wendigo:909:snowshoe_hare,feral_hog:914:feral_hog")]
     public void TestEveryReserveOfTheHalloweenEventGetsItsContentForAPlayerWhoPlaysIt(int reserve, string content)
     {
@@ -257,6 +257,25 @@ public class SeasonalEventTests : StateTestBase
         });
         Eq("[962, 963, 1142]", reply["species_ammo"]![0]!["ammo"]);
     }
+
+    [Fact]
+    public void TestTheHalloweenRowsHaveTheOriginalsSizes()
+    {
+        Eq("""[{"males": 12, "females": 24, "radius": 0}]""", Sizes(Rows(Connect(Hunt(0))).Single(p => (long)p["index"]! == 3)["groups"]!));
+        Eq("""[{"males": 18, "females": 30, "radius": 0}]""", Sizes(Rows(Connect(Hunt(1))).Single(p => (long)p["index"]! == 110)["groups"]!));
+        var none = Rows(Connect(Hunt(8))).Single(p => (long)p["index"]! == 805);
+        Assert.Empty(none["groups"]!.AsArray());
+        Eq("""{"males": 25, "females": 25, "radius": 30}""", new JsonObject
+        {
+            ["males"] = none["random_groups"]!["males"]!.DeepClone(), ["females"] = none["random_groups"]!["females"]!.DeepClone(), ["radius"] = none["random_groups"]!["radius"]!.DeepClone(),
+        });
+        Assert.Null(Rows(Connect(Hunt(1))).Single(p => (long)p["index"]! == 110)["random_groups"]);
+    }
+
+    static JsonNode Sizes(JsonNode groups) => new JsonArray([.. groups.AsArray().Select(g => (JsonNode?)new JsonObject
+    {
+        ["males"] = g!["males"]!.DeepClone(), ["females"] = g["females"]!.DeepClone(), ["radius"] = g["radius"]!.DeepClone(),
+    })]);
 
     [Theory]
     [InlineData(0)]
