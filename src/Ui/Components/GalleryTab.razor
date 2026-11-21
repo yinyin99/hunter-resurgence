@@ -20,7 +20,7 @@ else if (photos is not null)
         {
             <li>
                 <a href="#" title="@Name(ph)" @onclick="() => Open(at)" @onclick:preventDefault>
-                    @if (ph.Thumbnail is not null) { <img class="asset-slot has-image" src="@ph.Thumbnail" style="width:210px;height:118px" width="210" height="118" alt="@Name(ph)" /> }
+                    @if (ph.Thumbnail is not null) { <img class="asset-slot has-image" src="@ph.Thumbnail" style="width:210px;height:118px" width="210" height="118" loading="lazy" alt="@Name(ph)" /> }
                     else { <AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /> }
                 </a>
                 <span>@if (ph.Kill is { } kill) { <a href="/profile/@Handle/score/@kill">@Caption(ph, " ")</a> } else { @Caption(ph, " ") }</span>

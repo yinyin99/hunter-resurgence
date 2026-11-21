@@ -98,10 +98,11 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["photos"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).Cast<JsonNode?>().ToArray()) });
     }
 
-    /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill}]}`.</summary>
+    /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill}]}`; `thumbnail` is always the full picture's link.</summary>
     public JsonObject PublicGallery(long account, int page, string site)
     {
         var all = GalleryRows(account, site, kills: true);
+        foreach (var r in all) r["thumbnail"] = r["url"]!.DeepClone();  // the game's square crop is not the tile: the page scales the full picture, as for a restored one
         var pages = Math.Max(1, (all.Count + GalleryPageSize - 1) / GalleryPageSize);
         page = Math.Clamp(page, 1, pages);
         return new JsonObject
