@@ -401,11 +401,15 @@ public static class Replay
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
         static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
-        public const string Version = "timer3";
+        public const string Version = "timer4";
         // the two places the script fills the Teams model's timer: the first read of the page and the refresh
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
+        /// <summary>The in-game missions panel's writes (Activate, Activate All, the favourite toggle, the automatic-activation and filter switches) call the page's API helper with no `oauth_access_token`, so no token is sent and the
+        /// server answers token expired; its list call passes the player's token, read from the game with `HUNTER.getAccessToken()`. Each write is rewritten to read it the same way, at the time of the click, and pass it with the same
+        /// data (the page awaits the result as it did the call).</summary>
+        static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_[a-z_]+)"",\{([^{}]*)\},\{\}\)", RegexOptions.ECMAScript);
         static int warned, warnedApp, warnedFrame, warnedPage;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
@@ -454,23 +458,6 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
         /// <summary>After capturing a key the game calls `game.updateKeybinding(...)` or `game.overrideKeybinding(...)` on the in-game page, which only defines them on `window.ewcallback` (set later by the page's own script), so
         /// the options page never saw the key and never saved. The script defines both on `window.game` (an existing `game` and any member already set is kept) and forwards every argument to `window.ewcallback` when the call is made.</summary>
         const string KeybindingScript = "<script>(function(){var g=window.game||(window.game={});['updateKeybinding','overrideKeybinding'].forEach(function(n){if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}})})()</script>";
-        /// <summary>The in-game page's mission buttons (Activate, Activate All, favourites, the automatic-activation and filter switches) POST to `/v1/mission/...` without the player's token, so the server answered token expired and the
-        /// page gave up. The script keeps the last `HUNTER.getAccessToken()` (read on load, every 15 s and at each mission POST, so it is there before the first button: the panel loads its list first) and, in `send` of an asynchronous
-        /// POST to a `/v1/mission/` path of the page's own origin that carries no token of its own (query, `Authorization`, decoded form or top-level JSON field), re-opens the same XHR with the token as a query field (which
-        /// `Req.Tokens` reads; no header, so no preflight), puts the headers back and sends the same body. Everything is synchronous, so abort, timeout and listeners are the page's own; any other request is untouched.
-        /// The token read last can be up to 15 s old: a rotation inside that window is answered like today, token expired.</summary>
-        const string MissionTokenScript = """
-<script>(function(){var X=XMLHttpRequest.prototype,o=X.open,h=X.setRequestHeader,s=X.send,T;
-function R(){try{var H=window.HUNTER;if(H&&typeof H.getAccessToken==="function")Promise.resolve(H.getAccessToken()).then(function(t){T=t?String(t):T},function(){})}catch(e){}}
-function U(m,u,a){try{var x=new URL(String(u),location.href);return /^post$/i.test(m)&&a!==false&&x.origin===location.origin&&x.pathname.indexOf("/v1/mission/")===0?x:null}catch(e){return null}}
-function Y(b){try{if(typeof b==="string"){var t=b.trim();return t.charAt(0)==="{"?Object.prototype.hasOwnProperty.call(JSON.parse(t),"oauth_access_token"):new URLSearchParams(b).has("oauth_access_token")}return !!b&&typeof b.has==="function"&&b.has("oauth_access_token")}catch(e){return true}}
-X.open=function(m,u,a){this._a=arguments;this._h=[];if(U(m,u,a))R();return o.apply(this,arguments)};
-X.setRequestHeader=function(k,v){if(this._h)this._h.push([k,v]);return h.apply(this,arguments)};
-X.send=function(b){var x=this,a=x._a,u=a&&U(a[0],a[1],a[2]);
-if(u&&T&&!u.searchParams.has("oauth_access_token")&&!Y(b)&&!x._h.some(function(p){return /^authorization$/i.test(p[0])})){u.searchParams.set("oauth_access_token",T);o.call(x,a[0],u.href,true,a[3],a[4]);x._h.forEach(function(p){h.call(x,p[0],p[1])})}
-return s.call(x,b)};R();setInterval(R,15000)})()</script>
-""";
-
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
         {
@@ -487,7 +474,7 @@ return s.call(x,b)};R();setInterval(R,15000)})()</script>
             return text;
         }
 
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + MissionTokenScript + ClientStyle)];
+        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + ClientStyle)];
         public static Reply Apply(Req r, Reply reply)
         {
             if (reply.Status != 200 || r.Method != "GET") return reply;
@@ -505,7 +492,10 @@ return s.call(x,b)};R();setInterval(R,15000)})()</script>
             if (AppFrame.IsMatch(r.Path) && ReplaceOnce(Encoding.Latin1.GetString(reply.Body), AppFrameSrc, ref warnedFrame, "the lodge editor's script tag") is { } frame)
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
-            return ReplaceOnce(Encoding.Latin1.GetString(reply.Body), Reads, ref warned, "the in-game page's round timer read") is { } text ? NoCache(reply, Encoding.Latin1.GetBytes(text)) : reply;
+            var src = Encoding.Latin1.GetString(reply.Body);
+            var script = MissionWrite.Replace(ReplaceOnce(src, Reads, ref warned, "the in-game page's round timer read") ?? src,
+                m => $"HUNTER.getAccessToken().then(function(_k){{return r.v1(\"POST\",\"/v1/mission/{m.Groups[1].Value}\",{{{m.Groups[2].Value}{(m.Groups[2].Length > 0 ? "," : "")}oauth_access_token:_k}},{{}})}})");
+            return script == src ? reply : NoCache(reply, Encoding.Latin1.GetBytes(script));
         }
 
         static readonly Regex Locale = new(@"\A/static/app/[^/]+/locale/[a-z_]+\.js\z", RegexOptions.ECMAScript);

@@ -222,7 +222,23 @@ public class ReplayTests : IAsyncLifetime
         Same(("a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.7/client.js"));
         Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
         var page = await R("GET", "game_web.test", "/client");
-        Assert.Contains("client.js?t=timer3", Encoding.UTF8.GetString(page.Body));
+        Assert.Contains("client.js?t=timer4", Encoding.UTF8.GetString(page.Body));
+    }
+
+    [Fact]
+    public async Task TestTheMissionPanelWritesCarryThePlayersToken()
+    {
+        const string was = "x=r.v1(\"POST\",\"/v1/mission/missions\",{oauth_access_token:a,lang:i});y=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t},{});z=r.v1(\"POST\",\"/v1/mission/activate_all_available\",{},{});"
+            + "w=r.v1(\"POST\",\"/v1/mission/update_favourite\",{group_id:t,is_favourite:a},{});";
+        var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.8/client.js");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllText(f, was);
+        var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
+        const string get = "HUNTER.getAccessToken().then(function(_k){return r.v1(\"POST\",\"/v1/mission/";
+        Assert.Contains("x=r.v1(\"POST\",\"/v1/mission/missions\",{oauth_access_token:a,lang:i});", text);  // the list already has its own
+        Assert.Contains("y=" + get + "activate\",{mission_id:t,oauth_access_token:_k},{})});", text);
+        Assert.Contains("z=" + get + "activate_all_available\",{oauth_access_token:_k},{})});", text);
+        Assert.Contains("w=" + get + "update_favourite\",{group_id:t,is_favourite:a,oauth_access_token:_k},{})});", text);
     }
 
     [Fact]
@@ -241,18 +257,6 @@ public class ReplayTests : IAsyncLifetime
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "window\\.game=\\{\\}"));  // the key binding forwarder: once, defined only where the page has none, forwarding to ewcallback at call time
         Assert.Contains("if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}", page);
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
-        // the mission buttons' token (one script; no JS engine here, so the guards are asserted as present): only the game API host's POSTs to /v1/mission/, asynchronous, with no token of their own, one synchronous re-send
-        Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "X\\.send=function\\(b\\)"));
-        Assert.DoesNotContain("@API@", page);
-        Assert.Contains("x.origin===location.origin", page);  // the page's own origin only, scheme and port included
-        Assert.Contains("a!==false", page);
-        Assert.Contains("x.pathname.indexOf(\"/v1/mission/\")===0", page);
-        Assert.Contains("!u.searchParams.has(\"oauth_access_token\")&&!Y(b)", page);
-        Assert.Contains("/^authorization$/i", page);
-        Assert.Contains("JSON.parse(t),\"oauth_access_token\")", page);  // a body's own field, decoded: form and top-level JSON
-        Assert.Contains("new URLSearchParams(b).has(\"oauth_access_token\")", page);
-        Assert.Contains("u.searchParams.set(\"oauth_access_token\",T)", page);
-        Assert.Contains("R();setInterval(R,15000)", page);  // the token is read before the first button
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
