@@ -2,7 +2,6 @@
 @inject IMissionsService Service
 @implements IDisposable
 @inject ModalService Modal
-@inject HostMode Mode
 
 <PageTitle>@L["Mis.Daily"]</PageTitle>
 
@@ -14,7 +13,8 @@
         @foreach (var day in d.Days)
         {
             var n = day.Number;
-            <button type="button" class="card hover-tint @(n == sel ? "active" : "") @(day.Stars > 1 ? "big" : "")" aria-pressed="@(n == sel ? "true" : "false")" @onclick="() => sel = n">
+            @* only today's mission is opened: the server gives no other day's, and the other cards are not buttons *@
+            <button type="button" class="card @(n == d.Today ? "active hover-tint" : "") @(day.Stars > 1 ? "big" : "")" disabled="@(n != d.Today)" aria-disabled="@(n != d.Today ? "true" : null)" aria-pressed="@(n == d.Today ? "true" : null)">
                 <h6>@Label(n)</h6>
                 <div class="body">
                     <AssetSlot Name="@($"paw-badge-{(day.Stars switch { 1 => "easy", 2 => "medium", _ => "hard" })}")" Width="100" Height="111" Class="badge" />
@@ -24,16 +24,16 @@
             </button>
         }
     </div>
-    if (sel >= 1 && sel <= d.Missions.Count && d.Missions[sel - 1].Title.Length > 0)  // a day without a mission shows only its card
+    if (d.Today >= 1 && d.Today <= d.Missions.Count && d.Missions[d.Today - 1].Title.Length > 0)  // a day without a mission shows only its card
     {
-    var m = d.Missions[sel - 1];
+    var m = d.Missions[d.Today - 1];
     var frozen = m.Frozen;
     <section class="detail">
         @if (frozen) { <span class="ribbon">@L["Mis.Inactive"]</span> }
-        else if (sel < d.Today || m.Done) { <span class="ribbon">@L["Mis.Completed"]</span> }
+        else if (m.Done) { <span class="ribbon">@L["Mis.Completed"]</span> }
         <h2>@m.Title</h2>
-        <div class="who">@if (!Mode.Live) { <AssetSlot Name="@($"mission-giver-{sel}")" Width="150" Height="150" /> }<div><h3>@L["Mis.Description"]</h3><p>@m.Description</p></div></div>
-        @if (!Mode.Live) { <AssetSlot Name="@($"mission-picture-{sel}")" Width="250" Height="360" Class="pic" /> }  @* the pictures are the mock's: the live site has none of the server's *@
+        <div class="who">@if (m.Giver is not null) { <AssetSlot Name="@AssetImages.Key($"mission-giver-{m.Giver}")" Width="150" Height="150" /> }<div><h3>@L["Mis.Description"]</h3><p>@m.Description</p></div></div>
+        @if (m.Species is not null) { <AssetSlot Name="@AssetImages.Key($"mission-species-{m.Species}-{(m.Female ? "f" : "m")}")" Width="250" Height="360" Class="pic" /> }  @* the original's card: the species picture by the mission's gender *@
         <h3>@L["Mis.Objectives"]</h3>
         <ol>@foreach (var o in m.Objectives) { <li><span class="box"></span> @o</li> }</ol>
         <h3>@L["Mis.Reserves"]</h3>
@@ -53,7 +53,7 @@
                 }
             </div>
         }
-        else if (sel == d.Today)
+        else
         {
             <p class="timer">@L[left > 0 ? "Mis.EndsIn" : "Mis.Ended"] <b>@Fmt.Elapsed(L, Math.Max(left, 0))</b></p>
         }
@@ -66,7 +66,7 @@ else { <div class="skeleton skeleton-page"></div> }
 @code {
     DailyCalendar? d;
     IReadOnlyList<(string, string)> tabs = [];
-    int sel, left;
+    int left;
     PeriodicTimer? timer;
 
     protected override async Task OnInitializedAsync()
@@ -78,7 +78,6 @@ else { <div class="skeleton skeleton-page"></div> }
     async Task Read()
     {
         d = await Service.DailyAsync();
-        sel = sel == 0 ? d.Today : sel;
         left = d.EndsIn;
     }
 

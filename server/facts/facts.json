@@ -698,15 +698,15 @@
    {"id":3,"title":"Hard","alias":"HARD","cooldown":10,"color":"red","reward_id":132,"reward":1000}
   ],
   "templates": [
-   {"id":174,"difficulty":1,"title":"ID tracks from a Grey Wolf","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["ID tracks from a Grey Wolf"]},
-   {"id":154,"difficulty":1,"title":"ID tracks from a male Black Bear","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ"},"objectives":["ID tracks from a male Black Bear"]},
-   {"id":245,"difficulty":1,"title":"ID tracks from a male Blacktail Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE"},"objectives":["ID tracks from a male Blacktail Deer"]},
-   {"id":113,"difficulty":1,"title":"Spot a male Rusa Deer","giver":{"id":15,"alias":"VERA_HERZSCHLAG"},"objectives":["Spot a male Rusa Deer"]},
-   {"id":301,"difficulty":2,"title":"Harvest a male Red Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE"},"objectives":["Harvest a male Red Deer"]},
-   {"id":302,"difficulty":2,"title":"ID 3 tracks from a Moose","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ"},"objectives":["ID 3 tracks from a Moose"]},
-   {"id":303,"difficulty":2,"title":"Harvest a female Blacktail Deer","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["Harvest a female Blacktail Deer"]},
-   {"id":401,"difficulty":3,"title":"Hunt a male Moose","giver":{"id":15,"alias":"VERA_HERZSCHLAG"},"objectives":["ID 5 tracks from a Moose","Then spot a Moose","Then harvest a male Moose"]},
-   {"id":402,"difficulty":3,"title":"Hunt a Black Bear","giver":{"id":16,"alias":"BUCK_WILLIAMS"},"objectives":["ID 4 tracks from a Black Bear","Then harvest a Black Bear"]}
+   {"id":174,"difficulty":1,"title":"ID tracks from a Grey Wolf","giver":{"id":16,"alias":"BUCK_WILLIAMS","image":"sheriff_buck_williams.jpg"},"objectives":["ID tracks from a Grey Wolf"]},
+   {"id":154,"difficulty":1,"title":"ID tracks from a male Black Bear","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ","image":"angelica_rodriguez.jpg"},"objectives":["ID tracks from a male Black Bear"]},
+   {"id":245,"difficulty":1,"title":"ID tracks from a male Blacktail Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE","image":"harley_lovegrove.jpg"},"objectives":["ID tracks from a male Blacktail Deer"]},
+   {"id":113,"difficulty":1,"title":"Spot a male Rusa Deer","giver":{"id":15,"alias":"VERA_HERZSCHLAG","image":"vera_herzschlag.jpg"},"objectives":["Spot a male Rusa Deer"]},
+   {"id":301,"difficulty":2,"title":"Harvest a male Red Deer","giver":{"id":6,"alias":"HARLEY_LOVEGROVE","image":"harley_lovegrove.jpg"},"objectives":["Harvest a male Red Deer"]},
+   {"id":302,"difficulty":2,"title":"ID 3 tracks from a Moose","giver":{"id":13,"alias":"ANGELICA_RODRIGUEZ","image":"angelica_rodriguez.jpg"},"objectives":["ID 3 tracks from a Moose"]},
+   {"id":303,"difficulty":2,"title":"Harvest a female Blacktail Deer","giver":{"id":16,"alias":"BUCK_WILLIAMS","image":"sheriff_buck_williams.jpg"},"objectives":["Harvest a female Blacktail Deer"]},
+   {"id":401,"difficulty":3,"title":"Hunt a male Moose","giver":{"id":15,"alias":"VERA_HERZSCHLAG","image":"vera_herzschlag.jpg"},"objectives":["ID 5 tracks from a Moose","Then spot a Moose","Then harvest a male Moose"]},
+   {"id":402,"difficulty":3,"title":"Hunt a Black Bear","giver":{"id":16,"alias":"BUCK_WILLIAMS","image":"sheriff_buck_williams.jpg"},"objectives":["ID 4 tracks from a Black Bear","Then harvest a Black Bear"]}
   ]
  },
  "store_avatars": [{"item":224,"id":1000024,"name":"Laura Francese","gender":"f"}],

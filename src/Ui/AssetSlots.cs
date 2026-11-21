@@ -55,7 +55,15 @@ public static class AssetSlots
     static Func<AssetSources, Task<IEnumerable<string>>> Values(string prefix, params string[] values) =>
         _ => Task.FromResult<IEnumerable<string>>([.. values.Select(v => prefix + v)]);
 
-    static Func<AssetSources, Task<IEnumerable<string>>> Days(string prefix) => Values(prefix, "1", "2", "3", "4", "5", "6", "7");
+    /// <summary>The species that have a card on the daily missions page (the species define in lower case): <c>mission-species-&lt;species&gt;-m</c> and <c>-f</c> each.</summary>
+    static readonly string[] MissionSpecies =
+    [
+        "alpine_ibex", "american_black_duck", "arctic_fox", "axis_deer", "banteng", "bighorn_sheep", "bison", "black_bear", "blacktail_deer", "bobcat", "brown_bear",
+        "canada_goose", "cottontail_rabbit", "coyote", "dall_sheep", "european_rabbit", "fallow_deer", "feral_goat", "feral_hog", "gadwall", "grizzly_bear",
+        "lynx_eurasian", "magpie_goose", "mallard", "moose", "mule_deer", "pheasant", "pintail", "polar_bear", "ptarmigan_rock", "ptarmigan_white_tailed",
+        "ptarmigan_willow", "puma", "red_deer", "red_fox", "red_kangaroo", "reindeer", "rocky_mountain_elk", "roe_deer", "roosevelt_elk", "rusa_deer", "sambar_deer",
+        "sitka_deer", "snow_goose", "snowshoe_hare", "turkey", "water_buffalo", "whitetail_deer", "wild_boar", "wolf", "wood_grouse"
+    ];
 
     /// <summary>The list of the mock only: the live site draws none of these (HostMode.Live).</summary>
     static Func<AssetSources, Task<IEnumerable<string>>> MockOnly(Func<AssetSources, Task<IEnumerable<string>>> keys) => s => s.Mode.Live ? None : keys(s);
@@ -112,8 +120,8 @@ public static class AssetSlots
         new("em-pack-", "bank", "100x80", "BankModal", MockOnly(async s => (await s.Bank.CatalogAsync()).EmPacks.Select(p => "em-pack-" + p.Ems))),
         new("membership-", "bank", "100x70", "BankModal", MockOnly(Values("membership-", "starter", "special", "basic"))),
         new("paw-badge-", "missions", "100x111", "DailyMissions", Values("paw-badge-", "easy", "medium", "hard")),
-        new("mission-giver-", "missions", "150x150", "DailyMissions", MockOnly(Days("mission-giver-"))),
-        new("mission-picture-", "missions", "250x360", "DailyMissions", MockOnly(Days("mission-picture-"))),
+        new("mission-giver-", "missions", "150x150", "DailyMissions", Values("mission-giver-", "vera_herzschlag", "buck_williams", "angelica_rodriguez", "harley_lovegrove")),  // the givers of the server's templates; one that is not here is listed when drawn
+        new("mission-species-", "missions", "250x360", "DailyMissions", Values("mission-species-", [.. MissionSpecies.SelectMany(n => new[] { n + "-m", n + "-f" })])),
         new("rank-", "profile", "114x114", "RanksTab", Values("rank-", "score", "animals", "weapons", "collectables")),   // rank-<id> of the live site: drawn
         new("ach-", "profile", "100x100", "AchievementsTab", Values("ach-", "animals", "weapons", "exploration", "day-mission")),
         // from a player's profile (the server's tables, not the website's): listed when a page draws them

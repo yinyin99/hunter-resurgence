@@ -235,11 +235,11 @@ public sealed partial class State
                 entry["rewards_translations"] = new JsonArray(new JsonObject { ["text"] = $"{DailyReward(index)} gm$" });
                 entry["character"] = new JsonObject
                 {
-                    ["id"] = d.Template.Giver, ["name"] = name, ["alias"] = d.Template.GiverAlias, ["description"] = name, ["image"] = d.Template.GiverAlias.ToLowerInvariant() + ".jpg",
+                    ["id"] = d.Template.Giver, ["name"] = name, ["alias"] = d.Template.GiverAlias, ["description"] = name, ["image"] = d.Template.GiverImage,
                 };
                 entry["mission"] = new JsonObject
                 {
-                    ["id"] = d.Template.Id, ["title"] = d.Template.Title, ["description"] = d.Template.Title + ".", ["gender"] = 0, ["species"] = entry["species"]?.DeepClone(),
+                    ["id"] = d.Template.Id, ["title"] = d.Template.Title, ["description"] = d.Template.Title + ".", ["gender"] = d.Def.Objectives[0].Rule.Gender is null or 0 ? 0 : 1, ["species"] = entry["species"]?.DeepClone(),
                     ["image"] = null, ["update_message"] = "", ["reserves"] = d.Def.Objectives[0].Rule.Species is { } sp ? facts.ReserveNames(sp) : "", ["objectives"] = objectives,
                 };
                 entry["objectives"] = objectives;
@@ -256,7 +256,7 @@ public sealed partial class State
     }
 
     /// <summary>The website's daily missions page (GET /account/missions/daily): `today` (the day number), `ends_in` (seconds until the UTC day ends), `frozen`, `broken` (the frozen streak was broken), `days`
-    /// (`number`, `stars` the difficulty id, `gms`) and `missions` in the order of the days (`title`, `desc`, `objectives` titles, `reserve`, `rewards` texts, `done`; empty
+    /// (`number`, `stars` the difficulty id, `gms`) and `missions` in the order of the days (`title`, `desc`, `objectives` titles, `reserve`, `rewards` texts, `species` the species define or null, `gender` 0 male or 1 female, `giver` the alias of the giver in lower case or null, `done`; empty
     /// for a day without a mission). Null when the server has no daily missions.</summary>
     public JsonObject? WebDaily(long account)
     {
@@ -274,11 +274,12 @@ public sealed partial class State
             })]),
             ["missions"] = new JsonArray([.. days.Select(d => (JsonNode?)(d["mission"] is JsonObject m ? new JsonObject
             {
-                ["title"] = m["title"]!.DeepClone(), ["desc"] = m["description"]!.DeepClone(),
+                ["title"] = m["title"]!.DeepClone(), ["desc"] = m["description"]!.DeepClone(), ["species"] = m["species"]?.DeepClone(), ["gender"] = m["gender"]!.DeepClone(),
+                ["giver"] = d["character"]?["alias"] is { } alias ? Py.Str(alias).ToLowerInvariant() : null,
                 ["objectives"] = new JsonArray([.. objectives.Select(o => (JsonNode?)Py.Str(o["objective_data"]!["title"]))]),
                 ["reserve"] = m["reserves"]!.DeepClone(), ["rewards"] = new JsonArray([.. d["rewards_translations"]!.AsArray().Select(t => (JsonNode?)Py.Str(t!["text"]))]),
                 ["done"] = objectives.Count > 0 && objectives.All(o => o["objective_data"]!["completed"] is not null),
-            } : new JsonObject { ["title"] = "", ["desc"] = "", ["objectives"] = new JsonArray(), ["reserve"] = "", ["rewards"] = new JsonArray(), ["done"] = false }))]),
+            } : new JsonObject { ["title"] = "", ["desc"] = "", ["objectives"] = new JsonArray(), ["reserve"] = "", ["rewards"] = new JsonArray(), ["species"] = null, ["gender"] = 0, ["giver"] = null, ["done"] = false }))]),
         };
     }
 }

@@ -36,23 +36,16 @@ public sealed class MockMissionsService(string? mock = null) : IMissionsService
 
     public Task<IReadOnlyList<Mission>> ActiveAsync() => Task.FromResult<IReadOnlyList<Mission>>(missions.Where(m => m.State == "active").ToList());
 
-    static readonly DailyMission[] Days =
-    [
-        new("Spot a male Rusa Deer", "Hello, I need a hand with a small job. Help me and you will be rewarded.", ["Spot a male Rusa Deer"], "Reserve 05", ["100 gm$"], false),
-        new("Harvest a Red Fox", "The foxes are after the hens again. Thin them out a little.", ["Harvest a Red Fox"], "Reserve 02", ["100 gm$"], false),
-        new("Track a Moose", "A big one was seen near the lake. Find its tracks.", ["Track a Moose"], "Reserve 03", ["100 gm$"], false),
-        new("Harvest two Mallards", "Supper for the camp: two ducks will do.", ["Harvest two Mallards"], "Reserve 01", ["500 gm$"], false),
-        new("Spot a Bison", "I lost a bison from my herd. Tell me where it is.", ["Spot a Bison"], "Reserve 04", ["100 gm$"], false),
-        new("Harvest a Wild Boar", "The boars ruined the field again.", ["Harvest a Wild Boar"], "Reserve 02", ["100 gm$"], false),
-        new("Track a Grey Wolf", "The pack is close. Be careful.", ["Track a Grey Wolf"], "Reserve 05", ["100 gm$"], false),
-    ];
+    // only today's mission is opened (the server gives no other day's): the other days have none
+    static readonly DailyMission Today = new("Spot a male Rusa Deer", "Hello, I need a hand with a small job. Help me and you will be rewarded.", ["Spot a male Rusa Deer"], "Reserve 05", ["100 gm$"], false, Species: "RUSA_DEER", Giver: "vera_herzschlag");
+    static readonly DailyMission None = new("", "", [], "", [], false);
 
     public Task<DailyCalendar> DailyAsync()
     {
         // the day rolls over when the clock runs out
         if (dayEnd <= DateTime.UtcNow) dayEnd = dayEnd.AddDays(1);
         return Task.FromResult(new DailyCalendar(1, Enumerable.Range(1, 7).Select(d => new DailyDay(d, d == 4 ? 2 : 1, d == 4 ? 500 : 100)).ToList(),
-            Days.Select((m, i) => i == 0 ? m with { Frozen = frozen } : m).ToList(), (int)(dayEnd - DateTime.UtcNow).TotalSeconds, offerResume ? new(1051, "Resume Streak", resumeOwned) : null));
+            Enumerable.Range(0, 7).Select(i => i == 0 ? Today with { Frozen = frozen } : None).ToList(), (int)(dayEnd - DateTime.UtcNow).TotalSeconds, offerResume ? new(1051, "Resume Streak", resumeOwned) : null));
     }
 
     public Task<RegularMissions> RegularAsync()

@@ -12,7 +12,10 @@ public sealed record DailyDay(int Number, int Stars, int Gms);
 
 /// <param name="Frozen">The streak is broken: the mission is inactive until the player activates it.</param>
 /// <param name="Done">Every objective of the day is finished.</param>
-public sealed record DailyMission(string Title, string Description, IReadOnlyList<string> Objectives, string Reserve, IReadOnlyList<string> Rewards, bool Frozen, bool Done = false);
+/// <param name="Species">The species define of the mission (RUSA_DEER); null when it names none: no picture.</param>
+/// <param name="Female">The mission's gender picks the female picture of the species.</param>
+/// <param name="Giver">The alias of the character who gives the mission, in lower case (vera_herzschlag); null when it has none: no portrait.</param>
+public sealed record DailyMission(string Title, string Description, IReadOnlyList<string> Objectives, string Reserve, IReadOnlyList<string> Rewards, bool Frozen, bool Done = false, string? Species = null, bool Female = false, string? Giver = null);
 
 /// <summary>The item that continues a broken streak and how many of it the player owns.</summary>
 public sealed record ResumeItem(int Id, string Name, int Owned);

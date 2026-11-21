@@ -104,7 +104,7 @@ public partial class AssetSlotsTests
         Assert.Contains($"store-item-{item.Id}", keys);
         Assert.DoesNotContain($"item-{item.Id}", keys);
         Assert.DoesNotContain("em-pack", keys);
-        Assert.DoesNotContain(keys, k => k.StartsWith("mission-giver-"));
+        Assert.Contains("mission-giver-vera-herzschlag", keys);
         // /competitions and /invite-friends are mock-only pages (LauncherGuard.MockData), and the server never sends the bait and feeder markers
         Assert.DoesNotContain(expected, e => e.Area == "competitions");
         Assert.DoesNotContain("recruit-hero", keys);

@@ -88,7 +88,7 @@ public class ServerMissionsServiceTests
         {"today": 2, "ends_in": 4000, "frozen": true,
          "days": [{"number": 1, "stars": 1, "gms": 100}, {"number": 2, "stars": 1, "gms": 100}, {"number": 3, "stars": 2, "gms": 500}],
          "missions": [{"title": "", "desc": "", "objectives": [], "reserve": "", "rewards": [], "done": false},
-                      {"title": "Test Daily", "desc": "Do it.", "objectives": ["Spot a Test Deer"], "reserve": "Test Reserve", "rewards": ["100 gm$"], "done": true},
+                      {"title": "Test Daily", "desc": "Do it.", "objectives": ["Spot a Test Deer"], "reserve": "Test Reserve", "rewards": ["100 gm$"], "species": "TEST_DEER", "gender": 1, "giver": "test_giver", "done": true},
                       {"title": "", "desc": "", "objectives": [], "reserve": "", "rewards": [], "done": false}]}
         """;
 
@@ -101,6 +101,7 @@ public class ServerMissionsServiceTests
         Assert.Equal((2, 4000, null), (d.Today, d.EndsIn, d.Resume));  // the server has no item to resume a streak
         Assert.Equal([(1, 1, 100), (2, 1, 100), (3, 2, 500)], d.Days.Select(x => (x.Number, x.Stars, x.Gms)));
         Assert.Equal([("", false, false), ("Test Daily", true, true), ("", false, false)], d.Missions.Select(m => (m.Title, m.Frozen, m.Done)));
+        Assert.Equal([(null, false, null), ("TEST_DEER", true, "test_giver"), (null, false, null)], d.Missions.Select(m => (m.Species, m.Female, m.Giver)));
         Assert.Equal(("Do it.", "Test Reserve", "Spot a Test Deer", "100 gm$"), (d.Missions[1].Description, d.Missions[1].Reserve, d.Missions[1].Objectives.Single(), d.Missions[1].Rewards.Single()));
     }
 

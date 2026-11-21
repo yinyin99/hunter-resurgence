@@ -20,8 +20,8 @@ public class DailyMissionTests : StateTestBase
            {"id": 3, "title": "Hard", "alias": "HARD", "cooldown": 10, "color": "red", "reward_id": 132, "reward": 1000}],
           "templates": [
            {"id": 11, "difficulty": 1, "title": "Spot a male Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Spot a male Test Deer"]},
-           {"id": 12, "difficulty": 1, "title": "ID tracks from a Test Wolf", "giver": {"id": 16, "alias": "OTHER_GIVER"}, "objectives": ["ID tracks from a Test Wolf"]},
-           {"id": 13, "difficulty": 2, "title": "Harvest a female Test Deer", "giver": {"id": 16, "alias": "OTHER_GIVER"}, "objectives": ["Harvest a female Test Deer"]},
+           {"id": 12, "difficulty": 1, "title": "ID tracks from a Test Wolf", "giver": {"id": 16, "alias": "OTHER_GIVER", "image": "sheriff_other_giver.jpg"}, "objectives": ["ID tracks from a Test Wolf"]},
+           {"id": 13, "difficulty": 2, "title": "Harvest a female Test Deer", "giver": {"id": 16, "alias": "OTHER_GIVER", "image": "sheriff_other_giver.jpg"}, "objectives": ["Harvest a female Test Deer"]},
            {"id": 14, "difficulty": 3, "title": "Hunt a Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["ID 2 tracks from a Test Deer", "Then spot a Test Deer"]}]}}
         """);
 
@@ -209,6 +209,10 @@ public class DailyMissionTests : StateTestBase
         On(D0.AddDays(3));
         var calendar = Calendar();
         Eq("""[4, "MEDIUM", 13, 500]""", T(TodayOf(calendar)["day_number"], TodayOf(calendar)["difficulty"]!["alias"], TodayOf(calendar)["mission"]!["id"], TodayOf(calendar)["rewards"]![0]!["amount"]));
+        Eq("""[1, "MULE_DEER"]""", T(TodayOf(calendar)["mission"]!["gender"], TodayOf(calendar)["mission"]!["species"]));  // a female mission: the page draws the female picture
+        var web = state.WebDaily(ME)!["missions"]!.AsArray();
+        Eq("""[1, "MULE_DEER", "other_giver", 0, null, null]""", T(web[3]!["gender"], web[3]!["species"], web[3]!["giver"], web[0]!["gender"], web[0]!["species"], web[0]!["giver"]));  // only today's day has a mission
+        Assert.Equal("sheriff_other_giver.jpg", (string)TodayOf(calendar)["character"]!["image"]!);  // the facts file's picture name, not one made from the alias
         var before = Gm();
         Hb(Easy());  // not the medium mission's objective
         Assert.Equal(before, Gm());
@@ -339,6 +343,10 @@ public class DailyMissionTests : StateTestBase
         var today = missions[0]!;
         Assert.Equal(1, today["objectives"]!.AsArray().Count);
         Eq("""["Alpha Reserve, Test Reserve", ["100 gm$"], false]""", T(today["reserve"], today["rewards"], today["done"]));
+        Assert.Contains((string)today["species"]!, new[] { "MULE_DEER", "WOLF" });
+        Assert.Equal(0, (long)today["gender"]!);
+        Assert.Contains((string)today["giver"]!, new[] { "test_giver", "other_giver" });
+        Assert.All(missions.Skip(1), m => Assert.Null(m!["species"] ?? m["giver"]));  // the other days have no mission to open
 
         Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/daily/activate", [cookie, ("X-Requested-With", "x")])).Status);
         Assert.False((bool)(await Page())["frozen"]!);

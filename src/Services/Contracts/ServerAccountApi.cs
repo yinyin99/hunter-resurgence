@@ -121,8 +121,8 @@ public sealed record ServerMissionGroup(int Id, string Title, string Desc, bool 
 /// <summary>A day of the daily calendar: its number (1 to 7), the difficulty id (1 easy, 2 medium, 3 hard) as <c>Stars</c> and its reward in gm$.</summary>
 public sealed record ServerDailyDay(int Number, int Stars, int Gms);
 
-/// <summary>The mission of a day of <see cref="ServerDaily"/>: empty (no <c>Title</c>) for a day that has none; <c>Done</c> once every objective is finished.</summary>
-public sealed record ServerDailyMission(string Title, string Desc, string[] Objectives, string Reserve, string[] Rewards, bool Done);
+/// <summary>The mission of a day of <see cref="ServerDaily"/>: empty (no <c>Title</c>) for a day that has none; <c>Done</c> once every objective is finished; <c>Species</c> the species define (null when the mission names none), <c>Gender</c> 0 male or 1 female, <c>Giver</c> the giver's alias in lower case (null when it has none).</summary>
+public sealed record ServerDailyMission(string Title, string Desc, string[] Objectives, string Reserve, string[] Rewards, bool Done, string? Species = null, int Gender = 0, string? Giver = null);
 
 /// <summary>The daily missions page: <c>Today</c> is the number of today's day, <c>EndsIn</c> the seconds until the day ends, <c>Frozen</c> true until the player activates the streak;
 /// <c>Missions</c> are in the order of <c>Days</c>; <c>Broken</c> is true when the frozen streak was broken.</summary>
