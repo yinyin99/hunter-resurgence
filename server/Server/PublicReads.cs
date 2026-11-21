@@ -347,7 +347,7 @@ public sealed partial class State
     static List<JsonNode?> Newest(IEnumerable<JsonNode?> rows, string field)
     {
         static double At(JsonNode? v) =>
-            Py.IsNum(v) ? (Num(v) is > 0 and <= 253402300799 and var n ? n : double.MinValue) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : double.MinValue;
+            Py.IsNum(v) ? (Day(v) is { } n ? n : double.MinValue) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : double.MinValue;
         return [.. rows.OrderByDescending(r => At(r?[field]))];
     }
 
@@ -395,7 +395,7 @@ public sealed partial class State
             ["rows"] = new JsonArray([.. all.Skip((page - 1) * TrophiesPageSize).Take(TrophiesPageSize).Select(t => (JsonNode?)new JsonObject
             {
                 ["name"] = Text(t?["name"]) ?? "", ["date"] = TrophyDay(t?["ts"]),
-                ["competitionId"] = Py.IsNum(t?["competition_id"]) ? JsonValue.Create(Py.L(t!["competition_id"])) : null, ["competition"] = Text(t?["competition_name"]),
+                ["competitionId"] = Py.IsNum(t?["competition_id"]) && Num(t!["competition_id"]) is >= 0 and <= 9007199254740991 and var cid ? JsonValue.Create((long)cid) : null, ["competition"] = Text(t?["competition_name"]),
                 ["image"] = Py.IsStr(t?["image"]) && Path.GetFileNameWithoutExtension(Py.Str(t!["image"])) is { Length: > 0 } file ? file : null,
             })]),
         };
@@ -403,7 +403,10 @@ public sealed partial class State
 
     /// <summary>The day (UTC, yyyy-MM-dd) of a trophy row's `ts` (Unix seconds); "" for anything else.</summary>
     static string TrophyDay(JsonNode? ts) =>
-        Py.IsNum(ts) ? DateTimeOffset.FromUnixTimeSeconds((long)Math.Clamp(Num(ts), 0, 253402300799)).ToString("yyyy-MM-dd") : "";
+        Day(ts) is { } at ? DateTimeOffset.FromUnixTimeSeconds((long)at).ToString("yyyy-MM-dd") : "";
+
+    /// <summary>The Unix seconds of a numeric date, null when it is not a number or outside 1970..9999.</summary>
+    static double? Day(JsonNode? v) => Py.IsNum(v) && Num(v) is > 0 and <= 253402300799 and var n ? n : null;
 
     /// <summary>The account's Me/me as it stands: the restored profile, else what a new account has (no recorded value).</summary>
     JsonObject MeOf(Db con, long account)
