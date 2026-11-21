@@ -243,16 +243,16 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
         // the mission buttons' token (one script; no JS engine here, so the guards are asserted as present): only the game API host's POSTs to /v1/mission/, asynchronous, with no token of their own, one synchronous re-send
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "X\\.send=function\\(b\\)"));
-        Assert.Contains("A=\"api.test\"", page);
         Assert.DoesNotContain("@API@", page);
-        Assert.Contains("x.host===A||x.hostname===A", page);
-        Assert.Contains("a[2]!==false", page);
-        Assert.Contains("u.pathname.indexOf(\"/v1/mission/\")===0", page);
+        Assert.Contains("x.origin===location.origin", page);  // the page's own origin only, scheme and port included
+        Assert.Contains("a!==false", page);
+        Assert.Contains("x.pathname.indexOf(\"/v1/mission/\")===0", page);
         Assert.Contains("!u.searchParams.has(\"oauth_access_token\")&&!Y(b)", page);
         Assert.Contains("/^authorization$/i", page);
-        Assert.Contains("oauth_access_token\"?\\s*[:=]", page);
+        Assert.Contains("JSON.parse(t),\"oauth_access_token\")", page);  // a body's own field, decoded: form and top-level JSON
+        Assert.Contains("new URLSearchParams(b).has(\"oauth_access_token\")", page);
         Assert.Contains("u.searchParams.set(\"oauth_access_token\",T)", page);
-        Assert.DoesNotContain("Promise.resolve().then(function(){return H.getAccessToken", page);  // nothing is deferred: abort, timeout and sync XHR stay the page's own
+        Assert.Contains("R();setInterval(R,15000)", page);  // the token is read before the first button
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
