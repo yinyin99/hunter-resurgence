@@ -23,7 +23,7 @@ public abstract class MissionTestBase : StateTestBase
     static readonly string[] ExtraSpecies =
     [
         """{"id": 3, "name": "Plains Elk"}""", """{"id": 4, "name": "Hill Elk"}""", """{"id": 5, "name": "Test Fox"}""", """{"id": 6, "name": "Spring Pintail"}""", """{"id": 7, "name": "Test Mallard"}""",
-        """{"id": 9, "name": "Snow Ptarmigan"}""", """{"id": 10, "name": "Rock Ptarmigan"}""",
+        """{"id": 9, "name": "Snow Ptarmigan"}""", """{"id": 10, "name": "Rock Ptarmigan"}""", """{"id": 36, "name": "Forest Wolf"}""",
     ];
 
     static readonly string[] ExtraItems =
@@ -55,11 +55,13 @@ public abstract class MissionTestBase : StateTestBase
         return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
     }
 
-    /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings (or one for each of `organs`) and the harvest. `pose` is the player's stance with the shot's flag.</summary>
+    /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings (or one for each of `organs`) and the harvest. `pose` is the player's stance with the shot's flag;
+    /// `texture` the animal's coat.</summary>
     protected static JsonNode[] Shot(int individual, int weapon = 50, int ammunition = 52, int distance = 15000, long organ = 6, int animalState = 3, int location = 0, int scope = -1,
-                                     int value = 100000, int grams = 90000, int hits = 1, int special = 0, int species = 1, int x = 0, int z = 0, int pose = 2048, int gender = 0, long[]? organs = null)
+                                     int value = 100000, int grams = 90000, int hits = 1, int special = 0, int species = 1, int x = 0, int z = 0, int pose = 2048, int gender = 0, long[]? organs = null,
+                                     int texture = 0)
     {
-        var events = new List<JsonNode> { O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": {{gender}}, "weight_grams": {{grams}}, "texture": 0, "special": {{special}}}""") };
+        var events = new List<JsonNode> { O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": {{gender}}, "weight_grams": {{grams}}, "texture": {{texture}}, "special": {{special}}}""") };
         for (var i = 0; i < (organs?.Length ?? hits); i++)
             events.Add(O($$"""
                 {"event": 1, "individual": {{individual}}, "weapon_id": {{weapon}}, "ammunition_id": {{ammunition}}, "distance_cms": {{distance}}, "organ1": 33, "organ2": {{organs?[i] ?? organ}},
@@ -69,10 +71,10 @@ public abstract class MissionTestBase : StateTestBase
         return [.. events];
     }
 
-    /// <summary>An animal seen from a stand (`location`): its spawn and the spot.</summary>
-    protected static JsonNode[] Spot(int individual, int species = 1, int gender = 0, int location = 0) =>
+    /// <summary>An animal (`texture`: its coat) seen from a stand (`location`): its spawn and the spot.</summary>
+    protected static JsonNode[] Spot(int individual, int species = 1, int gender = 0, int location = 0, int texture = 0) =>
     [
-        O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": {{gender}}, "weight_grams": 90000, "texture": 0, "special": 0}"""),
+        O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": {{gender}}, "weight_grams": 90000, "texture": {{texture}}, "special": 0}"""),
         O($$"""{"event": 11, "individual": {{individual}}, "location": {{location}}}"""),
     ];
 

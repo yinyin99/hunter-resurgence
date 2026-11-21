@@ -103,8 +103,8 @@ public sealed partial class State
                 (tests, unknown) = reader.ReadClue(body, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
-            // a spot has no weapon, hit or harvest: only its stand, its reserve, its species and its name can be checked
-            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species));
+            // a spot has no weapon, hit or harvest: only its stand, its reserve, its species, its coat and its name can be checked
+            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat));
             return new Rule(kind, species, gender, ordered.Success, text, tests, unknown);
         }
 

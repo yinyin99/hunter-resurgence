@@ -1,5 +1,5 @@
 // What a mission objective's title asks of a harvest beyond its kind: the species (when it names several or a short name), the weapon, ammunition or sight, the
-// shot and the organs it may or may not hit, the harvest value, the distance, the score, the weight, the animal's state, the player's stance and stand, the reserve,
+// shot and the organs it may or may not hit, the harvest value, the distance, the score, the weight, the animal's state and coat, the player's stance and stand, the reserve,
 // a named animal. The title is the objective's only definition (docs/server.md,
 // "Missions"), so <see cref="Reader"/> reads those conditions from its English words; a title with words it does not understand is `Unknown`, and an unknown
 // objective is never met. The checks run over the events of the kill (<see cref="Kill"/>).
@@ -11,10 +11,10 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue }
+    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
-    /// animal state, stance, stand `location`, reserve), the refused ones (`NotAmmo`, `NotState`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
+    /// animal state, stance, stand `location`, reserve, coat), the refused ones (`NotAmmo`, `NotState`, `NotCoat`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
     /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one. `Clue` is met by a clue of one of the
     /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt.</summary>
     sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
@@ -77,6 +77,8 @@ public sealed partial class State
             Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
             Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
+            Check.Coat => Has(NumOf(k.E7, "texture")),
+            Check.NotCoat => NumOf(k.E7, "texture") is { } coat && !t.Ids!.Contains((long)coat),  // an animal with no spawn has no coat: it is no other coat either
             _ => false,
         };
     }
@@ -294,8 +296,41 @@ public sealed partial class State
         static readonly string[] Male = ["male", "buck", "bull", "stag", "rooster", "tom", "ram"], Female = ["female", "doe", "cow", "hen", "ewe"];
         public static readonly Regex MaleWord = new(@"\b(?:" + string.Join('|', Male) + @")\b", Rx), FemaleWord = new(@"\b(?:" + string.Join('|', Female) + @")\b", Rx);
 
+        // The coat of an animal is its spawn's (event 7) `texture`. The name of each id, in id order, is the game's own English name of that coat, as its trophy and its harvest
+        // show it (several ids share a name: `Common`, `Dark`, `Piebald`, `Chocolate`, `Albino`); the ids from 77 on are coats of the Halloween 2026 event that the game names nowhere.
+        static readonly string[] CoatNames =
+        [
+            "common", "common", "albino", "common", "melanistic", "piebald", "blonde", "chocolate", "cinnamon", "glacier", "gold", "silver tipped", "grey", "cross", "mythical",
+            "brown hybrid", "leucistic", "black hybrid", "albino", "bald leucistic", "light grey leucistic", "brown leucistic", "amber leucistic", "common blue", "mallard hybrid",
+            "piebald black", "dark", "dark red", "dark", "orange", "chocolate", "golden", "dark", "light", "dilute", "common", "common", "piebald", "piebald", "piebald", "belted",
+            "belted", "common", "abraxis", "caerbannog", "whiro", "sabbatic", "izuna", "ghostaroo", "pale", "camo", "gangsta", "russet", "candy", "monster", "skinless", "hiiden hirvi",
+            "mummy hybrid", "cyborg", "pumpkin", "reptile", "blocky normal", "blocky no cream", "blocky normal", "blocky all cream", "blocky badly stirred", "wendigo", "gyuki",
+            "eikthyrnir", "anukite", "nanuq", "mahaha", "tulikettu", "jiibayaabooz", "black shuck", "dryad", "orange shuck",
+        ];
+
+        // the words for a coat that the names lack: `blue` is the game's short name of `Common Blue` (the snow goose's blue phase, its only coat of that name); `halloween` is any coat
+        // the game's Halloween 2026 event gives an animal (each species there has its own, and no animal has one of them outside the event)
+        static readonly (string Word, long[] Ids)[] CoatWords =
+            [("blue", [23]), ("halloween", [43, 44, 45, 46, 47, 48, 54, 55, 56, 57, 58, 59, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82])];
+
+        // a species' coats that the titles tell apart and the game does not: the Grey Wolf's (36) four common coats are all `Common`; by their colour 0 is grey (the title's
+        // `common`), 1 and 42 (black and tan) dark and 3 brown
+        static readonly Dictionary<long, (string Word, long[] Ids)[]> SpeciesCoats = new() { [36] = [("common", [0]), ("dark", [1, 42]), ("brown", [3])] };
+
+        static readonly string CoatAlternatives = string.Join('|', CoatNames.Concat(CoatWords.Select(c => c.Word)).Concat(SpeciesCoats.Values.SelectMany(v => v.Select(c => c.Word)))
+            .Distinct().OrderByDescending(w => w.Length).Select(Regex.Escape));  // the longest first: "dark red" before "dark"
+
+        // a coat named with its frame: `with fur variation Grey`, `with any fur variation other than common`, `with a color other than Common`, `Chocolate colored`, `(Blue color variation)`
+        static readonly Regex CoatFramed = new(@"\s(?:with\s+(?:an?\s+|any\s+)?(?:fur\s+variation|colou?r)\s+(?<other>other\s+than\s+)?(?<c>" + CoatAlternatives + @")|(?<c>" + CoatAlternatives
+            + @")\s+(?:colou?red|colou?r\s+variation))(?=\s)", Rx);
+
+        /// <summary>The ids of a coat word for an animal of one of `animals` (none known: any).</summary>
+        static long[] CoatIds(string word, IEnumerable<long> animals) =>
+            animals.SelectMany(a => SpeciesCoats.GetValueOrDefault(a, [])).Where(c => c.Word == word).SelectMany(c => c.Ids).ToArray() is { Length: > 0 } own ? own
+                : [.. CoatWords.Where(c => c.Word == word).SelectMany(c => c.Ids), .. Enumerable.Range(0, CoatNames.Length).Where(i => CoatNames[i] == word).Select(i => (long)i)];
+
         readonly (long Id, string Name)[] species;
-        readonly Regex? speciesList, speciesName;
+        readonly Regex? speciesList, speciesName, coatBefore;
         readonly List<(string Name, long[] Ids)> weaponNames, sightNames;
         readonly List<(long Id, string Name, string Class, HashSet<string> Words)> weapons = [], sights = [];
         readonly (long Id, string Core, HashSet<string> Words)[] ammo;
@@ -311,6 +346,8 @@ public sealed partial class State
                 var any = string.Join('|', this.species.Select(s => Regex.Escape(s.Name)));  // the longest name first: "mule deer" before "deer"
                 speciesName = new Regex(@"(?<![a-z0-9])(?:" + any + @")(?![a-z0-9])", Rx);
                 speciesList = new Regex(@"(?<=\s)(?:" + any + @")(?:\s+or\s+(?:an?\s+|the\s+)?(?:" + any + @"))*(?=\s)", Rx);  // "and" is two animals, not one of two
+                // a bare coat word is one only right before the species, a gender word between (`a dark Grey Wolf`, `an Orange female Axis Deer`)
+                coatBefore = new Regex(@"\s(?<c>" + CoatAlternatives + @")(?=\s+(?:(?:" + string.Join('|', Male.Concat(Female)) + @")\s+)?(?<s>" + any + @")\s)", Rx);
             }
             var ammoItems = new List<(long Id, string Core, string Note)>();
             var ammoWords = new Dictionary<long, HashSet<string>>();
@@ -387,6 +424,23 @@ public sealed partial class State
                     tests.Add(new(Check.Reserve, Ids: [id]));
                     break;
                 }
+        }
+
+        /// <summary>The title's coat (`a dark Grey Wolf`, `a Chocolate colored Black Bear`, `with fur variation Piebald Black`, `(Blue color variation)`, `with a color other than Common`)
+        /// is cut out of `sn` and becomes a test. A word of one species' coats only (`brown`, the Grey Wolf's) stays for another species, and the objective is not understood; a name of
+        /// the game's is read for any species, one that never has that coat too (it is then never met).</summary>
+        void TakeCoat(ref string sn, List<Test> tests)
+        {
+            var m = CoatFramed.Match(sn);
+            if (!m.Success && coatBefore?.Match(sn) is { Success: true } before)
+                m = before;
+            if (!m.Success)
+                return;
+            var name = m.Groups["s"].Success ? m.Groups["s"].Value : speciesName?.Match(sn).Value;
+            var ids = CoatIds(m.Groups["c"].Value, species.Where(x => x.Name == name).Select(x => x.Id));
+            sn = sn[..m.Index] + " " + sn[(m.Index + m.Length)..] + (ids.Length == 0 ? " coat " : "");
+            if (ids.Length > 0)
+                tests.Add(new(m.Groups["other"].Success ? Check.NotCoat : Check.Coat, Ids: [.. ids]));
         }
 
         /// <summary>The title's species and gender are cut out of `sn`; several species, a short name of some (`Elk`) or `any animal except ...` become a species test.</summary>
@@ -497,6 +551,7 @@ public sealed partial class State
             var sn = " " + Normalise(s) + " ";
             if (Take(ref sn, Permitted, out _)) tests.Add(new(Check.Permitted));
             TakeReserve(ref sn, tests);
+            TakeCoat(ref sn, tests);  // before the species: a bare coat word is one right before it
             TakeSpecies(ref sn, own, tests);
             // `except` ends what the title allows: the weapons named after it (a class, a name, a list of them) are the ones it refuses; what else is left of the tail is read as the rest of the title
             var refused = new HashSet<long>();
