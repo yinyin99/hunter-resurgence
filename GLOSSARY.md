@@ -178,8 +178,8 @@ A sign an animal leaves that the player identifies: footprints, droppings, a cal
 _Avoid_: sign
 
 **Track**:
-Any clue. "ID 3 tracks" is met by three clues of any kind from the same animal in one hunt; only "tracks or droppings" sets tracks apart, meaning footprints there.
-_Avoid_: footprints (when any clue is meant)
+Footprints, as in "ID tracks from a Grey Wolf". Following one animal's trail ("Locate 3 tracks from the same animal") counts clues of any kind from that animal in one hunt.
+_Avoid_: clue (when footprints are meant)
 
 **Footprints**:
 The clue of an animal's feet on the ground; the only kind an objective means when it says footprints.
