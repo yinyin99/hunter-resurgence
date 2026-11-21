@@ -132,7 +132,7 @@ public sealed partial class State
             return;
         var finished = Ids(s["objectives"]).ToList();
         var begun = (DateOf(s).DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0;
-        if (Meet(d.Def, finished, kind, meets, (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a AND ts < ?", begun)!) is null)
+        if (Meet(d.Def, finished, kind, meets, kind != Kind.Track ? 0 : (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a AND ts < ?", begun)!) is null)  // only a clue count looks back
             return;
         s["objectives"] = List(finished);
         if (d.Def.Objectives.All(o => finished.Contains(o.Id)))

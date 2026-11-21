@@ -83,6 +83,18 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheTypesTwoKindsShareNeedTheAnimalToHaveAKind()
+    {
+        state = New("ambiguous.db", Catalogue(["ID any clue"]));  // no species: the kind of 25 and 32 cannot be told from water bubbles without the animal
+        ActivateAll();
+        Hb(O("""{"event": 12, "individual": 1, "track_type": 25}"""));
+        Hb(O("""{"event": 12, "individual": 2, "track_type": 32}"""));
+        Assert.Equal("", Completed());
+        Hb(Clue(3, 25, species: 5));  // a known animal: droppings
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
     public void TestAClueObjectiveWithWordsTheServerDoesNotReadIsNeverMetAndTheCoverageCountsIt()
     {
         state = New("clue-unread.db", Catalogue(["Find a Test Fox track north of the Middle Tower", "ID tracks from three different Test Fox within a span of 5 min", "ID a Test Fox track",
