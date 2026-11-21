@@ -49,7 +49,7 @@ public sealed class Store
 
     // the account's missions: a row per active (state 2) or completed (3) mission, with the ids of its finished objectives in the
     // order they were finished (JSON); a mission without a row is not started. Ids may have no definition (a restored account's).
-    // mission_prefs is the page's switches and favourite groups (JSON), one row per account once it has used missions.
+    // mission_prefs is the page's switches and favourite mission packs (JSON), one row per account once it has used missions.
     // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
     // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore; earlier: the
     // objectives finished before `seen` (JSON): no harvest after it finished them.

@@ -138,6 +138,94 @@ _Avoid_: hunter score (in code and docs), trophy score
 The players of the community server in hunterscore order; a player's rank is their place on it.
 _Avoid_: ladder, leaderboard (the website's boards of the other kinds)
 
+**Rank row**:
+One line of a profile's ranks tab: a species, a weapon or a kind of collectable, with the player's ethical kills or pickups of it. Not the player's rank on the hunterscore board.
+
+## Hunting
+
+**Reserve**:
+One of the game's hunting areas, with its own map, species and lodges.
+
+**Hunt**:
+One outing on a reserve, from its start to its end; the game calls it an expedition.
+
+**Lodge**:
+A house on a reserve's map where a hunt can start and the player reaches their lodge inventory.
+
+**Tent**:
+A shelter the player places on a reserve; like a lodge, a hunt can start there and the lodge inventory is in reach.
+
+**Spot**:
+To study an animal through binoculars or a scope, which records it as spotted.
+
+**Harvest**:
+An animal the player killed and then confirmed at its body, which records, scores and pays it; the game also says confirmed kill.
+
+**Score**:
+The measure of a harvest by its species' method (antlers, horns, skull or weight), shown on its score sheet.
+
+**Score sheet**:
+The page of a harvest's measurements and the score they add up to.
+
+**Harvest value**:
+A harvest's percentage from how quickly the animal died and how little the trophy was damaged; higher is better.
+
+**Cross-species score**:
+A harvest's score put on one scale for every species, so that species compare; a harvest pays it in gm$. Shortened to CSS.
+
+**Permitted ammunition**:
+The ammunition the game allows for a species.
+
+**Disqualified**:
+Said of a harvest of which a hit used ammunition not permitted for its species: it has no score and pays nothing.
+
+**Ethical kill**:
+A harvest that is not disqualified; only these count in the rank rows.
+
+**Collectable**:
+An object on a reserve that the player finds and picks up, such as a shed antler.
+
+**Pickup**:
+One collectable picked up; pickups count in the rank rows of their kind.
+
+**Trophy shot**:
+The photo a player takes of their harvest at its body.
+
+**Taxidermy**:
+Turning a harvest into a trophy, full body or skull, for em$ or gm$ within 72 hours of the harvest.
+
+**Trophy**:
+A taxidermized or skull-mounted harvest, or one restored from the original; the player can mount it in a trophy lodge.
+
+**Trophy lodge**:
+A building a player owns where they mount their trophies and weapons for other players to visit; the profile area "Lodges" lists them.
+
+## Inventory and wallet
+
+**Loadout**:
+What the player carries on a hunt; a saved loadout is a named set the player can pick at launch.
+
+**Lodge inventory**:
+Everything the player owns that is not in the loadout; in reach at a lodge or a tent.
+
+**Capacity**:
+How much a loadout can hold; a backpack (the Increased Capacity item) adds to it.
+
+**gm$**:
+The game's currency earned by playing: harvests, missions and daily missions pay it, and the store sells for it.
+
+**em$**:
+The game's other currency, which the original sold for money; the store prices most items in it, and some missions pay it.
+
+**Wallet**:
+A player's em$ and gm$ balances and the history of their changes.
+
+**Membership**:
+The kind of account the original sold (a guest, or a membership of some months), shown in a profile's header.
+
+**License**:
+The right to hunt a species or on a reserve, which the original sold; on the community server every player holds all of them unless the operator turns that off.
+
 ## Multiplayer and events
 
 **Multiplayer game**:
@@ -148,6 +236,9 @@ The small UDP server that introduces a joiner to a host behind a home router, so
 
 **Seasonal event**:
 A themed event the operator switches on for a window of time on some reserves, with its own creatures and missions. Each player can turn it off ("Play seasonal events").
+
+**Event creature**:
+A creature that lives only on the reserves of a seasonal event while it runs, such as the werewolf or the wendigo.
 
 **Season**:
 A leaderboard period of the community server: 0 is all time, 1 the harvests restored from the original (up to 2026-11-11), 2 and later the server's own, each started by the operator. A harvest belongs to the season its kill time falls in; an ended season has a Hall of Fame.
@@ -166,28 +257,39 @@ _Avoid_: mission group, chain
 The mission on a player's daily calendar, chosen by the date and the difficulty of the player's streak; finishing it continues that streak.
 _Avoid_: daily challenge
 
+**Giver**:
+The character who gives a daily mission, shown with their portrait.
+
+**Streak**:
+The days in a row a player finished their daily mission; a missed day breaks it, and the next activation starts again at day 1.
+
+**Difficulty**:
+Easy, Medium or Hard: the level of a day's daily mission, set by the day of the streak; a harder one pays more.
+
 **Objective**:
 One line of a mission, such as "Harvest a Whitetail Deer buck with at least 8 typical points"; met by what the player does after the mission is active.
 
 **Not understood**:
 Said of an objective the community server can't judge yet: it can't be newly met, and an earlier finish of it stays.
-_Avoid_: unsupported, unknown
+_Avoid_: unsupported
 
 **Clue**:
-A sign an animal leaves that the player identifies: footprints, droppings, a call, a blood trail or a bed.
-_Avoid_: sign
+What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. Objectives count only the first five.
 
 **Track**:
-Footprints, as in "ID tracks from a Grey Wolf". Following one animal's trail ("Locate 3 tracks from the same animal") counts clues of any kind from that animal in one hunt.
+Footprints, as in "ID tracks from a Grey Wolf", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail ("Locate 3 Elk tracks", "3 tracks from the same animal") counts clues of any kind from that animal in one hunt.
 _Avoid_: clue (when footprints are meant)
 
 **Footprints**:
-The clue of an animal's feet on the ground; the only kind an objective means when it says footprints.
+The clue of an animal's feet on the ground, walking or fleeing; titles also say footprint or footsteps.
 
 **Typical points**:
-The antler points of an animal's typical antler shape, both antlers added: 5 on each side is 10.
+The antler points of an animal's typical antler shape, both antlers added: 5 on each side is 10. Not the abnormal points.
 _Avoid_: points (alone), tines
 
+**Abnormal points**:
+The antler points outside the typical shape, counted apart on the score sheet.
+
 **Reopen**:
-To set a finished objective back to not met because the hunt recorded on the community server does not meet it; the player keeps the reward already paid, and the mission pays again when finished again.
+To set a finished objective back to not met because no harvest or clue recorded on the community server since the mission was activated meets it (for a single-hunt mission, none of one hunt); the player keeps the reward already paid, and the mission pays again when finished again.
 _Avoid_: revert, reset

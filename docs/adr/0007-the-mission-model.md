@@ -11,13 +11,13 @@ The community server runs missions as four rules:
 3. **The game's own updates and rewards**: the server pays a mission's reward and announces it in the reply shapes the game already shows (the new balance, the completion notice), so the game needs no change.
 4. **Restored states carry over**: a mission the backup holds as completed stays completed, and an active one keeps its saved progress.
 
-Daily missions rotate by date, the same for everyone, with streaks; challenges are tracked like missions. Missions, their progress and the wallet they pay are **owner-only** ([ADR 0005](0005-public-and-owner-only-profile-areas.md)).
+Daily missions rotate by date, with streaks: every player on the same day at the same difficulty has the same mission, and the difficulty follows the day of each player's streak ([docs/server.md](../server.md#daily-missions); this sentence said "the same for everyone" before the difficulties came). Challenges are tracked like missions. Missions, their progress and the wallet they pay are **owner-only** ([ADR 0005](0005-public-and-owner-only-profile-areas.md)).
 
 ## Considered options
 
 - **Write the mission list into the server.** Rejected: the game and the website show the recorded titles and texts, so a list of our own would not match them and would be one more thing to keep in step. The cost is that a new mission means a new recording, as for the store.
 - **Take completion from the client.** Rejected: the same trust rule as the statistics; a reward would be a number the player's PC could send.
-- **Daily missions chosen per player.** Rejected: the spec fixes one rotation by date for everyone, so the calendar and the streaks mean the same to all players.
+- **Daily missions chosen per player.** Rejected: the spec fixes one rotation by date, so the calendar and the streaks mean the same to all players; only the streak's difficulty differs between them.
 
 ## Consequences
 
