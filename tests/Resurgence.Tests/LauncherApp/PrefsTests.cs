@@ -43,5 +43,7 @@ public class PrefsTests
         Assert.False(new WindowPlace(-1220, 0, 1296, 799, false).OnScreen(screen), "76 units left: too little to grab");
         Assert.False(new WindowPlace(2000, 100, 1296, 799, false).OnScreen(screen), "on a second monitor that is gone");
         Assert.False(new WindowPlace(100, 1050, 1296, 799, false).OnScreen(screen), "title bar below the screen's bottom");
+        Assert.False(new WindowPlace(100, 100, 1296, -1, false).OnScreen(screen), "a damaged height: the default, never a window that cannot open");
+        Assert.False(new WindowPlace(double.NaN, 100, 1296, 799, false).OnScreen(screen), "a damaged position: the default");
     }
 }

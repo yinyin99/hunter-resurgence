@@ -47,7 +47,8 @@ public sealed class Prefs
 /// <summary>The launcher window's normal bounds in WPF units, and whether it was maximized.</summary>
 public sealed record WindowPlace(double Left, double Top, double Width, double Height, bool Maximized)
 {
-    /// <summary>At least 100 x 50 units of the window's top (its title bar) lie on the screen: a monitor that is gone never hides the launcher.</summary>
+    /// <summary>A real size, and at least 100 x 50 units of the window's top (its title bar) on the screen: a damaged value or a monitor that is gone never hides the launcher or stops it from starting.</summary>
     public bool OnScreen(System.Windows.Rect screen) =>
-        Math.Min(Left + Width, screen.Right) - Math.Max(Left, screen.Left) >= 100 && Math.Min(Top + 50, screen.Bottom) - Math.Max(Top, screen.Top) >= 50;
+        double.IsFinite(Left + Top + Width + Height) && Width > 0 && Height > 0
+        && Math.Min(Left + Width, screen.Right) - Math.Max(Left, screen.Left) >= 100 && Math.Min(Top + 50, screen.Bottom) - Math.Max(Top, screen.Top) >= 50;
 }

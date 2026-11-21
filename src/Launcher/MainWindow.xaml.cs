@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
 using System.Windows;
 
@@ -9,18 +10,24 @@ public partial class MainWindow : Window
     {
         // dev aid: resurgence-launcher.exe --mock=patch:new-patch shows a patch state, --mock=settings:first the first start dialog, --mock=session:signup an account without a username
         var mock = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--mock="))?[7..];
-        Resources.Add("services", LauncherServices.Build(mock, Settings.Load().ServerUrl));
+        var services = LauncherServices.Build(mock, Settings.Load().ServerUrl);
+        Resources.Add("services", services);
+        env = services.GetRequiredService<LauncherEnv>();
         InitializeComponent();
         Title += " v" + LauncherEnv.AppVersion;
         // dev aid: resurgence-launcher.exe --route=/store opens that route first
         // the window opens where it was closed (on a screen that is still there); else it is sized so that the page area is exactly 1280x760, as in every reference picture
-        if (Prefs.Load(Prefs.DefaultPath).Window is { } place && place.OnScreen(new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight)))
+        // ponytail: one rectangle around all monitors, so a corner no monitor covers counts as on screen; test each monitor (EnumDisplayMonitors) if players get lost there
+        if (env.Prefs.Window is { } place && place.OnScreen(new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight)))
         {
             WindowStartupLocation = WindowStartupLocation.Manual;
             (Left, Top, Width, Height) = (place.Left, place.Top, place.Width, place.Height);
             if (place.Maximized) WindowState = WindowState.Maximized;
         }
         else Loaded += (_, _) => { Width += 1280 - Blazor.ActualWidth; Height += 760 - Blazor.ActualHeight; };
+        // the close-game answer minimizes before closing: the last state that was not minimized is the one to keep
+        maximized = WindowState == WindowState.Maximized;
+        StateChanged += (_, _) => { if (WindowState != WindowState.Minimized) maximized = WindowState == WindowState.Maximized; };
         // closing while the game runs would stop the forwarder and disconnect the game, so the player is asked; Windows shutdown and sign-out are never held up
         Application.Current.SessionEnding += (_, _) => ending = true;
         Closing += (_, e) =>
@@ -33,20 +40,16 @@ public partial class MainWindow : Window
         Blazor.StartPath = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--route="))?[8..] ?? "/splash";
     }
 
-    bool ending, closing, asking;
+    readonly LauncherEnv env;
+    bool ending, closing, asking, maximized;
 
-    /// <summary>Saves the window's normal bounds for the next start; a minimized window keeps the place it had before. A failed save never holds up the close.</summary>
+    /// <summary>Saves the window's normal bounds and whether it was maximized for the next start, through the launcher's one copy of its preferences (a failed save is ignored there).</summary>
     void RememberPlace()
     {
         var b = RestoreBounds;
         if (b.IsEmpty) return;
-        try
-        {
-            var prefs = Prefs.Load(Prefs.DefaultPath);
-            prefs.Window = new(b.Left, b.Top, b.Width, b.Height, WindowState == WindowState.Maximized);
-            prefs.Save(Prefs.DefaultPath);
-        }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+        env.Prefs.Window = new(b.Left, b.Top, b.Width, b.Height, maximized);
+        env.Save();
     }
 
     static bool GameRunning() => GameFiles.ClientRunning(Settings.Load().ClientExe);
