@@ -1,5 +1,6 @@
 // What a community server's account shows of itself where no restore filled the rows: Me/me from the account, Inventory/list
 // from the items table. A local server never calls these (it answers from its recordings).
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -339,7 +340,15 @@ public sealed partial class State
             rows.Add(row);
         }
         Mount(account, rows);
-        return rows;
+        return Newest(rows, "timestamp");
+    }
+
+    /// <summary>Rows newest first by the Unix seconds or ISO text in <paramref name="field"/>; rows without a date go last, equal dates keep their order.</summary>
+    static List<JsonNode?> Newest(IEnumerable<JsonNode?> rows, string field)
+    {
+        static long? At(JsonNode? v) =>
+            Py.IsNum(v) ? Py.L(v) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : null;
+        return [.. rows.OrderBy(r => At(r?[field]) is null).ThenByDescending(r => At(r?[field]) ?? 0)];
     }
 
     static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
@@ -376,7 +385,7 @@ public sealed partial class State
     /// and name (null without them) and its picture's file name without the extension (null without a picture).</summary>
     public JsonObject PublicTrophies(long account, int page)
     {
-        var all = Restored(account, "trophies", "/v1/Trophy/list").Where(NotHidden).ToList();
+        var all = Newest(Restored(account, "trophies", "/v1/Trophy/list").Where(NotHidden), "ts");
         var pages = Math.Max(1, (all.Count + TrophiesPageSize - 1) / TrophiesPageSize);
         page = Math.Clamp(page, 1, pages);
         static JsonNode? Text(JsonNode? n) => Py.IsStr(n) ? C(n) : null;
