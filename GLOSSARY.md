@@ -156,21 +156,21 @@ _Avoid_: seasonal event (a themed event of creatures and missions, not a leaderb
 ## Missions
 
 **Mission**:
-A task a player activates and finishes in hunts for a gm$ reward; it has one or more objectives and is finished when all of them are.
+A task a player activates and finishes in hunts for a reward; it has one or more objectives and is finished when all of them are.
 
 **Mission pack**:
 A group of missions about one species, weapon or theme; some missions need earlier ones of their pack first.
 _Avoid_: mission group, chain
 
 **Daily mission**:
-The one mission of the day the calendar offers every player, with its own giver and streak.
+The mission on a player's daily calendar, chosen by the date and the difficulty of the player's streak; finishing it continues that streak.
 _Avoid_: daily challenge
 
 **Objective**:
 One line of a mission, such as "Harvest a Whitetail Deer buck with at least 8 typical points"; met by what the player does after the mission is active.
 
 **Not understood**:
-Said of an objective whose wording the community server can't read yet; it is never met until a version reads it.
+Said of an objective the community server can't judge yet: it can't be newly met, and an earlier finish of it stays.
 _Avoid_: unsupported, unknown
 
 **Clue**:
@@ -178,7 +178,7 @@ A sign an animal leaves that the player identifies: footprints, droppings, a cal
 _Avoid_: sign
 
 **Track**:
-Any clue. "ID 3 tracks" is met by any three clues; only "tracks or droppings" sets tracks apart, meaning footprints there.
+Any clue. "ID 3 tracks" is met by three clues of any kind from the same animal in one hunt; only "tracks or droppings" sets tracks apart, meaning footprints there.
 _Avoid_: footprints (when any clue is meant)
 
 **Footprints**:
@@ -189,5 +189,5 @@ The antler points of an animal's typical antler shape, both antlers added: 5 on 
 _Avoid_: points (alone), tines
 
 **Reopen**:
-To set a finished objective back to not met because the hunt recorded on the community server does not meet it; the mission pays again when finished again, and no gm$ is taken back.
+To set a finished objective back to not met because the hunt recorded on the community server does not meet it; the player keeps the reward already paid, and the mission pays again when finished again.
 _Avoid_: revert, reset
