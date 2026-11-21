@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Choisissez le lieu de départ de votre session de chasse. Cliquez sur l’un des 12 logos de réserve ci-dessous pour afficher la carte de la réserve correspondante, puis sur les loges (les icônes en forme de maison) pour découvrir les espèces que l’on peut y rencontrer. Vous pouvez aussi parcourir la carte du monde en la faisant glisser avec la souris et zoomer ou dézoomer avec la molette.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Certains des plus magnifiques milieux naturels du monde, ainsi que 45 espèces animales différentes, vous attendent. Bonne chasse !</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Heure de départ :</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Fixée par l'événement : {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Démarrer la partie</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Mise à jour</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Loges :</value></data>

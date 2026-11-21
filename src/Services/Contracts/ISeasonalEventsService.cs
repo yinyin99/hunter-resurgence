@@ -8,6 +8,9 @@ public sealed record SeasonalEvents(bool Play, string? Event, IReadOnlyList<int>
 {
     /// <summary>The player sees the event's picture of the launch map's reserve <paramref name="reserve"/>: the event runs, covers it and the player did not opt out.</summary>
     public bool Shows(int reserve) => Play && Event is not null && (Reserves.Count == 0 || Reserves.Contains(reserve - 1));
+
+    /// <summary>The hour of day the event fixes on the launch map's reserve <paramref name="reserve"/> (night: 1.25, on Bushrangers Run 4.7), null when it fixes none.</summary>
+    public double? FixedHour(int reserve) => Shows(reserve) ? (reserve == 9 ? 4.7 : 1.25) : null; // ponytail: halloween_2026 is the only event; per-event hours when a second one has them
 }
 
 /// <summary>A shared objective of the event: all players who play events count toward it; <paramref name="Target"/> is already divided by the server's setting.</summary>

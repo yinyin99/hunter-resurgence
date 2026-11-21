@@ -62,6 +62,8 @@ Multiplayer is a beta: it works, but expect rough edges. The game connects the p
 - **Host**: in the launcher, Hunt now, **Multiplayer game** (the dashboard's **Start a multiplayer game**, or **HOST YOUR OWN GAME** when the list has no games): choose the reserve, the start and the time, then the game's name, a description, friends only or anyone, a password if you want one, and 2 to 8 players (optionally a Hunter Score range). The game ends when you leave it.
 - **Connection**: the other players connect to your PC. The server's punch-through server helps a home router to let them in, with no setting on your side. If nothing answers, the game waits about 30 seconds and then tries a direct connection (UPnP, or a forwarded UDP port). A strict router can still block it. Games with a host close to you run better. Allow the game in Windows Firewall, as in step 5.
 
+**A seasonal event fixes the time.** While an event runs on a reserve and "Play seasonal events" is on, the time of day of a hunt there is the event's (night), so the launcher shows "Fixed by the event" with that time instead of the time list. Other reserves are unchanged. To choose the time yourself, turn off "Play seasonal events" (the launcher's Settings menu, or the box on the launch map).
+
 More: [launcher](launcher.md#multiplayer).
 
 ## Problems

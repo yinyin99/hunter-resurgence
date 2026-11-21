@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Wybierz, skąd chcesz rozpocząć polowanie. Kliknij logo jednego z 12 rezerwatów poniżej, aby zobaczyć mapę danego rezerwatu, a następnie kliknij leśniczówki (ikony domków), aby dowiedzieć się, jakie gatunki można spotkać w tej okolicy. Mapę świata możesz też przeglądać, przeciągając ją myszą, a przybliżać i oddalać kółkiem myszy.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Jedne z najpiękniejszych środowisk naturalnych na świecie oraz 45 różnych gatunków zwierząt czekają na Ciebie. Udanych łowów!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Godzina rozpoczęcia:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Ustalona przez wydarzenie: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Start gry</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Aktualizacja</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Leśniczówki:</value></data>

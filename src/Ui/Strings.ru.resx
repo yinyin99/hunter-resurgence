@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на стоянки (значки домиков), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Одни из самых великолепных уголков природы и 45 видов животных ждут вас. Удачной охоты!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Время начала:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Задано событием: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Начать игру</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Обновление</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Стоянки:</value></data>
