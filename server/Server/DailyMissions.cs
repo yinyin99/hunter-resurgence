@@ -173,8 +173,8 @@ public sealed partial class State
 
     static string EventType(Kind kind) => kind switch { Kind.Harvest => "CONFIRMKILL", Kind.Spot => "SPOT", Kind.Track => "CLUE", _ => "" };
 
-    /// <summary>The page's objective entry: its title and the condition the rule stands for. ponytail: a clue counts whatever its type (footsteps, droppings), as the
-    /// catalogue's missions do; the condition names droppings when the title does, else footsteps, for the page only.</summary>
+    /// <summary>The page's objective entry: its title and the condition the rule stands for. The rule checks the clue's kind as a catalogue mission does; the page's condition names
+    /// droppings when the title does, else footsteps (a call or a blood trail is shown as footsteps: for the page only).</summary>
     JsonObject DailyObjective(Objective o, bool finished)
     {
         var rule = o.Rule;

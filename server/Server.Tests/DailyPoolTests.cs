@@ -102,7 +102,7 @@ public class DailyPoolTests : StateTestBase
                 foreach (var g in id == 381 ? new long[] { 0, 1 } : [gender])
                     state.HeartbeatReply(account, Events(
                         O($$"""{"event": 7, "individual": {{++individual}}, "species": {{speciesId}}, "gender": {{g}}, "weight_grams": 50000, "texture": 0}"""),
-                        id is 49 or 121 ? O($$"""{"event": 11, "individual": {{individual}}, "milliseconds_viewed": 3000, "percentage": 80}""") : O($$"""{"event": 12, "individual": {{individual}}, "track_type": 3}""")));
+                        id is 49 or 121 ? O($$"""{"event": 11, "individual": {{individual}}, "milliseconds_viewed": 3000, "percentage": 80}""") : O($$"""{"event": 12, "individual": {{individual}}, "track_type": {{(species == "PTARMIGAN_ROCK" ? 1 : 2)}}}""")));  // droppings (1) for the ptarmigan's, footprints (2) for the others
                 var today = Reply(state.DailyCalendarReply(account)!)["calendar"]!.AsArray().Single(e => (bool)e!["today"]!)!;
                 Assert.All(JsonNode.Parse((string)today["objectives"]!)!.AsArray(), o => Assert.NotNull(o!["objective_data"]!["completed"]));
             }

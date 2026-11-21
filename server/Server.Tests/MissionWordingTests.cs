@@ -37,14 +37,14 @@ public class MissionWordingTests : MissionTestBase
         Hb(Shot(1));  // 150 m with the carbine, before any hunt: no reserve yet
         Assert.Equal("1,4,8", Completed());
         Hb(Spot(2));
-        Hb(Clue(3, trackType: 3));  // footprints: any clue, not the heard call, and not in the reserve
+        Hb(Clue(3, trackType: 2));  // footprints: any clue, not the heard call, and not in the reserve
         Assert.Equal("1,2,3,4,8", Completed());
         Hb(Clue(4, trackType: 9));
         Assert.Equal("1,2,3,4,8,9", Completed());
         Launch();
         Hb(Shot(5, distance: 2000));
         Assert.Equal("1,2,3,4,5,7,8,9", Completed());
-        Hb(Clue(6, trackType: 3));
+        Hb(Clue(6, trackType: 2));
         Assert.Equal("1,2,3,4,5,6,7,8,9", Completed());
     }
 
@@ -76,11 +76,11 @@ public class MissionWordingTests : MissionTestBase
         Assert.Equal(("", "0"), (Done(1), Done(2)));
         Hb(Spot(2));
         Assert.Equal(("0", "2"), (Done(1), Completed()));  // the spot finished mission 2: its ordered objective had its harvest
-        Hb(Clue(3, trackType: 3));  // the last objective waits for the harvest
+        Hb(Clue(3, trackType: 2));  // the last objective waits for the harvest
         Assert.Equal("0", Done(1));
         Hb(Shot(4));
         Assert.Equal("0,1", Done(1));
-        Hb(Clue(5, trackType: 3));
+        Hb(Clue(5, trackType: 2));
         Assert.Equal("1,2", Completed());
     }
 

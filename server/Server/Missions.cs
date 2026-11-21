@@ -15,10 +15,10 @@ public sealed partial class State
     enum Kind { Other, Harvest, Track, Spot, Arrive, Start }
 
     /// <summary>What an objective needs: its kind, the species (catalogue id, 0 to 99) and gender (0 male, 1 female) its title names (null: any; a title that names several species, a short
-    /// name of some, or any animal but some, has a `Species` test instead), how many clues of one animal (tracks), whether it counts only after the objectives before it, its title in
-    /// <see cref="Normalise"/>d words (a place), and, for a harvest or a spot (a clue: its reserve), the conditions its title asks of the kill (<see cref="Reader"/>); `Unknown` when it
+    /// name of some, or any animal but some, has a `Species` test instead), whether it counts only after the objectives before it, its title in
+    /// <see cref="Normalise"/>d words (a place), and the conditions its title asks of the kill, the spot or the clue (<see cref="Reader"/>); `Unknown` when it
     /// has words the server does not understand: it is never met.</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, int Count, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
+    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
@@ -31,9 +31,7 @@ public sealed partial class State
     static readonly Regex AtAny = new(@"\A\s*at any (?:point|time)\b(?:\s+(?:(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)|while\s+in\s+(?<r>[^,:]+)))?\s*[,:]?\s*",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly Regex GoTo = new(@"\A(?:(?:head|go|travel)(?: over| out)? to|make it to)\b", RegexOptions.CultureInvariant);
-    static readonly Regex AudioClue = new(@"\baudio clues?\b", RegexOptions.CultureInvariant);
     static readonly Regex TrackWord = new(@"\b(tracks?|droppings?|calls?|blood|bedding|feeding|footprints?|footsteps?|clues?|scat)\b", RegexOptions.CultureInvariant);
-    static readonly Regex ClueCount = new(@"\b(\d+) (?:\w+ ){0,4}?(?:tracks?|droppings?|clues?|footprints?|footsteps?)\b", RegexOptions.CultureInvariant);
     static readonly Regex Reward = new(@"\A\s*(\d+)\s*(gm|em)\$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly string[] Switches = ["auto_mission_activate", "activate_only_favourite", "hide_completed_favourite"];
     const string MissionsPath = "Mission_missions.json";
@@ -97,18 +95,17 @@ public sealed partial class State
             };
             long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
             long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
-            var count = kind == Kind.Track && ClueCount.Match(text) is { Success: true } m && int.TryParse(m.Groups[1].Value, out var clues) ? Math.Clamp(clues, 1, 100) : 1;
             Test[] tests = [];
             var unknown = false;
             if (kind is Kind.Harvest or Kind.Spot)
                 (tests, unknown) = reader.Read(body, own);
             else if (kind == Kind.Track)
-                tests = reader.ReservesIn(body);
+                (tests, unknown) = reader.ReadClue(body, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its species and its name can be checked
             unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species));
-            return new Rule(kind, species, gender, count, ordered.Success, text, tests, unknown);
+            return new Rule(kind, species, gender, ordered.Success, text, tests, unknown);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -348,20 +345,14 @@ public sealed partial class State
         Kill? kill = null;
         if (kind != Kind.Arrive)
         {
-            var animal = kind == Kind.Harvest ? KillEvents(con, e["individual"], Py.Dumps(e)).E7
-                : con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ? ORDER BY id DESC LIMIT 1", e["individual"])
-                    .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
+            var animal = kind == Kind.Harvest ? KillEvents(con, e["individual"], Py.Dumps(e)).E7 : SpawnBefore(con, e["individual"], eventId);
             (animalSpecies, gender) = AnimalOf(animal, kind == Kind.Harvest ? e["extended_species"] : animal["species"]);
-            kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, animal);
+            kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, e, animal);
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
         Advance(con, kind, rule =>
             kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
-            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill))
-              && (kind != Kind.Track || !AudioClue.IsMatch(rule.Text) || Is(e["track_type"], 9))
-              && (kind != Kind.Track || rule.Count <= 1 || (long)con.Scalar(
-                    "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ? AND id > COALESCE("
-                    + "(SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)", e["individual"])! >= rule.Count),
+            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill)),
             u =>
             {
                 // one update 15 per currency in a reply, as the game's server sends: a kill's css and a mission's reward add into the last balance

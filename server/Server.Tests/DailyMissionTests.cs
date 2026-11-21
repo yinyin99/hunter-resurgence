@@ -61,7 +61,7 @@ public class DailyMissionTests : StateTestBase
 
     JsonNode SpotOf() => O($$"""{"event": 11, "individual": {{individual}}, "milliseconds_viewed": 3000, "percentage": 80}""");
 
-    JsonNode Track() => O($$"""{"event": 12, "individual": {{individual}}, "track_type": 3}""");
+    JsonNode Track() => O($$"""{"event": 12, "individual": {{individual}}, "track_type": 2}""");
 
     /// <summary>The events that finish today's easy mission, whichever it is: a male deer spotted and a wolf's tracks.</summary>
     JsonNode[] Easy() => [Spawn(1, 0), SpotOf(), Spawn(56, 0), Track()];

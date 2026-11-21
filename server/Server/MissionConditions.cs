@@ -11,20 +11,23 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species }
+    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
     /// animal state, stance, stand `location`, reserve), the refused ones (`NotAmmo`, `NotState`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
-    /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one.</summary>
+    /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one. `Clue` is met by a clue of one of the
+    /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt.</summary>
     sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
 
     /// <summary>A kill as the conditions see it: its harvest (event 3) and spawn (event 7), its hits (event 1, in order; a spot's own event 11), the reserve of the hunt it
-    /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).</summary>
-    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null)
+    /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).
+    /// A clue has its own event (12) and, when asked for, the clues of its animal in its hunt up to it.</summary>
+    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null,
+                      JsonObject? e12 = null, Func<List<JsonObject>>? clues = null)
     {
-        public readonly JsonObject E3 = e3, E7 = e7;
+        public readonly JsonObject E3 = e3, E7 = e7, E12 = e12 ?? new();
         public readonly long? Reserve = reserve;
-        public readonly Lazy<List<JsonObject>> Hits = new(hits);
+        public readonly Lazy<List<JsonObject>> Hits = new(hits), Clues = new(clues ?? (() => []));
         public readonly Lazy<(bool Disqualified, double? Score)> Scored = new(scored);
         public readonly Lazy<double?> Points = new(points ?? (() => null));
     }
@@ -72,6 +75,7 @@ public sealed partial class State
             // a title with a place is met by its species (and gender) there; one without a place, by an animal that carries `special`
             Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
+            Check.Clue => ClueIs(t, k.E12, k.E7) && k.Clues.Value.Count(c => ClueIs(t, c, k.E7)) >= t.Min,
             _ => false,
         };
     }
@@ -105,8 +109,36 @@ public sealed partial class State
     /// <summary>A spotted animal (event 11, stored as event `eventId`) as a kill with one hit: the spot itself, which carries the player's stand.</summary>
     Kill SpotOf(Db con, JsonObject e11, long eventId, JsonObject e7) => new(new JsonObject(), e7, () => [e11], ReserveAt(con, eventId), () => (false, null));
 
-    /// <summary>A found clue (event 12, stored as event `eventId`) as a kill with no hit: only the reserve of its hunt can be checked.</summary>
-    Kill ClueOf(Db con, long eventId, JsonObject e7) => new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null));
+    /// <summary>A found clue (event 12 `e12`, stored as event `eventId`) as a kill with no hit: the reserve of its hunt, its kind and the clues of the same animal in that hunt can be checked.</summary>
+    Kill ClueOf(Db con, long eventId, JsonObject e12, JsonObject e7) =>
+        new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null), e12: e12, clues: () => ClueEvents(con, e12["individual"], eventId));
+
+    /// <summary>The clues (event 12) of the animal `individual` in the hunt that event `eventId` is in, up to that event.</summary>
+    static List<JsonObject> ClueEvents(Db con, JsonNode? individual, long eventId) =>
+        [.. con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > COALESCE("
+            + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id", individual, eventId).Select(r => Parse(r[0]))];
+
+    /// <summary>The kinds of clue a title names.</summary>
+    enum ClueKind { Blood, Footprints, Droppings, Call, Bedding }
+
+    static Dictionary<long, ClueKind> ClueTable(params (ClueKind Kind, int[] Types)[] kinds) => kinds.SelectMany(k => k.Types.Select(t => ((long)t, k.Kind))).ToDictionary();
+
+    // The `track_type` of an event 12 by the kind of clue it is. 0 (blood trail), 9 (a heard call) and 12 (bedding) are one id each. The other ids come in pairs of one species' clues: its
+    // droppings, then its footprints (a trotting or a fleeing animal leaves the footprints' id too): 1 and 2 for a whitetail, 3 and 4 for a mule deer, 16 and 17 for a moose, 5 and 6 for a
+    // turkey, and so on up to 102 and 103 for a wood grouse. Each id but 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) is in the recorded clue
+    // events, always of the species it is listed for. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) name no kind a title asks for: only `any clue` meets them.
+    static readonly Dictionary<long, ClueKind> ClueKinds = ClueTable(
+        (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]),
+        (ClueKind.Droppings, [1, 3, 5, 7, 10, 14, 16, 18, 23, 25, 32, 34, 36, 38, 40, 44, 56, 58, 60, 62, 64, 66, 68, 70, 78, 80, 82, 84, 88, 92, 93, 94, 96, 98, 100, 102]),
+        (ClueKind.Footprints, [2, 4, 6, 8, 11, 15, 17, 19, 21, 22, 24, 26, 28, 33, 35, 37, 39, 41, 45, 57, 59, 61, 63, 65, 67, 69, 71, 73, 79, 81, 83, 85, 89, 95, 97, 99, 101, 103]));
+
+    /// <summary>The kind of the clue of event 12 `e12` by an animal of `species`; null for a type no kind is known for. The red deer's water bubbles (25) and the wendigo's (32) use the
+    /// ids of the roe deer's and the rabbits' droppings.</summary>
+    static ClueKind? ClueKindOf(JsonObject e12, long? species) =>
+        NumOf(e12, "track_type") is { } type && (long)type is var id && (id, species) is not ((25, 12) or (32, 58)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
+
+    static bool ClueIs(Test t, JsonObject e12, JsonObject e7) =>
+        t.Ids!.Count == 0 || ClueKindOf(e12, AnimalOf(e7, e7["species"]).Species) is { } kind && t.Ids.Contains((long)kind);
 
     /// <summary>The species (0 to 99) and gender of an animal: the harvest's `extended_species` (or the spawn's `species`) and the spawn's `gender`.</summary>
     static (long? Species, long? Gender) AnimalOf(JsonObject e7, JsonNode? number) =>
@@ -140,7 +172,7 @@ public sealed partial class State
             Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
             Notes = new(@"\b(?:other organs may be hit|to blame it for making the noise)\b\.?", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
-            SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
+            SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session|outing)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
             TypicalPoints = Quantity(@"typical\s+points?"), PointCount = new(@"(?<![\w.-])(?<n>\d+)(?:-point|\s?pt)\b(?!\s+score)", Rx),
             NumberWord = new(@"\b(?<w>" + string.Join('|', NumberWords[1..]) + @")(?=\s+typical\s+points?\b)", Rx),
@@ -171,7 +203,7 @@ public sealed partial class State
             ExceptAnimal = new(@"\s(?:any\s+)?animals?\s+except(?=\s)", Rx),
             SpeciesOf = new(@"\s(?:one\s+of\s+)?(?:any\s+)?species\s+of(?=\s)", Rx),
             Duck = new(@"\sducks?(?=\s)", Rx),
-            Alias = new(@"(?<=\s)(?<a>elk|whitetail|blacktail|pintail|ptarmigan)(?=\s)", Rx),
+            Alias = new(@"(?<=\s)(?<a>elk|whitetail|blacktail|pintail|ptarmigan|sitka)(?=\s)", Rx),
             NoCrossbows = new(@"\(\s*no crossbows?\s*\)", Rx),
             OnlyOrgans = new(@"\bonly organs may be hit\b\.?", Rx),
             OnlyNamed = new(@"\bno other vital organs or bones should be hit\b\.?", Rx),
@@ -195,6 +227,22 @@ public sealed partial class State
             NoStands = new(@"\s(?:an?\s+|the\s+)?" + StandList + @"\s+(?:is|are)\s+not\s+allowed(?=\s)", Rx);
 
         static readonly string[] Stops = "a an the another any one final in with using from at and or of to while by during same hunt then finally first harvest spot killed shot taken kill take it its that is are be on when only just either each also second third fourth last more ammo ammunition rounds shells loaded bullet bullets s weapon weapons but animal animals fine dandy anywhere".Split(' ');
+
+        // words of a clue objective that ask nothing more: each clue finishes one objective, in order (`another set of tracks`, `a third track`, `a pile of droppings`)
+        static readonly string[] ClueStops = "set sets pile piles unique".Split(' ');
+
+        static readonly Regex
+            ClueVerb = new(@"\A\s*(?:locate|identify|id|find|register)\b", Rx),
+            ClueCount = new(@"\b(?<n>\d+|" + string.Join('|', NumberWords[2..11]) + @")\s+(?:\w+\s+){0,4}?(?:tracks?|droppings?|clues?|footprints?|footsteps?|calls?)\b", Rx),
+            ClueWord = new(@"\bclues?\b", Rx);
+
+        // the words of a clue's kind, the most specific first (`blood trail` before `tracks`, `droppings track` before `track`)
+        static readonly (Regex Word, ClueKind Kind)[] ClueWords =
+        [
+            (new(@"\bblood(?:\s+(?:trails?|tracks?))?\b", Rx), ClueKind.Blood), (new(@"\b(?:droppings?|scat)(?:\s+tracks?)?\b", Rx), ClueKind.Droppings),
+            (new(@"\b(?:audio(?:\s+(?:clues?|calls?))?|calls?)\b", Rx), ClueKind.Call), (new(@"\b(?:bedding|beds?)\b", Rx), ClueKind.Bedding),
+            (new(@"\b(?:tracks?|footprints?|footsteps?)\b", Rx), ClueKind.Footprints),
+        ];
 
         // an animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells
         static readonly (Regex Word, long[] States, bool First)[] States = [.. new (string, long[], bool)[]
@@ -308,11 +356,72 @@ public sealed partial class State
             return range is not null;
         }
 
-        /// <summary>The reserve test of a title (a clue's only condition): none when it names no reserve.</summary>
-        public Test[] ReservesIn(string title)
+        /// <summary>The title's reserve (`in <reserve>`) is cut out of `sn` and becomes a test.</summary>
+        void TakeReserve(ref string sn, List<Test> tests)
         {
-            var s = " " + Words(title) + " ";
-            return [.. reserves.Where(r => r.In.IsMatch(s)).Take(1).Select(r => new Test(Check.Reserve, Ids: [r.Id]))];
+            foreach (var (id, inReserve) in reserves)
+                if (Take(ref sn, inReserve, out _))
+                {
+                    tests.Add(new(Check.Reserve, Ids: [id]));
+                    break;
+                }
+        }
+
+        /// <summary>The title's species and gender are cut out of `sn`; several species, a short name of some (`Elk`) or `any animal except ...` become a species test.</summary>
+        void TakeSpecies(ref string sn, long[]? own, List<Test> tests)
+        {
+            var except = Take(ref sn, ExceptAnimal, out _);
+            var named = new List<long>();
+            if (speciesList?.Match(sn) is { Success: true } list)
+            {
+                sn = sn[..list.Index] + " " + sn[(list.Index + list.Length)..];
+                foreach (Match m in speciesName!.Matches(list.Value))
+                    named.AddRange(species.Where(x => x.Name == m.Value).Select(x => x.Id));
+            }
+            long[] like = [], aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
+            if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias)
+            {
+                sn = sn[..alias.Index] + " " + sn[(alias.Index + alias.Length)..];
+                like = [.. species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id)];
+                aliased = like.Intersect(own ?? []).ToArray() is { Length: > 0 } mine ? mine : like;
+            }
+            if (named.Count > 0 || aliased.Length > 0)
+                Take(ref sn, Duck, out _);  // `Mallard duck`
+            Take(ref sn, SpeciesOf, out _);  // `one of any species of Ptarmigan`
+            if (except && named.Count == 0 && like.Length == 0)
+                sn += " animals_except ";  // no species after `any animal except`: the word stays, the objective is not understood
+            else if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named).Except(like)]));
+            else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
+            else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
+            if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);
+        }
+
+        /// <summary>The conditions of a clue objective's title (its first word is the verb: `ID`, `Locate`, ...): the reserve, the species and the gender as for a harvest, and a `Clue` test:
+        /// the kinds the title names (`tracks`, `footprints`, `droppings`, `call`, `audio clue`, `blood trail`, `bedding`; `any clue` alone names none: any), and how many clues of the
+        /// one animal it needs (a number before them, else one). A clue word it does not read, a place, `different` animals or any other word make it not understood.</summary>
+        public (Test[] Tests, bool Unknown) ReadClue(string title, long[]? own = null)
+        {
+            var tests = new List<Test>();
+            var s = ClueVerb.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), " ");
+            var sn = " " + Normalise(SameHunt.Replace(Coordinates.Replace(s, " "), " ")) + " ";
+            TakeReserve(ref sn, tests);
+            TakeSpecies(ref sn, own, tests);
+            var count = 1L;
+            if (ClueCount.Match(sn) is { Success: true } many)
+            {
+                var n = many.Groups["n"];
+                count = Math.Clamp(long.TryParse(n.Value, out var digits) ? digits : Array.IndexOf(NumberWords, n.Value), 1, 100);
+                sn = sn[..n.Index] + " " + sn[(n.Index + n.Length)..];
+            }
+            var kinds = new HashSet<long>();
+            foreach (var (word, kind) in ClueWords)
+                if (Take(ref sn, word, out _))
+                    kinds.Add((long)kind);
+            var any = Take(ref sn, ClueWord, out _);
+            if (kinds.Count == 0 && !any)
+                sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
+            tests.Add(new(Check.Clue, count, Ids: kinds));
+            return ([.. tests], sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(w => !Stops.Contains(w) && !ClueStops.Contains(w)));
         }
 
         /// <summary>The conditions the title asks and whether it has words this reader does not understand (the words of a condition it could not read stay in the title).</summary>
@@ -354,36 +463,8 @@ public sealed partial class State
             else if (Take(ref s, ScoreBefore, out score) && !Bound(score, 1, Check.Score, tests)) s += " " + score.Value;
             var sn = " " + Normalise(s) + " ";
             if (Take(ref sn, Permitted, out _)) tests.Add(new(Check.Permitted));
-            foreach (var (id, inReserve) in reserves)
-                if (Take(ref sn, inReserve, out _))
-                {
-                    tests.Add(new(Check.Reserve, Ids: [id]));
-                    break;
-                }
-            var except = Take(ref sn, ExceptAnimal, out _);
-            var named = new List<long>();
-            if (speciesList?.Match(sn) is { Success: true } list)
-            {
-                sn = sn[..list.Index] + " " + sn[(list.Index + list.Length)..];
-                foreach (Match m in speciesName!.Matches(list.Value))
-                    named.AddRange(species.Where(x => x.Name == m.Value).Select(x => x.Id));
-            }
-            long[] like = [], aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
-            if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias)
-            {
-                sn = sn[..alias.Index] + " " + sn[(alias.Index + alias.Length)..];
-                like = [.. species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id)];
-                aliased = like.Intersect(own ?? []).ToArray() is { Length: > 0 } mine ? mine : like;
-            }
-            if (named.Count > 0 || aliased.Length > 0)
-                Take(ref sn, Duck, out _);  // `Mallard duck`
-            Take(ref sn, SpeciesOf, out _);  // `one of any species of Ptarmigan`
-            if (except && named.Count == 0 && like.Length == 0)
-                sn += " animals_except ";  // no species after `any animal except`: the word stays, the objective is not understood
-            else if (except) tests.Add(new(Check.Species, Ids: [.. species.Select(x => x.Id).Except(named).Except(like)]));
-            else if (named.Count > 1) tests.Add(new(Check.Species, Ids: [.. named]));
-            else if (aliased.Length > 0) tests.Add(new(Check.Species, Ids: [.. aliased]));
-            if (!Take(ref sn, FemaleWord, out _)) Take(ref sn, MaleWord, out _);
+            TakeReserve(ref sn, tests);
+            TakeSpecies(ref sn, own, tests);
             // `except` ends what the title allows: the weapons named after it (a class, a name, a list of them) are the ones it refuses; what else is left of the tail is read as the rest of the title
             var refused = new HashSet<long>();
             if (sn.IndexOf(" except ", StringComparison.Ordinal) is var cut and >= 0)
