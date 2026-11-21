@@ -368,9 +368,9 @@ public static class GameApi
                 (MISSION_ACTIVATE, "MissionActivate", "Activate an available mission", "Form `mission_id`: `true`, `false` for a mission that is unknown or not available."),
                 (MISSION_ACTIVATE_ALL, "MissionActivateAll", "Activate every available mission", "`true`."),
                 (MISSION_AUTO, "MissionAuto", "Switch the automatic activation of unlocked missions", "Form `auto_mission_activate` (`true`/`false`): `true`."),
-                (MISSION_ONLY_FAVOURITE, "MissionOnlyFavourite", "Limit the automatic activation to favourite groups", "Form `activate_only_favourite` (`true`/`false`): `true`."),
-                (MISSION_HIDE_COMPLETED, "MissionHideCompleted", "Hide the completed missions of favourite groups", "Form `hide_completed_favourite` (`true`/`false`): `true`."),
-                (MISSION_FAVOURITE, "MissionFavourite", "Add or remove a favourite mission group", "Form `group_id`, `is_favourite` (`true`/`false`): `true`, `false` for a group id that is not a number."),
+                (MISSION_ONLY_FAVOURITE, "MissionOnlyFavourite", "Limit the automatic activation to favourite mission packs", "Form `activate_only_favourite` (`true`/`false`): `true`."),
+                (MISSION_HIDE_COMPLETED, "MissionHideCompleted", "Hide the completed missions of favourite mission packs", "Form `hide_completed_favourite` (`true`/`false`): `true`."),
+                (MISSION_FAVOURITE, "MissionFavourite", "Add or remove a favourite mission pack", "Form `group_id`, `is_favourite` (`true`/`false`): `true`, `false` for a group id that is not a number."),
             })
                 api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => s.MissionCall(a, path[(path.LastIndexOf('/') + 1)..], r.Body) is { } ok
                         ? new(200, JsonAnyOrigin(), ok ? "true"u8.ToArray() : "false"u8.ToArray(), "state") : null))

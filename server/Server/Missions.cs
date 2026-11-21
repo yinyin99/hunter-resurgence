@@ -143,7 +143,7 @@ public sealed partial class State
 
     /// <summary>The account's mission rows and switches exist. The first time (no `mission_prefs` row) they come from the restored mission page
     /// (`Mission_missions.json` of `extras`): `completed` and `active` with the finished objectives of `states`, the three switches and the favourite
-    /// groups; ids without a definition are kept as they are. `available` is never stored. A restored completed mission is marked as restored (`kept` is `*`), a restored
+    /// mission packs; ids without a definition are kept as they are. `available` is never stored. A restored completed mission is marked as restored (`kept` is `*`), a restored
     /// active one keeps its finished objectives (`kept`), and the events up to `before` (default: the last one) are not the missions': they are older than the rows.
     /// Call inside a transaction.</summary>
     public static void EnsureMissions(Db con, long? before = null)
