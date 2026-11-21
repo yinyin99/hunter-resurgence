@@ -77,42 +77,54 @@ public sealed class DailyMissionsPageTests : UiContext
     }
 
     // made-up: day 1 is today and frozen with the only mission; the other days have none
-    static string Server(bool broken) => """
+    static string Server(bool broken, int gender = 1) => """
         {"today": 1, "ends_in": 4000, "frozen": true, "broken": BROKEN,
          "days": [{"number": 1, "stars": 1, "gms": 100}, {"number": 2, "stars": 1, "gms": 100}],
-         "missions": [{"title": "Test Daily", "desc": "Do it.", "objectives": ["Spot a Test Deer"], "reserve": "Test Reserve", "rewards": ["100 gm$"], "done": false},
+         "missions": [{"title": "Test Daily", "desc": "Do it.", "objectives": ["Spot a Test Deer"], "reserve": "Test Reserve", "rewards": ["100 gm$"], "species": "TEST_DEER", "gender": GENDER, "giver": "test_giver", "done": false},
                       {"title": "", "desc": "", "objectives": [], "reserve": "", "rewards": [], "done": false}]}
-        """.Replace("BROKEN", broken ? "true" : "false");
+        """.Replace("BROKEN", broken ? "true" : "false").Replace("GENDER", $"{gender}");
 
-    IRenderedComponent<DailyMissions> Open(bool live, bool broken)
+    IRenderedComponent<DailyMissions> Open(bool live, bool broken, int gender = 1)
     {
         Services.AddSingleton(new HostMode { Live = live });
-        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server(broken))) { BaseAddress = new Uri("http://server.test") },
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server(broken, gender))) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
         return Render<DailyMissions>();
     }
 
     [Fact]
-    public void TheLiveSiteShowsTheServersMissionWithoutTheMocksPicturesAndANewStreakIsNotBroken()
+    public void TheLiveSiteShowsTheServersMissionWithItsSpeciesCardAndANewStreakIsNotBroken()
     {
         var cut = Open(live: true, broken: false);
 
         Assert.Equal("Test Daily", cut.Find(".detail h2").TextContent);
-        Assert.Empty(cut.FindAll("[aria-label^='mission-giver'], [aria-label^='mission-picture']"));
+        Assert.Single(cut.FindAll("[aria-label='mission-giver-test_giver']"));
+        Assert.Single(cut.FindAll("[aria-label='mission-species-test-deer-f']"));  // the server's gender 1: the female picture
         Assert.Empty(cut.FindAll("p.broken").Where(p => p.TextContent.StartsWith("Your streak is broken")));
         Assert.NotEmpty(cut.FindAll("#activate-dm"));
         Assert.Empty(cut.FindAll("#buy-resume-streak, #bottom-block-resume-streak"));  // the server has no resume item
     }
 
     [Fact]
-    public void ABrokenStreakSaysSoAndADayWithoutAMissionShowsOnlyItsCard()
+    public void ABrokenStreakSaysSo()
     {
         var cut = Open(live: true, broken: true);
 
         Assert.Equal(2, cut.FindAll("p.broken").Count);  // the broken note and the notice
-        cut.FindAll(".calendar button.card")[1].Click();
-
-        Assert.Empty(cut.FindAll(".detail"));
         Assert.Equal(2, cut.FindAll(".calendar button.card").Count);
+    }
+
+    [Fact]
+    public void AMaleMissionShowsTheMalePictureAndOnlyTodaysCardCanBeOpened()
+    {
+        var cut = Open(live: true, broken: false, gender: 0);
+
+        Assert.Single(cut.FindAll("[aria-label='mission-species-test-deer-m']"));
+        Assert.Empty(cut.FindAll("[aria-label='mission-species-test-deer-f']"));
+        var cards = cut.FindAll(".calendar button.card");
+        Assert.Equal([false, true], cards.Select(c => c.HasAttribute("disabled")));  // today is day 1
+        Assert.Equal(["true", null], cards.Select(c => c.GetAttribute("aria-pressed")));
+        Assert.Equal([null, "true"], cards.Select(c => c.GetAttribute("aria-disabled")));
+        Assert.Equal("Test Daily", cut.Find(".detail h2").TextContent);
     }
 }
