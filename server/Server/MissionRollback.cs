@@ -122,7 +122,7 @@ public sealed partial class State
 
     /// <summary>The operator's rollback of what the lax rules finished: for every account (or `only`), each finished harvest and clue objective of a mission activated here that the
     /// rules of this version fully understand is checked against the harvests and clues made since its mission was activated (since the account's first event when that is not known,
-    /// and, for a single-hunt mission, the best single hunt); one that no event meets is reopened, and a completed mission that loses one becomes active again. An
+    /// and, for a single-hunt mission, the single hunt that confirms most of the objectives it holds); one that no event meets is reopened, and a completed mission that loses one becomes active again. An
     /// objective whose title has words the server does not read cannot be judged: it stays finished (and is counted as kept). The missions
     /// a reopened one had made available are activated, so nobody is locked out. What the account was paid (gm$, em$, items) is not taken back, and the missions a restore
     /// brought are never touched: no event of theirs exists. With `apply` the rows are changed and a record of what was reopened is kept for the account (table
@@ -187,10 +187,11 @@ public sealed partial class State
             if (checkable.Count == 0)
                 continue;
             var mine = events.Value.Where(h => h.Id > (mark.Since ?? 0)).ToList();
-            // a single-hunt mission was finished in one hunt: the best of its hunts counts
+            // a single-hunt mission was finished in one hunt: the hunt that confirms most of what the account holds counts (not the one that meets most objectives: an active
+            // mission holds what its latest hunt finished, and an earlier hunt that met others would reopen those)
             var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
             var start = StartOf(m, held, mark, confirm: false).Concat(replayedHeld.Where(d => !Judged(d))).ToArray();  // what cannot be judged counts as done: it neither blocks nor takes an event
-            var met = runs.Select(r => Replay(m, start, r, mark.Since ?? 0)).OrderByDescending(r => r.Count).FirstOrDefault() ?? [];
+            var met = runs.Select(r => Replay(m, start, r, mark.Since ?? 0)).OrderByDescending(r => r.Count(x => checkable.Contains(x.Objective.Id))).FirstOrDefault() ?? [];
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
             if (drop.Count == 0)
                 continue;
