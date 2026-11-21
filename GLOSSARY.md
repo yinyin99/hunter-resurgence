@@ -277,7 +277,7 @@ _Avoid_: unsupported
 What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. No title names the last two, so only an objective that follows one animal's trail counts them.
 
 **Track**:
-Footprints, as in "ID tracks from a Grey Wolf" or "ID 3 tracks from a Moose", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail (a number of tracks to locate or find, as in "Locate 3 Elk tracks", or tracks "from the same animal") counts clues of any kind from that animal in one hunt.
+Footprints, as in "ID tracks from a Grey Wolf" or "ID 3 tracks from a Moose", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail, two or more tracks to locate or find ("Locate 3 Elk tracks") or two or more from the same animal ("3 tracks from the same animal"), counts clues of any kind from that animal in one hunt.
 _Avoid_: clue (when footprints are meant)
 
 **Footprints**:
