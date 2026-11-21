@@ -427,7 +427,8 @@ public sealed partial class State
         }
 
         /// <summary>The title's coat (`a dark Grey Wolf`, `a Chocolate colored Black Bear`, `with fur variation Piebald Black`, `(Blue color variation)`, `with a color other than Common`)
-        /// is cut out of `sn` and becomes a test; a coat word that names no coat of the title's species stays, and the objective is not understood.</summary>
+        /// is cut out of `sn` and becomes a test. A word of one species' coats only (`brown`, the Grey Wolf's) stays for another species, and the objective is not understood; a name of
+        /// the game's is read for any species, one that never has that coat too (it is then never met).</summary>
         void TakeCoat(ref string sn, List<Test> tests)
         {
             var m = CoatFramed.Match(sn);

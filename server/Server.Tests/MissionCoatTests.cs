@@ -69,6 +69,17 @@ public class MissionCoatTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAKillWithNoSpawnHasNoCoatAndSoNoOtherCoat()
+    {
+        state = New("no-spawn.db", Catalogue(["Harvest a Test Deer with a color other than Common"]));
+        ActivateAll();
+        Hb(Shot(1, texture: 2)[1..]);  // the hit and the harvest, no event 7
+        Assert.Equal("", Completed());
+        Hb(Shot(2, texture: 2));
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
     public void TestASpotIsReadForItsCoat()
     {
         state = New("spot.db", Catalogue(["Spot a Common colored Test Deer", "Spot a Test Deer with fur variation Grey"]));
