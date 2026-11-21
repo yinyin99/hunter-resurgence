@@ -201,7 +201,7 @@ public sealed class Facts
 
     /// <summary>The application catalogue's `items` from the install's item definitions (item.json): the numeric type,
     /// group, category and client type from the file's enum tables, the slots and capacity of the item's type.
-    /// ponytail: no `fit` lists (empty), and an item is not for sale when it costs 0 (that matches the catalogue for
+    /// ponytail: `extra` holds only `arm_type`; no `fit` lists (empty), and an item is not for sale when it costs 0 (that matches the catalogue for
     /// all but a dozen items); both only matter to the store pages and to the definitions of bought items.</summary>
     public JsonArray ApplicationItems(JsonArray definitions)
     {
@@ -227,6 +227,7 @@ public sealed class Facts
                 ["price"] = price, ["silver_price"] = d["silver_price"]?.DeepClone(),
                 ["notbuyable"] = price is not null && Py.D(price) == 0 ? 1 : 0,
                 ["units"] = units, ["fit"] = new JsonObject(),
+                ["extra"] = d["extra"]?["arm_type"] is { } arm ? new JsonObject { ["arm_type"] = arm.DeepClone() } : new JsonObject(),
                 ["inventory"] = new JsonObject
                 {
                     ["weight"] = weight, ["slots"] = type?["slots"]?.DeepClone() ?? new JsonArray(), ["capacity"] = type?["capacity"]?.DeepClone() ?? 0,

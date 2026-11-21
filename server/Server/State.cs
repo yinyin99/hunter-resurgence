@@ -1421,7 +1421,8 @@ public sealed partial class State
             return info;
         if (!(items.TryGetValue(itemId, out var a) || installItems.TryGetValue(itemId, out a)) || a.Count == 0)
             return null;
-        // ponytail: built definitions lack allowedCombinationSlots, usesCombinationSlots and arm_type; the game does not need them.
+        // ponytail: built definitions lack usesCombinationSlots and the combination slots of a combination gun's ammo (the catalogue has neither), which only a
+        // combination gun's second barrel needs. arm_type comes from the catalogue's extra: a top with 1 is bare-armed and the game then adds the arms.
         // An ammo needs its ballistics (velocity_falloff, wounding_factor, ...) to get past connect: they come from the install's item definitions.
         // The other fields match the known definitions except a few fitItems lists
         var inv = a["inventory"]!;
@@ -1438,6 +1439,8 @@ public sealed partial class State
             ["fitItems"] = new JsonArray(fit.OrderBy(Py.D).Select(C).ToArray()), ["image"] = C(a["image"]),
             ["variationName"] = C(a["variationname"]), ["units"] = C(G(a["units"] as JsonObject ?? new JsonObject(), "count", -2)),
         };
+        if (a["extra"] is JsonObject extra && Py.IsNum(extra["arm_type"]))
+            built["arm_type"] = C(extra["arm_type"]);
         if (ballistics.TryGetValue(itemId, out var ammo))
             foreach (var (k, v) in ammo)
                 built[k] = C(v);
