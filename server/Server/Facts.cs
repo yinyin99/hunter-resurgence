@@ -201,7 +201,7 @@ public sealed class Facts
 
     /// <summary>The application catalogue's `items` from the install's item definitions (item.json): the numeric type,
     /// group, category and client type from the file's enum tables, the slots and capacity of the item's type.
-    /// ponytail: no `fit` lists (empty), and an item is not for sale when it costs 0 (that matches the catalogue for
+    /// ponytail: `extra` holds only `arm_type`; no `fit` lists (empty), and an item is not for sale when it costs 0 (that matches the catalogue for
     /// all but a dozen items); both only matter to the store pages and to the definitions of bought items.</summary>
     public JsonArray ApplicationItems(JsonArray definitions)
     {
@@ -214,7 +214,7 @@ public sealed class Facts
             var units = d["units"] is { } u && Py.IsNum(u) && Py.D(u) > 0
                 ? new JsonObject { ["count"] = u.DeepClone(), ["name"] = d["unit_name"]?.DeepClone() } : null;
             var weight = (d["inventory"] as JsonObject)?["weight"]?.DeepClone() ?? 0;
-            items.Add(new JsonObject
+            var item = new JsonObject
             {
                 ["id"] = d["id"]!.DeepClone(), ["define"] = d["define"]?.DeepClone(), ["name"] = d["name"]?.DeepClone(),
                 ["description"] = d["description"]?.DeepClone(), ["variationname"] = d["variationname"]?.DeepClone(),
@@ -232,7 +232,10 @@ public sealed class Facts
                     ["weight"] = weight, ["slots"] = type?["slots"]?.DeepClone() ?? new JsonArray(), ["capacity"] = type?["capacity"]?.DeepClone() ?? 0,
                     ["inbackpack"] = true, ["slotUnlock"] = null,
                 },
-            });
+            };
+            if (d["extra"]?["arm_type"] is { } arm)
+                item["extra"] = new JsonObject { ["arm_type"] = arm.DeepClone() };
+            items.Add(item);
         }
         return items;
     }

@@ -35,7 +35,9 @@ public class InstallTests : IDisposable
           "price": 4, "silver_price": 68, "units": 30, "unit_name": "shells", "inventory": {"weight": 850}, "sponsor_image": "brand.jpg",
           "extra": {"ammo": {"velocity_falloff": 1, "penetration_factor": 22, "wounding_factor": 28, "ammo_velocity": 400, "mass": 0.02}}},
          {"id": 15, "define": "TEST_SLUGS", "cat": "AMMO", "group": "ITEM_GROUP_AMMO", "type": "AMMO", "client_type": "SPECIAL",
-          "name": "Test Slugs", "price": 9, "units": 10, "unit_name": "slugs"}]
+          "name": "Test Slugs", "price": 9, "units": 10, "unit_name": "slugs"},
+         {"id": 500, "define": "TEST_BARE_TOP", "name": "Bare Top", "price": 5, "extra": {"arm_type": 1}, "inventory": {"weight": 10}},
+         {"id": 501, "define": "TEST_SLEEVED_TOP", "name": "Sleeved Top", "price": 5, "extra": {"arm_type": 0}, "inventory": {"weight": 10}}]
         """;
 
     const string SPECIES = """[{"id": 0, "name": "Test Deer", "define": "TEST_DEER", "short": "deer", "ethical": {"ammo": ["X"]}}]""";
@@ -188,6 +190,15 @@ public class InstallTests : IDisposable
         Eq("""{"name": "Test Shells", "notbuyable": 0, "units": {"count": 30, "name": "shells"}, "sponsor_image": "brand.jpg", "silver_price": 68}""",
            Pick(items[1]!, "name", "notbuyable", "units", "sponsor_image", "silver_price"));
         Assert.Equal(77, (int)items[2]!["client_type"]!);  // an explicit client type comes from the table, else it is the type
+    }
+
+    [Fact]
+    public void ABuiltTopDefinitionCarriesItsArmType()
+    {
+        var state = LoadState(cfg, new HarTable(), tmp)!;
+        Assert.Equal(1, (int)state.ItemInfo(500)!["arm_type"]!);  // bare-armed: the game adds the arms
+        Assert.Equal(0, (int)state.ItemInfo(501)!["arm_type"]!);  // own sleeves
+        Assert.False(state.ItemInfo(14)!.ContainsKey("arm_type"));  // an item without one has none, not a null
     }
 
     [Fact]
