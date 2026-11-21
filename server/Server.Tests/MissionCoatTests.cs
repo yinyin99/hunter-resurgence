@@ -52,6 +52,18 @@ public class MissionCoatTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheGreyWolfsBlackAndTanCoatIsDark()
+    {
+        state = New("wolf-dark.db", Catalogue(["Harvest a dark Forest Wolf"]));
+        ActivateAll();
+        Hb(Shot(1, species: 36, texture: 0));  // grey
+        Hb(Shot(2, species: 36, texture: 3));  // brown
+        Assert.Equal("", Completed());
+        Hb(Shot(3, species: 36, texture: 42));  // black and tan
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
     public void TestOtherThanAGenderWordBetweenAndTheHalloweenCoats()
     {
         state = New("other.db", Catalogue(["Harvest a male Test Deer with a color other than Common", "Harvest an Orange female Test Deer", "Harvest an airborne Halloween male Test Deer"]));

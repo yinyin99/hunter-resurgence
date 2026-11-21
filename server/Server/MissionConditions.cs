@@ -314,8 +314,8 @@ public sealed partial class State
             [("blue", [23]), ("halloween", [43, 44, 45, 46, 47, 48, 54, 55, 56, 57, 58, 59, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82])];
 
         // a species' coats that the titles tell apart and the game does not: the Grey Wolf's (36) four common coats are all `Common`; by their colour 0 is grey (the title's
-        // `common`), 1 dark and 3 brown; 42 (black and tan) no title names
-        static readonly Dictionary<long, (string Word, long[] Ids)[]> SpeciesCoats = new() { [36] = [("common", [0]), ("dark", [1]), ("brown", [3])] };
+        // `common`), 1 and 42 (black and tan) dark and 3 brown
+        static readonly Dictionary<long, (string Word, long[] Ids)[]> SpeciesCoats = new() { [36] = [("common", [0]), ("dark", [1, 42]), ("brown", [3])] };
 
         static readonly string CoatAlternatives = string.Join('|', CoatNames.Concat(CoatWords.Select(c => c.Word)).Concat(SpeciesCoats.Values.SelectMany(v => v.Select(c => c.Word)))
             .Distinct().OrderByDescending(w => w.Length).Select(Regex.Escape));  // the longest first: "dark red" before "dark"
