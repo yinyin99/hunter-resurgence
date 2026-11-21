@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Ali se pridruži</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Hitri vstop</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Tvoj napredek</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Lov poteka</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Poglej lov</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Lovske točke</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Uvrstitev</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Zadnji dosežek</value></data>
@@ -1007,7 +1009,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas odstrela</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Osveži</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>V teku</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bo posodobljena, ko končaš z lovom.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taksidermija</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Nazaj</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Naprej</value></data>

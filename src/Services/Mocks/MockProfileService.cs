@@ -135,12 +135,13 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
 
     Expedition Make(long id, int n)
     {
-        // the latest expedition is empty; the others have shots and kills
+        // the latest expedition is empty (profile:ongoing: in progress, with what its events have made so far, no distance and no achievement); the others have shots and kills
         var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
-        if (id == Latest) return new(id, Reserves[0], Lodges[0], start, mock == "profile:ongoing" ? null : start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
+        var open = id == Latest && mock == "profile:ongoing";
+        if (id == Latest && !open) return new(id, Reserves[0], Lodges[0], start, start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
         var species = Names.Species[(n * 5) % Names.Species.Length].Name;
-        return new(id, Reserves[n % 3], Lodges[n % 3], start, start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new Pickup("Common Mushroom", 12.5, start.AddMinutes(10))],
-            [new Achievement("Hunter", "Harvest 1 " + species, DateOnly.FromDateTime(start))], 3.2 + n, (38 + n) * 60 + n * 17 % 60, [new ShedAntler(species, n % 2 == 0, 40.5)],
+        return new(id, Reserves[n % 3], Lodges[n % 3], start, open ? null : start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new Pickup("Common Mushroom", 12.5, start.AddMinutes(10))],
+            open ? [] : [new Achievement("Hunter", "Harvest 1 " + species, DateOnly.FromDateTime(start))], open ? 0 : 3.2 + n, (38 + n) * 60 + n * 17 % 60, [new ShedAntler(species, n % 2 == 0, 40.5)],
             [new(100000200 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 120.0 + n, 100.0 + n, 85.0 + n, start.AddMinutes(20))]);
     }
 

@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Or join one</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Quick Join</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Your progress</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Hunt in progress</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>View this hunt</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rank</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Latest achievement</value></data>
@@ -1006,8 +1008,7 @@
   <data name="Stat.Range" xml:space="preserve"><value>Range</value></data>
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Time of Harvest</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Refresh</value></data>
-  <data name="Stat.Ongoing" xml:space="preserve"><value>Ongoing</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistics will be updated when expedition has ended.</value></data>
+  <data name="Stat.Ongoing" xml:space="preserve"><value>In progress</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermy</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Previous</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Next</value></data>

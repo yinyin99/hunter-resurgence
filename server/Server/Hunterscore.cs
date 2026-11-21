@@ -1,6 +1,6 @@
 // The hunterscore and achievements of a community server's account (docs/server.md#the-hunterscore): the rank rows of the facts
-// file and the achievement definitions over the account's statistics (the restored ones plus this server's closed hunts, stored
-// when each closes).
+// file and the achievement definitions over the account's statistics (the restored ones plus this server's hunts: a closed hunt's
+// stored when it closes, the open hunt's so far, stored again with each heartbeat that brings events of it).
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Data.Sqlite;
@@ -40,43 +40,52 @@ public sealed partial class State
         })];
     }
 
-    /// <summary>Store the statistics (<see cref="HuntStats"/>) of every closed expedition of the account that has none yet; call
-    /// it inside a transaction. Its events end where the next expedition's begin; its kills are its harvests (event 3): each
-    /// counts for its species and for the ammo of its last hit, ethical when no hit used an ammo not permitted on its species.
-    /// A kill whose rows cannot be read back (a number that is not finite) is skipped and logged; a hunt with such an event
-    /// counts nothing (logged), stored as empty so it is not read again.</summary>
+    /// <summary>The expeditions whose statistics are (re)computed: the open one (its counts so far, flagged `open`, so the profile's statistics, the ranks and the hunterscore include it), a closed one that has none, and a closed one that
+    /// still holds its open counts.</summary>
+    const string Unstored = "(end_ts IS NULL OR stats IS NULL OR json_extract(stats, '$.open') = 1)";
+
+    /// <summary>Store the statistics (<see cref="HuntStatsOf"/>) of every expedition of the account <see cref="Unstored"/>; call it inside a transaction. An open expedition's are flagged `open` and made again every time.</summary>
     void StoreHuntStats(Db con, long account)
     {
         foreach (var e in con.Rows("SELECT id, start_ts, end_ts, first_event, distance, (SELECT MIN(n.first_event) FROM expeditions n"
                                    + " WHERE n.account_id = $a AND n.id > e.id) FROM expeditions e"
-                                   + " WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL"))
+                                   + " WHERE account_id = $a AND " + Unstored))
         {
-            var kills = new List<(JsonNode?, List<JsonObject>, bool)>();
-            foreach (var k in con.Rows("SELECT k.individual, k.harvest FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
-                                       + " WHERE k.account_id = $a AND json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", e[0]))
-                try
-                {
-                    var sp = Parse(k[1])["extended_species"];
-                    var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
-                    kills.Add((sp, hits, Ethical(sp, hits)));
-                }
-                catch (Exception ex) when (ex is not SqliteException)  // a value a player sent, of any kind; a database error stays an error
-                {
-                    Console.WriteLine($"statistics of account {account}: a kill is not counted: {ex.Message}");
-                }
-            var distance = Py.FromSql(e[4]);
-            JsonObject stats;
+            var stats = HuntStatsOf(con, account, e);
+            if (e[2] is DBNull)
+                stats["open"] = true;
+            con.Exec("UPDATE expeditions SET stats = ? WHERE account_id = $a AND id = ?", Py.Dumps(stats), e[0]);
+        }
+    }
+
+    /// <summary>The statistics (<see cref="HuntStats"/>) of the expedition row `e` (id, start_ts, end_ts, first_event, distance, the next expedition's first_event). Its events end where the next expedition's begin; its kills are its
+    /// harvests (event 3): each counts for its species and for the ammo of its last hit, ethical when no hit used an ammo not permitted on its species. An open expedition (no end_ts) lasts until now and has no distance
+    /// (the game reports it at the end). A kill whose rows cannot be read back (a number that is not finite) is skipped and logged; a hunt with such an event counts nothing (logged).</summary>
+    JsonObject HuntStatsOf(Db con, long account, object[] e)
+    {
+        var kills = new List<(JsonNode?, List<JsonObject>, bool)>();
+        foreach (var k in con.Rows("SELECT k.individual, k.harvest FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
+                                   + " WHERE k.account_id = $a AND json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", e[0]))
             try
             {
-                stats = HuntStats(con, Py.FromSql(e[3]), e[5] is long until ? until : long.MaxValue, kills,
-                                  (long)(Convert.ToDouble(e[2]) - Convert.ToDouble(e[1])), Py.Truthy(distance) ? distance : 0);
+                var sp = Parse(k[1])["extended_species"];
+                var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
+                kills.Add((sp, hits, Ethical(sp, hits)));
             }
-            catch (Exception ex) when (ex is not SqliteException)
+            catch (Exception ex) when (ex is not SqliteException)  // a value a player sent, of any kind; a database error stays an error
             {
-                Console.WriteLine($"statistics of account {account}: a hunt is not counted: {ex.Message}");
-                stats = new JsonObject { ["duration"] = 0, ["distance"] = 0, ["data"] = new JsonObject { ["achievements"] = new JsonArray() } };
+                Console.WriteLine($"statistics of account {account}: a kill is not counted: {ex.Message}");
             }
-            con.Exec("UPDATE expeditions SET stats = ? WHERE account_id = $a AND id = ?", Py.Dumps(stats), e[0]);
+        var distance = Py.FromSql(e[4]);
+        try
+        {
+            return HuntStats(con, Py.FromSql(e[3]), e[5] is long until ? until : long.MaxValue, kills,
+                             Math.Max(0, (long)((e[2] is DBNull ? Clock() : Convert.ToDouble(e[2])) - Convert.ToDouble(e[1]))), Py.Truthy(distance) ? distance : 0);
+        }
+        catch (Exception ex) when (ex is not SqliteException)
+        {
+            Console.WriteLine($"statistics of account {account}: a hunt is not counted: {ex.Message}");
+            return new JsonObject { ["duration"] = 0, ["distance"] = 0, ["data"] = new JsonObject { ["achievements"] = new JsonArray() } };
         }
     }
 
@@ -151,18 +160,19 @@ public sealed partial class State
         }
     }
 
-    /// <summary>Store the statistics of the account's newly closed hunts (<see cref="StoreHuntStats"/>), then recompute its
-    /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile, and award the
-    /// achievements its statistics reach (<see cref="AwardAchievements"/>). Every close path, a restore and every start call it,
-    /// outside a transaction. The hunterscore and achievements are computed on a community server only; the recorded account
+    /// <summary>Store the statistics of the account's hunts that need them (<see cref="StoreHuntStats"/>: the newly closed ones and the open one), then recompute its
+    /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile, and, when <paramref name="closing"/>, award the
+    /// achievements its statistics reach (<see cref="AwardAchievements"/>). Every close path, a restore and every start call it with `closing`, outside a transaction; a heartbeat that brings
+    /// events of the open hunt calls it without, so the hunterscore counts the hunt so far but an achievement is earned, and its time set, only when the hunt closes (the hunt's page lists the ones earned at its close).
+    /// The hunterscore and achievements are computed on a community server only; the recorded account
     /// (LocalAccount) keeps the recorded player's values. Always the computed value: what cannot be read counts 0, so a close, a
     /// restore or the start never fails and a backup's own value never stays.
-    /// ponytail: sums every stored hunt of the account at every close; keep a running total if that gets slow.</summary>
-    public void UpdateHunterscore(Db con, long account)
+    /// ponytail: sums every stored hunt of the account at every close and every heartbeat with hunt events; keep a running total if that gets slow.</summary>
+    public void UpdateHunterscore(Db con, long account, bool closing = true)
     {
         con.Begin();
         // the hunts closed since the last time carry their close as the earn time, so a hunt's page lists what it earned (several closed at once share the latest)
-        var closedAt = con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL");
+        var closedAt = closing ? con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND (stats IS NULL OR json_extract(stats, '$.open') = 1)") : null;
         StoreHuntStats(con, account);
         if (Online && account != LocalAccount)
         {
@@ -170,7 +180,8 @@ public sealed partial class State
             var score = Score(facts, (JsonObject)stats["data"]!);
             con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
             con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
-            AwardAchievements(con, stats, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
+            if (closing)
+                AwardAchievements(con, stats, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
         }
         con.Commit();
     }

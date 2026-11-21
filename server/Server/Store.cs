@@ -234,7 +234,7 @@ public sealed class Store
         CREATE TABLE expeditions (
             id INTEGER PRIMARY KEY, {A}, reserve INTEGER, location_id INTEGER, start_ts REAL NOT NULL, end_ts REAL,
             first_event INTEGER, distance INTEGER, last_seen REAL,
-            stats TEXT,   -- a closed hunt's statistics (State.HuntStats), stored at its close
+            stats TEXT,   -- a hunt's statistics (State.HuntStatsOf): stored at its close; an open hunt's counts so far carry "open": true and are stored again by the heartbeats that bring events of it
             start_time INTEGER,   -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
             tent INTEGER);        -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);

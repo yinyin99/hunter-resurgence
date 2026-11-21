@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Sau alăturați-vă unuia</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Alăturare rapidă</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Progresul dvs.</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Vânătoare în desfășurare</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Vezi vânătoarea</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Poziție</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Ultima realizare</value></data>
@@ -1007,7 +1009,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Momentul colectării</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Reîmprospătare</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>În desfășurare</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statisticile vor fi actualizate atunci când expediția s-a încheiat.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Anterior</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Următor</value></data>

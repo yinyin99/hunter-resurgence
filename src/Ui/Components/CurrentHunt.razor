@@ -1,0 +1,54 @@
+@implements IDisposable
+@inject ISessionService Sessions
+@inject IProfileService Profiles
+
+@* the hunt the signed-in player has open while the game runs: its reserve, time and counts so far, read again about every heartbeat; no hunt in progress, no panel *@
+@if (hunt is not null && handle is not null)
+{
+    <section class="current" aria-labelledby="current-title">
+        <h3 id="current-title">@L["Hunt.Current"]</h3>
+        <p class="where">@string.Join(" - ", new[] { hunt.Reserve, hunt.Lodge }.Where(n => !string.IsNullOrEmpty(n)))</p>
+        <dl>
+            <div><dt>@L["Stat.Dur"]</dt><dd>@Fmt.Duration(L, hunt.Seconds)</dd></div>
+            <div><dt>@L["Stat.KillsCol"]</dt><dd>@hunt.Kills.Count</dd></div>
+            <div><dt>@L["Stat.CollectablesCol"]</dt><dd>@hunt.Collectables.Count</dd></div>
+        </dl>
+        <a class="btn btn-primary" href="/profile/@handle/expedition/@hunt.Id">@L["Hunt.CurrentView"]</a>
+    </section>
+}
+
+@code {
+    readonly CancellationTokenSource stop = new();
+    Expedition? hunt;
+    string? handle;
+
+    /// <summary>How often the server is asked again: about a heartbeat of the game.</summary>
+    [Parameter] public TimeSpan Every { get; set; } = TimeSpan.FromSeconds(60);
+
+    protected override async Task OnInitializedAsync()
+    {
+        handle = (await Sessions.CurrentAsync())?.Handle;
+        hunt = await Open();
+        _ = Poll();
+    }
+
+    /// <summary>The player's latest hunt when it has not ended.</summary>
+    async Task<Expedition?> Open() => handle is null ? null : await Profiles.ExpeditionAsync(handle, null) is { End: null } e ? e : null;
+
+    async Task Poll()
+    {
+        using var timer = new PeriodicTimer(Every);
+        try
+        {
+            while (await timer.WaitForNextTickAsync(stop.Token))
+            {
+                var next = await Open();
+                if (stop.IsCancellationRequested) return;
+                await InvokeAsync(() => { hunt = next; StateHasChanged(); });
+            }
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    public void Dispose() => stop.Cancel();
+}

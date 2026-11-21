@@ -278,7 +278,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
         }
         return new([], 1, 1);
     }
-    /// <summary><c>GET /hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: a hunt with its statistics and kills; null when the server does not know it or does not answer. A hunt that is open has no statistics yet.</summary>
+    /// <summary><c>GET /hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: a hunt with its statistics and kills; null when the server does not know it or does not answer. A hunt that is open (no end) has the statistics of its events so far, <c>Seconds</c> the time since it started and no distance.</summary>
     public async Task<Expedition?> ExpeditionAsync(string handle, long? id) =>
         await GetAsync<ServerHunt>($"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.HuntsSuffix}/{(id?.ToString() ?? "latest")}", "hunt") is { } h
             ? new(h.Id, h.Reserve, h.Lodge, Utc(h.Start), h.End is { } end ? Utc(end) : null, h.Weapons ?? [], h.Animals ?? [],

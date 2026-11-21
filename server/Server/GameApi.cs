@@ -275,7 +275,7 @@ public static class GameApi
                     ? Own(game, r, a => s.HuntsOf(a, r.Body) is { } who ? new(hit.Status, hit.Headers, s.ExpeditionReply(who, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
-               .WithDescription("`stats` stays null while the hunt is open; `expedition_id` picks an older hunt (an unknown id and the "
+               .WithDescription("`stats` of a hunt that is open are those of its events so far (`duration` the time since it started, `distance` 0 until the hunt ends); `expedition_id` picks an older hunt (an unknown id and the "
                                 + "time before the first server hunt: a hunt a restore saved, else the recorded reply, a community server: `null`). "
                                 + "`user_id` of another player here is that player's hunt (no token of theirs); an unknown or banned one is the base reply.")
                .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");

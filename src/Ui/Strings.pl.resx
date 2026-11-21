@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Lub dołącz do istniejącej</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Szybka gra</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Twój postęp</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Polowanie w toku</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Zobacz polowanie</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Punkty Myśliwego</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Pozycja</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Ostatnie osiągnięcie</value></data>
@@ -1007,7 +1009,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Data upolowania</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Odśwież</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>W toku</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statystki zostaną zaktualizowane po zakończeniu wyprawy.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taksydermia</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Poprzedni</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Następny</value></data>

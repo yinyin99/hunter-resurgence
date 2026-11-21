@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Vagy csatlakozz egyhez</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Gyors csatlakozás</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>A te állásod</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Folyamatban lévő vadászat</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Vadászat megtekintése</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Vadászpont</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Helyezés</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Legújabb eredmény</value></data>
@@ -1007,7 +1009,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Elejtés dátuma</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Frissítés</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>Folyamatban</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>A statisztika a vadászat befejezésével frissül.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Preparátum</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Előző</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Következő</value></data>

@@ -1992,6 +1992,9 @@ public sealed partial class State
         return Py.DumpBytes(fresh);
     }
 
+    /// <summary>The heartbeat events a hunt's statistics are made of: hit, harvest, spot, track, miss, pickup, shed antler.</summary>
+    static readonly long[] HuntEvents = [1, 3, 11, 12, 21, 24, 36];
+
     public byte[] HeartbeatReply(long account, byte[] body)
     {
         JsonArray events;
@@ -2014,6 +2017,8 @@ public sealed partial class State
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
             UpdateHunterscore(con, account);
+        else if (events.OfType<JsonObject>().Any(e => HuntEvents.Any(k => Is(e["event"], k))))  // the open hunt's counts so far: the hunterscore and the profile's statistics follow each heartbeat
+            UpdateHunterscore(con, account, closing: false);
         return Py.DumpBytes(new JsonObject { ["updates"] = updates, ["err"] = 0 });
     }
 
@@ -2180,9 +2185,9 @@ public sealed partial class State
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
             kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
-            // stats are null mid-hunt; expeditions from before first_event have no scope; a closed one's are stored at its close
-            if (row[4] is not DBNull && row[5] is not DBNull && row[7] is string s)
-                stats = Parse(s);
+            // an open hunt's are those of its events so far; expeditions from before first_event have no scope; a closed one's are stored at its close
+            if (row[5] is not DBNull)
+                stats = row[4] is DBNull ? HuntStatsOf(con, account, [row[0], row[3], row[4], row[5], row[6], long.MaxValue]) : row[7] is string s ? Parse(s) : null;
             pickups = Pickups(con, Py.FromSql(row[5]), con.Scalar("SELECT MIN(first_event) FROM expeditions WHERE account_id = $a AND id > ?", row[0]) is long u ? u : long.MaxValue);
         }
         var (x, y, z) = StartPosition(Py.FromSql(row[2]));

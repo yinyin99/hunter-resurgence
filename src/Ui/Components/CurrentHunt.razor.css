@@ -1,0 +1,8 @@
+.current { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 28px; width: 940px; max-width: 100%; box-sizing: border-box; margin-bottom: 30px; isolation: isolate; }
+.current::before { content: ""; position: absolute; inset: -8px; z-index: -1; border-radius: var(--r-3); background: var(--surface-2); }
+h3 { flex: none; margin: 3px 0 0; font-size: 22px; line-height: 40px; font-weight: 300; text-transform: uppercase; }
+.where { flex: 1; min-width: 0; margin: 0; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+dl { display: flex; gap: 28px; margin: 0; }
+dt { font-size: var(--fs-h5); font-weight: 500; text-transform: uppercase; color: var(--fg-muted-2); }
+dd { margin: 0; font-size: 15px; line-height: 22px; color: var(--text-1); }
+.btn { flex: none; }

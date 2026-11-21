@@ -67,8 +67,8 @@ public sealed partial class State
     }
 
     /// <summary>What a profile page's hunt page shows, `GET /hunters/&lt;handle&gt;/hunts/&lt;id&gt;` (`latest` for the newest): `{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}`
-    /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats (none while the hunt is open);
-    /// `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
+    /// of Public_user/expedition (a hunt made here, else a restored one). `weapons`, `animals` and `distanceKm` are the statistics tab's rows of the hunt's stats; an open hunt's are those of its events so far, with no distance (the game
+    /// reports it when the hunt ends) and `seconds` the time since it started; `end` is null for an open hunt. `collectables` are the hunt's pickups `{name, score, ts}` (name from the catalogue, "#id" without one; a hunt made here only: a restored hunt's backup holds
     /// per-type sums, no pickups), `antlers` its shed antlers `{species, double, score}` (a restored hunt's are its backup's), `achievements` `{title, description}` of the thresholds the hunt earned
     /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists as earned between its start and its end. `kills` are
     /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. For the player's own page
@@ -80,7 +80,7 @@ public sealed partial class State
         HashSet<long> sheets;
         var collectables = new JsonArray();
         var achievements = new JsonArray();
-        long start = Integer(e["start_ts"]), end = Integer(e["end_ts"]);
+        long start = Integer(e["start_ts"]), end = Integer(e["end_ts"]), open = 0;  // open: the seconds since a hunt made here started, while it is open
         void Earned(long achievement, string threshold)
         {
             if (Arr(G(connect, "achievements", null)).OfType<JsonObject>().FirstOrDefault(d => TryKey(d["id"], out var k) && k == achievement) is { } def)
@@ -93,6 +93,8 @@ public sealed partial class State
             if (con.Rows("SELECT first_event FROM expeditions WHERE account_id = $a AND id = ?", huntId).FirstOrDefault() is { } made)  // else a restored hunt
             {
                 var next = con.Scalar("SELECT MIN(first_event) FROM expeditions WHERE account_id = $a AND id > ?", huntId) is long u ? u : long.MaxValue;
+                if (!Py.IsNum(e["end_ts"]))
+                    open = Math.Max(0, (long)(Clock() - Real(e["start_ts"])));
                 foreach (var p in Pickups(con, Py.FromSql(made[0]), next).Where(p => !p.Antler))
                     collectables.Add(new JsonObject { ["name"] = CollectableName(p.Type), ["score"] = Real(p.Body["score"]), ["ts"] = p.Ts });
                 if (Py.IsNum(e["end_ts"]))
@@ -135,7 +137,7 @@ public sealed partial class State
             ["id"] = Integer(e["id"]), ["reserve"] = ReserveName(e["reserve"]), ["lodge"] = StartName(e["location_id"]), ["start"] = start,
             ["end"] = Py.IsNum(e["end_ts"]) ? end : null,
             ["weapons"] = C(view?["weapons"]) ?? new JsonArray(), ["animals"] = C(view?["animals"]) ?? new JsonArray(), ["collectables"] = collectables, ["achievements"] = achievements,
-            ["distanceKm"] = Real(view?["distanceKm"]), ["seconds"] = Py.IsNum(e["end_ts"]) && end > start ? end - start : 0, ["antlers"] = antlers,
+            ["distanceKm"] = Real(view?["distanceKm"]), ["seconds"] = Py.IsNum(e["end_ts"]) ? (end > start ? end - start : 0) : open, ["antlers"] = antlers,
             ["kills"] = new JsonArray([.. (reply["kills"] as JsonArray ?? []).Select(Kill)]),
         };
     }

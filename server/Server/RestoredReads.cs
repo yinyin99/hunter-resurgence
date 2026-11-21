@@ -1,6 +1,6 @@
 // The client's replies built from the rows a restore wrote (Restorer): the profile, statistics and achievements tables.
 // An account without a profile row has no restored rows, and these return null: the caller's recorded reply stands. The
-// statistics add this server's closed hunts on top of the restored ones.
+// statistics add this server's hunts (the open one so far) on top of the restored ones.
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -45,7 +45,7 @@ public static class RestoredReads
         }).ToArray());
 
     /// <summary>The four per-kind statistic objects plus the distance and duration, as the connect reply and Statistics/total carry
-    /// them: the restored ones (the base, which play never changes) plus the account's closed hunts (<see cref="AddHunts"/>).</summary>
+    /// them: the restored ones (the base, which play never changes) plus the account's hunts (<see cref="AddHunts"/>).</summary>
     static (JsonObject Data, double Distance, double Duration, long? Bust, long? Lane) Statistics(Db con)
     {
         var row = con.Rows("SELECT user_stats, distance, duration FROM statistics WHERE account_id = $a").FirstOrDefault();
@@ -70,7 +70,7 @@ public static class RestoredReads
         return restored is null ? played : played is null ? restored : Math.Max(restored.Value, played.Value);
     }
 
-    /// <summary>Add the stored statistics of the account's closed hunts (State.HuntStats) to data's `animal`, `weapon` and `collectables`: counters
+    /// <summary>Add the stored statistics of the account's hunts, the open one's so far included (State.HuntStats), to data's `animal`, `weapon` and `collectables`: counters
     /// add up (a collectable's `sum`, a text, too), a weapon's `distance` (its longest hit) and a collectable's `max` are the largest, a counter of data that is no number is replaced. Returns the
     /// hunts' summed distance and duration. A hunt that cannot be read back (a number that is not finite) is skipped and logged.</summary>
     public static (double Distance, double Duration) AddHunts(Db con, JsonObject data)
