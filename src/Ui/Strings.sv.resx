@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Välj var du vill starta din jakt. Klicka på en av de 12 logotyperna för jaktområden nedan för att se en karta över området, och klicka på stugorna (husikonerna) för att se vilka arter som finns där. Du kan också utforska världskartan genom att klicka och dra på den, och zooma in och ut med mushjulet.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Några av världens vackraste naturmiljöer och 45 olika djurarter väntar på dig. Lycka till på jakten!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttid:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Bestäms av händelsen: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Starta spel</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patchar</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Stugor:</value></data>

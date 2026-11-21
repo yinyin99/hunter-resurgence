@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Choose where to start your hunting session from. Click on one of the 12 reserve logos below to see a map of the corresponding reserve, and click on the lodges (the house symbols) to learn what species can be found in that area. You can also browse the world's map by clicking and dragging on it and zoom in and out using the mouse wheel.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Some of the world's most magnificent natural environments as well as 45 different species of animals are waiting for you, happy hunting!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Start time:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Fixed by the event: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Start Game</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patching</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Lodges:</value></data>

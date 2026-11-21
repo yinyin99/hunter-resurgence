@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Scegli da dove iniziare la tua sessione di caccia. Clicca su uno dei 12 loghi delle riserve qui sotto per vedere la mappa della riserva corrispondente e clicca sui lodge (i simboli a forma di casa) per scoprire quali specie si trovano in quella zona. Puoi anche esplorare la mappa del mondo trascinandola con il mouse e fare zoom avanti e indietro con la rotella.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Alcuni dei più magnifici ambienti naturali del mondo e 45 specie animali diverse ti aspettano. Buona caccia!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Ora di inizio:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Fissata dall'evento: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Inizia partita</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Aggiornamento</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Lodge:</value></data>

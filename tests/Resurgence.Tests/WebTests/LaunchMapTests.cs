@@ -19,6 +19,25 @@ public sealed class LaunchMapTests : UiContext
         Assert.Single(states, "true");
     }
 
+    // an event reserve shows the event's fixed time instead of the list; without the event the list stays
+    [Theory]
+    [InlineData("events:running", true)]
+    [InlineData(null, false)]
+    public void AnEventReserveSaysItsTimeIsFixed(string? mock, bool fixedTime)
+    {
+        Services.AddSingleton<ISeasonalEventsService>(new Resurgence.Services.Mocks.MockSeasonalEventsService(mock));
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 1));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[data-reserve]")));
+        cut.WaitForAssertion(() => Assert.Equal(fixedTime, cut.Find("#start-time").TagName == "P"));
+        if (fixedTime) Assert.Contains("01:15", cut.Find("#start-time").TextContent);
+        if (fixedTime)
+        {
+            cut.Find("button[data-reserve='9']").Click();  // Bushrangers Run has its own hour
+            cut.WaitForAssertion(() => Assert.Contains("04:42", cut.Find("#start-time").TextContent));
+        }
+    }
+
     sealed class Recording : IServersService
     {
         public (int Reserve, int Marker)? Started;

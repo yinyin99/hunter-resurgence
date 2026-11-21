@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Valitse, mistä aloitat metsästyksesi. Napsauta jotakin alla olevista 12 alueen logoista nähdäksesi kyseisen alueen kartan, ja napsauta erämajoja (talosymboleita) nähdäksesi, mitä lajeja alueelta löytyy. Voit myös selata maailmankarttaa napsauttamalla ja vetämällä sitä sekä lähentää ja loitontaa hiiren rullalla.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Osa maailman upeimmista luonnonympäristöistä sekä 45 eri eläinlajia odottavat sinua. Hyvää metsästysonnea!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Aloitusaika:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Tapahtuman määräämä: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Aloita peli</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Päivitetään</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Erämajat:</value></data>

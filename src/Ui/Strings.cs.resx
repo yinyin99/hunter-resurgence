@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Vyberte, odkud svůj lov zahájíte. Kliknutím na jedno z 12 log obor níže zobrazíte mapu příslušné obory a kliknutím na myslivny (symboly domků) zjistíte, jaké druhy zvěře se v dané oblasti vyskytují. Mapou světa můžete také posouvat tažením myší a přibližovat či oddalovat ji kolečkem myši.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Čekají na vás ty nejkrásnější přírodní scenérie světa i 45 různých druhů zvířat. Lovu zdar!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Čas zahájení:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Čas určuje událost: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Spustit hru</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Záplatování</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Myslivny:</value></data>

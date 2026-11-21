@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Alegeți locul de unde începeți sesiunea de vânătoare. Faceți clic pe una dintre cele 12 embleme de rezervații de mai jos pentru a vedea harta rezervației respective și faceți clic pe cabane (simbolurile în formă de casă) pentru a afla ce specii se găsesc în zona respectivă. Puteți explora și harta lumii, trăgând de ea cu mouse-ul și mărind sau micșorând cu rotița mouse-ului.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Unele dintre cele mai magnifice medii naturale din lume, precum și 45 de specii diferite de animale vă așteaptă. Vânătoare plăcută!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Ora de începere:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Stabilită de eveniment: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Începeți jocul</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Actualizare</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Cabane:</value></data>

@@ -203,6 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Válaszd ki, honnan kezded a vadászatodat. Kattints a lenti 12 vadászterület egyikének logójára a terület térképének megtekintéséhez, majd kattints a vadászházakra (a házikó piktogramokra), hogy megtudd, mely fajok találhatók az adott környéken. A világtérképet kattintással és húzással is böngészheted, az egérgörgővel pedig nagyíthatsz és kicsinyíthetsz.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>A világ legkáprázatosabb tájai és 45 különböző állatfaj vár rád. Jó vadászatot!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Kezdő időpont:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Az esemény rögzíti: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Játék indítása</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Javítás</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Vadászházak:</value></data>
