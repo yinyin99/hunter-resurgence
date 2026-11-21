@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Minden idők legjobb pontszámai</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Minden idők legnagyobb távolságai</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Itt még senki nem szerepel a ranglistán</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>A ranglistát nem sikerült betölteni. Próbáld újra.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Próbáld újra</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Még egyetlen szezon sem ért véget</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit legjobb pontszámok</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>A Lane Bandit egy klassz retro arcade játék, amelyet a Huntermate-en játszhatsz, hogy szórakoztasson, amíg a trófea megjelenésére vársz!</value></data>

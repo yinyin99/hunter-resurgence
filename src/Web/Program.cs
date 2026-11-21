@@ -33,6 +33,9 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 } serverUrl)
         .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
     builder.Services.AddScoped<ISessionService>(sp => new ServerSessionService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSessionService>>()));
     // the player's backup and data: one part of an upload (up to 90 MiB, streamed from the browser) takes longer than the sign-in's 5 s
+    // the boards: the server may still be computing one (it does at its start), so they wait longer than the 5 s of the others
+    builder.Services.AddHttpClient("server-boards", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromSeconds(30); })
+        .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
     builder.Services.AddHttpClient("server-upload", c => { c.BaseAddress = new Uri(serverUrl); c.Timeout = TimeSpan.FromMinutes(10); })
         .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler { UseCookies = false });
     builder.Services.AddScoped<IRestoreService>(sp => new ServerRestoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server-upload"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreService>>()));
@@ -80,7 +83,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
     // the sign-in pages (/signin/...) read the server's login in progress (docs/website.md#sign-in)
     builder.Services.Replace(ServiceDescriptor.Scoped<ISignInService>(sp => new ServerSignInService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSignInService>>())));
     // the hunterscore board and the profile header are the community server's; registered after the mocks they wrap
-    builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
+    builder.Services.AddScoped<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server-boards"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
     // the friends (the status bar's list, the profile tab and its buttons) are the account's on the server
     builder.Services.Replace(ServiceDescriptor.Scoped<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>())));
     // the messages (the restored conversations and the server's notices) are the account's too, read only

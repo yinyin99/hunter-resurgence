@@ -93,7 +93,11 @@ public static class AssetSlots
         new("bundle-", "store", "150x110", "Store, BundleDetail", async s => s.Mode.Live ? [] : (await s.Store.BundlesAsync()).Select(b => s.Mode.BundleSlot(b.Id))),
         new("store-bundle-", "store", "150x110", "Store, BundleDetail", async s => s.Mode.Live ? (await s.Store.BundlesAsync()).Select(b => s.Mode.BundleSlot(b.Id)) : []),
         new("logo-rating-", "decoration", "62x82", "Footer", Values("logo-rating-", "1", "2", "3", "4")),
-        new("species-", "species", "135x135", "Leaderboards", async s => (await s.Boards.BoardsAsync("score", 0)).Select(b => "species-" + b.Name)),
+        new("species-", "species", "135x135", "Leaderboards", async s =>
+        {
+            try { return (await s.Boards.BoardsAsync("score", 0)).Select(b => "species-" + b.Name); }
+            catch (BoardUnavailableException) { return []; }  // the server's boards are not there: no species slots now, like an empty store
+        }),
         // the reserves the server's catalogue holds (the website's mock: 01 to 12); marker kinds are the enum's
         new("reserve-", "reserves and maps", "70x70", "LaunchMap", async s => (await s.Servers.ReservesAsync()).Select(r => $"reserve-{r.Id:00}")),
         new("map-", "reserves and maps", "", "LaunchMap, JoinMapModal", async s => (await s.Servers.ReservesAsync()).Select(r => $"map-{r.Id:00}")),

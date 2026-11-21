@@ -68,7 +68,11 @@
             case "": last = await Service.ExpeditionAsync(Handle, null); break;
             case "lifetime": totals = await Service.TotalsAsync(Handle); break;
             case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
-            default: (best, seasons) = (await Service.BestAsync(Handle, season), (await Seasons.SeasonsAsync()).Current); break;
+            default:
+                best = await Service.BestAsync(Handle, season);
+                try { seasons = (await Seasons.SeasonsAsync()).Current; }
+                catch (BoardUnavailableException) { seasons = 0; }  // no season to pick without the server's list
+                break;
         }
     }
 

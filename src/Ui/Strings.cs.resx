@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Nejlepší skóre všech dob</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Nejlepší vzdálenosti všech dob</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Zatím zde nikdo není umístěn</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Žebříček se nepodařilo načíst. Zkuste to prosím znovu.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Zkusit znovu</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Zatím neskončila žádná sezóna</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Nejlepší skóre v Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je skvělá retro arkáda, kterou si můžete zahrát na svém HunterMate a krátit si tak čas při čekání, až se objeví vysněná trofej!</value></data>

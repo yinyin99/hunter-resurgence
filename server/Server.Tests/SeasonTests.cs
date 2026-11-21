@@ -270,7 +270,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTheBoardsAreKept15MinutesAndAnEndedSeasons24Hours()
+    public async Task TestTheBoardsAreKept15Minutes()
     {
         Scene();
         var now = Py.Now();
@@ -286,15 +286,33 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         now += 2;
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer));  // expired: the new harvest shows
         Assert.Equal("no-store", (await Get("/hunters/alpha/best")).Headers.Single(h => h.Name == "Cache-Control").Value);
-        // an ended season: 24 hours
+        // a season start drops the kept boards; an ended season's are kept 15 minutes like the others
         Assert.NotNull(state.StartSeason((long)now - 10));
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
         state.CreateAccount(31, "india");
         Harvest(31, 1, Deer, "95", Second + 20, cm: 1000);
-        now += 86399;
+        now += 899;
         Assert.Equal("hotel:90 charlie:70", await Board("score", Deer, 2));
         now += 2;
         Assert.Equal("india:95 hotel:90 charlie:70", await Board("score", Deer, 2));
+    }
+
+    [Fact]
+    public async Task TestARefreshComputesAwayFromTheReadsAndAReadAfterItComputesNothing()
+    {
+        Scene();
+        var now = Py.Now();
+        state.Clock = () => now;
+        await Task.Run(state.RefreshBoards);  // the first computation, as at the start
+        state.CreateAccount(30, "hotel");
+        Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
+        Assert.Equal("charlie:70", await Board("score", Deer));  // a read waits for no computation: the new harvest is not in the kept boards
+        now += State.BoardRefresh.TotalSeconds;
+        await Task.Run(state.RefreshBoards);  // the replacement, 14 minutes on: the old boards answered until it was ready
+        state.CreateAccount(31, "india");
+        Harvest(31, 1, Deer, "95", Second + 20, cm: 1000);
+        now += 100;  // past the first computation's 15 minutes, inside the replacement's
+        Assert.Equal("hotel:90 charlie:70", await Board("score", Deer));  // the replacement is kept: no read computed india's harvest
     }
 
     [Fact]

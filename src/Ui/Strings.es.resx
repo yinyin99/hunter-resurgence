@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Mejores puntuaciones de todos los tiempos</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Mejores distancias de todos los tiempos</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Todavía no hay nadie clasificado aquí</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>No se pudo cargar la clasificación. Inténtalo de nuevo.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Reintentar</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Aún no ha terminado ninguna temporada</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Mejores puntuaciones de Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>¡Lane Bandit es un genial juego arcade retro que puedes jugar en tu Huntermate para entretenerte mientras esperas a que aparezca ese trofeo!</value></data>

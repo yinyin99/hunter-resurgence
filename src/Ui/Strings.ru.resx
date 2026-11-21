@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Лучший счёт за всё время</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Лучшая дистанция за всё время</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Здесь пока никого нет в рейтинге</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Не удалось загрузить рейтинг. Попробуйте ещё раз.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Повторить</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ни один сезон ещё не закончился</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Лучшие результаты в Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit — классная ретро-аркада, в которую можно играть на вашем Huntermate, пока вы ждёте появления трофея!</value></data>

@@ -77,6 +77,71 @@ public sealed class LeaderboardSeasonsTests : UiContext
         public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([.. Names.Select(n => new HallEntry(n, One, One))]);
     }
 
+    /// <summary>A service whose boards come when the test says, or fail: the page's states while it waits and after.</summary>
+    sealed class Waiting : ILeaderboardsService
+    {
+        public TaskCompletionSource<IReadOnlyList<Board>> Answer { get; private set; } = new();
+        public int Asked { get; private set; }
+        public Task<(int Current, IReadOnlyList<Season> Seasons)> SeasonsAsync() => new Unsorted().SeasonsAsync();
+        public Task<IReadOnlyList<Board>> BoardsAsync(string kind, int season)
+        {
+            Asked++;
+            return Answer.Task;
+        }
+        public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([], 1, 1));
+        public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
+        public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([]);
+        public void Again() => Answer = new();
+    }
+
+    [Fact]
+    public void ABoardShowsLoadingWhileTheServerIsComputingThenItsRows()
+    {
+        var service = new Waiting();
+        Services.AddSingleton<ILeaderboardsService>(service);
+        var cut = Board("score");
+
+        Assert.NotEmpty(cut.FindAll(".skeleton"));
+        Assert.Empty(cut.FindAll("p.norank"));  // not "Nobody is ranked here yet": nothing has answered
+        Assert.Empty(cut.FindAll("section.tile"));
+        service.Answer.SetResult([new Board(1, "Mallard", [new Ranked(1, "a", 1)])]);
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("section.tile")));
+        Assert.Empty(cut.FindAll(".skeleton"));
+    }
+
+    [Fact]
+    public void AFailedLoadShowsTheErrorAndNotTheEmptyTextAndRetryLoadsIt()
+    {
+        var service = new Waiting();
+        Services.AddSingleton<ILeaderboardsService>(service);
+        var cut = Board("score");
+        service.Answer.SetException(new BoardUnavailableException("timed out"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("[role=alert]")));
+
+        Assert.Contains("could not be loaded", cut.Find("[role=alert]").TextContent);
+        Assert.DoesNotContain("Nobody is ranked", cut.Markup);
+        Assert.Empty(cut.FindAll("section.tile"));
+
+        service.Again();
+        cut.Find("button.btn").Click();
+        Assert.NotEmpty(cut.FindAll(".skeleton"));
+        Assert.Empty(cut.FindAll("[role=alert]"));
+        service.Answer.SetResult([new Board(1, "Mallard", [new Ranked(1, "a", 1)])]);
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("section.tile")));
+        Assert.Equal(2, service.Asked);
+    }
+
+    [Fact]
+    public void AnEmptyBoardTheServerAnsweredStillSaysNobodyIsRanked()
+    {
+        var service = new Waiting();
+        Services.AddSingleton<ILeaderboardsService>(service);
+        var cut = Board("score");
+        service.Answer.SetResult([]);
+
+        cut.WaitForAssertion(() => Assert.Equal("Nobody is ranked here yet", cut.Find("p.norank").TextContent.Trim()));
+    }
+
     [Theory]
     [InlineData("score", "section.tile h4")]
     [InlineData("halloffame", ".hof h4")]

@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Højeste scorer gennem tiderne</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Længste skud gennem tiderne</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Ingen er rangeret her endnu</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Rangeringen kunne ikke indlæses. Prøv igen.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Prøv igen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen sæson er slut endnu</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Højeste Lane Bandit-scorer</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et fedt retro-arkadespil, som du kan spille på din Huntermate, så du har noget at underholde dig med, mens du venter på, at trofæet dukker op!</value></data>

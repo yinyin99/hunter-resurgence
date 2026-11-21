@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Kaikkien aikojen parhaat pisteet</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Kaikkien aikojen pisimmät etäisyydet</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Täällä ei ole vielä ketään sijoittuneena</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Tulostaulua ei voitu ladata. Yritä uudelleen.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Yritä uudelleen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Yksikään kausi ei ole vielä päättynyt</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Parhaat Lane Bandit -tulokset</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>

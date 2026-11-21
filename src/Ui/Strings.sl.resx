@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Najboljši rezultati vseh časov</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Najdaljše razdalje vseh časov</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Tu še nihče nima uvrstitve</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Lestvice ni bilo mogoče naložiti. Poskusite znova.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Poskusi znova</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Nobena sezona se še ni končala</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najboljši rezultati v igri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je kul retro arkadna igra, ki jo lahko igraš na svoji napravi Huntermate, da si krajšaš čas, medtem ko čakaš, da se pojavi trofeja!</value></data>

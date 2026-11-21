@@ -285,9 +285,13 @@ public sealed partial class State
     List<JsonNode?> Restored(long account, string table, string source, string? id = null)
     {
         using var con = Con(account);
-        return [.. con.Rows($"SELECT node FROM {table} WHERE account_id = $a AND source = ?{(id is null ? "" : " AND id = ?")} ORDER BY n",
-                            id is null ? [source] : [source, id]).Select(r => JsonNode.Parse((string)r[0]))];
+        return Restored(con, table, source, id);
     }
+
+    /// <summary>The same on a connection the caller has open for the account (a scan of every account reads each one once).</summary>
+    static List<JsonNode?> Restored(Db con, string table, string source, string? id = null) =>
+        [.. con.Rows($"SELECT node FROM {table} WHERE account_id = $a AND source = ?{(id is null ? "" : " AND id = ?")} ORDER BY n",
+                     id is null ? [source] : [source, id]).Select(r => JsonNode.Parse((string)r[0]))];
 
     /// <summary>One restored record as the reply it was read from; null when the account has none with this id.</summary>
     public byte[]? RowReply(long account, string table, string source, string id) =>
@@ -298,8 +302,14 @@ public sealed partial class State
 
     /// <summary>A trophy row for each animal slot of the restored lodges that carries `trophy_details`, in the restored shape: a public restore has no `/game/user/trophies` (the game sends it
     /// to its owner only), but its lodges name the animals they hold.</summary>
-    List<JsonObject> MountedRows(long account) =>
-        [.. Restored(account, "lodges", LodgeOne).Concat(Restored(account, "lodges", LodgeList)).OfType<JsonObject>()
+    List<JsonObject> MountedRows(long account)
+    {
+        using var con = Con(account);
+        return MountedRows(con);
+    }
+
+    static List<JsonObject> MountedRows(Db con) =>
+        [.. Restored(con, "lodges", LodgeOne).Concat(Restored(con, "lodges", LodgeList)).OfType<JsonObject>()
             .SelectMany(l => (l["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
             .Where(s => s["trophy_id"] is not null && s["trophy_details"] is JsonObject)
             .Select(s =>

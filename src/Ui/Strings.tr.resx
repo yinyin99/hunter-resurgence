@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Tüm zamanların en yüksek skorları</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Tüm zamanların en uzun mesafeleri</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Burada henüz kimse sıralamada değil</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Sıralama yüklenemedi. Lütfen tekrar deneyin.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Tekrar dene</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Henüz hiçbir sezon sona ermedi</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>En yüksek Lane Bandit skorları</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit, Huntermate'inizde oynayabileceğiniz, avınızın ortaya çıkmasını beklerken eğlenceli vakit geçirmenizi sağlayan havalı bir retro atari oyunudur!</value></data>

@@ -221,7 +221,11 @@ public class WebAppTests(WebSite site) : IClassFixture<WebSite>
     {
         var server = new ListsServer();
         using var withServer = site.WithWebHostBuilder(b => b.UseSetting("SERVER_URL", "http://server.test")
-            .ConfigureTestServices(s => s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => server)));
+            .ConfigureTestServices(s =>
+            {
+                s.AddHttpClient("server").ConfigurePrimaryHttpMessageHandler(() => server);
+                s.AddHttpClient("server-boards").ConfigurePrimaryHttpMessageHandler(() => server);
+            }));
         using var client = withServer.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
 
         var r = await Get(client, "/sitemap.xml");

@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Topscores aller tijden</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Topafstanden aller tijden</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Hier staat nog niemand in de ranglijst</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Het klassement kon niet worden geladen. Probeer het opnieuw.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Opnieuw proberen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Er is nog geen seizoen afgelopen</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Topscores Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is een coole retro-arcadegame die je op je Huntermate kunt spelen om je te vermaken terwijl je wacht tot die trofee verschijnt!</value></data>
