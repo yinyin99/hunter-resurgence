@@ -640,6 +640,11 @@ public sealed partial class State
     /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
     /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
     public bool UnlimitedAmmo { get; init; }
+    /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
+    public const long DefaultInventoryCapacity = 20000;
+    /// <summary>settings.json `default_inventory_capacity`, in grams: what every account carries; the owned Increased Capacity item adds its own 10000
+    /// from its inventory row, once (the connect's `boost` entry for it carries no capacity of its own).</summary>
+    public long InventoryCapacity { get; init; } = DefaultInventoryCapacity;
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -1336,6 +1341,13 @@ public sealed partial class State
         var score = Py.IsNum(reply["account"]!["hunterscore"]) ? Py.L(reply["account"]!["hunterscore"]) : 0;
         foreach (var o in (reply["boost"]?["boost"] as JsonArray ?? []).OfType<JsonObject>())
             o["own"] = o["item"] is JsonObject boosted && (owned.Contains(Py.L(boosted["id"])) || Py.IsNum(boosted["hunterscoreGiveLevel"]) && score >= Py.L(boosted["hunterscoreGiveLevel"]));
+        // one capacity source per upgrade: the owned item's row (its `infos` capacity) carries it, so the boost entry must not add it again
+        if (reply["boost"] is JsonObject boostBlock)
+        {
+            boostBlock["default_inventory_capacity"] = InventoryCapacity;
+            foreach (var o in (boostBlock["boost"] as JsonArray ?? []).OfType<JsonObject>())
+                if (o["item"]?["inventory"] is JsonObject boostedInventory && boostedInventory.ContainsKey("capacity")) boostedInventory["capacity"] = 0;
+        }
         reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
         using (var con = Con(account))
         {
