@@ -73,6 +73,16 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var unlimited) => unlimited,
             _ => throw new InvalidDataException("unlimited_ammo: true or false"),
         };
+        // a time-limited gm$ multiplier for harvests (docs/server.md#harvest-gm-bonus): {multiplier above 0, until an ISO UTC time}, stored as Unix seconds
+        cfg["harvest_gm_bonus"] = root["harvest_gm_bonus"] switch
+        {
+            null => null,
+            JsonObject b when b["multiplier"] is JsonValue factor && factor.TryGetValue<double>(out var times) && times > 0 && double.IsFinite(times)
+                              && b["until"] is JsonValue u && u.TryGetValue<string>(out var text)
+                              && DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var until)
+                => new JsonObject { ["multiplier"] = times, ["until"] = until.ToUnixTimeSeconds() },
+            _ => throw new InvalidDataException("harvest_gm_bonus: {\"multiplier\": a number above 0, \"until\": an ISO time such as \"2026-11-23T05:00:00Z\"}"),
+        };
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch

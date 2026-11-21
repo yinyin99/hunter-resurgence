@@ -87,6 +87,24 @@ public class HarvestScoreTests : StateTestBase
             }
     }
 
+    // the confirm-kill screen shows round(css) of update 6 as the reward: a bonus must show there as it is paid, and stop at its end
+    [Fact]
+    public void AHarvestGmBonusDoublesTheShownRewardAndThePaymentUntilItsEnd()
+    {
+        var start = gm;
+        var normal = Py.D(Harvest(0, 0).Update["css"]);
+        Assert.Equal(Py.RoundInt(normal), gm - start);
+        state.HarvestGmBonus = (2, state.Clock() + 3600);
+        start = gm;
+        var doubled = Py.D(Harvest(0, 0).Update["css"]);
+        Assert.Equal(Py.Round(normal * 2, 1), doubled);
+        Assert.Equal(Py.RoundInt(doubled), gm - start);
+        state.HarvestGmBonus = (2, state.Clock() - 1);
+        start = gm;
+        Assert.Equal(normal, Py.D(Harvest(0, 0).Update["css"]));
+        Assert.Equal(Py.RoundInt(normal), gm - start);
+    }
+
     [Theory]
     [InlineData(22), InlineData(31), InlineData(32), InlineData(48), InlineData(56)]  // the three dogs, the sasquatch, the t-rex: the game scores none of them
     public void ASpeciesWithoutScoreRulesGetsNoScore(int species)

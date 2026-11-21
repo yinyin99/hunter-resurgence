@@ -28,6 +28,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `offline_mode` | Default `true`: a request that no token resolves is the local account's (a player's own PC). `false` on a community server: it gets the reply of an expired token, see [Accounts](#accounts) |
 | `all_licenses` | Default `true`: every player hunts with an unlimited license, see [Licenses](#licenses). `false`: licenses are items like any other |
 | `unlimited_ammo` | Default `true`: every player has unlimited ammunition, see [Unlimited ammunition](#unlimited-ammunition). `false`: ammunition is an item like any other. Independent of `all_licenses` |
+| `harvest_gm_bonus` | Optional: `{"multiplier": 2, "until": "2026-11-23T05:00:00Z"}` (a number above 0, an ISO time; no zone means UTC). Until that time every harvest pays `multiplier` times its gm$, see [Harvest gm$ bonus](#harvest-gm-bonus). Unset or past: no bonus. Read at start |
 | `default_inventory_capacity` | Default `20000` (grams, a whole number, at least 1): the backpack capacity of every account, 20 units. The original gave 10000; this is a community-server change. The owned Increased Capacity upgrade (item 92) adds its 10000 on top: 30 units. See [Backpack capacity](#backpack-capacity) |
 | `link_discord` | Optional: an `https` invite URL of the operator's Discord; the `LINK_DISCORD` environment variable (set by the deploy from the repository secret, [deploy.md](deploy.md#deploys)) wins over it. When set, the launcher's start page when signed in shows "Join the Discord: news, help and the operator" as a link to it (the website's confirm and "Done" pages show the same line from its own `LINK_DISCORD`). Unset, empty or not `https`: nothing is shown |
 | `review_webhook` | Optional: an `https` URL of a Discord-style webhook. When a zip is kept for review ([Upload a backup zip](#upload-a-backup-zip)) or an archive claim waits ([Archive claims](#archive-claims)) the server posts `{"content": "..."}` there. The same webhook gets the alerts for a refused upload and a problem report. Every alert has the layout and fields of [Discord alerts](#discord-alerts), nothing else. Unset or empty: no alert. An `http` or malformed URL is logged once and turns it off. A failed post is logged and never delays the upload |
@@ -701,6 +702,16 @@ The original sold a license to hunt a species (1, 7 or 28 days) and licenses of 
 - **Buying:** `Inventory/buy` and `POST /account/buy` refuse a license as already owned (`{"success": false}`, 409 `refused`), nothing is charged. A bundle that lists one is not for sale: `buyable` is false in `GET /catalog/store` (the website shows its buy button disabled) and `POST /account/buy` refuses it.
 
 With it off, a license is an item like any other: sold, owned by the rows the account has, its `spawn_licenses` as the connect carries it.
+
+## Harvest gm$ bonus
+
+With `harvest_gm_bonus` set, a harvest made before its `until` (the server's clock at the heartbeat that carries the harvest) has its CSS multiplied by `multiplier`, rounded to one decimal, before anything uses it:
+
+- **Update 6** carries the multiplied `css`. The game builds the confirm-kill screen's "Reward: X gm$" from it (`round(css)`), and the chat line's CSS too, so the player sees the bonus.
+- **The payment** is `round` of that CSS, under the usual `CSS Reward (Animal Id: <kill>)` label, so a rescore never pays it again.
+- The score, the leaderboards, the Hall of Fame and the score sheets use the score, not the CSS: unchanged. Missions, daily missions and dog rewards are not multiplied.
+
+After `until` the bonus stops by itself; the setting can stay until the next deploy.
 
 ## Unlimited ammunition
 
