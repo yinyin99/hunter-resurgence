@@ -120,7 +120,7 @@ public static class AssetSlots
         new("em-pack-", "bank", "100x80", "BankModal", MockOnly(async s => (await s.Bank.CatalogAsync()).EmPacks.Select(p => "em-pack-" + p.Ems))),
         new("membership-", "bank", "100x70", "BankModal", MockOnly(Values("membership-", "starter", "special", "basic"))),
         new("paw-badge-", "missions", "100x111", "DailyMissions", Values("paw-badge-", "easy", "medium", "hard")),
-        new("mission-giver-", "missions", "150x150", "DailyMissions", Values("mission-giver-", "vera_herzschlag", "buck_williams", "angelica_rodriguez", "harley_lovegrove")),  // the givers of the server's templates; one that is not here is listed when drawn
+        new("mission-giver-", "missions", "150x150", "DailyMissions", Values("mission-giver-", "vera_herzschlag", "buck_williams", "angelica_rodriguez", "harley_lovegrove", "clinton_douglas", "igsivalitaq", "laura_francese", "taxidermist_max")),  // the givers of the server's templates; one that is not here is listed when drawn
         new("mission-species-", "missions", "250x360", "DailyMissions", Values("mission-species-", [.. MissionSpecies.SelectMany(n => new[] { n + "-m", n + "-f" })])),
         new("rank-", "profile", "114x114", "RanksTab", Values("rank-", "score", "animals", "weapons", "collectables")),   // rank-<id> of the live site: drawn
         new("ach-", "profile", "100x100", "AchievementsTab", Values("ach-", "animals", "weapons", "exploration", "day-mission")),
