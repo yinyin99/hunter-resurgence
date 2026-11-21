@@ -116,7 +116,7 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
         Eq("[50]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
         Assert.Equal(200, (await server.SendAsync("POST", "game_web.test", "/v1/harvest/51/taxidermize", [("Content-Type", "application/json"), ("Authorization", "Bearer " + token)],
             """{"currency": "gold"}"""u8.ToArray())).Status);
-        Eq("[50, 51]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
+        Eq("[51, 50]", new JsonArray([.. (await OwnTrophies(token)).Select(t => t!["id"]!.DeepClone())]));
         Assert.Empty(await OwnTrophies(otherToken));
 
         // another player's trophies in the game are the ones mounted in the player's lodges: the harvest goes in a slot of the restored lodge

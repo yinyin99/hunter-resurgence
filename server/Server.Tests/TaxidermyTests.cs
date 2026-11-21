@@ -194,14 +194,14 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         Assert.Equal(grace, new DateTimeOffset(DateTime.Parse((string)offers[22]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds());  // old: the grace end, not harvest + 72 h
         Assert.Equal(grace, new DateTimeOffset(DateTime.Parse((string)offers[23]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal)).ToUnixTimeSeconds());
         Assert.InRange(DateTime.Parse((string)offers[20]["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).Subtract(DateTime.UtcNow).TotalHours, 70.9, 71.1);  // new: 72 h from the harvest (1 h ago)
-        Eq("[5, 22, 23]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // the restored trophy, and the old harvests while the window is open
+        Eq("[23, 22, 5]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // the restored trophy, and the old harvests while the window is open
         Assert.Equal(200, await Status(22, tokenMe, Gold));  // 73 hours old, yet inside the grace window
         Assert.Equal(172, Em());
         Assert.Equal(409, await Status(22, tokenMe, Gold));
         state.Clock = () => Py.Now() + 63 * 3600;  // the grace window is over; kill 20 (1 h old) has 8 hours left
         Assert.Equal(410, await Status(23, tokenMe, Gold));
         Assert.Equal(200, await Status(20, tokenMe, Gold));
-        Eq("[5, 20, 22]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // taxidermized ones stay, the old one that was not is gone, the restored one is untouched
+        Eq("[20, 22, 5]", new JsonArray((await Editor()).Select(i => (JsonNode)i).ToArray()));  // taxidermized ones stay, the old one that was not is gone, the restored one is untouched
     }
 
     [Fact]

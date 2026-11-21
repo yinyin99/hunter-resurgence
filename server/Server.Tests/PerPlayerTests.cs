@@ -209,11 +209,10 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var first = await Page("?page=1");
         Eq("""[1, 2, 26]""", T(first["page"], first["pages"], first["total"]));
         Assert.Equal(24, first["rows"]!.AsArray().Count);
-        Eq("""{"name": "shown", "date": "", "competitionId": null, "competition": null, "image": null}""", first["rows"]![0]);  // a row without a competition, a date or a picture
-        Eq("""{"name": "cup 3", "date": "2020-09-13", "competitionId": 1003, "competition": "Open 3", "image": "cup_3"}""", first["rows"]![1]);
+        Eq("""{"name": "cup 3", "date": "2020-09-13", "competitionId": 1003, "competition": "Open 3", "image": "cup_3"}""", first["rows"]![0]);  // rows of one date keep their order
         var last = await Page("?page=3");  // past the end: the last page
         Eq("""[2, 2]""", T(last["page"], last["rows"]!.AsArray().Count));
-        Eq("""{"name": "cup 27", "date": "2020-09-13", "competitionId": 1027, "competition": "Open 27", "image": "cup_27"}""", last["rows"]![1]);
+        Eq("""{"name": "shown", "date": "", "competitionId": null, "competition": null, "image": null}""", last["rows"]![1]);  // a row without a competition, a date or a picture is last
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/banned/trophies", null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/trophies", null)).Status);
     }
@@ -429,8 +428,8 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.True((bool)(await Harvest(10))["taxidermized"]!);
         Assert.Equal(404, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/11/taxidermize", tokenA, "currency=gold")).Status);
         var own = await Own();
-        var row = own[1]!.AsObject();
-        Eq("""[2, 9, 10]""", T(own.Count, own[0]!["id"], row["id"]));  // the server kill got an id above the restored 9
+        var row = own[0]!.AsObject();  // the newest first: the harvest made now
+        Eq("""[2, 9, 10]""", T(own.Count, own[1]!["id"], row["id"]));  // the server kill got an id above the restored 9
         Assert.Equal(fields, row.Select(kv => kv.Key));
         Eq("""[false, "MULE_DEER", 50000, 0.9, 46658, false]""", T(row["hidden"], row["species_define"], row["weight"], row["scale"], row["antlers_seed"], row["is_skull"]));
     }
@@ -450,7 +449,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Hb(AccountIsolationTests.Harvest(71, 50000));
         Assert.Equal(200, (await Send(community, "POST", "apiv2.test", "/game/user/harvest/78/taxidermize", tokenA, "currency=gold")).Status);  // the server kill is 78, not 77
         var own = JsonNode.Parse((await Send(community, "GET", "apiv2.test", "/game/user/trophies", tokenA)).Body)!.AsArray();
-        Eq("[77, 78]", new JsonArray(own.Select(t => t!["id"]!.DeepClone()).ToArray()));
+        Eq("[78, 77]", new JsonArray(own.Select(t => t!["id"]!.DeepClone()).ToArray()));
     }
 
     [Fact]
