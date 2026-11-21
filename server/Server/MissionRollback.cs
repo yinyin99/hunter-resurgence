@@ -284,11 +284,12 @@ public sealed partial class State
             (finished, finishers) = (finished + recent.Count, finishers + (recent.Count > 0 ? 1 : 0));
             foreach (var (m, o, e) in recent)
             {
-                foreach (var t in o.Rule.Tests ?? [])
-                    if (Measured(t, e.Kill) is { } v)
-                        foreach (var (bound, side) in new[] { (t.Min, "min"), (t.Max, "max") })
-                            if (double.IsFinite(bound) && Math.Abs(v - bound) <= 0.05 * Math.Abs(bound) && !(t.Check == Check.Value && bound >= 100000))
-                                flagged.Add(("borderline", Line(m, o, $"{What(e)}: {t.Check.ToString().ToLowerInvariant()} {v:0.##} vs {side} {bound:0.##}")));
+                var near = (o.Rule.Tests ?? []).SelectMany(t => Measured(t, e.Kill) is { } v
+                    ? new[] { (t.Min, "min"), (t.Max, "max") }.Where(b => double.IsFinite(b.Item1) && Math.Abs(v - b.Item1) <= 0.05 * Math.Abs(b.Item1) && !(t.Check == Check.Value && b.Item1 >= 100000))
+                        .Select(b => $"{t.Check.ToString().ToLowerInvariant()} {v:0.##} vs {b.Item2} {b.Item1:0.##}")
+                    : []).ToList();
+                if (near.Count > 0)
+                    flagged.Add(("borderline", Line(m, o, $"{What(e)}: {string.Join("; ", near)}")));
                 if (missionsOf[e.Id] >= 3)
                     flagged.Add(("shared", Line(m, o, $"{What(e)} met objectives of {missionsOf[e.Id]} missions")));
             }

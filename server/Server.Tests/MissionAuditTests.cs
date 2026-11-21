@@ -27,16 +27,19 @@ public class MissionAuditTests : MissionTestBase
     [Fact]
     public void TestAKillWithin5PercentOfTheTitlesBoundIsBorderline()
     {
-        state = Audited("borderline.db", Catalogue(["Harvest a Test Deer from over 100 meters", "Harvest a Test Deer from over 50 meters", "Harvest a Test Deer at 100% Harvest Value"]));
+        state = Audited("borderline.db", Catalogue(["Harvest a Test Deer from over 100 meters", "Harvest a Test Deer from over 50 meters", "Harvest a Test Deer at 100% Harvest Value",
+                                                    "Harvest a Test Deer weighing at least 88 kg from over 100 meters"]));
         ActivateAll();
         Hb(Enter("Test Lake"));
         now += 600;
-        Hb(Shot(1, distance: 10300));  // 103 m, 100 % value
+        Hb(Shot(1, distance: 10300));  // 103 m, 90 kg, 100 % value
         var report = Audit();
-        Assert.Equal("missions audit, the last 24 h: 3 objectives completed by 1 accounts", report[0]);
-        var line = Assert.Single(Flagged(report, "borderline"));  // 103 m is far over 50 m; 100 % value has nothing above it
-        Assert.Matches($@"^borderline \| mission 1 Harvest a Test Deer from over 100 meters \| Harvest a Test Deer from over 100 meters \| {Me} \| harvest event \d+: distance 103 vs min 100$", line);
-        Assert.Equal("borderline 1, unmet 0, fast 0, shared 3, spike 0", report[^1]);
+        Assert.Equal("missions audit, the last 24 h: 4 objectives completed by 1 accounts", report[0]);
+        var lines = Flagged(report, "borderline");  // 103 m is far over 50 m; 100 % value has nothing above it
+        Assert.Equal(2, lines.Count);
+        Assert.Matches($@"^borderline \| mission 1 Harvest a Test Deer from over 100 meters \| Harvest a Test Deer from over 100 meters \| {Me} \| harvest event \d+: distance 103 vs min 100$", lines[0]);
+        Assert.Matches(@"^borderline \| mission 4 .* \| harvest event \d+: (distance 103 vs min 100; weight 90 vs min 88|weight 90 vs min 88; distance 103 vs min 100)$", lines[1]);  // one line per objective
+        Assert.Equal("borderline 2, unmet 0, fast 0, shared 4, spike 0", report[^1]);
         now += 25 * 3600;
         Assert.Equal("borderline 0, unmet 0, fast 0, shared 0, spike 0", Audit()[^1]);  // out of the window
     }
