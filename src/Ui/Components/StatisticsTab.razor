@@ -65,7 +65,7 @@
         season = Arg ?? 0;
         switch (sub)
         {
-            case "": await LoadLast(); break;
+            case "": last = await Service.ExpeditionAsync(Handle, null); break;
             case "lifetime": totals = await Service.TotalsAsync(Handle); break;
             case "history": history = await Service.HistoryAsync(Handle, Arg ?? 1); break;
             default: (best, seasons) = (await Service.BestAsync(Handle, season), (await Seasons.SeasonsAsync()).Current); break;
@@ -78,8 +78,8 @@
     // a list that is still being made can be read again: the service moves it on
     async Task Refresh() => best = await Service.BestAsync(Handle, season);
 
-    // the latest hunt, which its statistics read again while it is in progress
-    async Task LoadLast() => last = await Service.ExpeditionAsync(Handle, null);
+    // the latest hunt read again while it is in progress: a read that fails keeps the page as it is
+    async Task LoadLast() => last = await Service.ExpeditionAsync(Handle, null) ?? last;
 
     void Season(ChangeEventArgs e) => Nav.NavigateTo($"/profile/{Handle}/statistics/best/{e.Value}");
 

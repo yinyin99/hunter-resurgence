@@ -42,20 +42,23 @@ public sealed partial class State
     }
 
     /// <summary>What a profile page's hunt history shows of an account, `GET /hunters/&lt;handle&gt;/hunts?page=n`: `{page, pages, total, rows: [{id, start, seconds, reserve, lodge, collectables, kills}]}`,
-    /// <see cref="HuntsPageSize"/> a page, newest first: the hunts made here, then the restored ones (as Expedition/list); `start` is Unix seconds, `seconds` 0 for an open hunt, `lodge` the name of the start
+    /// <see cref="HuntsPageSize"/> a page, newest first: the hunts made here, then the restored ones (as Expedition/list); `start` is Unix seconds, `seconds` the time since it started for an open hunt, `lodge` the name of the start
     /// (<see cref="StartName"/>), "" without one.</summary>
     public JsonObject PublicHunts(long account, int page)
     {
         var all = JsonNode.Parse(ExpeditionListReply(account, "{}"u8.ToArray(), []))!["expeditions"]!.AsArray();
         var pages = Math.Max(1, (all.Count + HuntsPageSize - 1) / HuntsPageSize);
         page = Math.Clamp(page, 1, pages);
+        long? openId;
+        using (var con = Con(account))
+            openId = con.Scalar("SELECT id FROM expeditions WHERE account_id = $a AND end_ts IS NULL ORDER BY id DESC LIMIT 1") as long?;
         JsonNode? Row(JsonNode? e)
         {
             var o = e as JsonObject ?? [];
-            long start = Integer(o["start_ts"]), end = Integer(o["end_ts"]);
+            long id = Integer(o["id"]), start = Integer(o["start_ts"]), end = Integer(o["end_ts"]);
             return new JsonObject
             {
-                ["id"] = Integer(o["id"]), ["start"] = start, ["seconds"] = end > start ? end - start : 0, ["reserve"] = ReserveName(o["reserve"]),
+                ["id"] = id, ["start"] = start, ["seconds"] = id == openId ? Math.Max(0, (long)Clock() - start) : end > start ? end - start : 0, ["reserve"] = ReserveName(o["reserve"]),
                 ["lodge"] = StartName(o["location_id"]), ["collectables"] = Count(o["collectables"]), ["kills"] = Count(o["kills"]),
             };
         }

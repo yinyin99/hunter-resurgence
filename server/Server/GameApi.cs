@@ -207,7 +207,7 @@ public static class GameApi
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("StatisticsTotal").WithSummary("Statistics of a player")
-               .WithDescription("The restored statistics plus the closed server hunts (`data`, `distance`, `duration`): the player's own on a local "
+               .WithDescription("The restored statistics plus the server hunts (the open one so far) (`data`, `distance`, `duration`): the player's own on a local "
                                 + "server (other players and unrestored accounts replay the recording), any account's on a community server (an unknown, banned or recorded user id gets empty statistics).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, ACHIEVEMENT_STATS, r => Own(game, r, a => s.AchievementReply(a, r.Body) is { Length: > 0 } reply
@@ -585,7 +585,7 @@ public static class GameApi
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.profile+json").Produces(404, contentType: "application/vnd.goa.error");
             apiv2.MapGet("/game/user/{id}/ranks", userRanks).WithName("UserRanks").WithSummary("A player's ranks, by user id")
                  .WithDescription("`[{id, category_id, value}]`, one per rank row of the facts file (`category_id` 1 animals, 2 weapons, 3 collectables), `value` the ethical kills "
-                                  + "or pickups from the account's statistics (restored plus closed server hunts) as the hunterscore counts them, before its cap; "
+                                  + "or pickups from the account's statistics (restored plus server hunts, the open one so far) as the hunterscore counts them, before its cap; "
                                   + "no token; 404 for a user id that is unknown, banned or the recorded player's. Also at `/v1/game/user/<id>/ranks` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.rank+json; type=collection").Produces(404, contentType: "application/vnd.goa.error");
 

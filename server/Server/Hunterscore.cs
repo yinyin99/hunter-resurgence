@@ -89,19 +89,19 @@ public sealed partial class State
         }
     }
 
-    /// <summary>The account's statistics (Statistics/total: `duration`, `distance`, `data`); only its closed hunts when the
+    /// <summary>The account's statistics (Statistics/total: `duration`, `distance`, `data`); only its hunts when the
     /// restored ones cannot be read back (logged).</summary>
-    static JsonObject StoredStats(Db con, long account)
+    static JsonObject StoredStats(Db con, long account, bool withOpen = true)
     {
         try
         {
-            return (JsonObject)RestoredReads.StatisticsTotal(con);
+            return (JsonObject)RestoredReads.StatisticsTotal(con, withOpen);
         }
         catch (Exception e) when (e is JsonException or InvalidCastException or InvalidOperationException)
         {
             Console.WriteLine($"hunterscore of account {account}: the restored statistics are not counted: {e.Message}");
             var hunts = new JsonObject();
-            var (distance, duration) = RestoredReads.AddHunts(con, hunts);
+            var (distance, duration) = RestoredReads.AddHunts(con, hunts, withOpen);
             return new JsonObject { ["duration"] = duration, ["distance"] = distance, ["data"] = hunts };
         }
     }
@@ -160,9 +160,12 @@ public sealed partial class State
         }
     }
 
+    /// <summary>A closed expedition whose statistics are not final: none yet, or the counts it had while it was open.</summary>
+    public const string ClosedUnstored = "end_ts IS NOT NULL AND (stats IS NULL OR json_extract(stats, '$.open') = 1)";
+
     /// <summary>Store the statistics of the account's hunts that need them (<see cref="StoreHuntStats"/>: the newly closed ones and the open one), then recompute its
     /// hunterscore and store it in its connect `account` and, for a restored account, its Me/me profile, and, when <paramref name="closing"/>, award the
-    /// achievements its statistics reach (<see cref="AwardAchievements"/>). Every close path, a restore and every start call it with `closing`, outside a transaction; a heartbeat that brings
+    /// achievements its closed hunts reach (<see cref="AwardAchievements"/>; the open hunt's counts so far earn none). Every close path, a restore and every start call it with `closing`, outside a transaction; a heartbeat that brings
     /// events of the open hunt calls it without, so the hunterscore counts the hunt so far but an achievement is earned, and its time set, only when the hunt closes (the hunt's page lists the ones earned at its close).
     /// The hunterscore and achievements are computed on a community server only; the recorded account
     /// (LocalAccount) keeps the recorded player's values. Always the computed value: what cannot be read counts 0, so a close, a
@@ -172,7 +175,7 @@ public sealed partial class State
     {
         con.Begin();
         // the hunts closed since the last time carry their close as the earn time, so a hunt's page lists what it earned (several closed at once share the latest)
-        var closedAt = closing ? con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND (stats IS NULL OR json_extract(stats, '$.open') = 1)") : null;
+        var closedAt = closing ? con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND " + ClosedUnstored) : null;
         StoreHuntStats(con, account);
         if (Online && account != LocalAccount)
         {
@@ -181,7 +184,10 @@ public sealed partial class State
             con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, account);
             con.Exec("UPDATE profile SET body = json_set(body, '$.hunterscore', ?) WHERE account_id = $a", score);
             if (closing)
-                AwardAchievements(con, stats, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
+            {
+                var closed = con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NULL") is null ? stats : StoredStats(con, account, withOpen: false);
+                AwardAchievements(con, closed, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
+            }
         }
         con.Commit();
     }
@@ -201,7 +207,7 @@ public sealed partial class State
     }
 
     /// <summary>`/game/user/&lt;id&gt;/ranks` of an account: `[{id, category_id, value}]`, one per rank row of the facts file (<see cref="RankValues"/>
-    /// over the account's statistics, the restored ones plus the closed server hunts: the same counts the hunterscore adds up, here before its cap).</summary>
+    /// over the account's statistics, the restored ones plus the server hunts (the open one so far): the same counts the hunterscore adds up, here before its cap).</summary>
     public byte[] RanksReply(long account) => Py.DumpBytes(new JsonArray([.. RankValues(facts, (JsonObject)StatisticsOf(account)["data"]!)
         .Zip(facts.Ranks, (v, r) => (JsonNode?)new JsonObject { ["id"] = r.Id, ["category_id"] = RankCategory(r), ["value"] = v })]));
 

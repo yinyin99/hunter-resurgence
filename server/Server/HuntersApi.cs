@@ -138,7 +138,7 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterHunts").WithSummary("One page of a hunter's hunt history")
             .WithDescription($"`{{page, pages, total, rows: [{{id, start, seconds, reserve, lodge, collectables, kills}}]}}`, {State.HuntsPageSize} rows a page, newest first: the hunts made here, then the restored ones "
-                             + "(as `Expedition/list`); `start` is Unix seconds, `seconds` 0 for a hunt that is open, `lodge` \"#id\" (the catalogue has no lodge names). 404 for a handle that is unknown or banned.")
+                             + "(as `Expedition/list`); `start` is Unix seconds, `seconds` the time since it started for a hunt that is open, `lodge` \"#id\" (the catalogue has no lodge names). 404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 

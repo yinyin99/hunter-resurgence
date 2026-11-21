@@ -337,7 +337,7 @@ public class HunterscoreTests : StateTestBase
         Eq("""{"5": {"10": {"ethical_kills": 1, "hits": 1, "misses": 1, "kills": 1}}}""", stats["data"]!["weapon"]);
         // the hunt list has its counts, the hunterscore and the profile's statistics count it
         var row = state.PublicHunts(B, 1)["rows"]![0]!;
-        Eq("[1, 1]", T(row["kills"], row["collectables"]));
+        Eq($"[{(long)(start + 90.5) - (long)start}, 1, 1]", T(row["seconds"], row["kills"], row["collectables"]));  // the open hunt's row has the time since it started
         Assert.Equal(2, Stored(B));
         Eq("""{"1": {"ethical_kills": 1, "kills": 1}}""", Total(B)["data"]!["animal"]);
         Eq("[90, 0]", T(Total(B)["duration"], Total(B)["distance"]));
@@ -358,6 +358,29 @@ public class HunterscoreTests : StateTestBase
         Assert.Equal(4, Stored(B));
         Eq("""{"1": {"ethical_kills": 2, "kills": 2}}""", Total(B)["data"]!["animal"]);
         Eq("[160, 466]", T(Total(B)["duration"], Total(B)["distance"]));
+    }
+
+    [Fact]
+    public void TestAServerStartDuringAHuntEarnsNothingFromItsCountsSoFar()
+    {
+        var (connect, app) = (CONNECT, APP);
+        connect["achievements"] = JsonNode.Parse("""[{"id": 25, "category": 2, "group": 0, "title": "Picker", "description": "Pick %d up", "value": "collectable.*.collected", "triggers": [1]}]""");
+        double now = Py.Now();
+        State Start() => new(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: Ranks)
+        {
+            Collectables = new Dictionary<long, JsonObject> { [9] = O("""{"id": 9, "cat": "MUSHROOM", "score": {"min": 3, "max": 78}}""") },
+            Clock = () => now,
+        };
+        state = Start();
+        state.CreateAccount(B, "second");
+        state.ConnectReply(B);
+        now += 10;
+        state.HeartbeatReply(B, Events(O("""{"event": 24, "collectable_id": 77, "type": 9, "x": 1, "y": 2, "z": 3, "scale": 100}""")));
+        state = Start();  // the server restarts during the hunt: the pickup is no achievement yet
+        Eq("[]", state.PublicHunt(B, null)!["achievements"]);
+        now += 50;
+        state.Disconnect(B, "{}"u8.ToArray());  // the hunt's close is the earn time, so its page lists it
+        Eq("""[{"title": "Picker", "description": "Pick 1 up"}]""", state.PublicHunt(B, null)!["achievements"]);
     }
 
     [Fact]
@@ -487,10 +510,13 @@ public class HunterscoreTests : StateTestBase
         foreach (var id in new[] { 9, 99, 7 })
             Assert.Null(state.HuntsOf(B, Encoding.UTF8.GetBytes($"user_id={id}")));
 
+        var frozen = Py.Now();
+        state.Clock = () => frozen;  // the open hunt's seconds do not move between the two reads
         var page = state.PublicHunts(B, 1);
         Eq("[1, 1, 2]", T(page["page"], page["pages"], page["total"]));
         var (open, closed) = (page["rows"]![0]!, page["rows"]![1]!);
-        Eq("""[0, "Test Reserve", "Lodge 1", 0, 0]""", T(open["seconds"], open["reserve"], open["lodge"], open["collectables"], open["kills"]));
+        Assert.InRange((long)open["seconds"]!, 0, 2);  // the time since it started
+        Eq("""["Test Reserve", "Lodge 1", 0, 0]""", T(open["reserve"], open["lodge"], open["collectables"], open["kills"]));
         Eq("""["Test Reserve", "Lodge 1", 1]""", T(closed["reserve"], closed["lodge"], closed["kills"]));
         Assert.True((long)open["id"]! > (long)closed["id"]!);
         Assert.Equal(page["rows"]!.ToJsonString(), state.PublicHunts(B, 9)["rows"]!.ToJsonString());  // a page past the last is the last

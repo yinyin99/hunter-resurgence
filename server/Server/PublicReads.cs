@@ -29,7 +29,7 @@ public sealed partial class State
 
     /// <summary>Public_user/getByHostname of an account: who it is (`membership` as its connect `account` has it, the type and
     /// title as its Me/me does), its hunterscore and rank, `online` while a hunt of it is open and alive, and the distance and
-    /// duration of its statistics (restored base plus the closed server hunts).</summary>
+    /// duration of its statistics (restored base plus the server hunts, the open one so far).</summary>
     public JsonObject PublicUser(long account)
     {
         using var con = Con(account);
@@ -208,7 +208,7 @@ public sealed partial class State
     /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: their item ids `weaponId` and `ammoId`, null when the key is not a number, shots,
     /// accuracy % of shots, kills, kills per hit %, longest hit in metres or null), `animals` (spotted, tracked, harvested per species),
     /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue,
-    /// the id where it has none. Restored base plus closed server hunts, like Statistics/total.</summary>
+    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total.</summary>
     public JsonObject StatisticsPage(long account)
     {
         JsonNode stats;

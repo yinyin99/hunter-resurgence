@@ -1042,7 +1042,7 @@ public sealed partial class State
         return new JsonObject { ["dogs"] = dogs };
     }
 
-    /// <summary>Statistics/total for a user_id: the restored statistics plus the closed server hunts. On a community server that is
+    /// <summary>Statistics/total for a user_id: the restored statistics plus the server hunts (the open one so far). On a community server that is
     /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
     /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>
     public byte[]? StatisticsReply(long account, byte[] formBody) => PublicReply(account, formBody, RestoredReads.StatisticsTotal);
@@ -2015,7 +2015,7 @@ public sealed partial class State
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box);
         CommunityPay(con, updates);
-        if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NULL LIMIT 1") is not null)
+        if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null)
             UpdateHunterscore(con, account);
         else if (events.OfType<JsonObject>().Any(e => HuntEvents.Any(k => Is(e["event"], k))))  // the open hunt's counts so far: the hunterscore and the profile's statistics follow each heartbeat
             UpdateHunterscore(con, account, closing: false);

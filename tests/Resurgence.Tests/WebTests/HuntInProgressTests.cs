@@ -52,12 +52,13 @@ public sealed class HuntInProgressTests : UiContext
     [Fact]
     public void AHuntInProgressAsksForItselfAgainAndAHuntThatEndedNever()
     {
-        var reloads = 0;
+        int reloads = 0, endedReloads = 0;
         Render<HuntStats>(p => p.Add(x => x.Hunt, Hunt(null)).Add(x => x.Handle, "h").Add(x => x.Every, TimeSpan.FromMilliseconds(40))
             .Add(x => x.Reload, EventCallback.Factory.Create(this, () => reloads++)));
         Render<HuntStats>(p => p.Add(x => x.Hunt, Hunt(Start.AddMinutes(30))).Add(x => x.Handle, "h").Add(x => x.Every, TimeSpan.FromMilliseconds(40))
-            .Add(x => x.Reload, EventCallback.Factory.Create(this, () => throw new InvalidOperationException("an ended hunt is not read again"))));
-        Assert.True(SpinWait.SpinUntil(() => reloads >= 2, TimeSpan.FromSeconds(5)));
+            .Add(x => x.Reload, EventCallback.Factory.Create(this, () => endedReloads++)));
+        Assert.True(SpinWait.SpinUntil(() => reloads >= 3, TimeSpan.FromSeconds(5)));  // by then the ended hunt's timer would have ticked too
+        Assert.Equal(0, endedReloads);
     }
 
     [Fact]
@@ -73,6 +74,18 @@ public sealed class HuntInProgressTests : UiContext
 
         Assert.Equal(2, cut.FindAll(".kills tbody tr").Count);
         Assert.DoesNotContain("In progress", cut.Find(".when").TextContent);
+    }
+
+    [Fact]
+    public async Task AReadThatFailsLeavesTheHuntPageAsItWas()
+    {
+        Serve(Hunt(null, kills: 1), null);
+        var cut = Render<ExpeditionTab>(p => p.Add(x => x.Handle, "h").Add(x => x.Id, 7L));
+
+        await cut.InvokeAsync(() => cut.FindComponent<HuntStats>().Instance.Reload.InvokeAsync());
+
+        Assert.EndsWith("In progress", cut.Find(".when").TextContent);
+        Assert.Single(cut.FindAll(".kills tbody tr"));
     }
 
     [Fact]

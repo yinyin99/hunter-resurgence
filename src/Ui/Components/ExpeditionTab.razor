@@ -1,6 +1,6 @@
 @inject IProfileService Service
 
-@if (hunt is not null) { <HuntStats Hunt="hunt" Handle="@Handle" Reload="Load" /> }
+@if (hunt is not null) { <HuntStats Hunt="hunt" Handle="@Handle" Reload="Reload" /> }
 
 @code {
     Expedition? hunt;
@@ -8,7 +8,8 @@
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
     [Parameter] public long Id { get; set; }
 
-    protected override Task OnParametersSetAsync() => Load();
+    protected override async Task OnParametersSetAsync() => hunt = await Service.ExpeditionAsync(Handle, Id);
 
-    async Task Load() => hunt = await Service.ExpeditionAsync(Handle, Id);
+    // a read that fails keeps the page as it is: the next one may answer
+    async Task Reload() => hunt = await Service.ExpeditionAsync(Handle, Id) ?? hunt;
 }
