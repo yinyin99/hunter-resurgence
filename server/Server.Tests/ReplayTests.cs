@@ -238,6 +238,9 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("body#client_missions_page #main #page_body #ajax_content{flex:1 1 0;min-height:0;max-height:none}", page);  // the list takes the height left in the box, its scrollbar stays inside
         Assert.Contains("html body#lodge_edit #main,html body#client_missions_page #main{flex:1 1 0;min-height:0;height:auto}", page);  // the frame is no longer cut off under the tab bar
         Assert.Contains("fieldset label:not([for=\"hide-completed\"]){display:block;width:auto}", page);  // the filters' labels stay above their controls (Search too) in a wide box
+        Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "window\\.game=\\{\\}"));  // the key binding forwarder: once, defined only where the page has none, forwarding to ewcallback at call time
+        Assert.Contains("if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}", page);
+        Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
