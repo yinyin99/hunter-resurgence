@@ -26,6 +26,8 @@ public sealed class Prefs
     public bool SteamOptionNever { get; set; }
     /// <summary>Problem reports: "unset" (never asked), "auto" (sent by itself after a failed start) or "ask" (only offered).</summary>
     public string ReportConsent { get; set; } = "unset";
+    /// <summary>Where the launcher window was when it last closed (its normal size, and whether it was maximized); null: centred at the default size.</summary>
+    public WindowPlace? Window { get; set; }
 
     public static Prefs Load(string path)
     {
@@ -40,4 +42,12 @@ public sealed class Prefs
         File.WriteAllBytes(tmp, JsonSerializer.SerializeToUtf8Bytes(this, J));
         File.Move(tmp, path, true); // a crash never leaves a half file
     }
+}
+
+/// <summary>The launcher window's normal bounds in WPF units, and whether it was maximized.</summary>
+public sealed record WindowPlace(double Left, double Top, double Width, double Height, bool Maximized)
+{
+    /// <summary>At least 100 x 50 units of the window's top (its title bar) lie on the screen: a monitor that is gone never hides the launcher.</summary>
+    public bool OnScreen(System.Windows.Rect screen) =>
+        Math.Min(Left + Width, screen.Right) - Math.Max(Left, screen.Left) >= 100 && Math.Min(Top + 50, screen.Bottom) - Math.Max(Top, screen.Top) >= 50;
 }

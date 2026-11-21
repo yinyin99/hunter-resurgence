@@ -13,13 +13,19 @@ public partial class MainWindow : Window
         InitializeComponent();
         Title += " v" + LauncherEnv.AppVersion;
         // dev aid: resurgence-launcher.exe --route=/store opens that route first
-        // the window is sized so that the page area is exactly 1280x760, as in every reference picture
-        Loaded += (_, _) => { Width += 1280 - Blazor.ActualWidth; Height += 760 - Blazor.ActualHeight; };
+        // the window opens where it was closed (on a screen that is still there); else it is sized so that the page area is exactly 1280x760, as in every reference picture
+        if (Prefs.Load(Prefs.DefaultPath).Window is { } place && place.OnScreen(new Rect(SystemParameters.VirtualScreenLeft, SystemParameters.VirtualScreenTop, SystemParameters.VirtualScreenWidth, SystemParameters.VirtualScreenHeight)))
+        {
+            WindowStartupLocation = WindowStartupLocation.Manual;
+            (Left, Top, Width, Height) = (place.Left, place.Top, place.Width, place.Height);
+            if (place.Maximized) WindowState = WindowState.Maximized;
+        }
+        else Loaded += (_, _) => { Width += 1280 - Blazor.ActualWidth; Height += 760 - Blazor.ActualHeight; };
         // closing while the game runs would stop the forwarder and disconnect the game, so the player is asked; Windows shutdown and sign-out are never held up
         Application.Current.SessionEnding += (_, _) => ending = true;
         Closing += (_, e) =>
         {
-            if (closing || !NeedsAnswer(ending, GameRunning)) return;
+            if (closing || !NeedsAnswer(ending, GameRunning)) { RememberPlace(); return; }
             e.Cancel = true;
             // the dialog opens after this event: a window cannot own a dialog while it is closing
             if (!asking) Dispatcher.InvokeAsync(Ask);
@@ -28,6 +34,20 @@ public partial class MainWindow : Window
     }
 
     bool ending, closing, asking;
+
+    /// <summary>Saves the window's normal bounds for the next start; a minimized window keeps the place it had before. A failed save never holds up the close.</summary>
+    void RememberPlace()
+    {
+        var b = RestoreBounds;
+        if (b.IsEmpty) return;
+        try
+        {
+            var prefs = Prefs.Load(Prefs.DefaultPath);
+            prefs.Window = new(b.Left, b.Top, b.Width, b.Height, WindowState == WindowState.Maximized);
+            prefs.Save(Prefs.DefaultPath);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+    }
 
     static bool GameRunning() => GameFiles.ClientRunning(Settings.Load().ClientExe);
 
