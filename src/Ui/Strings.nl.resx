@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Of doe mee</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Snel meedoen</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Jouw voortgang</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Jacht bezig</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Bekijk de jacht</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Laatste prestatie</value></data>
@@ -1008,7 +1010,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tijd van de oogst</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>Bezig</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistieken zullen worden bijgewerkt wanneer de expeditie is beëindigd.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Vorige</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Volgende</value></data>

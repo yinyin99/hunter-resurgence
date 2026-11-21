@@ -1,6 +1,6 @@
 // The client's replies built from the rows a restore wrote (Restorer): the profile, statistics and achievements tables.
 // An account without a profile row has no restored rows, and these return null: the caller's recorded reply stands. The
-// statistics add this server's closed hunts on top of the restored ones.
+// statistics add this server's hunts (the open one so far) on top of the restored ones.
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -45,15 +45,15 @@ public static class RestoredReads
         }).ToArray());
 
     /// <summary>The four per-kind statistic objects plus the distance and duration, as the connect reply and Statistics/total carry
-    /// them: the restored ones (the base, which play never changes) plus the account's closed hunts (<see cref="AddHunts"/>).</summary>
-    static (JsonObject Data, double Distance, double Duration, long? Bust, long? Lane) Statistics(Db con)
+    /// them: the restored ones (the base, which play never changes) plus the account's hunts (<see cref="AddHunts"/>).</summary>
+    static (JsonObject Data, double Distance, double Duration, long? Bust, long? Lane) Statistics(Db con, bool withOpen = true)
     {
         var row = con.Rows("SELECT user_stats, distance, duration FROM statistics WHERE account_id = $a").FirstOrDefault();
         var data = row is null ? new JsonObject() : JsonNode.Parse((string)row[0])!.AsObject();
         if (row is null)  // nothing restored: the empty statistics of a new player; a restored `data` stays as saved (an older reply has no daily_missions)
             foreach (var kind in new[] { "collectables", "weapon", "animal", "daily_missions" })
                 data[kind] = new JsonObject();
-        var (distance, duration) = AddHunts(con, data);
+        var (distance, duration) = AddHunts(con, data, withOpen);
         if (con.Scalar("SELECT json_extract(body, '$.days') FROM daily_missions WHERE account_id = $a") is string days && JsonNode.Parse(days) is JsonObject played)
             Add(data, "daily_missions", new JsonObject(played.Select(kv => KeyValuePair.Create(kv.Key, (JsonNode?)new JsonObject { ["days"] = kv.Value?.DeepClone() }))));
         return (data, distance + (row is null ? 0 : Convert.ToDouble(row[1])), duration + (row is null ? 0 : Convert.ToDouble(row[2])),
@@ -70,13 +70,13 @@ public static class RestoredReads
         return restored is null ? played : played is null ? restored : Math.Max(restored.Value, played.Value);
     }
 
-    /// <summary>Add the stored statistics of the account's closed hunts (State.HuntStats) to data's `animal`, `weapon` and `collectables`: counters
+    /// <summary>Add the stored statistics of the account's hunts, the open one's so far included (State.HuntStats), to data's `animal`, `weapon` and `collectables`: counters
     /// add up (a collectable's `sum`, a text, too), a weapon's `distance` (its longest hit) and a collectable's `max` are the largest, a counter of data that is no number is replaced. Returns the
-    /// hunts' summed distance and duration. A hunt that cannot be read back (a number that is not finite) is skipped and logged.</summary>
-    public static (double Distance, double Duration) AddHunts(Db con, JsonObject data)
+    /// hunts' summed distance and duration; without <paramref name="withOpen"/> the open hunt's counts so far are left out. A hunt that cannot be read back (a number that is not finite) is skipped and logged.</summary>
+    public static (double Distance, double Duration) AddHunts(Db con, JsonObject data, bool withOpen = true)
     {
         double distance = 0, duration = 0;
-        foreach (var r in con.Rows("SELECT stats FROM expeditions WHERE account_id = $a AND stats IS NOT NULL ORDER BY id"))
+        foreach (var r in con.Rows("SELECT stats FROM expeditions WHERE account_id = $a AND stats IS NOT NULL" + (withOpen ? "" : " AND json_extract(stats, '$.open') IS NOT 1") + " ORDER BY id"))
         {
             JsonObject hunt;
             try
@@ -122,9 +122,11 @@ public static class RestoredReads
     /// <summary>A whole number as an integer, the way the API sends distance and duration.</summary>
     static JsonNode Number(double d) => d == Math.Floor(d) && Math.Abs(d) < 1e15 ? (long)d : d;
 
-    public static JsonNode StatisticsTotal(Db con)
+    public static JsonNode StatisticsTotal(Db con) => StatisticsTotal(con, true);
+
+    public static JsonNode StatisticsTotal(Db con, bool withOpen)
     {
-        var s = Statistics(con);
+        var s = Statistics(con, withOpen);
         return new JsonObject { ["duration"] = Number(s.Duration), ["distance"] = Number(s.Distance), ["data"] = s.Data };
     }
 

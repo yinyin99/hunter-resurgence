@@ -5,7 +5,7 @@
 @switch (sub)
 {
     case "":
-        @if (last is not null) { <HuntStats Hunt="last" Handle="@Handle" /> }
+        @if (last is not null) { <HuntStats Hunt="last" Handle="@Handle" Reload="LoadLast" /> }
         break;
     case "lifetime":
         @if (totals is not null)
@@ -77,6 +77,9 @@
 
     // a list that is still being made can be read again: the service moves it on
     async Task Refresh() => best = await Service.BestAsync(Handle, season);
+
+    // the latest hunt read again while it is in progress: a read that fails keeps the page as it is
+    async Task LoadLast() => last = await Service.ExpeditionAsync(Handle, null) ?? last;
 
     void Season(ChangeEventArgs e) => Nav.NavigateTo($"/profile/{Handle}/statistics/best/{e.Value}");
 

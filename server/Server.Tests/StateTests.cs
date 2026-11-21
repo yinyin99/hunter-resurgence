@@ -742,14 +742,17 @@ public class InventoryTests : StateTestBase
            O("""{"event": 1, "individual": 5, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 4000}"""),
            O("""{"event": 1, "individual": 5, "weapon_id": 5, "ammunition_id": 10, "distance_cms": 6000}"""),
            O("""{"event": 3, "individual": 5, "extended_species": 1}"""));
-        Assert.Null(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]);  // ongoing
+        var ongoing = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!;  // the hunt so far, the same counts as at its end; no distance until then
+        const string data = """
+                            {"achievements": [], "weapon": {"5": {"10": {"ethical_kills": 1, "hits": 2, "misses": 1, "kills": 1, "distance": 60000}}}, "animal": {"1": {"ethical_kills": 1, "spots": 1, "kills": 1}, "4": {"tracks": 1}}}
+                            """;
+        Eq("0", ongoing["distance"]);
+        Assert.Equal(data, Py.Dumps(ongoing["data"]));
         state.Disconnect(ME, "{\"distance_travelled\": 466, \"shots_fired\": 3, \"shots_hit\": 2}"u8.ToArray());
         var stats = Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!;
         Eq("466", stats["distance"]);
         // finished hunt: achievements first, zero counters left out, Statistics/total key order
-        Assert.Equal("""
-                     {"achievements": [], "weapon": {"5": {"10": {"ethical_kills": 1, "hits": 2, "misses": 1, "kills": 1, "distance": 60000}}}, "animal": {"1": {"ethical_kills": 1, "spots": 1, "kills": 1}, "4": {"tracks": 1}}}
-                     """, Py.Dumps(stats["data"]));
+        Assert.Equal(data, Py.Dumps(stats["data"]));
     }
 
     [Fact]
@@ -830,7 +833,7 @@ public class InventoryTests : StateTestBase
     {
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
         state.HeartbeatReply(ME, "{\"events\": []}"u8.ToArray());
-        Assert.Null(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]);  // still within the timeout
+        Assert.Equal("""{"achievements": []}""", Py.Dumps(Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!["data"]));  // still within the timeout: the hunt so far, nothing yet
         double lastSeen;
         using (var con = new SqliteConnection($"Data Source={Db};Pooling=False"))  // the client quit: last heartbeat 200 s ago
         {

@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Nebo se připojte</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Rychlé připojení</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Váš postup</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Probíhající lov</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Zobrazit lov</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Lovecké skóre</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Umístění</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Poslední achievement</value></data>
@@ -1008,7 +1010,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Čas dohledání</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Obnovit</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>Probíhá</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistika bude aktualizována po skončení výpravy.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Taxidermie</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Předchozí</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Další</value></data>

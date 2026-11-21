@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Tai liity yhteen</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Nopea liittyminen</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Edistymisesi</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Metsästys käynnissä</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Näytä metsästys</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Sijoitus</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Viimeisin saavutus</value></data>
@@ -1008,7 +1010,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Kaadon aika</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Päivitä</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>Käynnissä</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Tilastot päivittyvät kun retki on loppunut.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Täytetyt eläimet</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Edellinen</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Seuraava</value></data>

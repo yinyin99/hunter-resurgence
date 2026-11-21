@@ -62,7 +62,7 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterStatistics").WithSummary("A hunter's statistics tab: weapons, animals, distance and hunt time")
             .WithDescription("`{weapons: [{weapon, ammo, shots, accuracy, kills, killsPerHit, longest}], animals: [{name, spotted, tracked, harvested}], collectables: [], "
-                             + "distanceKm, huntSeconds}`: the restored statistics plus the closed server hunts; 404 for a handle that is unknown or banned.")
+                             + "distanceKm, huntSeconds}`: the restored statistics plus the server hunts (the open one so far); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/skills", (string handle) => state.PublicAccount(handle) is { } id
@@ -138,7 +138,7 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterHunts").WithSummary("One page of a hunter's hunt history")
             .WithDescription($"`{{page, pages, total, rows: [{{id, start, seconds, reserve, lodge, collectables, kills}}]}}`, {State.HuntsPageSize} rows a page, newest first: the hunts made here, then the restored ones "
-                             + "(as `Expedition/list`); `start` is Unix seconds, `seconds` 0 for a hunt that is open, `lodge` \"#id\" (the catalogue has no lodge names). 404 for a handle that is unknown or banned.")
+                             + "(as `Expedition/list`); `start` is Unix seconds, `seconds` the time since it started for a hunt that is open, `lodge` \"#id\" (the catalogue has no lodge names). 404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
@@ -148,7 +148,7 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterHunt").WithSummary("One hunt of a hunter: its statistics and its kills")
             .WithDescription("`{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}` of `Public_user/expedition` (`id` a hunt id, or `latest`): `weapons` and `animals` are the "
-                             + "rows of `/hunters/<handle>/statistics` for the hunt (empty while it is open, `end` null), `collectables`, `achievements` and `antlers` are empty, `kills` are `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` "
+                             + "rows of `/hunters/<handle>/statistics` for the hunt (those of its events so far while it is open, `end` null, `distanceKm` 0 and `seconds` the time since it started), `collectables`, `achievements` and `antlers` are empty, `kills` are `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` "
                              + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). On the signed-in player's own hunt (the `hr_session` cookie of the handle) a kill made here also has "
                              + "`taxidermy: {end, ems, gms, skull, done}`: `end` (ISO UTC) is 72 hours after the harvest (after the day the taxidermy went live, for an older harvest), `ems` and `gms` the price, `skull` whether the species has a skull to mount, `done` `taxidermy`, `skull` or null; "
                              + "a restored kill and anyone else's view have none. 404 for a handle that is unknown or banned, and for a hunt that is unknown.")

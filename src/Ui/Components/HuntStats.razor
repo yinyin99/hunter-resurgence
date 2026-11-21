@@ -1,14 +1,9 @@
-@* the statistics of one expedition: the last hunt of a hunter, or one expedition of the history *@
+@implements IDisposable
+@* the statistics of one expedition: the last hunt of a hunter, or one expedition of the history. A hunt in progress shows what its events have made so far, its distance empty until it ends, and is read again every minute *@
 <div class="head">
     <span class="where">@string.Join(" - ", new[] { Hunt.Reserve, Hunt.Lodge }.Where(n => !string.IsNullOrEmpty(n)))</span>
     <span class="when">@Hunt.Start.ToString("yyyy-MM-dd HH:mm") UTC - @(Hunt.End is { } e ? e.ToString("yyyy-MM-dd HH:mm") + " UTC" : L["Stat.Ongoing"])</span>
 </div>
-@if (Hunt.End is null)
-{
-    // the old page shows nothing else until the expedition is over
-    <p>@L["Stat.WhenEnded"]</p>
-    return;
-}
 <h4>@L["Prof.Weapons"]</h4>
 @if (Hunt.Weapons.Count == 0) { <p>@L["Stat.NoShotsExp"]</p> }
 else { <WeaponTable Weapons="Hunt.Weapons" /> }
@@ -30,7 +25,7 @@ else { <SpeciesTable Rows="Hunt.Animals" /> }
 }
 <h4>@L["Stat.Misc"]</h4>
 <table class="misc tbl"><tbody>
-    <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(L, Hunt.DistanceKm)</td></tr>
+    <tr><td>@L["Stat.Distance"]</td><td>@(Hunt.End is null ? "-" : Fmt.Kilometres(L, Hunt.DistanceKm))</td></tr>
     <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(L, Hunt.Seconds)</td></tr>
 </tbody></table>
 @if (Hunt.Antlers.Count > 0)
@@ -52,7 +47,37 @@ else
 }
 
 @code {
+    readonly CancellationTokenSource stop = new();
+    bool polling;
+
     [Parameter, EditorRequired] public Expedition Hunt { get; set; } = null!;
     /// <summary>The hunter whose score sheets the kills link to.</summary>
     [Parameter, EditorRequired] public string Handle { get; set; } = "";
+    /// <summary>Reads the hunt again and gives it back as <see cref="Hunt"/>; called while the hunt is in progress. Without it the page is not refreshed.</summary>
+    [Parameter] public EventCallback Reload { get; set; }
+    /// <summary>How often a hunt in progress is read again: about a heartbeat of the game.</summary>
+    [Parameter] public TimeSpan Every { get; set; } = TimeSpan.FromSeconds(60);
+
+    protected override void OnParametersSet()
+    {
+        if (Hunt.End is null && !polling && Reload.HasDelegate)
+        {
+            polling = true;
+            _ = Poll();
+        }
+    }
+
+    async Task Poll()
+    {
+        using var timer = new PeriodicTimer(Every);
+        try
+        {
+            while (Hunt.End is null && await timer.WaitForNextTickAsync(stop.Token))
+                await InvokeAsync(Reload.InvokeAsync);
+        }
+        catch (OperationCanceledException) { }
+        polling = false;
+    }
+
+    public void Dispose() => stop.Cancel();
 }

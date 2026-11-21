@@ -191,6 +191,8 @@
   <data name="Hunt.OrJoin" xml:space="preserve"><value>Eller gå med i ett</value></data>
   <data name="Hunt.QuickJoin" xml:space="preserve"><value>Snabbanslut</value></data>
   <data name="Hunt.Progress" xml:space="preserve"><value>Dina framsteg</value></data>
+  <data name="Hunt.Current" xml:space="preserve"><value>Jakt pågår</value></data>
+  <data name="Hunt.CurrentView" xml:space="preserve"><value>Visa jakten</value></data>
   <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunterpoäng</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rank</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Senaste prestation</value></data>
@@ -1008,7 +1010,6 @@
   <data name="Stat.TimeOfHarvest" xml:space="preserve"><value>Tidpunkt</value></data>
   <data name="Stat.Refresh" xml:space="preserve"><value>Uppdatera</value></data>
   <data name="Stat.Ongoing" xml:space="preserve"><value>Pågår</value></data>
-  <data name="Stat.WhenEnded" xml:space="preserve"><value>Statistiken kommer att uppdateras när expeditionen har avslutats.</value></data>
   <data name="Stat.Taxidermy" xml:space="preserve"><value>Uppstoppning</value></data>
   <data name="Stat.Previous" xml:space="preserve"><value>Föregående</value></data>
   <data name="Stat.Next" xml:space="preserve"><value>Nästa</value></data>
