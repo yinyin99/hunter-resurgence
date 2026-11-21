@@ -346,9 +346,9 @@ public sealed partial class State
     /// <summary>Rows newest first by the Unix seconds or ISO text in <paramref name="field"/>; rows without a date go last, equal dates keep their order.</summary>
     static List<JsonNode?> Newest(IEnumerable<JsonNode?> rows, string field)
     {
-        static long? At(JsonNode? v) =>
-            Py.IsNum(v) ? Py.L(v) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : null;
-        return [.. rows.OrderBy(r => At(r?[field]) is null).ThenByDescending(r => At(r?[field]) ?? 0)];
+        static double At(JsonNode? v) =>
+            Py.IsNum(v) ? Num(v) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : double.MinValue;
+        return [.. rows.OrderByDescending(r => At(r?[field]))];
     }
 
     static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
