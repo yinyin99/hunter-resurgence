@@ -273,7 +273,7 @@ A reserve of the event without an entry gets only `ingame_event`, and so does ev
 
 | Game reserve (launch map) | Event creatures the server adds | Why this reserve |
 |---|---|---|
-| 0 (1, Whitehart Island) | a feral hog (index 3: 12 males and 24 females) and a werewolf (9: 9 and 16, random groups 22 and 36, radius 15) | the game ships a werewolf and a feral hog density map for it |
+| 0 (1, Whitehart Island) | a feral hog (index 3: 12 males and 24 females, no random groups, beside the normal Roosevelt elk 3) and a werewolf (9: 9 and 16, random groups 22 and 36, radius 15) | the game ships a werewolf and a feral hog density map for it |
 | 1 (2, Logger's Point) | a werewolf (110: 18 and 30, no random groups) | the game ships a werewolf density map for it; its feral hog is the normal one |
 | 2 (3, Settler Creeks) | a werewolf (208: 9 and 16, random groups 22 and 36, radius 15) | the same |
 | 8 (9, Bushrangers Run) | a werewolf (805: no group, random groups 25 and 25, radius 30) | the same |

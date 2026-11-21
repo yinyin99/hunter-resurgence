@@ -155,7 +155,7 @@ public sealed class Facts
     {
         if (Obj("events")[name]?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)] is not JsonObject content) return null;
         long[] ammo = [.. (content["ammo"] as JsonArray ?? []).Select(Py.L)];
-        JsonObject[] populations = [.. (content["populations"] as JsonArray ?? []).Select(p => Population(p!.AsObject(), reserve + 1))];
+        JsonObject[] populations = [.. (content["populations"] as JsonArray ?? []).Select(p => Population(p!.AsObject(), reserve + 1)).Select(p => { p["key"] = $"event-{name}-{p["index"]}"; return p; })];  // its own key: an event row can share its index with a normal one
         return (ammo, populations);
     }
 

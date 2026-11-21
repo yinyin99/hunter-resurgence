@@ -252,6 +252,7 @@ public class SeasonalEventTests : StateTestBase
         if (reserve == 0)
             Assert.Contains(Rows(reply), p => (long)p["index"]! == 3 && (string)p["animal"]! == "roosevelt_elk");  // the normal creature that shares the hog's index stays
         Assert.Equal(content, string.Join(",", rows.Select(p => $"{p!["animal"]}:{p["index"]}:{p["density_map"]}")));
+        Assert.All(rows, p => Assert.Equal($"event-halloween_2026-{p["index"]}", (string)p["key"]!));  // never a normal row's key
         Assert.All(rows, p =>
         {
             Assert.Equal(reserve + 1, (int)p!["reserve"]!);  // the web's number of the game's reserve
