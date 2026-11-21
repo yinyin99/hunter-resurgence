@@ -128,7 +128,7 @@ else
 
     /// <summary>The time picker; on a reserve the event fixes, the event's time instead (docs/server.md#seasonal-events).</summary>
     RenderFragment StartTime => seasonal.FixedHour(reserve) is { } fixedHour
-        ? @<p id="start-time" class="muted">@L["Launch.EventTime", $"{fixedHour:00}:{(int)Math.Round(fixedHour % 1 * 60):00}"]</p>
+        ? @<p id="start-time" class="muted">@L["Launch.EventTime", TimeSpan.FromHours(fixedHour).ToString(@"hh\:mm")]</p>
         : @<Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />;
 
     [Parameter] public int Kind { get; set; }

@@ -31,6 +31,11 @@ public sealed class LaunchMapTests : UiContext
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button[data-reserve]")));
         cut.WaitForAssertion(() => Assert.Equal(fixedTime, cut.Find("#start-time").TagName == "P"));
         if (fixedTime) Assert.Contains("01:15", cut.Find("#start-time").TextContent);
+        if (fixedTime)
+        {
+            cut.Find("button[data-reserve='9']").Click();  // Bushrangers Run has its own hour
+            cut.WaitForAssertion(() => Assert.Contains("04:42", cut.Find("#start-time").TextContent));
+        }
     }
 
     sealed class Recording : IServersService

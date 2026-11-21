@@ -203,7 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Wählen Sie, wo Ihre Jagd beginnen soll. Klicken Sie auf eines der 12 Revier-Logos unten, um eine Karte des jeweiligen Reviers zu sehen, und klicken Sie auf die Lodges (die Haussymbole), um zu erfahren, welche Wildarten in diesem Gebiet vorkommen. Sie können die Weltkarte auch verschieben, indem Sie sie mit gedrückter Maustaste ziehen, und mit dem Mausrad ein- und auszoomen.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Einige der großartigsten Naturlandschaften der Welt sowie 45 verschiedene Tierarten warten auf Sie. Waidmannsheil!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Startzeit:</value></data>
-  <data name="Launch.EventTime" xml:space="preserve"><value>Von dem Event festgelegt: {0}</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Vom Event festgelegt: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Spiel starten</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patch läuft</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Lodges:</value></data>

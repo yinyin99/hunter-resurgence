@@ -203,7 +203,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Vælg, hvor din jagt skal starte. Klik på et af de 12 logoer for jagtområderne nedenfor for at se et kort over det pågældende jagtområde, og klik på jagthytterne (husikonerne) for at se, hvilke arter der findes i området. Du kan også udforske verdenskortet ved at klikke og trække på det og zoome ind og ud med musehjulet.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Nogle af verdens mest storslåede naturområder og 45 forskellige dyrearter venter på dig – god jagt!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttidspunkt:</value></data>
-  <data name="Launch.EventTime" xml:space="preserve"><value>Tidspunktet er fastlagt af eventet: {0}</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Tidspunktet er fastlagt af begivenheden: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Start spillet</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patcher</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Jagthytter:</value></data>
