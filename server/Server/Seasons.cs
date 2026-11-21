@@ -152,7 +152,7 @@ public sealed partial class State
         {
             do
                 try { RefreshBoards(); }
-                catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("leaderboards: " + e.Message); }
+                catch (Exception e) when (e is not OperationCanceledException) { Console.Error.WriteLine("leaderboards: " + e.Message); }  // whatever a round meets, the next one comes
             while (await tick.WaitForNextTickAsync(stop));
         }
         catch (OperationCanceledException) { }

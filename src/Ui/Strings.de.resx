@@ -281,7 +281,7 @@
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Passwort eingeben</value></data>
   <data name="Join.Go" xml:space="preserve"><value>Beitreten</value></data>
   <data name="Join.Close" xml:space="preserve"><value>Schließen</value></data>
-  <data name="Join.WrongPassword" xml:space="preserve"><value>Falsches Passwort. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Join.WrongPassword" xml:space="preserve"><value>Falsches Passwort. Bitte versuche es erneut.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Dieses Spiel ist voll. Bitte versuche ein anderes Spiel.</value></data>
   <data name="Join.NotAllowed" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Es ist nur für Freunde des Gastgebers, oder dein Hunter-Score liegt außerhalb seiner Grenzen.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Der Gastgeber ist noch nicht bereit. Bitte versuche es gleich noch einmal.</value></data>
@@ -569,7 +569,7 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Beste Bewertungen aller Zeiten</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Beste Schussweiten aller Zeiten</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Hier ist noch niemand platziert</value></data>
-  <data name="Board.LoadFailed" xml:space="preserve"><value>Die Bestenliste konnte nicht geladen werden. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Die Bestenliste konnte nicht geladen werden. Bitte versuche es erneut.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Erneut versuchen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Noch keine Saison ist zu Ende</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Beste Lane-Bandit-Bewertungen</value></data>
@@ -848,14 +848,14 @@
   <data name="Bank.Extras" xml:space="preserve"><value>Zusatzwaffen: {0}, weitere Artikel: {1}</value></data>
   <data name="Bank.MonthsOnly" xml:space="preserve"><value>{0} Monate</value></data>
   <data name="Bank.SteamInternal" xml:space="preserve"><value>Interner Steam-Fehler, bitte versuche es später erneut.</value></data>
-  <data name="Bank.SteamError" xml:space="preserve"><value>Beim Verbinden mit Steam ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Bank.SteamError" xml:space="preserve"><value>Beim Verbinden mit Steam ist ein Fehler aufgetreten. Bitte versuche es erneut.</value></data>
   <data name="Bank.Thanks" xml:space="preserve"><value>Danke, dass du den {game}-Shop genutzt hast, dein Konto wurde mit dem gekauften Artikel aktualisiert.</value></data>
   <data name="Bank.ThanksClose" xml:space="preserve"><value>Klicke oben rechts auf „Schließen“, um zu {game} zurückzukehren.</value></data>
   <data name="Bank.Unavailable" xml:space="preserve"><value>Etwas ist schiefgegangen, bitte nochmals versuchen. Wenn es wieder nicht klappt, bitte den Support kontaktieren</value></data>
   <data name="Bank.SteamThanks" xml:space="preserve"><value>Danke für deinen Einkauf!</value></data>
   <data name="Bank.SteamDone" xml:space="preserve"><value>Dein Kauf von {0} über Steam ist abgeschlossen und deine Waren wurden deinem Konto hinzugefügt.</value></data>
   <data name="Bank.SteamFailed" xml:space="preserve"><value>Kauf fehlgeschlagen</value></data>
-  <data name="Bank.SteamAborted" xml:space="preserve"><value>Etwas ist schiefgelaufen und dein Steam-Kauf wurde abgebrochen. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Bank.SteamAborted" xml:space="preserve"><value>Etwas ist schiefgelaufen und dein Steam-Kauf wurde abgebrochen. Bitte versuche es erneut.</value></data>
   <data name="Bank.HuntNow" xml:space="preserve"><value>Jagd beginnen</value></data>
   <data name="Msg.Title" xml:space="preserve"><value>Mitteilungen</value></data>
   <data name="Msg.OnlyFriends" xml:space="preserve"><value>Nur Nachrichten von Freunden zulassen</value></data>
@@ -1439,8 +1439,8 @@
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- und Proxy-Logs können IP-Adressen und Handles enthalten. Sie werden höchstens 30 Tage aufbewahrt.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Dein Browser ist geöffnet. Melde dich dort mit Steam an.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Mit Steam anmelden</value></data>
-  <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuchen Sie es erneut.</value></data>
-  <data name="Signin.LinkFailed" xml:space="preserve"><value>Der Server ist nicht erreichbar. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>
+  <data name="Signin.LinkFailed" xml:space="preserve"><value>Der Server ist nicht erreichbar. Bitte versuche es erneut.</value></data>
   <data name="Kit.SettingsBroken" xml:space="preserve"><value>settings.json ist kein gültiges JSON.</value></data>
   <data name="Kit.SettingsKey" xml:space="preserve"><value>settings.json: Setze "{0}" (fehlt oder ist noch ein Platzhalter).</value></data>
   <data name="Kit.SettingsUrl" xml:space="preserve"><value>settings.json: "{0}" muss eine https-Adresse ohne Abfrage sein.</value></data>
@@ -1582,7 +1582,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Taxidermy.NotEnoughGms" xml:space="preserve"><value>Nicht genügend gm$</value></data>
   <data name="Taxidermy.Already" xml:space="preserve"><value>Für dieses Tier bereits erledigt.</value></data>
   <data name="Taxidermy.TooLate" xml:space="preserve"><value>Zu spät: die 72 Stunden sind vorbei.</value></data>
-  <data name="Taxidermy.Failed" xml:space="preserve"><value>Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.</value></data>
+  <data name="Taxidermy.Failed" xml:space="preserve"><value>Etwas ist schiefgelaufen. Bitte versuche es erneut.</value></data>
   <data name="Exit.Title" xml:space="preserve"><value>Das Spiel wurde sofort beendet</value></data>
   <data name="Exit.Steam" xml:space="preserve"><value>Das Spiel konnte weder mit noch ohne Steam gestartet werden.</value></data>
   <data name="Exit.Blocked" xml:space="preserve"><value>Windows hat das Spiel blockiert.</value></data>
