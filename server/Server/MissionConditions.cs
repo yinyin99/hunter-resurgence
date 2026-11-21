@@ -11,7 +11,7 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species }
+    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
     /// animal state, stance, stand `location`, reserve), the refused ones (`NotAmmo`, `NotState`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
@@ -19,13 +19,14 @@ public sealed partial class State
     sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
 
     /// <summary>A kill as the conditions see it: its harvest (event 3) and spawn (event 7), its hits (event 1, in order; a spot's own event 11), the reserve of the hunt it
-    /// happened in, and, when asked for, whether a hit was not permitted and the score.</summary>
-    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored)
+    /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).</summary>
+    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null)
     {
         public readonly JsonObject E3 = e3, E7 = e7;
         public readonly long? Reserve = reserve;
         public readonly Lazy<List<JsonObject>> Hits = new(hits);
         public readonly Lazy<(bool Disqualified, double? Score)> Scored = new(scored);
+        public readonly Lazy<double?> Points = new(points ?? (() => null));
     }
 
     static double? NumOf(JsonObject? o, string key) => o is not null && Py.IsNum(o[key]) ? Py.D(o[key]) : null;
@@ -59,6 +60,7 @@ public sealed partial class State
             Check.Distance => In(t, NumOf(last, "distance_cms") / 100),
             Check.Weight => In(t, NumOf(k.E7, "weight_grams") / 1000),
             Check.Score => In(t, k.Scored.Value.Score),
+            Check.Points => NumOf(k.E7, "gender") != 1 && In(t, k.Points.Value),  // a female never has the rack a title asks for
             Check.State => Has(NumOf(last, "animal_state")),
             Check.NotState => NumOf(last, "animal_state") is { } state && !t.Ids!.Contains((long)state),
             Check.FirstState => Has(NumOf(first, "animal_state")),
@@ -81,7 +83,7 @@ public sealed partial class State
     static long? ReserveAt(Db con, long eventId) =>
         con.Scalar("SELECT reserve FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) as long?;
 
-    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits and its score are read from the stored events when a condition asks.</summary>
+    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits, its score and its antler points are read from the stored events when a condition asks.</summary>
     Kill KillOf(Db con, JsonObject e3, long eventId, JsonObject? e7 = null)
     {
         var harvest = Py.Dumps(e3);
@@ -89,7 +91,15 @@ public sealed partial class State
         {
             var r = ScoreKill(con, e3, harvest, Trophy, AmmoCheck);
             return (r.Disqualified, Py.IsNum(r.Score) ? Py.D(r.Score) : null);
-        });
+        }, () => TypicalPoints(e3, KillEvents(con, e3["individual"], harvest).E22));
+    }
+
+    /// <summary>The typical points of both antlers added (the `points` of the trophy event's `left_antler` and `right_antler`: the main beam and the tines, not the `abnormals`); null for a
+    /// kill with no trophy event (or no antler in it) and for a non-typical rack (`extended_species` 100 and up).</summary>
+    static double? TypicalPoints(JsonObject e3, JsonObject e22)
+    {
+        var sides = new[] { "left_antler", "right_antler" }.Select(side => e22[side] is JsonObject antler ? antler["points"] as JsonArray : null).ToList();
+        return Py.IsNum(e3["extended_species"]) && Py.L(e3["extended_species"]) >= 100 || sides.All(s => s is null) ? null : sides.Sum(s => s?.Count ?? 0);
     }
 
     /// <summary>A spotted animal (event 11, stored as event `eventId`) as a kill with one hit: the spot itself, which carries the player's stand.</summary>
@@ -120,6 +130,9 @@ public sealed partial class State
 
         static Regex Between(string unit) => new(@"(?:between|(?:(?:at|from)\s+)?(?:a\s+)?range\s+of)\s+(?<a>\d+(?:[.,]\d+)?)\s*(?:" + unit + @"\s*)?(?:and|to|-)\s*(?<b>\d+(?:[.,]\d+)?)\s*" + unit + @"\b", Rx);
 
+        // the number words a title may use for a count (a number of typical points, a number of clues): the index is the number
+        static readonly string[] NumberWords = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty".Split(' ');
+
         static readonly Regex
             Verb = new(@"\A\s*(?:harvest|take|kill|spot)\b", Rx),
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
@@ -129,6 +142,8 @@ public sealed partial class State
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
+            TypicalPoints = Quantity(@"typical\s+points?"), PointCount = new(@"(?<![\w.-])(?<n>\d+)(?:-point|\s?pt)\b(?!\s+score)", Rx),
+            NumberWord = new(@"\b(?<w>" + string.Join('|', NumberWords[1..]) + @")(?=\s+typical\s+points?\b)", Rx),
             Quoted = new("\"([^\"]+)\"", Rx),
             PlacePhrase = new(@"\b(?:by|at|near|around|last seen at|in)\s+[^()\d]*?\(\s*x\s*:[^)]*\)", Rx),
             Distance = Quantity(Metres), Kg = Quantity(Kilos), Lb = Quantity(Pounds), BetweenMetres = Between(Metres), BetweenKg = Between(Kilos),
@@ -323,6 +338,9 @@ public sealed partial class State
                 tests.Add(place.Success ? new(Check.Named, Coordinate(place.Groups["x"].Value), Coordinate(place.Groups["y"].Value)) : new(Check.Named));
             s = SameHunt.Replace(Coordinates.Replace(Conversion.Replace(s, " "), " "), " ");
             if (Take(ref s, Hundred, out _)) tests.Add(new(Check.Value, 100000));
+            s = NumberWord.Replace(s, m => Array.IndexOf(NumberWords, m.Groups["w"].Value).ToString(CultureInfo.InvariantCulture));  // `ten typical points`
+            if (Take(ref s, TypicalPoints, out var points)) Bound(points, 1, Check.Points, tests);  // `at least 8 typical points`: both antlers together, before the score reads "points"
+            else if (Take(ref s, PointCount, out points)) tests.Add(new(Check.Points, Parse(points.Groups["n"].Value)));  // `a 12-point Elk`: at least 12
             var (distance, weight) = (false, false);
             if (Take(ref s, BetweenMetres, out var between)) { tests.Add(new(Check.Distance, Parse(between.Groups["a"].Value), Parse(between.Groups["b"].Value))); distance = true; }
             else if (Take(ref s, Distance, out var d)) { distance = Bound(d, 1, Check.Distance, tests); if (!distance) s += " " + d.Value; }
