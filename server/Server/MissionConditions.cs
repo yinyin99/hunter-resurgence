@@ -136,28 +136,30 @@ public sealed partial class State
         [.. con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > COALESCE("
             + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id", individual, eventId).Select(r => ((long)r[0], Parse(r[1])))];
 
-    /// <summary>The kinds of clue a title names.</summary>
-    enum ClueKind { Blood, Footprints, Droppings, Call, Bedding }
+    /// <summary>The kinds of clue a title names; `Other` (rooting, water bubbles) no title names, and only a trail takes it.</summary>
+    enum ClueKind { Blood, Footprints, Droppings, Call, Bedding, Other }
 
     static Dictionary<long, ClueKind> ClueTable(params (ClueKind Kind, int[] Types)[] kinds) => kinds.SelectMany(k => k.Types.Select(t => ((long)t, k.Kind))).ToDictionary();
 
     // The `track_type` of an event 12 by the kind of clue it is. 0 (blood trail), 9 (a heard call) and 12 (bedding) are one id each. The other ids come in pairs of one species' clues: its
     // droppings, then its footprints (a trotting or a fleeing animal leaves the footprints' id too): 1 and 2 for a whitetail, 3 and 4 for a mule deer, 16 and 17 for a moose, 5 and 6 for a
     // turkey, and so on up to 102 and 103 for a wood grouse. 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) are unverified entries, every other id is
-    // verified. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are in no kind: no objective is met by them.
+    // verified. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are `Other`: only a trail's count takes them.
     static readonly Dictionary<long, ClueKind> ClueKinds = ClueTable(
-        (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]),
+        (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]), (ClueKind.Other, [20, 31]),
         (ClueKind.Droppings, [1, 3, 5, 7, 10, 14, 16, 18, 23, 25, 32, 34, 36, 38, 40, 44, 56, 58, 60, 62, 64, 66, 68, 70, 78, 80, 82, 84, 88, 92, 93, 94, 96, 98, 100, 102]),
         (ClueKind.Footprints, [2, 4, 6, 8, 11, 15, 17, 19, 21, 22, 24, 26, 28, 33, 35, 37, 39, 41, 45, 57, 59, 61, 63, 65, 67, 69, 71, 73, 79, 81, 83, 85, 89, 95, 97, 99, 101, 103]));
 
     /// <summary>The kind of the clue of event 12 `e12` by an animal of `species`; null for a whole `track_type` no kind is known for, and for any other value. The red deer's water bubbles (25)
-    /// and the wendigo's (32) use the ids of the roe deer's and the rabbits' droppings: those two ids have a kind for a known animal only, and not for the red deer's and the wendigo's.</summary>
+    /// and the wendigo's (32) use the ids of the roe deer's and the rabbits' droppings: those two ids are `Other` for the red deer and the wendigo, and have no kind without a known animal.</summary>
     static ClueKind? ClueKindOf(JsonObject e12, long? species) =>
-        NumOf(e12, "track_type") is { } type && type == Math.Floor(type) && (long)type is var id && (id, species) is not ((25, 12) or (32, 58) or (25 or 32, null)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
+        NumOf(e12, "track_type") is { } type && type == Math.Floor(type) && (long)type is var id && (id, species) is not (25 or 32, null)
+            ? (id, species) is (25, 12) or (32, 58) ? ClueKind.Other : ClueKinds.TryGetValue(id, out var kind) ? kind : null
+            : null;
 
-    /// <summary>Is the clue `e12` of the animal `e7` one the test accepts: a clue of a known kind, of one of the kinds named, or of any known kind when it names none?</summary>
+    /// <summary>Is the clue `e12` of the animal `e7` one the test accepts: a clue of one of the kinds named, or of any kind but `Other` when it names none?</summary>
     static bool ClueIs(Test t, JsonObject e12, JsonObject e7) =>
-        ClueKindOf(e12, AnimalOf(e7, e7["species"]).Species) is { } kind && (t.Ids!.Count == 0 || t.Ids.Contains((long)kind));
+        ClueKindOf(e12, AnimalOf(e7, e7["species"]).Species) is { } kind && (t.Ids!.Count == 0 ? kind != ClueKind.Other : t.Ids.Contains((long)kind));
 
     /// <summary>The species (0 to 99) and gender of an animal: the harvest's `extended_species` (or the spawn's `species`) and the spawn's `gender`.</summary>
     static (long? Species, long? Gender) AnimalOf(JsonObject e7, JsonNode? number) =>
@@ -441,10 +443,13 @@ public sealed partial class State
                 if (Take(ref sn, word, out _))
                     kinds.Add((long)kind);
             // `tracks` are footprints (the original's daily missions `ID tracks from ...` counted footprints only), but several of one animal followed as a trail (`Locate 3 ... tracks`,
-            // `3 tracks from the same animal`: a trail goes on with every clue of its animal) are any clues; listed with another kind (`tracks or droppings`) they are the footprints
+            // `3 tracks from the same animal`: a trail goes on with every clue of its animal, rooting and water bubbles too) are any clues; listed with another kind (`tracks or
+            // droppings`) they are the footprints
             var tracks = Take(ref sn, Tracks, out _);
             if (tracks && (kinds.Count > 0 || count < 2 || !Trail.IsMatch(folded)))
                 kinds.Add((long)ClueKind.Footprints);
+            else if (tracks)
+                kinds.UnionWith(Enum.GetValues<ClueKind>().Select(k => (long)k));
             var any = Take(ref sn, ClueWord, out _) || tracks;
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood

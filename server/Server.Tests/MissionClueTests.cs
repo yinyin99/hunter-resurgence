@@ -66,6 +66,25 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
+    public void TestATrailNamedByTheSameAnimalTakesEveryClueOfItRootingAndWaterBubblesToo()
+    {
+        state = New("same.db", Catalogue(["Identify 3 Test Deer tracks from the same animal", "ID 3 tracks from one and the same Test Fox", "ID 2 tracks from a Plains Elk"]));
+        ActivateAll();
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 31));
+        Assert.Equal("", Completed());
+        Hb(Clue(1, 20));  // footprints, water bubbles and rooting of one deer
+        Assert.Equal("1", Completed());
+        Hb(Clue(2, 1, species: 5));
+        Hb(Clue(2, 9, species: 5));
+        Hb(Clue(2, 0, species: 5));  // droppings, a call and a blood trail of one fox
+        Assert.Equal("1,2", Completed());
+        Hb(Clue(3, 8, species: 3));
+        Hb(Clue(3, 31, species: 3));  // footprints and water bubbles of an elk: tracks that are no trail are footprints
+        Assert.Equal("1,2", Completed());
+    }
+
+    [Fact]
     public void TestTracksBesideAnotherKindAreFootprintsEvenOnATrail()
     {
         state = New("listed.db", Catalogue(["Locate 2 Test Fox tracks or droppings from the same animal", "ID tracks, droppings or calls of a Test Deer"]));
