@@ -4,9 +4,9 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-/// <summary>What a clue objective asks: the kind of clue its title names (footprints, droppings, a call, a blood trail, bedding, any), the animal (a short species name too, a gender) and how
-/// many clues of one animal after the mission was activated; a clue word the server does not read leaves the objective open; the rollback and the start check clues too. Invented catalogue and
-/// events (`track_type` 2 footprints, 1 droppings, 9 a call, 0 a blood trail, 12 bedding, 20 rooting, 31 water bubbles).</summary>
+/// <summary>What a clue objective asks: the kind of clue its title names (footprints, droppings, a call, a blood trail, bedding, any; `tracks` footprints, but any clue of one animal's trail),
+/// the animal (a short species name too, a gender) and how many clues of one animal after the mission was activated; a clue word the server does not read leaves the objective open; the
+/// rollback and the start check clues too. Invented catalogue and events (`track_type` 2 footprints, 1 droppings, 9 a call, 0 a blood trail, 12 bedding, 20 rooting, 31 water bubbles).</summary>
 public class MissionClueTests : MissionTestBase
 {
     [Fact]
@@ -38,10 +38,66 @@ public class MissionClueTests : MissionTestBase
         Hb(Clue(2, 8, species: 3));
         Hb(Clue(2, 8, species: 3));
         Hb(Clue(3, 8, species: 3));  // two of one elk, one of another
-        Hb(Clue(2, 9, species: 3));  // a call of the first one is no footprints
         Assert.Equal("", Completed());
-        Hb(Clue(2, 8, species: 3));
+        Hb(Clue(2, 9, species: 3));  // a call of the first one: the third clue of its trail
         Assert.Equal("1", Completed());
+    }
+
+    [Fact]
+    public void TestTracksAreFootprintsButTheCluesOfOneAnimalsTrailAreAnyClues()
+    {
+        state = New("trail.db", Catalogue(["Locate 3 Test Deer tracks from the same animal", "ID tracks or droppings from a Test Fox", "ID 2 tracks from a Test Fox"]));
+        ActivateAll();
+        Hb(Clue(1, 1));
+        Hb(Clue(2, 9));
+        Hb(Clue(3, 2));  // three clues of three deer
+        Hb(Clue(4, 1));
+        Hb(Clue(4, 9));
+        Assert.Equal("", Completed());
+        Hb(Clue(4, 2));  // droppings, a call and footprints of one deer
+        Assert.Equal("1", Completed());
+        Hb(Clue(5, 9, species: 5));
+        Hb(Clue(5, 9, species: 5));  // two calls of a fox are neither its tracks nor its droppings
+        Assert.Equal("1", Completed());
+        Hb(Clue(5, 2, species: 5));
+        Assert.Equal("1,2", Completed());
+        Hb(Clue(5, 2, species: 5));  // its second footprints
+        Assert.Equal("1,2,3", Completed());
+    }
+
+    [Fact]
+    public void TestATrailNamedByTheSameAnimalTakesEveryClueOfItRootingAndWaterBubblesToo()
+    {
+        state = New("same.db", Catalogue(["Identify 3 Test Deer tracks from the same animal", "ID 3 tracks from one and the same Test Fox", "ID 2 tracks from a Plains Elk"]));
+        ActivateAll();
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 31));
+        Assert.Equal("", Completed());
+        Hb(Clue(1, 20));  // footprints, water bubbles and rooting of one deer
+        Assert.Equal("1", Completed());
+        Hb(Clue(2, 1, species: 5));
+        Hb(Clue(2, 9, species: 5));
+        Hb(Clue(2, 0, species: 5));  // droppings, a call and a blood trail of one fox
+        Assert.Equal("1,2", Completed());
+        Hb(Clue(3, 8, species: 3));
+        Hb(Clue(3, 31, species: 3));  // footprints and water bubbles of an elk: tracks that are no trail are footprints
+        Assert.Equal("1,2", Completed());
+    }
+
+    [Fact]
+    public void TestTracksBesideAnotherKindAreFootprintsEvenOnATrail()
+    {
+        state = New("listed.db", Catalogue(["Locate 2 Test Fox tracks or droppings from the same animal", "ID tracks, droppings or calls of a Test Deer"]));
+        ActivateAll();
+        Hb(Clue(1, 9, species: 5));
+        Hb(Clue(1, 0, species: 5));  // a call and a blood trail of one fox
+        Hb(Clue(2, 0));  // a blood trail of a deer
+        Hb(Clue(1, 1, species: 5));  // the fox's droppings: one clue of the kinds named
+        Assert.Equal("", Completed());
+        Hb(Clue(1, 2, species: 5));  // and its footprints
+        Assert.Equal("1", Completed());
+        Hb(Clue(2, 9));
+        Assert.Equal("1,2", Completed());
     }
 
     [Fact]
@@ -138,6 +194,22 @@ public class MissionClueTests : MissionTestBase
         Hb(Clue(2, 9));
         Assert.Equal(("1", wallet + 10), (Completed(of: strict), Gm(strict)));  // the call pays the mission again
         Assert.Equal("reopened 0 objectives in 0 missions; kept: not understood 0 finished objectives", strict.RollbackMissions(apply: true).Last());
+    }
+
+    [Fact]
+    public void TestTheRollbackOfAnActiveSingleHuntMissionKeepsWhatItsLatestHuntFinished()
+    {
+        state = New("one-hunt.db", """{"missions": [{"id": 1, "title": "One Hunt", "singleExpedition": true, "dependencies": [], "rewards": [{"text": "10 gm$"}], "objectives": [""" +
+            """{"id": 0, "title": "ID footprints from a Test Deer"}, {"id": 1, "title": "ID footprints from a Test Fox"}, {"id": 2, "title": "ID footprints from a Plains Elk"}]}]}""");
+        ActivateAll();
+        Launch();
+        Hb(Clue(1, 2));
+        Hb(Clue(2, 8, species: 3));  // the first hunt finishes the deer and the elk
+        Launch();
+        Hb(Clue(1, 2, species: 5));
+        Hb(Clue(2, 8, species: 3));  // the latest one the fox and the elk
+        Eq("""{"state": 2, "objectives": [1, 2]}""", Reply(state.MissionsReply(ME)!)["states"]!["1"]);
+        Assert.Equal("would reopen 0 objectives in 0 missions; kept: not understood 0 finished objectives (dry run: nothing written, --apply writes)", state.RollbackMissions(apply: false).Last());
     }
 
     [Fact]

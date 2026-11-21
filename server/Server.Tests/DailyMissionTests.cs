@@ -198,6 +198,22 @@ public class DailyMissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestAWolfsTracksAreItsFootprintsAndNotItsDroppings()
+    {
+        if (MissionOf(Calendar()) != 12)
+        {
+            state = New("wolf.db");  // an account of the next date: the other easy template
+            On(D0.AddDays(1));
+        }
+        Assert.Equal(12, MissionOf(Calendar()));
+        state.DailyActivate(ME);
+        Hb([Spawn(56, 0), O($$"""{"event": 12, "individual": {{individual}}, "track_type": 1}""")]);  // the wolf's droppings
+        Assert.Equal([false], Completed());
+        Hb([Spawn(56, 0), Track()]);
+        Assert.Equal([true], Completed());
+    }
+
+    [Fact]
     public void TestTheStreakMovesThroughTheCycleAndEachDifficultyIsCounted()
     {
         state.DailyActivate(ME);
