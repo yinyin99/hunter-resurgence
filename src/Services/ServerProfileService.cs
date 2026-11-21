@@ -143,7 +143,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             ? new(s.Kind, s.Species, s.Facts ?? [], s.Rows ?? [], [.. (s.Abnormal ?? []).Select(a => (a.Right, a.Left))], s.Sums ?? [], s.Weapon, s.Scope, s.Ammo, s.DistanceM, s.State, s.BodyPart, s.Stance, s.Platform,
                 s.WeightKg, s.Type, s.WoundTime, s.Integrity, s.ShotLocation, s.Shots, Utc(s.When), s.ExpeditionId, s.Score, s.HarvestValue)
             : null;
-    /// <summary><c>GET /hunters/&lt;handle&gt;/gallery?page=n</c>: one page of 24 photos, each with its small picture. A failed answer is an empty page.</summary>
+    /// <summary><c>GET /hunters/&lt;handle&gt;/gallery?page=n</c>: one page of 24 photos, each with the full picture's address. A failed answer is an empty page.</summary>
     public async Task<Page<Photo>> GalleryAsync(string handle, int page)
     {
         var path = $"{ServerSessionApi.Hunters}/{Uri.EscapeDataString(handle)}{ServerSessionApi.GallerySuffix}?page={page}";

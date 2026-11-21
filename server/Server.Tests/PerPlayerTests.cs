@@ -281,6 +281,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var (cameraFile, trophyFile) = (cameraUrl[photos.Length..], trophyUrl[photos.Length..]);
         Eq($"\"https://web.test/photos/8/{cameraFile}\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
         Eq("[3, 1]", Ids(first["rows"]!));
+        Assert.All(first["rows"]!.AsArray(), r => Assert.Equal((string?)r!["url"], (string?)r["thumbnail"]));  // the grid scales the full picture: the game's square crop (the trophy has one) is not the tile
         Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/" + cameraFile, null)).Status);
         Assert.Equal(404, (await Send(community, "GET", "web.test", "/photos/8/nothing.jpg", null)).Status);
         using (var con = state.Store.Open(8))

@@ -50,7 +50,7 @@ public sealed record BestRow(string Species, double Score, double Range, string 
 public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 
 /// <param name="Url">The address of the picture, for the share window.</param>
-/// <param name="Thumbnail">The address of the small picture the gallery shows; without one the picture is the old interface's slot <c>photo-&lt;id&gt;</c>.</param>
+/// <param name="Thumbnail">The address of the picture the gallery grid shows, scaled to the tile (the server sends the full picture's address); without one the picture is the old interface's slot <c>photo-&lt;id&gt;</c>.</param>
 /// <param name="Kill">The id of the kill the photo shows when the profile has its score sheet page (<c>/profile/&lt;handle&gt;/score/&lt;kill&gt;</c>); null otherwise.</param>
 public sealed record Photo(long Id, string Animal, double Score, string Url, string? Thumbnail = null, long? Kill = null);
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
