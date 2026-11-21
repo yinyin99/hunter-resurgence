@@ -27,7 +27,7 @@
 .indent { margin: 0 0 30px 15px; }
 .broken { margin: 0 0 10px; font-size: 14px; line-height: 20px; color: var(--accent-text); }
 #activate-dm { padding: 6px 12px; font-size: 14px; line-height: 20px; }
-.ribbon { position: absolute; right: -52px; top: 28px; width: 220px; padding: 4px 0; transform: rotate(45deg); background: #aaa; font-size: 24px; line-height: 40px; text-align: center; color: #fff; }
+.ribbon { position: absolute; right: -52px; top: 28px; z-index: 1; width: 220px; padding: 4px 0; transform: rotate(45deg); background: #aaa; font-size: 24px; line-height: 40px; text-align: center; color: #fff; } /* above the species picture, which comes later and is also positioned */
 .actions { display: flex; gap: 10px; }
 .timer { margin: 20px 0 0; font-size: 14px; line-height: 20px; color: var(--text-3); }
 .timer b { font-weight: 400; color: var(--text-1); }
