@@ -150,7 +150,7 @@ One of the game's hunting areas, with its own map, species and lodges.
 One outing on a reserve, from its start to its end; the game calls it an expedition.
 
 **Lodge**:
-A house on a reserve's map where a hunt can start and the player reaches their lodge inventory.
+A house on a reserve's map where a hunt can start and the player reaches their lodge inventory. The docs and the code also say lodge for a trophy lodge.
 
 **Tent**:
 A shelter the player places on a reserve; like a lodge, a hunt can start there and the lodge inventory is in reach.
@@ -198,7 +198,7 @@ Turning a harvest into a trophy, full body or skull, for em$ or gm$ during its o
 A taxidermized or skull-mounted harvest, or one restored from the original; the player can mount it in a trophy lodge.
 
 **Trophy lodge**:
-A building a player owns where they mount their trophies and weapons for other players to visit; the profile area "Lodges" lists them.
+A building a player owns where they mount their trophies and weapons for other players to visit; the profile area "Lodges" lists them (the docs and the code often say lodge alone).
 
 ## Inventory and wallet
 
@@ -221,7 +221,7 @@ The game's other currency, which the original sold for money; the store prices m
 A player's em$ and gm$ balances and the history of their changes.
 
 **Membership**:
-The kind of account the original sold (a guest, or a membership of some months), shown in a profile's header.
+The kind of account a player had on the original: a free guest, or a membership of some months the original sold; shown in a profile's header.
 
 **License**:
 The right to hunt a species or on a reserve, which the original sold; on the community server every player holds all of them unless the operator turns that off.
@@ -277,7 +277,7 @@ _Avoid_: unsupported
 What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. No title names the last two, so only an objective that follows one animal's trail counts them.
 
 **Track**:
-Footprints, as in "ID tracks from a Grey Wolf", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail ("Locate 3 Elk tracks", "3 tracks from the same animal") counts clues of any kind from that animal in one hunt.
+Footprints, as in "ID tracks from a Grey Wolf" or "ID 3 tracks from a Moose", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail (a number of tracks to locate or find, as in "Locate 3 Elk tracks", or tracks "from the same animal") counts clues of any kind from that animal in one hunt.
 _Avoid_: clue (when footprints are meant)
 
 **Footprints**:
