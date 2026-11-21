@@ -171,20 +171,22 @@ public sealed partial class State
         return true;
     }
 
-    static string EventType(Kind kind) => kind switch { Kind.Harvest => "KILL", Kind.Spot => "SPOT", Kind.Track => "CLUE", _ => "" };
+    static string EventType(Kind kind) => kind switch { Kind.Harvest => "CONFIRMKILL", Kind.Spot => "SPOT", Kind.Track => "CLUE", _ => "" };
 
     /// <summary>The page's objective entry: its title and the condition the rule stands for. ponytail: a clue counts whatever its type (footsteps, droppings), as the
-    /// catalogue's missions do; the condition names footsteps for the page only.</summary>
+    /// catalogue's missions do; the condition names droppings when the title does, else footsteps, for the page only.</summary>
     JsonObject DailyObjective(Objective o, bool finished)
     {
         var rule = o.Rule;
         var parts = new List<string>();
+        if (rule.Kind == Kind.Harvest)
+            parts.AddRange(["a.ethical()", "a.killedBy(e.getUserId())"]);
         if (rule.Species is { } id)
             parts.Add($"a.species() == c.species.{Py.Str(species.GetValueOrDefault(id)?["define"])}");
         if (rule.Kind == Kind.Track)
-            parts.Add("e.trackType() == c.clue.FOOTSTEPS");
-        if (rule.Gender is { } gender)
-            parts.Add($"a.gender() == c.gender.{(gender == 0 ? "MALE" : "FEMALE")}");
+            parts.Add($"e.trackType() == c.clue.{(o.Title.Contains("droppings", StringComparison.OrdinalIgnoreCase) ? "DROPPINGS" : "FOOTSTEPS")}");
+        if (rule.Gender is { } gender)  // a harvest's is written without the space before `==`, as the original does
+            parts.Add($"a.gender(){(rule.Kind == Kind.Harvest ? "" : " ")}== c.gender.{(gender == 0 ? "MALE" : "FEMALE")}");
         var data = new JsonObject { ["id"] = o.Id, ["title"] = o.Title, ["update_message"] = "", ["conditions"] = string.Join(" and ", parts) };
         if (finished)
             data["completed"] = true;
@@ -229,7 +231,7 @@ public sealed partial class State
             {
                 var objectives = Py.Dumps(new JsonArray([.. d.Def.Objectives.Select(o => (JsonNode?)DailyObjective(o, finished.Contains(o.Id)))]), compact: true);
                 var animal = d.Def.Objectives[0].Rule.Species is { } id ? species.GetValueOrDefault(id) : null;
-                var name = string.Join(' ', d.Template.GiverAlias.Split('_').Select(w => w[..1] + w[1..].ToLowerInvariant()));
+                var name = d.Template.GiverName ?? string.Join(' ', d.Template.GiverAlias.Split('_').Select(w => w[..1] + w[1..].ToLowerInvariant()));
                 entry["date"] = s["date"]!.DeepClone();
                 entry["species"] = animal is null ? null : Py.Str(animal["define"]);
                 entry["rewards_translations"] = new JsonArray(new JsonObject { ["text"] = $"{DailyReward(index)} gm$" });
