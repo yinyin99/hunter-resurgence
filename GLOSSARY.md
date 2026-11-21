@@ -152,3 +152,42 @@ A themed event the operator switches on for a window of time on some reserves, w
 **Season**:
 A leaderboard period of the community server: 0 is all time, 1 the harvests restored from the original (up to 2026-11-11), 2 and later the server's own, each started by the operator. A harvest belongs to the season its kill time falls in; an ended season has a Hall of Fame.
 _Avoid_: seasonal event (a themed event of creatures and missions, not a leaderboard period)
+
+## Missions
+
+**Mission**:
+A task a player activates and finishes in hunts for a gm$ reward; it has one or more objectives and is finished when all of them are.
+
+**Mission pack**:
+A group of missions about one species, weapon or theme; some missions need earlier ones of their pack first.
+_Avoid_: mission group, chain
+
+**Daily mission**:
+The one mission of the day the calendar offers every player, with its own giver and streak.
+_Avoid_: daily challenge
+
+**Objective**:
+One line of a mission, such as "Harvest a Whitetail Deer buck with at least 8 typical points"; met by what the player does after the mission is active.
+
+**Not understood**:
+Said of an objective whose wording the community server can't read yet; it is never met until a version reads it.
+_Avoid_: unsupported, unknown
+
+**Clue**:
+A sign an animal leaves that the player identifies: footprints, droppings, a call, a blood trail or a bed.
+_Avoid_: sign
+
+**Track**:
+Any clue. "ID 3 tracks" is met by any three clues; only "tracks or droppings" sets tracks apart, meaning footprints there.
+_Avoid_: footprints (when any clue is meant)
+
+**Footprints**:
+The clue of an animal's feet on the ground; the only kind an objective means when it says footprints.
+
+**Typical points**:
+The antler points of an animal's typical antler shape, both antlers added: 5 on each side is 10.
+_Avoid_: points (alone), tines
+
+**Reopen**:
+To set a finished objective back to not met because the hunt recorded on the community server does not meet it; the mission pays again when finished again, and no gm$ is taken back.
+_Avoid_: revert, reset
