@@ -882,6 +882,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Wybierz nowy awatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Awatary do odblokowania</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Ten awatar jest zablokowany. Możesz go odblokować, kupując go w sklepie.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Obraz</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>W grze</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Gdy wybrany jest Twój obraz, głowa używana w grze jest oznaczona „W grze”. Aby ją zmienić, wybierz awatar z listy, a potem ponownie wybierz swój obraz.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Witamy w grze {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gratulacje, {0}! Twoje zupełnie nowe konto {game} zostało utworzone!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Jeśli masz już pobrany i zainstalowany launcher oraz klienta gry, możesz zaczynać! Jeśli dopiero zaczynasz przygodę z grą {game}, zalecamy przejście samouczków przed pierwszym prawdziwym polowaniem. Samouczki nauczą Cię wszystkiego, co potrzebne, by poradzić sobie samodzielnie w Rezerwacie Myśliwskim Evergreen. Zacznij poniżej.</value></data>

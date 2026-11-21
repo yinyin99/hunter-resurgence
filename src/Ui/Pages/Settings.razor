@@ -31,10 +31,16 @@
                 <h5>@L["Set.AvatarCurrent"]</h5>
                 <div class="cur"><AssetSlot Name="@(account?.Avatar ?? Avatars.Default)" Width="150" Height="150" /></div>
                 <h5>@L["Set.AvatarSelect"]</h5>
+                @if (avatars.Any(a => Avatars.IdOf(a.Id) is null))
+                {
+                    <p class="hint">@L["Set.AvatarHeadHint"]</p>
+                }
                 <div class="avatars">
                     @foreach (var a in avatars.Where(a => !a.Locked))
                     {
-                        <button type="button" class="pick @(a.Id == account?.Avatar ? "on" : "")" title="@a.Name" @onclick="() => Pick(a.Id)"><AssetSlot Name="@a.Id" Width="60" Height="60" /></button>
+                        var on = a.Id == account?.Avatar;
+                        var css = "pick" + (on ? " on" : "") + (a.InGame ? " game" : "");
+                        <button type="button" class="@css" title="@a.Name" @onclick="() => Pick(a.Id)"><AssetSlot Name="@a.Id" Width="60" Height="60" />@if (on && Avatars.IdOf(a.Id) is null) { <span class="tag">@L["Set.AvatarPicture"]</span> } else if (a.InGame) { <span class="tag">@L["Set.AvatarInGame"]</span> }</button>
                     }
                 </div>
                 <h5>@L["Set.AvatarUnlockable"]</h5>
@@ -69,6 +75,6 @@
     async Task Pick(string id)
     {
         await Service.SetAvatarAsync(id);
-        account = await Service.AccountAsync();
+        (account, avatars) = (await Service.AccountAsync(), await Service.AvatarsAsync());  // the in-game head is marked only while the own picture is selected
     }
 }

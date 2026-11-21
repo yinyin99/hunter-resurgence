@@ -882,6 +882,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Selectați un avatar nou</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatare deblocabile</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Acest avatar este blocat. Îl puteți debloca cumpărându-l din magazin.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Imagine</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>În joc</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Cât timp imaginea dvs. este selectată, capul folosit de joc este marcat cu „În joc”. Pentru a-l schimba, alegeți un avatar din listă, apoi alegeți din nou imaginea dvs.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Bun venit în {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Felicitări, {0}, noul dvs. cont {game} a fost creat!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Dacă ați descărcat și instalat deja launcherul și clientul jocului, sunteți gata să începeți să jucați! Dacă sunteți nou în {game}, vă recomandăm să parcurgeți tutorialele înainte de prima vânătoare adevărată. Tutorialele vă vor învăța tot ce trebuie să știți pentru a vă descurca singur în Rezervația de vânătoare Evergreen. Începeți mai jos.</value></data>

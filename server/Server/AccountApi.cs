@@ -406,8 +406,9 @@ public static class AccountApi
                 ? Json(200, state.AvatarChoices(account, site))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountAvatars").WithSummary("The player's avatar and the ones to choose from")
-            .WithDescription("`{current, ids, locked, imported}`: `current` the player's avatar as in `GET /hunters/<handle>` (null for none), `ids` the game's avatars the player can choose, in the order of its list (docs/server.md#avatars): the free ones and the store's once the player owns their item, "
-                             + "`locked` the store avatars it cannot yet, `[{id, item, name}]` (`item` the store item that unlocks it), `imported` the link of the picture imported from the player's backup, null without one.")
+            .WithDescription("`{current, ids, locked, imported, face, own}`: `current` the player's avatar as in `GET /hunters/<handle>` (null for none), `ids` the game's avatars the player can choose, in the order of its list (docs/server.md#avatars): the free ones and the store's once the player owns their item, "
+                             + "`locked` the store avatars it cannot yet, `[{id, item, name}]` (`item` the store item that unlocks it), `imported` the link of the picture imported from the player's backup, null without one, "
+                             + "`face` the 3D head the game draws the player with (the id of the listed avatar of that number; null for an account with none), `own` true while the current picture is the imported one.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/avatar", async (HttpContext ctx) =>
@@ -421,7 +422,7 @@ public static class AccountApi
                     : Refuse(404, "invalid", "This is none of the avatars you can choose.");
             })
             .WithName("AccountAvatar").WithSummary("Choose the player's avatar (form `id`: a game avatar's id, or `imported`)")
-            .WithDescription("The game sees it at its next start (`avatar_url`, `face`, `avatar`, `avatar_id`, and for a listed avatar `gender`). 200 like `GET /account/avatars`; 404 `invalid` for an id that is not in the game's list, a store avatar whose item the player does not own, or `imported` without an imported picture.")
+            .WithDescription("The game sees it at its next start (`avatar_url`, `face`, `avatar`, `avatar_id`, and for a listed avatar `gender`; `imported` changes only the picture and keeps a `face` that is a 3D head of the account's gender). 200 like `GET /account/avatars`; 404 `invalid` for an id that is not in the game's list, a store avatar whose item the player does not own, or `imported` without an imported picture.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/messages/thread", (HttpContext ctx) => Account(ctx) is not { } account

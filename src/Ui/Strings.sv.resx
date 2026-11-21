@@ -882,6 +882,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Välj en ny avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Avatarer att låsa upp</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Den här avataren är låst. Du kan låsa upp den genom att köpa den i butiken.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Bild</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>I spelet</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Så länge din bild är vald är huvudet som spelet använder markerat med ”I spelet”. Vill du ändra det, välj en avatar i listan och välj sedan din bild igen.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Välkommen till {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Grattis {0}, ditt alldeles nya {game}-konto har skapats!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Om du redan har laddat ner och installerat spelets launcher och klient är du redo att börja spela! Om du är ny i {game} rekommenderar vi att du går igenom guiderna innan du ger dig ut på din första riktiga jakt. Guiderna lär dig allt du behöver veta för att klara dig på egen hand i Evergreen Hunting Reserve. Kom igång nedan.</value></data>

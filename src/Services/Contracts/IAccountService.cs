@@ -1,8 +1,8 @@
 namespace Resurgence.Services;
 
 public sealed record Account(string Avatar);
-/// <summary>An avatar picture of the settings; a locked one is unlocked by buying the store item <c>Item</c>.</summary>
-public sealed record AvatarChoice(string Id, string Name, bool Locked, long? Item = null);
+/// <summary>An avatar picture of the settings; a locked one is unlocked by buying the store item <c>Item</c>. <c>InGame</c>: while the player's own picture is selected, the listed avatar whose head the game draws the player with.</summary>
+public sealed record AvatarChoice(string Id, string Name, bool Locked, long? Item = null, bool InGame = false);
 
 /// <summary>A line of the recruit rewards: an item with a store page, or plain text such as 50 Em$.</summary>
 public sealed record RewardItem(string Text, int? ItemId);

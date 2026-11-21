@@ -530,7 +530,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar', 1000000, '$.avatar_id', 1000000) WHERE id = ?", me);  // an account that has these copies of its avatar
         var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
-        Eq($$"""{"current": "{{DefaultSite}}", "ids": [1000000, 1000001], "locked": [], "imported": null}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""{"current": "{{DefaultSite}}", "ids": [1000000, 1000001], "locked": [], "imported": null, "face": null, "own": false}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));  // this account has no face yet
         Assert.Equal(401, (await Get("web.test", "/account/avatars")).Status);
         Assert.Equal(400, (await ChooseAvatar("id=1000001", ck)).Status);  // not from a page of this server
         Assert.Equal(401, (await ChooseAvatar("id=1000001", ("X-Requested-With", "XMLHttpRequest"))).Status);
@@ -541,7 +541,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
         var picked = await ChooseAvatar("id=1000001", xhr);
         Assert.Equal(200, picked.Status);
-        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "locked": [], "imported": null}""", JsonNode.Parse(picked.Body));
+        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "locked": [], "imported": null, "face": 1000001, "own": false}""", JsonNode.Parse(picked.Body));
         // what the game reads at its next connect, and what the pages show right away
         var account = state.Store.AccountJson(me);
         Eq($$"""["{{Picked}}", 1000001, 1000001, 1000001]""", T(account["avatar_url"], account["face"], account["avatar"], account["avatar_id"]));
@@ -598,7 +598,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Restorer.Import(state, TestZip.Own(handle: "one").Media("images/avatars.example_a.png", picture).Write(tmp), me, tmp);
         var link = $"https://web.test/photos/{me}/avatar.jpg";
         var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
-        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}", "face": 1000000, "own": true}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
         var photo = await Get("web.test", $"/photos/{me}/avatar.jpg");  // the stable link, on the website's host
         Assert.Equal(200, photo.Status);
         Assert.Equal(picture, photo.Body);
@@ -608,11 +608,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
         // a game avatar replaces it; the imported picture stays a choice
         Assert.Equal(200, (await ChooseAvatar("id=1000001", xhr)).Status);
-        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}", "face": 1000001, "own": false}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
         Assert.Equal(200, (await ChooseAvatar("id=imported", xhr)).Status);
         var account = state.Store.AccountJson(me);
-        Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000001]""", T(account["avatar_url"], account["face"]));  // the body keeps the female gender of the avatar chosen before, so the face is the list's female head
-        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
+        Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000001]""", T(account["avatar_url"], account["face"]));  // the head chosen before stays (a female one: the body keeps the avatar's gender)
+        Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}", "face": 1000001, "own": true}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
     }
 
     [Fact]

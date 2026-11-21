@@ -105,4 +105,33 @@ public sealed class AvatarPagesTests : UiContext
         cut.FindAll("button.pick")[1].Click();  // a game avatar
         cut.WaitForAssertion(() => Assert.Contains(fake.Seen, s => s.Request.Method == HttpMethod.Post && s.Body == "id=1000001"));
     }
+
+    // while the own picture is selected, the head the game draws the player with is marked next to it (docs/website.md#avatars); a listed avatar needs no mark
+    [Theory]
+    [InlineData(true, new[] { "pick", "pick game", "pick on" }, new[] { "In game", "Picture" })]
+    [InlineData(false, new[] { "pick on", "pick", "pick" }, new string[0])]
+    public void TheSettingsMarkTheInGameHeadWhileTheOwnPictureIsSelected(bool own, string[] classes, string[] tags)
+    {
+        var current = own ? Imported : "https://site.test/images/avatars/256/1000000.png";
+        var fake = new Fake(_ => Json($$"""{"current":"{{current}}","ids":[1000000,1000001],"imported":"{{Imported}}","face":1000001,"own":{{(own ? "true" : "false")}}}"""));
+        Services.AddSingleton<IAccountService>(new ServerAccountService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, new MockAccountService(), NullLogger<ServerAccountService>.Instance));
+        Services.GetRequiredService<HostMode>().Live = true;
+        var cut = Render<Settings>();
+        cut.WaitForAssertion(() => Assert.Equal(3, cut.FindAll("button.pick").Count));
+        Assert.Equal(classes, cut.FindAll("button.pick").Select(b => b.ClassName!));
+        Assert.Equal(tags, cut.FindAll("button.pick .tag").Select(t => t.TextContent));
+        Assert.Single(cut.FindAll("p.hint"));  // the player has a picture to choose: the hint says how the head changes
+    }
+
+    [Fact]
+    public void TheSettingsShowNoHintToAPlayerWithoutAnOwnPicture()
+    {
+        var fake = new Fake(_ => Json("""{"current":"https://site.test/images/avatars/256/1000000.png","ids":[1000000,1000001],"imported":null,"face":1000000,"own":false}"""));
+        Services.AddSingleton<IAccountService>(new ServerAccountService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, new MockAccountService(), NullLogger<ServerAccountService>.Instance));
+        Services.GetRequiredService<HostMode>().Live = true;
+        var cut = Render<Settings>();
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("button.pick").Count));
+        Assert.Empty(cut.FindAll("p.hint"));
+        Assert.Empty(cut.FindAll("button.pick .tag"));
+    }
 }

@@ -133,8 +133,9 @@ public sealed record ServerMissions(ServerMission[] Missions, ServerMissionGroup
     [property: System.Text.Json.Serialization.JsonPropertyName("activate_only_favourite")] bool OnlyFavourite,
     [property: System.Text.Json.Serialization.JsonPropertyName("hide_completed_favourite")] bool HideCompletedFavourite);
 
-/// <summary><see cref="ServerAccountApi.AvatarChoices"/>: <c>Current</c> the player's avatar URL (null for none), <c>Ids</c> the game's avatars the player can choose, <c>Locked</c> the store's avatars it has not unlocked, <c>Imported</c> the link of the picture imported from the player's backup (null without one).</summary>
-public sealed record ServerAvatars(string? Current, long[]? Ids, ServerLockedAvatar[]? Locked, string? Imported);
+/// <summary><see cref="ServerAccountApi.AvatarChoices"/>: <c>Current</c> the player's avatar URL (null for none), <c>Ids</c> the game's avatars the player can choose, <c>Locked</c> the store's avatars it has not unlocked, <c>Imported</c> the link of the picture imported from the player's backup (null without one),
+/// <c>Face</c> the id of the head the game draws the player with (the listed avatar of that id; null for none) and <c>Own</c> true while the current picture is the imported one.</summary>
+public sealed record ServerAvatars(string? Current, long[]? Ids, ServerLockedAvatar[]? Locked, string? Imported, long? Face = null, bool Own = false);
 
 /// <summary>A store avatar the player cannot choose yet: its id, the store <c>Item</c> that unlocks it and its name.</summary>
 public sealed record ServerLockedAvatar(long Id, long? Item, string? Name);

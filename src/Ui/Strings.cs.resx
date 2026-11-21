@@ -882,6 +882,9 @@
   <data name="Set.AvatarSelect" xml:space="preserve"><value>Vyberte nový avatar</value></data>
   <data name="Set.AvatarUnlockable" xml:space="preserve"><value>Odemykatelné avatary</value></data>
   <data name="Set.AvatarLocked" xml:space="preserve"><value>Tento avatar je uzamčen. Odemknete ho zakoupením v obchodě.</value></data>
+  <data name="Set.AvatarPicture" xml:space="preserve"><value>Obrázek</value></data>
+  <data name="Set.AvatarInGame" xml:space="preserve"><value>Ve hře</value></data>
+  <data name="Set.AvatarHeadHint" xml:space="preserve"><value>Dokud je vybrán váš obrázek, je hlava, kterou hra používá, označena „Ve hře“. Chcete-li ji změnit, vyberte avatar ze seznamu a poté znovu vyberte svůj obrázek.</value></data>
   <data name="Welcome.Title" xml:space="preserve"><value>Vítejte ve hře {game}</value></data>
   <data name="Welcome.Congrats" xml:space="preserve"><value>Gratulujeme, {0}, váš zbrusu nový účet hry {game} byl vytvořen!</value></data>
   <data name="Welcome.Intro" xml:space="preserve"><value>Pokud už máte stažený a nainstalovaný launcher i klienta hry, můžete začít hrát! Pokud ve hře {game} začínáte, doporučujeme před prvním skutečným lovem projít výukou. Naučí vás vše, co potřebujete k samostatnému lovu v Evergreen Hunting Reserve. Začněte níže.</value></data>

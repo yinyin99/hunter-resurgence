@@ -96,16 +96,19 @@ public sealed partial class State
         return AvatarEntries.ToLookup(e => e.Item is not { } item || owned.Contains(item));
     }
 
-    /// <summary>`GET /account/avatars`: `{current, ids, locked, imported}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars it can choose (the free ones, and a store avatar once the account owns its item),
-    /// the others as `[{id, item, name}]` (`item` the store item that unlocks it) and the imported picture's link (null without one).</summary>
+    /// <summary>`GET /account/avatars`: `{current, ids, locked, imported, face, own}`: the player's avatar (<see cref="AvatarUrl"/>), the ids of the game's avatars it can choose (the free ones, and a store avatar once the account owns its item),
+    /// the others as `[{id, item, name}]` (`item` the store item that unlocks it), the imported picture's link (null without one), the `face` the game draws the player with (a 3D head: the id of the listed avatar of the same number; null for an account with none)
+    /// and `own`: whether the current picture is the imported one.</summary>
     public JsonObject AvatarChoices(long account, string site)
     {
         var parts = AvatarsByUnlock(account);
+        var current = AvatarUrl(account, site);
+        var imported = HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null;
         return new()
         {
-            ["current"] = AvatarUrl(account, site), ["ids"] = new JsonArray([.. parts[true].Select(e => (JsonNode)e.Id)]),
+            ["current"] = current, ["ids"] = new JsonArray([.. parts[true].Select(e => (JsonNode)e.Id)]),
             ["locked"] = new JsonArray([.. parts[false].Select(e => (JsonNode)new JsonObject { ["id"] = e.Id, ["item"] = e.Item, ["name"] = e.Name })]),
-            ["imported"] = HasImportedAvatar(account) ? PhotoUrl(account, ImportedAvatar, site) : null,
+            ["imported"] = imported, ["face"] = FaceOfAccount(account), ["own"] = imported is not null && current == imported,
         };
     }
 
@@ -121,17 +124,27 @@ public sealed partial class State
     }
 
     /// <summary>`POST /account/avatar`: the player's avatar becomes the game's avatar `id`, or the imported picture for null. False, and nothing changed, for an id that is not in the list, a store avatar whose item the account does not own
-    /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture keeps it. It writes what a restore does: `avatar_url`, `face` (a 3D face: the picture's head, or the default one of the gender for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
+    /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture keeps `gender` and `face` when the face is a 3D head of that gender (the head the player chose stays), else it gets that gender's default head.
+    /// It writes what a restore does: `avatar_url`, `face` (always a 3D face), `avatar` and `avatar_id` (the head's picture for the imported one) where the account has them.</summary>
     public bool SetAvatar(long account, long? id)
     {
         if (id is null ? !HasImportedAvatar(account) : !AvatarsByUnlock(account)[true].Any(e => e.Id == id.Value)) return false;
         var url = id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar);
-        var (face, picture, gender) = AvatarFace(id, GenderOf(account));
+        var current = GenderOf(account);
+        var (face, picture, gender) = id is null && FaceOfAccount(account) is { } kept && KeepsHead(kept, current) ? (kept, kept, current) : AvatarFace(id, current);
         Store.SetAvatar(account, url, face, gender, picture);
         return true;
     }
 
     long GenderOf(long account) => Store.AccountJson(account)["gender"] is { } g && Py.IsNum(g) ? Py.L(g) : 0;
+
+    long? FaceOfAccount(long account) => Store.AccountJson(account)["face"] is { } f && Py.IsNum(f) ? Py.L(f) : null;
+
+    /// <summary>The game's 3D faces: the 18 heads of the first series and the store's own head.</summary>
+    static bool IsHead(long face) => face is >= DefaultAvatar and < DefaultAvatar + 18 or 1000024;
+
+    /// <summary>Is `face` a 3D head of the body's `gender` (a head the list gives no gender fits any)? Then it is the player's choice and stays.</summary>
+    bool KeepsHead(long face, long gender) => IsHead(face) && (AvatarGender(face) ?? gender) == gender;
 
     /// <summary>The 3D face of a listed picture: the first series' head with the same number (`1002007` is `1000007`), the same head and gender.</summary>
     public static long FaceOf(long picture) => DefaultAvatar + picture % 1000;
@@ -182,7 +195,6 @@ public sealed partial class State
     /// else gets the default face of the gender. `apply` false: nothing changes. Returns the counts line. Idempotent: the writes keep face and gender in step, so a second run finds none.</summary>
     public string FixFaces(bool apply)
     {
-        var heads = new HashSet<long>(Enumerable.Range(0, 18).Select(i => DefaultAvatar + i)) { 1000024 };  // the game's 3D faces: the 18 heads and the store's Laura
         int genders = 0, faces = 0;
         foreach (var (id, url, face, gender) in Store.FacesAndGenders())
         {
@@ -191,7 +203,7 @@ public sealed partial class State
             var picture0 = new ItemCatalogue(items, avatars).AvatarId(url);
             long? listed = picture0 is { } p0 && p0 != DefaultAvatar ? p0 : (picture0 is not null || url is null) && AvatarIds.Contains(f) ? f : null;  // the default address is no choice: the face says (a restore without a picture has the default address and its gender's face)
             var (newFace, newGender) = listed is { } picture ? (FaceOf(picture), AvatarGender(picture) ?? g)
-                : heads.Contains(f) && (AvatarGender(f) ?? g) == g ? (f, g) : (DefaultFace(g), g);
+                : KeepsHead(f, g) ? (f, g) : (DefaultFace(g), g);
             if (newGender != g) genders++;
             if (newFace != f) faces++;
             if (apply && (newGender != g || newFace != f)) Store.SetFaceAndGender(id, newFace, newGender);
