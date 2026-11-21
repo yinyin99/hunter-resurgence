@@ -45,6 +45,18 @@ public sealed partial class State
 
     static bool In(Test t, double? v) => v is { } x && x >= t.Min && x <= t.Max;
 
+    /// <summary>The number a threshold test compares with its bounds: the harvest value, the distance of the killing shot in metres, the weight in kilograms, the score, the typical
+    /// points (a female has none); null for another test, or when the kill does not have it.</summary>
+    static double? Measured(Test t, Kill k) => t.Check switch
+    {
+        Check.Value => NumOf(k.E3, "harvest_value"),
+        Check.Distance => NumOf(k.Hits.Value.LastOrDefault(), "distance_cms") / 100,
+        Check.Weight => NumOf(k.E7, "weight_grams") / 1000,
+        Check.Score => k.Scored.Value.Score,
+        Check.Points => NumOf(k.E7, "gender") != 1 ? k.Points.Value : null,  // a female never has the rack a title asks for
+        _ => null,
+    };
+
     static bool Meets(Test t, Kill k, long after = 0)
     {
         var hits = k.Hits.Value;
@@ -60,11 +72,7 @@ public sealed partial class State
             Check.Organ => NumOf(last, "organ2") is { } bits && t.Ids!.Any(m => ((long)bits & m) == m),
             Check.OrganOnly => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is > 0 and var b && ((long)b & ~t.Ids!.Aggregate(0L, (a, m) => a | m)) == 0),
             Check.OrganAvoid => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is { } b && t.Ids!.All(m => ((long)b & m) == 0)),
-            Check.Value => In(t, NumOf(k.E3, "harvest_value")),
-            Check.Distance => In(t, NumOf(last, "distance_cms") / 100),
-            Check.Weight => In(t, NumOf(k.E7, "weight_grams") / 1000),
-            Check.Score => In(t, k.Scored.Value.Score),
-            Check.Points => NumOf(k.E7, "gender") != 1 && In(t, k.Points.Value),  // a female never has the rack a title asks for
+            Check.Value or Check.Distance or Check.Weight or Check.Score or Check.Points => In(t, Measured(t, k)),
             Check.State => Has(NumOf(last, "animal_state")),
             Check.NotState => NumOf(last, "animal_state") is { } state && !t.Ids!.Contains((long)state),
             Check.FirstState => Has(NumOf(first, "animal_state")),

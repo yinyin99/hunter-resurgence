@@ -267,6 +267,26 @@ docker compose up -d
 
 Repeat the `cp` for every other database of `/data` that was lost (`ls /backups` shows the names). The players' progress is what the copy held: the hours since it was made are gone.
 
+## Missions audit
+
+Once a day a cron line of the `deploy` user posts the server's `admin missions-audit --discord` ([server.md](server.md#missions)) to a Discord webhook: the mission completions of the last 24 hours that look suspicious, and the count of each flag. The webhook's URL is the `MISSIONS_AUDIT_WEBHOOK=<url>` line of `~/web/.env`, which the operator adds by hand (deploys leave the line alone; without it nothing is posted). The script, `~/web/missions-audit.sh`, needs `jq` and `curl` on the host:
+
+```
+#!/bin/sh
+cd ~/web && url=$(sed -n 's/^MISSIONS_AUDIT_WEBHOOK=//p' .env) && [ -n "$url" ] || exit 0
+docker compose exec -T server dotnet server.dll admin missions-audit --discord | sed -n '/^\*\*missions audit/,$p' |
+  jq -Rsc 'rtrimstr("\n") | split("\n---8<---\n")[] | {content: ., allowed_mentions: {parse: []}}' |
+  while read -r body; do curl -fsS -o /dev/null -H 'Content-Type: application/json' -d "$body" "$url"; sleep 1; done
+```
+
+Each message is one post (`allowed_mentions` empty, so a handle such as `@everyone` pings nobody; one second apart, under the webhook's rate limit); `sed` drops what the server prints before the report (a `skip` line for a recording it cannot read). The crontab line (`crontab -e` as `deploy`), with the output kept for a failed post:
+
+```
+30 6 * * * sh ~/web/missions-audit.sh >> ~/web/missions-audit.log 2>&1
+```
+
+`sh ~/web/missions-audit.sh` by hand posts it at once. The audit only reads the database, so it runs in the live container.
+
 ## Logs
 
 Every service logs to the host journal (`logging: *logging` in `compose.yml`, Docker's `journald` driver), so a deploy that recreates a container keeps its logs; the default `json-file` driver deletes them with the container. Read them on the VPS, as root or a member of `systemd-journal`:
