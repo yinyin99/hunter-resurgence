@@ -358,7 +358,7 @@ On a community server `Mission/missions` and the calls the missions page sends a
 | `call`, `audio clue`, `audio call`, `audio` | a heard call |
 | `blood`, `blood trail` | a blood trail |
 | `bedding`, `bed` | a bedding clue |
-| `any clue`, `a clue` | a clue of any kind in the table below |
+| `any clue`, `a clue` | a clue of any kind in the table below but rooting and water bubbles |
 | several of the above (`footprints or droppings`, `tracks, droppings or calls`, `any clue (footprints, droppings, or audio)`) | a clue of any of the kinds named (`tracks` among them are the footprints): the kinds in brackets after `any clue` are the ones it takes |
 | `3 tracks`, `five tracks`, `3 sets of tracks`, `from the same animal` | that many clues of those kinds of one animal in the hunt, after the mission was activated, the one just found counted (without a number, one) |
 | a species name, a short name (`Elk`, `Sitka`, `Ptarmigan`), `any species of Ptarmigan`, `any animal except ...`, a gender word, `in <reserve>` | as for a harvest: the species and gender of the animal's event 7, the reserve of the hunt |
