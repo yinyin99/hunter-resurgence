@@ -228,14 +228,16 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             con.Begin();
             PlayerRows.AddTrophy(con, "/game/user/trophies", "22", O("""{"id": 22, "species": 3, "hidden": false, "timestamp": 1700000000}"""));
             PlayerRows.AddTrophy(con, "/game/user/trophies", "23", O("""{"id": 23, "species": 3, "hidden": false, "timestamp": "2020-01-01T00:00:00Z"}"""));
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "24", O("""{"id": 24, "species": 3, "hidden": false, "timestamp": 99999999999999999999999}"""));  // an unreadable date: undated
             con.Exec("UPDATE harvests SET body = ? WHERE account_id = $a AND kill_id = 30", """{"species": 2, "taxidermized": true, "timestamp": "2026-05-01T10:00:00Z"}""");
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "41", O("""{"id": 41, "name": "old", "hidden": false, "ts": 100}"""));
             PlayerRows.AddTrophy(con, "/v1/Trophy/list", "42", O("""{"id": 42, "name": "new", "hidden": false, "ts": 200}"""));
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "43", O("""{"id": 43, "name": "huge", "hidden": false, "ts": 99999999999999999999999}"""));
             con.Commit();
         }
         // the harvest made here is before the older restored rows; row 21 has no date
-        Eq("[30, 22, 23, 21]", new JsonArray(Reply(state.TrophiesReply(OWNER)).AsArray().Select(t => (JsonNode?)t!["id"]!.DeepClone()).ToArray()));
-        Eq("""["new", "old", ""]""", new JsonArray(((JsonArray)state.PublicTrophies(OWNER, 1)["rows"]!).Select(t => (JsonNode?)t!["name"]!.DeepClone()).ToArray()));
+        Eq("[30, 22, 23, 21, 24]", new JsonArray(Reply(state.TrophiesReply(OWNER)).AsArray().Select(t => (JsonNode?)t!["id"]!.DeepClone()).ToArray()));
+        Eq("""["new", "old", "", "huge"]""", new JsonArray(((JsonArray)state.PublicTrophies(OWNER, 1)["rows"]!).Select(t => (JsonNode?)t!["name"]!.DeepClone()).ToArray()));
     }
 
     [Fact]

@@ -320,7 +320,7 @@ public sealed partial class State
                 PlayerRows.AddTrophy(con, "/game/user/trophies", Py.Str(row["id"]), row);
     }
 
-    /// <summary>The account's trophies as `/game/user/trophies` sends them: the restored rows, then the animals mounted in the restored lodges that have no row (<see cref="MountedRows"/>), then one row per harvest made on this
+    /// <summary>The account's trophies as `/game/user/trophies` sends them, newest first (<see cref="Newest"/>): the restored rows, then the animals mounted in the restored lodges that have no row (<see cref="MountedRows"/>), then one row per harvest made on this
     /// server that is taxidermized or whose grace window is open (<see cref="InEditor"/>), in the restored shape (`hidden` as the player set it), each with the lodge slot that holds it now (<see cref="Mount"/>).
     /// A new kill id is above every restored id (see Heartbeat). <paramref name="all"/>: every harvest, for the `trophy_details` of a lodge slot (a harvest that is mounted stays shown in its lodge).</summary>
     List<JsonNode?> TrophyRows(long account, bool all = false)
@@ -347,7 +347,7 @@ public sealed partial class State
     static List<JsonNode?> Newest(IEnumerable<JsonNode?> rows, string field)
     {
         static double At(JsonNode? v) =>
-            Py.IsNum(v) ? Num(v) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : double.MinValue;
+            Py.IsNum(v) ? (Num(v) is > 0 and <= 253402300799 and var n ? n : double.MinValue) : Py.IsStr(v) && DateTimeOffset.TryParse(Py.Str(v), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var t) ? t.ToUnixTimeSeconds() : double.MinValue;
         return [.. rows.OrderByDescending(r => At(r?[field]))];
     }
 
@@ -380,7 +380,7 @@ public sealed partial class State
 
     public const int TrophiesPageSize = 24;
 
-    /// <summary>What a profile page's trophies tab shows of an account: one page of its competition trophies (the restored `Trophy/list` rows) without the hidden ones,
+    /// <summary>What a profile page's trophies tab shows of an account: one page, newest first, of its competition trophies (the restored `Trophy/list` rows) without the hidden ones,
     /// `{page, pages, total, rows: [{name, date, competitionId, competition, image}]}`: the trophy's name, the day it was won (UTC, from `ts`; "" without one), the competition's id
     /// and name (null without them) and its picture's file name without the extension (null without a picture).</summary>
     public JsonObject PublicTrophies(long account, int page)
@@ -403,7 +403,7 @@ public sealed partial class State
 
     /// <summary>The day (UTC, yyyy-MM-dd) of a trophy row's `ts` (Unix seconds); "" for anything else.</summary>
     static string TrophyDay(JsonNode? ts) =>
-        Py.IsNum(ts) ? DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(Py.L(ts), 0, 253402300799)).ToString("yyyy-MM-dd") : "";
+        Py.IsNum(ts) ? DateTimeOffset.FromUnixTimeSeconds((long)Math.Clamp(Num(ts), 0, 253402300799)).ToString("yyyy-MM-dd") : "";
 
     /// <summary>The account's Me/me as it stands: the restored profile, else what a new account has (no recorded value).</summary>
     JsonObject MeOf(Db con, long account)
