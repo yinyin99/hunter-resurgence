@@ -640,6 +640,12 @@ public sealed partial class State
     /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
     /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
     public bool UnlimitedAmmo { get; init; }
+    /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
+    public const long DefaultInventoryCapacity = 20000;
+    /// <summary>The Increased Capacity item: each owned row adds its 10000 g to the capacity, so the connect sends one.</summary>
+    const long BackpackItem = 92;
+    /// <summary>settings.json `default_inventory_capacity`, in grams: what every account carries; the Increased Capacity item adds 10000 more.</summary>
+    public long InventoryCapacity { get; init; } = DefaultInventoryCapacity;
     readonly OrderedDictionary<long, long> family = new();
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
@@ -1251,6 +1257,11 @@ public sealed partial class State
             rows = Items(con);
             if (AllLicenses)
                 UnlimitedLicenses(rows);
+            // the game adds the capacity of every owned Increased Capacity row, so a second copy would add 10 more: it gets one
+            var seenBackpack = false;
+            foreach (var bag in rows.ToList())
+                if (Py.L(bag!["item_id"]) == BackpackItem && seenBackpack) rows.Remove(bag);
+                else if (Py.L(bag!["item_id"]) == BackpackItem) seenBackpack = true;
             // Send one definition per distinct owned item id, in order of first appearance, as the game's server does; a list longer than
             // the items stops the game after connect, so never the whole catalogue
             var infosOut = new JsonArray(rows.Select(r => Py.L(r!["item_id"])).Distinct()
@@ -1336,6 +1347,8 @@ public sealed partial class State
         var score = Py.IsNum(reply["account"]!["hunterscore"]) ? Py.L(reply["account"]!["hunterscore"]) : 0;
         foreach (var o in (reply["boost"]?["boost"] as JsonArray ?? []).OfType<JsonObject>())
             o["own"] = o["item"] is JsonObject boosted && (owned.Contains(Py.L(boosted["id"])) || Py.IsNum(boosted["hunterscoreGiveLevel"]) && score >= Py.L(boosted["hunterscoreGiveLevel"]));
+        if (reply["boost"] is JsonObject boostBlock)
+            boostBlock["default_inventory_capacity"] = InventoryCapacity;
         reply["skills"] = SkillNumbers(account, xp => Py.L(Skills.Value(xp)));
         using (var con = Con(account))
         {

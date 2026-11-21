@@ -205,6 +205,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Av oturumunuzu nereden başlatacağınızı seçin. İlgili rezervin haritasını görmek için aşağıdaki 12 rezerv logosundan birine, o bölgede hangi türlerin bulunduğunu öğrenmek için ise kulübelere (ev simgeleri) tıklayın. Dünya haritasında tıklayıp sürükleyerek gezinebilir, fare tekerleğiyle yakınlaştırıp uzaklaştırabilirsiniz.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Dünyanın en muhteşem doğal ortamlarından bazıları ve 45 farklı hayvan türü sizi bekliyor, iyi avlar!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Başlangıç saati:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Etkinlik tarafından sabitlendi: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Oyunu Başlat</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Yamalanıyor</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Kulübeler:</value></data>

@@ -56,7 +56,7 @@ else
         <div class="col start">
             <h3>@L["Launch.Start"]</h3>
             <label class="muted">@L["Launch.StartTime"]</label>
-            <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            @StartTime
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
             <button class="btn btn-primary btn-large btn-block" disabled="@(!ready || starting)" @onclick="Go">@(ready ? L["Launch.Create"].Value : L["Launch.Patching"].Value)</button>
         </div>
@@ -74,7 +74,7 @@ else
         @if (single)
         {
             <label class="muted">@L["Launch.StartTime"]</label>
-            <Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />
+            @StartTime
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" />
             <button class="btn btn-primary btn-large btn-block go" disabled="@(!ready || starting)" @onclick="Go">@(ready ? L["Launch.StartGame"].Value : L["Launch.Patching"].Value)</button>
         }
@@ -125,6 +125,11 @@ else
             <li class="@(m.Id == marker ? "current" : "")"><a class="@(m.Id == marker ? "" : "hover-tint")" href="#" @onclick="() => marker = m.Id" @onclick:preventDefault @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null">@m.Name</a></li>
         }
     </ul>;
+
+    /// <summary>The time picker; on a reserve the event fixes, the event's time instead (docs/server.md#seasonal-events).</summary>
+    RenderFragment StartTime => seasonal.FixedHour(reserve) is { } fixedHour
+        ? @<p id="start-time" class="muted">@L["Launch.EventTime", TimeSpan.FromHours(fixedHour).ToString(@"hh\:mm")]</p>
+        : @<Select Id="start-time" Width="172" Options="hours" Value="@Hour" ValueChanged="SetHour" />;
 
     [Parameter] public int Kind { get; set; }
 

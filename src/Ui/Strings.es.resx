@@ -205,6 +205,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Elige desde dónde empezar tu sesión de caza. Haz clic en uno de los 12 logotipos de reservas de abajo para ver el mapa de la reserva correspondiente, y haz clic en los refugios (los símbolos con forma de casa) para saber qué especies se pueden encontrar en esa zona. También puedes recorrer el mapa del mundo haciendo clic y arrastrando sobre él, y acercarlo o alejarlo con la rueda del ratón.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Algunos de los entornos naturales más magníficos del mundo y 45 especies de animales diferentes te esperan. ¡Feliz cacería!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Hora de inicio:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Fijada por el evento: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Iniciar partida</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Parcheando</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Refugios:</value></data>

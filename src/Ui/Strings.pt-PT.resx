@@ -205,6 +205,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Escolhe onde queres iniciar a tua sessão de caça. Clica num dos 12 logótipos de reservas abaixo para ver o mapa da reserva correspondente e clica nas cabanas (os símbolos de casa) para saberes que espécies se encontram nessa zona. Também podes percorrer o mapa-múndi ao clicar e arrastar, e aumentar ou diminuir o zoom com a roda do rato.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Alguns dos ambientes naturais mais magníficos do mundo e 45 espécies diferentes de animais esperam por ti. Boa caçada!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Hora de início:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Definida pelo evento: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Iniciar jogo</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>A atualizar</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Cabanas:</value></data>

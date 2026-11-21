@@ -205,6 +205,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Kies waar je jachtsessie begint. Klik op een van de 12 reservaatlogo's hieronder om een kaart van het bijbehorende reservaat te zien en klik op de jachthutten (de huissymbolen) om te ontdekken welke soorten in dat gebied voorkomen. Je kunt ook de wereldkaart verkennen door te klikken en te slepen, en in- en uitzoomen met het muiswiel.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Enkele van de mooiste natuurgebieden ter wereld en 45 verschillende diersoorten wachten op je. Veel jachtplezier!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Starttijd:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Vastgelegd door het evenement: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Spel starten</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Patchen</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Jachthutten:</value></data>

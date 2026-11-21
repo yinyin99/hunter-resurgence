@@ -205,6 +205,7 @@
   <data name="Launch.Intro1" xml:space="preserve"><value>Izberi, od kod želiš začeti lov. Klikni enega od 12 logotipov rezervatov spodaj, da si ogledaš zemljevid izbranega rezervata, nato pa klikni koče (simbole hišic), da izveš, katere vrste živali živijo na tem območju. Zemljevid sveta lahko tudi premikaš, tako da ga povlečeš z miško, približaš ali oddaljiš pa ga s kolescem miške.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Nekatera najčudovitejša naravna okolja na svetu in 45 različnih vrst živali te čakajo. Lep lov!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Čas začetka:</value></data>
+  <data name="Launch.EventTime" xml:space="preserve"><value>Določa dogodek: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Zaženi igro</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Krpanje</value></data>
   <data name="Launch.Lodges" xml:space="preserve"><value>Koče:</value></data>

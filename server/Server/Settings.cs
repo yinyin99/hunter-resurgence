@@ -81,6 +81,7 @@ public sealed class Settings
             JsonValue n when n.TryGetValue<int>(out var divisor) && divisor >= 1 => divisor,
             _ => throw new InvalidDataException("event_community_divisor: a whole number, at least 1"),
         };
+        cfg["default_inventory_capacity"] = Whole(root, "default_inventory_capacity", State.DefaultInventoryCapacity, 1);  // grams every player carries; docs/server.md#backpack-capacity
         cfg["game_build"] = root["game_build"] is null ? null : Whole(root, "game_build", 0, 1);  // the game's Steam build id the server supports, served by GET /stats/game; unset: null
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
