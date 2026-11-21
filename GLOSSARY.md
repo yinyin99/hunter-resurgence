@@ -274,7 +274,7 @@ Said of an objective the community server can't judge yet: it can't be newly met
 _Avoid_: unsupported
 
 **Clue**:
-What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. Objectives count only the first five.
+What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. No title names the last two, so only an objective that follows one animal's trail counts them.
 
 **Track**:
 Footprints, as in "ID tracks from a Grey Wolf", and wherever a title names tracks beside another kind of clue ("tracks or droppings", "tracks, droppings or calls"). Following one animal's trail ("Locate 3 Elk tracks", "3 tracks from the same animal") counts clues of any kind from that animal in one hunt.
