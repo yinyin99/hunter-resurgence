@@ -32,26 +32,25 @@ public class BoostTests : StateTestBase
     }
 
     [Fact]
-    public void CapacityHasOneSourceEach()
+    public void CapacityIsTheDefaultPlusOneBackpackRow()
     {
         var connect = CONNECT;
-        connect["boost"] = new JsonObject { ["default_inventory_capacity"] = 10000, ["boost"] = new JsonArray(new JsonObject
-        {
-            ["own"] = true, ["item"] = new JsonObject { ["id"] = 92, ["inventory"] = new JsonObject { ["capacity"] = 10000 } },
-        }) };
+        connect["boost"] = new JsonObject { ["default_inventory_capacity"] = 10000, ["boost"] = new JsonArray() };
         connect["inventory"]!["infos"]!.AsArray().Add(new JsonObject { ["item_id"] = 92, ["capacity"] = 10000 });
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES) { InventoryCapacity = 20000 };
         state.CreateAccount(Earner, "earner");
-        using (var con = state.Store.Open(Owner)) con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, 901, 92, 0, '{}', NULL)");
+        using (var con = state.Store.Open(Owner))
+        {
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, 901, 92, 0, '{}', NULL)");
+            con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, 902, 92, 0, '{}', NULL)");  // a duplicate row
+        }
 
-        // the game's total: the default, the boost entries' capacity, and each owned row's capacity
+        // the game's total: the default plus the capacity of each owned row
         long Total(long account)
         {
             var reply = Reply(state.ConnectReply(account));
-            var rows = reply["inventory"]!["items"]!.AsArray().Select(r => (long)r!["item_id"]!).ToHashSet();
-            return (long)reply["boost"]!["default_inventory_capacity"]!
-                + reply["boost"]!["boost"]!.AsArray().Sum(b => (bool)b!["own"]! ? (long)b!["item"]!["inventory"]!["capacity"]! : 0)
-                + reply["inventory"]!["infos"]!.AsArray().Where(i => rows.Contains((long)i!["item_id"]!)).Sum(i => i!["capacity"] is { } c ? (long)c : 0);
+            var capacity = reply["inventory"]!["infos"]!.AsArray().ToDictionary(i => (long)i!["item_id"]!, i => i!["capacity"] is { } c ? (long)c : 0);
+            return (long)reply["boost"]!["default_inventory_capacity"]! + reply["inventory"]!["items"]!.AsArray().Sum(r => capacity.GetValueOrDefault((long)r!["item_id"]!));
         }
         Assert.Equal(30000, Total(Owner));
         Assert.Equal(20000, Total(Earner));
