@@ -18,8 +18,10 @@ public sealed class LauncherEnv
     /// <summary>SteamID64 of the Steam user signed in on this PC, null when Steam is not running or nobody is signed in.</summary>
     public string? SteamId64 { get; private set; }
     public bool SaveFailed { get; private set; }
-    public string Version { get; } =
+    /// <summary>The launcher's version (x.y.z, without the build metadata).</summary>
+    public static string AppVersion { get; } =
         (typeof(LauncherEnv).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "0.0.0").Split('+')[0];
+    public string Version => AppVersion;
 
     public LauncherEnv(string? prefsPath = null)
     {

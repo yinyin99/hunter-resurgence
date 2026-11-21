@@ -2,7 +2,7 @@
 
 `src/Launcher/` is a Windows desktop app that will replace the old launcher once the community server exists. It runs beside the old launcher and does not change it. It never writes into the game folder.
 
-It is a Blazor app shown in a WPF window (1280 x 760) through the WebView2 control, so the Microsoft Edge WebView2 runtime must be installed (it comes with Windows 11). The screens are shared with the [website](website.md) and live in `src/Ui/`; the launcher only adds the window and the real services below.
+It is a Blazor app shown in a WPF window (1280 x 760 the first time, then where and how large it was when it last closed, if that place is still on a screen; its title ends with the launcher's version, `Hunter Resurgence v0.33.0`) through the WebView2 control, so the Microsoft Edge WebView2 runtime must be installed (it comes with Windows 11). The screens are shared with the [website](website.md) and live in `src/Ui/`; the launcher only adds the window and the real services below.
 
 ## State
 
@@ -300,7 +300,7 @@ Tests: `FolderActionTests` (temporary install, `%APPDATA%` and Pictures folders:
 
 | File | Who writes it | Content |
 |---|---|---|
-| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, whether game settings were saved once (`game_settings_saved`: the first game start no longer asks), and Steam's Play button (`steam_option_set`, `steam_option_before`, `steam_option_file`, `steam_option_asked`, `steam_option_never`), and whether problem reports may be sent by themselves (`report_consent`: `unset`, `auto` or `ask`). A missing or damaged file means the defaults. |
+| `%APPDATA%\hunter-resurgence\launcher.json` | the launcher | language, game folder chosen by hand, whether game settings were saved once (`game_settings_saved`: the first game start no longer asks), and Steam's Play button (`steam_option_set`, `steam_option_before`, `steam_option_file`, `steam_option_asked`, `steam_option_never`), whether problem reports may be sent by themselves (`report_consent`: `unset`, `auto` or `ask`), and the window's place when it last closed (`window`: `left`, `top`, `width`, `height` of its normal size, `maximized`). A missing or damaged file means the defaults. |
 | `%APPDATA%\hunter-resurgence\runs.json` | the launcher | the last 10 game starts it watched: when, how long, the mode (`steam` or `nosteam`), the exit code and whether a game window was seen. Included in a problem report. |
 | `%TEMP%\hunter-resurgence\hunter-resurgence-report-<time>.zip` | Report a problem | the report as built; replaced by the next one. Save copies it to Downloads. |
 | the game's graphics file | Game settings, on Save; the launcher before every game start | fullscreen, resolution and refresh rate, scene complexity, texture, shadow, anti-aliasing, anisotropic filtering, vertical sync; the launcher also replaces it with the newest of the two modes' files (missing or older) before every start, after a `.resurgence-backup` copy of the file it overwrites |
