@@ -611,7 +611,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Eq($$"""{"current": "{{PickedSite}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
         Assert.Equal(200, (await ChooseAvatar("id=imported", xhr)).Status);
         var account = state.Store.AccountJson(me);
-        Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000000]""", T(account["avatar_url"], account["face"]));
+        Eq($$"""["{{BASE}}/photos/{{me}}/avatar.jpg", 1000001]""", T(account["avatar_url"], account["face"]));  // the body keeps the female gender of the avatar chosen before, so the face is the list's female head
         Eq($$"""{"current": "{{link}}", "ids": [1000000, 1000001], "locked": [], "imported": "{{link}}"}""", JsonNode.Parse((await Get("web.test", "/account/avatars", ck)).Body));
     }
 
