@@ -76,10 +76,10 @@ public abstract class MissionTestBase : StateTestBase
         O($$"""{"event": 11, "individual": {{individual}}, "location": {{location}}}"""),
     ];
 
-    /// <summary>A clue (`trackType` 9 is a heard call) of an animal that is a deer (species 1) unless said.</summary>
-    protected static JsonNode[] Clue(int individual, int trackType, int species = 1) =>
+    /// <summary>A clue (`trackType` 9 is a heard call, 2 footprints, 1 droppings, 0 a blood trail) of an animal that is a deer (species 1) and a male unless said.</summary>
+    protected static JsonNode[] Clue(int individual, int trackType, int species = 1, int gender = 0) =>
     [
-        O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 0, "weight_grams": 90000, "texture": 0, "special": 0}"""),
+        O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": {{gender}}, "weight_grams": 90000, "texture": 0, "special": 0}"""),
         O($$"""{"event": 12, "individual": {{individual}}, "track_type": {{trackType}}}"""),
     ];
 

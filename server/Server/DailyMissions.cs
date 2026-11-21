@@ -119,9 +119,9 @@ public sealed partial class State
         return s;
     }
 
-    /// <summary>Today's daily mission meets an event (<see cref="Advance"/>): an objective of the kind that `meets` accepts is finished; the last one completes the
-    /// day: its gm$ are paid (update 15 and a wallet row), the game is told (update 17) and the day is counted. A frozen account's mission does not count.</summary>
-    void DailyAdvance(Db con, Kind kind, Func<Rule, bool> meets, Action<JsonObject> now)
+    /// <summary>Today's daily mission meets an event (<see cref="Advance"/>): an objective of the kind that `meets` accepts is finished (a count of clues adds up those found since the day
+    /// began); the last one completes the day: its gm$ are paid (update 15 and a wallet row), the game is told (update 17) and the day is counted. A frozen account's mission does not count.</summary>
+    void DailyAdvance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now)
     {
         if (dailies.Count == 0)
             return;
@@ -131,7 +131,8 @@ public sealed partial class State
         if (Py.Truthy(s["frozen"]) || Py.Truthy(s["done"]) || MissionOf(s) is not { } d)
             return;
         var finished = Ids(s["objectives"]).ToList();
-        if (Meet(d.Def, finished, kind, meets) is null)
+        var begun = (DateOf(s).DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0;
+        if (Meet(d.Def, finished, kind, meets, kind != Kind.Track ? 0 : (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a AND ts < ?", begun)!) is null)  // only a clue count looks back
             return;
         s["objectives"] = List(finished);
         if (d.Def.Objectives.All(o => finished.Contains(o.Id)))
@@ -173,8 +174,8 @@ public sealed partial class State
 
     static string EventType(Kind kind) => kind switch { Kind.Harvest => "CONFIRMKILL", Kind.Spot => "SPOT", Kind.Track => "CLUE", _ => "" };
 
-    /// <summary>The page's objective entry: its title and the condition the rule stands for. ponytail: a clue counts whatever its type (footsteps, droppings), as the
-    /// catalogue's missions do; the condition names droppings when the title does, else footsteps, for the page only.</summary>
+    /// <summary>The page's objective entry: its title and the condition the rule stands for. The rule checks the clue's kind as a catalogue mission does; the page's condition names
+    /// droppings when the title does, else footsteps (a call or a blood trail is shown as footsteps: for the page only).</summary>
     JsonObject DailyObjective(Objective o, bool finished)
     {
         var rule = o.Rule;

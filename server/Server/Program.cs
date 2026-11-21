@@ -24,8 +24,8 @@ const string AdminUsage = """
     A running hunt receives them with its next heartbeat (update 10 / update 15); otherwise the next connect carries them.
     Negative amounts take currency away. With the server running, the same is in its admin API (http://localhost/swagger).
     spawn adds a group to spawn.json in the data folder: the next hunt (connect) has it; x/z default to the start.
-    admin missions-rollback [--apply] [--account <id or handle>] reopens the mission objectives the earlier, laxer rules finished without their conditions: each finished harvest objective whose title the server fully understands is checked again against the harvests
-    made since its mission was activated, and one that no harvest meets is reopened (one with words the server does not read stays finished and is counted as `kept: not understood` in the total line) (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
+    admin missions-rollback [--apply] [--account <id or handle>] reopens the mission objectives the earlier, laxer rules finished without their conditions: each finished harvest or clue objective whose title the server fully understands is checked again against the harvests and clues
+    made since its mission was activated, and one that no harvest or clue meets is reopened (one with words the server does not read stays finished and is counted as `kept: not understood` in the total line) (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
     missions completed before a restore are never touched. Without --apply it only prints one line per account with a change and a total, and writes nothing; --apply changes the rows and keeps a record per account (table mission_rollbacks).
     Run it once, with the server stopped, after `backup`.
     """;
@@ -465,7 +465,7 @@ async Task Serve()
     var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
     if (state is not null && state.ConfirmMissions() is > 0 and var confirmed)
-        Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests made before this start");
+        Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests and clues made before this start");
     if (state is not null && (bool?)settings.Cfg["offline_mode"] == false) state.BackfillLodges();  // a community server: the lodges its accounts' lodge items lack
     var certs = new List<X509Certificate2>();
     try

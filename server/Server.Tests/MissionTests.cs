@@ -69,7 +69,7 @@ public class MissionTests : StateTestBase
 
     static JsonNode Spawn(int individual) => O($$"""{"event": 7, "individual": {{individual}}, "species": 1, "gender": 0, "weight_grams": 50000, "texture": 0}""");
 
-    static JsonNode Track(int individual) => O($$"""{"event": 12, "individual": {{individual}}, "track_type": 3}""");
+    static JsonNode Track(int individual) => O($$"""{"event": 12, "individual": {{individual}}, "track_type": 2}""");
 
     static JsonNode SpotOf(int individual) => O($$"""{"event": 11, "individual": {{individual}}, "milliseconds_viewed": 3000, "percentage": 80}""");
 
