@@ -108,12 +108,22 @@ public class ServerLeaderboardsServiceTests
     }
 
     [Fact]
-    public async Task TheSeasonsAreNoneWhenTheServerDoesNotAnswer()
+    public async Task TheSeasonsAndTheHallAreUnavailableWhenTheServerDoesNotAnswer()
     {
-        var (current, seasons) = await Make(new Down()).SeasonsAsync();
-        Assert.Equal((0, 0), (current, seasons.Count));
-        Assert.Empty(await Make(new Down()).HallAsync(1));
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Down()).SeasonsAsync());
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Down()).HallAsync(1));
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Down()).BoardsAsync("score", 0));
     }
+
+    /// <summary>A board the server is slow to answer: the client's timeout cancels the request.</summary>
+    sealed class Slow : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct) => throw new TaskCanceledException("the request timed out");
+    }
+
+    [Fact]
+    public async Task ATimeoutIsUnavailableNotAnEmptyBoard() =>
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Slow()).BoardsAsync("score", 0));
 
     [Theory]
     [InlineData("lanebandit")]
@@ -140,12 +150,12 @@ public class ServerLeaderboardsServiceTests
     }
 
     [Fact]
-    public async Task ServerDownIsAnEmptyBoardAndNoRank()
+    public async Task ServerDownIsUnavailableAndNoRank()
     {
         var service = Make(new Down());
-        var page = await service.RowsAsync("hunterscore", 0, 1, 0);
-        Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => service.RowsAsync("hunterscore", 0, 1, 0));
         Assert.Null(await service.MyRankAsync("hunterscore", 0, 0));
+        Assert.Null(await Make(new Slow()).MyRankAsync("range", 5, 2));
     }
 
     // PL24: fix 7bfa174
@@ -161,12 +171,18 @@ public class ServerLeaderboardsServiceTests
     [Theory]
     [InlineData("hunterscore", HttpStatusCode.InternalServerError, "{}")]
     [InlineData("hunterscore", HttpStatusCode.OK, "<html>")]
-    [InlineData("hunterscore", HttpStatusCode.OK, "{}")]  // a reply without rows
     [InlineData("lanebandit", HttpStatusCode.InternalServerError, "{}")]
+    [InlineData("score", HttpStatusCode.BadGateway, "{}")]
+    public async Task AFailedOrGarbledBoardIsUnavailable(string kind, HttpStatusCode code, string body) =>
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Fake(_ => Json(code, body))).RowsAsync(kind, 5, 1, 0));
+
+    [Theory]
+    [InlineData("hunterscore", HttpStatusCode.OK, "{}")]  // a reply without rows
     [InlineData("bustthrough", HttpStatusCode.OK, "{}")]
-    public async Task AFailedOrGarbledBoardIsEmpty(string kind, HttpStatusCode code, string body)
+    [InlineData("score", HttpStatusCode.NotFound, "{}")]  // an answer: no such board
+    public async Task ABoardTheServerAnsweredWithoutRowsIsEmpty(string kind, HttpStatusCode code, string body)
     {
-        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync(kind, 0, 1, 0);
+        var page = await Make(new Fake(_ => Json(code, body))).RowsAsync(kind, 5, 1, 0);
         Assert.Equal((0, 1, 1), (page.Rows.Count, page.Number, page.Pages));
     }
 

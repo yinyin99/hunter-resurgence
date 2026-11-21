@@ -134,7 +134,7 @@ void Admin(string[] a)
             if (r.Rescored > 0 || r.Paid > 0)
                 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, rescored = r.Rescored, paid = r.Paid, gms = r.Gms, applied = apply }));
         }
-        Console.WriteLine(apply ? "applied (a running server keeps its boards 15 minutes, an ended season's 24 hours, or until it restarts)" : "dry run: nothing written; add --apply to write");
+        Console.WriteLine(apply ? "applied (a running server shows it in its boards within 15 minutes, or at its restart)" : "dry run: nothing written; add --apply to write");
         return;
     }
     if (a.Length > 0 && a[0] == "gallery-details")
@@ -488,6 +488,9 @@ async Task Serve()
             }
         });
         Console.WriteLine("listening on " + string.Join(", ", settings.Listeners.Select(l => $"{(l.Cert is null ? "http" : "https")}://{l.Address}:{l.Port}{(l.Admin ? " (admin)" : "")}")));
+        // the leaderboards are computed in the background at the start and again before they expire: no request waits for a cold board
+        if (state is { Online: true })
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => state.KeepBoardsWarm(State.BoardRefresh, app.Lifetime.ApplicationStopping)));
         await app.RunAsync();
     }
     finally

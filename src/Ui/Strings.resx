@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Top scores of all time</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Top ranges of all time</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Nobody is ranked here yet</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>The leaderboard could not be loaded. Please try again.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Try again</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>No season has ended yet</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Top Lane Bandit scores</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is a cool retro arcade game that you can play on your Huntermate to keep you entertained while you wait for that trophy to appear!</value></data>

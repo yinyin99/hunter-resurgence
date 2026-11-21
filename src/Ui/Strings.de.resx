@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Beste Bewertungen aller Zeiten</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Beste Schussweiten aller Zeiten</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Hier ist noch niemand platziert</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Die Bestenliste konnte nicht geladen werden. Bitte versuche es erneut.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Erneut versuchen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Noch keine Saison ist zu Ende</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Beste Lane-Bandit-Bewertungen</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit ist ein cooles Retro-Arcade-Spiel, das Sie auf Ihrem Huntermate spielen können, um sich die Zeit zu vertreiben, während Sie auf das Erscheinen der Trophäe warten!</value></data>

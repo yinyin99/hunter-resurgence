@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Najlepsze wyniki wszech czasów</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Największe odległości wszech czasów</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Nikt jeszcze nie jest tu w rankingu</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Nie udało się wczytać rankingu. Spróbuj ponownie.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Spróbuj ponownie</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Żaden sezon jeszcze się nie zakończył</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najlepsze wyniki Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit to fajna gra arcade w stylu retro, w którą możesz zagrać na swoim Huntermacie, by umilić sobie czekanie na wymarzone trofeum!</value></data>

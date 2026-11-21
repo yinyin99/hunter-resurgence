@@ -569,6 +569,8 @@
   <data name="Board.TopScoresAll" xml:space="preserve"><value>Høyeste poengsummer gjennom tidene</value></data>
   <data name="Board.TopRangesAll" xml:space="preserve"><value>Lengste skuddavstander gjennom tidene</value></data>
   <data name="Board.Empty" xml:space="preserve"><value>Ingen er rangert her ennå</value></data>
+  <data name="Board.LoadFailed" xml:space="preserve"><value>Rangeringen kunne ikke lastes. Prøv igjen.</value></data>
+  <data name="Board.Retry" xml:space="preserve"><value>Prøv igjen</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen sesong er avsluttet ennå</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Høyeste poeng i Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et kult retro-arkadespill du kan spille på HunterMate for å få tiden til å gå mens du venter på at trofeet skal dukke opp!</value></data>

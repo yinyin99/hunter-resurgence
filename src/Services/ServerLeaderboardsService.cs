@@ -5,7 +5,7 @@ namespace Resurgence.Services;
 
 /// <summary>The boards of the community server: the species boards by season and their hall of fame, the hunterscore and the two minigames' (the best scores, restored or played).
 /// It has no antler boards (the live site does not offer them).</summary>
-/// <param name="http">Base address is the server, <c>UseCookies</c> off; a failure of the network is an empty board.</param>
+/// <param name="http">Base address is the server, <c>UseCookies</c> off; a failure of the network is <see cref="BoardUnavailableException"/> (the launcher gives it time: the server may be computing).</param>
 public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cookie, ILogger<ServerLeaderboardsService> log) : ILeaderboardsService
 {
     const string Hunterscore = "hunterscore";
@@ -50,26 +50,27 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
     {
         if (cookie.Value is null) return null;
         if (kind == Hunterscore)
-            return await GetAsync<ServerAccount>(ServerSessionApi.Me) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar)) : null;
+            return await GetAsync<ServerAccount>(ServerSessionApi.Me, mine: true) is { Handle.Length: > 0 } me ? new Ranked(me.Rank, me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar)) : null;
         // the server keeps no place on the minigame boards
-        return Species(kind) && await GetAsync<ServerRow>($"{ServerSessionApi.Leaderboards}/{kind}/{id}/me?season={season}") is { Handle.Length: > 0 } r ? Row(r) : null;
+        return Species(kind) && await GetAsync<ServerRow>($"{ServerSessionApi.Leaderboards}/{kind}/{id}/me?season={season}", mine: true) is { Handle.Length: > 0 } r ? Row(r) : null;
     }
 
-    /// <summary>The JSON of a 200; null for any other answer or none (a 401, an expired cookie, and a 404, not ranked, are not worth a warning).</summary>
-    async Task<T?> GetAsync<T>(string path) where T : class
+    /// <summary>The JSON of a 200; null for a 401 or a 404 (signed out, not ranked: answers). Any other answer, or none, throws <see cref="BoardUnavailableException"/>,
+    /// except for <paramref name="mine"/>, the player's own place: a place that cannot be read is no place.</summary>
+    async Task<T?> GetAsync<T>(string path, bool mine = false) where T : class
     {
         try
         {
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
-            if (response.StatusCode is not (System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.NotFound))
-                log.LogWarning("The server answered a board request with {Status}: an empty board", (int)response.StatusCode);
+            if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.NotFound) return null;
+            throw new HttpRequestException($"the server answered {(int)response.StatusCode}");
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
-            log.LogWarning("The server did not answer a board request ({Reason}): an empty board", e.Message);
+            log.LogWarning("A board request failed ({Reason})", e.Message);
+            return mine ? null : throw new BoardUnavailableException(e.Message, e);
         }
-        return null;
     }
 }

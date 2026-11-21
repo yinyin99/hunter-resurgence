@@ -11,7 +11,12 @@
 <h2 class="page-title">@L["Board.Title"]</h2>
 <Tabs Kind="strip" Items="tabs" Active="@active" />
 
-@if (loaded)
+@if (failed)
+{
+    <p class="norank" role="alert">@L["Board.LoadFailed"]</p>
+    <button type="button" class="btn btn-inverse" @onclick="OnParametersSetAsync">@L["Board.Retry"]</button>
+}
+else if (loaded)
 {
     switch (kind)
     {
@@ -121,7 +126,8 @@ else
     string kind = "score", active = "", speciesName = "";
     int? id;
     int page = 1, pages = 1, season, current;
-    bool loaded;
+    /// <summary>The board is read: <see cref="loaded"/>, or <see cref="failed"/> when the server did not answer (the empty text is for a board it answered as empty).</summary>
+    bool loaded, failed;
 
     /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double), then a species or antler id, then a page.</summary>
     [Parameter] public string? Path { get; set; }
@@ -142,7 +148,7 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        loaded = false;
+        (loaded, failed) = (false, false);
         var p = (Path ?? "score").Split('/', StringSplitOptions.RemoveEmptyEntries);
         var numbers = p.SkipWhile(s => !int.TryParse(s, out _)).Select(int.Parse).ToArray();
         kind = p[0] == "antlers" ? "antlers-" + (p.Length > 1 ? p[1] : "single") : p[0];
@@ -152,35 +158,39 @@ else
             return;
         }
         active = tabs.FirstOrDefault(t => t.Href == "/leaderboards/" + kind.Replace("-", "/")).Href ?? tabs[0].Href;
-        var (now, seasons) = await Service.SeasonsAsync();
-        current = now;
-        all = [0, .. seasons.Select(s => s.No).OrderBy(n => n)];
-        ended = [.. seasons.Where(s => s.End is not null).Select(s => s.No).OrderBy(n => n)];
-        season = SeasonQuery ?? (kind == "halloffame" ? ended.LastOrDefault() : now);
-        (id, page, mine, boards, rows) = (null, 1, null, [], []);
-        switch (kind)
+        try
         {
-            case "halloffame":
-                hall = [.. (await Service.HallAsync(season)).OrderBy(h => L.Term(h.Species), StringComparer.CurrentCultureIgnoreCase)];
-                break;
-            case "hunterscore" or "lanebandit" or "bustthrough":
-                page = numbers.Length > 0 ? numbers[0] : 1;
-                (rows, page, pages) = Unpack(await Service.RowsAsync(kind, 0, page, 0));
-                mine = await Service.MyRankAsync(kind, 0, 0);
-                break;
-            default:
-                boards = [.. (await Service.BoardsAsync(kind, season)).OrderBy(b => L.Term(b.Name), StringComparer.CurrentCultureIgnoreCase)];
-                if (numbers.Length > 0)
-                {
-                    (id, page) = (numbers[0], numbers.Length > 1 ? numbers[1] : 1);
-                    (rows, page, pages) = Unpack(await Service.RowsAsync(kind, id.Value, page, season));
-                    mine = await Service.MyRankAsync(kind, id.Value, season);
-                    // a species nobody ranks in this season is not in its overview: its name is the all-time one
-                    speciesName = (boards.FirstOrDefault(b => b.Id == id) ?? (season == 0 ? null : (await Service.BoardsAsync(kind, 0)).FirstOrDefault(b => b.Id == id)))?.Name ?? "";
-                }
-                break;
+            var (now, seasons) = await Service.SeasonsAsync();
+            current = now;
+            all = [0, .. seasons.Select(s => s.No).OrderBy(n => n)];
+            ended = [.. seasons.Where(s => s.End is not null).Select(s => s.No).OrderBy(n => n)];
+            season = SeasonQuery ?? (kind == "halloffame" ? ended.LastOrDefault() : now);
+            (id, page, mine, boards, rows) = (null, 1, null, [], []);
+            switch (kind)
+            {
+                case "halloffame":
+                    hall = [.. (await Service.HallAsync(season)).OrderBy(h => L.Term(h.Species), StringComparer.CurrentCultureIgnoreCase)];
+                    break;
+                case "hunterscore" or "lanebandit" or "bustthrough":
+                    page = numbers.Length > 0 ? numbers[0] : 1;
+                    (rows, page, pages) = Unpack(await Service.RowsAsync(kind, 0, page, 0));
+                    mine = await Service.MyRankAsync(kind, 0, 0);
+                    break;
+                default:
+                    boards = [.. (await Service.BoardsAsync(kind, season)).OrderBy(b => L.Term(b.Name), StringComparer.CurrentCultureIgnoreCase)];
+                    if (numbers.Length > 0)
+                    {
+                        (id, page) = (numbers[0], numbers.Length > 1 ? numbers[1] : 1);
+                        (rows, page, pages) = Unpack(await Service.RowsAsync(kind, id.Value, page, season));
+                        mine = await Service.MyRankAsync(kind, id.Value, season);
+                        // a species nobody ranks in this season is not in its overview: its name is the all-time one
+                        speciesName = (boards.FirstOrDefault(b => b.Id == id) ?? (season == 0 ? null : (await Service.BoardsAsync(kind, 0)).FirstOrDefault(b => b.Id == id)))?.Name ?? "";
+                    }
+                    break;
+            }
+            loaded = true;
         }
-        loaded = true;
+        catch (BoardUnavailableException) { failed = true; }
     }
 
     static (IReadOnlyList<Ranked>, int, int) Unpack(Page<Ranked> p) => (p.Rows, p.Number, p.Pages);

@@ -76,7 +76,8 @@ static class LauncherServices
         services.AddSingleton<ISessionService>(sp => new LauncherSessionService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             Path.Combine(Path.GetDirectoryName(Prefs.DefaultPath)!, "session.dat"), OpenBrowser, sp.GetRequiredService<ILogger<ServerSessionService>>()));
         services.AddSingleton<ServerCache<ServerStore>>();
-        services.AddSingleton<ILeaderboardsService>(sp => new ServerLeaderboardsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
+        // the boards get a client of their own: the server may still be computing one (it does at its start), so it waits longer than the 5 seconds of the others
+        services.AddSingleton<ILeaderboardsService>(sp => new ServerLeaderboardsService(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(30) }, sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
         services.AddSingleton<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>()));
         services.AddSingleton<IMessagesService>(sp => new ServerMessagesService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMessagesService>>()));
         services.AddSingleton<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),

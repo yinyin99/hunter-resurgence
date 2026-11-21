@@ -33,8 +33,8 @@ public sealed partial class State
                     var ts = (long)Num(rec["confirm_ts"]);
                     found.Add(new(Py.L(row["specie"]), Num(rec["score"]), Num(rec["distance"]), (JsonObject)rec.DeepClone(), ts, 1, 0));  // a restored kill is Season 1 whatever time its backup says
                 }
-        if (found.Count == 0 && con.Account is { } account)  // no saved bests (an archive claim): the restored trophy list and the animals mounted in the restored lodges, one row per trophy id, score only
-            foreach (var row in Restored(account, "trophies", "/game/user/trophies").Concat(MountedRows(account)).OfType<JsonObject>().DistinctBy(r => Py.Str(r["id"])).Where(NotHidden))
+        if (found.Count == 0)  // no saved bests (an archive claim): the restored trophy list and the animals mounted in the restored lodges, one row per trophy id, score only
+            foreach (var row in Restored(con, "trophies", "/game/user/trophies").Concat(MountedRows(con)).OfType<JsonObject>().DistinctBy(r => Py.Str(r["id"])).Where(NotHidden))
                 if (Py.IsNum(row["species"]) && Num(row["score"]) is > 0 and var score)
                 {
                     var ts = Py.IsStr(row["timestamp"]) && DateTimeOffset.TryParse((string)row["timestamp"]!, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : (long)Num(row["timestamp"]);
@@ -84,19 +84,21 @@ public sealed partial class State
         return new JsonObject { ["status"] = "done", ["data"] = data };
     }
 
-    /// <summary>How long a computed board is kept: 15 minutes, 24 hours for an ended season (its harvests are all in).</summary>
-    static readonly TimeSpan BoardTtl = TimeSpan.FromMinutes(15), EndedBoardTtl = TimeSpan.FromHours(24);
+    /// <summary>How long a computed set of boards is kept (15 minutes) and when <see cref="KeepBoardsWarm"/> replaces it (14 minutes after, so it is never missing).</summary>
+    public static readonly TimeSpan BoardTtl = TimeSpan.FromMinutes(15), BoardRefresh = TimeSpan.FromMinutes(14);
 
-    sealed record CachedBoards(Lazy<SortedDictionary<long, List<BoardRow>>> Boards, double Expires);
+    /// <summary>Every board of one computation: (range, season) with 0 for all time, each by species.</summary>
+    sealed record CachedBoards(int Epoch, Lazy<Dictionary<(bool Range, long Season), SortedDictionary<long, List<BoardRow>>>> Boards, double Expires);
 
-    readonly System.Collections.Concurrent.ConcurrentDictionary<(bool Range, long Season, int Epoch), CachedBoards> boardCache = new();
+    static readonly SortedDictionary<long, List<BoardRow>> NoBoards = [];
+    CachedBoards? boardCache;
     int boardEpoch;
 
-    /// <summary>Drop the kept boards, for a change that must show at once: a season start, a deleted account, a hidden harvest. A board that is being computed meanwhile is not kept (the epoch is part of its key).</summary>
+    /// <summary>Drop the kept boards, for a change that must show at once: a season start, a deleted account, a hidden harvest. A set that is being computed meanwhile is not kept (it carries the epoch it started in).</summary>
     public void DropBoards()
     {
         Interlocked.Increment(ref boardEpoch);
-        boardCache.Clear();
+        Volatile.Write(ref boardCache, null);
     }
 
     /// <summary>Start the next season (<see cref="Store.StartSeason"/>) and drop the kept boards: the ended season's are final now, the current one's are the new one's.</summary>
@@ -107,46 +109,86 @@ public sealed partial class State
         return started;
     }
 
-    /// <summary>The boards of a season (0: all time) by species id: the score board (`range` false) or the range board, every hunter with a best above 0 (a banned account and the recorded
-    /// player's are left out), best first, a tie to the earlier kill, then the lower account id. The callers cut the top and must not change them: the result is kept for <see cref="BoardTtl"/>
-    /// (<see cref="EndedBoardTtl"/> for an ended season), and callers that miss at the same time share one computation.</summary>
-    public SortedDictionary<long, List<BoardRow>> Boards(bool range, long season)
+    /// <summary>The kept set of boards; none, or an expired one: a new computation, which callers that miss at the same time share.</summary>
+    CachedBoards KeptBoards()
     {
-        var key = (range, season, Volatile.Read(ref boardEpoch));
-        var now = Clock();
-        if (!boardCache.TryGetValue(key, out var kept) || kept.Expires <= now)
+        while (true)
         {
-            var seasons = Store.Seasons();
-            var ended = seasons.FirstOrDefault(s => s.No == season)?.End is { } end && end < now;
-            var fresh = new CachedBoards(new(() => ComputeBoards(range, season, seasons)), now + (ended ? EndedBoardTtl : BoardTtl).TotalSeconds);
-            kept = boardCache.AddOrUpdate(key, fresh, (_, old) => old.Expires > now ? old : fresh);
+            var (epoch, now, kept) = (Volatile.Read(ref boardEpoch), Clock(), Volatile.Read(ref boardCache));
+            if (kept is not null && kept.Epoch == epoch && kept.Expires > now) return kept;
+            var fresh = new CachedBoards(epoch, new(ComputeBoards), now + BoardTtl.TotalSeconds);
+            if (Interlocked.CompareExchange(ref boardCache, fresh, kept) == kept) return fresh;
         }
-        try { return kept.Boards.Value; }
-        catch { boardCache.TryRemove(KeyValuePair.Create(key, kept)); throw; }  // a failed computation is not kept
     }
 
-    /// <summary>ponytail: scans every account (the per-player tables are read one connection each, as <see cref="Store.GameBoard"/>); a harvest shows when the kept board expires, store the last hit on the harvest when the scan itself gets slow.</summary>
-    SortedDictionary<long, List<BoardRow>> ComputeBoards(bool range, long season, IReadOnlyList<Store.Season> seasons)
+    /// <summary>The boards of a season (0: all time) by species id: the score board (`range` false) or the range board, every hunter with a best above 0 (a banned account and the recorded
+    /// player's are left out), best first, a tie to the earlier kill, then the lower account id. The callers cut the top and must not change them: all boards come from one computation that is kept for <see cref="BoardTtl"/>
+    /// and made again by <see cref="KeepBoardsWarm"/> before that, so a read waits only for the first computation after the start or after <see cref="DropBoards"/>; callers that miss at the same time share it.</summary>
+    public SortedDictionary<long, List<BoardRow>> Boards(bool range, long season)
     {
+        var kept = KeptBoards();
+        try { return kept.Boards.Value.GetValueOrDefault((range, season)) ?? NoBoards; }
+        catch { Interlocked.CompareExchange(ref boardCache, null, kept); throw; }  // a failed computation is not kept
+    }
+
+    /// <summary>Compute the boards again and replace the kept ones with them, off any request: the old ones answer until then. A computation that a <see cref="DropBoards"/> overtakes is thrown away. Without kept boards this is their first computation, the one the reads wait for.</summary>
+    public void RefreshBoards()
+    {
+        if (Volatile.Read(ref boardCache) is not { } kept || kept.Epoch != Volatile.Read(ref boardEpoch) || kept.Expires <= Clock())
+        {
+            _ = Boards(false, 0);
+            return;
+        }
+        var (epoch, expires) = (Volatile.Read(ref boardEpoch), Clock() + BoardTtl.TotalSeconds);
+        var fresh = new CachedBoards(epoch, new(ComputeBoards()), expires);
+        if (epoch == Volatile.Read(ref boardEpoch)) Volatile.Write(ref boardCache, fresh);
+    }
+
+    /// <summary>Compute the boards at the start and again every <paramref name="every"/>, so no request waits for a cold board (a failed round is tried again at the next one; the boards of a failed first one are computed by the first read).</summary>
+    public async Task KeepBoardsWarm(TimeSpan every, CancellationToken stop)
+    {
+        using var tick = new PeriodicTimer(every);
+        try
+        {
+            do
+                try { RefreshBoards(); }
+                catch (Exception e) when (e is not OperationCanceledException) { Console.Error.WriteLine("leaderboards: " + e.Message); }  // whatever a round meets, the next one comes
+            while (await tick.WaitForNextTickAsync(stop));
+        }
+        catch (OperationCanceledException) { }
+    }
+
+    /// <summary>ponytail: scans every account once for all the boards (the per-player tables are read on one connection each, as <see cref="Store.GameBoard"/>); a harvest shows when the kept boards are replaced,
+    /// store each hunter's best per species and season when the scan itself gets slow.</summary>
+    Dictionary<(bool Range, long Season), SortedDictionary<long, List<BoardRow>>> ComputeBoards()
+    {
+        var seasons = Store.Seasons();
         List<(long Id, string Handle)> accounts;
         using (var con = Store.Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", LocalAccount).Select(r => ((long)r[0], (string)r[1]))];
-        var all = new SortedDictionary<long, List<(long Id, string Handle, Cand Kill)>>();
+        var all = new Dictionary<(bool Range, long Season), SortedDictionary<long, List<(long Id, string Handle, Cand Kill)>>>();
         foreach (var (id, handle) in accounts)
         {
             using var con = Con(id);
-            foreach (var (species, score, best) in Bests(Candidates(con, seasons), season))
-            {
-                var c = range ? best : score;
-                if ((range ? c.Mm : c.Score) > 0)
-                    (all.TryGetValue(species, out var list) ? list : all[species] = []).Add((id, handle, c));
-            }
+            var kills = Candidates(con, seasons);
+            foreach (var season in (long[])[0, .. seasons.Select(s => s.No)])
+                foreach (var (species, score, best) in Bests(kills, season))
+                    foreach (var range in (bool[])[false, true])
+                    {
+                        var c = range ? best : score;
+                        if ((range ? c.Mm : c.Score) <= 0) continue;
+                        var board = all.TryGetValue((range, season), out var b) ? b : all[(range, season)] = [];
+                        (board.TryGetValue(species, out var list) ? list : board[species] = []).Add((id, handle, c));
+                    }
         }
-        var boards = new SortedDictionary<long, List<BoardRow>>();
-        foreach (var (species, list) in all)
-            boards[species] = [.. list.OrderByDescending(e => range ? e.Kill.Mm : e.Kill.Score).ThenBy(e => e.Kill.Ts).ThenBy(e => e.Id)
-                .Select((e, i) => new BoardRow(i + 1, e.Id, e.Handle, range ? e.Kill.Mm / 1000 : e.Kill.Score, e.Kill.Rec["weapon_id"], e.Kill.Ts, e.Kill.Kill, (long)Num(e.Kill.Rec["animal_id"])))];
-        return boards;
+        return all.ToDictionary(kv => kv.Key, kv =>
+        {
+            var boards = new SortedDictionary<long, List<BoardRow>>();
+            foreach (var (species, list) in kv.Value)
+                boards[species] = [.. list.OrderByDescending(e => kv.Key.Range ? e.Kill.Mm : e.Kill.Score).ThenBy(e => e.Kill.Ts).ThenBy(e => e.Id)
+                    .Select((e, i) => new BoardRow(i + 1, e.Id, e.Handle, kv.Key.Range ? e.Kill.Mm / 1000 : e.Kill.Score, e.Kill.Rec["weapon_id"], e.Kill.Ts, e.Kill.Kill, (long)Num(e.Kill.Rec["animal_id"])))];
+            return boards;
+        });
     }
 
     /// <summary>The Hall of Fame of an ended season: per species the best score and the best range; empty for season 0 and the current season.</summary>

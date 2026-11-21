@@ -15,7 +15,11 @@ public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);
 /// <summary>Winner of a past season for one species: best score and best range.</summary>
 public sealed record HallEntry(string Species, Ranked? Score, Ranked? Range);
 
+/// <summary>A board that could not be read: the server did not answer (in time) or answered an error. An empty board is an answer, not this.</summary>
+public sealed class BoardUnavailableException(string message, Exception? inner = null) : Exception(message, inner);
+
 /// <summary>Species boards and the hall of fame answer for a season: 0 all time, else a <see cref="Season"/>'s number. The other boards ignore it.</summary>
+/// <remarks>Every method but <see cref="MyRankAsync"/> throws <see cref="BoardUnavailableException"/> when the board cannot be read.</remarks>
 public interface ILeaderboardsService
 {
     /// <summary>The current season number and the seasons (0, all time, is not listed).</summary>
