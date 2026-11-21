@@ -8,14 +8,14 @@ namespace Resurgence.Server.Tests;
 public class AvatarFaceTests : StateTestBase
 {
     public AvatarFaceTests() => state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES,
-        avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "gender": "m"}, {"id": 1000007, "gender": "m"}, {"id": 1000009, "gender": "f"}, {"id": 1001007, "gender": "m"}, {"id": 1002007, "gender": "m"}, {"id": 1002009, "gender": "f"}]""")!);
+        avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}, {"id": 1000007, "url": "https://avatar.test/256/1000007.png", "gender": "m"}, {"id": 1000009, "url": "https://avatar.test/256/1000009.png", "gender": "f"}, {"id": 1001007, "url": "https://avatar.test/256/1001007.png", "gender": "m"}, {"id": 1002007, "url": "https://avatar.test/256/1002007.png", "gender": "m"}, {"id": 1002009, "url": "https://avatar.test/256/1002009.png", "gender": "f"}]""")!);
 
     long Of(long account, string key) => (long)state.Store.AccountJson(account)[key]!;
 
-    void Set(long account, long face, long gender)
+    void Set(long account, long face, long gender, string? url = null)
     {
         using var con = state.Store.Open();
-        con.Exec("UPDATE accounts SET account = json_set(account, '$.face', ?, '$.gender', ?) WHERE id = ?", face, gender, account);
+        con.Exec("UPDATE accounts SET account = json_set(account, '$.face', ?, '$.gender', ?, '$.avatar_url', ?) WHERE id = ?", face, gender, url ?? $"{BASE}/media/avatar/256/{face}.png", account);
     }
 
     [Fact]
@@ -42,16 +42,17 @@ public class AvatarFaceTests : StateTestBase
     [Fact]
     public void TheFixTakesTheFacesGenderAndMakesEveryFaceA3DFaceAndIsIdempotent()
     {
-        foreach (var id in new long[] { 50, 51, 52, 53, 54 }) state.CreateAccount(id, $"p{id}");
+        foreach (var id in new long[] { 50, 51, 52, 53, 54, 55 }) state.CreateAccount(id, $"p{id}");
         Set(50, 1000007, 0);  // body and face disagree
         Set(51, 1002007, 1);  // a picture, no 3D face
         Set(52, 1000024, 0);  // the store's head stays
         Set(53, 4242, 0);     // no listed avatar: its gender stays, a default face of it
+        Set(55, 1000000, 0, $"{BASE}/photos/55/avatar.jpg");  // its own picture: the male face was the server's fill-in, the woman stays a woman
         Set(54, 1000009, 0);  // fine
-        Assert.Equal("would fix: 1 body(ies) of another gender than their face, 2 face(s) that are no 3D face", state.FixFaces(apply: false));
+        Assert.Equal("would fix: 1 body(ies) of another gender than their face, 3 face(s) that are no 3D face of their body", state.FixFaces(apply: false));
         Assert.Equal(0L, Of(50, "gender"));
         state.FixFaces(apply: true);
-        Assert.Equal([(1000007L, 1L), (1000007L, 1L), (1000024L, 0L), (1000009L, 0L), (1000009L, 0L)], new long[] { 50, 51, 52, 53, 54 }.Select(i => (Of(i, "face"), Of(i, "gender"))));
-        Assert.Equal("fixed: 0 body(ies) of another gender than their face, 0 face(s) that are no 3D face", state.FixFaces(apply: true));
+        Assert.Equal([(1000007L, 1L), (1000007L, 1L), (1000024L, 0L), (1000009L, 0L), (1000009L, 0L), (1000009L, 0L)], new long[] { 50, 51, 52, 53, 54, 55 }.Select(i => (Of(i, "face"), Of(i, "gender"))));
+        Assert.Equal("fixed: 0 body(ies) of another gender than their face, 0 face(s) that are no 3D face of their body", state.FixFaces(apply: true));
     }
 }

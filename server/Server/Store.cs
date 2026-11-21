@@ -688,11 +688,11 @@ public sealed class Store
             mine.Exec("UPDATE profile SET body = json_set(body, '$.gender', ?) WHERE account_id = $a", g2);
     }
 
-    /// <summary>Every account's `face` and `gender` (null where it has none), by user id.</summary>
-    public List<(long Id, long? Face, long? Gender)> FacesAndGenders()
+    /// <summary>Every account's `avatar_url`, `face` and `gender` (null where it has none), by user id.</summary>
+    public List<(long Id, string? Url, long? Face, long? Gender)> FacesAndGenders()
     {
         using var con = Open();
-        return [.. con.Rows("SELECT id, json_extract(account, '$.face'), json_extract(account, '$.gender') FROM accounts").Select(r => ((long)r[0], r[1] as long?, r[2] as long?))];
+        return [.. con.Rows("SELECT id, json_extract(account, '$.avatar_url'), json_extract(account, '$.face'), json_extract(account, '$.gender') FROM accounts").Select(r => ((long)r[0], r[1] as string, r[2] as long?, r[3] as long?))];
     }
 
     /// <summary>Set the account's `face` and `gender` (and the restored profile's `gender`).</summary>
