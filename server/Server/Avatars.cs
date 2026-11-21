@@ -178,7 +178,7 @@ public sealed partial class State
     }
 
     /// <summary>`admin faces`: every account's `face` is a 3D face of its body's gender. An account whose `avatar_url` is a listed picture takes that picture's head (<see cref="FaceOf"/>) and gender (`face` when the address is none: the old
-    /// default face of an account with its own picture was a server fill-in, never a choice); any other account (its own picture, none) keeps its gender and keeps its face when that is a 3D face of this gender (the store's head too),
+    /// default face of an account with its own picture was a server fill-in, never a choice); any other account (its own picture, the default avatar every account starts with: no choice) keeps its gender and keeps its face when that is a 3D face of this gender (the store's head too),
     /// else gets the default face of the gender. `apply` false: nothing changes. Returns the counts line. Idempotent: the writes keep face and gender in step, so a second run finds none.</summary>
     public string FixFaces(bool apply)
     {
@@ -189,6 +189,7 @@ public sealed partial class State
             if (face is not { } f) continue;
             var g = gender ?? 0;
             long? listed = new ItemCatalogue(items, avatars).AvatarId(url) ?? (url is null && AvatarIds.Contains(f) ? f : (long?)null);
+            if (listed == DefaultAvatar) listed = null;  // the address every account starts with (and a restore without a picture writes) is no choice: the gender stays
             var (newFace, newGender) = listed is { } picture ? (FaceOf(picture), AvatarGender(picture) ?? g)
                 : heads.Contains(f) && (AvatarGender(f) ?? g) == g ? (f, g) : (DefaultFace(g), g);
             if (newGender != g) genders++;

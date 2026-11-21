@@ -81,7 +81,7 @@ public static class Restorer
             con.Begin();
             pictures = state.PreparePictures(con, read, hashes, replace: false);
             var account = store.AccountJson(id);
-            var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), account["gender"] is { } g0 ? (long)g0 : 0);
+            var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), account["gender"] is JsonValue g0 && g0.TryGetValue<long>(out var g1) ? g1 : 0);
             SetAvatar(account, face, picture, avatar);
             account["gender"] = gender;
             con.Exec("UPDATE accounts SET account = ? WHERE id = ?", Py.Dumps(account), id);
