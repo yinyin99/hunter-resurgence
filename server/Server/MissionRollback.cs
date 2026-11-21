@@ -1,13 +1,15 @@
 // Missions checked again against the harvests and clues already stored: at the server's start (<see cref="ConfirmMissions"/>: what a version that understands more titles
-// finishes late) and by the operator (<see cref="RollbackMissions"/>: what the lax rules of an earlier version finished wrongly). docs/server.md, "Missions".
+// finishes late), by the operator (<see cref="RollbackMissions"/>: what the lax rules of an earlier version finished wrongly) and by the daily audit (<see cref="AuditMissions"/>:
+// the recent finishes that look suspicious). docs/server.md, "Missions".
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    /// <summary>A stored harvest (event 3) or clue (event 12) with its kill and its animal's species and gender, ready for the rules.</summary>
-    sealed record Recorded(long Id, Kind Kind, Kill Kill, long? Species, long? Gender)
+    /// <summary>A stored harvest (event 3) or clue (event 12) with its kill, its animal's species and gender, and when the server received it (null before schema 14), ready for the rules.</summary>
+    sealed record Recorded(long Id, Kind Kind, Kill Kill, long? Species, long? Gender, double? Ts)
     {
         public bool Meets(Rule r, long after) => (r.Species is null || r.Species == Species) && (r.Gender is null || r.Gender == Gender) && State.Meets(r, Kill, after);
     }
@@ -20,18 +22,18 @@ public sealed partial class State
 
     /// <summary>The harvests and the clues stored after event `after`, in order.</summary>
     List<Recorded> RecordedOf(Db con, long after) =>
-        [.. con.Rows("SELECT id, event, body FROM events WHERE account_id = $a AND event IN (3, 12) AND id > ? ORDER BY id", after).Select(r =>
+        [.. con.Rows("SELECT id, event, body, ts FROM events WHERE account_id = $a AND event IN (3, 12) AND id > ? ORDER BY id", after).Select(r =>
         {
-            var (id, e) = ((long)r[0], Parse(r[2]));
+            var (id, e, ts) = ((long)r[0], Parse(r[2]), r[3] as double?);
             if ((long)r[1] == 12)
             {
                 var e7 = SpawnBefore(con, e["individual"], id);
                 var (clueSpecies, clueGender) = AnimalOf(e7, e7["species"]);
-                return new Recorded(id, Kind.Track, ClueOf(con, id, e, e7), clueSpecies, clueGender);
+                return new Recorded(id, Kind.Track, ClueOf(con, id, e, e7), clueSpecies, clueGender, ts);
             }
             var kill = KillOf(con, e, id);
             var (species, gender) = AnimalOf(kill.E7, e["extended_species"]);
-            return new Recorded(id, Kind.Harvest, kill, species, gender);
+            return new Recorded(id, Kind.Harvest, kill, species, gender, ts);
         })];
 
     /// <summary>Is the objective one a stored event can have finished: a harvest or a clue? A spot, a place and a start leave no stored event the rules can be checked on.</summary>
@@ -179,19 +181,10 @@ public sealed partial class State
             if (!missions.TryGetValue(id, out var m) || marks[id].Restored)
                 continue;
             var mark = marks[id];
-            var held = state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
-            bool Judged(long d) => !m.Objectives.First(o => o.Id == d).Rule.Unknown;
-            var replayedHeld = held.Where(d => IsReplayed(m, d) && !mark.KeptIds.Contains(d)).ToList();
-            notUnderstood += replayedHeld.Count(d => !Judged(d));
-            var checkable = replayedHeld.Where(Judged).ToList();
+            var (held, unreadable, checkable, met) = JudgeMission(m, state, done, mark, events, hunts);
+            notUnderstood += unreadable;
             if (checkable.Count == 0)
                 continue;
-            var mine = events.Value.Where(h => h.Id > (mark.Since ?? 0)).ToList();
-            // a single-hunt mission was finished in one hunt: the hunt that confirms most of what the account holds counts (not the one that meets most objectives: an active
-            // mission holds what its latest hunt finished, and an earlier hunt that met others would reopen those)
-            var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
-            var start = StartOf(m, held, mark, confirm: false).Concat(replayedHeld.Where(d => !Judged(d))).ToArray();  // what cannot be judged counts as done: it neither blocks nor takes an event
-            var met = runs.Select(r => Replay(m, start, r, mark.Since ?? 0)).OrderByDescending(r => r.Count(x => checkable.Contains(x.Objective.Id))).FirstOrDefault() ?? [];
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
             if (drop.Count == 0)
                 continue;
@@ -206,5 +199,133 @@ public sealed partial class State
             foreach (var b in kept)
                 Activate(con, b);
         return (reopened, kept, notUnderstood);
+    }
+
+    /// <summary>The one judging of a held mission, for the rollback and the audit: the objectives it holds (all of a completed mission), how many of its harvest and clue ones have words the server
+    /// does not read, the ones that can be judged, and the objectives the stored events meet under today's rules, each with the event that met it. `met` is empty when nothing can be judged.</summary>
+    (List<long> Held, int NotUnderstood, List<long> Checkable, List<(Objective Objective, long At)> Met) JudgeMission(MissionDef m, long state, List<long> done, Mark mark, Lazy<List<Recorded>> events, Lazy<List<long>> hunts)
+    {
+        var held = state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
+        bool Judged(long d) => !m.Objectives.First(o => o.Id == d).Rule.Unknown;
+        var replayedHeld = held.Where(d => IsReplayed(m, d) && !mark.KeptIds.Contains(d)).ToList();
+        var notUnderstood = replayedHeld.Count(d => !Judged(d));
+        var checkable = replayedHeld.Where(Judged).ToList();
+        if (checkable.Count == 0)
+            return (held, notUnderstood, checkable, []);
+        var mine = events.Value.Where(h => h.Id > (mark.Since ?? 0)).ToList();
+        // a single-hunt mission was finished in one hunt: the hunt that confirms most of what the account holds counts (not the one that meets most objectives: an active
+        // mission holds what its latest hunt finished, and an earlier hunt that met others would reopen those)
+        var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
+        var start = StartOf(m, held, mark, confirm: false).Concat(replayedHeld.Where(d => !Judged(d))).ToArray();  // what cannot be judged counts as done: it neither blocks nor takes an event
+        var met = runs.Select(r => Replay(m, start, r, mark.Since ?? 0)).OrderByDescending(r => r.Count(x => checkable.Contains(x.Objective.Id))).FirstOrDefault() ?? [];
+        return (held, notUnderstood, checkable, met);
+    }
+
+    // ---- audited
+
+    static readonly string[] AuditFlags = ["borderline", "unmet", "fast", "shared", "spike"];
+
+    /// <summary>The operator's daily audit, read only: the harvest and clue objectives that every account (or `only`) holds and that the stored events meet under today's rules
+    /// (<see cref="JudgeMission"/>, as the rollback judges them) were completed when the server received the event that meets them (`events.ts`); those of the last `hours` that
+    /// look suspicious are listed, one line per objective, grouped by flag: `borderline` (the kill's harvest value, distance, weight, score or typical points is within 5% of a
+    /// bound of the title; 100% harvest value has nothing above it and is never borderline), `unmet` (no stored event meets it: a bug; not dated, so listed when a harvest or
+    /// clue of the account since the mission's activation is in the window, the only events that finish one), `fast` (less than 2 minutes after the mission's activation, which
+    /// is not stored: the first event the server received after it), `shared` (the event met objectives of 3 or more missions), `spike` (one line per mission completed in the
+    /// window at least 5 times and more than 3 times its average over the 14 days before; a mission is dated by its latest objective, one with no harvest or clue objective is not).
+    /// Then the counts. `discord`: the same as Markdown, cut into messages of at most 2000 characters separated by a line `---8<---`.</summary>
+    public IEnumerable<string> AuditMissions(double hours, long? only = null, bool discord = false)
+    {
+        if (missions.Count == 0)
+        {
+            yield return "no missions: no recorded catalogue, or a local server";
+            yield break;
+        }
+        var from = Clock() - hours * 3600;
+        var before = from - 14 * 86400;
+        List<long> accounts;
+        using (var all = Store.Open())
+            accounts = (only is { } one ? all.Rows("SELECT id FROM accounts WHERE id = ?", one) : all.Rows("SELECT id FROM accounts ORDER BY id")).Select(r => (long)r[0]).ToList();
+        var flagged = new List<(string Flag, string Line)>();
+        var completions = new List<(MissionDef Mission, long Account, double At)>();
+        var (finished, finishers) = (0, 0);
+        foreach (var account in accounts)
+        {
+            using var con = Con(account);  // no transaction: it would hold the live server's write lock
+            if (con.Scalar("SELECT ts FROM events WHERE account_id = $a ORDER BY id DESC LIMIT 1") is not double last || last < before
+                || con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
+                continue;
+            var handle = Store.HandleOf(account) ?? account.ToString();
+            string Line(MissionDef m, Objective o, string what) => $"mission {m.Id} {m.Title} | {o.Title} | {handle} | {what}";
+            static string What(Recorded e) => $"{(e.Kind == Kind.Track ? "clue" : "harvest")} event {e.Id}";
+            var (rows, marks) = (MissionRows(con), Marks(con));
+            var events = new Lazy<List<Recorded>>(() => RecordedOf(con, 0));
+            var byId = new Lazy<Dictionary<long, Recorded>>(() => events.Value.ToDictionary(e => e.Id));
+            var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
+            var met = new List<(MissionDef M, Objective O, Recorded E)>();
+            foreach (var (id, (state, done)) in rows)
+            {
+                if (!missions.TryGetValue(id, out var m) || marks[id].Restored)
+                    continue;
+                var mark = marks[id];
+                var (_, _, checkable, judged) = JudgeMission(m, state, done, mark, events, hunts);
+                var mine = judged.Where(x => checkable.Contains(x.Objective.Id)).Select(x => (M: m, O: x.Objective, E: byId.Value[x.At])).ToList();
+                met.AddRange(mine);
+                if (state == 3 && mine.Count > 0 && mine.Count == checkable.Count)
+                    completions.Add((m, account, mine.Max(x => x.E.Ts ?? 0)));
+                if (mine.Count < checkable.Count && events.Value.Any(e => e.Id > (mark.Since ?? 0) && e.Ts >= from))
+                    foreach (var o in m.Objectives.Where(o => checkable.Contains(o.Id) && !mine.Any(x => x.O == o)))
+                        flagged.Add(("unmet", Line(m, o, "no harvest or clue since its activation meets it")));
+                if (mark.Since is { } since && con.Scalar("SELECT ts FROM events WHERE account_id = $a AND id > ? ORDER BY id LIMIT 1", since) is double activated)
+                    foreach (var (_, o, e) in mine.Where(x => x.E.Ts >= from && x.E.Ts - activated < 120))
+                        flagged.Add(("fast", Line(m, o, $"{What(e)}, {e.Ts - activated:0} s after the activation")));
+            }
+            var missionsOf = met.GroupBy(x => x.E.Id).ToDictionary(g => g.Key, g => g.Select(x => x.M.Id).Distinct().Count());
+            var recent = met.Where(x => x.E.Ts >= from).ToList();
+            (finished, finishers) = (finished + recent.Count, finishers + (recent.Count > 0 ? 1 : 0));
+            foreach (var (m, o, e) in recent)
+            {
+                foreach (var t in o.Rule.Tests ?? [])
+                    if (Measured(t, e.Kill) is { } v)
+                        foreach (var (bound, side) in new[] { (t.Min, "min"), (t.Max, "max") })
+                            if (double.IsFinite(bound) && Math.Abs(v - bound) <= 0.05 * Math.Abs(bound) && !(t.Check == Check.Value && bound >= 100000))
+                                flagged.Add(("borderline", Line(m, o, $"{What(e)}: {t.Check.ToString().ToLowerInvariant()} {v:0.##} vs {side} {bound:0.##}")));
+                if (missionsOf[e.Id] >= 3)
+                    flagged.Add(("shared", Line(m, o, $"{What(e)} met objectives of {missionsOf[e.Id]} missions")));
+            }
+        }
+        foreach (var g in completions.GroupBy(c => c.Mission))
+        {
+            var (now, earlier) = (g.Count(c => c.At >= from), g.Count(c => c.At >= before && c.At < from));
+            if (now >= 5 && now > 3 * earlier / 14.0 * hours / 24)
+                flagged.Add(("spike", $"mission {g.Key.Id} {g.Key.Title} | every objective | {g.Where(c => c.At >= from).Select(c => c.Account).Distinct().Count()} accounts"
+                    + $" | {now} completions in {hours:0.##} h vs {earlier / 14.0:0.##} a day over the 14 days before"));
+        }
+        var header = $"missions audit, the last {hours:0.##} h: {finished} objectives completed by {finishers} accounts";
+        var lines = AuditFlags.SelectMany(f => flagged.Where(x => x.Flag == f).Select(x => $"{f} | {x.Line}"));
+        var counts = string.Join(", ", AuditFlags.Select(f => $"{f} {flagged.Count(x => x.Flag == f)}"));
+        foreach (var line in discord ? DiscordChunks([$"**{Escaped(header)}**", .. lines.Select(l => "- " + Escaped(l)), $"**{Escaped(counts)}**"]) : [header, .. lines, counts])
+            yield return line;
+    }
+
+    static readonly Regex Markdown = new(@"[\\*_~`]", RegexOptions.CultureInvariant);
+
+    static string Escaped(string text) => Markdown.Replace(text, @"\$0");
+
+    /// <summary>Whole lines in messages of at most 2000 characters (Discord's limit; a longer line is cut), separated by a line `---8<---`.</summary>
+    static IEnumerable<string> DiscordChunks(IEnumerable<string> lines)
+    {
+        var (chunk, size) = (new List<string>(), -1);
+        foreach (var line in lines.Select(l => l.Length > 2000 ? l[..2000] : l))
+        {
+            if (chunk.Count > 0 && size + 1 + line.Length > 2000)
+            {
+                yield return string.Join('\n', chunk);
+                yield return "---8<---";
+                (chunk, size) = ([], -1);
+            }
+            chunk.Add(line);
+            size += 1 + line.Length;
+        }
+        yield return string.Join('\n', chunk);
     }
 }
