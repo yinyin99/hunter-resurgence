@@ -14,6 +14,7 @@ const string AdminUsage = """
     Usage (repo root): dotnet run --project server/Server -- admin item <item_id> [count] | admin em|gm <amount> [--account <id or handle>]
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
     --account names another account (user id or handle); without it the local account gets it.
+    admin faces [--apply] makes every account's face a 3D face of its body's gender (dry run without --apply: prints the counts).
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
     admin rescore [--account <id or handle>] [--kill <id>] [--apply] scores the stored harvests again with today's rules (every account, one, or with --kill, that account's one harvest) and prints one JSON line per harvest whose score changes:
@@ -159,6 +160,15 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.SweepAvatars(PictureLinks.FromCfg(settings.Cfg), only, dry).GetAwaiter().GetResult()) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "faces")
+    {
+        if (a[1..].Any(x => x != "--apply")) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        Console.WriteLine(loaded.FixFaces(a.Contains("--apply")));
         return;
     }
     if (a.Length > 0 && a[0] == "missions-rollback")

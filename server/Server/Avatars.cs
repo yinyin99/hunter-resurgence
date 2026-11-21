@@ -1,4 +1,4 @@
-// Player avatars: the picture of an account is one of the game's avatars (`avatar_url` is this server's `<game host>/media/avatar/256/<id>.png`, `face` the id) or the one imported from its backup
+// Player avatars: the picture of an account is one of the game's avatars (`avatar_url` is this server's `<game host>/media/avatar/256/<id>.png`, `face` the 3D head of the same number: <see cref="FaceOf"/>) or the one imported from its backup
 // (`photos/<account>/avatar.jpg`, served at the photo link). What a page is told of it, and the player's own choice.
 using System.Text.RegularExpressions;
 using System.Text.Json.Nodes;
@@ -121,13 +121,31 @@ public sealed partial class State
     }
 
     /// <summary>`POST /account/avatar`: the player's avatar becomes the game's avatar `id`, or the imported picture for null. False, and nothing changed, for an id that is not in the list, a store avatar whose item the account does not own
-    /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture leaves it. It writes what a restore does: `avatar_url`, `face` (the default avatar for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
+    /// or for no imported picture. A listed avatar also sets `gender` from its list entry; the imported picture keeps it. It writes what a restore does: `avatar_url`, `face` (a 3D face: the picture's head, or the default one of the gender for the imported picture), `avatar` and `avatar_id` where the account has them.</summary>
     public bool SetAvatar(long account, long? id)
     {
         if (id is null ? !HasImportedAvatar(account) : !AvatarsByUnlock(account)[true].Any(e => e.Id == id.Value)) return false;
-        Store.SetAvatar(account, id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar), id ?? DefaultAvatar, id is { } l ? AvatarGender(l) : null);
+        var url = id is { } listed ? ListedAvatarUrl(listed) : PhotoUrl(account, ImportedAvatar);
+        var (face, picture, gender) = AvatarFace(id, GenderOf(account));
+        Store.SetAvatar(account, url, face, gender, picture);
         return true;
     }
+
+    long GenderOf(long account) => Store.AccountJson(account)["gender"] is { } g && Py.IsNum(g) ? Py.L(g) : 0;
+
+    /// <summary>The 3D face of a listed picture: the first series' head with the same number (`1002007` is `1000007`), the same head and gender.</summary>
+    public static long FaceOf(long picture) => DefaultAvatar + picture % 1000;
+
+    /// <summary>The default 3D face of a body: the first head of the list with that gender (the male default when the list has none).</summary>
+    long DefaultFace(long gender) => AvatarIds.Where(i => i is >= DefaultAvatar and < DefaultAvatar + 18 && AvatarGender(i) == gender).Select(i => (long?)i).FirstOrDefault() ?? DefaultAvatar;
+
+    /// <summary>What an avatar writes: the `face` (always a 3D face), the picture id for `avatar`/`avatar_id` and the `gender`. A listed picture gives its head, its id and its gender (`gender` when the list has none);
+    /// null (the imported picture, the default) keeps the body's `gender` and gets that gender's default face, also as its picture id.</summary>
+    internal (long Face, long Picture, long Gender) AvatarFace(long? listed, long gender) =>
+        listed is { } id ? (FaceOf(id), id, AvatarGender(id) ?? gender) : (DefaultFace(gender), DefaultFace(gender), gender);
+
+    /// <summary>The listed picture the zip's avatar is, null for the player's own or none.</summary>
+    internal long? ListedAvatarOf(Restored read) => new ItemCatalogue(items, avatars).AvatarId(read.Model.Profile.AvatarUrl);
 
     /// <summary>Once, at start: an account whose `avatar_url` is the address of a picture the player uploaded on the official site, and whose restored copy is in its photo folder,
     /// gets that picture as its imported avatar. Its other values stay, so the game and the website show the picture as after a restore.</summary>
@@ -157,6 +175,28 @@ public sealed partial class State
         foreach (var (account, url) in Store.AvatarUrls())
             if (new ItemCatalogue(items, avatars).AvatarId(url) is { } id && AvatarGender(id) is { } gender)
                 Store.FixGenderUnlessRestored(account, gender);
+    }
+
+    /// <summary>`admin faces`: every account's `face` is a 3D face of its body's gender. An account whose `avatar_url` is a listed picture takes that picture's head (<see cref="FaceOf"/>) and gender (the face when the address is the default one every account starts with, or none: a restore without a picture writes it with its gender's face);
+    /// any other account (its own picture: the old default face was a server fill-in, never a choice) keeps its gender and keeps its face when that is a 3D face of this gender (the store's head too),
+    /// else gets the default face of the gender. `apply` false: nothing changes. Returns the counts line. Idempotent: the writes keep face and gender in step, so a second run finds none.</summary>
+    public string FixFaces(bool apply)
+    {
+        var heads = new HashSet<long>(Enumerable.Range(0, 18).Select(i => DefaultAvatar + i)) { 1000024 };  // the game's 3D faces: the 18 heads and the store's Laura
+        int genders = 0, faces = 0;
+        foreach (var (id, url, face, gender) in Store.FacesAndGenders())
+        {
+            if (face is not { } f) continue;
+            var g = gender ?? 0;
+            var picture0 = new ItemCatalogue(items, avatars).AvatarId(url);
+            long? listed = picture0 is { } p0 && p0 != DefaultAvatar ? p0 : (picture0 is not null || url is null) && AvatarIds.Contains(f) ? f : null;  // the default address is no choice: the face says (a restore without a picture has the default address and its gender's face)
+            var (newFace, newGender) = listed is { } picture ? (FaceOf(picture), AvatarGender(picture) ?? g)
+                : heads.Contains(f) && (AvatarGender(f) ?? g) == g ? (f, g) : (DefaultFace(g), g);
+            if (newGender != g) genders++;
+            if (newFace != f) faces++;
+            if (apply && (newGender != g || newFace != f)) Store.SetFaceAndGender(id, newFace, newGender);
+        }
+        return $"{(apply ? "fixed" : "would fix")}: {genders} body(ies) of another gender than their face, {faces} face(s) that are no 3D face of their body";
     }
 
     /// <summary>The avatar links the account's restored data holds: `avatar` of its profile and of the saved Me/me and Public_user/getByHostname replies. Empty: the data names no avatar at all.</summary>
@@ -192,7 +232,7 @@ public sealed partial class State
             {
                 Directory.CreateDirectory(AccountPhotos(account));
                 File.WriteAllBytes(Path.Combine(AccountPhotos(account), ImportedAvatar), bytes.ToArray());
-                Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), DefaultAvatar);
+                Store.SetAvatar(account, PhotoUrl(account, ImportedAvatar), DefaultFace(GenderOf(account)), null);
                 result = "set";
             }
             lines.Add($"{account} {handle} {result}");

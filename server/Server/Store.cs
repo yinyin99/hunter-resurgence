@@ -671,14 +671,14 @@ public sealed class Store
         return [.. con.Rows("SELECT id, json_extract(account, '$.avatar_url') FROM accounts WHERE json_extract(account, '$.avatar_url') IS NOT NULL").Select(r => ((long)r[0], (string)r[1]))];
     }
 
-    /// <summary>Point the account's picture at `url`: its `avatar_url` and the `avatar` of its restored profile. A `face` also sets the account's `face`, `avatar` and `avatar_id` (the last two where it has them), as a restore does; a `gender` sets the account's `gender`.</summary>
-    public void SetAvatar(long id, string url, long? face, long? gender = null)
+    /// <summary>Point the account's picture at `url`: its `avatar_url` and the `avatar` of its restored profile. A `face` also sets the account's `face` and its `avatar` and `avatar_id` (the last two where it has them: the `picture`, else the face), as a restore does; a `gender` sets the account's `gender`.</summary>
+    public void SetAvatar(long id, string url, long? face, long? gender = null, long? picture = null)
     {
         using (var con = Open())
         {
             con.Exec("UPDATE accounts SET account = json_set(account, '$.avatar_url', ?) WHERE id = ?", url, id);
             if (face is { } f)
-                con.Exec("UPDATE accounts SET account = json_replace(json_set(account, '$.face', ?1), '$.avatar', ?1, '$.avatar_id', ?1) WHERE id = ?2", f, id);
+                con.Exec("UPDATE accounts SET account = json_replace(json_set(account, '$.face', ?1), '$.avatar', ?3, '$.avatar_id', ?3) WHERE id = ?2", f, id, picture ?? f);
             if (gender is { } g)
                 con.Exec("UPDATE accounts SET account = json_set(account, '$.gender', ?) WHERE id = ?", g, id);
         }
@@ -686,6 +686,22 @@ public sealed class Store
         mine.Exec("UPDATE profile SET body = json_set(body, '$.avatar', ?) WHERE account_id = $a", url);
         if (gender is { } g2)
             mine.Exec("UPDATE profile SET body = json_set(body, '$.gender', ?) WHERE account_id = $a", g2);
+    }
+
+    /// <summary>Every account's `avatar_url`, `face` and `gender` (null where it has none), by user id.</summary>
+    public List<(long Id, string? Url, long? Face, long? Gender)> FacesAndGenders()
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT id, json_extract(account, '$.avatar_url'), json_extract(account, '$.face'), json_extract(account, '$.gender') FROM accounts").Select(r => ((long)r[0], r[1] as string, r[2] as long?, r[3] as long?))];
+    }
+
+    /// <summary>Set the account's `face` and `gender` (and the restored profile's `gender`).</summary>
+    public void SetFaceAndGender(long id, long face, long gender)
+    {
+        using (var con = Open())
+            con.Exec("UPDATE accounts SET account = json_set(account, '$.face', ?, '$.gender', ?) WHERE id = ?", face, gender, id);
+        using var mine = Open(id);
+        mine.Exec("UPDATE profile SET body = json_set(body, '$.gender', ?) WHERE account_id = $a", gender);
     }
 
     /// <summary>Set the account's `gender` when it differs and the account never restored anything (no restored id, no restore audit, no claim); true when it changed.</summary>

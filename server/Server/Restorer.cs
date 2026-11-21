@@ -81,11 +81,14 @@ public static class Restorer
             con.Begin();
             pictures = state.PreparePictures(con, read, hashes, replace: false);
             var account = store.AccountJson(id);
-            SetAvatar(account, read.Model, avatar);
+            var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), account["gender"] is JsonValue g0 && g0.TryGetValue<long>(out var g1) ? g1 : 0);
+            SetAvatar(account, face, picture, avatar);
+            account["gender"] = gender;
             con.Exec("UPDATE accounts SET account = ? WHERE id = ?", Py.Dumps(account), id);
             if (con.Scalar("SELECT body FROM profile WHERE account_id = $a") is string body && JsonNode.Parse(body) is JsonObject me)
             {
                 me["avatar"] = avatar;
+                me["gender"] = gender;
                 PlayerRows.SetProfile(con, me);
             }
             con.Commit();
@@ -148,7 +151,9 @@ public static class Restorer
         }
         var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
-        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl);
+        var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), model.Profile.Gender);  // a 3D face of the body's gender, whatever the archive's face and gender were
+        model = model with { Profile = model.Profile with { Gender = (int)gender }, Account = model.Account with { Face = (int)face } };
+        var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl, picture);
         var report = "";
         State.Unpacking? pictures = null;
         void Write(Db con)
@@ -234,7 +239,7 @@ public static class Restorer
 
     /// <summary>The connect reply's `account` object: base (the account's own, or the recorded one for a new account) with the
     /// profile's fields and the importer's defaults, and `avatarUrl` (<see cref="State.RestoredAvatarUrl"/>). No e-mail, Facebook id or Steam id of the zip.</summary>
-    static JsonObject AccountObject(JsonObject baseAccount, PlayerModel m, long id, string handle, string avatarUrl)
+    static JsonObject AccountObject(JsonObject baseAccount, PlayerModel m, long id, string handle, string avatarUrl, long picture)
     {
         var a = (JsonObject)baseAccount.DeepClone();
         var p = m.Profile;
@@ -244,19 +249,19 @@ public static class Restorer
         a["membership"] = p.MembershipInt;
         a["gender"] = p.Gender;
         a["hunterscore"] = p.Hunterscore;
-        SetAvatar(a, m, avatarUrl);
+        SetAvatar(a, m.Account.Face, picture, avatarUrl);
         a["facebook_enabled"] = m.Account.FacebookEnabled;
         a["share_on_facebook"] = m.Account.ShareOnFacebook != 0;
         Put(a, "hostname", p.Hostname);
         return a;
     }
 
-    /// <summary>The account's own copies of the chosen avatar: `face`, `avatar`, `avatar_id` (where it has them) and `avatar_url`.</summary>
-    static void SetAvatar(JsonObject a, PlayerModel m, string avatarUrl)
+    /// <summary>The account's own copies of the chosen avatar: `face` (a 3D face), `avatar`, `avatar_id` (the picture, where it has them) and `avatar_url`.</summary>
+    static void SetAvatar(JsonObject a, long face, long picture, string avatarUrl)
     {
-        a["face"] = m.Account.Face;
+        a["face"] = face;
         foreach (var key in new[] { "avatar", "avatar_id" })
-            if (a.ContainsKey(key)) a[key] = m.Account.Face;
+            if (a.ContainsKey(key)) a[key] = picture;
         a["avatar_url"] = avatarUrl;
     }
 
