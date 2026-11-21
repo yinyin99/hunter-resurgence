@@ -122,4 +122,16 @@ public sealed class AvatarPagesTests : UiContext
         Assert.Equal(tags, cut.FindAll("button.pick .tag").Select(t => t.TextContent));
         Assert.Single(cut.FindAll("p.hint"));  // the player has a picture to choose: the hint says how the head changes
     }
+
+    [Fact]
+    public void TheSettingsShowNoHintToAPlayerWithoutAnOwnPicture()
+    {
+        var fake = new Fake(_ => Json("""{"current":"https://site.test/images/avatars/256/1000000.png","ids":[1000000,1000001],"imported":null,"face":1000000,"own":false}"""));
+        Services.AddSingleton<IAccountService>(new ServerAccountService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test") }, new ServerCookie { Value = "abc" }, new MockAccountService(), NullLogger<ServerAccountService>.Instance));
+        Services.GetRequiredService<HostMode>().Live = true;
+        var cut = Render<Settings>();
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("button.pick").Count));
+        Assert.Empty(cut.FindAll("p.hint"));
+        Assert.Empty(cut.FindAll("button.pick .tag"));
+    }
 }
