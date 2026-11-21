@@ -159,10 +159,10 @@ A shelter the player places on a reserve; like a lodge, a hunt can start there a
 To study an animal through binoculars or a scope, which records it as spotted.
 
 **Harvest**:
-An animal the player killed and then confirmed at its body, which records, scores and pays it; the game also says confirmed kill.
+An animal the player killed and then confirmed at its body, which records it; the game also says confirmed kill.
 
 **Score**:
-The measure of a harvest by its species' method (antlers, horns, skull or weight), shown on its score sheet.
+The measure of a harvest by its species' method (from its antlers, horns, skull, weight and the like), shown on its score sheet; some harvests, such as a doe, have none.
 
 **Score sheet**:
 The page of a harvest's measurements and the score they add up to.
@@ -171,7 +171,7 @@ The page of a harvest's measurements and the score they add up to.
 A harvest's percentage from how quickly the animal died and how little the trophy was damaged; higher is better.
 
 **Cross-species score**:
-A harvest's score put on one scale for every species, so that species compare; a harvest pays it in gm$. Shortened to CSS.
+A harvest's score put on one scale for every species, so that species compare; the harvest pays it in gm$, rounded, when it is above 0. Shortened to CSS.
 
 **Permitted ammunition**:
 The ammunition the game allows for a species.
@@ -192,7 +192,7 @@ One collectable picked up; pickups count in the rank rows of their kind.
 The photo a player takes of their harvest at its body.
 
 **Taxidermy**:
-Turning a harvest into a trophy, full body or skull, for em$ or gm$ within 72 hours of the harvest.
+Turning a harvest into a trophy, full body or skull, for em$ or gm$ during its offer window, normally 72 hours after the harvest.
 
 **Trophy**:
 A taxidermized or skull-mounted harvest, or one restored from the original; the player can mount it in a trophy lodge.
@@ -206,7 +206,7 @@ A building a player owns where they mount their trophies and weapons for other p
 What the player carries on a hunt; a saved loadout is a named set the player can pick at launch.
 
 **Lodge inventory**:
-Everything the player owns that is not in the loadout; in reach at a lodge or a tent.
+The items the player owns that are neither carried nor placed on a reserve; in reach at a lodge or a tent.
 
 **Capacity**:
 How much a loadout can hold; a backpack (the Increased Capacity item) adds to it.
@@ -254,7 +254,7 @@ A group of missions about one species, weapon or theme; some missions need earli
 _Avoid_: mission group, chain
 
 **Daily mission**:
-The mission on a player's daily calendar, chosen by the date and the difficulty of the player's streak; finishing it continues that streak.
+The mission on a player's daily calendar, picked by the date and the difficulty of the player's streak day (a frozen calendar keeps the one it showed); finishing it continues that streak.
 _Avoid_: daily challenge
 
 **Giver**:
@@ -291,5 +291,5 @@ _Avoid_: points (alone), tines
 The antler points outside the typical shape, counted apart on the score sheet.
 
 **Reopen**:
-To set a finished objective back to not met because no harvest or clue recorded on the community server since the mission was activated meets it (for a single-hunt mission, none of one hunt); the player keeps the reward already paid, and the mission pays again when finished again.
+To set a finished objective back to not met because no harvest or clue recorded on the community server since the mission was activated meets it (for a single-hunt mission, only the one hunt that meets most of its finished objectives counts); the player keeps the reward already paid, and the mission pays again when finished again.
 _Avoid_: revert, reset

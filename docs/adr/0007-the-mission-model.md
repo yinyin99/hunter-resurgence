@@ -11,7 +11,7 @@ The community server runs missions as four rules:
 3. **The game's own updates and rewards**: the server pays a mission's reward and announces it in the reply shapes the game already shows (the new balance, the completion notice), so the game needs no change.
 4. **Restored states carry over**: a mission the backup holds as completed stays completed, and an active one keeps its saved progress.
 
-Daily missions rotate by date, with streaks: every player on the same day at the same difficulty has the same mission, and the difficulty follows the day of each player's streak ([docs/server.md](../server.md#daily-missions); this sentence said "the same for everyone" before the difficulties came). Challenges are tracked like missions. Missions, their progress and the wallet they pay are **owner-only** ([ADR 0005](0005-public-and-owner-only-profile-areas.md)).
+Daily missions rotate by date, with streaks: a day's mission is picked by the date and the difficulty of the player's streak day, so players at different difficulties get different missions, and a frozen calendar keeps the mission it showed ([docs/server.md](../server.md#daily-missions); this sentence said "the same for everyone" before the difficulties came). Challenges are tracked like missions. Missions, their progress and the wallet they pay are **owner-only** ([ADR 0005](0005-public-and-owner-only-profile-areas.md)).
 
 ## Considered options
 
