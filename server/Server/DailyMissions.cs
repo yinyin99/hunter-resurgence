@@ -131,7 +131,7 @@ public sealed partial class State
         if (Py.Truthy(s["frozen"]) || Py.Truthy(s["done"]) || MissionOf(s) is not { } d)
             return;
         var finished = Ids(s["objectives"]).ToList();
-        if (Meet(d.Def, finished, kind, meets) is null)
+        if (Meet(d.Def, finished, kind, (rule, _) => meets(rule)) is null)
             return;
         s["objectives"] = List(finished);
         if (d.Def.Objectives.All(o => finished.Contains(o.Id)))

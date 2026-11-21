@@ -9,12 +9,14 @@ public sealed partial class State
     /// <summary>A stored harvest (event 3) or clue (event 12) with its kill and its animal's species and gender, ready for the rules.</summary>
     sealed record Recorded(long Id, Kind Kind, Kill Kill, long? Species, long? Gender)
     {
-        public bool Meets(Rule r) => (r.Species is null || r.Species == Species) && (r.Gender is null || r.Gender == Gender) && State.Meets(r, Kill);
+        public bool Meets(Rule r, long after) => (r.Species is null || r.Species == Species) && (r.Gender is null || r.Gender == Gender) && State.Meets(r, Kill, after);
     }
 
-    /// <summary>The animal of an event: the latest spawn (event 7) of its individual before it; {} when there is none.</summary>
+    /// <summary>The animal of an event: the latest spawn (event 7) of its individual before it in its hunt (individual ids are reused by the next hunt); {} when there is none.</summary>
     static JsonObject SpawnBefore(Db con, JsonNode? individual, long eventId) =>
-        con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ? AND id < ? ORDER BY id DESC LIMIT 1", individual, eventId).Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
+        con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id < ?2 AND id > COALESCE("
+            + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id DESC LIMIT 1", individual, eventId)
+            .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
 
     /// <summary>The harvests and the clues stored after event `after`, in order.</summary>
     List<Recorded> RecordedOf(Db con, long after) =>
@@ -36,12 +38,12 @@ public sealed partial class State
     static bool IsReplayed(MissionDef m, long objective) => m.Objectives.FirstOrDefault(o => o.Id == objective)?.Rule.Kind is Kind.Harvest or Kind.Track;
 
     /// <summary>The harvest and clue objectives of `m` that `events` meet, in order, each with the event that met it. `start` are the objectives counted as done before the first
-    /// (those of other kinds, and the ones a restore brought).</summary>
-    static List<(Objective Objective, long At)> Replay(MissionDef m, IEnumerable<long> start, IEnumerable<Recorded> events)
+    /// (those of other kinds, and the ones a restore brought); `after` is the last event the progress is not owed from.</summary>
+    static List<(Objective Objective, long At)> Replay(MissionDef m, IEnumerable<long> start, IEnumerable<Recorded> events, long after)
     {
         var (done, met) = (start.Distinct().ToList(), new List<(Objective, long)>());
         foreach (var h in events)
-            if (Meet(m, done, h.Kind, h.Meets) is { } o)
+            if (Meet(m, done, h.Kind, (r, last) => h.Meets(r, last), after) is { } o)
                 met.Add((o, h.Id));
         return met;
     }
@@ -95,7 +97,8 @@ public sealed partial class State
             foreach (var (id, (_, done)) in work)
             {
                 var (m, mark) = (missions[id], marks[id]);
-                var met = Replay(m, StartOf(m, done, mark, confirm: true), events.Where(h => h.Id > Math.Max(mark.Seen, m.SingleExpedition ? hunt : 0)))
+                var after = Math.Max(mark.Seen, m.SingleExpedition ? hunt : 0);
+                var met = Replay(m, StartOf(m, done, mark, confirm: true), events.Where(h => h.Id > after), after)
                     .Where(x => !done.Contains(x.Objective.Id)).ToList();
                 if (met.Count == 0)
                     continue;
@@ -187,7 +190,7 @@ public sealed partial class State
             // a single-hunt mission was finished in one hunt: the best of its hunts counts
             var runs = m.SingleExpedition ? mine.GroupBy(h => hunts.Value.Count(f => f < h.Id)).Select(g => g.AsEnumerable()).ToList() : [mine];
             var start = StartOf(m, held, mark, confirm: false).Concat(replayedHeld.Where(d => !Judged(d))).ToArray();  // what cannot be judged counts as done: it neither blocks nor takes an event
-            var met = runs.Select(r => Replay(m, start, r)).OrderByDescending(r => r.Count).FirstOrDefault() ?? [];
+            var met = runs.Select(r => Replay(m, start, r, mark.Since ?? 0)).OrderByDescending(r => r.Count).FirstOrDefault() ?? [];
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
             if (drop.Count == 0)
                 continue;

@@ -31,7 +31,7 @@ public sealed partial class State
     static readonly Regex AtAny = new(@"\A\s*at any (?:point|time)\b(?:\s+(?:(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)|while\s+in\s+(?<r>[^,:]+)))?\s*[,:]?\s*",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly Regex GoTo = new(@"\A(?:(?:head|go|travel)(?: over| out)? to|make it to)\b", RegexOptions.CultureInvariant);
-    static readonly Regex TrackWord = new(@"\b(tracks?|droppings?|calls?|blood|bedding|feeding|footprints?|footsteps?|clues?|scat)\b", RegexOptions.CultureInvariant);
+    static readonly Regex TrackWord = new(@"\b(tracks?|droppings?|calls?|audio|blood|bedding|beds?|feeding|footprints?|footsteps?|clues?|scat)\b", RegexOptions.CultureInvariant);
     static readonly Regex Reward = new(@"\A\s*(\d+)\s*(gm|em)\$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly string[] Switches = ["auto_mission_activate", "activate_only_favourite", "hide_completed_favourite"];
     const string MissionsPath = "Mission_missions.json";
@@ -350,9 +350,9 @@ public sealed partial class State
             kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, e, animal);
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
-        Advance(con, kind, rule =>
+        Advance(con, kind, (rule, after) =>
             kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
-            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill)),
+            : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill, after)),
             u =>
             {
                 // one update 15 per currency in a reply, as the game's server sends: a kill's css and a mission's reward add into the last balance
@@ -374,17 +374,17 @@ public sealed partial class State
             if (state == 2 && done.Count > 0 && missions.TryGetValue(id, out var m) && m.SingleExpedition)
                 con.Exec("UPDATE missions SET objectives = '[]', kept = '[]', earlier = '[]' WHERE account_id = $a AND mission_id = ?", id);
         var names = lodge is { } l && lodgeNames.TryGetValue(l, out var n) ? n : [];
-        Advance(con, Kind.Start, rule => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
+        Advance(con, Kind.Start, (rule, _) => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
     }
 
-    /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (an ordered objective only once every one before it is finished):
-    /// its id is added to `done`, and it is returned; null when none is met.</summary>
-    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, bool> meets)
+    /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (an ordered objective only once every one before it is finished; `after` is the last event the
+    /// progress is not owed from): its id is added to `done`, and it is returned; null when none is met.</summary>
+    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, long, bool> meets, long after = 0)
     {
         for (var i = 0; i < m.Objectives.Length; i++)
         {
             var o = m.Objectives[i];
-            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || !meets(o.Rule))
+            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || !meets(o.Rule, after))
                 continue;
             done.Add(o.Id);
             return o;
@@ -394,12 +394,12 @@ public sealed partial class State
 
     /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts; then the same
     /// for today's daily mission.</summary>
-    void Advance(Db con, Kind kind, Func<Rule, bool> meets, Action<JsonObject> now, long eventId)
+    void Advance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now, long eventId)
     {
         var marks = Marks(con);
         foreach (var (id, (state, done)) in MissionRows(con))
         {
-            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets) is not { } o)
+            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets, marks[id].Seen) is not { } o)
                 continue;
             if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
@@ -409,8 +409,8 @@ public sealed partial class State
             else
                 Complete(con, m, now);
         }
-        DailyAdvance(con, kind, meets, now);
-        CommunityCount(con, kind, meets);
+        DailyAdvance(con, kind, rule => meets(rule, 0), now);
+        CommunityCount(con, kind, rule => meets(rule, 0));
     }
 
     /// <summary>The last objective is finished: the mission is completed, its gm$ and em$ are paid (update 15 with the new balance, a wallet row each),

@@ -23,11 +23,12 @@ public sealed partial class State
     /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).
     /// A clue has its own event (12) and, when asked for, the clues of its animal in its hunt up to it.</summary>
     sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null,
-                      JsonObject? e12 = null, Func<List<JsonObject>>? clues = null)
+                      JsonObject? e12 = null, Func<List<(long Id, JsonObject Body)>>? clues = null)
     {
         public readonly JsonObject E3 = e3, E7 = e7, E12 = e12 ?? new();
         public readonly long? Reserve = reserve;
-        public readonly Lazy<List<JsonObject>> Hits = new(hits), Clues = new(clues ?? (() => []));
+        public readonly Lazy<List<JsonObject>> Hits = new(hits);
+        public readonly Lazy<List<(long Id, JsonObject Body)>> Clues = new(clues ?? (() => []));
         public readonly Lazy<(bool Disqualified, double? Score)> Scored = new(scored);
         public readonly Lazy<double?> Points = new(points ?? (() => null));
     }
@@ -44,7 +45,7 @@ public sealed partial class State
 
     static bool In(Test t, double? v) => v is { } x && x >= t.Min && x <= t.Max;
 
-    static bool Meets(Test t, Kill k)
+    static bool Meets(Test t, Kill k, long after = 0)
     {
         var hits = k.Hits.Value;
         var (first, last) = (hits.FirstOrDefault(), hits.LastOrDefault());  // the killing hit is the last: the weapon, ammunition, distance, stand and state are its
@@ -75,13 +76,13 @@ public sealed partial class State
             // a title with a place is met by its species (and gender) there; one without a place, by an animal that carries `special`
             Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
-            Check.Clue => ClueIs(t, k.E12, k.E7) && k.Clues.Value.Count(c => ClueIs(t, c, k.E7)) >= t.Min,
+            Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
             _ => false,
         };
     }
 
-    /// <summary>Does the kill meet every condition of the rule (an unknown one never)?</summary>
-    static bool Meets(Rule rule, Kill k) => !rule.Unknown && (rule.Tests ?? []).All(t => Meets(t, k));
+    /// <summary>Does the kill meet every condition of the rule (an unknown one never)? `after` is the last event the mission's progress is not owed from: the clues a count adds up are later.</summary>
+    static bool Meets(Rule rule, Kill k, long after = 0) => !rule.Unknown && (rule.Tests ?? []).All(t => Meets(t, k, after));
 
     /// <summary>The reserve of the hunt an event happened in: the latest hunt that started before it.</summary>
     static long? ReserveAt(Db con, long eventId) =>
@@ -95,15 +96,23 @@ public sealed partial class State
         {
             var r = ScoreKill(con, e3, harvest, Trophy, AmmoCheck);
             return (r.Disqualified, Py.IsNum(r.Score) ? Py.D(r.Score) : null);
-        }, () => TypicalPoints(e3, KillEvents(con, e3["individual"], harvest).E22));
+        }, () => TypicalPoints(e3, TrophyOf(con, e3["individual"], eventId)));
     }
 
+    /// <summary>The trophy event (22) of the animal of the harvest stored as event `harvestId`: the latest one of its individual after its spawn (the latest event 7 before the harvest) and
+    /// before the individual's next spawn, so a later hunt's animal of the same individual has its own; one sent after the harvest counts. {} when there is none.</summary>
+    static JsonObject TrophyOf(Db con, JsonNode? individual, long harvestId) =>
+        con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 22 AND individual = ?1"
+            + " AND id > COALESCE((SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id < ?2), 0)"
+            + " AND id < COALESCE((SELECT MIN(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1 AND id > ?2), 9223372036854775807) ORDER BY id DESC LIMIT 1",
+            individual, harvestId).Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
+
     /// <summary>The typical points of both antlers added (the `points` of the trophy event's `left_antler` and `right_antler`: the main beam and the tines, not the `abnormals`); null for a
-    /// kill with no trophy event (or no antler in it) and for a non-typical rack (`extended_species` 100 and up).</summary>
+    /// kill with no trophy event, a trophy that lacks the list of a side (the total is not known) and a non-typical rack (`extended_species` 100 and up).</summary>
     static double? TypicalPoints(JsonObject e3, JsonObject e22)
     {
         var sides = new[] { "left_antler", "right_antler" }.Select(side => e22[side] is JsonObject antler ? antler["points"] as JsonArray : null).ToList();
-        return Py.IsNum(e3["extended_species"]) && Py.L(e3["extended_species"]) >= 100 || sides.All(s => s is null) ? null : sides.Sum(s => s?.Count ?? 0);
+        return Py.IsNum(e3["extended_species"]) && Py.L(e3["extended_species"]) >= 100 || sides.Any(s => s is null) ? null : sides.Sum(s => s!.Count);
     }
 
     /// <summary>A spotted animal (event 11, stored as event `eventId`) as a kill with one hit: the spot itself, which carries the player's stand.</summary>
@@ -113,10 +122,10 @@ public sealed partial class State
     Kill ClueOf(Db con, long eventId, JsonObject e12, JsonObject e7) =>
         new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null), e12: e12, clues: () => ClueEvents(con, e12["individual"], eventId));
 
-    /// <summary>The clues (event 12) of the animal `individual` in the hunt that event `eventId` is in, up to that event.</summary>
-    static List<JsonObject> ClueEvents(Db con, JsonNode? individual, long eventId) =>
-        [.. con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > COALESCE("
-            + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id", individual, eventId).Select(r => Parse(r[0]))];
+    /// <summary>The clues (event 12) of the animal `individual` in the hunt that event `eventId` is in, up to that event, with their event ids.</summary>
+    static List<(long Id, JsonObject Body)> ClueEvents(Db con, JsonNode? individual, long eventId) =>
+        [.. con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > COALESCE("
+            + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id", individual, eventId).Select(r => ((long)r[0], Parse(r[1])))];
 
     /// <summary>The kinds of clue a title names.</summary>
     enum ClueKind { Blood, Footprints, Droppings, Call, Bedding }
@@ -126,19 +135,20 @@ public sealed partial class State
     // The `track_type` of an event 12 by the kind of clue it is. 0 (blood trail), 9 (a heard call) and 12 (bedding) are one id each. The other ids come in pairs of one species' clues: its
     // droppings, then its footprints (a trotting or a fleeing animal leaves the footprints' id too): 1 and 2 for a whitetail, 3 and 4 for a mule deer, 16 and 17 for a moose, 5 and 6 for a
     // turkey, and so on up to 102 and 103 for a wood grouse. Each id but 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) is in the recorded clue
-    // events, always of the species it is listed for. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) name no kind a title asks for: only `any clue` meets them.
+    // events. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are in no kind: no objective is met by them.
     static readonly Dictionary<long, ClueKind> ClueKinds = ClueTable(
         (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]),
         (ClueKind.Droppings, [1, 3, 5, 7, 10, 14, 16, 18, 23, 25, 32, 34, 36, 38, 40, 44, 56, 58, 60, 62, 64, 66, 68, 70, 78, 80, 82, 84, 88, 92, 93, 94, 96, 98, 100, 102]),
         (ClueKind.Footprints, [2, 4, 6, 8, 11, 15, 17, 19, 21, 22, 24, 26, 28, 33, 35, 37, 39, 41, 45, 57, 59, 61, 63, 65, 67, 69, 71, 73, 79, 81, 83, 85, 89, 95, 97, 99, 101, 103]));
 
-    /// <summary>The kind of the clue of event 12 `e12` by an animal of `species`; null for a type no kind is known for. The red deer's water bubbles (25) and the wendigo's (32) use the
-    /// ids of the roe deer's and the rabbits' droppings.</summary>
+    /// <summary>The kind of the clue of event 12 `e12` by an animal of `species`; null for a whole `track_type` no kind is known for, and for any other value. The red deer's water bubbles (25)
+    /// and the wendigo's (32) use the ids of the roe deer's and the rabbits' droppings.</summary>
     static ClueKind? ClueKindOf(JsonObject e12, long? species) =>
-        NumOf(e12, "track_type") is { } type && (long)type is var id && (id, species) is not ((25, 12) or (32, 58)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
+        NumOf(e12, "track_type") is { } type && type == Math.Floor(type) && (long)type is var id && (id, species) is not ((25, 12) or (32, 58)) && ClueKinds.TryGetValue(id, out var kind) ? kind : null;
 
+    /// <summary>Is the clue `e12` of the animal `e7` one the test accepts: a clue of a known kind, of one of the kinds named, or of any known kind when it names none?</summary>
     static bool ClueIs(Test t, JsonObject e12, JsonObject e7) =>
-        t.Ids!.Count == 0 || ClueKindOf(e12, AnimalOf(e7, e7["species"]).Species) is { } kind && t.Ids.Contains((long)kind);
+        ClueKindOf(e12, AnimalOf(e7, e7["species"]).Species) is { } kind && (t.Ids!.Count == 0 || t.Ids.Contains((long)kind));
 
     /// <summary>The species (0 to 99) and gender of an animal: the harvest's `extended_species` (or the spawn's `species`) and the spawn's `gender`.</summary>
     static (long? Species, long? Gender) AnimalOf(JsonObject e7, JsonNode? number) =>
@@ -379,10 +389,11 @@ public sealed partial class State
                     named.AddRange(species.Where(x => x.Name == m.Value).Select(x => x.Id));
             }
             long[] like = [], aliased = [];  // a short name of species (`Elk`): the species with that word in their name, the mission's own ones when it lists some of them
-            if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias)
+            if (named.Count == 0 && Alias.Match(sn) is { Success: true } alias
+                && species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id).ToArray() is { Length: > 0 } found)  // a short name no species has stays in the title
             {
                 sn = sn[..alias.Index] + " " + sn[(alias.Index + alias.Length)..];
-                like = [.. species.Where(x => x.Name.Split(' ').Contains(alias.Groups["a"].Value)).Select(x => x.Id)];
+                like = found;
                 aliased = like.Intersect(own ?? []).ToArray() is { Length: > 0 } mine ? mine : like;
             }
             if (named.Count > 0 || aliased.Length > 0)
@@ -403,7 +414,7 @@ public sealed partial class State
         {
             var tests = new List<Test>();
             var s = ClueVerb.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), " ");
-            var sn = " " + Normalise(SameHunt.Replace(Coordinates.Replace(s, " "), " ")) + " ";
+            var sn = " " + Normalise(SameHunt.Replace(Coordinates.Replace(s, " "), " ")) + (Coordinates.IsMatch(s) ? " coordinates" : "") + " ";  // a place is not checked: coordinates leave it not understood
             TakeReserve(ref sn, tests);
             TakeSpecies(ref sn, own, tests);
             var count = 1L;
