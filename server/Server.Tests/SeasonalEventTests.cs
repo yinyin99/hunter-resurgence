@@ -218,8 +218,10 @@ public class SeasonalEventTests : StateTestBase
     {
         var connect = CONNECT;
         connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""), JsonValue.Create("r3"));
-        if (Facts.Default.EventIndexes(reserve).FirstOrDefault() is > 0 and var recorded)
-            connect["populations"]!.AsArray().Add(O($$"""{"index": {{recorded}}, "animal": "werewolf", "density_map": "werewolf", "reserve": {{reserve + 1}}}"""));
+        if (reserve == 0)  // the normal row whose index the event's feral hog shares
+            connect["populations"]!.AsArray().Add(O("""{"index": 3, "animal": "roosevelt_elk", "density_map": "roosevelt_elk", "reserve": 1}"""));
+        if (Facts.Default.EventRows(reserve).FirstOrDefault() is ({ } recorded, { } kind) && recorded > 0)
+            connect["populations"]!.AsArray().Add(O($$"""{"index": {{recorded}}, "animal": "{{kind}}", "density_map": "{{kind}}", "reserve": {{reserve + 1}}}"""));
         connect["species_ammo"] = new JsonArray(O("""{"species_id": "17", "ammo": [999]}"""));
         var app = APP;
         app["locations"] = new JsonArray([.. new[] { 0, 100, 200, 500, 800, 900 }.Select(l => (JsonNode?)O(
@@ -245,8 +247,10 @@ public class SeasonalEventTests : StateTestBase
         var reply = Connect(Hunt(reserve));
         Eq("""{"name": "halloween_2026", "define": "HALLOWEEN_2026", "reserves": [0, 1, 2, 8, 9]}""", reply["ingame_event"]);
         var rows = Rows(reply).Where(p => p["active_start"] is not null).ToArray();
-        var ids = Rows(reply).Select(p => (long)p["index"]!).ToArray();
-        Assert.Equal(ids.Length, ids.Distinct().Count());  // the recorded creature is replaced, not doubled
+        var pairs = Rows(reply).Select(p => ((long)p["index"]!, (string)p["animal"]!)).ToArray();
+        Assert.Equal(pairs.Length, pairs.Distinct().Count());  // the recorded creature is replaced, not doubled
+        if (reserve == 0)
+            Assert.Contains(Rows(reply), p => (long)p["index"]! == 3 && (string)p["animal"]! == "roosevelt_elk");  // the normal creature that shares the hog's index stays
         Assert.Equal(content, string.Join(",", rows.Select(p => $"{p!["animal"]}:{p["index"]}:{p["density_map"]}")));
         Assert.All(rows, p =>
         {
@@ -258,24 +262,19 @@ public class SeasonalEventTests : StateTestBase
         Eq("[962, 963, 1142]", reply["species_ammo"]![0]!["ammo"]);
     }
 
-    [Fact]
-    public void TestTheHalloweenRowsHaveTheOriginalsSizes()
+    [Theory]
+    [InlineData(0, 3, "feral_hog", "12/24/0", "")]
+    [InlineData(0, 9, "werewolf", "9/16/0", "22/36/15")]
+    [InlineData(1, 110, "werewolf", "18/30/0", "")]
+    [InlineData(2, 208, "werewolf", "9/16/0", "22/36/15")]
+    [InlineData(8, 805, "werewolf", "", "25/25/30")]
+    public void TestTheHalloweenRowsHaveTheOriginalsSizes(int reserve, int index, string animal, string group, string random)
     {
-        Eq("""[{"males": 12, "females": 24, "radius": 0}]""", Sizes(Rows(Connect(Hunt(0))).Single(p => (long)p["index"]! == 3)["groups"]!));
-        Eq("""[{"males": 18, "females": 30, "radius": 0}]""", Sizes(Rows(Connect(Hunt(1))).Single(p => (long)p["index"]! == 110)["groups"]!));
-        var none = Rows(Connect(Hunt(8))).Single(p => (long)p["index"]! == 805);
-        Assert.Empty(none["groups"]!.AsArray());
-        Eq("""{"males": 25, "females": 25, "radius": 30}""", new JsonObject
-        {
-            ["males"] = none["random_groups"]!["males"]!.DeepClone(), ["females"] = none["random_groups"]!["females"]!.DeepClone(), ["radius"] = none["random_groups"]!["radius"]!.DeepClone(),
-        });
-        Assert.Null(Rows(Connect(Hunt(1))).Single(p => (long)p["index"]! == 110)["random_groups"]);
+        var row = Rows(Connect(Hunt(reserve))).Single(p => (long)p["index"]! == index && (string)p["animal"]! == animal);
+        static string Of(JsonNode n, string a, string b, string c) => $"{n[a]}/{n[b]}/{n[c]}";
+        Assert.Equal(group, string.Join(";", row["groups"]!.AsArray().Select(g => Of(g!, "males", "females", "radius"))));
+        Assert.Equal(random, row["random_groups"] is { } r ? Of(r, "males", "females", "radius") : "");
     }
-
-    static JsonNode Sizes(JsonNode groups) => new JsonArray([.. groups.AsArray().Select(g => (JsonNode?)new JsonObject
-    {
-        ["males"] = g!["males"]!.DeepClone(), ["females"] = g["females"]!.DeepClone(), ["radius"] = g["radius"]!.DeepClone(),
-    })]);
 
     [Theory]
     [InlineData(0)]
@@ -288,7 +287,9 @@ public class SeasonalEventTests : StateTestBase
         var reply = Connect(Hunt(reserve, playsEvents: false));
         Assert.Null(reply["ingame_event"]);
         Assert.DoesNotContain(Rows(reply), p => p["active_start"] is not null);
-        Assert.DoesNotContain(Rows(reply), p => Facts.Default.EventIndexes(reserve).Contains((long)p["index"]!));  // the recorded creature goes too
+        Assert.DoesNotContain(Rows(reply), p => Facts.Default.EventRows(reserve).Contains(((long)p["index"]!, (string)p["animal"]!)));  // the recorded creature goes too
+        if (reserve == 0)
+            Assert.Contains(Rows(reply), p => (long)p["index"]! == 3 && (string)p["animal"]! == "roosevelt_elk");  // and the normal one stays
         Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
     }
 

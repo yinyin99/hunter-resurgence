@@ -162,9 +162,10 @@ public sealed class Facts
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
-    /// <summary>The `index` of every population any event adds on the game's reserve number <paramref name="reserve"/>.</summary>
-    public IEnumerable<long> EventIndexes(int reserve) => Obj("events").SelectMany(e => (e.Value?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)]?["populations"] as JsonArray ?? [])
-        .Select(p => Py.L(p!["index"])));
+    /// <summary>The `index` and `animal` of every population any event adds on the game's reserve number <paramref name="reserve"/>; the pair, as an event's index
+    /// can be a normal creature's (the original's feral hog 3 on reserve 0 is beside the Roosevelt elk 3).</summary>
+    public IEnumerable<(long Index, string Animal)> EventRows(int reserve) => Obj("events").SelectMany(e => (e.Value?["reserves"]?[reserve.ToString(CultureInfo.InvariantCulture)]?["populations"] as JsonArray ?? [])
+        .Select(p => (Py.L(p!["index"]), (string)p["animal"]!)));
 
     // the client's population row; fields the file leaves out are the client's defaults (null / -1)
     static JsonObject Population(JsonObject p, int reserve)

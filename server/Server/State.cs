@@ -1373,9 +1373,9 @@ public sealed partial class State
                     row["ammo"] = C(ethicalAmmo[(int)sid]);
         var clientReserve = (int)(Py.L(expedition["lodge"]) / 100);  // the game's own reserve number, as it reads it
         if (reply["populations"] is JsonArray present)  // a recorded connect may carry an event's creatures
-            foreach (var index in facts.EventIndexes(clientReserve))
+            foreach (var (index, animal) in facts.EventRows(clientReserve))
                 for (var i = present.Count - 1; i >= 0; i--)
-                    if (present[i] is JsonObject row && Py.L(row["index"]) == index)
+                    if (present[i] is JsonObject row && Py.L(row["index"]) == index && Py.Str(row["animal"]) == animal)
                         present.RemoveAt(i);
         if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
             AddSeasonal(reply, seasonal, clientReserve);
