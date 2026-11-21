@@ -455,17 +455,20 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
         /// the options page never saw the key and never saved. The script defines both on `window.game` (an existing `game` and any member already set is kept) and forwards every argument to `window.ewcallback` when the call is made.</summary>
         const string KeybindingScript = "<script>(function(){var g=window.game||(window.game={});['updateKeybinding','overrideKeybinding'].forEach(function(n){if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}})})()</script>";
         /// <summary>The in-game page's mission buttons (Activate, Activate All, favourites, the automatic-activation and filter switches) POST to `/v1/mission/...` without the player's token, so the server answered token expired and the
-        /// page gave up. The script wraps the XHR the page's request library uses: a POST to a `/v1/mission/` path with no `oauth_access_token` waits for `HUNTER.getAccessToken()`, is re-opened with the token as a query field (which
-        /// `Req.Tokens` reads; no header, so no preflight) and sent with the same headers and body.</summary>
-        const string MissionTokenScript = "<script>(function(){var X=XMLHttpRequest.prototype,o=X.open,h=X.setRequestHeader,s=X.send;"
-            + "X.open=function(){this._a=arguments;this._h=[];return o.apply(this,arguments)};"
-            + "X.setRequestHeader=function(k,v){if(this._h)this._h.push([k,v]);return h.apply(this,arguments)};"
-            + "X.send=function(b){var x=this,a=x._a,u=a&&String(a[1]),H=window.HUNTER;"
-            + "if(!a||!/^post$/i.test(a[0])||!/\\/v1\\/mission\\//.test(u)||u.indexOf('oauth_access_token=')>=0||(typeof b==='string'&&b.indexOf('oauth_access_token=')>=0)||!H||typeof H.getAccessToken!=='function')return s.call(x,b);"
-            + "Promise.resolve().then(function(){return H.getAccessToken()}).then(function(t){if(!t)return s.call(x,b);"
-            + "o.call(x,a[0],u+(u.indexOf('?')<0?'?':'&')+'oauth_access_token='+encodeURIComponent(t),a[2]!==false,a[3],a[4]);"
-            + "x._h.forEach(function(p){h.call(x,p[0],p[1])});s.call(x,b)},function(){s.call(x,b)})}})()</script>";
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + MissionTokenScript + ClientStyle)];
+        /// page gave up. The script keeps the last `HUNTER.getAccessToken()` (read at each XHR to the game API host `@API@`, so it is fresh when a button is pressed) and, in `send` of an asynchronous POST to that host's
+        /// `/v1/mission/` paths that carries no token of its own (query, `Authorization`, form or JSON body field), re-opens the same XHR with the token as a query field (which `Req.Tokens` reads; no header, so no preflight), puts
+        /// the headers back and sends the same body. Everything is synchronous, so abort, timeout and listeners are the page's own; any other request is untouched.</summary>
+        const string MissionTokenScript = """
+<script>(function(){var X=XMLHttpRequest.prototype,o=X.open,h=X.setRequestHeader,s=X.send,A="@API@",T,H;
+function R(){try{H=window.HUNTER;if(H&&typeof H.getAccessToken==="function")Promise.resolve(H.getAccessToken()).then(function(t){if(t)T=String(t)},function(){})}catch(e){}}
+function U(u){try{var x=new URL(String(u),location.href);return x.host===A||x.hostname===A?x:null}catch(e){return null}}
+function Y(b){if(typeof b==="string")return /(^|[&{,\s])"?oauth_access_token"?\s*[:=]/.test(b);return !!b&&typeof b.has==="function"&&b.has("oauth_access_token")}
+X.open=function(m,u,a){this._a=arguments;this._h=[];if(/^post$/i.test(m)&&a!==false&&U(u))R();return o.apply(this,arguments)};
+X.setRequestHeader=function(k,v){if(this._h)this._h.push([k,v]);return h.apply(this,arguments)};
+X.send=function(b){var x=this,a=x._a,u=a&&/^post$/i.test(a[0])&&a[2]!==false&&U(a[1]);
+if(u&&T&&u.pathname.indexOf("/v1/mission/")===0&&!u.searchParams.has("oauth_access_token")&&!Y(b)&&!x._h.some(function(p){return /^authorization$/i.test(p[0])})){u.searchParams.set("oauth_access_token",T);o.call(x,a[0],u.href,true,a[3],a[4]);x._h.forEach(function(p){h.call(x,p[0],p[1])})}
+return s.call(x,b)}})()</script>
+""";
 
         /// <summary>The body with each text replaced; null (and one warning) when a text is not found exactly once.</summary>
         static string? ReplaceOnce(string text, (string From, string To)[] edits, ref int warnedFlag, string what)
@@ -483,14 +486,14 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             return text;
         }
 
-        public static Reply Apply(Req r, Reply reply)
+        public static Reply Apply(Req r, Reply reply, string api)
         {
             if (reply.Status != 200 || r.Method != "GET") return reply;
             if (r.Path == "/client")
             {
                 var was = Encoding.Latin1.GetString(reply.Body);
                 var page = Token.Replace(was, "$1?t=" + Version);
-                if (ReplaceOnce(page, ClientPageSrc, ref warnedPage, "the in-game page's head") is { } styled) page = styled;
+                if (ReplaceOnce(page, [("</head>", KeybindingScript + MissionTokenScript.Replace("@API@", api) + ClientStyle)], ref warnedPage, "the in-game page's head") is { } styled) page = styled;
                 return page == was ? reply : NoCache(reply, Encoding.Latin1.GetBytes(page));
             }
             if (Locale.IsMatch(r.Path)) return AddHide(reply);  // no-cache too, so a copy cached before is not used
@@ -609,7 +612,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
         /// recorded reply (JSONP callback swapped), mirror, archive file found by basename, an empty 200 for a request
         /// only recorded as 304/0 ("weak"), else a miss. A community server replays a recording only for a global endpoint
         /// (<see cref="ReplayScope"/>); a per-player one gets its empty reply, an unlisted one the miss.</summary>
-        public Reply Fallback(Req r) => TimerFix.Apply(r, NoStoreMiss(Served(r)));
+        public Reply Fallback(Req r) => TimerFix.Apply(r, NoStoreMiss(Served(r)), Api);
 
         /// <summary>A miss may be answered later (a picture the server learns to serve), so the client must not keep it in its disk cache.</summary>
         static Reply NoStoreMiss(Reply reply) =>
