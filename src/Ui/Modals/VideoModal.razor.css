@@ -1,8 +1,8 @@
-.video { position: absolute; top: 60px; left: calc(50% - 450px); width: 900px; outline: 0; color: #fff; }
+.video { position: absolute; top: 50%; left: 50%; translate: -50% -50%; width: min(900px, 100vw - 112px, (100vh - 140px) * 900 / 506); outline: 0; color: #fff; container-type: inline-size; }
 .close { position: absolute; right: -4px; top: -44px; font-size: 36px; line-height: 40px; color: #fff; }
-.frame ::deep .asset-slot { display: block; }
+.frame ::deep .asset-slot { display: block; width: 100% !important; height: auto !important; aspect-ratio: 900 / 506; }
 p { margin: 10px 0 0; font-size: 16px; text-align: center; }
-.nav { position: absolute; top: 240px; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .6); color: #fff; cursor: pointer; }
+.nav { position: absolute; top: calc(50cqw * 506 / 900 - 20px); width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: rgba(0, 0, 0, .6); color: #fff; cursor: pointer; }
 .nav.prev { left: -56px; }
 .nav.next { right: -56px; }
 .nav ::deep .icon { width: 16px; height: 16px; }
