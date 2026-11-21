@@ -406,10 +406,10 @@ public static class Replay
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
              ("timer:e[2]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[2])")];
-        /// <summary>The in-game missions panel's writes (Activate, Activate All, the favourite toggle, the automatic-activation and filter switches) call the page's API helper with no `oauth_access_token`, so no token is sent and the
-        /// server answers token expired; its list call passes the player's token, read from the game with `HUNTER.getAccessToken()`. Each write is rewritten to read it the same way, at the time of the click, and pass it with the same
-        /// data (the page awaits the result as it did the call).</summary>
-        static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_[a-z_]+)"",\{([^{}]*)\},\{\}\)", RegexOptions.ECMAScript);
+        /// <summary>The in-game missions panel's writes (Activate, Activate All, the favourite toggle, the automatic-activation and filter switches) call the page's API helper with no token and no auth mode, so it sends none and the
+        /// server answers token expired (the list call passes `oauth_access_token`, so it loaded). Each of the six calls (empty options, no token of its own) is given the helper's own `authMode:"required"` option: the helper then waits
+        /// for the game's token and sends it as `Authorization: Bearer`, which the server already accepts.</summary>
+        static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_favourite|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite)"",(\{(?:(?!oauth_access_token)[^{}])*\}),\{\}\)", RegexOptions.ECMAScript);
         static int warned, warnedApp, warnedFrame, warnedPage;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
@@ -493,8 +493,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
             var src = Encoding.Latin1.GetString(reply.Body);
-            var script = MissionWrite.Replace(ReplaceOnce(src, Reads, ref warned, "the in-game page's round timer read") ?? src,
-                m => $"HUNTER.getAccessToken().then(function(_k){{return r.v1(\"POST\",\"/v1/mission/{m.Groups[1].Value}\",{{{m.Groups[2].Value}{(m.Groups[2].Length > 0 ? "," : "")}oauth_access_token:_k}},{{}})}})");
+            var script = MissionWrite.Replace(ReplaceOnce(src, Reads, ref warned, "the in-game page's round timer read") ?? src, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
             return script == src ? reply : NoCache(reply, Encoding.Latin1.GetBytes(script));
         }
 

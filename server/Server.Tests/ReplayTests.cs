@@ -229,16 +229,19 @@ public class ReplayTests : IAsyncLifetime
     public async Task TestTheMissionPanelWritesCarryThePlayersToken()
     {
         const string was = "x=r.v1(\"POST\",\"/v1/mission/missions\",{oauth_access_token:a,lang:i});y=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t},{});z=r.v1(\"POST\",\"/v1/mission/activate_all_available\",{},{});"
-            + "w=r.v1(\"POST\",\"/v1/mission/update_favourite\",{group_id:t,is_favourite:a},{});";
+            + "w=r.v1(\"POST\",\"/v1/mission/update_favourite\",{group_id:t,is_favourite:a},{});own=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t,oauth_access_token:k},{});"
+            + "other=r.v1(\"POST\",\"/v1/mission/update_other\",{a:1},{});";
         var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.8/client.js");
         Directory.CreateDirectory(Path.GetDirectoryName(f)!);
         File.WriteAllText(f, was);
         var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
-        const string get = "HUNTER.getAccessToken().then(function(_k){return r.v1(\"POST\",\"/v1/mission/";
+        const string required = ",{authMode:\"required\"});";
         Assert.Contains("x=r.v1(\"POST\",\"/v1/mission/missions\",{oauth_access_token:a,lang:i});", text);  // the list already has its own
-        Assert.Contains("y=" + get + "activate\",{mission_id:t,oauth_access_token:_k},{})});", text);
-        Assert.Contains("z=" + get + "activate_all_available\",{oauth_access_token:_k},{})});", text);
-        Assert.Contains("w=" + get + "update_favourite\",{group_id:t,is_favourite:a,oauth_access_token:_k},{})});", text);
+        Assert.Contains("y=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t}" + required, text);
+        Assert.Contains("z=r.v1(\"POST\",\"/v1/mission/activate_all_available\",{}" + required, text);
+        Assert.Contains("w=r.v1(\"POST\",\"/v1/mission/update_favourite\",{group_id:t,is_favourite:a}" + required, text);
+        Assert.Contains("own=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t,oauth_access_token:k},{});", text);  // a write with its own token and an unrelated update_ call stay as they are
+        Assert.Contains("other=r.v1(\"POST\",\"/v1/mission/update_other\",{a:1},{});", text);
     }
 
     [Fact]
