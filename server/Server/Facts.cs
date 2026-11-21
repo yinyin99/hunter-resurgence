@@ -214,7 +214,7 @@ public sealed class Facts
             var units = d["units"] is { } u && Py.IsNum(u) && Py.D(u) > 0
                 ? new JsonObject { ["count"] = u.DeepClone(), ["name"] = d["unit_name"]?.DeepClone() } : null;
             var weight = (d["inventory"] as JsonObject)?["weight"]?.DeepClone() ?? 0;
-            items.Add(new JsonObject
+            var item = new JsonObject
             {
                 ["id"] = d["id"]!.DeepClone(), ["define"] = d["define"]?.DeepClone(), ["name"] = d["name"]?.DeepClone(),
                 ["description"] = d["description"]?.DeepClone(), ["variationname"] = d["variationname"]?.DeepClone(),
@@ -227,13 +227,15 @@ public sealed class Facts
                 ["price"] = price, ["silver_price"] = d["silver_price"]?.DeepClone(),
                 ["notbuyable"] = price is not null && Py.D(price) == 0 ? 1 : 0,
                 ["units"] = units, ["fit"] = new JsonObject(),
-                ["extra"] = d["extra"]?["arm_type"] is { } arm ? new JsonObject { ["arm_type"] = arm.DeepClone() } : new JsonObject(),
                 ["inventory"] = new JsonObject
                 {
                     ["weight"] = weight, ["slots"] = type?["slots"]?.DeepClone() ?? new JsonArray(), ["capacity"] = type?["capacity"]?.DeepClone() ?? 0,
                     ["inbackpack"] = true, ["slotUnlock"] = null,
                 },
-            });
+            };
+            if (d["extra"]?["arm_type"] is { } arm)
+                item["extra"] = new JsonObject { ["arm_type"] = arm.DeepClone() };
+            items.Add(item);
         }
         return items;
     }

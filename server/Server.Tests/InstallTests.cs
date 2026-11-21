@@ -198,7 +198,7 @@ public class InstallTests : IDisposable
         var state = LoadState(cfg, new HarTable(), tmp)!;
         Assert.Equal(1, (int)state.ItemInfo(500)!["arm_type"]!);  // bare-armed: the game adds the arms
         Assert.Equal(0, (int)state.ItemInfo(501)!["arm_type"]!);  // own sleeves
-        Assert.Null(state.ItemInfo(14)!["arm_type"]);
+        Assert.False(state.ItemInfo(14)!.ContainsKey("arm_type"));  // an item without one has none, not a null
     }
 
     [Fact]
