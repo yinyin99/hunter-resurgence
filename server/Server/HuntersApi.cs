@@ -172,22 +172,40 @@ public static class HuntersApi
                              + "`sums`, then the kill's `species`, `weapon`, `scope`, `ammo`, `distanceM`, `state`, `bodyPart`, `stance`, `platform`, `weightKg`, `type`, `woundTime`, `integrity`, `shotLocation`, `shots`, `when` (Unix seconds), "
                              + "`expeditionId`, `score` and `harvestValue`. 404 for a handle that is unknown or banned, and for a kill without a harvest here (a restored one).")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
-        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
-                ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}"))
+        Reply Refuse(int status, string kind, string message) => Json(status, new JsonObject { ["status"] = kind, ["message"] = message, ["report"] = null });
+        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => SignedIn(ctx) is not { } viewer ? SignedOut
+                : state.PublicAccount(handle) is { } id ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}", viewer))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
-            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal, kill}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
-                             + "(`url` the full picture, `thumbnail` the same link, for the tile, `animal` the species of the kill it shows, `label` that kill's score, `kill` its id when `/hunters/<handle>/score/<kill>` answers, else null). 404 for a handle that is unknown or banned.")
+            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal, kill, share}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
+                             + "(`url` the signed-in player's link of the picture (`/photos/...`: the original on his own gallery, the display-size copy on anyone else's), `thumbnail` the same link, for the tile, `animal` the species of the kill it shows, `label` that kill's score, `kill` its id when `/hunters/<handle>/score/<kill>` answers, else null; "
+                             + "`share`, on the player's own rows only, the bare link of the display-size copy, for the Share window). 401 `signed_out` without a session; 404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
-            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+            .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json").Produces(404, contentType: "application/json");
 
         // the photos of the gallery tab are on the website's own domain: the game's host is not one a browser can reach
-        app.MapGet(State.PHOTO_PREFIX + "{**name}", (string name) => state.PhotoFile(State.PHOTO_PREFIX + name) is { } file
-                ? new Reply(200, [("Content-Type", "image/jpeg"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(file), "state") : new Reply(404, [], [], "state"))
+        app.MapGet(State.PHOTO_PREFIX + "{**name}", (string name, HttpContext ctx) =>
+            {
+                var q = ctx.Request.Query;
+                var (status, file) = state.WebPhoto(name, SignedIn(ctx) ?? state.LinkViewer(name, q["viewer"], q["until"], q["key"]));
+                return file is not null  // never kept by the browser: the next read asks again, with the session it has then
+                    ? new Reply(200, [("Content-Type", "image/jpeg"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(file), "state")
+                    : status switch
+                    {
+                        401 => SignedOut,
+                        403 => Refuse(403, "not_yours", "Only its owner gets the original picture."),
+                        429 => Refuse(429, "rate_limited", "Too many reads: wait a minute."),
+                        _ => new Reply(404, [], [], "state"),
+                    };
+            })
             .RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
-            .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")
-            .Produces(200, contentType: "image/jpeg").Produces(404);
+            .WithDescription("The photos of `GET /hunters/<handle>/gallery`: `<account id>/<name>`, for a signed-in player: the `hr_session` cookie, or the keyed link of the gallery's rows (`viewer`, `until`, `key`; the launcher's pages send no cookie). "
+                             + "A stored file (the original) goes to its owner only. Another player's gallery links its pictures by their display names (`display-<hex>.jpg`, which never tell the original's name): the display-size copy, at most 1280 px on its longest side, encoded again, without metadata; "
+                             + "every read of another player's picture counts in the account's read limit (429 `rate_limited`). 401 `signed_out` without a session or a valid link, 403 `not_yours` for another player's original. `Cache-Control: no-store`. "
+                             + "The imported avatar (`avatar.jpg`) is served to anyone. The game's host serves the originals to the game as before.")
+            .QueryParams(("viewer", "the account the link is for"), ("until", "Unix seconds the link holds until"), ("key", "the server's key of the link"))
+            .Produces(200, contentType: "image/jpeg").Produces(401, contentType: "application/json").Produces(403, contentType: "application/json").Produces(429, contentType: "application/json").Produces(404);
 
         var boards = app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .AddEndpointFilter(async (f, next) => SignedIn(f.HttpContext) is null ? SignedOut : await next(f));

@@ -61,6 +61,9 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
 
     Task<JsonNode> Api(string path, string? token, string body = "") => Send(community, "POST", "api.test", path, token, body).ContinueWith(t => JsonNode.Parse(t.Result.Body)!);
 
+    /// <summary>A GET on the website's host as a signed-in player (a new session of `viewer`).</summary>
+    Task<Reply> Web(string path, long viewer) => community.SendAsync("GET", "web.test", path, [("Cookie", "hr_session=" + state.Store.CreateWebSession(viewer, TimeSpan.FromHours(1)))]);
+
     [Fact]
     public void TestEveryRuleMatchesItsOwnSample()
     {
@@ -276,16 +279,18 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         JsonNode? KillPhoto() => Reply(state.ExpeditionReply(8, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"];
         Eq($"\"{trophyUrl}\"", KillPhoto());
 
-        // the website's page: 24 a page, a page past the end is the last, no banned or unknown hunter
-        async Task<JsonNode> Page(string query) => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery" + query, null)).Body)!;
+        // the website's page, signed in: 24 a page, a page past the end is the last, no banned or unknown hunter
+        async Task<JsonNode> Page(string query) => JsonNode.Parse((await Web("/hunters/second/gallery" + query, ME)).Body)!;
         var first = await Page("?page=1");
         Eq("[1, 1, 2, [3, 1]]", T(first["page"], first["pages"], first["total"], Ids(first["rows"]!)));
         var (cameraFile, trophyFile) = (cameraUrl[photos.Length..], trophyUrl[photos.Length..]);
-        Eq($"\"https://web.test/photos/8/{cameraFile}\"", first["rows"]![0]!["url"]);  // the website's own host: the game's is no host a browser reaches
+        Assert.Matches($@"\Ahttps://web\.test/photos/8/display-[0-9a-f]{{32}}\.jpg\?viewer={ME}&until=[0-9]+&key=[0-9a-f]{{32}}\z", (string)first["rows"]![0]!["url"]!);  // the website's own host: the game's is no host a browser reaches; another's picture at display size, by a name that is not the original's
         Eq("[3, 1]", Ids(first["rows"]!));
-        Assert.All(first["rows"]!.AsArray(), r => Assert.Equal((string?)r!["url"], (string?)r["thumbnail"]));  // the grid scales the full picture: the game's square crop (the trophy has one) is not the tile
-        Assert.Equal(200, (await Send(community, "GET", "web.test", "/photos/8/" + cameraFile, null)).Status);
-        Assert.Equal(404, (await Send(community, "GET", "web.test", "/photos/8/nothing.jpg", null)).Status);
+        Assert.All(first["rows"]!.AsArray(), r => Assert.Equal((string?)r!["url"], (string?)r["thumbnail"]));  // the grid scales the picture: the game's square crop (the trophy has one) is not the tile
+        Assert.StartsWith($"https://web.test/photos/8/{cameraFile}?viewer=8&", (string)JsonNode.Parse((await Web("/hunters/second/gallery", 8)).Body)!["rows"]![0]!["url"]!);  // the owner's: the original
+        Assert.Equal(200, (await Web("/photos/8/" + cameraFile, 8)).Status);
+        Assert.Equal(404, (await Web("/photos/8/nothing.jpg", 8)).Status);
+        Assert.Equal(401, (await community.SendAsync("GET", "web.test", "/hunters/second/gallery")).Status);  // signed out
         using (var con = state.Store.Open(8))
         {
             con.Begin();
@@ -300,8 +305,8 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             con.Exec("DELETE FROM photos WHERE account_id = $a AND file = 'x.jpg'");
             con.Commit();
         }
-        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/banned/gallery", null)).Status);
-        Assert.Equal(404, (await Send(community, "GET", "web.test", "/hunters/nobody/gallery", null)).Status);
+        Assert.Equal(404, (await Web("/hunters/banned/gallery", ME)).Status);
+        Assert.Equal(404, (await Web("/hunters/nobody/gallery", ME)).Status);
 
         // Gallery/delete: an own photo only, its row and files
         Eq("false", await Api(Replay.GALLERY_DELETE, tokenA, "photo_id=3"));  // another player's
@@ -342,7 +347,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             return new Uri((string)Reply(state.UploadReply(8, new Uri((string)update["url"]!).Query.TrimStart('?'), [1]).Body)["mediaLink"]!).AbsolutePath;
         }
         JsonNode? KillPhoto() => Reply(state.ExpeditionReply(8, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"];
-        async Task<JsonNode> Site() => JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/gallery", null)).Body)!;
+        async Task<JsonNode> Site() => JsonNode.Parse((await Web("/hunters/second/gallery", ME)).Body)!;
         var screenshots = new[] { 12, 14 }.Select(Upload).ToList();
         Assert.Null(KillPhoto());  // a screenshot is no kill's picture
         Eq("0", (await Api(Replay.GALLERY_LIST, tokenA, "user_id=8"))["total"]);
@@ -356,6 +361,90 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("1", (await Site())["total"]);
         using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(8)));
         Assert.Equal([Path.GetFileName(trophy)], zip.Entries.Select(e => e.FullName));
+    }
+
+    [Fact]
+    public async Task TestAnotherPlayersPictureIsServedAtDisplaySizeOnlyAndTheOriginalToItsOwnerAndTheGame()
+    {
+        state.CreateAccount(9, "third");
+        foreach (var account in new long[] { 8, ME }) state.NoteLaunch(account, "start=100&reserve=2"u8.ToArray());
+        static byte[] Jpeg(int width, int height)
+        {
+            var big = new MemoryStream();
+            using (var image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(width, height))
+                image.Save(big, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
+            return big.ToArray();
+        }
+        string Upload(long account, long hash, byte[] bytes)
+        {
+            var update = Reply(state.HeartbeatReply(account, Events(O($$"""{"event": 4, "hash": {{hash}}, "photo_type": 1, "individual": 99}"""))))["updates"]!.AsArray().Single(u => (int)u!["update"]! == 11)!;
+            return new Uri((string)Reply(state.UploadReply(account, new Uri((string)update["url"]!).Query.TrimStart('?'), bytes).Body)["mediaLink"]!).AbsolutePath;
+        }
+        var wide = Jpeg(2560, 1440);
+        var path = Upload(8, 1, wide);
+        Upload(8, 2, Jpeg(1920, 1280));  // it already fits the box's height
+        Task<Reply> Bare(string pathAndQuery, string host = "web.test") => community.SendAsync("GET", host, pathAndQuery);
+        string PathOf(JsonNode? url) => new Uri((string)url!).PathAndQuery;
+
+        // signed out: the gallery and a bare link of a picture answer 401
+        Assert.Equal(401, (await Bare("/hunters/second/gallery")).Status);
+        Assert.Equal(401, (await Bare(path)).Status);
+
+        // its owner and the game get the original; the owner's zip holds it
+        Assert.Equal(wide, (await Web(path, 8)).Body);
+        Assert.Equal(wide, (await Bare(path, "gameserver.test")).Body);
+        using (var zip = new ZipArchive(new MemoryStream((await Web("/account/gallery/zip", 8)).Body)))
+        using (var entry = zip.GetEntry(Path.GetFileName(path))!.Open())
+        {
+            var stored = new MemoryStream();
+            entry.CopyTo(stored);
+            Assert.Equal(wide, stored.ToArray());
+        }
+
+        // anyone else: 403 for the original; the gallery links the display-size copy by a name that never tells the original's, so the game's host has nothing by it
+        Assert.Equal(403, (await Web(path, ME)).Status);
+        var rows = JsonNode.Parse((await Web("/hunters/second/gallery", ME)).Body)!["rows"]!.AsArray();  // newest first: the square one, then the wide one
+        Assert.All(rows, r => Assert.Null(r!["share"]));
+        var (link, squareLink) = (PathOf(rows[1]!["url"]), PathOf(rows[0]!["url"]));
+        Assert.DoesNotContain(Path.GetFileNameWithoutExtension(path), link);
+        Assert.NotEqual("state", (await Bare(link[..link.IndexOf('?')], "gameserver.test")).Source);  // no stored photo answers: the request falls through to the replay
+        var display = await Web(link, ME);
+        Assert.Contains(("Cache-Control", "no-store"), display.Headers);
+        foreach (var (shown, width, height) in new[] { (display.Body, State.DisplaySize, 720), ((await Web(squareLink, ME)).Body, State.DisplaySize, 853) })
+        {
+            var size = SixLabors.ImageSharp.Image.Identify(shown);
+            Assert.Equal((width, height), (size.Width, size.Height));
+        }
+        var copy = Path.Combine(tmp, "photos", "display", "8", Path.GetFileName(path));
+        Assert.Equal(display.Body, File.ReadAllBytes(copy));  // kept for the next request
+
+        // the launcher's pages send no cookie: the gallery's keyed link is enough, for its viewer only, until it ends
+        Assert.Equal(display.Body, (await Bare(link)).Body);
+        Assert.Equal(401, (await Bare(link.Replace($"viewer={ME}", "viewer=8"))).Status);  // a key is its viewer's
+        state.Clock = () => Py.Now() + 3 * 86400;
+        Assert.Equal(401, (await Bare(link)).Status);
+        state.Clock = Py.Now;
+
+        // Share hands out the bare link of the display-size copy: 401 signed out, the copy to another signed-in player, never the original
+        var share = PathOf(JsonNode.Parse((await Web("/hunters/second/gallery", 8)).Body)!["rows"]![1]!["share"]);
+        Assert.Equal(401, (await Bare(share)).Status);
+        Assert.Equal(display.Body, (await Web(share, ME)).Body);
+
+        // every display-size read of another player counts in the reader's read limit
+        var third = PathOf(state.PublicGallery(8, 1, "https://web.test", 9)["rows"]![1]!["url"]);
+        for (var n = 0; n < State.ReadsPerMinute; n++)
+            Assert.Equal(200, (await Bare(third)).Status);
+        Assert.Equal(429, (await Bare(third)).Status);
+
+        // a picture that is no JPEG, as the first of its account, and a lossless JPEG (a kind the decoder lacks): no copy, 404
+        Upload(ME, 3, "not a picture"u8.ToArray());
+        Upload(ME, 4, [255, 216, 255, 195, 0, 11, 8, 0, 16, 0, 16, 1, 1, 17, 0, 255, 217]);  // start of image, a lossless frame header (SOF3), end of image
+        foreach (var row in state.PublicGallery(ME, 1, "https://web.test", 8)["rows"]!.AsArray())
+            Assert.Equal(404, (await Bare(PathOf(row!["url"]))).Status);
+
+        // deleting the picture deletes its copy
+        Assert.True(state.DeletePhoto(8, (long)rows[1]!["id"]!));
+        Assert.False(File.Exists(copy));
     }
 
     [Fact]

@@ -791,13 +791,13 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, (await Delete(first, xhr)).Status);
         Assert.False(File.Exists(Path.Combine(tmp, "photos", me.ToString(), "1-2.jpg")));
         Assert.Equal(404, (await Delete(first, xhr)).Status);
-        Assert.Equal([second], JsonNode.Parse((await Get("web.test", "/hunters/one/gallery")).Body)!["rows"]!.AsArray().Select(r => (long)r!["id"]!));
+        Assert.Equal([second], JsonNode.Parse((await Get("web.test", "/hunters/one/gallery", ck)).Body)!["rows"]!.AsArray().Select(r => (long)r!["id"]!));
 
         // signed out, or not from a page of this server
         Assert.Equal(401, (await Get("web.test", "/account/gallery/zip")).Status);
         Assert.Equal(401, (await Delete(second, ("X-Requested-With", "XMLHttpRequest"))).Status);
         Assert.Equal(400, (await Delete(second, ck)).Status);
-        Assert.Equal(1, (int)JsonNode.Parse((await Get("web.test", "/hunters/one/gallery")).Body)!["total"]!);
+        Assert.Equal(1, (int)JsonNode.Parse((await Get("web.test", "/hunters/one/gallery", ck)).Body)!["total"]!);
     }
 
     [Fact]
