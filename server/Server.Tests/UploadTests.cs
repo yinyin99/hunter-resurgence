@@ -834,11 +834,12 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     public async Task TestARestoredPageAndFileAreServedWithNoScriptAndNoSniffing()
     {
         Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie)).Kind);
-        var page = await server.SendAsync("GET", "web.test", "/user/sample/score/?id=777", []);
+        (string, string)[] signedIn = [("Cookie", $"{SignIn.SessionCookie}={cookie}")];
+        var page = await server.SendAsync("GET", "web.test", "/user/sample/score/?id=777", signedIn);
         Assert.Equal(200, page.Status);
         Assert.Equal("<div>saved sheet</div>", Encoding.UTF8.GetString(page.Body));
         Assert.Contains(("Content-Security-Policy", "sandbox"), page.Headers);
-        Assert.Equal("miss", (await server.SendAsync("GET", "web.test", "/user/sample/score/?id=778", [])).Source);  // a kill with no saved page
+        Assert.Equal("miss", (await server.SendAsync("GET", "web.test", "/user/sample/score/?id=778", signedIn)).Source);  // a kill with no saved page
         foreach (var host in new[] { "web.test", "gameserver.test" })
         {
             var file = await server.SendAsync("GET", host, "/photos/1001/kills_score_777.html", []);  // any stored file is served as a picture, never as a page

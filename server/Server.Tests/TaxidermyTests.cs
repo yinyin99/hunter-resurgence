@@ -280,7 +280,7 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         Eq("""[10, 2000, true, null]""", T(offer["ems"], offer["gms"], offer["skull"], offer["done"]));
         var end = DateTime.Parse((string)offer["end"]!, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         Assert.InRange((end - DateTime.UtcNow).TotalHours, 71.9, 72.01);
-        Assert.Null((await Kills(null))[0]!["taxidermy"]);       // anyone
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/hunters/second/hunts/latest", [])).Status);  // anyone signed out: no hunt page at all
         Assert.Null((await Kills(cookieMe))[0]!["taxidermy"]);   // another player
         Assert.Equal(200, (await Web(kill, cookieOther, """{"product": "skull", "currency": "ems"}""")).Status);
         Assert.Equal("skull", (string?)(await Kills(cookieOther))[0]!["taxidermy"]!["done"]);

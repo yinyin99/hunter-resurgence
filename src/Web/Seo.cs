@@ -1,10 +1,8 @@
 using System.Xml.Linq;
-using Resurgence.Services;
-using Resurgence.Ui;
 
 namespace Resurgence.Web;
 
-/// <summary>What search engines read (docs/website.md#search-engines): one URL per page and language, and the sitemap.</summary>
+/// <summary>What search engines read (docs/website.md#search-engines): one URL per page and language, which pages are indexed, and the sitemap.</summary>
 public static class Seo
 {
     /// <summary>The page's URL in a language: the path (no trailing slash) with only the queries that change what it shows, <c>page</c> (above 1) and <c>lang</c>
@@ -18,31 +16,21 @@ public static class Seo
         return $"{page.GetLeftPart(UriPartial.Authority)}{path}{(query.Count > 0 ? "?" + string.Join('&', query) : "")}";
     }
 
-    /// <summary>The open pages, every store category, item and bundle, and the profile of every hunter on the hunterscore board; English URLs only,
-    /// the pages name their other languages (hreflang).</summary>
-    // ponytail: one board and store walk per request; cache it if the sitemap is fetched often or the board grows past a few thousand hunters
-    public static async Task<string> SitemapAsync(string origin, IStoreService store, ILeaderboardsService boards)
+    /// <summary>The public pages (docs/website.md#search-engines): the news, the download, the help and the terms and privacy pages. Every other page is for signed-in players, or a step of signing in,
+    /// and is not indexed.</summary>
+    static readonly string[] Public = ["/", "/download", "/help", "/your-data", "/terms"];
+
+    /// <summary>Whether search engines may index the page at <paramref name="path"/>: a public page (<c>/feed</c> is <c>/</c>, the help's tabs are the help); the response of any other path sends <c>noindex</c>.</summary>
+    public static bool Indexed(string path)
     {
-        List<string> paths = ["/", "/store", "/store/bundles", .. ServerLeaderboardsService.Kinds.Select(k => $"/leaderboards/{k}"), "/download", "/help", "/your-data", "/terms"];
-        // the store's "all" is /store itself
-        void Categories(IEnumerable<StoreCategory> cs) { foreach (var c in cs) { if (c.Key != "all") paths.Add($"/store/{c.Key}"); Categories(c.Children); } }
-        Categories(await store.CategoriesAsync());
-        for (int p = 1, pages = 1; p <= pages; p++)
-        {
-            var items = await store.ItemsAsync("all", "", p);
-            pages = items.Pages;
-            paths.AddRange(items.Rows.Select(i => $"/store/item/{i.Id}"));
-        }
-        paths.AddRange((await store.BundlesAsync()).Select(b => $"/store/bundle/{b.Id}"));
-        for (int p = 1, pages = 1; p <= pages; p++)
-        {
-            Page<Ranked> board;
-            try { board = await boards.RowsAsync("hunterscore", 0, p, 0); }
-            catch (BoardUnavailableException) { break; }  // the server's board is not there: no profiles now
-            pages = board.Pages;
-            paths.AddRange(board.Rows.Select(r => $"/profile/{Uri.EscapeDataString(r.Handle)}"));
-        }
+        path = path.TrimEnd('/') is "" or "/feed" ? "/" : path.TrimEnd('/');
+        return Public.Contains(path, StringComparer.OrdinalIgnoreCase) || path.StartsWith("/help/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>The public pages; English URLs only, the pages name their other languages (hreflang).</summary>
+    public static string Sitemap(string origin)
+    {
         XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + new XElement(ns + "urlset", paths.Distinct().Select(p => new XElement(ns + "url", new XElement(ns + "loc", origin + p))));
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + new XElement(ns + "urlset", Public.Select(p => new XElement(ns + "url", new XElement(ns + "loc", origin + p))));
     }
 }

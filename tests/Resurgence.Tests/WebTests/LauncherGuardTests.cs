@@ -20,8 +20,19 @@ public class LauncherGuardTests
     [InlineData("new-message", true)]
     [InlineData("bank/ems", true)]
     [InlineData("walletx", false)]
-    [InlineData("store", false)]
-    [InlineData("profile/x", false)]
+    [InlineData("store", true)]                      // players' data, the store and the competitions are for signed-in players
+    [InlineData("store/item/7", true)]
+    [InlineData("profile/x", true)]
+    [InlineData("profile/x/score/5", true)]
+    [InlineData("competitions/details/3", true)]
+    [InlineData("missions/daily", true)]
+    [InlineData("servers", true)]
+    [InlineData("feed", false)]
+    [InlineData("download", false)]
+    [InlineData("help/support", false)]
+    [InlineData("your-data", false)]
+    [InlineData("terms", false)]
+    [InlineData("signin/handle", false)]
     public void NeedsASessionForTheSignedInRoutes(string path, bool needs) => Assert.Equal(needs, LauncherGuard.NeedsSession(path));
 
     [Theory]

@@ -598,6 +598,9 @@ public static class GameApi
                 {
                     if (r.Method != "GET" || !ScorePath.IsMatch(r.Path))
                         return null;
+                    // a score sheet is a player's data: for a signed-in player (the session cookie) or the game (its token), as the website's /hunters/ routes
+                    if (SignIn.Session(s.Store, r.Header("Cookie")) is null && s.Authenticate(r.Tokens()) is null)
+                        return new(401, [("Content-Type", "application/json"), ("Cache-Control", "no-store")], """{"status": "signed_out", "message": "Sign in first."}"""u8.ToArray(), "state");
                     var killId = Py.ParseQs(r.Query).TryGetValue("id", out var ids) ? ids[0] : "";
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
                     if (!Py.IsDigit(killId) || !long.TryParse(killId, out var kid) || s.PublicAccount(handle) is not { } account)
@@ -608,9 +611,10 @@ public static class GameApi
                     return Has(page) ? new(200, [("Content-Type", "text/html")], page!, "state") : null;
                 }))
                .WithName("ScorePage").WithSummary("Kill details page of a kill")
-               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page; for a kill a restore brought, the page its backup saved (sent with a sandbox policy).")
+               .WithDescription("Shots, weight, wound time, integrity, location and the worked score sheet, rendered as an HTML page; for a kill a restore brought, the page its backup saved (sent with a sandbox policy). "
+                                + "For a signed-in player (the `hr_session` cookie) or the game (its token); 401 `signed_out` otherwise.")
                .PathParams(("handle", "player handle (any)")).QueryParams(("id", "kill id"))
-               .Produces(200, contentType: "text/html");
+               .Produces(200, contentType: "text/html").Produces(401, contentType: "application/json");
         }
 
         app.MapFallback("/{**path}", Handle(game, _ => null)).ExcludeFromDescription();  // replay, archives, mirror, misses

@@ -191,6 +191,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         return null;
     }
 
+    /// <summary>The account of a request's session cookie (<paramref name="header"/> is its Cookie header), null when signed out.</summary>
+    public static long? Session(Store store, string? header) => CookieOf(header, SessionCookie) is { } c ? store.ResolveWebSession(c) : null;
+
     static string Set(string name, string value, string path, TimeSpan age) =>
         $"{name}={value}; Path={path}; Max-Age={(long)age.TotalSeconds}; HttpOnly; Secure; SameSite=Lax";
 
