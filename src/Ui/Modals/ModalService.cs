@@ -114,8 +114,11 @@ public sealed class ModalService
     public void StartFailed(Result r) =>
         Show<StartFailedDialog>(new Dictionary<string, object?> { [nameof(StartFailedDialog.Error)] = r.Error ?? "Launch.Failed" }, "alert");
 
-    /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, or Steam. close-game has none.</summary>
-    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit)
+    bool closingGame;
+
+    /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, Steam, or closing the running game
+    /// (<paramref name="restart"/>: from a refused start's dialog, which then repeats that start).</summary>
+    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit, bool restart = false)
     {
         switch (fix)
         {
@@ -124,6 +127,16 @@ public sealed class ModalService
             case "open-steam": bridge.OpenExternal("steam://open/main"); break;
             // the launcher puts its steam_app_id (settings.json) in place of the placeholder
             case "verify-files": bridge.OpenExternal("steam://nav/games/details/{steam_app_id}"); break;
+            case "close-game" when !closingGame: // a second click while it closes would start twice
+                closingGame = true;
+                try
+                {
+                    var closed = await bridge.CloseGameAsync(restart);
+                    if (!closed.Ok) StartFailed(closed);
+                    else if (restart) { Close(); GameStarted(bridge); }
+                }
+                finally { closingGame = false; }
+                break;
             case "setup" when kit.Available:
                 try { Show<KitSetupModal>(new Dictionary<string, object?> { [nameof(KitSetupModal.Plan)] = await kit.StartAsync() ?? kit.Plan() }); }
                 catch (InvalidOperationException e) { Alert(e.Message); } // settings.json has no usable server_url or *_host: the plan's translated text

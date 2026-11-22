@@ -56,7 +56,7 @@ public class LauncherBridgeTests
             Assert.Equal("123", i.Environment["SteamGameId"]);
 
             running = true;
-            Assert.Equal("Launch.AlreadyRunning", b.StartGame("srv://x").Error);
+            Assert.Equal("Launch.LeftOver", b.StartGame("srv://x").Error); // no process is known to have a window
             Assert.Single(started);
 
             running = false;
@@ -64,6 +64,79 @@ public class LauncherBridgeTests
             Assert.Single(started);
         }
         finally { Directory.Delete(dir, true); }
+    }
+
+    static (LauncherBridge Bridge, List<ProcessStartInfo> Started, List<nint> Shown, List<string?> Stopped, Action<bool> Running, Action<IReadOnlyList<ClientProcess>> Processes, string Dir) Running(bool stopWorks = true)
+    {
+        var dir = Directory.CreateTempSubdirectory().FullName;
+        var exe = Path.Combine(dir, "client.exe");
+        File.WriteAllText(exe, "");
+        var started = new List<ProcessStartInfo>();
+        var shown = new List<nint>();
+        var stopped = new List<string?>();
+        var running = true;
+        IReadOnlyList<ClientProcess> processes = [];
+        var b = new LauncherBridge(() => new(dir, exe), Rest, e => running && e == exe, i => { started.Add(i); return LauncherFakes.Alive(); }, LauncherFakes.Signed, null,
+            processes: _ => processes, bringToFront: shown.Add, stopClient: (e, _) => { stopped.Add(e); running &= !stopWorks; return Task.CompletedTask; });
+        return (b, started, shown, stopped, r => running = r, p => processes = p, dir);
+    }
+
+    [Fact]
+    public async Task AWindowlessClientIsLeftOverAndClosingItRepeatsTheStart()
+    {
+        var (b, started, shown, stopped, _, processes, dir) = Running();
+        try
+        {
+            processes([new(41, 0), new(42, 0)]);
+            Assert.Equal("Launch.LeftOver", b.StartGame("srv://x").Error);
+            Assert.Empty(started);
+            Assert.Empty(shown);
+
+            Assert.True((await b.CloseGameAsync(true)).Ok);
+            Assert.Equal([Path.Combine(dir, "client.exe")], stopped);
+            Assert.Equal(" /connect:srv://x", " " + started.Single().Arguments.Split(' ')[0]);
+
+            Assert.True((await b.CloseGameAsync(true)).Ok); // the start was repeated once: nothing more
+            Assert.Single(started);
+        }
+        finally { Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public async Task AClientWithAWindowIsShownAndNothingStartsUntilItIsClosed()
+    {
+        var (b, started, shown, _, _, processes, dir) = Running();
+        try
+        {
+            processes([new(41, 0), new(42, 777)]);
+            Assert.Equal("Launch.AlreadyRunning", b.StartGame("srv://x").Error);
+            Assert.Equal<nint>([777], shown);
+            Assert.Empty(started);
+
+            Assert.True((await b.CloseGameAsync(true)).Ok);
+            Assert.Single(started);
+        }
+        finally { Directory.Delete(dir, true); }
+    }
+
+    [Fact]
+    public async Task ClosingWithoutRestartStartsNothingAndAGameThatStaysIsAFailure()
+    {
+        var (b, started, _, stopped, _, _, dir) = Running();
+        var (stuck, _, _, _, _, _, dir2) = Running(stopWorks: false);
+        try
+        {
+            Assert.Equal("Launch.LeftOver", b.StartGame("srv://x").Error);
+            Assert.True((await b.CloseGameAsync(false)).Ok);
+            Assert.Single(stopped);
+            Assert.Empty(started);
+            Assert.True((await b.CloseGameAsync(true)).Ok); // the refused start was forgotten: it is not repeated
+            Assert.Empty(started);
+
+            Assert.Equal("Launch.LeftOver", stuck.StartGame("srv://x").Error);
+            Assert.Equal("Launch.CloseFailed", (await stuck.CloseGameAsync(true)).Error);
+        }
+        finally { Directory.Delete(dir, true); Directory.Delete(dir2, true); }
     }
 
     [Fact]

@@ -59,7 +59,7 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:files", "block", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:steam", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
     [InlineData("steam:none", "warn", "Steam is not installed: the game will start without Steam.", null)]
-    [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", null)]
+    [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", "Close the game")]
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]
     [InlineData("check:dlls", "warn", "Files that are not part of the game are in its folder: d3d9.dll. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.", "Open folder")]
@@ -178,7 +178,8 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:old", "Check.Version.Old", "The game is not up to date: update it in Steam.", "Open Steam")]
     [InlineData("check:files", "Check.Files.Missing", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:setup", "Kit.NoHosts", "The hosts file has no block from setup (not run, or removed), so the game still talks to its own servers.", "Set up")]
-    [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", null)]
+    [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", "Close the game")]
+    [InlineData("check:running", "Launch.LeftOver", "A copy of the game is still running in the background without a window, probably after a crash. Close it and start again.", "Close the game")]
     [InlineData("folder:none", "Launch.NoGame", "The game was not found. Check its folder in the settings.", "Choose folder…")]
     [InlineData(null, "Launch.StartFailed", "The game could not be started.", null)]
     public void ARefusedStartSaysWhyAndOffersTheFixOfItsCheck(string? state, string error, string text, string? button)
@@ -212,6 +213,23 @@ public sealed class GameCheckTests : UiContext
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
         cut.Find("#alert-fix").Click();
         Assert.Equal(["steam://open/main"], log.Urls);
+    }
+
+    [Fact]
+    public void TheCloseGameButtonOfTheLineClosesTheGameAndTheLineTurnsGreen()
+    {
+        var cut = Line("check:running", out _);
+        cut.Find("#game-check-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal("Game check: OK", cut.Find("#game-check .text").TextContent));
+    }
+
+    [Fact]
+    public async Task ClosingTheGameFromARefusedStartRepeatsThatStart()
+    {
+        var b = new MockLauncherBridge(NullLogger(), "check:running");
+        Assert.Equal("Launch.AlreadyRunning", b.StartGame("x").Error);
+        Assert.True((await b.CloseGameAsync(true)).Ok);
+        Assert.Equal("steam", b.LastStartMode); // the repeated start went through
     }
 
     [Fact]

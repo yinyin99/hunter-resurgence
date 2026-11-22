@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pri ustvarjanju seje igre je prišlo do napake. Osveži seznam strežnikov in se poskusi pridružiti drugi igri.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Igra že teče.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Kopija igre še vedno teče v ozadju brez okna, verjetno po sesutju. Zaprite jo in zaženite znova.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Zapri igro</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Igre ni bilo mogoče zapreti. Končajte jo v upravitelju opravil (zavihek Podrobnosti) in zaženite znova.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Igre ni bilo mogoče najti. Preverite njeno mapo v nastavitvah.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Igre ni bilo mogoče zagnati.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Zagon Steama …</value></data>
