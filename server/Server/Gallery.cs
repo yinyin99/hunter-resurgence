@@ -174,7 +174,7 @@ public sealed partial class State
             ? v : null;
 
     /// <summary>GET of the website's `/photos/&lt;account&gt;/&lt;name&gt;` by `viewer` (the session's account, else the one the link names): the status and the file to send. 401 without a viewer. The original, for every signed-in player. Every read of another player's picture counts in
-    /// <see cref="ReadAllowed"/> (429 past it). The imported avatar stays everyone's. 404 for no such picture.</summary>
+    /// <see cref="PictureAllowed"/> (429 past it). The imported avatar stays everyone's. 404 for no such picture.</summary>
     public (int Status, string? File) WebPhoto(string name, long? viewer)
     {
         var file = PhotoFile(PHOTO_PREFIX + name);
@@ -182,7 +182,7 @@ public sealed partial class State
         if (viewer is not { } v) return (401, null);
         var slash = name.IndexOf('/');
         if (slash < 0 || !long.TryParse(name[..slash], NumberStyles.None, CultureInfo.InvariantCulture, out var owner)) return (404, null);
-        if (owner != v && !ReadAllowed(v)) return (429, null);  // every read of another player's picture counts, a refused or missing one too
+        if (owner != v && !PictureAllowed(v)) return (429, null);  // every read of another player's picture counts, a refused or missing one too
         if (file is not null) return (200, file);
         return DisplayedPicture(owner, name[(slash + 1)..]) is { } original ? (200, original) : (404, null);
     }
