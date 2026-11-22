@@ -46,7 +46,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     ];
 
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
-    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|(?<!ancellation)token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash): up to the next slash, or, at the end of the path, up to a space or punctuation.</summary>
     static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])(?:[^\\/:*?""<>|\r\n]+(?=[\\/])|[^\s\\/:*?""<>|,;()'\[\]]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

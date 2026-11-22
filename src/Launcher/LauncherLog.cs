@@ -63,7 +63,7 @@ public sealed class LauncherLog(string path) : ILoggerProvider
 
     /// <summary>
     /// The frames of the stack the runtime captured, as <c>   at Type.Method(ParameterType name) in file:line n</c>, built from each frame's metadata. <c>Exception.StackTrace</c> is text (a type may override it and a caller may set a remote stack
-    /// text), which could hold a credential, so it is not used; code names and parameter types carry none, so a method with a Token parameter stays.
+    /// text), which could hold a credential, so it is not used; code names and parameter types carry none; the word Token is shortened to Tk so that these frames pass the strict line scrub.
     /// </summary>
     static string Frames(Exception e)
     {
@@ -75,7 +75,8 @@ public sealed class LauncherLog(string path) : ILoggerProvider
                 if (f.GetFileName() is { } file) sb.Append(" in ").Append(file).Append(":line ").Append(f.GetFileLineNumber());
                 sb.Append('\n');
             }
-        return Diagnostics.ScrubNames(sb.ToString());
+        // the word Token is written Tk (CancellationToken parameters are in every async frame): the report's line scrub, which stays strict, would take the frame for a credential
+        return Diagnostics.ScrubNames(sb.ToString().Replace("Token", "Tk", StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>

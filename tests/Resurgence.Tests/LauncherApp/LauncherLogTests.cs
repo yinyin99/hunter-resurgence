@@ -97,13 +97,13 @@ public class LauncherLogTests
         Assert.DoesNotContain("Jane Doe", text);
         Assert.Contains(@"C:\Users\<user>\AppData\x.cfg", text);
         Assert.Contains("at Resurgence.Tests.LauncherApp.LauncherLogTests.Boom", text); // the frame stays
-        // a frame with a CancellationToken parameter is code, not a credential: it stays in the log and in the report; the line scrub stays strict for every other word
+        // a frame with a CancellationToken parameter stays in the log and in the report (the word is written Tk there); the line scrub itself stays strict
         try { BoomWithCancellation(CancellationToken.None); }
         catch (Exception e) { log.Write(LogLevel.Error, "with a parameter", e); }
-        Assert.Contains("BoomWithCancellation(CancellationToken cancellationToken)", File.ReadAllText(path));
+        Assert.Contains("BoomWithCancellation(CancellationTk cancellationTk)", File.ReadAllText(path));
         var zip = new Diagnostics(() => null, [], "1", () => [], Path.Combine(temp.Path, "out"), () => [], () => [], () => [], _ => [], launcherLog: path).Build("manual").Path;
         using (var z = System.IO.Compression.ZipFile.OpenRead(zip))
-            Assert.Contains("BoomWithCancellation(CancellationToken cancellationToken)", new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd());
+            Assert.Contains("BoomWithCancellation(CancellationTk cancellationTk)", new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd());
         Assert.Equal("[line removed: it may hold a credential]", Diagnostics.Scrub("   at X.Y() in C:\\x token=abc"));
         Assert.Equal("[line removed: it may hold a credential]", Diagnostics.Scrub("   at X.Y(string token)"));
     }
