@@ -20,12 +20,13 @@ namespace Resurgence.Launcher;
 /// <param name="processes">Names of the running processes (without .exe).</param>
 /// <param name="antivirus">Antivirus products as Windows reports them.</param>
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
-/// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
+/// <param name="events">Application events of the last 7 days naming one of the exes (the game's, the launcher's, WebView2's: the names passed), each one formatted.</param>
 /// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
 /// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest one written after the last run's start, of up to 32 MiB (a full-memory .hdmp gives way to a .dmp or .mdmp of the same crash), that opens and fits the report limit goes into the zip.</param>
+/// <param name="launcherLog">The launcher's own log (<see cref="LauncherLog"/>); it and its older copy <c>launcher.1.log</c> go into the zip. Null: none.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
-    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
-    Func<string, IEnumerable<string>>? dumps = null)
+    Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<IReadOnlyList<string>, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
+    Func<string, IEnumerable<string>>? dumps = null, string? launcherLog = null)
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
@@ -77,7 +78,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var exe = install() is { } g ? Path.GetFileName(g.ClientExe) : null;
         var checks = installChecks is null ? null : Try(() => installChecks(), missing, "install checks");
         var system = SystemText(missing, exe, checks);
-        var events = exe is null ? "no game folder" : EventsText(missing, exe);
+        var events = EventsText(missing, exe);
         var history = Try(() => runs(), missing, "runs.json") ?? [];
         var run = JsonSerializer.Serialize(history, RunHistory.Json);
         var candidates = exe is null ? [] : Dumps(missing, exe, history.Count > 0 ? history[^1].Start : null);
@@ -166,6 +167,11 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             Add("system.txt", system, Encoding.UTF8);
             Add("events.txt", events, Encoding.UTF8);
             Add("runs.json", runsJson, Encoding.UTF8);
+            if (launcherLog is not null)
+            {
+                AddFile("launcher.log", launcherLog);
+                if (File.Exists(LauncherLog.OlderOf(launcherLog))) AddFile("launcher.1.log", LauncherLog.OlderOf(launcherLog));
+            }
             if (install() is { } g && Path.GetDirectoryName(g.ClientExe) is { } folder && Directory.Exists(folder))
             {
                 AddFile("game/debug.log", Path.Combine(folder, "debug.log"));
@@ -271,11 +277,15 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         return sb.ToString();
     }
 
-    string EventsText(List<string> missing, string exe)
+    /// <summary>The executables whose crashes go into events.txt besides the game's: the launcher and WebView2, its browser.</summary>
+    internal static readonly string[] OwnExes = ["resurgence-launcher.exe", "msedgewebview2.exe"];
+
+    string EventsText(List<string> missing, string? exe)
     {
-        Func<string, IEnumerable<string>> read = events ?? ReadEvents;
-        var list = Try(() => read(exe).ToList(), missing, "events.txt");
-        return list is null ? "The Windows event log could not be read." : list.Count == 0 ? $"No Application Error or Windows Error Reporting event of the last {EventDays} days names {exe}." : string.Join("\n\n", list);
+        Func<IReadOnlyList<string>, IEnumerable<string>> read = events ?? ReadEvents;
+        string[] names = exe is null ? OwnExes : [exe, .. OwnExes];
+        var list = Try(() => read(names).ToList(), missing, "events.txt");
+        return list is null ? "The Windows event log could not be read." : list.Count == 0 ? $"No Application Error or Windows Error Reporting event of the last {EventDays} days names {string.Join(", ", names)}." : string.Join("\n\n", list);
     }
 
     /// <summary>Runs a probe; a probe that fails (Windows services off, no rights, a vanished file) is listed as missing instead of failing the report.</summary>
@@ -305,15 +315,15 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             using (o) yield return $"Graphics: {o["Name"]}, driver {o["DriverVersion"]}, screen {o["CurrentHorizontalResolution"]}x{o["CurrentVerticalResolution"]} at {o["CurrentRefreshRate"]} Hz";
     }
 
-    /// <summary>The last <see cref="EventDays"/> days of Application Error (1000) and Windows Error Reporting (1001) events whose text names the exe, newest first, at most <see cref="EventsMax"/>.</summary>
-    internal static IEnumerable<string> ReadEvents(string exe)
+    /// <summary>The last <see cref="EventDays"/> days of Application Error (1000) and Windows Error Reporting (1001) events whose text names one of the exes, newest first, at most <see cref="EventsMax"/>.</summary>
+    internal static IEnumerable<string> ReadEvents(IReadOnlyList<string> names)
     {
         var age = (long)TimeSpan.FromDays(EventDays).TotalMilliseconds;
         using var reader = new EventLogReader(new EventLogQuery("Application", PathType.LogName, $"*[System[(EventID=1000 or EventID=1001) and TimeCreated[timediff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
         var found = new List<string>();
         while (found.Count < EventsMax && reader.ReadEvent() is { } e)
             using (e)
-                if (e.FormatDescription() is { } text && text.Contains(exe, StringComparison.OrdinalIgnoreCase))
+                if (e.FormatDescription() is { } text && names.Any(n => text.Contains(n, StringComparison.OrdinalIgnoreCase)))
                     found.Add($"{e.TimeCreated:u}  event {e.Id}  {e.ProviderName}\n{(text.Length > EventChars ? text[..EventChars] + " [cut]" : text)}");
         return found;
     }

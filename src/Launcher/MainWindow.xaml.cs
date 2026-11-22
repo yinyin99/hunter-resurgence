@@ -55,7 +55,7 @@ public partial class MainWindow : Window
         var b = new BlazorWebView { HostPage = @"wwwroot\index.html", Services = services, StartPath = startPath };
         b.RootComponents.Add(new RootComponent { Selector = "head::after", ComponentType = typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet) });
         b.RootComponents.Add(new RootComponent { Selector = "#app", ComponentType = typeof(Routes) });
-        b.BlazorWebViewInitialized += (_, e) => e.WebView.CoreWebView2.ProcessFailed += (_, f) => OnProcessFailed(f.ProcessFailedKind, f.Reason.ToString());
+        b.BlazorWebViewInitialized += (_, e) => e.WebView.CoreWebView2.ProcessFailed += (_, f) => OnProcessFailed(f.ProcessFailedKind, f.Reason.ToString(), f.ExitCode);
         return b;
     }
 
@@ -79,9 +79,9 @@ public partial class MainWindow : Window
         }
     }
 
-    void OnProcessFailed(CoreWebView2ProcessFailedKind kind, string reason)
+    void OnProcessFailed(CoreWebView2ProcessFailedKind kind, string reason, int exitCode)
     {
-        log.LogWarning("WebView2 process failed: {Kind}, {Reason}", kind, reason);
+        log.LogWarning("WebView2 process failed: {Kind}, {Reason}, exit code {ExitCode}", kind, reason, exitCode);
         // the event may come on any thread
         Dispatcher.InvokeAsync(() => Handle(kind, () => Blazor.WebView.CoreWebView2?.Reload(), () =>
         {

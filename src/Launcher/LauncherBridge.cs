@@ -37,7 +37,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var settings = new[] { env.Settings.GraphicsFile, env.Settings.GraphicsFileNoSteam, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
         var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
         // Build runs off the UI thread (ProblemReporter.BuildAsync), so waiting for the checks is fine here
-        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult()), env.Prefs, env.Save, http, cookie);
+        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult(), launcherLog: LauncherLog.Default.FilePath), env.Prefs, env.Save, http, cookie);
     }
 
     /// <summary>The last game start this watcher saw; null before any.</summary>
@@ -232,6 +232,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
+        log?.LogInformation("Game started, mode {Mode}", lastStartMode);
         return Result.Success;
     }
 
@@ -272,6 +273,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
+            log?.LogInformation("Game exited: code {Code}, {Seconds} s, window seen {Window}", code?.ToString() ?? "unknown", (int)elapsed.TotalSeconds, window);
             var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
             return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null);
         }

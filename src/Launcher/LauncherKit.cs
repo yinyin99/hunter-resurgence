@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 using Resurgence.Services;
 
 namespace Resurgence.Launcher;
@@ -8,7 +9,7 @@ namespace Resurgence.Launcher;
 /// The player kit inside the launcher: setup and removal (what <c>play setup [--remove]</c> did), and the forwarder that answers the game on 127.0.0.1:80/443
 /// for as long as the launcher is open (it lives in this process, so closing the launcher stops it). Needs an https <c>server_url</c>.
 /// </summary>
-public sealed class LauncherKit(Uri? server) : IKitService
+public sealed class LauncherKit(Uri? server, ILogger? log = null) : IKitService
 {
     WebApplication? app;
     X509Certificate2? leaf;
@@ -40,6 +41,7 @@ public sealed class LauncherKit(Uri? server) : IKitService
         }
         catch (Exception e) when (e is not OutOfMemoryException)
         {
+            log?.LogWarning(e, "The forwarder did not start");
             Problem = e.Message;
             return null;
         }
@@ -69,13 +71,20 @@ public sealed class LauncherKit(Uri? server) : IKitService
         try { await app.StartAsync(); }
         catch (IOException e)
         {
-            await Stop();
-            throw new InvalidOperationException(Kit.F("Kit.PortBusy", e.Message));
+            await Release();
+            throw new InvalidOperationException(Kit.F("Kit.PortBusy", e.Message), e); // the log keeps the inner exception
         }
         Problem = null;
+        log?.LogInformation("The forwarder runs on {Addresses}", string.Join(", ", Forwarder.Addresses(app)));
     }
 
     async Task Stop()
+    {
+        if (app is not null) log?.LogInformation("The forwarder stops");
+        await Release();
+    }
+
+    async Task Release()
     {
         if (app is not null) await app.DisposeAsync();
         leaf?.Dispose();
@@ -97,6 +106,7 @@ public sealed class LauncherKit(Uri? server) : IKitService
         }
         catch (Exception e) when (e is not OutOfMemoryException)
         {
+            log?.LogWarning(e, "The player kit setup did not complete");
             Problem = e.Message;
             return Result.Fail(e.Message);
         }
