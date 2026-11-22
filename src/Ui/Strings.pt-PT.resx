@@ -1491,6 +1491,8 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>O Steam não está instalado: o jogo vai iniciar sem o Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>O Windows bloqueou um ficheiro do jogo ({0}): permita-o na Segurança do Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Pouco espaço em disco em {0} ({1} livres).</value></data>
+  <data name="Check.Dlls.Extra" xml:space="preserve"><value>Há ficheiros que não fazem parte do jogo na pasta dele: {0}. Ferramentas gráficas e mods colocados ali podem impedir o jogo de iniciar. Retire-os da pasta e inicie de novo.</value></data>
+  <data name="Check.Dlls.Changed" xml:space="preserve"><value>Os ficheiros do jogo foram alterados: {0}. Isto pode impedir o jogo de iniciar. No Steam, Propriedades, Ficheiros instalados, Verificar a integridade dos ficheiros de jogo.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>O jogo já está em execução: feche-o e depois inicie-o a partir daqui.</value></data>
   <data name="Check.OpenSteam" xml:space="preserve"><value>Abrir o Steam</value></data>
   <data name="Check.SeeAll" xml:space="preserve"><value>Ver tudo</value></data>
@@ -1504,6 +1506,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Check.Name.windows" xml:space="preserve"><value>Bloqueio do Windows</value></data>
   <data name="Check.Name.disk" xml:space="preserve"><value>Espaço em disco</value></data>
   <data name="Check.Name.running" xml:space="preserve"><value>Jogo fechado</value></data>
+  <data name="Check.Name.dlls" xml:space="preserve"><value>Ficheiros da pasta do jogo</value></data>
   <data name="Check.Level.Warn" xml:space="preserve"><value>Aviso</value></data>
   <data name="Check.Level.Block" xml:space="preserve"><value>Impede o arranque</value></data>
   <data name="Check.Setup.Port" xml:space="preserve"><value>A porta {0} está a ser usada por {1}; feche-o e tente novamente.</value></data>
