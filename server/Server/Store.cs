@@ -633,14 +633,13 @@ public sealed class Store
                                 id, excluded)!;
     }
 
-    /// <summary>One page of the hunterscore board (the order of Rank) and how many accounts are on it.</summary>
-    public (List<(long Rank, long Id, string Handle, long Hunterscore)> Rows, long Total) Board(long? excluded, int offset, int limit)
+    /// <summary>Rows of the hunterscore board (the order of Rank) from `offset`, at most `limit`.</summary>
+    public List<(long Rank, long Id, string Handle, long Hunterscore)> Board(long? excluded, int offset, int limit)
     {
         using var con = Open();
-        var rows = con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
-                            + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
+        return con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
+                        + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
             .Select((r, i) => (offset + i + 1L, (long)r[0], (string)r[1], Convert.ToInt64(r[2]))).ToList();
-        return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
     }
 
     /// <summary>The account's `avatar_url`; null when it has none.</summary>

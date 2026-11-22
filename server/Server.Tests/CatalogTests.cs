@@ -43,10 +43,23 @@ public class CatalogTests : StateTestBase
         return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    async Task<Reply> Get(string application, bool offline = false, string path = "/catalog/store")
+    /// <summary>A GET of the catalogue as the website's server sends it: signed in as ME, the store is for signed-in players only.</summary>
+    async Task<Reply> Get(string application, bool offline = false, string path = "/catalog/store", bool signedIn = true)
     {
         await using var server = await Start(application, offline);
-        return await server.SendAsync("GET", "web.test", path, []);
+        return await server.SendAsync("GET", "web.test", path, signedIn ? [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}")] : []);
+    }
+
+    [Fact]
+    public async Task TestTheStoreAndItsItemsNeedASession()
+    {
+        foreach (var path in new[] { "/catalog/store", "/catalog/item/1" })
+        {
+            var refused = await Get(Fitting, path: path, signedIn: false);
+            Assert.Equal(401, refused.Status);
+            Assert.Equal("signed_out", (string)JsonNode.Parse(refused.Body)!["status"]!);
+        }
+        Assert.Equal(200, (await Get(Fitting)).Status);
     }
 
     /// <summary>POST /account/buy as the website's server sends it, signed in as ME (182 em$) who already owns the owned items; its reply and

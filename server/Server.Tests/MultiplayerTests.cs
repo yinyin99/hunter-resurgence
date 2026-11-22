@@ -264,11 +264,15 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestTheWebsiteHostListsTheSameGamesWithoutACookie()
+    public async Task TestTheWebsiteHostListsTheSameGamesToASignedInPlayer()
     {
-        Eq("[]", Json(await Send("GET", "web.test", "/catalog/games")));
+        (string, string)[] signedIn = [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(THIRD, TimeSpan.FromHours(1))}")];
+        Eq("[]", Json(await server.SendAsync("GET", "web.test", "/catalog/games", signedIn)));
         await Host();
-        var reply = await Send("GET", "web.test", "/catalog/games");
+        var refused = await Send("GET", "web.test", "/catalog/games");  // signed out: refused, while the game's own list still answers without a token
+        Assert.Equal((401, "signed_out"), (refused.Status, (string)Json(refused)["status"]!));
+        Assert.NotEmpty(Json(await Send("GET", "api.test", "/v1/Network/list")).AsArray());
+        var reply = await server.SendAsync("GET", "web.test", "/catalog/games", signedIn);
         Assert.Equal(("catalog", 200), (reply.Source, reply.Status));
         Eq(await List(), Json(reply));
         Assert.Equal("Test Camp", (string)Json(reply)[0]!["name"]!);

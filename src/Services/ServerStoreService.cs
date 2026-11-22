@@ -9,8 +9,8 @@ namespace Resurgence.Services;
 /// (<see cref="ServerCatalogApi.Item"/>: capacity, contents, what fits it, the permitted species); the server not answering leaves the page without it. Buying is the server's
 /// (<see cref="ServerAccountApi.Buy"/>), with em$ or gm$.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
-/// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is the same for everyone and is asked without the
-/// session cookie; a purchase carries it.</param>
+/// <param name="cookie">The server picks its site by <c>Host</c>, so every request carries the host the browser used. The store is for signed-in players only: every request carries the
+/// session cookie, and without one the store is empty (the list is the same for everyone, so a signed-in player's read is kept for the others who are signed in).</param>
 public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, ServerCache<ServerStore> cache, IInventoryService inventory, ILogger<ServerStoreService> log) : IStoreService
 {
     public const int PageSize = 12;
@@ -67,8 +67,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     {
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"{ServerCatalogApi.Item}{id}");
-            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
+            using var request = cookie.Request(HttpMethod.Get, $"{ServerCatalogApi.Item}{id}");
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<ServerItemPage>();
             log.LogWarning("The server answered {Path}{Id} with {Status}: the item shows without its details", ServerCatalogApi.Item, id, (int)response.StatusCode);
@@ -129,6 +128,6 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))]);
 
-    async Task<ServerStore> LoadAsync() =>
-        await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log) ?? Empty;
+    async Task<ServerStore> LoadAsync() => cookie.Value is null ? Empty
+        : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value) ?? Empty;
 }

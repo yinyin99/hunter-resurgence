@@ -215,12 +215,12 @@ public class ServerServersServiceTests
         """;
 
     [Fact]
-    public async Task TheGamesAreTheCatalogsListWithoutACookieAndAFutureStartIsAgeZero()
+    public async Task TheGamesAreTheCatalogsListWithTheCookieAndAFutureStartIsAgeZero()
     {
         var fake = new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, Games) : Answer(r));
-        var games = await Make(fake, new Bridge()).ServersAsync();  // signed in: the cookie is still not sent
+        var games = await Make(fake, new Bridge()).ServersAsync();  // the list is for signed-in players: the cookie is sent
 
-        Assert.Equal([(HttpMethod.Get, ServerCatalogApi.Games, (string?)null)], fake.Seen.Select(s => (s.Method, s.Path, s.Cookie)));
+        Assert.Equal([(HttpMethod.Get, ServerCatalogApi.Games, (string?)"hr_session=secret")], fake.Seen.Select(s => (s.Method, s.Path, s.Cookie)));
         Assert.Equal([(4000000001L, "Test game", "HostOne", 2, 2, 4, false, 100, 2000), (4000000002L, "Locked game", "HostTwo", 4, 1, 8, true, 0, 99999), (4000000003L, "Wide game", "HostThree", 4, 1, 8, false, 0, 99999)],
             games.Select(g => (g.Id, g.Name, g.Host, g.Reserve, g.Players, g.Max, g.Password, g.MinScore, g.MaxScore)));
         Assert.Equal(["Come and hunt.", "", ""], games.Select(g => g.Description));
@@ -230,6 +230,15 @@ public class ServerServersServiceTests
         Assert.All(games, g => Assert.Equal("", g.Country));
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);
+    }
+
+    // signed out there are no games, and the server is not asked
+    [Fact]
+    public async Task SignedOutHasNoGamesAndAsksNothing()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Games));
+        Assert.Empty(await Make(fake, new Bridge(), session: null).ServersAsync());
+        Assert.Empty(fake.Seen);
     }
 
     [Fact]

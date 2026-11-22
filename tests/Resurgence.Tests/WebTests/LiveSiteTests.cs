@@ -82,7 +82,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string reply = """{"categories": [{"key": "0", "name": "Weapons", "children": [{"key": "0", "name": "Rifles"}, {"key": "1", "name": "Handguns"}]}], "items": [], "bundles": []}""";
         Services.AddSingleton<IStoreService>(new ServerStoreService(new HttpClient(new Answer(HttpStatusCode.OK, reply)) { BaseAddress = new Uri("http://server.test") },
-            new ServerCookie(), new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance));
+            new ServerCookie { Value = "abc" }, new ServerCache<ServerStore>(), new NoItems(), NullLogger<ServerStoreService>.Instance));  // the store is for signed-in players
 
         var cut = Render<Resurgence.Ui.Components.StoreFrame>(p => p.Add(f => f.Active, "0"));
 
@@ -457,7 +457,7 @@ public sealed class LiveSiteTests : UiContext
         Live(live);
         var cut = Render<Leaderboards>(p => p.Add(l => l.Path, "lanebandit"));
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("table.board")));
-        Assert.Equal(blocks, cut.FindAll("div.mine").Count);
+        Assert.Equal(blocks + 1, cut.FindAll("div.mine").Count);  // and the "Top 100" label
         Assert.Equal(blocks, cut.FindAll("p.norank").Count);
     }
 

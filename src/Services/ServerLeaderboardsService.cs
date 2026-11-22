@@ -34,15 +34,21 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
     public async Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)
     {
         if (kind == Hunterscore)
+        {
+            static Ranked Hunter(ServerHunter r) => new(r.Rank, r.Handle, r.Hunterscore, Avatar: Avatars.Slot(r.Avatar));
             return await GetAsync<ServerBoard>($"{ServerSessionApi.Hunters}?page={page}") is { Rows: not null } b
-                ? new Page<Ranked>([.. b.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Hunterscore, Avatar: Avatars.Slot(r.Avatar)))], b.Page, b.Pages, b.Total)
+                ? new Page<Ranked>([.. b.Rows.Select(Hunter)], b.Page, b.Pages, Around: [.. (b.Around ?? []).Select(Hunter)])
                 : new Page<Ranked>([], 1, 1);
+        }
         if (kind is "lanebandit" or "bustthrough")
+        {
+            static Ranked Game(ServerGameRow r) => new(r.Rank, r.Handle, r.Value, Avatar: Avatars.Slot(r.Avatar));
             return await GetAsync<ServerGameBoard>($"{ServerSessionApi.Leaderboards}/{kind}?page={page}") is { Rows: not null } g
-                ? new Page<Ranked>([.. g.Rows.Select(r => new Ranked(r.Rank, r.Handle, r.Value, Avatar: Avatars.Slot(r.Avatar)))], g.Page, g.Pages, g.Total)
+                ? new Page<Ranked>([.. g.Rows.Select(Game)], g.Page, g.Pages, Around: [.. (g.Around ?? []).Select(Game)])
                 : new Page<Ranked>([], 1, 1);
+        }
         if (Species(kind) && await GetAsync<ServerRowsPage>($"{ServerSessionApi.Leaderboards}/{kind}/{id}?season={season}&page={page}") is { Rows: not null } s)
-            return new Page<Ranked>([.. s.Rows.Select(Row)], s.Page, s.Pages, s.Total);
+            return new Page<Ranked>([.. s.Rows.Select(Row)], s.Page, s.Pages, Around: [.. (s.Around ?? []).Select(Row)]);
         return new Page<Ranked>([], 1, 1);
     }
 

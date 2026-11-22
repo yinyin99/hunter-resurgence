@@ -30,10 +30,11 @@ public class ServerLeaderboardsServiceTests
     [Fact]
     public async Task HunterscoreBoardIsTheServersPage()
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 3, "total": 61, "rows": [{"rank": 31, "handle": "Owl", "hunterscore": 2000, "avatar": "https://web.test/media/avatar/256/1000005.png"}, {"rank": 32, "handle": "Fox", "hunterscore": 1234, "avatar": null}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 4, "rows": [{"rank": 31, "handle": "Owl", "hunterscore": 2000, "avatar": "https://web.test/media/avatar/256/1000005.png"}, {"rank": 32, "handle": "Fox", "hunterscore": 1234, "avatar": null}], "around": [{"rank": 160, "handle": "Me", "hunterscore": 50}]}"""));
         var page = await Make(fake).RowsAsync("hunterscore", 0, 2, 0);
         Assert.Equal([new Ranked(31, "Owl", 2000, Avatar: "avatar-1000005"), new Ranked(32, "Fox", 1234)], page.Rows);
-        Assert.Equal((2, 3, 61), (page.Number, page.Pages, page.Total));
+        Assert.Equal((2, 4), (page.Number, page.Pages));
+        Assert.Equal([new Ranked(160, "Me", 50)], page.Around!);  // the player's own window past the top 100
         var request = Assert.Single(fake.Seen);
         Assert.Equal("/hunters?page=2", request.RequestUri!.PathAndQuery);
         Assert.Equal("site.test", request.Headers.Host);
@@ -56,7 +57,7 @@ public class ServerLeaderboardsServiceTests
     {
         var fake = new Fake(r => Json(HttpStatusCode.OK, r.RequestUri!.AbsolutePath.EndsWith("range", StringComparison.Ordinal)
             ? $$"""{"boards": [{"species": 5, "name": "Moose", "top": [{{Row}}]}]}"""
-            : $$"""{"page": 2, "pages": 4, "total": 100, "rows": [{{Row}}]}"""));
+            : $$"""{"page": 2, "pages": 4, "rows": [{{Row}}]}"""));
         var service = Make(fake);
         var expected = new Ranked(1, "Owl", 123.4567, 9, Weapon: "Test Bow", When: DateTimeOffset.FromUnixTimeSeconds(1760000000));
 
@@ -67,7 +68,8 @@ public class ServerLeaderboardsServiceTests
         Assert.Equal((5, "Moose"), (board.Id, board.Name));
         Assert.Equal([expected], board.Top);
         Assert.Equal([expected], page.Rows);
-        Assert.Equal((2, 4, 100), (page.Number, page.Pages, page.Total));
+        Assert.Equal((2, 4), (page.Number, page.Pages));
+        Assert.Empty(page.Around!);  // no window in the reply: none
         Assert.Equal(["/leaderboards/range?season=0", "/leaderboards/score/5?season=1&page=2"], fake.Seen.Select(r => r.RequestUri!.PathAndQuery));
     }
 
@@ -130,9 +132,10 @@ public class ServerLeaderboardsServiceTests
     [InlineData("bustthrough")]
     public async Task AMinigameBoardIsTheServersPage(string kind)
     {
-        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 3, "total": 61, "rows": [{"rank": 31, "handle": "Fox", "value": 4200}]}"""));
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"page": 2, "pages": 4, "rows": [{"rank": 31, "handle": "Fox", "value": 4200}], "around": [{"rank": 120, "handle": "Me", "value": 10}]}"""));
         var page = await Make(fake).RowsAsync(kind, 0, 2, 0);
-        Assert.Equal((2, 3, 61), (page.Number, page.Pages, page.Total));
+        Assert.Equal((2, 4), (page.Number, page.Pages));
+        Assert.Equal([new Ranked(120, "Me", 10)], page.Around!);
         Assert.Equal(new Ranked(31, "Fox", 4200), Assert.Single(page.Rows));
         Assert.Equal($"/leaderboards/{kind}?page=2", Assert.Single(fake.Seen).RequestUri!.PathAndQuery);
     }

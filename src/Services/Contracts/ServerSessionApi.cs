@@ -14,32 +14,33 @@ public static class ServerSessionApi
     public const string SignOut = "/auth/signout";
     /// <summary>Takes <c>?next=</c>, a local path to come back to.</summary>
     public const string SteamLogin = "/auth/steam/login";
-    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404.
+    /// Every <c>/hunters/</c> route needs the cookie: 401 <c>signed_out</c> without a session.</summary>
     public const string Hunters = "/hunters";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. With the cookie.</summary>
     public const string SkillsSuffix = "/skills";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. With the cookie.</summary>
     public const string DogsSuffix = "/dogs";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/achievements</c>: 200 <see cref="ServerAchievements"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/achievements</c>: 200 <see cref="ServerAchievements"/> or 404. With the cookie.</summary>
     public const string AchievementsSuffix = "/achievements";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. With the cookie.</summary>
     public const string TrophiesSuffix = "/trophies";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. With the cookie.</summary>
     public const string RanksSuffix = "/ranks";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. With the cookie.</summary>
     public const string FriendsSuffix = "/friends";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. With the cookie.</summary>
     public const string BestSuffix = "/best";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. With the cookie.</summary>
     public const string HuntsSuffix = "/hunts";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. With the cookie.</summary>
     public const string ScoreSuffix = "/score";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. With the cookie.</summary>
     public const string GallerySuffix = "/gallery";
-    /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.
-    /// Under it, the species boards by season (<c>season</c> missing: the current one; 0: all time; no cookie needed but for <c>/me</c>):
+    /// <summary>With the cookie (401 when signed out), every route: GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>.
+    /// Under it, the species boards by season (<c>season</c> missing: the current one; 0: all time):
     /// <c>/seasons</c> 200 <see cref="ServerSeasons"/>; <c>/&lt;score|range&gt;</c> 200 <see cref="ServerSpeciesBoards"/>; <c>/&lt;score|range&gt;/&lt;species&gt;?page=n</c> 200 <see cref="ServerRowsPage"/>;
-    /// <c>/&lt;score|range&gt;/&lt;species&gt;/me</c> (with the cookie) 200 <see cref="ServerRow"/> or 404 when not ranked; <c>/halloffame</c> 200 <see cref="ServerHall"/>, none for all time and the current season.</summary>
+    /// <c>/&lt;score|range&gt;/&lt;species&gt;/me</c> 200 <see cref="ServerRow"/> or 404 when not ranked; <c>/halloffame</c> 200 <see cref="ServerHall"/>, none for all time and the current season.</summary>
     public const string Leaderboards = "/leaderboards";
 }
 
@@ -53,14 +54,14 @@ public sealed record ServerHunter(int Rank, string Handle, int Hunterscore, stri
 /// <c>background</c> the file name of the header picture the player chose (null without one).</summary>
 public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, string? Membership, string? Avatar, string? Background = null);
 
-/// <summary>One page of the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
-public sealed record ServerBoard(int Page, int Pages, int Total, ServerHunter[] Rows);
+/// <summary>One page of the top 100 of the hunterscore board of <see cref="ServerSessionApi.Hunters"/>; <c>Around</c> the player's own place and the 50 above and below it that are past the top 100.</summary>
+public sealed record ServerBoard(int Page, int Pages, ServerHunter[] Rows, ServerHunter[]? Around = null);
 
 /// <summary>A hunter's best score on a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
 public sealed record ServerGameRow(int Rank, string Handle, long Value, string? Avatar = null);
 
-/// <summary>One page of a minigame board of <see cref="ServerSessionApi.Leaderboards"/>.</summary>
-public sealed record ServerGameBoard(int Page, int Pages, int Total, ServerGameRow[] Rows);
+/// <summary>One page of the top 100 of a minigame board of <see cref="ServerSessionApi.Leaderboards"/>; <c>Around</c> as on <see cref="ServerBoard"/>.</summary>
+public sealed record ServerGameBoard(int Page, int Pages, ServerGameRow[] Rows, ServerGameRow[]? Around = null);
 
 /// <summary>A season of <see cref="ServerSeasons"/>: its times are Unix seconds; <c>End</c> is null for the current season, and <c>Start</c> for a season the server gives no start.</summary>
 public sealed record ServerSeason(int No, long? Start, long? End);
@@ -77,8 +78,8 @@ public sealed record ServerSpeciesBoard(int Species, string Name, ServerRow[] To
 
 public sealed record ServerSpeciesBoards(ServerSpeciesBoard[] Boards);
 
-/// <summary>A page of the top 100 of a species.</summary>
-public sealed record ServerRowsPage(int Page, int Pages, int Total, ServerRow[] Rows);
+/// <summary>A page of the top 100 of a species; <c>Around</c> as on <see cref="ServerBoard"/>.</summary>
+public sealed record ServerRowsPage(int Page, int Pages, ServerRow[] Rows, ServerRow[]? Around = null);
 
 /// <summary>The best score and the best range of a species in an ended season.</summary>
 public sealed record ServerHallRow(int Id, string Species, ServerRow? Score, ServerRow? Range);

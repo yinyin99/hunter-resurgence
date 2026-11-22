@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: közösségi szerver ({game_full})</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Jelentkezz be az oldal megtekintéséhez</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>A játékosok adatai, a bolt, a küldetések és a versenyek csak a bejelentkezett vadászoknak érhetők el.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VADÁSSZ!</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} játékos</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} játékos</value></data>
@@ -556,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Legnagyobb távolságok, {0}. szezon</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Teljes ranglista megtekintése</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Helyezésed</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Legjobb 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>A helyezésed körül</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Jelenleg nincs helyezésed ebben a kategóriában</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Minden idők legjobb vadászpontja</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Helyezés</value></data>

@@ -197,7 +197,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     static (string, string) Ck(string name, string? value) => ("Cookie", $"{name}={value}");
 
-    Task<Reply> Get(string host, string path, params (string, string)[] headers) => server.SendAsync("GET", host, path, headers);
+    /// <summary>A GET; a read of players (<c>/hunters</c>, the score page) without a cookie goes as a signed-in visitor (<see cref="Visitor"/>): they are for signed-in players only.</summary>
+    Task<Reply> Get(string host, string path, params (string, string)[] headers) => server.SendAsync("GET", host, path,
+        (path.StartsWith("/hunters", StringComparison.Ordinal) || path.StartsWith("/user/", StringComparison.Ordinal)) && !headers.Any(h => h.Item1 == "Cookie") && Visitor() is { } v ? [.. headers, v] : headers);
+
+    /// <summary>The session cookie of the first account that is not banned; null without one.</summary>
+    (string, string)? Visitor()
+    {
+        using var con = state.Store.Open();
+        return con.Scalar("SELECT id FROM accounts WHERE banned = 0 ORDER BY id LIMIT 1") is long id ? Ck("hr_session", state.Store.CreateWebSession(id, TimeSpan.FromHours(1))) : null;
+    }
 
     Task<Reply> PostForm(string host, string path, string body, params (string, string)[] headers) =>
         server.SendAsync("POST", host, path, [.. Form, ("Origin", "https://" + host), .. headers], Encoding.UTF8.GetBytes(body));
@@ -207,6 +216,13 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     /// <summary>What the website's page of a step reads: the sign-in in progress in this browser.</summary>
     Task<Reply> Pending(string host, string login) => Xhr("GET", host, "/auth/pending", Ck("hr_login", login));
+
+    /// <summary>The refusal of a read for signed-in players to a request without a session.</summary>
+    static void SignedOut(Reply r)
+    {
+        Assert.Equal(401, r.Status);
+        Assert.Equal("signed_out", (string)JsonNode.Parse(r.Body)!["status"]!);
+    }
 
     /// <summary>A refused request of the player's browser is sent to the website's problem page, with the key of its reason.</summary>
     static void Problem(Reply r, string reason)
@@ -287,10 +303,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
                 con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE handle = ?", score, handle);
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         }
-        var board = JsonNode.Parse((await Get("web.test", "/hunters")).Body)!;
+        var third = Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1)));  // the board is for a signed-in player
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/hunters", [])).Status);
+        var board = JsonNode.Parse((await Get("web.test", "/hunters", third)).Body)!;
         // equal hunterscores: the lower account id first
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{DefaultSite}}"}]}""", board);
-        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{DefaultSite}}"}], "around": []}""", board);
+        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9", third)).Body)!["page"]);
         var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
         Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
         Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)two["avatar"]!);  // a new account's picture
@@ -636,7 +654,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal([null, PickedSite], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
         Assert.Equal([PickedSite], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
         Assert.Equal([null, PickedSite], Avatars((await Read("/hunters/one/friends", ck))!["rows"]));
-        Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters"))!["rows"]));  // by account id: Third, Fourth, one
+        Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters", ck))!["rows"]));  // by account id: Third, Fourth, one
         Assert.Equal([PickedSite, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
         Assert.Null((await Read("/hunters/fourth"))!["avatar"]);
     }
@@ -693,7 +711,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Empty(await Handles("/account/friends", "pending"));
         foreach (var handle in new[] { "banned", "nobody", "third" })
             Assert.Equal(403, (await Get("web.test", $"/hunters/{handle}/friends", ck)).Status);
-        Assert.Equal(403, (await Get("web.test", "/hunters/one/friends")).Status);  // signed out
+        Assert.Equal(403, (await Get("web.test", "/hunters/one/friends")).Status);  // another signed-in player (Get's visitor)
     }
 
     [Fact]
@@ -809,11 +827,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             RestoredReads.Connect(con, reply, new JsonObject(), null);
         Eq("[70, 0]", T(reply["user_stats"]!["bust_through_score"], reply["user_stats"]!["lane_bandit_score"]));
         // equal scores: the lower account id first (fourth restored 300, fifth played 300); a 0, no score and a banned account are not on it
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{DefaultSite}}"}]}""",
-            JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
-        Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{DefaultSite}}"}]}""",
-            JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
-        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers")).Status);
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{DefaultSite}}"}], "around": []}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Body));
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{DefaultSite}}"}], "around": []}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Body));
+        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Status);
     }
 
     [Fact]
@@ -937,6 +955,19 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var page = await Get("web.test", "/user/Hunter_One/score/?id=1");
         Assert.Equal(200, page.Status);
         Assert.Contains("text/html", page.Headers.Single(h => h.Name == "Content-Type").Value);
+        // signed out the score sheet is refused; the game's token and the player's cookie read it (docs/server.md#public-reads)
+        SignedOut(await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", []));
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", [("X-Hun-Session", session)])).Status);
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1&oauth_access_token=" + session, [])).Status);
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", [Ck("hr_session", cookie)])).Status);
+        foreach (var path in new[] { "/hunters/Hunter_One", "/hunters/Hunter_One/statistics", "/hunters/Hunter_One/skills", "/hunters/Hunter_One/trophies", "/hunters/Hunter_One/dogs",
+                                     "/hunters/Hunter_One/ranks", "/hunters/Hunter_One/achievements", "/hunters/Hunter_One/best", "/hunters/Hunter_One/hunts", "/hunters/Hunter_One/hunts/latest",
+                                     "/hunters/Hunter_One/score/1", "/hunters/nobody" })
+        {
+            SignedOut(await server.SendAsync("GET", "web.test", path, []));
+            SignedOut(await server.SendAsync("GET", "web.test", path, [Ck("hr_session", "0000")]));  // a cookie the server does not know
+            Assert.Equal(path.EndsWith("nobody") ? 404 : 200, (await server.SendAsync("GET", "web.test", path, [Ck("hr_session", cookie)])).Status);
+        }
         var hunter = JsonNode.Parse((await Get("web.test", "/hunters/Hunter_One")).Body)!;
         var me = (await Me(cookie, "signup.test"))!;
         var earned = (long)hunter["hunterscore"]!;

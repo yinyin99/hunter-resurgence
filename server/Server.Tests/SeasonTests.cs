@@ -50,9 +50,22 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         con.Exec("INSERT INTO harvests (account_id, kill_id, body, hidden) VALUES ($a, ?, ?, ?)", kill, $$"""{"score": {{score}}, "species": {{species}}, "timestamp": "{{Iso(ts)}}"}""", hidden ? 1 : 0);
     }
 
-    async Task<Reply> Get(string path, params (string, string)[] headers) => await server.SendAsync("GET", "web.test", path, headers);
+    /// <summary>A GET on the website's host; without a cookie it goes as a signed-in visitor, the first account: the boards and the profiles are for signed-in players only.</summary>
+    async Task<Reply> Get(string path, params (string, string)[] headers) => await server.SendAsync("GET", "web.test", path,
+        !headers.Any(h => h.Item1 == "Cookie") ? [.. headers, Visitor()] : headers);
 
-    async Task<JsonNode> Json(string path) => JsonNode.Parse((await Get(path)).Body)!;
+    (string, string) Visitor()
+    {
+        using var con = state.Store.Open();
+        return ("Cookie", "hr_session=" + state.Store.CreateWebSession((long)con.Scalar("SELECT id FROM accounts WHERE banned = 0 ORDER BY id LIMIT 1")!, TimeSpan.FromHours(1)));
+    }
+
+    /// <summary>A GET without a session.</summary>
+    async Task<Reply> Anon(string path) => await server.SendAsync("GET", "web.test", path, []);
+
+    (string, string) Session(long id) => ("Cookie", "hr_session=" + state.Store.CreateWebSession(id, TimeSpan.FromHours(1)));
+
+    async Task<JsonNode> Json(string path, params (string, string)[] headers) => JsonNode.Parse((await Get(path, headers)).Body)!;
 
     /// <summary>The handles of a species' board in rank order, "handle:value".</summary>
     async Task<string> Board(string kind, long species, long? season = null) =>
@@ -176,15 +189,16 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
             Harvest(100 + i, 1, Deer, i.ToString(), Second + i);
         }
         var page2 = await Json($"/leaderboards/score/{Deer}?page=2");
-        Eq("[2, 2, 27]", T(page2["page"], page2["pages"], page2["total"]));
+        Eq("[2, 2]", T(page2["page"], page2["pages"]));
+        Assert.False(page2.AsObject().ContainsKey("total"));  // no count of the players
         Eq("""["p2", "p1"]""", new JsonArray([.. page2["rows"]!.AsArray().Select(r => (JsonNode?)r!["handle"]!.DeepClone())]));
         Assert.Equal(26, (long)page2["rows"]![0]!["rank"]!);
-        Eq("[1, 1, 0]", T((await Json($"/leaderboards/score/{Rabbit}"))["page"], (await Json($"/leaderboards/score/{Rabbit}"))["pages"], (await Json($"/leaderboards/score/{Rabbit}"))["total"]));
+        Eq("[1, 1]", T((await Json($"/leaderboards/score/{Rabbit}"))["page"], (await Json($"/leaderboards/score/{Rabbit}"))["pages"]));
         var cookie = ("Cookie", "hr_session=" + state.Store.CreateWebSession(103, TimeSpan.FromHours(1)));
         var me = JsonNode.Parse((await Get($"/leaderboards/score/{Deer}/me", cookie)).Body)!;
         Eq("""[25, "p3", 3.0]""", T(me["rank"], me["handle"], me["value"]));
         Assert.Equal(404, (await Get($"/leaderboards/score/{Rabbit}/me", cookie)).Status);  // not ranked
-        Assert.Equal(401, (await Get($"/leaderboards/score/{Deer}/me")).Status);
+        Assert.Equal(401, (await Anon($"/leaderboards/score/{Deer}/me")).Status);
         // beyond the 100: the place is still told (only 27 here, so the board's last)
         var last = ("Cookie", "hr_session=" + state.Store.CreateWebSession(101, TimeSpan.FromHours(1)));
         Assert.Equal(27, (long)JsonNode.Parse((await Get($"/leaderboards/score/{Deer}/me", last)).Body)!["rank"]!);
@@ -217,7 +231,16 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq($$"""{"current": 3, "seasons": [{"no": 1, "start": 0, "end": {{Second - 1}}}, {"no": 2, "start": {{Second}}, "end": {{Second + 999}}}, {"no": 3, "start": {{Second + 1000}}, "end": null}]}""", seasons);
     }
 
-    async Task<JsonNode> Call(string path, string body) => JsonNode.Parse((await server.SendAsync("POST", "api.test", path, [("Content-Type", "application/x-www-form-urlencoded")], System.Text.Encoding.ASCII.GetBytes(body))).Body)!;
+    Task<Reply> Post(string path, string body) => server.SendAsync("POST", "api.test", path, [("Content-Type", "application/x-www-form-urlencoded")], System.Text.Encoding.ASCII.GetBytes(body));
+
+    /// <summary>A call of the original's pages with the token of the first account: the boards need a player's.</summary>
+    async Task<JsonNode> Call(string path, string body)
+    {
+        long first;
+        using (var con = state.Store.Open())
+            first = (long)con.Scalar("SELECT id FROM accounts WHERE banned = 0 ORDER BY id LIMIT 1")!;
+        return JsonNode.Parse((await Post(path, (body == "" ? "" : body + "&") + "oauth_access_token=" + state.Store.CreateToken(first))).Body)!;
+    }
 
     [Fact]
     public async Task TestTheCallsOfTheOriginalsPagesAnswerFromTheSameBoards()
@@ -243,6 +266,9 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("""[1, 1, 1, 70.0, 100.0]""", T(mine[0]!["species_id"], mine[0]!["score"]!["total"], mine[0]!["score"]!["rank"], mine[0]!["score"]!["score"], mine[0]!["distance_min"]!["score"]));
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=25"));  // banned
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=999"));
+        // without a player's token: the expired-token reply, no board
+        foreach (var (path, body) in new[] { (Replay.LEADERBOARDS_ALL, "type=1"), (Replay.LEADERBOARD_DETAILS, "type=1&species=1"), (Replay.HALL_OF_FAME, ""), (Replay.CURRENT_PERSONAL, "user_id=22") })
+            Eq("""{"errorCode": 5, "message": "token expired"}""", JsonNode.Parse((await Post(path, body)).Body));
         Assert.NotNull(state.StartSeason(Second + 1000));
         Eq("""{"season": 3, "items": []}""", await Call(Replay.APPLICATION, ""));
     }
@@ -276,7 +302,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         var now = Py.Now();
         state.Clock = () => now;
         var first = await Get($"/leaderboards/score/{Deer}");
-        Assert.Equal("public, max-age=60", first.Headers.Single(h => h.Name == "Cache-Control").Value);
+        Assert.Equal("no-store", first.Headers.Single(h => h.Name == "Cache-Control").Value);  // a board is for one signed-in player
         Assert.Equal("charlie:70", await Board("score", Deer));
         state.CreateAccount(30, "hotel");
         Harvest(30, 1, Deer, "90", Second + 10, cm: 1000);
@@ -330,7 +356,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, state.HideTrophy(30, 1, """{"hidden": true}"""u8.ToArray()));
         Assert.Equal("charlie:70", await Board("score", Deer, 2));
         var hall = await Get("/leaderboards/halloffame?season=2");
-        Assert.Equal(["public, max-age=60", "Accept"], new[] { "Cache-Control", "Vary" }.Select(n => hall.Headers.Single(h => h.Name == n).Value));
+        Assert.Equal("no-store", hall.Headers.Single(h => h.Name == "Cache-Control").Value);
         var boards = await Task.WhenAll(Enumerable.Range(0, 8).Select(_ => Task.Run(() => state.Boards(true, 0))));
         Assert.All(boards, b => Assert.Same(boards[0], b));
     }
@@ -342,6 +368,89 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Null(state.StartSeason(Second - 5));
         Assert.Equal(new Store.Season(3, Second + 1, null), state.StartSeason(Second + 1));
         Assert.Equal(Second, state.Store.Seasons()[1].End);  // closed one second before the next starts
+    }
+
+    static long[] Ranks(JsonNode? rows) => [.. rows!.AsArray().Select(r => (long)r!["rank"]!)];
+
+    static long[] Places(int from, int count) => [.. Enumerable.Range(from, count).Select(n => (long)n)];
+
+    [Fact]
+    public async Task TestABoardIsItsTop100AndThePlayersOwnPlaceWith50AboveAndBelow()
+    {
+        for (var i = 1; i <= 170; i++)  // p<i> scores i: its place is 171 - i
+        {
+            state.CreateAccount(1000 + i, "p" + i);
+            Harvest(1000 + i, 1, Deer, i.ToString(), Second + i);
+        }
+        var low = Session(1011);  // p11: place 160
+        // signed out: no board, no seasons
+        var anon = await Anon($"/leaderboards/score/{Deer}");
+        Eq("[401, \"signed_out\"]", T(anon.Status, JsonNode.Parse(anon.Body)!["status"]));
+        foreach (var path in new[] { "/leaderboards/seasons", "/leaderboards/score", "/leaderboards/halloffame?season=1", "/leaderboards/lanebandit", "/hunters" })
+            Assert.Equal(401, (await Anon(path)).Status);
+        // the top 100 in 4 pages and no count; a page past them is the last one
+        List<long> top = [];
+        for (var p = 1; p <= 4; p++)
+            top.AddRange(Ranks((await Json($"/leaderboards/score/{Deer}?page={p}", low))["rows"]));
+        Assert.Equal(Places(1, 100), top);
+        var past = await Json($"/leaderboards/score/{Deer}?page=9", low);
+        Eq("[4, 4]", T(past["page"], past["pages"]));
+        Assert.False(past.AsObject().ContainsKey("total"));
+        // the window: places 110 to 170 (the board's end), the player's own at 160; places 101 to 109 are not his to see
+        Assert.Equal(Places(110, 61), Ranks(past["around"]));
+        Eq("""["p11", 160]""", T(past["around"]![50]!["handle"], past["around"]![50]!["rank"]));
+        Eq("[]", (await Json($"/leaderboards/score/{Deer}", Session(1150)))["around"]);  // place 21: the top holds the window
+        Assert.Equal(Places(101, 70), Ranks((await Json($"/leaderboards/score/{Deer}", Session(1051)))["around"]));  // place 120
+        // the game's page: the top 100, then the window; without a token nothing
+        var details = await Post(Replay.LEADERBOARD_DETAILS, "type=1&species=1&oauth_access_token=" + state.Store.CreateToken(1011));
+        Assert.Equal([.. Places(1, 100), .. Places(110, 61)], Ranks(JsonNode.Parse(details.Body)!["records"]));
+        Assert.DoesNotContain("p11", System.Text.Encoding.UTF8.GetString((await Post(Replay.LEADERBOARD_DETAILS, "type=1&species=1")).Body));
+    }
+
+    [Fact]
+    public async Task TestHunterscoreBoardAndCanSeeGiveTop100OwnWindowAndFriendsOnly()
+    {
+        for (var i = 1; i <= 200; i++)  // all at hunterscore 0: the board is in account id order, h<i> at place i
+            state.CreateAccount(1000 + i, "h" + i);
+        var board = await Json("/hunters?page=9", Session(1160));
+        Eq("[4, 4]", T(board["page"], board["pages"]));
+        Assert.Equal(Places(91, 10), Ranks(board["rows"]));
+        Assert.Equal(Places(110, 91), Ranks(board["around"]));  // 160 - 50 to the board's end
+        Assert.False(board.AsObject().ContainsKey("total"));
+        Assert.True(state.CanSee(1160, 1160));
+        Assert.True(state.CanSee(1160, 1100));  // the top 100
+        Assert.True(state.CanSee(1160, 1110));  // his window
+        Assert.True(state.CanSee(1160, 1200));
+        Assert.False(state.CanSee(1160, 1105));  // place 105: past the top, 55 above him
+        Assert.False(state.CanSee(1001, 1105));
+        state.Store.AddFriend(1160, 1105);
+        state.Store.AddFriend(1105, 1160);
+        Assert.True(state.CanSee(1160, 1105));  // a friend
+        Assert.False(state.CanSee(1001, 1105));
+        // the game's places of a player: for one the caller sees only
+        Harvest(1150, 1, Deer, "5", Second + 1);
+        Assert.Equal("[]", System.Text.Encoding.UTF8.GetString((await Post(Replay.CURRENT_PERSONAL, "user_id=1105&oauth_access_token=" + state.Store.CreateToken(1001))).Body));
+        Assert.Contains("\"species_id\": 1", System.Text.Encoding.UTF8.GetString((await Post(Replay.CURRENT_PERSONAL, "user_id=1150&oauth_access_token=" + state.Store.CreateToken(1001))).Body));
+        Assert.False(state.CanSee(1160, 99999));  // no such account
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 1002");
+        Assert.False(state.CanSee(1160, 1002));  // banned: on no board, though place 2 before
+    }
+
+    [Fact]
+    public async Task TestAMinigameBoardIsItsTop100AndThePlayersWindow()
+    {
+        for (var i = 1; i <= 120; i++)  // g<i> scores i at Lane Bandit: its place is 121 - i
+        {
+            state.CreateAccount(1000 + i, "g" + i);
+            using var con = state.Store.Open(1000 + i);
+            PlayerRows.SetStatistics(con, new JsonObject(), 0, 0, null, i);
+        }
+        var board = await Json("/leaderboards/lanebandit?page=9", Session(1005));  // place 116
+        Eq("[4, 4]", T(board["page"], board["pages"]));
+        Assert.Equal(Places(91, 10), Ranks(board["rows"]));
+        Assert.Equal(Places(101, 20), Ranks(board["around"]));  // 66 to 166: past the top, to the board's end
+        Eq("[]", (await Json("/leaderboards/lanebandit", Session(1120)))["around"]);  // place 1
     }
 
     [Fact]

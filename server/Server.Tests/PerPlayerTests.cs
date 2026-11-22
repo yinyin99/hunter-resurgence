@@ -53,8 +53,10 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         await local.DisposeAsync();
     }
 
+    /// <summary>A request with the token (none: no token); the website's reads go as a signed-in visitor, ME: the reads of players are for signed-in players only.</summary>
     Task<Reply> Send(Loopback server, string method, string host, string path, string? token, string body = "") => server.SendAsync(method, host, path,
-        [.. FormHeader, .. token is null ? [] : new[] { ("X-Hun-Session", token), ("Authorization", "Bearer " + token) }],
+        [.. FormHeader, .. token is null ? [] : new[] { ("X-Hun-Session", token), ("Authorization", "Bearer " + token) },
+         .. host == "web.test" ? new[] { ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}") } : []],
         Encoding.ASCII.GetBytes(body + (token is null ? "" : "&oauth_access_token=" + token)));
 
     Task<JsonNode> Api(string path, string? token, string body = "") => Send(community, "POST", "api.test", path, token, body).ContinueWith(t => JsonNode.Parse(t.Result.Body)!);
