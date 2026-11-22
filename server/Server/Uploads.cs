@@ -605,14 +605,14 @@ public sealed class Uploads(State state, string dataDir)
         catch (Exception e) when (e is IOException or InvalidDataException) { return "other"; }
     }
 
-    /// <summary>Delete the account and everything of it: its rows, tokens and sessions (the foreign keys), the kept zips and the photos (with their display-size copies).</summary>
+    /// <summary>Delete the account and everything of it: its rows, tokens and sessions (the foreign keys), the kept zips and the photos.</summary>
     public void Delete(long account)
     {
         lock (decide)
         {
             Store.DeleteAccount(account);
             state.DropBoards();
-            foreach (var dir in new[] { "restores", "photos", Path.Combine("photos", "display"), "refused", "reports" })
+            foreach (var dir in new[] { "restores", "photos", "refused", "reports" })
             {
                 var path = Path.Combine(dataDir, dir, account.ToString());
                 if (Directory.Exists(path)) Directory.Delete(path, recursive: true);

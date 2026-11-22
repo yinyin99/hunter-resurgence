@@ -766,14 +766,6 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         File.WriteAllText(Path.Combine(first, "9-2.jpg"), "mine");  // a photo taken here
         using (var con = state.Store.Open(1001))
             con.Exec("INSERT INTO photos (account_id, photo_type, file) VALUES ($a, 2, '9-2.jpg')");
-        string Copies(long account) => Path.Combine(tmp, "photos", "display", account.ToString());
-        void Copy(long account)  // a display-size copy the website made for another player
-        {
-            Directory.CreateDirectory(Copies(account));
-            File.WriteAllText(Path.Combine(Copies(account), "9-2.jpg"), "copy");
-        }
-        Copy(1001);
-        Copy(1002);
         Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(uid: "1002").Pictures(), "b.zip", 1001, cookie)).Kind);
         var moved = Path.Combine(tmp, "photos", "1002");
         Assert.False(Directory.Exists(first));
@@ -782,13 +774,9 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, (long)state.Store.Open(1002).Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '9-2.jpg'")!);
         Assert.NotNull(state.PhotoFile("/photos/1002/9-2.jpg"));
         Assert.Null(state.PhotoFile("/photos/1001/9-2.jpg"));
-        Assert.False(Directory.Exists(Copies(1001)));  // the restore moved and replaced the pictures: no copy of the old ones stays
-        Assert.False(Directory.Exists(Copies(1002)));
-        Copy(1002);
         Operator.Delete(1002);
         Assert.False(Directory.Exists(moved));
         Assert.False(Directory.Exists(first));
-        Assert.False(Directory.Exists(Copies(1002)));  // nor after the account is deleted
     }
 
     [Fact]

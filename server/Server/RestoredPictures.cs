@@ -194,7 +194,6 @@ public sealed partial class State
             foreach (var f in Directory.EnumerateFiles(dir).Where(f => StoredFolders.Any(s => Path.GetFileName(f).StartsWith(s + "_", StringComparison.Ordinal))))
                 File.Delete(f);
             File.Delete(Path.Combine(dir, ImportedAvatar));
-            DropDisplayCopies(account);
         }
         if (u.Files.Count == 0)
             return;
@@ -210,12 +209,10 @@ public sealed partial class State
         }
     }
 
-    /// <summary>A restore that adopted another user id: move the files of `photos/<from>/` into `photos/<to>/`, replacing a file of the same name there, and remove the old folder and the display-size copies of both.
+    /// <summary>A restore that adopted another user id: move the files of `photos/<from>/` into `photos/<to>/`, replacing a file of the same name there, and remove the old folder.
     /// The rows hold file names only, so the links (built from the account id) follow.</summary>
     public void MovePhotos(long from, long to)
     {
-        DropDisplayCopies(from);
-        DropDisplayCopies(to);
         var old = AccountPhotos(from);
         if (!Directory.Exists(old)) return;
         var dir = AccountPhotos(to);

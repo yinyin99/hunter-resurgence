@@ -23,11 +23,6 @@ updates:
     groups:
       dotnet:
         patterns: ["Microsoft.*", "System.*"]
-      skiasharp: # the managed package and its native Linux assets must stay on the same version
-        patterns: ["SkiaSharp*"]
-    ignore:
-      - dependency-name: "SkiaSharp*"
-        update-types: ["version-update:semver-major"] # 4.157.0 crashes decoding a JPEG on Windows (#799); stay on 3.x until #801
   - package-ecosystem: github-actions
     directories: ["/", "/.github/actions/*"] # "/" covers the workflows; the composite actions (setup-sdk uses setup-dotnet) are looked up per folder
     schedule:
