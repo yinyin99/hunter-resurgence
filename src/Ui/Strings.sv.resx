@@ -1597,8 +1597,12 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Exit.BlockedHow" xml:space="preserve"><value>Tillåt det i Windows-säkerhet (Smart App Control eller ditt säkerhetsprogram).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>En Windows-komponent som spelet behöver saknas.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>Installera spelets komponenter</value></data>
-  <data name="Exit.Closed" xml:space="preserve"><value>Spelet stängdes av sig självt.</value></data>
-  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Kontrollera datorns klocka och din anslutning.</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Spelet stängdes av sig självt innan jakten började.</value></data>
+  <data name="Exit.ClosedReport" xml:space="preserve"><value>Skicka en problemrapport så att vi kan titta på det.</value></data>
+  <data name="Exit.ClockAhead" xml:space="preserve"><value>Datorns klocka går {0} före: ställ in den på automatisk uppdatering.</value></data>
+  <data name="Exit.ClockBehind" xml:space="preserve"><value>Datorns klocka går {0} efter: ställ in den på automatisk uppdatering.</value></data>
+  <data name="Exit.Dll" xml:space="preserve"><value>En spelfil har ersatts (ofta steam_api.dll eller en mods DLL). Verifiera spelets filer i Steam.</value></data>
+  <data name="Exit.Verify" xml:space="preserve"><value>Verifiera spelets filer i Steam</value></data>
   <data name="Exit.Crash" xml:space="preserve"><value>Spelet stoppades.</value></data>
   <data name="Exit.Report" xml:space="preserve"><value>Skicka en problemrapport</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Öppna Windows-säkerhet</value></data>
