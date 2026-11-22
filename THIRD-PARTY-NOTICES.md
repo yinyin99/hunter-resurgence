@@ -28,7 +28,6 @@ Bundled with the server (`server/Server`; NuGet packages, direct and transitive;
 | `Microsoft.AspNetCore.OpenApi`, `Microsoft.Data.Sqlite` (with `.Core`), `Microsoft.OpenApi` | 10.0.12, 10.0.12, 2.12.0 | MIT |
 | `Swashbuckle.AspNetCore.SwaggerUI` (embeds the Swagger UI files that the server's admin pages serve) | 10.3.0 | MIT; Swagger UI: Apache-2.0 |
 | `SQLitePCLRaw.bundle_e_sqlite3` (with `.core`, `.provider.e_sqlite3`, `.lib.e_sqlite3`; the native SQLite library) | 2.1.12 | Apache-2.0, copyright 2014-2024 SourceGear, LLC; SQLite itself is in the public domain |
-| `SkiaSharp` and `SkiaSharp.NativeAssets.Linux.NoDependencies` (the display-size copies of the gallery pictures) | 3.119.1 | MIT, copyright Microsoft Corporation and Xamarin, Inc.; Skia itself: BSD 3-clause, copyright Google Inc. |
 
 The punch-through server's image (`server/natpt`) is built from RakNet (commit `44ec8ec` of the public repository, one line of its message numbers changed at build time), copyright Oculus VR, LLC and its contributors, under the BSD 2-clause licence; RakNet's source is cloned during the build and is not in this repository.
 

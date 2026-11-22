@@ -411,7 +411,7 @@ public class RestoreTests : StateTestBase
         Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
         Assert.Equal(TestZip.Jpeg("a"), File.ReadAllBytes(state.PhotoFile(Link(gallery[1]!["url"]))!));
         Assert.Equal(gallery[0]!["url"]!.ToString(), gallery[0]!["thumbnail"]!.ToString());  // the tool saved no thumbnail
-        Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]![0]!["url"]))!));
+        Assert.Matches(@"^/photos/1001/display-[0-9a-f]{32}\.jpg$", Link(state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]![0]!["url"]));  // the website's link: an opaque name
         using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(1001)));
         Assert.Equal(2, zip.Entries.Count);
         var rows = state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]!.AsArray();  // the website's rows: the species and score of the real entry's object `animal`, and the kill whose score page the zip saved
@@ -495,10 +495,11 @@ public class RestoreTests : StateTestBase
         var kills = JsonNode.Parse(state.ExpeditionReply(1001, "null"u8.ToArray(), "expedition_id=9100"u8.ToArray()))!["kills"]!.AsArray();
         Assert.Equal(TestZip.Jpeg("new"), File.ReadAllBytes(state.PhotoFile(Link(kills[0]!["kill"]!["photo"]))!));  // the newest picture of kill 777
         Assert.Null(kills[1]!["kill"]!["photo"]);
-        var hunt = state.PublicHunt(1001, 9100, own: true)!["kills"]!.AsArray();
-        Assert.Equal(Link(kills[0]!["kill"]!["photo"]), Link(hunt[0]!["photo"]));
+        var hunt = state.PublicHunt(1001, 9100, own: true, viewer: 1001, site: "https://web.test")!["kills"]!.AsArray();
+        // the website's keyed link of the same picture, by an opaque name
+        Assert.StartsWith("https://web.test/photos/1001/display-", (string)hunt[0]!["photo"]!);
         Assert.Null(hunt[1]!["photo"]);
-        Assert.Null(state.PublicHunt(1001, 9100)!["kills"]![0]!["photo"]);  // anyone else's page: no link of the original
+        Assert.Null(state.PublicHunt(1001, 9100)!["kills"]![0]!["photo"]);  // no viewer: no link
     }
 
     [Fact]

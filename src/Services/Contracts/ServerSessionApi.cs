@@ -141,7 +141,7 @@ public sealed record ServerBestRow(string Species, double Score, double Range, s
 public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPhoto[] Rows);
 
 /// <param name="Kill">The kill the photo shows when <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c> answers; null otherwise.</param>
-/// <param name="Share">On the player's own rows: the bare link of the display-size copy, for the Share window; null otherwise.</param>
+/// <param name="Share">On the player's own rows: the bare link of the picture, for the Share window; null otherwise.</param>
 public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail, long? Kill = null, string? Share = null);
 
 /// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open; <c>Avatar</c> the URL of their picture (null for none).</summary>

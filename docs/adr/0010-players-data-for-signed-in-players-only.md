@@ -14,7 +14,7 @@ No one, signed in or not, can list all the players of the server:
 - A player sees his own friends only; the friend search needs 3 characters and gives a few handles, a limited number of times an hour.
 - A read that takes a user id answers for the caller, his friends and the players he can already see; walking user ids finds nothing.
 - Reads of profiles, hunts, searches and pictures are rate limited per account, and an account that keeps hitting the limit raises an alert.
-- Another player's gallery pictures are served at display size; only the owner gets the originals and the gallery zip.
+- A signed-in player sees every gallery and every picture at full size, and a kill's photo on every hunt page; only the owner gets the gallery zip and the Share button.
 - Search engines get only the public pages: the sitemap lists them, every other page is `noindex`.
 
 ## Considered options

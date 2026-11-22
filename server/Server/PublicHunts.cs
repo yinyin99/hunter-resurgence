@@ -76,8 +76,8 @@ public sealed partial class State
     /// (the connect definitions' texts): for a hunt made here those whose earn time is its close, so never one a restore or a server start earned; for a restored hunt those its backup lists as earned between its start and its end. `kills` are
     /// `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` of the last hit; `sheet` says the kill has a score sheet (`/score/&lt;id&gt;`): a kill made here, or a restored one whose backup saved its page. For the player's own page
     /// (<paramref name="own"/>) a kill made here also has `taxidermy: {end, ems, gms, skull, done}` (<see cref="TaxidermyOffers"/>); a restored kill and anyone else's page have none. `photo` is the kill's trophy shot (the game's link of
-    /// the original) on the player's own page only, null on anyone else's. Null for an unknown hunt.</summary>
-    public JsonObject? PublicHunt(long account, long? id, bool own = false)
+    /// the original) as the keyed website link of <paramref name="viewer"/> (<see cref="ViewLink"/>) on any page. Null for an unknown hunt.</summary>
+    public JsonObject? PublicHunt(long account, long? id, bool own = false, long viewer = 0, string site = "")
     {
         if (JsonNode.Parse(ExpeditionReply(account, "null"u8.ToArray(), id is { } i ? Encoding.UTF8.GetBytes($"expedition_id={i}") : null)) is not JsonObject reply || reply["expedition"] is not JsonObject e)
             return null;
@@ -130,7 +130,7 @@ public sealed partial class State
             var kill = new JsonObject
             {
                 ["id"] = killId, ["species"] = Py.IsStr(k["speciesName"]) ? Py.Str(k["speciesName"]) : "#" + Py.Str(k["species"]), ["weapon"] = ItemOf(hit, "weapon_id"), ["ammo"] = ItemOf(hit, "ammo_id"),
-                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null, ["photo"] = own ? C(info?["photo"]) : null,
+                ["distanceM"] = Real(hit?["distance"]) / 1000, ["score"] = Real(info?["score"]), ["weightKg"] = Real(k["weight"]) / 1000, ["when"] = Integer(info?["confirmTs"]), ["sheet"] = sheets.Contains(killId) || SavedPage(account, killId) is not null, ["photo"] = Py.IsStr(info?["photo"]) && viewer != 0 ? ViewLink(viewer, account, Path.GetFileName((string)info!["photo"]!), site) : null,
             };
             if (offers.TryGetValue(killId, out var offer))
                 kill["taxidermy"] = offer;

@@ -1,14 +1,13 @@
 // The account's gallery: the photos the game uploaded (Heartbeat event 4, UploadReply), listed by Gallery/list and the website's gallery tab,
 // deleted by their owner, and the picture a kill links. Only a camera photo and a trophy shot (GalleryTypes), and a picture a restore unpacked (a saved gallery entry,
 // whatever its saved type), are gallery pictures; the game's other photos (its automatic screenshots, the avatar picture) are stored and never listed or linked, and every file name carries a token nobody can guess.
-// On the website's host a picture is served to a signed-in player only (<see cref="WebPhoto"/>): its owner gets the original, anyone else a display-size copy.
+// On the website's host a picture is served to a signed-in player only (<see cref="WebPhoto"/>): the original, whoever owns it.
 using System.Globalization;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using SkiaSharp;
 
 namespace Resurgence.Server;
 
@@ -102,7 +101,7 @@ public sealed partial class State
     }
 
     /// <summary>What a profile page's gallery tab shows of an account to `viewer`: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill, share}]}`; `url` and `thumbnail` are both
-    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original for its owner, the display-size copy for anyone else. `share` (the owner's rows only) is the bare link of the display-size copy: it shows to a signed-in player, never the original.</summary>
+    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original under its opaque name. `share` (the owner's rows only) is its bare link: it shows to a signed-in player.</summary>
     public JsonObject PublicGallery(long account, int page, string site, long viewer)
     {
         var all = GalleryRows(account, site, kills: true);
@@ -132,7 +131,6 @@ public sealed partial class State
             foreach (var name in new[] { file, ThumbName(file) })
             {
                 File.Delete(Path.Combine(AccountPhotos(account), name));
-                if (File.Exists(DisplayPath(account, name))) File.Delete(DisplayPath(account, name));  // its folder may not exist: no copy was ever made
             }
         return found;
     }
@@ -151,22 +149,17 @@ public sealed partial class State
         return ms.ToArray();
     }
 
-    /// <summary>The longest side of the copy of a picture another player is served: the lightbox's size.</summary>
-    public const int DisplaySize = 1280;
-    const long MaxPixels = 50_000_000;  // a picture larger than this is never decoded
-    const int MaxSide = 12_000;  // nor one longer than this
-
-    /// <summary>The website's name of the display-size copy of a picture: `display-&lt;32 hex digits&gt;.jpg`, an HMAC-SHA256 of the picture keyed with the server's secret, so a display link never tells the original's name
-    /// (the game's host serves the original by its name, without a session).</summary>
+    /// <summary>The website's name of a picture: `display-&lt;32 hex digits&gt;.jpg`, an HMAC-SHA256 of the picture keyed with the server's secret, so a link given to a player never tells the original's name
+    /// (the game's host serves the original by its name, without a session or a read limit).</summary>
     string DisplayName(long account, string file) =>
         "display-" + Convert.ToHexStringLower(HMACSHA256.HashData(Store.JwtKey, Encoding.UTF8.GetBytes($"photo-display:{account}/{file}")))[..32] + ".jpg";
 
-    /// <summary>The website's link of a picture for `viewer`: the original for its owner, else the display-size copy (<see cref="DisplayName"/>). Its key (<see cref="ViewKey"/>) names the viewer and holds until the end of
+    /// <summary>The website's link of a picture for `viewer`: the original under its opaque name (<see cref="DisplayName"/>). Its key (<see cref="ViewKey"/>) names the viewer and holds until the end of
     /// tomorrow (UTC), so the launcher's pages, which send no cookie, load it, and a bare link answers 401.</summary>
     string ViewLink(long viewer, long account, string file, string site)
     {
         var until = ((long)Clock() / 86400 + 2) * 86400;
-        var name = viewer == account ? file : DisplayName(account, file);
+        var name = DisplayName(account, file);
         return PhotoUrl(account, name, site) + $"?viewer={viewer}&until={until}&key={ViewKey(viewer, $"{account}/{name}", until)}";
     }
 
@@ -180,8 +173,7 @@ public sealed partial class State
         && key is { Length: 32 } && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(ViewKey(v, name, u)), Encoding.ASCII.GetBytes(key))
             ? v : null;
 
-    /// <summary>GET of the website's `/photos/&lt;account&gt;/&lt;name&gt;` by `viewer` (the session's account, else the one the link names): the status and the file to send. 401 without a viewer. A stored file (the original)
-    /// goes to its owner only, 403 for anyone else; a display name (<see cref="DisplayName"/>) of a gallery picture is its display-size copy (<see cref="DisplayCopy"/>). Every read of another player's picture counts in
+    /// <summary>GET of the website's `/photos/&lt;account&gt;/&lt;name&gt;` by `viewer` (the session's account, else the one the link names): the status and the file to send. 401 without a viewer. The original, for every signed-in player. Every read of another player's picture counts in
     /// <see cref="ReadAllowed"/> (429 past it). The imported avatar stays everyone's. 404 for no such picture.</summary>
     public (int Status, string? File) WebPhoto(string name, long? viewer)
     {
@@ -191,73 +183,17 @@ public sealed partial class State
         var slash = name.IndexOf('/');
         if (slash < 0 || !long.TryParse(name[..slash], NumberStyles.None, CultureInfo.InvariantCulture, out var owner)) return (404, null);
         if (owner != v && !ReadAllowed(v)) return (429, null);  // every read of another player's picture counts, a refused or missing one too
-        if (file is not null) return owner == v ? (200, file) : (403, null);
-        if (DisplayedPicture(owner, name[(slash + 1)..]) is not { } original) return (404, null);
-        return DisplayCopy(owner, original) is { } copy ? (200, copy) : (404, null);
+        if (file is not null) return (200, file);
+        return DisplayedPicture(owner, name[(slash + 1)..]) is { } original ? (200, original) : (404, null);
     }
 
-    /// <summary>The stored file of the gallery picture whose display name is `name`; null for none. ponytail: one HMAC per gallery picture per request; keep a name column if galleries grow past a few thousand.</summary>
+    /// <summary>The stored file of the gallery picture whose opaque name is `name`; null for none. ponytail: one HMAC per gallery picture per request; keep a name column if galleries grow past a few thousand.</summary>
     string? DisplayedPicture(long account, string name)
     {
         if (!name.StartsWith("display-", StringComparison.Ordinal)) return null;
         using var con = Con(account);
         return con.Rows($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND (photo_type IN ({GalleryTypes}) OR saved IS NOT NULL)")
             .Select(r => (string)r[0]).FirstOrDefault(f => DisplayName(account, f) == name) is { } file ? PhotoFile($"{PHOTO_PREFIX}{account}/{file}") : null;
-    }
-
-    string DisplayDir(long account) => Path.Combine(photosDir, "display", account.ToString(CultureInfo.InvariantCulture));
-
-    string DisplayPath(long account, string name) => Path.Combine(DisplayDir(account), name);
-
-    /// <summary>Remove every display-size copy of the account (a restore replaced or moved its pictures): they are made again when asked for.</summary>
-    void DropDisplayCopies(long account)
-    {
-        if (Directory.Exists(DisplayDir(account))) Directory.Delete(DisplayDir(account), recursive: true);
-    }
-
-    /// <summary>The display-size copy of a stored picture: decoded as a JPEG without its metadata, its longest side at most <see cref="DisplaySize"/>, and encoded again; kept in `photos/display/&lt;account&gt;/` under the
-    /// original's name and made again when the original is newer. Null for a file that is no JPEG this reads.</summary>
-    string? DisplayCopy(long account, string file)
-    {
-        var copy = DisplayPath(account, Path.GetFileName(file));
-        if (File.Exists(copy) && File.GetLastWriteTimeUtc(copy) >= File.GetLastWriteTimeUtc(file)) return copy;
-        Directory.CreateDirectory(DisplayDir(account));
-        var part = $"{copy}.{Guid.NewGuid():N}.part";
-        try
-        {
-            using var from = File.OpenRead(file);
-            Span<byte> head = stackalloc byte[3];
-            if (from.Read(head) != 3 || head[0] != 0xFF || head[1] != 0xD8 || head[2] != 0xFF) return null;  // not a JPEG: nothing else is decoded
-            from.Position = 0;
-            using var codec = SKCodec.Create(from);
-            if (codec is not { EncodedFormat: SKEncodedImageFormat.Jpeg }) return null;
-            var (width, height) = (codec.Info.Width, codec.Info.Height);
-            if (width <= 0 || height <= 0 || width > MaxSide || height > MaxSide || (long)width * height > MaxPixels) return null;
-            var longestSide = Math.Max(width, height);
-            var scaled = longestSide <= DisplaySize ? codec.Info.Size : codec.GetScaledDimensions(Math.Min(1f, (float)Math.Ceiling(DisplaySize * 8.0 / longestSide) / 8));  // a JPEG decodes at the smallest eighth that still covers the box
-            using var bitmap = new SKBitmap(new SKImageInfo(scaled.Width, scaled.Height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
-            if (codec.GetPixels(bitmap.Info, bitmap.GetPixels()) is not (SKCodecResult.Success or SKCodecResult.IncompleteInput)) return null;
-            var longest = Math.Max(bitmap.Width, bitmap.Height);
-            using var fitted = longest > DisplaySize  // the decoder leaves it when one side already fits the box
-                ? bitmap.Resize(new SKImageInfo((int)Math.Max(1, Math.Round((double)bitmap.Width * DisplaySize / longest)), (int)Math.Max(1, Math.Round((double)bitmap.Height * DisplaySize / longest)), bitmap.ColorType, SKAlphaType.Opaque), new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear))
-                : null;
-            if (longest > DisplaySize && fitted is null) return null;
-            using var image = SKImage.FromBitmap(fitted ?? bitmap);
-            using var data = image.Encode(SKEncodedImageFormat.Jpeg, 85);  // a new encode carries none of the original's metadata
-            if (data is null) return null;
-            using (var to = File.Create(part))
-                data.SaveTo(to);
-            File.Move(part, copy, overwrite: true);
-            return copy;
-        }
-        catch (Exception)  // SkiaSharp throws a plain Exception when it cannot allocate
-        {
-            return null;
-        }
-        finally
-        {
-            if (File.Exists(part)) File.Delete(part);  // a restore may have removed the folder meanwhile
-        }
     }
 
     /// <summary>SQL of the spawn (event 7) of a kill's animal: the latest of its individual before the kill's event 3, as <see cref="KillHits"/> bounds its hits.</summary>
