@@ -1,5 +1,5 @@
-// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public (only a hunt page also reads the cookie: the signed-in player's own taxidermy offers). The website's
-// server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
+// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host (only a hunt page also reads the cookie: the signed-in player's own taxidermy offers). The boards are for a signed-in player
+// (the `hr_session` cookie; else 401 `signed_out`) and none lists every player: each shows its top 100 and his own window (docs/server.md#who-sees-whom). The website's server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
@@ -9,15 +9,14 @@ public static class HuntersApi
 {
     public const int PageSize = 30;
 
-    /// <summary>The species boards: the rows of the overview for each species, the hunters of a species' page in all and a page of them.</summary>
-    public const int OverviewTop = 3, SpeciesTop = 100, SpeciesPage = 25;
+    /// <summary>The species boards: the rows of the overview for each species and of a page of a species' top 100.</summary>
+    public const int OverviewTop = 3, SpeciesPage = 25;
 
     static Reply Json(int status, JsonNode body) =>
         new(status, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
-    /// <summary>An anonymous board reply: the same for everyone, so a browser or proxy may keep it as long as the server keeps the board (<see cref="State.Boards"/>). `Vary: Accept`: the website's pages share these URLs and the reverse proxy picks by the header.</summary>
-    static Reply PublicJson(JsonNode body) =>
-        new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("Vary", "Accept"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
+    /// <summary>The reply of a /hunters/ route to a request without a session: as the account routes refuse it.</summary>
+    static Reply SignedOut => Json(401, new JsonObject { ["status"] = "signed_out", ["message"] = "Sign in first." });
 
     public static void MapHunters(this WebApplication app, Game game)
     {
@@ -29,21 +28,25 @@ public static class HuntersApi
 
         group.MapGet("", (HttpContext ctx) =>
             {
-                var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
-                var total = state.Store.Board(state.LocalAccount, 0, 0).Total;
-                var pages = Math.Max(1, (int)((total + PageSize - 1) / PageSize));
-                page = Math.Min(page, pages);
-                var (rows, _) = state.Store.Board(state.LocalAccount, (page - 1) * PageSize, PageSize);
+                if (SignedIn(ctx) is not { } me) return SignedOut;
+                var top = state.Store.Board(state.LocalAccount, 0, State.BoardTop);
+                var pages = Math.Max(1, (top.Count + PageSize - 1) / PageSize);
+                var page = Math.Min(int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1, pages);
+                var (from, count) = State.Window(state.Store.Rank(me, state.LocalAccount));
+                JsonNode? Row((long Rank, long Id, string Handle, long Hunterscore) r) =>
+                    new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["hunterscore"] = r.Hunterscore, ["avatar"] = state.AvatarUrl(r.Id, site) };
                 return Json(200, new JsonObject
                 {
-                    ["page"] = page, ["pages"] = pages, ["total"] = total,
-                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["hunterscore"] = r.Hunterscore, ["avatar"] = state.AvatarUrl(r.Id, site) })]),
+                    ["page"] = page, ["pages"] = pages,
+                    ["rows"] = new JsonArray([.. top.Skip((page - 1) * PageSize).Take(PageSize).Select(Row)]),
+                    ["around"] = new JsonArray([.. (count > 0 ? state.Store.Board(state.LocalAccount, from, count) : []).Select(Row)]),
                 });
             })
-            .WithName("HuntersBoard").WithSummary("One page of the hunterscore board")
-            .WithDescription($"`{{page, pages, total, rows: [{{rank, handle, hunterscore, avatar}}]}}`, {PageSize} rows a page, highest first; equal hunterscores in account id order. Banned accounts are not on it. `avatar` is the picture of the player's page (docs/server.md#avatars), null for none.")
+            .WithName("HuntersBoard").WithSummary("One page of the top 100 of the hunterscore board, and the signed-in player's window")
+            .WithDescription($"`{{page, pages, rows: [{{rank, handle, hunterscore, avatar}}], around: [...]}}`: the top {State.BoardTop} in pages of {PageSize} rows, highest first; equal hunterscores in account id order. `around` holds the rows of the signed-in player's place "
+                             + $"and the {State.BoardAround} above and below it that are past the top {State.BoardTop} (empty in the top {State.BoardTop - State.BoardAround}); no other row is ever answered. Banned accounts are not on it. `avatar` is the picture of the player's page (docs/server.md#avatars), null for none. 401 `signed_out` without a session.")
             .QueryParams(("page", "1 for the first"))
-            .Produces(200, contentType: "application/json");
+            .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json");
 
         group.MapGet("/{handle}", (string handle) => state.PublicAccount(handle) is { } id && state.PublicUser(id) is var p
                 ? Json(200, new JsonObject
@@ -179,7 +182,8 @@ public static class HuntersApi
             .WithDescription("The photos of `GET /hunters/<handle>/gallery`, as the game host serves them: `<account id>/<file name>`; public, the link is the access.")
             .Produces(200, contentType: "image/jpeg").Produces(404);
 
-        var boards = app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
+        var boards = app.MapGroup("/leaderboards").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .AddEndpointFilter(async (f, next) => SignedIn(f.HttpContext) is null ? SignedOut : await next(f));
 
         // the season a request asks for: `season` (0 all time, else a stored one), the current one when missing; null for none such
         long? SeasonOf(HttpContext ctx)
@@ -205,11 +209,12 @@ public static class HuntersApi
                 });
             })
             .WithName("LeaderboardSeasons").WithSummary("The seasons of the species boards")
-            .WithDescription("`{current, seasons: [{no, start, end}]}`, oldest first: `start` and `end` Unix seconds (both inclusive), `end` null for the current season. Season 0 (all time) is not listed; every board and the Hall of Fame also take it.")
+            .WithDescription("`{current, seasons: [{no, start, end}]}`, oldest first: `start` and `end` Unix seconds (both inclusive), `end` null for the current season. Season 0 (all time) is not listed; every board and the Hall of Fame also take it. "
+                             + "Every /leaderboards/ route answers 401 `signed_out` without a session.")
             .Produces(200, contentType: "application/json");
 
         boards.MapGet("/halloffame", (HttpContext ctx) => SeasonOf(ctx) is not { } season ? NoSuchSeason()
-                : PublicJson(new JsonObject
+                : Json(200, new JsonObject
                 {
                     ["rows"] = new JsonArray([.. state.HallOfFame(season).Select(h => (JsonNode?)new JsonObject
                     {
@@ -227,7 +232,7 @@ public static class HuntersApi
             {
                 if (kind is "score" or "range")
                     return SeasonOf(ctx) is not { } season ? NoSuchSeason()
-                        : PublicJson(new JsonObject
+                        : Json(200, new JsonObject
                         {
                             ["boards"] = new JsonArray([.. state.Boards(kind == "range", season).Select(b => (JsonNode?)new JsonObject
                             {
@@ -235,22 +240,24 @@ public static class HuntersApi
                             })]),
                         });
                 if (!Store.GameIds.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });
-                var page = int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1;
                 var board = state.Store.GameBoard(kind, state.LocalAccount);
-                var total = board.Count;
-                var pages = Math.Max(1, (total + PageSize - 1) / PageSize);
-                page = Math.Min(page, pages);
-                var rows = board.Skip((page - 1) * PageSize).Take(PageSize).Select((r, i) => (Rank: (page - 1) * PageSize + i + 1, r.Id, r.Handle, r.Score));
+                var top = Math.Min(board.Count, State.BoardTop);
+                var pages = Math.Max(1, (top + PageSize - 1) / PageSize);
+                var page = Math.Min(int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1, pages);
+                var (from, count) = State.Window(SignedIn(ctx) is { } me ? board.FindIndex(r => r.Id == me) + 1 : 0);
+                JsonArray Rows(int skip, int take) =>
+                    new([.. board.Skip(skip).Take(take).Select((r, i) => (JsonNode?)new JsonObject { ["rank"] = skip + i + 1, ["handle"] = r.Handle, ["value"] = r.Score, ["avatar"] = state.AvatarUrl(r.Id, site) })]);
                 return Json(200, new JsonObject
                 {
-                    ["page"] = page, ["pages"] = pages, ["total"] = total,
-                    ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)new JsonObject { ["rank"] = r.Rank, ["handle"] = r.Handle, ["value"] = r.Score, ["avatar"] = state.AvatarUrl(r.Id, site) })]),
+                    ["page"] = page, ["pages"] = pages,
+                    ["rows"] = Rows((page - 1) * PageSize, Math.Min(PageSize, top - (page - 1) * PageSize)),
+                    ["around"] = Rows(from, count),
                 });
             })
             .WithName("GameBoard").WithSummary("The species boards of a season (score or range), or one page of a minigame's board (lanebandit or bustthrough)")
             .WithDescription($"`score` and `range`: `{{boards: [{{species, name, top: [Row]}}]}}`, one per species with a ranked hunter in `season` (0 all time, the current season when missing), species id order, the best {OverviewTop} each; "
                              + "`Row` is `{rank, handle, value, weaponName, ts, kill, avatar}` (`value` the score, or the range in metres; `weaponName` the weapon item's name or \"\"; `ts` the kill's Unix seconds; `kill` its id for `/hunters/<handle>/score/<kill>`, 0 for a restored kill). "
-                             + $"`lanebandit` and `bustthrough`: `{{page, pages, total, rows: [{{rank, handle, value, avatar}}]}}`, {PageSize} rows a page, highest first; equal scores in account id order. The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. "
+                             + $"`lanebandit` and `bustthrough`: `{{page, pages, rows: [{{rank, handle, value, avatar}}], around: [...]}}`, the top {State.BoardTop} in pages of {PageSize} rows, highest first; equal scores in account id order; `around` as on /hunters (the signed-in player's window past the top). The best scores: the higher of the restored one (statistics) and the best the account's hunts reported; an account without one, or with 0, is not on it, nor is a banned one. "
                              + "404 for another kind and for a season that does not exist.")
             .QueryParams(("season", "the season number"), ("page", "1 for the first (minigames)"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
@@ -260,24 +267,26 @@ public static class HuntersApi
                 if (kind is not ("score" or "range")) return Json(404, new JsonObject { ["error"] = "no such board" });
                 if (SeasonOf(ctx) is not { } season) return NoSuchSeason();
                 var all = state.Boards(kind == "range", season).GetValueOrDefault(species) ?? [];
-                var total = Math.Min(all.Count, SpeciesTop);
-                var pages = Math.Max(1, (total + SpeciesPage - 1) / SpeciesPage);
+                var top = Math.Min(all.Count, State.BoardTop);
+                var pages = Math.Max(1, (top + SpeciesPage - 1) / SpeciesPage);
                 var page = Math.Min(int.TryParse(ctx.Request.Query["page"], out var p) && p > 1 ? p : 1, pages);
-                return PublicJson(new JsonObject
+                var (from, count) = State.Window(SignedIn(ctx) is { } me ? all.FirstOrDefault(r => r.Account == me)?.Rank ?? 0 : 0);
+                return Json(200, new JsonObject
                 {
-                    ["page"] = page, ["pages"] = pages, ["total"] = total,
-                    ["rows"] = new JsonArray([.. all.Take(total).Skip((page - 1) * SpeciesPage).Take(SpeciesPage).Select(r => (JsonNode?)RowJson(r))]),
+                    ["page"] = page, ["pages"] = pages,
+                    ["rows"] = new JsonArray([.. all.Take(top).Skip((page - 1) * SpeciesPage).Take(SpeciesPage).Select(r => (JsonNode?)RowJson(r))]),
+                    ["around"] = new JsonArray([.. all.Skip(from).Take(count).Select(r => (JsonNode?)RowJson(r))]),
                 });
             })
             .WithName("SpeciesBoard").WithSummary("One page of the top 100 of a species' score or range board")
-            .WithDescription($"`{{page, pages, total, rows: [Row]}}`: the best {SpeciesTop} hunters of the species `species` (its id) in `season` (0 all time, the current season when missing), {SpeciesPage} rows a page; `Row` as on the overview. A species nobody ranks: `total` 0, `rows` empty. 404 for a kind other than `score` or `range` and for a season that does not exist.")
+            .WithDescription($"`{{page, pages, rows: [Row], around: [Row]}}`: the best {State.BoardTop} hunters of the species `species` (its id) in `season` (0 all time, the current season when missing), {SpeciesPage} rows a page; `Row` as on the overview; `around` as on /hunters (the signed-in player's window past the top). A species nobody ranks: `rows` empty. 404 for a kind other than `score` or `range` and for a season that does not exist.")
             .QueryParams(("season", "the season number"), ("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         boards.MapGet("/{kind}/{species:long}/me", (string kind, long species, HttpContext ctx) =>
             {
                 if (kind is not ("score" or "range")) return Json(404, new JsonObject { ["error"] = "no such board" });
-                if (SignedIn(ctx) is not { } account) return Json(401, new JsonObject { ["error"] = "sign in" });
+                if (SignedIn(ctx) is not { } account) return SignedOut;
                 if (SeasonOf(ctx) is not { } season) return NoSuchSeason();
                 return (state.Boards(kind == "range", season).GetValueOrDefault(species) ?? []).FirstOrDefault(r => r.Account == account) is { } row
                     ? Json(200, RowJson(row)) : Json(404, new JsonObject { ["error"] = "not ranked" });

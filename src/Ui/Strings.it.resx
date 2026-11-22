@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: server della community per {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina non trovata</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Questa pagina non esiste.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Accedi per vedere questa pagina</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>I dati dei giocatori, il negozio, le missioni e le competizioni sono riservati ai cacciatori che hanno effettuato l'accesso.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>CACCIA ORA</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} giocatore</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} giocatori</value></data>
@@ -555,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Distanze maggiori della Stagione {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Vedi classifica completa</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Tua posizione</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>I migliori 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Intorno alla tua posizione</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Al momento non sei in classifica in questa categoria</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Migliori Hunter Score di sempre</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Pos.</value></data>

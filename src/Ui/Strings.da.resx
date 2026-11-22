@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: fællesskabsserver til {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Siden blev ikke fundet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne side findes ikke.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Log ind for at se denne side</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Spillernes data, butikken, missionerne og konkurrencerne er kun for jægere, der er logget ind.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAGT NU</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} spiller</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} spillere</value></data>
@@ -555,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Længste skud i sæson {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Se hele ranglisten</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Din rang</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Omkring din rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Du er i øjeblikket ikke rangeret i denne kategori</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Højeste jægerscore nogensinde</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>

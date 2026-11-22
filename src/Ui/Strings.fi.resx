@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: yhteisöpalvelin pelille {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Sivua ei löytynyt</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tätä sivua ei ole olemassa.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Kirjaudu sisään nähdäksesi tämän sivun</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Pelaajien tiedot, kauppa, tehtävät ja kilpailut ovat vain sisäänkirjautuneille metsästäjille.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>METSÄSTÄMÄÄN</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} pelaaja</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} pelaajaa</value></data>
@@ -555,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Pisimmät etäisyydet, kausi {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Näytä koko pistetaulukko</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Sijoituksesi</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Parhaat 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Sijoituksesi ympärillä</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Et ole tällä hetkellä sijoittunut tässä kategoriassa</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Kaikkien aikojen parhaat: metsästäjän pisteet</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Sijoitus</value></data>

@@ -225,11 +225,14 @@ public sealed partial class State
     public byte[] BoardsAllReply(bool range, string site) =>
         Py.DumpBytes(new JsonArray([.. Boards(range, Store.Seasons().Last().No).Select(b => (JsonNode?)PageBoard(b.Key, b.Value, range, 5, site))]));
 
-    /// <summary>`Page_content/leaderboard_details` (`type`, `species`): the species' best 100 of the current season; null for a species the catalogue lacks.</summary>
-    public byte[]? BoardDetailsReply(bool range, long species, string site)
+    /// <summary>`Page_content/leaderboard_details` (`type`, `species`): the species' best 100 of the current season, then the rows of <paramref name="caller"/>'s window past them (<see cref="Window"/>); null for a species the catalogue lacks.</summary>
+    public byte[]? BoardDetailsReply(bool range, long species, string site, long caller)
     {
         if (Lookup(this.species, (JsonNode)species) is null) return null;
-        var board = PageBoard(species, Boards(range, Store.Seasons().Last().No).GetValueOrDefault(species) ?? [], range, 100, site);
+        var rows = Boards(range, Store.Seasons().Last().No).GetValueOrDefault(species) ?? [];
+        var board = PageBoard(species, rows, range, BoardTop, site);
+        var (from, count) = Window(rows.FirstOrDefault(r => r.Account == caller)?.Rank ?? 0);
+        foreach (var r in rows.Skip(from).Take(count)) ((JsonArray)board["records"]!).Add(PageRow(r, range, false, site));
         board["position"] = null;  // the page asks Leaderboard/current_personal for the player's own place
         return Py.DumpBytes(board);
     }
@@ -247,10 +250,10 @@ public sealed partial class State
     }
 
     /// <summary>`Leaderboard/current_personal` (`user_id`): the account's places on the boards of the current season, `[{species_id, score: {total, rank, animal_id, score}, distance_min: {…}}]`
-    /// (`total` and `rank` the place); `[]` for a user id that is none.</summary>
-    public byte[] CurrentPersonalReply(long userId)
+    /// (`total` and `rank` the place); `[]` for a user id that is none or that <paramref name="caller"/> cannot see (<see cref="CanSee"/>).</summary>
+    public byte[] CurrentPersonalReply(long caller, long userId)
     {
-        if (PublicAccount(userId) is not { } account) return "[]"u8.ToArray();
+        if (PublicAccount(userId) is not { } account || !CanSee(caller, account)) return "[]"u8.ToArray();
         var season = Store.Seasons().Last().No;
         var (score, range) = (Boards(false, season), Boards(true, season));
         static JsonObject? Place(SortedDictionary<long, List<BoardRow>> boards, long species, long account) =>

@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: server comunitar pentru {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina nu a fost găsită</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Această pagină nu există.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Conectează-te pentru a vedea această pagină</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Datele jucătorilor, magazinul, misiunile și competițiile sunt doar pentru vânătorii conectați.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VÂNAȚI ACUM</value></data>
   <data name="Online.Player" xml:space="preserve"><value>Jucători: {0}</value></data>
   <data name="Online.Players" xml:space="preserve"><value>Jucători: {0}</value></data>
@@ -555,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Cele mai mari distanțe, sezonul {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Vedeți clasamentul complet</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Poziția dvs.</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Primii 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>În jurul poziției dvs.</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Momentan nu sunteți clasat în această categorie</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Top Hunter Score, din toate timpurile</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Poziție</value></data>
