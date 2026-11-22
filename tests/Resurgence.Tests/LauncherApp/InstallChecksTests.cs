@@ -168,7 +168,7 @@ public class InstallChecksTests
         {
             var path = Path.Combine(folder, "steam_api.dll");
             Files.Write(path, text);
-            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(++stamp));
+            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(2 * ++stamp)); // two seconds apart: also a file system with a coarse clock tells them apart
         }
 
         var ok = await Dlls();
