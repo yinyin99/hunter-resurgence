@@ -271,12 +271,12 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     InstallCheck Dlls(GameInstall g, string? build)
     {
         if (!CleanDlls.Judges(build)) return Ok("dlls");
-        var foreign = CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files).Where(f => f.File.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
-        InstallCheck Warn(string text, bool changed, string fix)
+        var foreign = CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files).Where(f => f.State != CleanDlls.State.Unreadable && f.File.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase)).ToList(); // a file that cannot be read tells nothing: the report names it
+        InstallCheck Warn(string text, CleanDlls.State state, string fix)
         {
-            var names = foreign.Where(f => f.Changed == changed).Select(f => f.File.Name).ToList();
+            var names = foreign.Where(f => f.State == state).Select(f => f.File.Name).ToList();
             return new("dlls", "warn", text, new Dictionary<string, string> { ["files"] = string.Join(", ", names.Take(NamesShown)) + (names.Count > NamesShown ? ", …" : "") }, fix);
         }
-        return foreign.Any(f => !f.Changed) ? Warn("Check.Dlls.Extra", false, "open-folder") : foreign.Count > 0 ? Warn("Check.Dlls.Changed", true, "verify-files") : Ok("dlls");
+        return foreign.Any(f => f.State == CleanDlls.State.Extra) ? Warn("Check.Dlls.Extra", CleanDlls.State.Extra, "open-folder") : foreign.Count > 0 ? Warn("Check.Dlls.Changed", CleanDlls.State.Changed, "verify-files") : Ok("dlls");
     }
 }

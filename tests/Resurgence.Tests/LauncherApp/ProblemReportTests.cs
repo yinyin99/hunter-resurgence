@@ -108,8 +108,9 @@ public class ProblemReportTests
         using var temp = new TempDir("resurgence-test-");
         var g = NewGame(temp);
         Files.Write(Path.Combine(g.Folder, "token-helper.dll"), "x");
+        Files.Write(Path.Combine(g.Folder, "jwté.dll"), "x");
         InstallCheck Version(long build) => new("version", "ok", "Check.Ok", new Dictionary<string, string> { ["build"] = build.ToString() });
-        InstallCheck Dlls = new("dlls", "warn", "Check.Dlls.Extra", new Dictionary<string, string> { ["files"] = "token-helper.dll" }, "open-folder");
+        InstallCheck Dlls = new("dlls", "warn", "Check.Dlls.Extra", new Dictionary<string, string> { ["files"] = "token-helper.dll", ["more"] = "jwté.dll" }, "open-folder");
 
         var other = Read(Direct(temp, g.Install, checks: () => [Version(CleanDlls.Build + 1), Dlls]).Build("manual").Path);
         Assert.Contains($"Game folder DLLs: not compared (the game is build {CleanDlls.Build + 1}", other["system.txt"]);
@@ -119,7 +120,21 @@ public class ProblemReportTests
         Assert.Contains("[line removed", same["system.txt"]); // the DLL's line: its name looks like a credential
         using var manifest = JsonDocument.Parse(same["report.json"]); // the name in the check's arguments is replaced by value, not by line: still valid JSON
         Assert.DoesNotContain("token-helper", same["report.json"]);
+        Assert.Equal("jwté.dll", manifest.RootElement.GetProperty("checks").EnumerateArray().Last().GetProperty("args").GetProperty("more").GetString()); // not a credential by itself: kept, as an escaped string
         Assert.Equal("dlls", manifest.RootElement.GetProperty("checks").EnumerateArray().Last().GetProperty("id").GetString());
+    }
+
+    [Fact]
+    public void ADllThatCannotBeReadIsNamedAndTheFolderIsNotCalledAsInstalled()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var known = Path.Combine(g.Folder, "steam_api.dll");
+        Files.Write(known, "steam");
+        using var held = new FileStream(known, FileMode.Open, FileAccess.Read, FileShare.None); // the size of the clean file, so it must be read to be judged
+        var system = Read(Direct(temp, g.Install).Build("manual").Path)["system.txt"];
+        Assert.Contains("Game folder DLL: steam_api.dll, not readable, not compared", system);
+        Assert.DoesNotContain("as installed", system);
     }
 
     [Fact]

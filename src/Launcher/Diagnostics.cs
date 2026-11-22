@@ -153,10 +153,10 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
-            void Add(string name, string text, Encoding enc)
+            void Add(string name, string text, Encoding enc, bool scrub = true)
             {
                 using var s = zip.CreateEntry(name, CompressionLevel.Optimal).Open();
-                s.Write(enc.GetBytes(Scrub(text)));
+                s.Write(enc.GetBytes(scrub ? Scrub(text) : text));
                 if (!files.Contains(name)) files.Add(name);
             }
             void AddFile(string name, string path)
@@ -194,7 +194,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
                 catch (Exception e) when (e is IOException or UnauthorizedAccessException) { missing.Add(name); }
             }
             files.Add("report.json");
-            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing, checks = checks?.Select(c => c with { Args = c.Args?.ToDictionary(a => a.Key, a => Scrub(a.Value)) }) }, RunHistory.Json), Encoding.UTF8);
+            // JSON is scrubbed by value, not by line (a replaced line is no longer JSON; a name with a non-ASCII letter next to a word such as jwt is escaped into a boundary by the serializer)
+            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files = files.Select(Scrub), missing = missing.Select(Scrub), checks = checks?.Select(c => c with { Args = c.Args?.ToDictionary(a => a.Key, a => Scrub(a.Value)) }) }, RunHistory.Json), Encoding.UTF8, scrub: false);
         }
         var folderOut = outFolder ?? Path.Combine(Path.GetTempPath(), "hunter-resurgence");
         try
@@ -274,16 +275,16 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         return sb.ToString();
     }
 
-    /// <summary>One line for each <c>.dll</c> or <c>.asi</c> file next to the exe that a clean install does not have (extra) or has otherwise (changed), with its size and file version, or <c>Game folder DLLs: as installed</c>; none without a game folder or when it cannot be read (then listed as missing).</summary>
+    /// <summary>One line for each <c>.dll</c> or <c>.asi</c> file next to the exe that a clean install does not have (extra) or has otherwise (changed), with its size and file version, or <c>Game folder DLLs: as installed</c> (every file was compared); none without a game folder or when it cannot be read (then listed as missing).</summary>
     List<string> DllLines(List<string> missing, IReadOnlyList<InstallCheck>? checks)
     {
         if (install() is not { } g) return [];
         var build = checks?.FirstOrDefault(c => c.Id == "version")?.Args?.GetValueOrDefault("build");
         if (!CleanDlls.Judges(build)) return [$"Game folder DLLs: not compared (the game is build {build}, the clean list is of build {CleanDlls.Build})"];
         var found = Try(() => CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files), missing, "game folder DLLs");
-        string Line((FileInfo File, bool Changed) f)
+        string Line((FileInfo File, CleanDlls.State State) f)
         {
-            var kind = f.Changed ? "changed" : "extra";
+            var kind = f.State switch { CleanDlls.State.Changed => "changed", CleanDlls.State.Extra => "extra", _ => "not readable, not compared" };
             try { return $"Game folder DLL: {f.File.Name}, {kind}, {f.File.Length} bytes, version {FileVersionInfo.GetVersionInfo(f.File.FullName).FileVersion ?? "none"}"; }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return $"Game folder DLL: {f.File.Name}, {kind}, size and version not readable"; } // gone since it was listed
         }

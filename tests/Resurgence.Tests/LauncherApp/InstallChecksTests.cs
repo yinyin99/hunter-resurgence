@@ -172,6 +172,9 @@ public class InstallChecksTests
         Files.Write(Path.Combine(folder, "steam_api.dll"), "steam");
         Files.Write(Path.Combine(folder, "mod.asi"), "x"); // only .dll files are judged by the check (the report lists .asi too)
         Assert.Equal("ok", (await Dlls()).Level);
+
+        using var held = new FileStream(Path.Combine(folder, "steam_api.dll"), FileMode.Open, FileAccess.Read, FileShare.None); // cannot be read: tells nothing, never a warning (the report names it)
+        Assert.Equal("ok", (await Dlls()).Level);
     }
 
     [Fact]

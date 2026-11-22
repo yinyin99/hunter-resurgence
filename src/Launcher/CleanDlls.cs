@@ -7,6 +7,9 @@ namespace Resurgence.Launcher;
 /// (docs/launcher.md#the-install-check, check 10), is foreign: a graphics wrapper, a mod, a replaced or an old file. Data: a new supported build is a new table, with <c>game_build</c> changed together.</summary>
 public static class CleanDlls
 {
+    /// <summary>How a DLL next to the exe differs from a clean install: it is not in the list, it is in it with another size or SHA-256, or it could not be read to tell (gone or locked since it was listed).</summary>
+    public enum State { Extra, Changed, Unreadable }
+
     public const long Build = 26432499;
 
     public static readonly IReadOnlyDictionary<string, (long Size, string Sha256)> Files = new Dictionary<string, (long Size, string Sha256)>(StringComparer.OrdinalIgnoreCase)
@@ -43,19 +46,19 @@ public static class CleanDlls
     // ponytail: remembered by path, size and write time (the 214 MB libcef.dll is hashed once, not at every page that shows the game check); a file that changes without either is not noticed until the launcher restarts
     static readonly ConcurrentDictionary<string, string> Hashes = new();
 
-    /// <summary>The <c>.dll</c> and <c>.asi</c> files directly in <paramref name="folder"/> that are not in <paramref name="clean"/> (<c>Changed</c> false) or differ from it in size or SHA-256 (true), by name; a file that vanishes or cannot be read meanwhile is left out, a folder that cannot be read throws.</summary>
-    public static List<(FileInfo File, bool Changed)> Foreign(string folder, IReadOnlyDictionary<string, (long Size, string Sha256)> clean)
+    /// <summary>The <c>.dll</c> and <c>.asi</c> files directly in <paramref name="folder"/> that are not in <paramref name="clean"/> or differ from it in size or SHA-256, by name; a file that vanishes or cannot be read meanwhile is <see cref="State.Unreadable"/>, a folder that cannot be read throws.</summary>
+    public static List<(FileInfo File, State State)> Foreign(string folder, IReadOnlyDictionary<string, (long Size, string Sha256)> clean)
     {
-        var found = new List<(FileInfo, bool)>();
+        var found = new List<(FileInfo, State)>();
         foreach (var path in Directory.EnumerateFiles(folder).Where(p => Path.GetExtension(p) is { } e && (e.Equals(".dll", StringComparison.OrdinalIgnoreCase) || e.Equals(".asi", StringComparison.OrdinalIgnoreCase))).Order(StringComparer.OrdinalIgnoreCase))
         {
             var file = new FileInfo(path);
             try
             {
-                if (!clean.TryGetValue(file.Name, out var want)) found.Add((file, false));
-                else if (file.Length != want.Size || !Hashes.GetOrAdd($"{path}|{file.Length}|{file.LastWriteTimeUtc.Ticks}", _ => Sha256Of(path)).Equals(want.Sha256.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)) found.Add((file, true));
+                if (!clean.TryGetValue(file.Name, out var want)) found.Add((file, State.Extra));
+                else if (file.Length != want.Size || !Hashes.GetOrAdd($"{path}|{file.Length}|{file.LastWriteTimeUtc.Ticks}", _ => Sha256Of(path)).Equals(want.Sha256.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)) found.Add((file, State.Changed));
             }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { } // gone or locked since it was listed: not judged, the others are
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { found.Add((file, State.Unreadable)); } // gone or locked since it was listed: the others are still judged
         }
         return found;
     }
