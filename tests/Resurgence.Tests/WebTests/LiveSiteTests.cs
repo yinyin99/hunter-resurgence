@@ -448,7 +448,7 @@ public sealed class LiveSiteTests : UiContext
         Live(live);
         var cut = Render<Leaderboards>(p => p.Add(l => l.Path, "lanebandit"));
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("table.board")));
-        Assert.Equal(blocks, cut.FindAll("div.mine").Count);
+        Assert.Equal(blocks + 1, cut.FindAll("div.mine").Count);  // and the "Top 100" label
         Assert.Equal(blocks, cut.FindAll("p.norank").Count);
     }
 

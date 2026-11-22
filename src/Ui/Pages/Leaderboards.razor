@@ -11,7 +11,11 @@
 <h2 class="page-title">@L["Board.Title"]</h2>
 <Tabs Kind="strip" Items="tabs" Active="@active" />
 
-@if (failed)
+@if (signedOut)
+{
+    <SignInRequired />
+}
+else if (failed)
 {
     <p class="norank" role="alert">@L["Board.LoadFailed"]</p>
     <button type="button" class="btn btn-inverse" @onclick="OnParametersSetAsync">@L["Board.Retry"]</button>
@@ -24,11 +28,13 @@ else if (loaded)
             <section class="panel head"><h4>@L["Board.AllTime"]</h4></section>
             <div class="mine"><span class="rank-label">@L["Board.YourRank"]</span></div>
             @if (mine is not null) { <table class="board me"><tbody><RankRow R="mine" Kind="hunterscore" /></tbody></table> }
+            <div class="mine"><span class="rank-label">@L["Board.Top100"]</span></div>
             <table class="board">
                 <thead><tr><th>@L["Board.Rank"]</th><th></th><th class="hunter">@L["Board.Hunter"]</th><th>@L["Board.ScoreColumn"]</th></tr></thead>
                 <tbody>@foreach (var r in rows) { <RankRow R="r" Kind="hunterscore" /> }</tbody>
             </table>
             <Paginator Page="page" Pages="pages" Href='n => "/leaderboards/hunterscore/" + n' />
+            @Around("hunterscore")
             break;
         case "halloffame":
             <section class="panel head hall">
@@ -60,8 +66,10 @@ else if (loaded)
                 @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
                 else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
             }
+            <div class="mine"><span class="rank-label">@L["Board.Top100"]</span></div>
             <table class="board"><tbody>@foreach (var r in rows) { <RankRow R="r" Kind="@kind" /> }</tbody></table>
             <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind + "/" + n)" />
+            @Around(kind)
             break;
         default:
             @if (id is null)
@@ -95,6 +103,7 @@ else if (loaded)
                     @if (mine is null) { <p class="norank">@L["Board.NoRank"]</p> }
                     else { <table class="board me"><tbody><RankRow R="mine" Kind="@kind" /></tbody></table> }
                 }
+                <div class="mine"><span class="rank-label">@L["Board.Top100"]</span></div>
                 @if (rows.Count == 0) { <p class="norank">@L["Board.Empty"]</p> }
                 else
                 {
@@ -104,6 +113,7 @@ else if (loaded)
                     </table>
                 }
                 <Paginator Page="page" Pages="pages" Href="@(n => "/leaderboards/" + kind.Replace("-", "/") + "/" + id + "/" + n + Q(season))" />
+                @Around(kind)
             }
             break;
     }
@@ -118,7 +128,7 @@ else
 @code {
     IReadOnlyList<(string Label, string Href)> tabs = [];
     IReadOnlyList<Board> boards = [];
-    IReadOnlyList<Ranked> rows = [];
+    IReadOnlyList<Ranked> rows = [], around = [];
     IReadOnlyList<HallEntry> hall = [];
     /// <summary>The seasons the selector offers: 0, all time, and every season; <see cref="ended"/> the ended ones, the hall of fame's.</summary>
     IReadOnlyList<int> all = [], ended = [];
@@ -126,8 +136,8 @@ else
     string kind = "score", active = "", speciesName = "";
     int? id;
     int page = 1, pages = 1, season, current;
-    /// <summary>The board is read: <see cref="loaded"/>, or <see cref="failed"/> when the server did not answer (the empty text is for a board it answered as empty).</summary>
-    bool loaded, failed;
+    /// <summary>The board is read: <see cref="loaded"/>, or <see cref="failed"/> when the server did not answer (the empty text is for a board it answered as empty); <see cref="signedOut"/>: the boards are for signed-in players only.</summary>
+    bool loaded, failed, signedOut;
 
     /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double), then a species or antler id, then a page.</summary>
     [Parameter] public string? Path { get; set; }
@@ -158,6 +168,7 @@ else
             return;
         }
         active = tabs.FirstOrDefault(t => t.Href == "/leaderboards/" + kind.Replace("-", "/")).Href ?? tabs[0].Href;
+        if (signedOut = await Sessions.CurrentAsync() is null) return;
         try
         {
             var (now, seasons) = await Service.SeasonsAsync();
@@ -165,7 +176,7 @@ else
             all = [0, .. seasons.Select(s => s.No).OrderBy(n => n)];
             ended = [.. seasons.Where(s => s.End is not null).Select(s => s.No).OrderBy(n => n)];
             season = SeasonQuery ?? (kind == "halloffame" ? ended.LastOrDefault() : now);
-            (id, page, mine, boards, rows) = (null, 1, null, [], []);
+            (id, page, mine, boards, rows, around) = (null, 1, null, [], [], []);
             switch (kind)
             {
                 case "halloffame":
@@ -173,7 +184,7 @@ else
                     break;
                 case "hunterscore" or "lanebandit" or "bustthrough":
                     page = numbers.Length > 0 ? numbers[0] : 1;
-                    (rows, page, pages) = Unpack(await Service.RowsAsync(kind, 0, page, 0));
+                    (rows, page, pages, around) = Unpack(await Service.RowsAsync(kind, 0, page, 0));
                     mine = await Service.MyRankAsync(kind, 0, 0);
                     break;
                 default:
@@ -181,7 +192,7 @@ else
                     if (numbers.Length > 0)
                     {
                         (id, page) = (numbers[0], numbers.Length > 1 ? numbers[1] : 1);
-                        (rows, page, pages) = Unpack(await Service.RowsAsync(kind, id.Value, page, season));
+                        (rows, page, pages, around) = Unpack(await Service.RowsAsync(kind, id.Value, page, season));
                         mine = await Service.MyRankAsync(kind, id.Value, season);
                         // a species nobody ranks in this season is not in its overview: its name is the all-time one
                         speciesName = (boards.FirstOrDefault(b => b.Id == id) ?? (season == 0 ? null : (await Service.BoardsAsync(kind, 0)).FirstOrDefault(b => b.Id == id)))?.Name ?? "";
@@ -193,7 +204,16 @@ else
         catch (BoardUnavailableException) { failed = true; }
     }
 
-    static (IReadOnlyList<Ranked>, int, int) Unpack(Page<Ranked> p) => (p.Rows, p.Number, p.Pages);
+    static (IReadOnlyList<Ranked>, int, int, IReadOnlyList<Ranked>) Unpack(Page<Ranked> p) => (p.Rows, p.Number, p.Pages, p.Around ?? []);
+
+    // the player's own place and the 50 above and below it past the top 100 (none in the top 50, or not ranked)
+    RenderFragment Around(string board) => @<text>
+        @if (around.Count > 0)
+        {
+            <div class="mine"><span class="rank-label">@L["Board.Around"]</span></div>
+            <table class="board"><tbody>@foreach (var r in around) { <RankRow R="r" Kind="@board" /> }</tbody></table>
+        }
+    </text>;
 
     /// <summary>The query of a season's address: none for the current season.</summary>
     string Q(int n) => n == current ? "" : "?season=" + n;

@@ -557,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Nejlepší vzdálenosti – sezóna {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Zobrazit celý žebříček</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Vaše umístění</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Nejlepších 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Kolem vašeho umístění</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>V této kategorii zatím nemáte umístění</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Nejlepší lovecké skóre všech dob</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Umístění</value></data>

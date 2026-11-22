@@ -303,10 +303,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
                 con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE handle = ?", score, handle);
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
         }
-        var board = JsonNode.Parse((await Get("web.test", "/hunters")).Body)!;
+        var third = Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1)));  // the board is for a signed-in player
+        Assert.Equal(401, (await server.SendAsync("GET", "web.test", "/hunters", [])).Status);
+        var board = JsonNode.Parse((await Get("web.test", "/hunters", third)).Body)!;
         // equal hunterscores: the lower account id first
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{DefaultSite}}"}]}""", board);
-        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9")).Body)!["page"]);
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "third", "hunterscore": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "one", "hunterscore": 50, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "two", "hunterscore": 50, "avatar": "{{DefaultSite}}"}], "around": []}""", board);
+        Eq("1", JsonNode.Parse((await Get("web.test", "/hunters?page=9", third)).Body)!["page"]);
         var two = JsonNode.Parse((await Get("web.test", "/hunters/TWO")).Body)!;
         Eq("""["two", 50, 3, "Hunter"]""", T(two["handle"], two["hunterscore"], two["rank"], two["membership"]));
         Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)two["avatar"]!);  // a new account's picture
@@ -650,7 +652,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal([null, PickedSite], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
         Assert.Equal([PickedSite], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
         Assert.Equal([null, PickedSite], Avatars((await Read("/hunters/one/friends"))!["rows"]));
-        Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters"))!["rows"]));  // by account id: Third, Fourth, one
+        Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters", ck))!["rows"]));  // by account id: Third, Fourth, one
         Assert.Equal([PickedSite, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
         Assert.Null((await Read("/hunters/fourth"))!["avatar"]);
     }
@@ -775,11 +777,11 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
             RestoredReads.Connect(con, reply, new JsonObject(), null);
         Eq("[70, 0]", T(reply["user_stats"]!["bust_through_score"], reply["user_stats"]!["lane_bandit_score"]));
         // equal scores: the lower account id first (fourth restored 300, fifth played 300); a 0, no score and a banned account are not on it
-        Eq($$"""{"page": 1, "pages": 1, "total": 3, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{DefaultSite}}"}]}""",
-            JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit")).Body));
-        Eq($$"""{"page": 1, "pages": 1, "total": 2, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{DefaultSite}}"}]}""",
-            JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5")).Body));
-        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers")).Status);
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "third", "value": 500, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 300, "avatar": "{{DefaultSite}}"}, {"rank": 3, "handle": "fifth", "value": 300, "avatar": "{{DefaultSite}}"}], "around": []}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/lanebandit", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Body));
+        Eq($$"""{"page": 1, "pages": 1, "rows": [{"rank": 1, "handle": "nogame", "value": 70, "avatar": "{{DefaultSite}}"}, {"rank": 2, "handle": "fourth", "value": 40, "avatar": "{{DefaultSite}}"}], "around": []}""",
+            JsonNode.Parse((await Get("web.test", "/leaderboards/bustthrough?page=5", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Body));
+        Assert.Equal(404, (await Get("web.test", "/leaderboards/antlers", Ck("hr_session", state.Store.CreateWebSession(9, TimeSpan.FromHours(1))))).Status);
     }
 
     [Fact]

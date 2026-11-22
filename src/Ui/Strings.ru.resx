@@ -557,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Лучшая дистанция в сезоне {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Полный список лидеров</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Ваш рейтинг</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Лучшие 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Рядом с вашим местом</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Вас пока нет в рейтинге этой категории</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Лучшие очки охотника за всё время</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Рейтинг</value></data>

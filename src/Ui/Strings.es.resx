@@ -557,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Mejores distancias de la temporada {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Ver la clasificación completa</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Tu posición</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Los 100 mejores</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Alrededor de tu posición</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Actualmente no tienes clasificación en esta categoría</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Mejores Puntuaciones del Cazador de todos los tiempos</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rango</value></data>

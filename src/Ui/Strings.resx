@@ -557,6 +557,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Top ranges for Season {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>View full leaderboard</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Your Rank</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Around your rank</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>You are currently not ranked in this category</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>All time top Hunter Score</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rank</value></data>
