@@ -87,7 +87,12 @@ public partial class MainWindow : Window
         {
             var old = Blazor;
             Content = NewBlazor();
-            _ = ((IAsyncDisposable)old).DisposeAsync();
+            // the old page's cleanup may wait for a browser that is gone: it runs on in the background, a failure is only logged
+            _ = Dispatcher.InvokeAsync(async () =>
+            {
+                try { await ((IAsyncDisposable)old).DisposeAsync(); }
+                catch (Exception e) when (e is not OutOfMemoryException) { log.LogWarning(e, "the failed WebView2 page did not clean up"); }
+            });
         }));
     }
 
