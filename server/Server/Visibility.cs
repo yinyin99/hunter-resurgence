@@ -18,11 +18,13 @@ public sealed partial class State
     }
 
     /// <summary>Whether <paramref name="caller"/> may see <paramref name="other"/> (account ids): himself, his friends, and whoever a board shows him (<see cref="OnView"/>):
-    /// the hunterscore board, a species board (score or range) of any season or all time, a minigame's board.
+    /// the hunterscore board, a species board (score or range) of any season or all time, a minigame's board. Never an account that is on no board (unknown, banned or the recorded player's).
     /// ponytail: walks every kept species board and reads both minigame boards (every account's statistics) when the cheaper checks fail; keep each player's places per board if profile reads get slow.</summary>
     public bool CanSee(long caller, long other)
     {
-        if (caller == other || Store.FriendsOf(caller, LocalAccount).Friends.Contains(other)) return true;
+        if (caller == other) return true;
+        if (Store.Listed(other, LocalAccount) is null) return false;
+        if (Store.FriendsOf(caller, LocalAccount).Friends.Contains(other)) return true;
         if (OnView(Store.Rank(other, LocalAccount), Store.Rank(caller, LocalAccount))) return true;
         foreach (var season in (long[])[0, .. Store.Seasons().Select(s => s.No)])
             foreach (var range in (bool[])[false, true])

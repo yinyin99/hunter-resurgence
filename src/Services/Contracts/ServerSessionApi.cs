@@ -14,7 +14,7 @@ public static class ServerSessionApi
     public const string SignOut = "/auth/signout";
     /// <summary>Takes <c>?next=</c>, a local path to come back to.</summary>
     public const string SteamLogin = "/auth/steam/login";
-    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>?page=n</c> (with the cookie; 401 <c>signed_out</c> without a session): 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404.</summary>
     public const string Hunters = "/hunters";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. Public: no cookie needed.</summary>
     public const string SkillsSuffix = "/skills";

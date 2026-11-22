@@ -266,9 +266,9 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("""[1, 1, 1, 70.0, 100.0]""", T(mine[0]!["species_id"], mine[0]!["score"]!["total"], mine[0]!["score"]!["rank"], mine[0]!["score"]!["score"], mine[0]!["distance_min"]!["score"]));
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=25"));  // banned
         Eq("[]", await Call(Replay.CURRENT_PERSONAL, "user_id=999"));
-        // without a player's token: no board
+        // without a player's token: the expired-token reply, no board
         foreach (var (path, body) in new[] { (Replay.LEADERBOARDS_ALL, "type=1"), (Replay.LEADERBOARD_DETAILS, "type=1&species=1"), (Replay.HALL_OF_FAME, ""), (Replay.CURRENT_PERSONAL, "user_id=22") })
-            Assert.DoesNotContain("charlie", System.Text.Encoding.UTF8.GetString((await Post(path, body)).Body));
+            Eq("""{"errorCode": 5, "message": "token expired"}""", JsonNode.Parse((await Post(path, body)).Body));
         Assert.NotNull(state.StartSeason(Second + 1000));
         Eq("""{"season": 3, "items": []}""", await Call(Replay.APPLICATION, ""));
     }
@@ -431,6 +431,26 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Harvest(1150, 1, Deer, "5", Second + 1);
         Assert.Equal("[]", System.Text.Encoding.UTF8.GetString((await Post(Replay.CURRENT_PERSONAL, "user_id=1105&oauth_access_token=" + state.Store.CreateToken(1001))).Body));
         Assert.Contains("\"species_id\": 1", System.Text.Encoding.UTF8.GetString((await Post(Replay.CURRENT_PERSONAL, "user_id=1150&oauth_access_token=" + state.Store.CreateToken(1001))).Body));
+        Assert.False(state.CanSee(1160, 99999));  // no such account
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = 1002");
+        Assert.False(state.CanSee(1160, 1002));  // banned: on no board, though place 2 before
+    }
+
+    [Fact]
+    public async Task TestAMinigameBoardIsItsTop100AndThePlayersWindow()
+    {
+        for (var i = 1; i <= 120; i++)  // g<i> scores i at Lane Bandit: its place is 121 - i
+        {
+            state.CreateAccount(1000 + i, "g" + i);
+            using var con = state.Store.Open(1000 + i);
+            PlayerRows.SetStatistics(con, new JsonObject(), 0, 0, null, i);
+        }
+        var board = await Json("/leaderboards/lanebandit?page=9", Session(1005));  // place 116
+        Eq("[4, 4]", T(board["page"], board["pages"]));
+        Assert.Equal(Places(91, 10), Ranks(board["rows"]));
+        Assert.Equal(Places(101, 20), Ranks(board["around"]));  // 66 to 166: past the top, to the board's end
+        Eq("[]", (await Json("/leaderboards/lanebandit", Session(1120)))["around"]);  // place 1
     }
 
     [Fact]
