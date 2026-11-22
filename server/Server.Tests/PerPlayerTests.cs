@@ -616,9 +616,12 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.True(await Answers(Near));
         Assert.False(await Answers(Far));
         Assert.Equal("{}", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.USER_CHALLENGES, tokenB, $"user_id={Far}")).Body));
-        state.Store.AddFriend(8, Far);
+        async Task<string> Ask(long id) => Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.FRIEND_ADD, tokenB, $"friend_user_id={id}")).Body);
+        Assert.Equal("""{"errorCode": 400}""", await Ask(Far));  // asking would name him in the requests sent
+        Eq("[]", (await Api(Replay.ME_FRIENDS, tokenB))["pending"]);
+        state.Store.AddFriend(Far, 8);  // he asks 8
         Assert.False(await Answers(Far));  // a request is no friendship
-        state.Store.AddFriend(Far, 8);
+        Assert.Equal("true", await Ask(Far));  // 8 accepts by id: a player of his requests
         Assert.True(await Answers(Far));  // a friend's
         Eq("""{"duration": 3600, "distance": 12.5, "data": {"collectables": {}, "weapon": {}, "animal": {"1": {"kills": 2}}, "daily_missions": {}}}""",
            JsonNode.Parse((await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, $"user_id={Far}")).Body));

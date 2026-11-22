@@ -28,11 +28,15 @@ public sealed partial class State
     /// <inheritdoc cref="PublicAccount(long)"/>
     public long? PublicAccount(string handle) => offline ? LocalAccount : Store.Listed(handle, LocalAccount);
 
-    /// <summary>The account of another player's `user_id` in a read of <paramref name="caller"/>: <see cref="PublicAccount(long)"/> when the caller may see it
-    /// (<see cref="CanSee"/>: himself, his friends, whoever a board shows him) and is within his read limit (<see cref="ReadAllowed"/>, his own reads are not counted); else null,
-    /// so walking user ids finds nothing.</summary>
-    public long? SeenAccount(long caller, long userId) =>
-        PublicAccount(userId) is { } other && (other == caller || CanSee(caller, other) && ReadAllowed(caller)) ? other : null;
+    /// <summary>The account of another player's `user_id` in a read of <paramref name="caller"/>: <see cref="PublicAccount(long)"/> when the caller is within his read limit
+    /// (<see cref="ReadAllowed"/>: every read of another user id counts, known, seen or not, so walking ids is slow and raises the alert; his own reads are not counted) and may see it
+    /// (<see cref="CanSee"/>: himself, his friends, whoever a board shows him); else null, so walking user ids finds nothing.</summary>
+    public long? SeenAccount(long caller, long userId)
+    {
+        var other = PublicAccount(userId);
+        if (other == caller) return other;
+        return ReadAllowed(caller) && other is { } o && CanSee(caller, o) ? o : null;
+    }
 
     /// <summary>Public_user/getByHostname of an account: who it is (`membership` as its connect `account` has it, the type and
     /// title as its Me/me does), its hunterscore and rank, `online` while a hunt of it is open and alive (shown to the account itself and its friends only:
@@ -117,16 +121,24 @@ public sealed partial class State
     /// <summary>How many players asked the account to be friends: Me/poll's and Me/me's `friend_requests`.</summary>
     public long FriendRequests(long account) => Store.FriendsOf(account, LocalAccount).Requests.Count;
 
-    /// <summary>Friend/add (ask, or accept the other's request) or Friend/remove (decline, cancel, remove) of `friend_user_id`:
-    /// `true`; `{"errorCode": 400}` for the account's own id or one that is not a player here (<see cref="PublicAccount(long)"/>).</summary>
+    /// <summary>Friend/add (ask, or accept the other's request) or Friend/remove (decline, cancel, remove) of `friend_user_id`: `true`; `{"errorCode": 400}` for the account's own id
+    /// and for any id other than a player of its friends, its requests either way, its multiplayer session or one it may see (<see cref="SeenAccount"/>): asking any id would name
+    /// the player in the website's list of the requests sent, so walking ids would list the handles.</summary>
     public byte[] FriendReply(long account, byte[] formBody, bool add)
     {
-        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "friend_user_id"), out var id) || id == account || PublicAccount(id) is not { } other)
+        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "friend_user_id"), out var id) || id == account)
             return """{"errorCode": 400}"""u8.ToArray();
-        if (add) Store.AddFriend(account, other);
-        else Store.RemoveFriend(account, other);
+        var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
+        var other = PublicAccount(id) is { } o && (friends.Contains(o) || requests.Contains(o) || pending.Contains(o) || InSessionWith(account, o)) ? o : SeenAccount(account, id);
+        if (other is not { } known)
+            return """{"errorCode": 400}"""u8.ToArray();
+        if (add) Store.AddFriend(account, known);
+        else Store.RemoveFriend(account, known);
         return "true"u8.ToArray();
     }
+
+    /// <summary>Are the two accounts in the same open multiplayer session (a player met in a hunt can be asked to be friends).</summary>
+    bool InSessionWith(long a, long b) => games.Open(Clock()).Any(g => g.Members.Any(m => m.Account == a) && g.Members.Any(m => m.Account == b));
 
     /// <summary>User/friendslist of `user_id` for the caller's own account only (a player sees only his own friends): `{total, friends}`, one page by `offset` and `limit` (1 to 50;
     /// missing, empty or below 1: every friend). Another player's `user_id`: the empty list. No `user_id`: `{"errorCode": 400}`; an empty or non-positive one: `null`;

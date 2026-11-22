@@ -406,7 +406,7 @@ public static class GameApi
             foreach (var (path, name, add) in new[] { (FRIEND_ADD, "FriendAdd", true), (FRIEND_REMOVE, "FriendRemove", false) })
                 api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.FriendReply(a, r.Body, add), "state")))
                    .WithName(name).WithSummary(add ? "Ask a player to be friends, or accept their request" : "Decline or cancel a request, or remove a friend")
-                   .WithDescription("`true`; `{\"errorCode\": 400}` for the player's own id or one that has no account here.")
+                   .WithDescription("`true`; `{\"errorCode\": 400}` for the player's own id, one that has no account here, and any id other than a player of his friends, requests (either way), multiplayer session or one he may see (State.SeenAccount).")
                    .Body<FriendForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, FRIENDS_LIST, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.FriendsListReply(a, r.Body), "state")))
                .WithName("FriendsList").WithSummary("The player's own friends, one page")
@@ -415,7 +415,7 @@ public static class GameApi
                .Body<FriendsListForm>(Form).Produces(200, contentType: "application/json");
             // the profile reads (community server only; a local server replays): a player's token; by handle any player here (State.PublicAccount), by user id one the player may see (State.SeenAccount)
             api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(),
-                    s.PublicAccount(FormValue(r, "hostname") ?? "") is { } other && (other == a || s.ReadAllowed(a)) ? Py.DumpBytes(s.PublicUser(other, a)) : "null"u8.ToArray(), "state")))
+                    s.PublicAccount(FormValue(r, "hostname") ?? "") is var other && (other == a || s.ReadAllowed(a)) && other is { } o ? Py.DumpBytes(s.PublicUser(o, a)) : "null"u8.ToArray(), "state")))
                .WithName("PublicUser").WithSummary("A player's public profile, by handle")
                .WithDescription("`{id, handle, hostname, avatar, hunterscore, rank, membership, membershipType, membershipTitle, online, stats: {distance, duration}}` "
                                 + "of any account here, with a player's token (without: token expired); `online` only for the player himself and his friends (else false); `null` for a handle that is unknown or banned, and past the read limit.")
@@ -600,6 +600,9 @@ public static class GameApi
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
                     if (!Py.IsDigit(killId) || !long.TryParse(killId, out var kid) || s.PublicAccount(handle) is not { } account)
                         return null;
+                    // a page of a player's data: counted in the reader's read limit (State.ReadAllowed), as the website's /hunters/ routes
+                    if ((SignIn.CookieOf(r.Header("Cookie") ?? "", SignIn.SessionCookie) is { } cookie ? s.Store.ResolveWebSession(cookie) : s.Authenticate(r.Tokens())) is { } reader && !s.ReadAllowed(reader))
+                        return new(429, [("Content-Type", "application/json"), ("Cache-Control", "no-store")], """{"status": "rate_limited", "message": "Too many reads: wait a minute."}"""u8.ToArray(), "state");
                     if (s.SavedScorePage(account, kid) is { } saved)  // a restored kill's page comes from a backup zip: nothing in it may run on this host
                         return new(200, [("Content-Type", "text/html"), ("Content-Security-Policy", "sandbox")], saved, "state");
                     var page = s.ScorePageReply(account, kid);
