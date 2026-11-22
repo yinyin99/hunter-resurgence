@@ -1546,7 +1546,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tem certeza de que deseja fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Relatar um problema</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Envia os logs do jogo e do launcher ao servidor da comunidade para que possamos ajudar. Guardados por 30 dias.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envia os logs e eventos de falha do jogo e do launcher (incluindo o WebView2) ao servidor da comunidade para que possamos ajudar. Guardados por 30 dias.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Reunindo os arquivos…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>O relatório contém estes arquivos:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Estes não puderam ser lidos e ficaram de fora:</value></data>
@@ -1563,7 +1563,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Algo deu errado? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar, o launcher pode nos enviar o log dele, os logs e eventos de falha do jogo e o último despejo de falha do jogo para corrigirmos.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não iniciar, o launcher pode nos enviar o log dele, os logs do jogo, eventos de falha do Windows do jogo, do launcher e do WebView2 e o último despejo de falha do jogo para corrigirmos.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostrar arquivos</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar toda vez</value></data>

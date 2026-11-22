@@ -46,7 +46,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     ];
 
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
-    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|(?<!ancellation)token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash): up to the next slash, or, at the end of the path, up to a space or punctuation.</summary>
     static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])(?:[^\\/:*?""<>|\r\n]+(?=[\\/])|[^\s\\/:*?""<>|,;()'\[\]]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
@@ -157,15 +157,15 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
-            void Add(string name, string text, Encoding enc, Func<string, string>? clean = null)
+            void Add(string name, string text, Encoding enc)
             {
                 using var s = zip.CreateEntry(name, CompressionLevel.Optimal).Open();
-                s.Write(enc.GetBytes((clean ?? Scrub)(text)));
+                s.Write(enc.GetBytes(Scrub(text)));
                 if (!files.Contains(name)) files.Add(name);
             }
-            void AddFile(string name, string path, Func<string, string>? clean = null)
+            void AddFile(string name, string path)
             {
-                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding, clean);
+                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding);
                 else missing.Add(name);
             }
 
@@ -174,9 +174,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             Add("runs.json", runsJson, Encoding.UTF8);
             if (launcherLog is not null)
             {
-                // the launcher scrubbed every entry when it wrote it (a stack frame keeps its Token parameters there, which the line scrub would take for credentials): only the user name is cleaned again
-                AddFile("launcher.log", launcherLog, ScrubNames);
-                if (File.Exists(LauncherLog.OlderOf(launcherLog))) AddFile("launcher.1.log", LauncherLog.OlderOf(launcherLog), ScrubNames);
+                AddFile("launcher.log", launcherLog);
+                if (File.Exists(LauncherLog.OlderOf(launcherLog))) AddFile("launcher.1.log", LauncherLog.OlderOf(launcherLog));
             }
             if (install() is { } g && Path.GetDirectoryName(g.ClientExe) is { } folder && Directory.Exists(folder))
             {
@@ -331,7 +330,14 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         while (found.Count < EventsMax && reader.ReadEvent() is { } e)
             using (e)
                 if (e.FormatDescription() is { } text && names.Any(n => text.Contains(n, StringComparison.OrdinalIgnoreCase)))
-                    found.Add($"{e.TimeCreated:u}  event {e.Id}  {e.ProviderName}\n{(text.Length > EventChars ? text[..EventChars] + " [cut]" : text)}");
+                    found.Add(FormatEvent(e.TimeCreated, e.Id, e.ProviderName, text));
         return found;
+    }
+
+    /// <summary>One event for events.txt: scrubbed first, then cut at <see cref="EventChars"/>, so that a credential on the cut is not left half (a prefix too short for the line scrub).</summary>
+    internal static string FormatEvent(DateTime? time, int id, string provider, string text)
+    {
+        text = Scrub(text);
+        return $"{time:u}  event {id}  {provider}\n{(text.Length > EventChars ? text[..EventChars] + " [cut]" : text)}";
     }
 }

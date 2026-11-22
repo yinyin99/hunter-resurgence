@@ -1546,7 +1546,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin ja launcherin lokit yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin ja launcherin lokit ja kaatumistapahtumat (WebView2 mukaan lukien) yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Kootaan tiedostoja…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Raportti sisältää nämä tiedostot:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Näitä ei voitu lukea, ja ne jätettiin pois:</value></data>
@@ -1563,7 +1563,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille oman lokinsa, pelin lokit ja kaatumistapahtumat sekä pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille oman lokinsa, pelin lokit, pelin, launcherin ja WebView2:n Windows-kaatumistapahtumat sekä pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>

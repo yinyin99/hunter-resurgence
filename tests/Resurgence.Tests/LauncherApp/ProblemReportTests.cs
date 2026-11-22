@@ -61,6 +61,16 @@ public class ProblemReportTests
     }
 
     [Fact]
+    public void AnEventIsScrubbedBeforeItIsCutSoACredentialOnTheCutIsNotLeftHalf()
+    {
+        // a fictional session id that the 2000-character cut would split into a prefix too short for the line scrub
+        var text = "resurgence-launcher.exe " + new string('x', 1950) + " 0123456789abcdef0123456789abcdef0123";
+        var formatted = Diagnostics.FormatEvent(new DateTime(2026, 1, 2, 3, 4, 5, DateTimeKind.Utc), 1000, "Application Error", text);
+        Assert.DoesNotContain("0123456789", formatted);
+        Assert.Contains("event 1000  Application Error", formatted);
+    }
+
+    [Fact]
     public void ALauncherCrashEventIsListedInEventsTxtEvenWithoutAGame()
     {
         using var temp = new TempDir("resurgence-test-");

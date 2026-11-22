@@ -8,7 +8,7 @@ namespace Resurgence.Tests.LauncherApp;
 public class LauncherLogTests
 {
     [MethodImpl(MethodImplOptions.NoInlining)]
-    static void BoomWithToken(CancellationToken token) => throw new InvalidOperationException("with token");
+    static void BoomWithCancellation(CancellationToken cancellationToken) => throw new InvalidOperationException("with a parameter");
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     static void Boom(string message) => throw new InvalidOperationException(message);
@@ -97,14 +97,39 @@ public class LauncherLogTests
         Assert.DoesNotContain("Jane Doe", text);
         Assert.Contains(@"C:\Users\<user>\AppData\x.cfg", text);
         Assert.Contains("at Resurgence.Tests.LauncherApp.LauncherLogTests.Boom", text); // the frame stays
-        // a frame with a Token parameter is code, not a credential: it stays in the log and in the report; the line scrub itself stays strict
-        try { BoomWithToken(CancellationToken.None); }
-        catch (Exception e) { log.Write(LogLevel.Error, "with a token parameter", e); }
-        Assert.Contains("BoomWithToken(CancellationToken token)", File.ReadAllText(path));
+        // a frame with a CancellationToken parameter is code, not a credential: it stays in the log and in the report; the line scrub stays strict for every other word
+        try { BoomWithCancellation(CancellationToken.None); }
+        catch (Exception e) { log.Write(LogLevel.Error, "with a parameter", e); }
+        Assert.Contains("BoomWithCancellation(CancellationToken cancellationToken)", File.ReadAllText(path));
         var zip = new Diagnostics(() => null, [], "1", () => [], Path.Combine(temp.Path, "out"), () => [], () => [], () => [], _ => [], launcherLog: path).Build("manual").Path;
         using (var z = System.IO.Compression.ZipFile.OpenRead(zip))
-            Assert.Contains("BoomWithToken(CancellationToken token)", new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd());
+            Assert.Contains("BoomWithCancellation(CancellationToken cancellationToken)", new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd());
         Assert.Equal("[line removed: it may hold a credential]", Diagnostics.Scrub("   at X.Y() in C:\\x token=abc"));
+        Assert.Equal("[line removed: it may hold a credential]", Diagnostics.Scrub("   at X.Y(string token)"));
+    }
+
+    [Fact]
+    public void AStackTextThatACallerSuppliedIsNotWrittenAndTheZipScrubsBothFilesStrictly()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "launcher.log");
+        var log = new LauncherLog(path);
+        var remote = new InvalidOperationException("remote failure");
+        System.Runtime.ExceptionServices.ExceptionDispatchInfo.SetRemoteStackTrace(remote, "   at Evil.Method() token=fictional-secret");
+        try { throw remote; }
+        catch (Exception e) { log.Write(LogLevel.Error, "remote", e); }
+        var text = File.ReadAllText(path);
+        Assert.Contains("remote failure", text);
+        Assert.DoesNotContain("fictional-secret", text);
+
+        // lines that are in either file when the zip is built (written by something else, or by an older version) go through the strict line scrub
+        File.AppendAllText(path, "   at Other.Method() Authorization: fictional-bearer\n");
+        File.WriteAllText(LauncherLog.OlderOf(path), "older line\n   at Other.Method() cookie=fictional-cookie\n");
+        var zip = new Diagnostics(() => null, [], "1", () => [], Path.Combine(temp.Path, "out"), () => [], () => [], () => [], _ => [], launcherLog: path).Build("manual").Path;
+        using var z = System.IO.Compression.ZipFile.OpenRead(zip);
+        var both = new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd() + new StreamReader(z.GetEntry("launcher.1.log")!.Open()).ReadToEnd();
+        Assert.Contains("older line", both);
+        Assert.DoesNotContain("fictional", both);
     }
 
     [Fact]

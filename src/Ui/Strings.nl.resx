@@ -1546,7 +1546,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs van het spel en de launcher naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs en crashgebeurtenissen van het spel en de launcher (inclusief WebView2) naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>De bestanden worden verzameld…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Het rapport bevat deze bestanden:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Deze konden niet worden gelezen en ontbreken:</value></data>
@@ -1563,7 +1563,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Het probleemrapport kon niet worden verzonden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Is er iets misgegaan? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Probleemrapporten sturen?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn eigen log, de logs en crashgebeurtenissen van het spel en de laatste crashdump van het spel sturen zodat we het kunnen oplossen.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Als het spel niet start, kan de launcher ons zijn eigen log, de logs van het spel, Windows-crashgebeurtenissen van het spel, de launcher en WebView2 en de laatste crashdump van het spel sturen zodat we het kunnen oplossen.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Bestanden tonen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch sturen</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Elke keer vragen</value></data>

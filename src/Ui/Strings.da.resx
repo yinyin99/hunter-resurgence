@@ -1546,7 +1546,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportér et problem</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Sender spillets og launcherens logfiler til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sender logfiler og nedbrudshændelser for spillet og launcheren (inklusive WebView2) til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samler filerne…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapporten indeholder disse filer:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Disse kunne ikke læses og er udeladt:</value></data>
@@ -1563,7 +1563,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gik noget galt? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sin egen logfil, spillets logfiler og nedbrudshændelser og spillets seneste nedbrudsdump, så vi kan rette det.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sin egen logfil, spillets logfiler, Windows-nedbrudshændelser for spillet, launcheren og WebView2 og spillets seneste nedbrudsdump, så vi kan rette det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Spørg mig hver gang</value></data>

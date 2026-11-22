@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
@@ -27,8 +28,8 @@ public sealed class LauncherLog(string path) : ILoggerProvider
 
     /// <summary>
     /// Appends one entry (a time in UTC, the level, the text, then the exceptions with their stacks); the file is closed again at once, so the report can read it while the launcher runs. The text and the exception messages go through the
-    /// report's line scrub (<see cref="Diagnostics.Scrub(string)"/>); a stack trace, which the runtime wrote, only loses the Windows user name (<see cref="Diagnostics.ScrubNames"/>), so that a method with a Token parameter stays. The
-    /// cut at <see cref="MaxEntryChars"/> comes after the scrub: a credential is never cut in two.
+    /// report's line scrub (<see cref="Diagnostics.Scrub(string)"/>); the stack frames are written from the frames' own metadata (type, method, parameters, file, line; see <see cref="Frames"/>), never from the exception's text, and lose the Windows
+    /// user name. The cut at <see cref="MaxEntryChars"/> comes after the scrub: a credential is never cut in two.
     /// </summary>
     public void Write(LogLevel level, string text, Exception? error = null)
     {
@@ -46,19 +47,35 @@ public sealed class LauncherLog(string path) : ILoggerProvider
             catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
     }
 
-    /// <summary>What <c>Exception.ToString()</c> says, but with the messages scrubbed as free text: the type and message of the exception, its stack, then each inner exception.</summary>
+    /// <summary>What <c>Exception.ToString()</c> says, with the messages scrubbed as free text: the type and message of the exception, its frames, then each inner exception.</summary>
     static string Describe(Exception error)
     {
         var sb = new StringBuilder();
         void Add(Exception e, string label)
         {
-            sb.Append(label).Append(e.GetType().FullName).Append(": ").Append(Diagnostics.Scrub(e.Message)).Append('\n');
-            if (e.StackTrace is { } stack) sb.Append(Diagnostics.ScrubNames(stack)).Append('\n');
+            sb.Append(label).Append(e.GetType().FullName).Append(": ").Append(Diagnostics.Scrub(e.Message)).Append('\n').Append(Frames(e));
             if (e is AggregateException all) foreach (var inner in all.InnerExceptions) Add(inner, "caused by ");
             else if (e.InnerException is { } one) Add(one, "caused by ");
         }
         Add(error, "");
         return sb.ToString().TrimEnd('\n');
+    }
+
+    /// <summary>
+    /// The frames of the stack the runtime captured, as <c>   at Type.Method(ParameterType name) in file:line n</c>, built from each frame's metadata. <c>Exception.StackTrace</c> is text (a type may override it and a caller may set a remote stack
+    /// text), which could hold a credential, so it is not used; code names and parameter types carry none, so a method with a Token parameter stays.
+    /// </summary>
+    static string Frames(Exception e)
+    {
+        var sb = new StringBuilder();
+        foreach (var f in new StackTrace(e, true).GetFrames() ?? [])
+            if (f.GetMethod() is { } m)
+            {
+                sb.Append("   at ").Append(m.DeclaringType?.FullName).Append('.').Append(m.Name).Append('(').AppendJoin(", ", m.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}")).Append(')');
+                if (f.GetFileName() is { } file) sb.Append(" in ").Append(file).Append(":line ").Append(f.GetFileLineNumber());
+                sb.Append('\n');
+            }
+        return Diagnostics.ScrubNames(sb.ToString());
     }
 
     /// <summary>

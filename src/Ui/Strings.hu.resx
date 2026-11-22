@@ -1546,7 +1546,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék és az indító naplóit a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék és az indító naplóit és összeomlási eseményeit (a WebView2-ét is) a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A fájlok összegyűjtése…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>A jelentés ezeket a fájlokat tartalmazza:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Ezeket nem sikerült beolvasni, ezért kimaradtak:</value></data>
@@ -1563,7 +1563,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Report.AutoFailed" xml:space="preserve"><value>A problémajelentést nem sikerült elküldeni: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Valami elromlott? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Küldjünk problémajelentéseket?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el, az indító elküldheti nekünk a saját naplóját, a játék naplóit és összeomlási eseményeit, valamint a játék utolsó összeomlási memóriaképét, hogy kijavíthassuk.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Ha a játék nem indul el, az indító elküldheti nekünk a saját naplóját, a játék naplóit, a játék, az indító és a WebView2 Windows-összeomlási eseményeit, valamint a játék utolsó összeomlási memóriaképét, hogy kijavíthassuk.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Fájlok megjelenítése</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Küldés automatikusan</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kérdezzen mindig</value></data>

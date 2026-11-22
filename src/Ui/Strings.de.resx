@@ -1546,7 +1546,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs des Spiels und des Launchers an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs und Absturzereignisse des Spiels und des Launchers (einschließlich WebView2) an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Die Dateien werden gesammelt …</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Der Bericht enthält diese Dateien:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Diese konnten nicht gelesen werden und fehlen:</value></data>
@@ -1563,7 +1563,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Report.AutoFailed" xml:space="preserve"><value>Der Problembericht konnte nicht gesendet werden: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ist etwas schiefgelaufen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Problemberichte senden?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns sein eigenes Log, die Logs und Absturzereignisse des Spiels und den letzten Absturzspeicherauszug des Spiels schicken, damit wir es beheben können.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Wenn das Spiel nicht startet, kann der Launcher uns sein eigenes Log, die Logs des Spiels, Windows-Absturzereignisse des Spiels, des Launchers und von WebView2 und den letzten Absturzspeicherauszug des Spiels schicken, damit wir es beheben können.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dateien anzeigen</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Automatisch senden</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Jedes Mal fragen</value></data>

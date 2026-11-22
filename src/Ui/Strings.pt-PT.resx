@@ -1546,7 +1546,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tens a certeza de que queres fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Comunicar um problema</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Envia os registos do jogo e do launcher para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envia os registos e eventos de falha do jogo e do launcher (incluindo o WebView2) para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A reunir os ficheiros…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>O relatório contém estes ficheiros:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Estes não puderam ser lidos e ficaram de fora:</value></data>
@@ -1563,7 +1563,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Não foi possível enviar o relatório de problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Algo correu mal? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Enviar relatórios de problemas?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar, o launcher pode enviar-nos o seu próprio registo, os registos e eventos de falha do jogo e o último despejo de falha do jogo para o corrigirmos.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se o jogo não arrancar, o launcher pode enviar-nos o seu próprio registo, os registos do jogo, os eventos de falha do Windows do jogo, do launcher e do WebView2 e o último despejo de falha do jogo para o corrigirmos.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostrar ficheiros</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Enviar automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Perguntar de cada vez</value></data>
