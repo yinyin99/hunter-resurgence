@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: fællesskabsserver til {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Siden blev ikke fundet</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Denne side findes ikke.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Log ind for at se denne side</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Spillernes data, butikken, missionerne og konkurrencerne er kun for jægere, der er logget ind.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAGT NU</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} spiller</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} spillere</value></data>

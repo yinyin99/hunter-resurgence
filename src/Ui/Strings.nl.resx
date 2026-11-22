@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: communityserver voor {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Pagina niet gevonden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Deze pagina bestaat niet.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Log in om deze pagina te zien</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>De gegevens van spelers, de winkel, de missies en de wedstrijden zijn alleen voor ingelogde jagers.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAAG NU</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} speler</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} spelers</value></data>

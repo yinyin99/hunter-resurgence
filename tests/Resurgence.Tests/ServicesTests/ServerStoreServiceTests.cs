@@ -38,15 +38,29 @@ public class ServerStoreServiceTests
 
     static ServerStoreService Ok() => Make(new Fake(_ => Json(HttpStatusCode.OK, Store)));
 
-    // the server answers its website host only; the store is the same for everyone, so the player's cookie stays home
+    // the server answers its website host only, and the store to a signed-in player only: the request carries the player's cookie
     [Fact]
-    public async Task TheRequestCarriesTheWebsitesHostAndNoCookie()
+    public async Task TheRequestCarriesTheWebsitesHostAndTheSessionCookie()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Store));
         await Make(fake).ItemsAsync("all", "", 1);
         var request = Assert.Single(fake.Seen);
         Assert.Equal("site.test", request.Headers.Host);
-        Assert.False(request.Headers.Contains("Cookie"));
+        Assert.Equal($"{ServerSessionApi.Cookie}=secret", request.Headers.GetValues("Cookie").Single());
+    }
+
+    // signed out the store is empty and the server is not asked, even when a signed-in player's read is kept
+    [Fact]
+    public async Task SignedOutTheStoreIsEmptyAndNotAsked()
+    {
+        var cache = new ServerCache<ServerStore>();
+        await Make(new Fake(_ => Json(HttpStatusCode.OK, Store)), cache: cache).ItemsAsync("all", "", 1);  // a signed-in player filled the cache
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, Store));
+        var service = new ServerStoreService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = null, Host = "site.test" },
+            cache, new NoItems(), NullLogger<ServerStoreService>.Instance);
+        Assert.Empty((await service.ItemsAsync("all", "", 1)).Rows);
+        Assert.Null(await service.ItemAsync(1));
+        Assert.Empty(fake.Seen);
     }
 
     [Fact]
@@ -93,7 +107,7 @@ public class ServerStoreServiceTests
          "ethical": {"ammo": [{"id": 9, "name": "Test Cartridge", "variant": "Red"}], "species": [{"id": 14, "name": "Test Fox", "permitted": [true]}, {"id": 8, "name": "Test Moose", "permitted": [false]}]}}
         """;
 
-    // the list holds a thousand items, so what belongs to one (capacity, contents, fits, the species table) is the server's item route, asked without the cookie
+    // the list holds a thousand items, so what belongs to one (capacity, contents, fits, the species table) is the server's item route, asked with the cookie
     [Fact]
     public async Task AnItemHasWhatTheServersItemRouteAdds()
     {
@@ -105,7 +119,7 @@ public class ServerStoreServiceTests
         Assert.Equal([new StoreFit(9, "Test Cartridge", "Red")], item.Ethics!.Columns);
         Assert.Equal([(14, "Test Fox", true), (8, "Test Moose", false)], item.Ethics.Rows.Select(r => (r.Id, r.Species, r.Permitted[0])));
         var request = fake.Seen[^1];
-        Assert.Equal(("/catalog/item/1", "site.test", false), (request.RequestUri!.AbsolutePath, request.Headers.Host, request.Headers.Contains("Cookie")));
+        Assert.Equal(("/catalog/item/1", "site.test", true), (request.RequestUri!.AbsolutePath, request.Headers.Host, request.Headers.Contains("Cookie")));
     }
 
     [Fact]

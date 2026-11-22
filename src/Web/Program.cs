@@ -133,6 +133,8 @@ app.Use((ctx, next) =>
     h["Referrer-Policy"] = "strict-origin-when-cross-origin";
     // not frameable (clickjacking); a wider policy would have to allow the inline import map and the offerwall iframe
     h.ContentSecurityPolicy = "frame-ancestors 'none'";
+    // only the public pages are for search engines (docs/website.md#search-engines)
+    if (!Seo.Indexed(ctx.Request.Path)) h["X-Robots-Tag"] = "noindex";
     return next();
 });
 // before the cookie policy, the language cookie and the antiforgery, which read the scheme
@@ -195,22 +197,19 @@ app.MapStaticAssets();
 // the launcher's list of the pictures (docs/images.md): {"<file>":"<version>"}; {} without IMAGES_DIR
 app.MapGet("/images.json", () => imageIndex);
 // every slot of the manifest without a file, by area, and the slots a page drew without one that the manifest does not know (docs/images.md#missing-pictures); the data patterns
-// are expanded from the site's own services, asked with the browser's host as the sitemap does. Public, so the manifest part is kept for an hour (MissingList) and Cloudflare may keep a reply for 5 minutes
+// are expanded from the site's own services, asked with the browser's host and its session (the store is for signed-in players: fetched signed out, the report has no store slots).
+// Public, so the manifest part is kept for an hour (MissingList) and Cloudflare may keep a reply for 5 minutes
 var missingList = new MissingList(images);
 app.MapGet("/images-missing.json", async (HttpRequest r, ServerCookie cookie, HostMode mode, IStoreService store, ILeaderboardsService boards, IHelpService help, ICompetitionsService competitions,
     IBankService bank, IAccountService account, IServersService servers) =>
 {
-    cookie.Host = r.Host.Value;
+    (cookie.Host, cookie.Value) = (r.Host.Value, r.Cookies[ServerSessionApi.Cookie]);
     var report = await missingList.GetAsync(new(mode, store, boards, help, competitions, bank, account, servers));
     r.HttpContext.Response.Headers.CacheControl = "public, max-age=300";
     return report;
 });
-// the public pages for search engines (docs/website.md#search-engines); the server answers its public lists for the website's own host only, as Routes.razor sets it for a page
-app.MapGet("/sitemap.xml", async (HttpRequest r, ServerCookie cookie, IStoreService store, ILeaderboardsService boards) =>
-{
-    cookie.Host = r.Host.Value;
-    return Results.Content(await Seo.SitemapAsync($"{r.Scheme}://{r.Host}", store, boards), "application/xml");
-});
+// the public pages for search engines (docs/website.md#search-engines)
+app.MapGet("/sitemap.xml", (HttpRequest r) => Results.Content(Seo.Sitemap($"{r.Scheme}://{r.Host}"), "application/xml"));
 // no CSP of Blazor's own (frame-ancestors 'self'): the security headers middleware above sends the only one
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(o => o.ContentSecurityFrameAncestorsPolicy = null).AddAdditionalAssemblies(typeof(Resurgence.Ui.Strings).Assembly);
 

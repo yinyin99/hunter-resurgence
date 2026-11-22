@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: Community-Server für {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Seite nicht gefunden</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Diese Seite existiert nicht.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Melde dich an, um diese Seite zu sehen</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Die Daten der Spieler, der Shop, die Missionen und die Wettbewerbe sind nur für angemeldete Jäger.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JAGD STARTEN</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} Spieler</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} Spieler</value></data>

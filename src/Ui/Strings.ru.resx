@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: сервер сообщества для {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Страница не найдена</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Такой страницы не существует.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Войдите, чтобы увидеть эту страницу</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Данные игроков, магазин, задания и соревнования доступны только охотникам, вошедшим в систему.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>ОХОТА</value></data>
   <data name="Online.Player" xml:space="preserve"><value>Игроки: {0}</value></data>
   <data name="Online.Players" xml:space="preserve"><value>Игроки: {0}</value></data>

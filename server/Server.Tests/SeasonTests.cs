@@ -50,7 +50,15 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         con.Exec("INSERT INTO harvests (account_id, kill_id, body, hidden) VALUES ($a, ?, ?, ?)", kill, $$"""{"score": {{score}}, "species": {{species}}, "timestamp": "{{Iso(ts)}}"}""", hidden ? 1 : 0);
     }
 
-    async Task<Reply> Get(string path, params (string, string)[] headers) => await server.SendAsync("GET", "web.test", path, headers);
+    /// <summary>A GET on the website's host; a profile read (<c>/hunters/</c>) without a cookie goes as a signed-in visitor, the first account: profiles are for signed-in players only.</summary>
+    async Task<Reply> Get(string path, params (string, string)[] headers) => await server.SendAsync("GET", "web.test", path,
+        path.StartsWith("/hunters/", StringComparison.Ordinal) && !headers.Any(h => h.Item1 == "Cookie") ? [.. headers, Visitor()] : headers);
+
+    (string, string) Visitor()
+    {
+        using var con = state.Store.Open();
+        return ("Cookie", "hr_session=" + state.Store.CreateWebSession((long)con.Scalar("SELECT id FROM accounts WHERE banned = 0 ORDER BY id LIMIT 1")!, TimeSpan.FromHours(1)));
+    }
 
     async Task<JsonNode> Json(string path) => JsonNode.Parse((await Get(path)).Body)!;
 
