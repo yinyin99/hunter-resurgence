@@ -8,11 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using ImageConfiguration = SixLabors.ImageSharp.Configuration;
-using DecoderOptions = SixLabors.ImageSharp.Formats.DecoderOptions;
-using Picture = SixLabors.ImageSharp.Image;
+using SkiaSharp;
 
 namespace Resurgence.Server;
 
@@ -158,7 +154,7 @@ public sealed partial class State
     /// <summary>The longest side of the copy of a picture another player is served: the lightbox's size.</summary>
     public const int DisplaySize = 1280;
     const long MaxPixels = 50_000_000;  // a picture larger than this is never decoded
-    static readonly ImageConfiguration JpegOnly = new(new JpegConfigurationModule());
+    const int MaxSide = 12_000;  // nor one longer than this
 
     /// <summary>The website's name of the display-size copy of a picture: `display-&lt;32 hex digits&gt;.jpg`, an HMAC-SHA256 of the picture keyed with the server's secret, so a display link never tells the original's name
     /// (the game's host serves the original by its name, without a session).</summary>
@@ -229,18 +225,32 @@ public sealed partial class State
         var part = $"{copy}.{Guid.NewGuid():N}.part";
         try
         {
-            var info = Picture.Identify(Decoding(null), file);
-            if ((long)info.Width * info.Height > MaxPixels) return null;
-            var large = info.Width > DisplaySize || info.Height > DisplaySize;
-            using var picture = Picture.Load(Decoding(large ? new(DisplaySize, DisplaySize) : null), file);  // a JPEG decodes at a smaller scale
-            if (picture.Width > DisplaySize || picture.Height > DisplaySize)  // the decoder leaves it when one side already fits the box
-                picture.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Max, Size = new(DisplaySize, DisplaySize) }));
+            using var from = File.OpenRead(file);
+            Span<byte> head = stackalloc byte[3];
+            if (from.Read(head) != 3 || head[0] != 0xFF || head[1] != 0xD8 || head[2] != 0xFF) return null;  // not a JPEG: nothing else is decoded
+            from.Position = 0;
+            using var codec = SKCodec.Create(from);
+            if (codec is not { EncodedFormat: SKEncodedImageFormat.Jpeg }) return null;
+            var (width, height) = (codec.Info.Width, codec.Info.Height);
+            if (width <= 0 || height <= 0 || width > MaxSide || height > MaxSide || (long)width * height > MaxPixels) return null;
+            var longestSide = Math.Max(width, height);
+            var scaled = longestSide <= DisplaySize ? codec.Info.Size : codec.GetScaledDimensions(Math.Min(1f, (float)Math.Ceiling(DisplaySize * 8.0 / longestSide) / 8));  // a JPEG decodes at the smallest eighth that still covers the box
+            using var bitmap = new SKBitmap(new SKImageInfo(scaled.Width, scaled.Height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
+            if (codec.GetPixels(bitmap.Info, bitmap.GetPixels()) is not (SKCodecResult.Success or SKCodecResult.IncompleteInput)) return null;
+            var longest = Math.Max(bitmap.Width, bitmap.Height);
+            using var fitted = longest > DisplaySize  // the decoder leaves it when one side already fits the box
+                ? bitmap.Resize(new SKImageInfo((int)Math.Max(1, Math.Round((double)bitmap.Width * DisplaySize / longest)), (int)Math.Max(1, Math.Round((double)bitmap.Height * DisplaySize / longest)), bitmap.ColorType, SKAlphaType.Opaque), new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear))
+                : null;
+            if (longest > DisplaySize && fitted is null) return null;
+            using var image = SKImage.FromBitmap(fitted ?? bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Jpeg, 85);  // a new encode carries none of the original's metadata
+            if (data is null) return null;
             using (var to = File.Create(part))
-                picture.Save(to, new JpegEncoder { Quality = 85 });
+                data.SaveTo(to);
             File.Move(part, copy, overwrite: true);
             return copy;
         }
-        catch (Exception e) when (e is SixLabors.ImageSharp.ImageFormatException or SixLabors.ImageSharp.Memory.InvalidMemoryOperationException or NotSupportedException or IOException)  // NotSupported: a JPEG kind the decoder lacks (lossless)
+        catch (Exception)  // SkiaSharp throws a plain Exception when it cannot allocate
         {
             return null;
         }
@@ -249,8 +259,6 @@ public sealed partial class State
             if (File.Exists(part)) File.Delete(part);  // a restore may have removed the folder meanwhile
         }
     }
-
-    static DecoderOptions Decoding(SixLabors.ImageSharp.Size? target) => new() { Configuration = JpegOnly, MaxFrames = 1, SkipMetadata = true, TargetSize = target };
 
     /// <summary>SQL of the spawn (event 7) of a kill's animal: the latest of its individual before the kill's event 3, as <see cref="KillHits"/> bounds its hits.</summary>
     static string KillSpawn(string individual, string harvest) =>

@@ -23,9 +23,6 @@ updates:
     groups:
       dotnet:
         patterns: ["Microsoft.*", "System.*"]
-    ignore:
-      - dependency-name: "SixLabors.ImageSharp"
-        versions: [">= 3.2.0"] # 3.2 and later need a Six Labors license key to build (server/Server/Server.csproj)
   - package-ecosystem: github-actions
     directories: ["/", "/.github/actions/*"] # "/" covers the workflows; the composite actions (setup-sdk uses setup-dotnet) are looked up per folder
     schedule:
