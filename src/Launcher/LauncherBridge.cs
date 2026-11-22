@@ -209,16 +209,19 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
     public void RestartLauncher() { if (restart?.Invoke() != true) rest.RestartLauncher(); }
 
-    string? refusedUrl; // the start the running game refused: CloseGameAsync repeats it
+    /// <summary>A start link is good for 15 minutes (docs/server.md): the refused start is repeated only within this.</summary>
+    static readonly TimeSpan RepeatWithin = TimeSpan.FromMinutes(5);
+    sealed record Refusal(string Url, long At);
+    Refusal? refused; // the start the running game refused: CloseGameAsync repeats it
 
     public Result StartGame(string url)
     {
-        refusedUrl = null;
+        refused = null;
         if (install() is not { } g || !File.Exists(g.ClientExe)) return Result.Fail("Launch.NoGame");
         if (url.Any(c => char.IsWhiteSpace(c) || c == '"')) return Result.Fail("Launch.Failed");
         if (isRunning(g.ClientExe))
         {
-            refusedUrl = url;
+            refused = new(url, Stopwatch.GetTimestamp());
             // a window: show it and start nothing; none: a copy left behind, probably by a crash
             if (processes?.Invoke(g.ClientExe).FirstOrDefault(p => p.Window != 0).Window is nint and not 0 and var window)
             {
@@ -260,9 +263,12 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         if (install() is not { } g) return Result.Success;
         if (stopClient is not null) await stopClient(g.ClientExe, TimeSpan.FromSeconds(10));
         if (isRunning(g.ClientExe)) return Result.Fail("Launch.CloseFailed");
-        var url = Interlocked.Exchange(ref refusedUrl, null);
+        var was = Interlocked.Exchange(ref refused, null);
+        if (!restart) return Result.Success;
+        // an old link is not repeated (the game would crash on it): the player starts again from the page
+        if (was is not { } r || Stopwatch.GetElapsedTime(r.At) > RepeatWithin) return Result.Fail("Launch.Failed");
         // off the UI thread: a start may wait for Steam
-        return restart && url is not null ? await Task.Run(() => StartGame(url)) : Result.Success;
+        return await Task.Run(() => StartGame(r.Url));
     }
 
     /// <summary>The graphics settings follow the start's mode (<see cref="GameFiles.CarryGraphics"/>); a failure is logged and never blocks the start.</summary>

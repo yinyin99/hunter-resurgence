@@ -87,7 +87,8 @@ public static class GameFiles
     {
         if (string.IsNullOrEmpty(clientExe)) return;
         var all = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe));
-        EndErrorReporting([.. all.Select(p => p.Id)]);
+        var ids = all.Select(p => p.Id).ToArray();
+        await Task.Run(() => EndErrorReporting(ids)); // a WMI query: never on the window's thread
         await StopAsync(all, grace);
     }
 

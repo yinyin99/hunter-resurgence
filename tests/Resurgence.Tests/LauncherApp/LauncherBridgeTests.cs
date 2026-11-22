@@ -96,7 +96,7 @@ public class LauncherBridgeTests
             Assert.Equal([Path.Combine(dir, "client.exe")], stopped);
             Assert.Equal(" /connect:srv://x", " " + started.Single().Arguments.Split(' ')[0]);
 
-            Assert.True((await b.CloseGameAsync(true)).Ok); // the start was repeated once: nothing more
+            Assert.Equal("Launch.Failed", (await b.CloseGameAsync(true)).Error); // the start was repeated once: nothing more
             Assert.Single(started);
         }
         finally { Directory.Delete(dir, true); }
@@ -130,7 +130,7 @@ public class LauncherBridgeTests
             Assert.True((await b.CloseGameAsync(false)).Ok);
             Assert.Single(stopped);
             Assert.Empty(started);
-            Assert.True((await b.CloseGameAsync(true)).Ok); // the refused start was forgotten: it is not repeated
+            Assert.Equal("Launch.Failed", (await b.CloseGameAsync(true)).Error); // the refused start was forgotten: it is not repeated
             Assert.Empty(started);
 
             Assert.Equal("Launch.LeftOver", stuck.StartGame("srv://x").Error);
