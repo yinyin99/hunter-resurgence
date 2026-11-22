@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Ei vielä kavereita</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Hakutulokset ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Metsästäjiä ei löytynyt</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Olet hakenut liian usein. Yritä uudelleen tunnin kuluttua.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Kaveripyyntö lähetetty</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Kaveripyyntö {0}/{1}</value></data>

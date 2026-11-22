@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Še nimaš prijateljev</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Rezultati iskanja ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ni najdenih lovcev</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Iskali ste prepogosto. Poskusite znova čez eno uro.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Pošlji prošnjo za prijateljstvo</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Prošnja je poslana</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Prošnja za prijateljstvo {0} od {1}</value></data>

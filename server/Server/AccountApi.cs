@@ -384,16 +384,22 @@ public static class AccountApi
                 ? Json(200, state.WebFriends(account, site))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountFriends").WithSummary("The player's friends, the players who asked to be friends and those the player asked")
-            .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online, avatar}` by handle (upper case, ordinal); `avatar` as in `GET /hunters/<handle>` (docs/server.md#avatars).")
+            .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online, avatar}` by handle (upper case, ordinal), `online` only true for friends; `avatar` as in `GET /hunters/<handle>` (docs/server.md#avatars).")
             .Produces(200, contentType: "application/json");
 
-        group.MapGet("/friends/search", (HttpContext ctx) => Account(ctx) is { } account
-                ? Json(200, state.WebFriendSearch(account, ctx.Request.Query["text"].ToString(), site))
-                : Refuse(401, "signed_out", "Sign in first."))
-            .WithName("AccountFriendSearch").WithSummary("Players whose handle contains the text (query `text`)")
-            .WithDescription($"`{{hunters: [{{handle, online, avatar}}]}}`, by handle, at most {State.FriendSearchLimit}; never the player itself.")
-            .QueryParams(("text", "A part of the handle, any case"))
-            .Produces(200, contentType: "application/json");
+        group.MapGet("/friends/search", (HttpContext ctx) =>
+            {
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var text = ctx.Request.Query["text"].ToString();
+                if (text.Trim().Length >= State.FriendSearchMin && !state.SearchAllowed(account))
+                    return Refuse(429, "rate_limited", $"At most {State.SearchesPerHour} searches an hour: try again later.");
+                return Json(200, state.WebFriendSearch(account, text, site));
+            })
+            .WithName("AccountFriendSearch").WithSummary("Players whose handle contains the text (query `text`, at least 3 characters)")
+            .WithDescription($"`{{hunters: [{{handle, online, avatar}}]}}`, the exact handle first, then by handle, at most {State.FriendSearchLimit}; never the player itself; `online` only true for the player's friends. "
+                             + $"A text under {State.FriendSearchMin} characters (spaces around it left out) finds nothing and is not counted; 429 `rate_limited` past {State.SearchesPerHour} searches an hour of the account.")
+            .QueryParams(("text", "A part of the handle, any case, at least 3 characters"))
+            .Produces(200, contentType: "application/json").Produces(429, contentType: "application/json");
 
         group.MapGet("/messages", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.WebConversations(account, site))

@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Ingen venner endnu</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Søgeresultater ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ingen jægere fundet</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Du har søgt for ofte. Prøv igen om en time.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send venneanmodning</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Venneanmodning sendt</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Venneanmodning {0} af {1}</value></data>

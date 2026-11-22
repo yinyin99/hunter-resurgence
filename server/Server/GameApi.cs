@@ -3,6 +3,7 @@
 // the contract it replaces, and returns null to fall through to the replay (Replay.Game.Fallback): a local server's
 // recorded reply, a community server's empty one (ReplayScope).
 using System.ComponentModel;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -201,21 +202,21 @@ public static class GameApi
                     : null))
                .WithName("SkillList").WithSummary("Skill numbers of a player")
                .WithDescription("The player's own skills from the state (level plus the fraction of its span); for other players a local "
-                                + "server replays the recording and a community server sends empty skills.")
+                                + "server replays the recording and a community server sends the skills of a player he may see (his friends, whoever a board shows him), else empty skills.")
                .Body<UserForm>(Form).Produces<SkillNumbers>();
             api.MapExactPost(game, STATISTICS_TOTAL, r => Own(game, r, a => s.StatisticsReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("StatisticsTotal").WithSummary("Statistics of a player")
                .WithDescription("The restored statistics plus the server hunts (the open one so far) (`data`, `distance`, `duration`): the player's own on a local "
-                                + "server (other players and unrestored accounts replay the recording), any account's on a community server (an unknown, banned or recorded user id gets empty statistics).")
+                                + "server (other players and unrestored accounts replay the recording), on a community server those of a player he may see (his friends, whoever a board shows him; anyone else, an unknown, banned or recorded user id gets empty statistics).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, ACHIEVEMENT_STATS, r => Own(game, r, a => s.AchievementReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
                     : null))
                .WithName("AchievementStats").WithSummary("Achievements of a player with their earn times")
                .WithDescription("The restored achievements and those earned on a community server, with their earn times: the player's own on a local "
-                                + "server (other players replay the recording, also for its unrestored accounts), any account's on a community server (`[]` for an unknown, banned or recorded user id).")
+                                + "server (other players replay the recording, also for its unrestored accounts), on a community server those of a player he may see (`[]` for anyone else and an unknown, banned or recorded user id).")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, LEADERBOARD_PERSONAL, r => Own(game, r, a => s.PersonalBestReply(a, r.Body) is { Length: > 0 } reply
                     ? new(200, JsonAnyOrigin(), reply, "state")
@@ -223,7 +224,7 @@ public static class GameApi
                .WithName("LeaderboardPersonal").WithSummary("A player's personal bests of a season")
                .WithDescription("`{status, data: [{specie, score, distance}]}` of the `user_id` and `season_no` (0 all time, 1 the restored harvests, 2 and later this server's seasons, [docs/server.md](server.md#leaderboards-and-seasons)): "
                                 + "the best score and the longest range of each species among the account's harvests of that season, `{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score`, `species}` "
-                                + "(any account's on a community server, `{status: done, data: []}` for an unknown, banned or recorded user id and for a season with none); a local server replays the recording for other players.")
+                                + "(on a community server the player's own or a player he may see, `{status: done, data: []}` for anyone else, an unknown, banned or recorded user id and for a season with none); a local server replays the recording for other players.")
                .Body<PersonalForm>(Form).Produces(200, contentType: "application/json");
             // the boards of the original's pages: a player's token, community server only, the current season (leaderboards_all, leaderboard_details, current_personal) or an ended one (hall of fame);
             // no board answers past its top 100 but the player's own window (docs/server.md#who-sees-whom)
@@ -274,21 +275,21 @@ public static class GameApi
         if (s != null)
         {
             // Base: the recorded reply on a local server, the endpoint's empty shape on a community server (ReplayScope).
-            // `user_id` of another player is that player's hunts, see State.HuntsOf; anyone else's is the base.
+            // `user_id` of another player the token's account may see is that player's hunts, see State.HuntsOf; anyone else's is the base.
             api.MapExactPost(game, PUBLIC_EXPEDITION, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.HuntsOf(a, r.Body) is { } who ? new(hit.Status, hit.Headers, s.ExpeditionReply(who, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("LastHunt").WithSummary("One expedition (the latest, or `expedition_id`) with its kills and stats")
                .WithDescription("`stats` of a hunt that is open are those of its events so far (`duration` the time since it started, `distance` 0 until the hunt ends); `expedition_id` picks an older hunt (an unknown id and the "
                                 + "time before the first server hunt: a hunt a restore saved, else the recorded reply, a community server: `null`). "
-                                + "`user_id` of another player here is that player's hunt (no token of theirs); an unknown or banned one is the base reply.")
+                                + "`user_id` of another player is that player's hunt when the player may see him (his friends, whoever a board shows him); anyone else, an unknown or banned one is the base reply, so walking user ids finds nothing.")
                .Body<ExpeditionForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, EXPEDITION_LIST, r => game.Base(r) is { } hit
                     ? Own(game, r, a => s.HuntsOf(a, r.Body) is { } who ? new(hit.Status, hit.Headers, s.ExpeditionListReply(who, hit.Body, r.Body), "state") : null)
                     : null)
                .WithName("Expeditions").WithSummary("Expedition history, newest first")
                .WithDescription("Server expeditions ahead of the hunts a restore saved, else the recorded ones, paged by `offset` and `limit` "
-                                + "(a community server: empty). `user_id` of another player here is that player's list; an unknown or banned one is the base reply.")
+                                + "(a community server: empty). `user_id` of another player the player may see is that player's list; anyone else, an unknown or banned one is the base reply.")
                .Body<ExpeditionListForm>(Form).Produces(200, contentType: "application/json");
             foreach (var (path, name) in new[] { (ME, "Me"), (POLL, "Poll") })
             {
@@ -337,12 +338,12 @@ public static class GameApi
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, TROPHY_LIST, r => !s.Online ? null : Own(game, r, a => s.TrophyListReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
                .WithName("TrophyList").WithSummary("A player's restored trophies, one page")
-               .WithDescription("`{total, trophies}` of the `user_id`: the player's own, or any other account's here without its hidden trophies (needs any player's token); the empty reply for an unknown or banned one.")
+               .WithDescription("`{total, trophies}` of the `user_id`: the player's own, or without its hidden trophies those of a player he may see (his friends, whoever a board shows him); the empty reply for anyone else and an unknown or banned one.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, GALLERY_LIST, r => !s.Online ? null : Own(game, r, a => s.GalleryListReply(a, r.Body) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
                .WithName("GalleryList").WithSummary("A player's gallery photos, one page")
                .WithDescription("`{total, photos: [{id, type, url, thumbnail, label, animal}]}` of the `user_id` (the player's own without one) from the photos the game uploaded, newest first, `offset` and `limit` page it; "
-                                + "any other account here is listed too (needs any player's token); the empty reply for an unknown or banned one.")
+                                + "a player he may see is listed too (his friends, whoever a board shows him); the empty reply for anyone else and an unknown or banned one.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, GALLERY_DELETE, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(),
                     long.TryParse(FormValue(r, "photo_id"), out var id) && s.DeletePhoto(a, id) ? "true"u8.ToArray() : "false"u8.ToArray(), "state")))
@@ -391,12 +392,13 @@ public static class GameApi
                .WithName("DailyMissionActivate").WithSummary("Start the daily mission streak")
                .WithDescription("`{\"success\": true}`: a frozen account unfreezes and starts day 1 today; the streak of an active account is kept.")
                .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
-            // challenges (community server only; a local server replays): any account's completed ones, from the challenges table
-            Reply? userChallenges(Req r) => !s.Online ? null : new(200, JsonAnyOrigin(), s.ChallengesReply(FormValue(r, "user_id") ?? ""), "state");
+            // challenges (community server only; a local server replays): the completed ones of a player the token's account may see (State.SeenAccount), from the challenges table
+            Reply? userChallenges(Req r) => !s.Online ? null : new(200, JsonAnyOrigin(), s.Authenticate(r.Tokens()) is { } a && long.TryParse(FormValue(r, "user_id"), out var id) && s.SeenAccount(a, id) is { } who
+                ? s.ChallengesReply(who.ToString(CultureInfo.InvariantCulture)) : "{}"u8.ToArray(), "state");
             api.MapExactPost(game, USER_CHALLENGES, userChallenges)
                .WithName("UserChallenges").WithSummary("A player's completed challenges")
                .WithDescription("`{<challenge id>: {id, user_id, challenge_id, objectives, objectives_hash, completed, challenge_date}}` of the `user_id` (form), one entry for each challenge it completed "
-                                + "(the restored ones and those this server tracked from the hunt's events); a challenge never completed has no entry. Any account's here, without a token; `{}` for an unknown or banned one.")
+                                + "(the restored ones and those this server tracked from the hunt's events); a challenge never completed has no entry. Needs a player's token: the player's own, or a player he may see (himself, his friends, whoever a board shows him); `{}` for anyone else and without a token.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             api.MapGet(USER_CHALLENGES, Handle(game, r => r.Method == "GET" && r.Path == USER_CHALLENGES ? userChallenges(r) : null)).WithName("UserChallengesGet")
                .WithSummary("A player's completed challenges, read with GET and the `user_id` in the query").Produces(200, contentType: "application/json");
@@ -408,25 +410,25 @@ public static class GameApi
             foreach (var (path, name, add) in new[] { (FRIEND_ADD, "FriendAdd", true), (FRIEND_REMOVE, "FriendRemove", false) })
                 api.MapExactPost(game, path, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.FriendReply(a, r.Body, add), "state")))
                    .WithName(name).WithSummary(add ? "Ask a player to be friends, or accept their request" : "Decline or cancel a request, or remove a friend")
-                   .WithDescription("`true`; `{\"errorCode\": 400}` for the player's own id or one that has no account here.")
+                   .WithDescription("`true`; `{\"errorCode\": 400}` for the player's own id, one that has no account here, and any id other than a player of his friends, requests (either way), multiplayer session or one he may see (State.SeenAccount).")
                    .Body<FriendForm>(Form).Produces(200, contentType: "application/json");
-            api.MapExactPost(game, FRIENDS_LIST, r => !s.Online ? null : new(200, JsonAnyOrigin(), s.FriendsListReply(r.Body), "state"))
-               .WithName("FriendsList").WithSummary("Any player's friends, one page, without a token")
-               .WithDescription("`{total, friends: [as Me/friends]}`; `limit` 1 to 50 (missing, empty or below 1: all). No `user_id`: `{\"errorCode\": 400}`; "
-                                + "an empty, non-positive or unknown one: `null`; a non-numeric value: the handler error.")
+            api.MapExactPost(game, FRIENDS_LIST, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.FriendsListReply(a, r.Body), "state")))
+               .WithName("FriendsList").WithSummary("The player's own friends, one page")
+               .WithDescription("`{total, friends: [as Me/friends]}` of the token's own `user_id` (a player sees only his own friends); `limit` 1 to 50 (missing, empty or below 1: all). Another player's `user_id`: `{total: 0, friends: []}`; "
+                                + "no `user_id`: `{\"errorCode\": 400}`; an empty or non-positive one: `null`; a non-numeric value: the handler error. Without a token: token expired.")
                .Body<FriendsListForm>(Form).Produces(200, contentType: "application/json");
-            // the public reads (community server only; a local server replays): any account here (State.PublicAccount), no token
-            api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null
-                    : new(200, JsonAnyOrigin(), s.PublicAccount(FormValue(r, "hostname") ?? "") is { } a ? Py.DumpBytes(s.PublicUser(a)) : "null"u8.ToArray(), "state"))
+            // the profile reads (community server only; a local server replays): a player's token; by handle any player here (State.PublicAccount), by user id one the player may see (State.SeenAccount)
+            api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(),
+                    s.PublicAccount(FormValue(r, "hostname") ?? "") is var other && (other == a || s.ReadAllowed(a)) && other is { } o ? Py.DumpBytes(s.PublicUser(o, a)) : "null"u8.ToArray(), "state")))
                .WithName("PublicUser").WithSummary("A player's public profile, by handle")
                .WithDescription("`{id, handle, hostname, avatar, hunterscore, rank, membership, membershipType, membershipTitle, online, stats: {distance, duration}}` "
-                                + "of any account here, without a token; `null` for a handle that is unknown or banned.")
+                                + "of any account here, with a player's token (without: token expired); `online` only for the player himself and his friends (else false); `null` for a handle that is unknown or banned, and past the read limit.")
                .Body<HostnameForm>(Form).Produces(200, contentType: "application/json");
             var userProfile = Handle(game, r =>
             {
                 var m = UserProfile.Match(r.Path);
                 if (!s.Online || r.Method != "GET" || !m.Success) return null;
-                return long.TryParse(m.Groups[1].Value, out var id) && s.PublicAccount(id) is { } a
+                return long.TryParse(m.Groups[1].Value, out var id) && s.Authenticate(r.Tokens()) is { } caller && s.SeenAccount(caller, id) is { } a
                     ? new(200, [("Content-Type", "application/vnd.game_data.user.profile+json"), .. Cors(r.Header)], s.UserProfileReply(a), "state")
                     : new(404, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)], Encoding.UTF8.GetBytes(ReplayScope.Missing), "state");
             });
@@ -435,7 +437,7 @@ public static class GameApi
             {
                 var m = UserRanks.Match(r.Path);
                 if (!s.Online || r.Method != "GET" || !m.Success) return null;
-                return long.TryParse(m.Groups[1].Value, out var id) && s.PublicAccount(id) is { } a
+                return long.TryParse(m.Groups[1].Value, out var id) && s.Authenticate(r.Tokens()) is { } caller && s.SeenAccount(caller, id) is { } a
                     ? new(200, [("Content-Type", "application/vnd.game_data.user.rank+json; type=collection"), .. Cors(r.Header)], s.RanksReply(a), "state")
                     : new(404, [("Content-Type", "application/vnd.goa.error"), .. Cors(r.Header)], Encoding.UTF8.GetBytes(ReplayScope.Missing), "state");
             });
@@ -475,7 +477,7 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
-            // the account's trophies and the lodges of any account here (community server only); a locked lodge is sent too: the game hides it
+            // the account's trophies and the lodges of a player the caller may see (community server only); a locked lodge is sent too: the game hides it
             var restored = Handle(game, r =>
             {
                 var (lodges, own, trophies) = (Lodges.Match(r.Path), OwnLodges.IsMatch(r.Path), TrophyList.IsMatch(r.Path));
@@ -484,7 +486,7 @@ public static class GameApi
                 if (s.Authenticate(r.Tokens()) is not { } a)
                     return Denied(game, r);
                 long? owner = own ? a : !lodges.Success ? null : s.IsUser(a, lodges.Groups[1].Value) ? a
-                    : long.TryParse(lodges.Groups[1].Value, out var userId) ? s.PublicAccount(userId) : null;  // the player's own lodges, else a public account's
+                    : long.TryParse(lodges.Groups[1].Value, out var userId) ? s.SeenAccount(a, userId) : null;  // the player's own lodges, else those of a player he may see
                 var (body, type) = trophies ? (s.TrophiesReply(a), "application/json")  // ponytail: the trophy list's own media type is not known
                     : owner is not { } o ? (null, "")
                     : own || !lodges.Groups[2].Success ? (s.LodgesReply(o), "application/vnd.game.user.trophy_lodge.lodge+json; type=collection")
@@ -508,12 +510,12 @@ public static class GameApi
             apiv2.MapGet("/game/user/trophies", restored).WithName("Trophies").WithSummary("The account's trophies: restored, mounted in a restored lodge, then harvested here")
                  .Produces(200, contentType: "application/json");
             api.MapGet("/v1/game/user/trophies", restored).ExcludeFromDescription();
-            apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The lodges of any account here, with their slots' trophies")
+            apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The lodges of a player, with their slots' trophies")
                  .WithDescription("The lodge rows of a restore, as edited since; each animal slot with a `trophy_id` also has its `trophy_details` (the trophy's row of "
-                                  + "`/game/user/trophies`). `locked` is kept: the game hides those lodges from other players. Needs any player's token; an unknown or "
-                                  + "banned user id gets the empty reply. Also at `/v1/game/user/<id>/lodges` (the current build).")
+                                  + "`/game/user/trophies`). `locked` is kept: the game hides those lodges from other players. Needs a player's token: his own, or a player he may see (his friends, whoever a board shows him); "
+                                  + "anyone else, an unknown or banned user id gets the empty reply. Also at `/v1/game/user/<id>/lodges` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
-            apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One lodge of any account here")
+            apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One lodge of a player")
                  .WithDescription("As Lodges; 404 for a lodge the account has not. Also at `/v1/game/user/<id>/lodges/<lodge>` (the current build).")
                  .PathParams(("id", "user id"), ("lodge", "lodge id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json");
             api.MapGet("/v1/game/user/{id}/lodges", restored).ExcludeFromDescription();  // the current build's paths of the same pages
@@ -584,13 +586,13 @@ public static class GameApi
             api.MapGet("/v1/game/user/loadout", loadouts).ExcludeFromDescription();  // the current build's paths of the same calls
             api.MapPut("/v1/game/user/loadout/{id}", loadouts).ExcludeFromDescription();
             apiv2.MapGet("/game/user/{id}/profile", userProfile).WithName("UserProfile").WithSummary("A player's profile page header, by user id")
-                 .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of any account here, without a token (`background` and `ribbon` "
-                                  + "as its backup had them, else null); 404 for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
+                 .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of the player himself or one he may see (his friends, whoever a board shows him), with his token (`background` and `ribbon` "
+                                  + "as its backup had them, else null); 404 without a token, for anyone else and for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.profile+json").Produces(404, contentType: "application/vnd.goa.error");
             apiv2.MapGet("/game/user/{id}/ranks", userRanks).WithName("UserRanks").WithSummary("A player's ranks, by user id")
                  .WithDescription("`[{id, category_id, value}]`, one per rank row of the facts file (`category_id` 1 animals, 2 weapons, 3 collectables), `value` the ethical kills "
                                   + "or pickups from the account's statistics (restored plus server hunts, the open one so far) as the hunterscore counts them, before its cap; "
-                                  + "no token; 404 for a user id that is unknown, banned or the recorded player's. Also at `/v1/game/user/<id>/ranks` (the current build).")
+                                  + "with a player's token, for himself or one he may see (as UserProfile); 404 for anyone else, without a token, and for a user id that is unknown, banned or the recorded player's. Also at `/v1/game/user/<id>/ranks` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.rank+json; type=collection").Produces(404, contentType: "application/vnd.goa.error");
 
             var web = Group(app, game.Web, "Website (web_host)");
@@ -605,6 +607,9 @@ public static class GameApi
                     var handle = Uri.UnescapeDataString(r.Path.Split('/')[2]);  // the page of this player's kill: kill ids are per account
                     if (!Py.IsDigit(killId) || !long.TryParse(killId, out var kid) || s.PublicAccount(handle) is not { } account)
                         return null;
+                    // a page of a player's data: counted in the reader's read limit (State.ReadAllowed), as the website's /hunters/ routes
+                    if ((SignIn.CookieOf(r.Header("Cookie") ?? "", SignIn.SessionCookie) is { } cookie ? s.Store.ResolveWebSession(cookie) : s.Authenticate(r.Tokens())) is { } reader && !s.ReadAllowed(reader))
+                        return new(429, [("Content-Type", "application/json"), ("Cache-Control", "no-store")], """{"status": "rate_limited", "message": "Too many reads: wait a minute."}"""u8.ToArray(), "state");
                     if (s.SavedScorePage(account, kid) is { } saved)  // a restored kill's page comes from a backup zip: nothing in it may run on this host
                         return new(200, [("Content-Type", "text/html"), ("Content-Security-Policy", "sandbox")], saved, "state");
                     var page = s.ScorePageReply(account, kid);

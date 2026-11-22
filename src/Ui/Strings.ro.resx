@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Încă niciun prieten</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Rezultatele căutării ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nu s-au găsit vânători</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Ai căutat prea des. Încearcă din nou peste o oră.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Cerere de prietenie trimisă</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Cererea de prietenie {0} din {1}</value></data>

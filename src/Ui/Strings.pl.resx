@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Brak znajomych</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Wyniki wyszukiwania ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nie znaleziono myśliwych</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Wyszukiwano zbyt często. Spróbuj ponownie za godzinę.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Wyślij zaproszenie</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Zaproszenie wysłane</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Zaproszenie do znajomych {0} z {1}</value></data>

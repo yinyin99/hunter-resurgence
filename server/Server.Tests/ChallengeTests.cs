@@ -325,20 +325,25 @@ public class ChallengeApiTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
-    async Task<JsonNode?> Call(string method, string body) => method == "GET"
-        ? JsonNode.Parse((await server.SendAsync("GET", "api.test", $"{Replay.USER_CHALLENGES}?{body}", [], [])).Body)
-        : JsonNode.Parse((await server.SendAsync("POST", "api.test", Replay.USER_CHALLENGES, [("Content-Type", "application/x-www-form-urlencoded")], Encoding.ASCII.GetBytes(body))).Body);
+    async Task<JsonNode?> Call(string method, string body, bool token = true)
+    {
+        (string, string)[] auth = token ? [("Authorization", "Bearer " + state.Store.CreateToken(8))] : [];
+        return method == "GET"
+            ? JsonNode.Parse((await server.SendAsync("GET", "api.test", $"{Replay.USER_CHALLENGES}?{body}", auth, [])).Body)
+            : JsonNode.Parse((await server.SendAsync("POST", "api.test", Replay.USER_CHALLENGES, [("Content-Type", "application/x-www-form-urlencoded"), .. auth], Encoding.ASCII.GetBytes(body))).Body);
+    }
 
     [Theory]
     [InlineData("POST")]
     [InlineData("GET")]
-    public async Task TestTheCallAnswersFromTheAccountsRowsWithoutATokenAndAnUnknownUserGetsAnEmptyReply(string method)
+    public async Task TestTheCallAnswersAPlayerFromTheAccountsRowsAndAnUnknownUserOrNoTokenGetsAnEmptyReply(string method)
     {
         Eq("{}", await Call(method, "user_id=8"));
         state.HeartbeatReply(8, Events(O("""{"event": 7, "individual": 1, "species": 1, "gender": 0, "weight_grams": 50000, "texture": 2}"""), O("""{"event": 2, "individual": 1, "animal_state": 3}""")));
         var reply = (await Call(method, "user_id=8"))!;
         Eq("""[901, 8, 1, "h"]""", T(reply["901"]!["challenge_id"], reply["901"]!["user_id"], reply["901"]!["completed"], reply["901"]!["objectives_hash"]));
         Eq("{}", await Call(method, "user_id=999"));
+        Eq("{}", await Call(method, "user_id=8", token: false));  // a player's token is needed
     }
 
     [Fact]

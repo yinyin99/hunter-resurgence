@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Друзей пока нет</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Результаты поиска ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Охотники не найдены</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Вы искали слишком часто. Попробуйте снова через час.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Отправить запрос в друзья</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Запрос отправлен</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Запрос в друзья {0} из {1}</value></data>

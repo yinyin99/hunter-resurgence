@@ -20,8 +20,8 @@ public sealed class MockFriendsService(string? mock = null) : IFriendsService
     // everyone the mock knows, whether a friend or not, and oneself, whom a search never lists
     static readonly string[] Everyone = ["Ranger_Test", "Moss_Walker", "Hunter01", "Hunter02", .. Others];
 
-    public Task<IReadOnlyList<Friend>> SearchAsync(string text) =>
-        Task.FromResult<IReadOnlyList<Friend>>(Everyone.Where(h => h != Own && h.Contains(text, StringComparison.OrdinalIgnoreCase)).Select(h => new Friend(h, false)).ToList());
+    public Task<IReadOnlyList<Friend>?> SearchAsync(string text) =>
+        Task.FromResult<IReadOnlyList<Friend>?>(Everyone.Where(h => h != Own && h.Contains(text, StringComparison.OrdinalIgnoreCase)).Select(h => new Friend(h, false)).ToList());
 
     public Task<IReadOnlyList<Friend>> RequestsAsync()
     {

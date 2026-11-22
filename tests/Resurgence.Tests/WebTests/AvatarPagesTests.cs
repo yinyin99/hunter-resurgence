@@ -81,7 +81,7 @@ public sealed class AvatarPagesTests : UiContext
     sealed class Friends(IReadOnlyList<Friend> list) : IFriendsService
     {
         public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult(list);
-        public Task<IReadOnlyList<Friend>> SearchAsync(string text) => Task.FromResult<IReadOnlyList<Friend>>([]);
+        public Task<IReadOnlyList<Friend>?> SearchAsync(string text) => Task.FromResult<IReadOnlyList<Friend>?>([]);
         public Task<IReadOnlyList<Friend>> RequestsAsync() => Task.FromResult<IReadOnlyList<Friend>>([]);
         public Task<IReadOnlyList<string>> PendingAsync() => Task.FromResult<IReadOnlyList<string>>([]);
         public Task<Result> SendRequestAsync(string handle) => Task.FromResult(Result.Success);

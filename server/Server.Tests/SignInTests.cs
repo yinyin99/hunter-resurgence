@@ -460,9 +460,10 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAnyAccountsRanksAreServedToEveryone()
+    public async Task TestAPlayersRanksAreServedToAnotherPlayer()
     {
         await SignIn("99999999999999991", "one");
+        var bearer = ("Authorization", "Bearer " + state.Store.CreateToken(state.Store.Listed("one", null)!.Value));
         state.CreateAccount(9, "third");
         state.CreateAccount(10, "banned");
         using (var con = state.Store.Open(9))  // the species 19 (and its variant 119): the first rank row; the weapon 369: row 41; a count counts before the cap
@@ -470,7 +471,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
 
-        var game = await Get("apiv2.test", "/game/user/9/ranks");
+        var game = await Get("apiv2.test", "/game/user/9/ranks", bearer);
         Assert.Equal("application/vnd.game_data.user.rank+json; type=collection", game.Headers.Single(h => h.Name == "Content-Type").Value);
         var rows = JsonNode.Parse(game.Body)!.AsArray();
         Assert.Equal(Facts.Default.Ranks.Length, rows.Count);
@@ -478,7 +479,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Eq("""{"id": 41, "category_id": 2, "value": 7}""", rows.Single(r => (long)r!["id"]! == 41));
         Eq("""{"id": 38, "category_id": 3, "value": 0}""", rows.Single(r => (long)r!["id"]! == 38));
         foreach (var id in new[] { 7, 10, 99 })  // the recorded player's, a banned and an unknown user id
-            Assert.Equal(404, (await Get("apiv2.test", $"/game/user/{id}/ranks")).Status);
+            Assert.Equal(404, (await Get("apiv2.test", $"/game/user/{id}/ranks", bearer)).Status);
+        Assert.Equal(404, (await Get("apiv2.test", "/game/user/9/ranks")).Status);  // without a token
 
         var site = JsonNode.Parse((await Get("web.test", "/hunters/third/ranks")).Body)!;
         Assert.Equal(1000, (long)site["cap"]!);
@@ -651,7 +653,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
         Assert.Equal([null, PickedSite], Avatars((await Read("/account/friends", ck))!["friends"]));  // by handle: Fourth, Third
         Assert.Equal([PickedSite], Avatars((await Read("/account/friends/search?text=thir", ck))!["hunters"]));
-        Assert.Equal([null, PickedSite], Avatars((await Read("/hunters/one/friends"))!["rows"]));
+        Assert.Equal([null, PickedSite], Avatars((await Read("/hunters/one/friends", ck))!["rows"]));
         Assert.Equal([PickedSite, null, DefaultSite], Avatars((await Read("/hunters", ck))!["rows"]));  // by account id: Third, Fourth, one
         Assert.Equal([PickedSite, null], Avatars((await Read("/account/messages", ck))!["conversations"]));  // a partner without an account here has none
         Assert.Null((await Read("/hunters/fourth"))!["avatar"]);
@@ -684,15 +686,18 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Empty(await Handles("/account/friends", "requests"));
         Assert.Equal(["Fourth"], await Handles("/account/friends", "friends"));
         Assert.Equal(["Fourth"], await Handles("/hunters/one/friends", "rows"));
-        Assert.Equal(["one"], await Handles("/hunters/fourth/friends", "rows"));
-        var past = JsonNode.Parse((await Get("web.test", "/hunters/Fourth/friends?page=9")).Body)!;  // a page past the end is the last
+        Assert.Equal(403, (await Get("web.test", "/hunters/fourth/friends", ck)).Status);  // a player sees only his own friends
+        var past = JsonNode.Parse((await Get("web.test", "/hunters/one/friends?page=9", ck)).Body)!;  // a page past the end is the last
         Assert.Equal((1, 1, 1), ((int)past["page"]!, (int)past["pages"]!, (int)past["total"]!));
-        Assert.Equal(["Fourth", "Third"], await Handles("/account/friends/search?text=r", "hunters"));  // contains, any case; not "one", not the banned
+        Assert.Equal(["Fourth"], await Handles("/account/friends/search?text=RTH", "hunters"));  // any part, any case
+        Assert.Equal(["Third"], await Handles("/account/friends/search?text=hir", "hunters"));
+        Assert.Empty(await Handles("/account/friends/search?text=r", "hunters"));  // under 3 characters: nothing
+        Assert.Empty(await Handles("/account/friends/search?text=%20th%20", "hunters"));
         Assert.Empty(await Handles("/account/friends/search?text=banned", "hunters"));
         Assert.Empty(await Handles("/account/friends/search?text=one", "hunters"));  // never the player itself
         Assert.Equal(200, (await Act("remove", "FOURTH", xhr)).Status);
         Assert.Empty(await Handles("/account/friends", "friends"));
-        Assert.Empty(await Handles("/hunters/fourth/friends", "rows"));
+        Assert.Empty(await Handles("/hunters/one/friends", "rows"));
         Assert.Equal(200, (await Act("remove", "Third", xhr)).Status);  // cancels the request
         Assert.Empty(await Handles("/account/friends", "pending"));
         // not another player: the own handle, a banned or an unknown one
@@ -704,8 +709,53 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(401, (await Act("add", "Third", ("X-Requested-With", "XMLHttpRequest"))).Status);
         Assert.Equal(400, (await Act("add", "Third", ck)).Status);
         Assert.Empty(await Handles("/account/friends", "pending"));
-        Assert.Equal(404, (await Get("web.test", "/hunters/banned/friends")).Status);
-        Assert.Equal(404, (await Get("web.test", "/hunters/nobody/friends")).Status);
+        foreach (var handle in new[] { "banned", "nobody", "third" })
+            Assert.Equal(403, (await Get("web.test", $"/hunters/{handle}/friends", ck)).Status);
+        Assert.Equal(403, (await Get("web.test", "/hunters/one/friends")).Status);  // another signed-in player (Get's visitor)
+    }
+
+    [Fact]
+    public async Task TestTheFriendSearchFindsTenHandlesExactFirstAndThirtyTimesAnHour()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        for (var i = 1; i <= 12; i++) state.CreateAccount(100 + i, $"a_xyz{i:00}");
+        state.CreateAccount(200, "XYZ");  // the exact handle, last by handle
+        var alerts = new List<long>();
+        state.ReadAlert = alerts.Add;
+        Task<Reply> Search(string text) => Get("web.test", "/account/friends/search?text=" + text, ck);
+        static string[] Handles(Reply r) => [.. JsonNode.Parse(r.Body)!["hunters"]!.AsArray().Select(h => (string)h!["handle"]!)];
+
+        var found = Handles(await Search("xyz"));
+        string[] expected = ["XYZ", .. Enumerable.Range(1, 9).Select(i => $"a_xyz{i:00}")];  // the exact handle first, then by handle; at most 10
+        Assert.Equal(expected, found);
+        Assert.Empty(Handles(await Search("xy")));  // under 3 characters: nothing, not counted
+        for (var i = 2; i <= State.SearchesPerHour; i++)
+            Assert.Equal(200, (await Search("abc")).Status);
+        var refused = await Search("xyz");  // the 31st in the hour
+        Assert.Equal((429, "rate_limited"), (refused.Status, (string)JsonNode.Parse(refused.Body)!["status"]!));
+        Assert.Equal([state.Store.Listed("one", null)!.Value], alerts);  // an alert to the review channel
+        Assert.Equal(429, (await Search("xyz")).Status);
+        Assert.Single(alerts);  // at most one an hour
+        Assert.Empty(Handles(await Search("xy")));  // a short text is still answered: nothing
+    }
+
+    [Fact]
+    public async Task TestProfileReadsOfASignedInPlayerStopAtTheReadLimitAndRaiseOneAlert()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        state.CreateAccount(9, "Third");
+        var now = 1_000_000.0;
+        state.Clock = () => now;
+        var alerts = new List<long>();
+        state.ReadAlert = alerts.Add;
+        for (var i = 0; i < State.ReadsPerMinute; i++)
+            Assert.Equal(200, (await Get("web.test", i % 2 == 0 ? "/hunters/third" : "/hunters/third/statistics", ck)).Status);
+        var refused = await Get("web.test", "/hunters/third/hunts", ck);
+        Assert.Equal((429, "rate_limited"), (refused.Status, (string)JsonNode.Parse(refused.Body)!["status"]!));
+        Assert.Equal(429, (await Get("web.test", "/hunters/third", ck)).Status);
+        Assert.Single(alerts);
+        now += 60;  // a minute later
+        Assert.Equal(200, (await Get("web.test", "/hunters/third", ck)).Status);
     }
 
     [Fact]

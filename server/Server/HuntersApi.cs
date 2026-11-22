@@ -28,6 +28,8 @@ public static class HuntersApi
             .AddEndpointFilter(async (f, next) =>
             {
                 if (SignedIn(f.HttpContext) is not { } account) return SignedOut;
+                // every read counts in the player's read limit (State.ReadAllowed): walking the profiles is slow and raises the alert
+                if (!state.ReadAllowed(account)) return Json(429, new JsonObject { ["status"] = "rate_limited", ["message"] = "Too many reads: wait a minute." });
                 return await next(f);
             });
 
@@ -132,14 +134,14 @@ public static class HuntersApi
             .QueryParams(("season", "the season number, 0 all time"))
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
-        group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
+        group.MapGet("/{handle}/friends", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id && SignedIn(ctx) == id
                 ? Json(200, state.PublicFriends(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, site))
-                : Json(404, new JsonObject { ["error"] = "not found" }))
-            .WithName("HunterFriends").WithSummary("One page of a hunter's friends")
+                : Json(403, new JsonObject { ["error"] = "not yours" }))
+            .WithName("HunterFriends").WithSummary("One page of the signed-in player's own friends")
             .WithDescription($"`{{page, pages, total, rows: [{{handle, hunterscore, avatar}}]}}`, {State.FriendsPageSize} rows a page, by handle (upper case, ordinal): the friends of docs/server.md#friends. "
-                             + "404 for a handle that is unknown or banned.")
+                             + "Only for the signed-in player's own handle (a player sees only his own friends): 403 for any other handle, known or not.")
             .QueryParams(("page", "1 for the first"))
-            .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
+            .Produces(200, contentType: "application/json").Produces(403, contentType: "application/json");
 
         group.MapGet("/{handle}/hunts", (string handle, HttpContext ctx) => state.PublicAccount(handle) is { } id
                 ? Json(200, state.PublicHunts(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1))

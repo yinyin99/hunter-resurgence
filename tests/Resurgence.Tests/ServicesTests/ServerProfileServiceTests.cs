@@ -426,7 +426,7 @@ public class ServerProfileServiceTests
     sealed class Friends(string[] friends, string[] pending) : IFriendsService
     {
         public Task<IReadOnlyList<Friend>> FriendsAsync() => Task.FromResult<IReadOnlyList<Friend>>([.. friends.Select(h => new Friend(h, false))]);
-        public Task<IReadOnlyList<Friend>> SearchAsync(string text) => throw new NotSupportedException();
+        public Task<IReadOnlyList<Friend>?> SearchAsync(string text) => throw new NotSupportedException();
         public Task<IReadOnlyList<Friend>> RequestsAsync() => throw new NotSupportedException();
         public Task<IReadOnlyList<string>> PendingAsync() => Task.FromResult<IReadOnlyList<string>>(pending);
         public Task<Result> SendRequestAsync(string handle) => throw new NotSupportedException();

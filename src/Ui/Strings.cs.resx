@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Zatím žádní přátelé</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Výsledky hledání ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Žádní lovci nenalezeni</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Hledali jste příliš často. Zkuste to znovu za hodinu.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Poslat žádost o přátelství</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Žádost o přátelství odeslána</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Žádost o přátelství {0} z {1}</value></data>

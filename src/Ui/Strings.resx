@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>No friends yet</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Search results ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>No hunters found</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>You searched too often. Try again in an hour.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send friend request</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Friend request sent</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Friend request {0} of {1}</value></data>
