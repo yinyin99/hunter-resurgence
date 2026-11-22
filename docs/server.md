@@ -1018,7 +1018,7 @@ Every alert to `review_webhook` and `signup_webhook` is plain text (no embeds) i
 | `📜 Claim waiting for review` | review | `claim` (`c<id>`), `handle`, `account`, `archived id`, `hunterscore`, `steam`, `run: review list` |
 | `⛔ Upload refused` | review | `handle`, `account`, `steam`, `reason`, `kept` (`r<account id>-<8 hex>`) |
 | `🩺 Problem report` | review | `handle`, `account`, `reference`, `trigger` (`manual`, `short`, `exitcode`, `nowindow`), `size` |
-| `🚨 Read limit hit` | review | `handle`, `account`, `limits` (the two caps of [Read limits](#read-limits)); at most one an hour per account |
+| `🚨 Read limit hit` | review | `handle`, `account`, `limits` (the three caps of [Read limits](#read-limits)); at most one an hour per account |
 | `🆕 New account` | signup | `handle`, `account`, `steam`, `archived` (the claimed handle and its hunterscore, when the sign-up came with a claim), `outcome` (`fresh start`, `claim restored`, `claim waiting for review` or `claim refused (<kind>)`) |
 | `✅ Claim restored` | signup | `handle`, `account`, `archived handle`, `hunterscore`, `steam` |
 
