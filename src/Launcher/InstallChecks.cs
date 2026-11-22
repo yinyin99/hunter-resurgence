@@ -270,7 +270,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     // A game of another build is not judged (the version check tells of an old or a new one): the table is of one build.
     InstallCheck Dlls(GameInstall g, string? build)
     {
-        if (build is not null && build != CleanDlls.Build.ToString(CultureInfo.InvariantCulture)) return Ok("dlls");
+        if (!CleanDlls.Judges(build)) return Ok("dlls");
         var foreign = CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files).Where(f => f.File.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
         InstallCheck Warn(string text, bool changed, string fix)
         {

@@ -194,7 +194,7 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
                 catch (Exception e) when (e is IOException or UnauthorizedAccessException) { missing.Add(name); }
             }
             files.Add("report.json");
-            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing, checks }, RunHistory.Json), Encoding.UTF8);
+            Add("report.json", JsonSerializer.Serialize(new { trigger, created = DateTimeOffset.UtcNow, launcher = version, files, missing, checks = checks?.Select(c => c with { Args = c.Args?.ToDictionary(a => a.Key, a => Scrub(a.Value)) }) }, RunHistory.Json), Encoding.UTF8);
         }
         var folderOut = outFolder ?? Path.Combine(Path.GetTempPath(), "hunter-resurgence");
         try
@@ -270,16 +270,24 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             sb.AppendLine("Install checks:");
             foreach (var c in checks) sb.AppendLine($"  {c.Id}: {c.Level} {c.Text}" + (c.Args is { Count: > 0 } a ? " (" + string.Join(", ", a.Select(kv => $"{kv.Key}={kv.Value}")) + ")" : ""));
         }
-        foreach (var line in DllLines(missing)) sb.AppendLine(line);
+        foreach (var line in DllLines(missing, checks)) sb.AppendLine(line);
         return sb.ToString();
     }
 
     /// <summary>One line for each <c>.dll</c> or <c>.asi</c> file next to the exe that a clean install does not have (extra) or has otherwise (changed), with its size and file version, or <c>Game folder DLLs: as installed</c>; none without a game folder or when it cannot be read (then listed as missing).</summary>
-    List<string> DllLines(List<string> missing)
+    List<string> DllLines(List<string> missing, IReadOnlyList<InstallCheck>? checks)
     {
-        var found = install() is { } g ? Try(() => CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files), missing, "game folder DLLs") : null;
-        return found is null ? [] : found.Count == 0 ? ["Game folder DLLs: as installed"]
-            : [.. found.Select(f => $"Game folder DLL: {f.File.Name}, {(f.Changed ? "changed" : "extra")}, {f.File.Length} bytes, version {FileVersionInfo.GetVersionInfo(f.File.FullName).FileVersion ?? "none"}")];
+        if (install() is not { } g) return [];
+        var build = checks?.FirstOrDefault(c => c.Id == "version")?.Args?.GetValueOrDefault("build");
+        if (!CleanDlls.Judges(build)) return [$"Game folder DLLs: not compared (the game is build {build}, the clean list is of build {CleanDlls.Build})"];
+        var found = Try(() => CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files), missing, "game folder DLLs");
+        string Line((FileInfo File, bool Changed) f)
+        {
+            var kind = f.Changed ? "changed" : "extra";
+            try { return $"Game folder DLL: {f.File.Name}, {kind}, {f.File.Length} bytes, version {FileVersionInfo.GetVersionInfo(f.File.FullName).FileVersion ?? "none"}"; }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return $"Game folder DLL: {f.File.Name}, {kind}, size and version not readable"; } // gone since it was listed
+        }
+        return found is null ? [] : found.Count == 0 ? ["Game folder DLLs: as installed"] : [.. found.Select(Line)];
     }
 
     // the exit codes of a game that stops before its window opens because a DLL is missing or lacks a function: Windows writes no Application Error for them, only an Application Popup
@@ -289,7 +297,8 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     {
         Func<string, IEnumerable<string>> read = events ?? ReadEvents;
         var list = Try(() => read(exe).ToList(), missing, "events.txt");
-        if (list is not null && lastExit is EntryPointNotFound or DllNotFound && Try(() => (popups ?? ReadPopups)(exe).Take(1).ToList(), missing, "application popup") is { Count: > 0 } popup) list.InsertRange(0, popup);
+        // its own probe: another log that cannot be read does not hide it
+        if (lastExit is EntryPointNotFound or DllNotFound && Try(() => (popups ?? ReadPopups)(exe).Take(1).ToList(), missing, "application popup") is { Count: > 0 } popup) list = [.. popup, .. list ?? []];
         return list is null ? "The Windows event log could not be read." : list.Count == 0 ? $"No Application Error or Windows Error Reporting event of the last {EventDays} days names {exe}." : string.Join("\n\n", list);
     }
 

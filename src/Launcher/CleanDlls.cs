@@ -43,18 +43,25 @@ public static class CleanDlls
     // ponytail: remembered by path, size and write time (the 214 MB libcef.dll is hashed once, not at every page that shows the game check); a file that changes without either is not noticed until the launcher restarts
     static readonly ConcurrentDictionary<string, string> Hashes = new();
 
-    /// <summary>The <c>.dll</c> and <c>.asi</c> files directly in <paramref name="folder"/> that are not in <paramref name="clean"/> (<c>Changed</c> false) or differ from it in size or SHA-256 (true), by name; a folder that cannot be read throws.</summary>
+    /// <summary>The <c>.dll</c> and <c>.asi</c> files directly in <paramref name="folder"/> that are not in <paramref name="clean"/> (<c>Changed</c> false) or differ from it in size or SHA-256 (true), by name; a file that vanishes or cannot be read meanwhile is left out, a folder that cannot be read throws.</summary>
     public static List<(FileInfo File, bool Changed)> Foreign(string folder, IReadOnlyDictionary<string, (long Size, string Sha256)> clean)
     {
         var found = new List<(FileInfo, bool)>();
         foreach (var path in Directory.EnumerateFiles(folder).Where(p => Path.GetExtension(p) is { } e && (e.Equals(".dll", StringComparison.OrdinalIgnoreCase) || e.Equals(".asi", StringComparison.OrdinalIgnoreCase))).Order(StringComparer.OrdinalIgnoreCase))
         {
             var file = new FileInfo(path);
-            if (!clean.TryGetValue(file.Name, out var want)) found.Add((file, false));
-            else if (file.Length != want.Size || !Hashes.GetOrAdd($"{path}|{file.Length}|{file.LastWriteTimeUtc.Ticks}", _ => Sha256Of(path)).Equals(want.Sha256.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)) found.Add((file, true));
+            try
+            {
+                if (!clean.TryGetValue(file.Name, out var want)) found.Add((file, false));
+                else if (file.Length != want.Size || !Hashes.GetOrAdd($"{path}|{file.Length}|{file.LastWriteTimeUtc.Ticks}", _ => Sha256Of(path)).Equals(want.Sha256.Replace(" ", ""), StringComparison.OrdinalIgnoreCase)) found.Add((file, true));
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException) { } // gone or locked since it was listed: not judged, the others are
         }
         return found;
     }
+
+    /// <summary>Whether the DLLs of a game of this Steam build (null: not known, as for a folder outside a Steam library) are judged: the table is of <see cref="Build"/> alone.</summary>
+    public static bool Judges(string? build) => build is null || build == Build.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     static string Sha256Of(string path)
     {

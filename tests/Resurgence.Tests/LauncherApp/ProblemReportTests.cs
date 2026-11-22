@@ -3,6 +3,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Launcher;
@@ -63,8 +64,9 @@ public class ProblemReportTests
     /// <summary>A clean install of one DLL, steam_api.dll of "steam", as the table of a clean install lists it.</summary>
     static readonly Dictionary<string, (long, string)> CleanTable = new() { ["steam_api.dll"] = (5, Convert.ToHexString(SHA256.HashData("steam"u8))) };
 
-    static Diagnostics Direct(TempDir temp, GameInstall install, Func<IReadOnlyList<GameRun>>? runs = null, Func<string, IEnumerable<string>>? popups = null) =>
-        new(() => install, [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), () => [], () => [], () => [], exe => [], popups: popups, cleanDlls: CleanTable);
+    static Diagnostics Direct(TempDir temp, GameInstall install, Func<IReadOnlyList<GameRun>>? runs = null, Func<string, IEnumerable<string>>? popups = null, Func<IReadOnlyList<InstallCheck>>? checks = null,
+        Func<string, IEnumerable<string>>? events = null) =>
+        new(() => install, [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), () => [], () => [], () => [], events ?? (exe => []), installChecks: checks, popups: popups, cleanDlls: CleanTable);
 
     [Fact]
     public void TheReportListsEveryExtraOrChangedDllWithItsSizeAndVersionElseSaysAsInstalled()
@@ -98,6 +100,37 @@ public class ProblemReportTests
         var events = Read(report.Path)["events.txt"];
         Assert.Equal(shown, events.Contains("could not be located in d3d9.dll"));
         Assert.Equal(shown, events.Contains("client.exe - Entry Point Not Found"));
+    }
+
+    [Fact]
+    public void AGameOfAnotherBuildIsNotComparedAndADllNamedLikeACredentialKeepsTheManifestValid()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        Files.Write(Path.Combine(g.Folder, "token-helper.dll"), "x");
+        InstallCheck Version(long build) => new("version", "ok", "Check.Ok", new Dictionary<string, string> { ["build"] = build.ToString() });
+        InstallCheck Dlls = new("dlls", "warn", "Check.Dlls.Extra", new Dictionary<string, string> { ["files"] = "token-helper.dll" }, "open-folder");
+
+        var other = Read(Direct(temp, g.Install, checks: () => [Version(CleanDlls.Build + 1), Dlls]).Build("manual").Path);
+        Assert.Contains($"Game folder DLLs: not compared (the game is build {CleanDlls.Build + 1}", other["system.txt"]);
+        Assert.DoesNotContain("as installed", other["system.txt"]);
+
+        var same = Read(Direct(temp, g.Install, checks: () => [Version(CleanDlls.Build), Dlls]).Build("manual").Path);
+        Assert.Contains("[line removed", same["system.txt"]); // the DLL's line: its name looks like a credential
+        using var manifest = JsonDocument.Parse(same["report.json"]); // the name in the check's arguments is replaced by value, not by line: still valid JSON
+        Assert.DoesNotContain("token-helper", same["report.json"]);
+        Assert.Equal("dlls", manifest.RootElement.GetProperty("checks").EnumerateArray().Last().GetProperty("id").GetString());
+    }
+
+    [Fact]
+    public void TheApplicationPopupStaysWhenTheApplicationLogCannotBeRead()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var report = Direct(temp, g.Install, () => [new(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1), unchecked((int)3221225781), false)], exe => [$"{exe} - System Error: the code execution cannot proceed because x.dll was not found"],
+            events: _ => throw new InvalidOperationException("no Application log")).Build("manual");
+        Assert.Contains("events.txt", report.Missing);
+        Assert.Contains("x.dll was not found", Read(report.Path)["events.txt"]);
     }
 
     [Fact]

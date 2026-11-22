@@ -189,8 +189,12 @@ public class InstallChecksTests
     }
 
     [Fact]
-    public async Task TheCleanTableIsOfTheBuildTheVersionCheckAcceptsAndIsWellFormed()
+    public async Task TheCleanTableIsOfTheBuildTheServerIsSetUpToServeAndIsWellFormed()
     {
+        // the example settings of the server name the supported build (game_build, which GET /stats/game serves): changing one without the other fails here
+        using var example = JsonDocument.Parse(File.ReadAllText(Repo.Path("server", "Server", "settings.example.json")));
+        Assert.Equal(CleanDlls.Build, example.RootElement.GetProperty("game_build").GetInt64());
+
         Assert.Equal(27, CleanDlls.Files.Count);
         Assert.All(CleanDlls.Files, f =>
         {
