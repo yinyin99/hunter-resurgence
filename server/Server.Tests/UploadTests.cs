@@ -841,7 +841,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal("miss", (await server.SendAsync("GET", "web.test", "/user/sample/score/?id=778", [])).Source);  // a kill with no saved page
         foreach (var host in new[] { "web.test", "gameserver.test" })
         {
-            var file = await server.SendAsync("GET", host, "/photos/1001/kills_score_777.html", []);  // any stored file is served as a picture, never as a page
+            var file = await server.SendAsync("GET", host, "/photos/1001/kills_score_777.html", [("Cookie", "hr_session=" + cookie)]);  // any stored file is served as a picture, never as a page (on the website, to its owner)
             Assert.Equal(200, file.Status);
             Assert.Contains(("Content-Type", "image/jpeg"), file.Headers);
             Assert.Contains(("X-Content-Type-Options", "nosniff"), file.Headers);

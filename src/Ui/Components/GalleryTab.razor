@@ -3,7 +3,7 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
-@if (Sub == "download")
+@if (Sub == "download" && Own)
 {
     <div class="empty">
         <p>@(done ? L["Prof.GalleryReady"] : L["Prof.GalleryGenerating"] + " (" + progress + "%)")</p>
@@ -24,7 +24,7 @@ else if (photos is not null)
                     else { <AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /> }
                 </a>
                 <span>@if (ph.Kill is { } kill) { <a href="/profile/@Handle/score/@kill">@Caption(ph, " ")</a> } else { @Caption(ph, " ") }</span>
-                <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Url })">@L["Prof.Share"]</button>
+                @if (Own) { <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Url })">@L["Prof.Share"]</button> }
                 @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
             </li>
         }
@@ -46,6 +46,8 @@ else if (photos is not null)
     {
         if (Sub == "download")
         {
+            // only your own gallery can be downloaded: on anyone else's the page goes back to the gallery
+            if (!Own) { Nav.NavigateTo($"/profile/{Handle}/gallery", replace: true); return; }
             // the progress is only shown: the file is made by the server when the button is pressed
             done = false;
             for (progress = 0; progress < 100; progress += 20) { StateHasChanged(); await Task.Delay(300); }

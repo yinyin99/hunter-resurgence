@@ -502,11 +502,11 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("/profile/Fox/friends/2", cut.Find("p.pager a").GetAttribute("href"));  // 21 friends: a second page
     }
 
-    // the gallery is the server's pictures by their links; the owner can delete and download, a visitor only looks
+    // the gallery is the server's pictures by their links; the owner can delete, share and download, a visitor only looks
     [Theory]
     [InlineData(true, 2, 1)]
     [InlineData(false, 0, 0)]
-    public void TheGalleryTabShowsTheServersPicturesAndTheOwnerDeletesAndDownloads(bool own, int deletes, int downloads)
+    public void TheGalleryTabShowsTheServersPicturesAndTheOwnerDeletesSharesAndDownloads(bool own, int deletes, int downloads)
     {
         const string page = """{"page":1,"pages":1,"total":2,"rows":[{"id":7,"animal":"Red Deer","label":"88.5","kill":1107254527,"url":"https://game.test/a.jpg","thumbnail":"https://game.test/a-thumb.jpg"},{"id":6,"animal":"","label":"","url":"https://game.test/b.jpg","thumbnail":"https://game.test/b.jpg"}]}""";
         Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, page)) { BaseAddress = new Uri("http://server.test") },
@@ -517,7 +517,17 @@ public sealed class LiveSiteTests : UiContext
         Assert.StartsWith("Red Deer", cut.FindAll("ul.grid li > span")[0].TextContent);
         Assert.Equal("", cut.FindAll("ul.grid li > span")[1].TextContent);  // no kill, no score
         Assert.Equal(["/profile/Fox/score/1107254527"], cut.FindAll("ul.grid li > span a").Select(x => x.GetAttribute("href")));  // the kill whose score sheet the server has is linked
-        Assert.Equal((deletes, downloads), (cut.FindAll("button.del").Count, cut.FindAll("p.dl a").Count));
+        Assert.Equal((deletes, deletes, downloads), (cut.FindAll("button.del").Count, cut.FindAll("button.share").Count, cut.FindAll("p.dl a").Count));
+    }
+
+    // only your own gallery can be downloaded: another player's download page goes back to his gallery
+    [Fact]
+    public void AnotherPlayersGalleryDownloadPageGoesBackToTheGallery()
+    {
+        Services.AddSingleton<IProfileService>(new MockProfileService());
+        var cut = Render<GalleryTab>(p => p.Add(t => t.Handle, "Fox").Add(t => t.Own, false).Add(t => t.Sub, "download"));
+        Assert.EndsWith("/profile/Fox/gallery", Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().Uri);
+        Assert.Empty(cut.FindAll("button.btn-primary"));
     }
 
     [Fact]

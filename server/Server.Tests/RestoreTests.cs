@@ -411,10 +411,10 @@ public class RestoreTests : StateTestBase
         Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(gallery[0]!["url"]))!));
         Assert.Equal(TestZip.Jpeg("a"), File.ReadAllBytes(state.PhotoFile(Link(gallery[1]!["url"]))!));
         Assert.Equal(gallery[0]!["url"]!.ToString(), gallery[0]!["thumbnail"]!.ToString());  // the tool saved no thumbnail
-        Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(state.PublicGallery(1001, 1, "https://web.test")["rows"]![0]!["url"]))!));
+        Assert.Equal(TestZip.Jpeg("b"), File.ReadAllBytes(state.PhotoFile(Link(state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]![0]!["url"]))!));
         using var zip = new ZipArchive(new MemoryStream(state.GalleryZip(1001)));
         Assert.Equal(2, zip.Entries.Count);
-        var rows = state.PublicGallery(1001, 1, "https://web.test")["rows"]!.AsArray();  // the website's rows: the species and score of the real entry's object `animal`, and the kill whose score page the zip saved
+        var rows = state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]!.AsArray();  // the website's rows: the species and score of the real entry's object `animal`, and the kill whose score page the zip saved
         Eq("""["Test Deer", "120.5", 777, "", "", null]""", T(rows[0]!["animal"], rows[0]!["label"], rows[0]!["kill"], rows[1]!["animal"], rows[1]!["label"], rows[1]!["kill"]));
     }
 
@@ -456,7 +456,7 @@ public class RestoreTests : StateTestBase
         var zip = TestZip.Own().Gallery("""[{"id":1,"type":2,"url":"https://photos.example/p/t.jpg","thumbnail":"","label":"9.5","animal":"Test Deer","kill_id":777}]""")
             .Media("photos/photos.example_p_t.jpg", TestZip.Jpeg("t")).Media("kills/score_777.html", "<div>saved sheet</div>"u8.ToArray());
         Restorer.Import(state, Zip(zip), null, tmp);
-        var row = state.PublicGallery(1001, 1, "https://web.test")["rows"]![0]!;
+        var row = state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]![0]!;
         Eq("""["Test Deer", "9.5", 777]""", T(row["animal"], row["label"], row["kill"]));
     }
 
@@ -468,7 +468,7 @@ public class RestoreTests : StateTestBase
              {"id":1,"type":2,"url":"https://photos.example/p/f.jpg","thumbnail":"","label":null,"animal":{"scoreType":0,"species_id":1,"score":318.3466,"id":777,"species":"Test Deer"}}]
             """).Media("photos/photos.example_p_n.jpg", TestZip.Jpeg("n")).Media("photos/photos.example_p_f.jpg", TestZip.Jpeg("f")).Media("kills/score_777.html", "<div>saved sheet</div>"u8.ToArray());
         Restorer.Import(state, Zip(zip), null, tmp);
-        var rows = state.PublicGallery(1001, 1, "https://web.test")["rows"]!.AsArray();
+        var rows = state.PublicGallery(1001, 1, "https://web.test", 1001)["rows"]!.AsArray();
         Eq("""[["Test Deer", "", null], ["Test Deer", "318.3466", 777]]""", T(T(rows[0]!["animal"], rows[0]!["label"], rows[0]!["kill"]), T(rows[1]!["animal"], rows[1]!["label"], rows[1]!["kill"])));  // no score page saved for kill 778: no link
     }
 

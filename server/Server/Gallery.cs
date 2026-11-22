@@ -1,11 +1,17 @@
 // The account's gallery: the photos the game uploaded (Heartbeat event 4, UploadReply), listed by Gallery/list and the website's gallery tab,
 // deleted by their owner, and the picture a kill links. Only a camera photo and a trophy shot (GalleryTypes), and a picture a restore unpacked (a saved gallery entry,
 // whatever its saved type), are gallery pictures; the game's other photos (its automatic screenshots, the avatar picture) are stored and never listed or linked, and every file name carries a token nobody can guess.
+// On the website's host a picture is served to a signed-in player only (<see cref="WebPhoto"/>): its owner gets the original, anyone else a display-size copy.
+using System.Globalization;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using ImageConfiguration = SixLabors.ImageSharp.Configuration;
+using DecoderOptions = SixLabors.ImageSharp.Formats.DecoderOptions;
+using Picture = SixLabors.ImageSharp.Image;
 
 namespace Resurgence.Server;
 
@@ -98,11 +104,17 @@ public sealed partial class State
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["photos"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).Cast<JsonNode?>().ToArray()) });
     }
 
-    /// <summary>What a profile page's gallery tab shows of an account: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill}]}`; `thumbnail` is always the full picture's link.</summary>
-    public JsonObject PublicGallery(long account, int page, string site)
+    /// <summary>What a profile page's gallery tab shows of an account to `viewer`: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill}]}`; `url` and `thumbnail` are both
+    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original for its owner, the display-size copy for anyone else.</summary>
+    public JsonObject PublicGallery(long account, int page, string site, long viewer)
     {
         var all = GalleryRows(account, site, kills: true);
-        foreach (var r in all) r["thumbnail"] = r["url"]!.DeepClone();  // the game's square crop is not the tile: the page scales the full picture, as for a restored one
+        foreach (var r in all)  // the game's square crop is not the tile: the page scales the picture, as for a restored one
+        {
+            var link = ViewLink(viewer, account, Path.GetFileName((string)r["url"]!), site);
+            r["url"] = link;
+            r["thumbnail"] = link;
+        }
         var pages = Math.Max(1, (all.Count + GalleryPageSize - 1) / GalleryPageSize);
         page = Math.Clamp(page, 1, pages);
         return new JsonObject
@@ -122,7 +134,10 @@ public sealed partial class State
         con.Commit();
         if (file is not null)
             foreach (var name in new[] { file, ThumbName(file) })
+            {
                 File.Delete(Path.Combine(AccountPhotos(account), name));
+                if (File.Exists(DisplayPath(account, name))) File.Delete(DisplayPath(account, name));  // its folder may not exist: no copy was ever made
+            }
         return found;
     }
 
@@ -139,6 +154,76 @@ public sealed partial class State
             }
         return ms.ToArray();
     }
+
+    /// <summary>The longest side of the copy of a picture another player is served: the lightbox's size.</summary>
+    public const int DisplaySize = 1280;
+    const long MaxPixels = 50_000_000;  // a picture larger than this is never decoded
+    static readonly ImageConfiguration JpegOnly = new(new JpegConfigurationModule());
+
+    /// <summary>The website's link of a picture for `viewer`: its key (<see cref="ViewKey"/>) names the viewer and holds until the end of tomorrow (UTC), so the launcher's pages, which send no cookie, load it,
+    /// and a bare link answers 401. Another player's picture is the display-size copy (`size=display`).</summary>
+    string ViewLink(long viewer, long account, string file, string site)
+    {
+        var until = ((long)Clock() / 86400 + 2) * 86400;
+        return PhotoUrl(account, file, site) + (viewer == account ? "?" : "?size=display&") + $"viewer={viewer}&until={until}&key={ViewKey(viewer, $"{account}/{file}", until)}";
+    }
+
+    /// <summary>The first 32 hex digits of an HMAC-SHA256 of the viewer, the picture (`&lt;account&gt;/&lt;file&gt;`) and the link's end, keyed with the server's secret.</summary>
+    string ViewKey(long viewer, string name, long until) =>
+        Convert.ToHexStringLower(HMACSHA256.HashData(Store.JwtKey, Encoding.UTF8.GetBytes($"photo-view:{viewer}:{name}:{until}")))[..32];
+
+    /// <summary>The viewer a picture link names (<see cref="ViewLink"/>): null for a missing, wrong or expired key.</summary>
+    public long? LinkViewer(string name, string? viewer, string? until, string? key) =>
+        long.TryParse(viewer, NumberStyles.None, CultureInfo.InvariantCulture, out var v) && long.TryParse(until, NumberStyles.None, CultureInfo.InvariantCulture, out var u) && u > Clock()
+        && key is { Length: 32 } && CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(ViewKey(v, name, u)), Encoding.ASCII.GetBytes(key))
+            ? v : null;
+
+    /// <summary>GET of the website's `/photos/&lt;account&gt;/&lt;file&gt;` by `viewer` (the session's account, else the one the link names): the status and the file to send. 401 without a viewer; the owner gets the file as stored;
+    /// anyone else only the display-size copy (`display`, <see cref="DisplayCopy"/>), each counted in <see cref="ReadAllowed"/> (429 past it), and 403 for the original. The imported avatar stays everyone's. 404 for no such picture.</summary>
+    public (int Status, string? File) WebPhoto(string name, long? viewer, bool display)
+    {
+        var file = PhotoFile(PHOTO_PREFIX + name);
+        if (file is not null && Path.GetFileName(file) == ImportedAvatar) return (200, file);
+        if (viewer is not { } v) return (401, null);
+        if (file is null) return (404, null);
+        var owner = long.Parse(name[..name.IndexOf('/')], NumberStyles.None, CultureInfo.InvariantCulture);  // PhotoFile read it
+        if (owner == v) return (200, file);
+        if (!display) return (403, null);
+        if (!ReadAllowed(v)) return (429, null);
+        return DisplayCopy(owner, file) is { } copy ? (200, copy) : (404, null);
+    }
+
+    string DisplayPath(long account, string name) => Path.Combine(photosDir, "display", account.ToString(CultureInfo.InvariantCulture), name);
+
+    /// <summary>The display-size copy of a stored picture: decoded as a JPEG without its metadata, its longest side at most <see cref="DisplaySize"/>, and encoded again; kept in `photos/display/&lt;account&gt;/` under the
+    /// original's name and made again when the original is newer. Null for a file that is no JPEG this reads.</summary>
+    string? DisplayCopy(long account, string file)
+    {
+        var copy = DisplayPath(account, Path.GetFileName(file));
+        if (File.Exists(copy) && File.GetLastWriteTimeUtc(copy) >= File.GetLastWriteTimeUtc(file)) return copy;
+        var part = $"{copy}.{Guid.NewGuid():N}.part";
+        try
+        {
+            var info = Picture.Identify(Decoding(null), file);
+            if ((long)info.Width * info.Height > MaxPixels) return null;
+            using var picture = Picture.Load(Decoding(info.Width > DisplaySize || info.Height > DisplaySize ? new(DisplaySize, DisplaySize) : null), file);
+            Directory.CreateDirectory(Path.GetDirectoryName(copy)!);
+            using (var to = File.Create(part))
+                picture.Save(to, new JpegEncoder { Quality = 85 });
+            File.Move(part, copy, overwrite: true);
+            return copy;
+        }
+        catch (Exception e) when (e is SixLabors.ImageSharp.ImageFormatException or SixLabors.ImageSharp.Memory.InvalidMemoryOperationException or IOException)
+        {
+            return null;
+        }
+        finally
+        {
+            File.Delete(part);
+        }
+    }
+
+    static DecoderOptions Decoding(SixLabors.ImageSharp.Size? target) => new() { Configuration = JpegOnly, MaxFrames = 1, SkipMetadata = true, TargetSize = target };
 
     /// <summary>SQL of the spawn (event 7) of a kill's animal: the latest of its individual before the kill's event 3, as <see cref="KillHits"/> bounds its hits.</summary>
     static string KillSpawn(string individual, string harvest) =>
