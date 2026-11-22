@@ -27,7 +27,7 @@ public static class ServerSessionApi
     public const string TrophiesSuffix = "/trophies";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. With the cookie.</summary>
     public const string RanksSuffix = "/ranks";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. With the cookie.</summary>
     public const string FriendsSuffix = "/friends";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. With the cookie.</summary>
     public const string BestSuffix = "/best";
@@ -35,7 +35,7 @@ public static class ServerSessionApi
     public const string HuntsSuffix = "/hunts";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. With the cookie.</summary>
     public const string ScoreSuffix = "/score";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. With the cookie.</summary>
     public const string GallerySuffix = "/gallery";
     /// <summary>GET <c>/leaderboards/&lt;lanebandit|bustthrough&gt;?page=n</c>: 200 <see cref="ServerGameBoard"/>. Public: no cookie needed.
     /// Under it, the species boards by season (<c>season</c> missing: the current one; 0: all time; no cookie needed but for <c>/me</c>):

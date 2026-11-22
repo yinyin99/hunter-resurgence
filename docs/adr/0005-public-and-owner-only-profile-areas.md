@@ -1,6 +1,6 @@
 # Public and owner-only profile areas
 
-Status: accepted
+Status: accepted, amended by [ADR 0010](0010-players-data-for-signed-in-players-only.md): "public" below means public to signed-in players, and the website's reads need the session cookie.
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 
@@ -13,7 +13,7 @@ Each public area has one read in the server, built once and served two ways: as 
 - **Header only, everything else owner-only.** The least shown. Rejected: the spec's goal is that a player sees their progress, and any other player's, on the profile page in the game and on the website; a page with no content shows nothing.
 - **A setting per area that each player chooses.** Rejected for now: it needs a settings page and a default for every area, and the spec fixes the split. A setting takes a new ADR.
 - **Separate code for the game and for the website.** Rejected: two reads of one area would drift, and the game and the website would show different numbers for the same player. One read per area has two outputs.
-- **Public only to signed-in players.** Rejected: the website's server shows a profile to a visitor who is signed in nowhere. (Some of the game's public reads still take a player's token, but only to know who asks.)
+- **Public only to signed-in players.** Rejected at first: the website's server showed a profile to a visitor who is signed in nowhere. (Some of the game's public reads still take a player's token, but only to know who asks.) Taken later by [ADR 0010](0010-players-data-for-signed-in-players-only.md), so that no one can collect every player's data without an account.
 
 ## Consequences
 
