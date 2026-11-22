@@ -370,10 +370,9 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         foreach (var account in new long[] { 8, ME }) state.NoteLaunch(account, "start=100&reserve=2"u8.ToArray());
         static byte[] Jpeg(int width, int height)
         {
-            var big = new MemoryStream();
-            using (var image = new SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgb24>(width, height))
-                image.Save(big, new SixLabors.ImageSharp.Formats.Jpeg.JpegEncoder());
-            return big.ToArray();
+            using var bitmap = new SkiaSharp.SKBitmap(width, height);
+            using var image = SkiaSharp.SKImage.FromBitmap(bitmap);
+            return image.Encode(SkiaSharp.SKEncodedImageFormat.Jpeg, 90).ToArray();
         }
         string Upload(long account, long hash, byte[] bytes)
         {
@@ -412,8 +411,8 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Contains(("Cache-Control", "no-store"), display.Headers);
         foreach (var (shown, width, height) in new[] { (display.Body, State.DisplaySize, 720), ((await Web(squareLink, ME)).Body, State.DisplaySize, 853) })
         {
-            var size = SixLabors.ImageSharp.Image.Identify(shown);
-            Assert.Equal((width, height), (size.Width, size.Height));
+            using var size = SkiaSharp.SKCodec.Create(new MemoryStream(shown));
+            Assert.Equal((width, height), (size.Info.Width, size.Info.Height));
         }
         var copy = Path.Combine(tmp, "photos", "display", "8", Path.GetFileName(path));
         Assert.Equal(display.Body, File.ReadAllBytes(copy));  // kept for the next request
