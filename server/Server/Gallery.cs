@@ -101,7 +101,7 @@ public sealed partial class State
     }
 
     /// <summary>What a profile page's gallery tab shows of an account to `viewer`: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill, share}]}`; `url` and `thumbnail` are both
-    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original. `share` (the owner's rows only) is the bare link of the original: it shows to a signed-in player.</summary>
+    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original under its opaque name. `share` (the owner's rows only) is its bare link: it shows to a signed-in player.</summary>
     public JsonObject PublicGallery(long account, int page, string site, long viewer)
     {
         var all = GalleryRows(account, site, kills: true);
@@ -114,7 +114,7 @@ public sealed partial class State
             var link = ViewLink(viewer, account, file, site);
             r["url"] = link;
             r["thumbnail"] = link;
-            if (viewer == account) r["share"] = PhotoUrl(account, file, site);
+            if (viewer == account) r["share"] = PhotoUrl(account, DisplayName(account, file), site);
         }
         return new JsonObject { ["page"] = page, ["pages"] = pages, ["total"] = all.Count, ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)r)]) };
     }
@@ -149,12 +149,18 @@ public sealed partial class State
         return ms.ToArray();
     }
 
-    /// <summary>The website's link of a picture for `viewer`: the original, for every signed-in player. Its key (<see cref="ViewKey"/>) names the viewer and holds until the end of
+    /// <summary>The website's name of a picture: `display-&lt;32 hex digits&gt;.jpg`, an HMAC-SHA256 of the picture keyed with the server's secret, so a link given to a player never tells the original's name
+    /// (the game's host serves the original by its name, without a session or a read limit).</summary>
+    string DisplayName(long account, string file) =>
+        "display-" + Convert.ToHexStringLower(HMACSHA256.HashData(Store.JwtKey, Encoding.UTF8.GetBytes($"photo-display:{account}/{file}")))[..32] + ".jpg";
+
+    /// <summary>The website's link of a picture for `viewer`: the original under its opaque name (<see cref="DisplayName"/>). Its key (<see cref="ViewKey"/>) names the viewer and holds until the end of
     /// tomorrow (UTC), so the launcher's pages, which send no cookie, load it, and a bare link answers 401.</summary>
     string ViewLink(long viewer, long account, string file, string site)
     {
         var until = ((long)Clock() / 86400 + 2) * 86400;
-        return PhotoUrl(account, file, site) + $"?viewer={viewer}&until={until}&key={ViewKey(viewer, $"{account}/{file}", until)}";
+        var name = DisplayName(account, file);
+        return PhotoUrl(account, name, site) + $"?viewer={viewer}&until={until}&key={ViewKey(viewer, $"{account}/{name}", until)}";
     }
 
     /// <summary>The first 32 hex digits of an HMAC-SHA256 of the viewer, the picture (`&lt;account&gt;/&lt;name&gt;`) and the link's end, keyed with the server's secret.</summary>
@@ -177,7 +183,17 @@ public sealed partial class State
         var slash = name.IndexOf('/');
         if (slash < 0 || !long.TryParse(name[..slash], NumberStyles.None, CultureInfo.InvariantCulture, out var owner)) return (404, null);
         if (owner != v && !ReadAllowed(v)) return (429, null);  // every read of another player's picture counts, a refused or missing one too
-        return file is not null ? (200, file) : (404, null);
+        if (file is not null) return (200, file);
+        return DisplayedPicture(owner, name[(slash + 1)..]) is { } original ? (200, original) : (404, null);
+    }
+
+    /// <summary>The stored file of the gallery picture whose opaque name is `name`; null for none. ponytail: one HMAC per gallery picture per request; keep a name column if galleries grow past a few thousand.</summary>
+    string? DisplayedPicture(long account, string name)
+    {
+        if (!name.StartsWith("display-", StringComparison.Ordinal)) return null;
+        using var con = Con(account);
+        return con.Rows($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND (photo_type IN ({GalleryTypes}) OR saved IS NOT NULL)")
+            .Select(r => (string)r[0]).FirstOrDefault(f => DisplayName(account, f) == name) is { } file ? PhotoFile($"{PHOTO_PREFIX}{account}/{file}") : null;
     }
 
     /// <summary>SQL of the spawn (event 7) of a kill's animal: the latest of its individual before the kill's event 3, as <see cref="KillHits"/> bounds its hits.</summary>

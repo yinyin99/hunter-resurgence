@@ -153,13 +153,13 @@ public static class HuntersApi
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/hunts/{id}", (string handle, string id, HttpContext ctx) => state.PublicAccount(handle) is { } account
-                && (id == "latest" ? state.PublicHunt(account, null, SignedIn(ctx) == account, SignedIn(ctx) is not null) : long.TryParse(id, out var n) ? state.PublicHunt(account, n, SignedIn(ctx) == account, SignedIn(ctx) is not null) : null) is { } hunt
+                && (id == "latest" ? state.PublicHunt(account, null, SignedIn(ctx) == account, SignedIn(ctx) ?? 0, $"https://{game.Web}") : long.TryParse(id, out var n) ? state.PublicHunt(account, n, SignedIn(ctx) == account, SignedIn(ctx) ?? 0, $"https://{game.Web}") : null) is { } hunt
                 ? Json(200, hunt)
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterHunt").WithSummary("One hunt of a hunter: its statistics and its kills")
             .WithDescription("`{id, reserve, lodge, start, end, weapons, animals, collectables, achievements, distanceKm, seconds, antlers, kills}` of `Public_user/expedition` (`id` a hunt id, or `latest`): `weapons` and `animals` are the "
                              + "rows of `/hunters/<handle>/statistics` for the hunt (those of its events so far while it is open, `end` null, `distanceKm` 0 and `seconds` the time since it started), `collectables`, `achievements` and `antlers` are empty, `kills` are `{id, species, weapon, ammo, distanceM, score, weightKg, when, sheet}` "
-                             + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). A signed-in player (the `hr_session` cookie) sees each kill's `photo` (null signed out); on his own hunt a kill made here also has "
+                             + "of the last hit (`when` Unix seconds, `sheet` true when `/hunters/<handle>/score/<id>` answers). A signed-in player (the `hr_session` cookie) sees each kill's `photo`, the keyed link of the picture on the website's host (null for a kill without one); on his own hunt a kill made here also has "
                              + "`taxidermy: {end, ems, gms, skull, done}`: `end` (ISO UTC) is 72 hours after the harvest (after the day the taxidermy went live, for an older harvest), `ems` and `gms` the price, `skull` whether the species has a skull to mount, `done` `taxidermy`, `skull` or null; "
                              + "a restored kill and anyone else's view have none. 404 for a handle that is unknown or banned, and for a hunt that is unknown.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");

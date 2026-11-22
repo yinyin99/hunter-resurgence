@@ -284,15 +284,14 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         var first = await Page("?page=1");
         Eq("[1, 1, 2, [3, 1]]", T(first["page"], first["pages"], first["total"], Ids(first["rows"]!)));
         var (cameraFile, trophyFile) = (cameraUrl[photos.Length..], trophyUrl[photos.Length..]);
-        Assert.Matches($@"\Ahttps://web\.test/photos/8/{Regex.Escape(cameraFile)}\?viewer={ME}&until=[0-9]+&key=[0-9a-f]{{32}}\z", (string)first["rows"]![0]!["url"]!);  // the website's own host: the game's is no host a browser reaches; another's picture is the original too
+        Assert.Matches($@"\Ahttps://web\.test/photos/8/display-[0-9a-f]{{32}}\.jpg\?viewer={ME}&until=[0-9]+&key=[0-9a-f]{{32}}\z", (string)first["rows"]![0]!["url"]!);  // the website's own host: the game's is no host a browser reaches; the original, by a name that is not its own
         Eq("[3, 1]", Ids(first["rows"]!));
         Assert.All(first["rows"]!.AsArray(), r => Assert.Equal((string?)r!["url"], (string?)r["thumbnail"]));  // the grid scales the picture: the game's square crop (the trophy has one) is not the tile
-        Assert.StartsWith($"https://web.test/photos/8/{cameraFile}?viewer=8&", (string)JsonNode.Parse((await Web("/hunters/second/gallery", 8)).Body)!["rows"]![0]!["url"]!);  // the owner's: the original
+        Assert.StartsWith("https://web.test/photos/8/display-", (string)JsonNode.Parse((await Web("/hunters/second/gallery", 8)).Body)!["rows"]![0]!["url"]!);  // the owner's too
         Assert.Equal(200, (await Web("/photos/8/" + cameraFile, 8)).Status);
-        Assert.Equal(200, (await Web("/photos/8/" + cameraFile, ME)).Status);  // and another signed-in player's
-        // a kill's photo shows on the hunt page of any signed-in player, never to a signed-out reader
-        Assert.Equal(trophyUrl, (string?)state.PublicHunt(8, null, false, true)!["kills"]![0]!["photo"]);
-        Assert.Null(state.PublicHunt(8, null)!["kills"]![0]!["photo"]);
+        // a kill's photo shows on the hunt page of another signed-in player: the keyed link of the picture, which opens for him
+        var huntPhoto = new Uri((string)state.PublicHunt(8, null, false, ME, "https://web.test")!["kills"]![0]!["photo"]!).PathAndQuery;
+        Assert.Equal(200, (await Web(huntPhoto, ME)).Status);
         Assert.Equal(404, (await Web("/photos/8/nothing.jpg", 8)).Status);
         Assert.Equal(401, (await community.SendAsync("GET", "web.test", "/hunters/second/gallery")).Status);  // signed out
         using (var con = state.Store.Open(8))
@@ -397,11 +396,12 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         using (var zip = new ZipArchive(new MemoryStream((await Web("/account/gallery/zip", ME)).Body)))
             Assert.Empty(zip.Entries);
 
-        // the gallery links the original, with no Share for anyone but its owner
+        // the gallery links the original by an opaque name, with no Share for anyone but its owner
         var rows = JsonNode.Parse((await Web("/hunters/second/gallery", ME)).Body)!["rows"]!.AsArray();
         Assert.All(rows, r => Assert.Null(r!["share"]));
         var link = PathOf(rows[0]!["url"]);
-        Assert.StartsWith(path + "?viewer=", link);
+        Assert.DoesNotContain(Path.GetFileNameWithoutExtension(path), link);  // the game's host serves the original by its name without a session: the link never tells it
+        Assert.NotEqual("state", (await Bare(link[..link.IndexOf('?')], "gameserver.test")).Source);
         Assert.Equal(wide, (await Bare(link)).Body);  // the launcher's pages send no cookie: the keyed link is enough
         Assert.Equal(401, (await Bare(link.Replace($"viewer={ME}", "viewer=8"))).Status);  // a key is its viewer's
         state.Clock = () => Py.Now() + 3 * 86400;
