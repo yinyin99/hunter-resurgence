@@ -1495,7 +1495,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blocked a game file ({0}): allow it in Windows Security.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Low disk space on {0} ({1} left).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>Full screen is set to {0}, which your screen does not offer: the game may close at start.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>The game draws on {0}, a virtual display: disable it in Device Manager or make your real screen the main display.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>The game draws on {0}, which has no screen attached: make your real screen the main display, or disable that adapter in Device Manager.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Use my screen's mode</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Files that are not part of the game are in its folder: {0}. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Game files were changed: {0}. This can stop the game from starting. In Steam, Properties, Installed files, Verify integrity of game files.</value></data>

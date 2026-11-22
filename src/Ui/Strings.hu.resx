@@ -1495,7 +1495,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>A Windows blokkolt egy játékfájlt ({0}): engedélyezd a Windows Biztonságban.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Kevés a szabad hely itt: {0} ({1} maradt).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>A teljes képernyő {0} módra van állítva, amelyet a képernyőd nem kínál: a játék induláskor bezárulhat.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>A játék a(z) {0} eszközön rajzol, amely virtuális kijelző: tiltsd le az Eszközkezelőben, vagy tedd a valódi képernyődet fő kijelzővé.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>A játék a(z) {0} eszközön rajzol, amelyhez nincs képernyő csatlakoztatva: tedd a valódi képernyődet fő kijelzővé, vagy tiltsd le ezt az adaptert az Eszközkezelőben.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>A képernyőm módjának használata</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>A játék mappájában olyan fájlok vannak, amelyek nem tartoznak a játékhoz: {0}. Az ide tett grafikai eszközök és modok megakadályozhatják a játék indulását. Vidd ki őket a mappából, és indítsd újra.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Játékfájlok megváltoztak: {0}. Ez megakadályozhatja a játék indulását. A Steamben Tulajdonságok, Telepített fájlok, Játékfájlok épségének ellenőrzése.</value></data>

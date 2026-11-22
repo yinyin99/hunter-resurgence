@@ -1495,7 +1495,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blokkerte en spillfil ({0}): tillat den i Windows-sikkerhet.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskplass på {0} ({1} igjen).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>Fullskjerm er satt til {0}, som skjermen din ikke støtter: spillet kan lukkes ved start.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>Spillet tegner på {0}, en virtuell skjerm: deaktiver den i Enhetsbehandling, eller gjør den ekte skjermen din til hovedskjerm.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Spillet tegner på {0}, som ikke har noen skjerm tilkoblet: gjør den ekte skjermen din til hovedskjerm, eller deaktiver adapteren i Enhetsbehandling.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Bruk skjermens modus</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Det ligger filer i spillmappen som ikke hører til spillet: {0}. Grafikkverktøy og modifikasjoner som er lagt der, kan hindre spillet i å starte. Flytt dem ut av mappen og start på nytt.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Spillfiler er endret: {0}. Det kan hindre spillet i å starte. I Steam, Egenskaper, Installerte filer, Verifiser integriteten til spillfilene.</value></data>

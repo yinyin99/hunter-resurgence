@@ -1495,7 +1495,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bir oyun dosyasını engelledi ({0}): Windows Güvenliği'nde izin verin.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>{0} sürücüsünde disk alanı az ({1} kaldı).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>Tam ekran {0} olarak ayarlı, ekranınız bunu sunmuyor: oyun başlarken kapanabilir.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>Oyun, sanal bir ekran olan {0} üzerine çizim yapıyor: Aygıt Yöneticisi'nde devre dışı bırakın veya gerçek ekranınızı ana ekran yapın.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Oyun, ekranı bağlı olmayan {0} üzerine çizim yapıyor: gerçek ekranınızı ana ekran yapın veya bu bağdaştırıcıyı Aygıt Yöneticisi'nde devre dışı bırakın.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Ekranımın modunu kullan</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Oyunun klasöründe oyunun parçası olmayan dosyalar var: {0}. Oraya konan grafik araçları ve modlar oyunun başlamasını engelleyebilir. Bunları klasörün dışına taşıyın ve yeniden başlatın.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Oyun dosyaları değiştirilmiş: {0}. Bu, oyunun başlamasını engelleyebilir. Steam'de Özellikler, Yüklü dosyalar, Oyun dosyalarının bütünlüğünü doğrula.</value></data>

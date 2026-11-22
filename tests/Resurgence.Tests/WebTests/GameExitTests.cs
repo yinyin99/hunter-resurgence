@@ -157,7 +157,7 @@ public sealed class GameExitTests : UiContext
         Use(null);
         var virtualDisplay = new InstallCheck("display", "warn", "Check.Display.Virtual", new Dictionary<string, string> { ["adapter"] = "Remote Display Adapter" });
         var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed") with { Display = virtualDisplay }));
-        Assert.Equal("The game draws on Remote Display Adapter, a virtual display: disable it in Device Manager or make your real screen the main display.", cut.Find(".message").TextContent);
+        Assert.Equal("The game draws on Remote Display Adapter, which has no screen attached: make your real screen the main display, or disable that adapter in Device Manager.", cut.Find(".message").TextContent);
         Assert.Equal(["exit-report", "exit-ok"], cut.FindAll(".actions .btn").Select(b => b.Id));
     }
 

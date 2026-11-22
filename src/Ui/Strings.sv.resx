@@ -1495,7 +1495,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blockerade en spelfil ({0}): tillåt den i Windows-säkerhet.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskutrymme på {0} ({1} kvar).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>Helskärm är inställt på {0}, vilket din skärm inte erbjuder: spelet kan stängas vid start.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>Spelet ritar på {0}, en virtuell skärm: inaktivera den i Enhetshanteraren eller gör din riktiga skärm till huvudskärm.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Spelet ritar på {0}, som inte har någon skärm ansluten: gör din riktiga skärm till huvudskärm eller inaktivera adaptern i Enhetshanteraren.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Använd min skärms läge</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Det ligger filer i spelets mapp som inte hör till spelet: {0}. Grafikverktyg och moddar som lagts där kan hindra spelet från att starta. Flytta ut dem ur mappen och starta igen.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Spelfiler har ändrats: {0}. Det kan hindra spelet från att starta. I Steam, Egenskaper, Installerade filer, Verifiera spelfilernas integritet.</value></data>

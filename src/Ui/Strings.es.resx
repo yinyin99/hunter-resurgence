@@ -1495,7 +1495,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bloqueó un archivo del juego ({0}): permítelo en Seguridad de Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Queda poco espacio en {0} ({1} libres).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>La pantalla completa está en {0}, que tu pantalla no ofrece: el juego puede cerrarse al iniciar.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>El juego dibuja en {0}, una pantalla virtual: desactívala en el Administrador de dispositivos o haz que tu pantalla real sea la principal.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>El juego dibuja en {0}, que no tiene ninguna pantalla conectada: haz que tu pantalla real sea la principal o desactiva ese adaptador en el Administrador de dispositivos.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Usar el modo de mi pantalla</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>En la carpeta del juego hay archivos que no forman parte de él: {0}. Las herramientas gráficas y los mods colocados allí pueden impedir que el juego se inicie. Muévelos fuera de la carpeta e inicia de nuevo.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Se modificaron archivos del juego: {0}. Esto puede impedir que el juego se inicie. En Steam, Propiedades, Archivos instalados, Verificar la integridad de los archivos de juego.</value></data>

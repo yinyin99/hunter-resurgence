@@ -65,7 +65,7 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]
     [InlineData("check:display", "warn", "Full screen is set to 1366x768 60 Hz, which your screen does not offer: the game may close at start.", "Use my screen's mode")]
-    [InlineData("check:virtual", "warn", "The game draws on Remote Display Adapter, a virtual display: disable it in Device Manager or make your real screen the main display.", null)]
+    [InlineData("check:virtual", "warn", "The game draws on Remote Display Adapter, which has no screen attached: make your real screen the main display, or disable that adapter in Device Manager.", null)]
     [InlineData("check:dlls", "warn", "Files that are not part of the game are in its folder: d3d9.dll. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.", "Open folder")]
     [InlineData("folder:none", "block", "The game was not found.", "Choose folder…")]
     public void AProblemShowsItsTextItsLevelAndItsFix(string state, string level, string text, string? button)

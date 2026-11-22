@@ -1495,7 +1495,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>System Windows zablokował plik gry ({0}): zezwól na niego w Zabezpieczeniach Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Mało miejsca na dysku {0} (zostało {1}).</value></data>
   <data name="Check.Display.Mode" xml:space="preserve"><value>Pełny ekran jest ustawiony na {0}, czego Twój ekran nie obsługuje: gra może się zamknąć przy uruchomieniu.</value></data>
-  <data name="Check.Display.Virtual" xml:space="preserve"><value>Gra rysuje na {0}, wirtualnym wyświetlaczu: wyłącz go w Menedżerze urządzeń lub ustaw swój prawdziwy ekran jako główny.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Gra rysuje na {0}, do którego nie jest podłączony żaden ekran: ustaw swój prawdziwy ekran jako główny lub wyłącz ten adapter w Menedżerze urządzeń.</value></data>
   <data name="Check.FixDisplay" xml:space="preserve"><value>Użyj trybu mojego ekranu</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>W folderze gry są pliki, które nie należą do gry: {0}. Narzędzia graficzne i mody umieszczone w nim mogą uniemożliwić uruchomienie gry. Przenieś je poza folder i uruchom ponownie.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Pliki gry zostały zmienione: {0}. Może to uniemożliwić uruchomienie gry. W Steam, Właściwości, Zainstalowane pliki, Sprawdź spójność plików gry.</value></data>
