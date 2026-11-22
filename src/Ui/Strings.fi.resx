@@ -1425,7 +1425,7 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Ongelmaraportit</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, pelin Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Sen tekstitiedostot eivät sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, käynnistäjän oma loki, pelin, käynnistäjän ja sen selaimen (WebView2) Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Sen tekstitiedostot eivät sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
   <data name="Data.Reports.Dump" xml:space="preserve"><value>Raportti voi sisältää myös pelin viimeisimmän kaatumisvedoksen, kopion osasta pelin muistia kaatumishetkellä. Toisin kuin muuta raporttia, sitä ei siivota: se voi sisältää sen, mitä pelillä oli muistissa.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Peli lähettää omat kaatumisraporttinsa itse. Palvelin säilyttää kaatumis- ja virheraportit 30 päivää tiliä kohti, asennuspolut ja laitetunniste poistettuina.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Käyttöehdot</value></data>
@@ -1549,7 +1549,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin lokit yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin ja launcherin lokit ja kaatumistapahtumat (WebView2 mukaan lukien) yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Kootaan tiedostoja…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Raportti sisältää nämä tiedostot:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Näitä ei voitu lukea, ja ne jätettiin pois:</value></data>
@@ -1566,7 +1566,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Report.AutoFailed" xml:space="preserve"><value>Ongelmaraporttia ei voitu lähettää: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Meni jokin pieleen? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Lähetetäänkö ongelmaraportit?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille lokinsa ja pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Jos peli ei käynnisty, launcher voi lähettää meille oman lokinsa, pelin lokit, pelin, launcherin ja WebView2:n Windows-kaatumistapahtumat sekä pelin viimeisimmän kaatumisvedoksen, jotta voimme korjata ongelman.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Näytä tiedostot</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Lähetä automaattisesti</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Kysy joka kerta</value></data>

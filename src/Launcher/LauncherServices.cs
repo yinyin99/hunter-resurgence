@@ -17,6 +17,7 @@ static class LauncherServices
     public static ServiceProvider Build(string? mock, Uri? server)
     {
         var services = new ServiceCollection();
+        services.AddLogging(b => b.AddProvider(LauncherLog.Default)); // what the launcher's own classes log goes to launcher.log
         services.AddWpfBlazorWebView();
         var brand = Branding.Load(Settings.FilePath);
         services.AddUiLocalization(brand);
@@ -32,7 +33,7 @@ static class LauncherServices
         if (updater is not null) { services.AddSingleton(updater); _ = updater.CheckAsync(); }
         services.AddSingleton<IPatchService>(updater ?? (IPatchService)new MockPatchService(server is null ? mock : null));
         // the player kit: setup, removal and the forwarder (live only with an https server_url)
-        services.AddSingleton<IKitService>(new LauncherKit(server));
+        services.AddSingleton<IKitService>(sp => new LauncherKit(server, sp.GetRequiredService<ILogger<LauncherKit>>()));
         // the first start after the install looks for what an older setup left (docs/launcher.md#install-and-uninstall)
         services.AddSingleton<ICleanupService>(sp => new LauncherCleanup(() => sp.GetRequiredService<LauncherEnv>().Install, Environment.ProcessPath, Program.FirstRun));
         // Steam's Play button opens the launcher: the launch option, written with the player's OK (docs/launcher.md#start-it-from-steam)

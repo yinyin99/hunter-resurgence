@@ -1425,7 +1425,7 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort; att logga in igen skapar ett nytt konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatören för den här servern kan se allt ovan.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Problemrapporter</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>När en spelstart misslyckas (spelet kördes under en minut, avslutades med ett fel eller visade inget fönster) sammanställer launchern en rapport: spelets loggar och inställningar, Windows kraschhändelser för spelet, namnen på antivirus-, booster- och overlayprogram, din Windows-version och ditt språk, grafikkort och skärmar samt dina senaste starter. Dess textfiler innehåller inga lösenord eller tokens. Den skickas bara om du valde ”Skicka automatiskt” (du tillfrågas en gång och kan ändra i Inställningar), annars bara när du trycker på Skicka. Den sparas med ditt konto i 30 dagar och operatörerna kan läsa den. En avisering med ditt handle, ditt kontonummer och rapportens referens går till operatörernas privata Discord-kanal. Radera mina uppgifter tar bort dina rapporter.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>När en spelstart misslyckas (spelet kördes under en minut, avslutades med ett fel eller visade inget fönster) sammanställer launchern en rapport: spelets loggar och inställningar, launcherns egen logg, Windows kraschhändelser för spelet, launchern och dess webbläsare (WebView2), namnen på antivirus-, booster- och overlayprogram, din Windows-version och ditt språk, grafikkort och skärmar samt dina senaste starter. Dess textfiler innehåller inga lösenord eller tokens. Den skickas bara om du valde ”Skicka automatiskt” (du tillfrågas en gång och kan ändra i Inställningar), annars bara när du trycker på Skicka. Den sparas med ditt konto i 30 dagar och operatörerna kan läsa den. En avisering med ditt handle, ditt kontonummer och rapportens referens går till operatörernas privata Discord-kanal. Radera mina uppgifter tar bort dina rapporter.</value></data>
   <data name="Data.Reports.Dump" xml:space="preserve"><value>En rapport kan också innehålla spelets senaste kraschdump, en kopia av en del av spelets minne vid kraschen. Till skillnad från resten av rapporten rensas den inte: den kan innehålla det spelet hade i minnet.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Spelet skickar sina egna kraschrapporter själv. Servern sparar krasch- och felrapporterna i 30 dagar per konto, med installationssökvägar och enhetsidentifieraren borttagna.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Användarvillkor</value></data>
@@ -1549,7 +1549,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Skickar spelets loggar till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Skickar loggar och kraschhändelser för spelet och launchern (inklusive WebView2) till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samlar in filerna…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapporten innehåller dessa filer:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Dessa kunde inte läsas och är utelämnade:</value></data>
@@ -1566,7 +1566,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunde inte skickas: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gick något fel? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Skicka problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sina loggar och spelets senaste kraschdump så att vi kan åtgärda det.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sin egen logg, spelets loggar, Windows kraschhändelser för spelet, launchern och WebView2 och spelets senaste kraschdump så att vi kan åtgärda det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Visa filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Skicka automatiskt</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Fråga mig varje gång</value></data>

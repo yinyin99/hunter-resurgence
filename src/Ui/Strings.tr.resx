@@ -1425,7 +1425,7 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Sorun raporları</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, oyun için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Metin dosyaları parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, başlatıcının kendi günlüğü, oyun, başlatıcı ve tarayıcısı (WebView2) için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Metin dosyaları parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
   <data name="Data.Reports.Dump" xml:space="preserve"><value>Bir rapor oyunun son çökme dökümünü de içerebilir; bu, çökme anında oyunun belleğinin bir bölümünün kopyasıdır. Raporun geri kalanından farklı olarak temizlenmez: oyunun bellekte tuttuklarını içerebilir.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Oyun kendi çökme raporlarını kendisi gönderir. Sunucu, çökme ve hata raporlarını hesap başına 30 gün saklar; kurulum yolları ve cihaz tanımlayıcısı çıkarılır.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Kullanım Koşulları</value></data>
@@ -1549,7 +1549,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Oyunun günlüklerini yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Oyunun ve başlatıcının günlüklerini ve çökme olaylarını (WebView2 dahil) yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Dosyalar toplanıyor…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapor şu dosyaları içerir:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Bunlar okunamadı ve dışarıda bırakıldı:</value></data>
@@ -1566,7 +1566,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Bir şeyler mi ters gitti? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Sorun raporları gönderilsin mi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için kendi günlüğünü, oyunun günlüklerini, oyun, başlatıcı ve WebView2 için Windows çökme olaylarını ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dosyaları göster</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Otomatik gönder</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Her seferinde sor</value></data>

@@ -38,7 +38,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var settings = new[] { env.Settings.GraphicsFile, env.Settings.GraphicsFileNoSteam, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
         var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
         // Build runs off the UI thread (ProblemReporter.BuildAsync), so waiting for the checks is fine here
-        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult()), env.Prefs, env.Save, http, cookie);
+        return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult(), launcherLog: LauncherLog.Default.FilePath), env.Prefs, env.Save, http, cookie);
     }
 
     /// <summary>The last game start this watcher saw; null before any.</summary>
@@ -222,6 +222,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // the client quit at once because Steam is not there: once more without Steam, and never again
         if (withSteam && QuitEarly(game.Game) == SteamMissing)
         {
+            log?.LogInformation("The game quit with {Code} after {Seconds} s when started with Steam; starting it again without Steam", SteamMissing, (int)game.Ran.Elapsed.TotalSeconds);
             game.Game.Dispose();
             CarryGraphics(false);
             game = Launch(g, url, param, false) is { } retry ? retry with { Retried = true } : null;
@@ -273,6 +274,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
+            log?.LogInformation("Game exited: code {Code}, {Seconds} s, window seen {Window}", code?.ToString() ?? "unknown", (int)elapsed.TotalSeconds, window);
             var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
             return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null, early && code == 0 ? clock?.Ahead : null);
         }
@@ -368,7 +370,11 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var info = new ProcessStartInfo(g.ClientExe, Arguments(url, param, withSteam)) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
         // with the app id set the client does not ask Steam to start it again (that would run Steam's launch option), in either mode
         if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
-        return start(info) is { } game ? new(game, withSteam ? "steam" : "nosteam", DateTimeOffset.Now, Stopwatch.StartNew()) : null;
+        var mode = withSteam ? "steam" : "nosteam";
+        var game = start(info);
+        if (game is null) log?.LogWarning("The game did not start, mode {Mode}", mode);
+        else log?.LogInformation("Game process started, mode {Mode}", mode);
+        return game is null ? null : new(game, mode, DateTimeOffset.Now, Stopwatch.StartNew());
     }
 
     /// <summary>Watches a client started with Steam for <c>quitWithin</c> (5 s) or until its window shows: its exit code when it quit, else null.</summary>

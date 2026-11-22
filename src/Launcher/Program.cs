@@ -15,6 +15,8 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
+        // before anything that can fail, so that a failure in the start-up is in launcher.log; not the elevated --hosts copy, which only edits the hosts file
+        if (args is not ["--hosts", _]) LauncherLog.Default.WatchProcess();
         // first: Velopack runs the install and uninstall hooks here and exits. A downloaded update is applied at start only by the first launcher (a second start, the link or the
         // elevated --hosts copy, must not close the open one) and never while the game runs
         var applyUpdate = !Mutex.TryOpenExisting(Instance, out var other) && args is not ["--hosts", _] && !GameFiles.ClientRunning(Settings.Load().ClientExe);

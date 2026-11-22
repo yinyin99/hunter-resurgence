@@ -30,8 +30,10 @@ public class ProblemReportTests
         return new(folder, Path.Combine(folder, "client.exe"));
     }
 
-    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null, string? outFolder = null, Func<string, IEnumerable<string>>? dumps = null) =>
-        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), outFolder ?? Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"], exe => [$"event 1000 {exe} crashed"], dumps: dumps);
+    static Diagnostics Make(TempDir temp, GameInstall? install, string[]? settings = null, Func<IEnumerable<string>>? processes = null, Func<IReadOnlyList<GameRun>>? runs = null, string? outFolder = null, Func<string, IEnumerable<string>>? dumps = null,
+        string? launcherLog = null, Func<IReadOnlyList<string>, IEnumerable<string>>? events = null) =>
+        new(() => install, settings ?? [], "1.2.3", runs ?? (() => []), outFolder ?? Path.Combine(temp.Path, "out"), processes ?? (() => ["explorer"]), () => ["Test Antivirus"], () => ["Graphics: Test GPU"],
+            events ?? (names => names.Select(n => $"event 1000 {n} crashed")), dumps: dumps, launcherLog: launcherLog);
 
     static Dictionary<string, string> Read(string zip)
     {
@@ -57,7 +59,7 @@ public class ProblemReportTests
     public void TheEventQueryIsValidForWindows()
     {
         if (!OperatingSystem.IsWindows()) return;
-        _ = Diagnostics.ReadEvents("no-such-game.exe").ToList(); // must not throw "The specified query is invalid"
+        _ = Diagnostics.ReadEvents(["no-such-game.exe", "resurgence-launcher.exe"]).ToList(); // must not throw "The specified query is invalid"
         _ = Diagnostics.ReadPopups("no-such-game.exe").ToList();
     }
 
@@ -65,8 +67,8 @@ public class ProblemReportTests
     static readonly Dictionary<string, (long, string)> CleanTable = new() { ["steam_api.dll"] = (5, Convert.ToHexString(SHA256.HashData("steam"u8))) };
 
     static Diagnostics Direct(TempDir temp, GameInstall install, Func<IReadOnlyList<GameRun>>? runs = null, Func<string, IEnumerable<string>>? popups = null, Func<IReadOnlyList<InstallCheck>>? checks = null,
-        Func<string, IEnumerable<string>>? events = null) =>
-        new(() => install, [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), () => [], () => [], () => [], events ?? (exe => []), installChecks: checks, popups: popups, cleanDlls: CleanTable);
+        Func<IReadOnlyList<string>, IEnumerable<string>>? events = null) =>
+        new(() => install, [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), () => [], () => [], () => [], events ?? (_ => []), installChecks: checks, popups: popups, cleanDlls: CleanTable);
 
     [Fact]
     public void TheReportListsEveryExtraOrChangedDllWithItsSizeAndVersionElseSaysAsInstalled()
@@ -156,6 +158,46 @@ public class ProblemReportTests
         var report = Direct(temp, g.Install, () => [new(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1), unchecked((int)3221225785), false)], _ => throw new InvalidOperationException("no System log")).Build("manual");
         Assert.Contains("application popup", report.Missing);
         Assert.Contains("events.txt", report.Files);
+    }
+
+    [Fact]
+    public void AnEventIsScrubbedBeforeItIsCutSoACredentialOnTheCutIsNotLeftHalf()
+    {
+        // a fictional session id that the 2000-character cut would split into a prefix too short for the line scrub
+        var text = "resurgence-launcher.exe " + new string('x', 1950) + " 0123456789abcdef0123456789abcdef0123";
+        var formatted = Diagnostics.FormatEvent(new DateTime(2026, 1, 2, 3, 4, 5, DateTimeKind.Utc), 1000, "Application Error", text);
+        Assert.DoesNotContain("0123456789", formatted);
+        Assert.Contains("event 1000  Application Error", formatted);
+    }
+
+    [Fact]
+    public void ALauncherCrashEventIsListedInEventsTxtEvenWithoutAGame()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        // a made-up event log: one launcher crash, one WebView2 crash, one of another program; only what names an asked exe is returned (as ReadEvents does)
+        string[] log = ["event 1000 Application Error: Faulting application name: resurgence-launcher.exe", "event 1001 Windows Error Reporting: msedgewebview2.exe stopped", "event 1000 other.exe crashed"];
+        var events = Read(Make(temp, null, events: names => log.Where(l => names.Any(n => l.Contains(n)))).Build("manual").Path)["events.txt"];
+        Assert.Contains(log[0], events); // the records themselves, not the "none found" text that also names the exes
+        Assert.Contains(log[1], events);
+        Assert.DoesNotContain("other.exe", events);
+        Assert.Contains("client.exe", Read(Make(temp, NewGame(temp).Install, events: _ => []).Build("manual").Path)["events.txt"]); // none found: the text names every exe asked for
+    }
+
+    [Fact]
+    public void TheLauncherLogAndItsOlderCopyGoIntoTheReport()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var log = new LauncherLog(Path.Combine(temp.Path, "appdata", "launcher.log"));
+        var report = Make(temp, null, launcherLog: log.FilePath).Build("manual");
+        Assert.Contains("launcher.log", report.Missing); // not written yet: listed, the report still builds
+        Assert.DoesNotContain("launcher.1.log", report.Missing);
+
+        log.Write(Microsoft.Extensions.Logging.LogLevel.Error, "something failed", new InvalidOperationException("boom"));
+        File.WriteAllText(LauncherLog.OlderOf(log.FilePath), "older entry\n");
+        var entries = Read(Make(temp, null, launcherLog: log.FilePath).Build("manual").Path);
+        Assert.Contains("something failed", entries["launcher.log"]);
+        Assert.Contains("boom", entries["launcher.log"]);
+        Assert.Equal("older entry\n", entries["launcher.1.log"]);
     }
 
     [Fact]

@@ -1425,7 +1425,7 @@
   <data name="Data.Delete.Text" xml:space="preserve"><value>Log ind, åbn Gendan din backup, og brug Slet mine data. Det sletter kontoen, dens spildata, de gemte zips og fotos og logger dig ud. Dit Steam-id glemmes derefter; hvis du logger ind igen, oprettes en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren af denne server kan se alt ovenstående.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Fejlrapporter</value></data>
-  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, Windows-nedbrudshændelser for spillet, navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Dens tekstfiler indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
+  <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, launcherens egen logfil, Windows-nedbrudshændelser for spillet, launcheren og dens browser (WebView2), navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Dens tekstfiler indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
   <data name="Data.Reports.Dump" xml:space="preserve"><value>En rapport kan også indeholde spillets seneste nedbrudsdump, en kopi af en del af spillets hukommelse ved nedbruddet. I modsætning til resten af rapporten bliver den ikke renset: den kan indeholde det, spillet havde i hukommelsen.</value></data>
   <data name="Data.Reports.Game" xml:space="preserve"><value>Spillet sender selv sine egne nedbrudsrapporter. Serveren beholder nedbruds- og fejlrapporterne i 30 dage pr. konto, med installationsstier og enhedsidentifikatoren fjernet.</value></data>
   <data name="Terms.Title" xml:space="preserve"><value>Brugsvilkår</value></data>
@@ -1549,7 +1549,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportér et problem</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Sender spillets logfiler til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Sender logfiler og nedbrudshændelser for spillet og launcheren (inklusive WebView2) til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samler filerne…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapporten indeholder disse filer:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Disse kunne ikke læses og er udeladt:</value></data>
@@ -1566,7 +1566,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunne ikke sendes: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gik noget galt? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Send problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sine logfiler og spillets seneste nedbrudsdump, så vi kan rette det.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Hvis spillet ikke starter, kan launcheren sende os sin egen logfil, spillets logfiler, Windows-nedbrudshændelser for spillet, launcheren og WebView2 og spillets seneste nedbrudsdump, så vi kan rette det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Vis filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Send automatisk</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Spørg mig hver gang</value></data>
