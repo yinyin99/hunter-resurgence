@@ -559,7 +559,9 @@ public sealed partial class State
     /// cloned: [{"item_guid": "new_item_&lt;ms&gt;", "item_id": N}] creates a stack of one full box for each placeholder (the page's name for a copy it made of the lodge's unlimited ammunition); the reply maps each placeholder
     /// created by THIS call to the new integer guid, or is null when none was created. The page gives the copy that guid and only then tells the game about the stack, so the guid must be a number the game can hold and never reused.
     /// A placeholder the account already has a box for (a tab change and a close overlap, the page asks twice) creates nothing and is not in the reply: the page replaced the placeholder when it got the first answer, and a key it no longer
-    /// knows stops it before it updates the game. `box(item)` is the stack size of an item that may be copied, null for any other: an entry for it creates nothing; so does an item the account does not own yet or has <see cref="MaxAmmoRows"/> rows of.
+    /// knows stops it before it updates the game. `box(item)` is the stack size of an item that may be copied, null for any other: an entry for it creates nothing; so does an item the account does not own yet.
+    /// An item the account has <see cref="MaxAmmoRows"/> rows of gets no new row: its oldest hidden lodge stack (<see cref="HIDDEN"/>) becomes the box instead (shown again, full, the placeholder's copy) and its guid is the answer;
+    /// with none hidden nothing is created. A placeholder left without a number would reach the game's loadout as a text, and the inventory page never resumes the game.
     /// mapping: [{"item_guid": guid or placeholder, "slot_id": N}] sets slots; unknown guids are ignored.
     /// The account's copies and row counts are read once, and only when the request has a placeholder, so a request of any size costs one scan under the write lock.</summary>
     public static JsonObject? MoveMultiple2(Db con, JsonArray mapping, JsonArray cloned, Func<long, long?> box)
@@ -578,8 +580,16 @@ public sealed partial class State
         foreach (var node in cloned)
         {
             if (node is not JsonObject c || !IsPlaceholder(c["item_guid"], out var placeholder) || !TryKey(c["item_id"], out var id) || known.Value.ContainsKey(placeholder)
-                || counts.Value.GetValueOrDefault(id) is not (> 0 and < MaxAmmoRows) || box(id) is not { } units)
+                || counts.Value.GetValueOrDefault(id) <= 0 || box(id) is not { } units)
                 continue;
+            if (counts.Value[id] >= MaxAmmoRows)
+            {
+                if (con.Scalar($"SELECT guid FROM items WHERE account_id = $a AND item_id = ? AND slot = 0 AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL ORDER BY guid LIMIT 1", id) is not { } spare)
+                    continue;
+                con.Exec("UPDATE items SET metadata = ?, units = ? WHERE account_id = $a AND guid = ?", Py.Dumps(new JsonObject { [CLONE] = placeholder }), units, spare);
+                fresh[placeholder] = known.Value[placeholder] = Convert.ToInt64(spare);
+                continue;
+            }
             if (next == 0)
                 next = NextId(con, "items", "guid");
             if (next > int.MaxValue)  // the game's guid is a 32-bit number
@@ -1634,7 +1644,7 @@ public sealed partial class State
     /// <summary>Most rows of one ammunition an account may own, copies of the lodge's stack included: a crafted request cannot grow the table without end (a backpack holds far fewer boxes).</summary>
     const long MaxAmmoRows = 100;
 
-    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition (<see cref="MoveMultiple2"/> also asks that the account owns it and has fewer than <see cref="MaxAmmoRows"/> rows of it); null for any other item.</summary>
+    /// <summary>The stack size of an item a cloned entry may create: with unlimited ammunition on, a catalogue ammunition (<see cref="MoveMultiple2"/> also asks that the account owns it, and at <see cref="MaxAmmoRows"/> rows of it reuses a hidden lodge stack); null for any other item.</summary>
     long? CloneBox(long itemId) => UnlimitedService && IsAmmo(itemId) ? Box(itemId) : null;
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
