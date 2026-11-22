@@ -245,9 +245,9 @@ public class LauncherBridgeTests
     }
 
     /// <summary>A bridge whose starts end as the test says (Steam installed and signed in); the watch must never look the game up by name.</summary>
-    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null) =>
+    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null, ServerClock? clock = null) =>
         new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, steam ?? LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
-            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin);
+            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin, clock: clock);
 
     [Fact]
     public async Task AfterA16010FallbackTheWatchFollowsTheRetryAndTheExitedFirstProcessIsIgnored()
@@ -310,10 +310,59 @@ public class LauncherBridgeTests
     [InlineData(16010, false, "crash")] // Steam was not both tried and retried: a start with Steam that quit after the retry window, or one that never tried Steam
     [InlineData(3236495362, true, "blocked")]
     [InlineData(3221225781, false, "runtime")]
+    [InlineData(3221225785, false, "dll")] // STATUS_ENTRYPOINT_NOT_FOUND: a game file lacks a function another one imports
     [InlineData(0, false, "closed")]
     [InlineData(3221226505, false, "crash")]
     [InlineData(1, true, "crash")]
     public void TheCauseFollowsTheExitCode(long code, bool retried, string cause) => Assert.Equal(cause, LauncherBridge.Cause(unchecked((int)code), retried));
+
+    // the server's time is the one in the Date header of its answer; this PC's is fixed at 12:00
+    static ServerClock ClockOff(TimeSpan pcAhead)
+    {
+        var now = new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
+        var clock = new ServerClock(() => now, () => TimeSpan.Zero);
+        clock.Observe(new HttpResponseMessage { Headers = { Date = now - pcAhead } });
+        return clock;
+    }
+
+    [Theory]
+    [InlineData(0, null)]
+    [InlineData(240, null)]      // 4 minutes: in step
+    [InlineData(10800, 10800)]   // 3 h ahead
+    [InlineData(-600, -600)]     // 10 min behind
+    public async Task AnEarlyExitZeroNamesTheClockOnlyWhenTheClockIsOff(int pcAheadSeconds, int? named)
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => false, () => 0), clock: ClockOff(TimeSpan.FromSeconds(pcAheadSeconds)));
+        Assert.True(b.StartGame("srv://x").Ok);
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal(("closed", named is { } n ? TimeSpan.FromSeconds(n) : (TimeSpan?)null), (exit.Cause, exit.ClockAhead));
+    }
+
+    [Fact]
+    public void ACorrectedClockIsNoLongerOff()
+    {
+        var (wall, up) = (new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), TimeSpan.FromMinutes(7));
+        var clock = new ServerClock(() => wall, () => up);
+        clock.Observe(new HttpResponseMessage { Headers = { Date = wall - TimeSpan.FromHours(3) } });
+        Assert.Equal(TimeSpan.FromHours(3), clock.Ahead);
+        (wall, up) = (wall - TimeSpan.FromHours(3) + TimeSpan.FromMinutes(20), up + TimeSpan.FromMinutes(20)); // the player sets the clock, 20 minutes pass
+        Assert.Null(clock.Ahead);
+        Assert.Equal(TimeSpan.Zero, clock.Offset);
+    }
+
+    [Fact]
+    public async Task OnlyAnExitZeroNamesTheClockAndAnUnmeasuredClockNeverDoes()
+    {
+        using var s = new Start();
+        var off = ClockOff(TimeSpan.FromHours(3));
+        var crash = Watching(s, _ => new GameProcess(() => false, () => 3), clock: off);
+        Assert.True(crash.StartGame("srv://x").Ok);
+        Assert.Null((await crash.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!.ClockAhead);
+        var unmeasured = Watching(s, _ => new GameProcess(() => false, () => 0), clock: new ServerClock());
+        Assert.True(unmeasured.StartGame("srv://x").Ok);
+        Assert.Null((await unmeasured.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!.ClockAhead);
+    }
 
     [Fact]
     public async Task TheRuntimesOfTheGameFolderRunOneAfterTheOtherAndNoneIsAnError()
