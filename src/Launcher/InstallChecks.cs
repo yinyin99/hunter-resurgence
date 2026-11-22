@@ -11,8 +11,8 @@ using Resurgence.Services;
 namespace Resurgence.Launcher;
 
 /// <summary>
-/// The install check (#631, docs/launcher.md#the-install-check): ten read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, path, steam,
-/// setup, windows, disk, running, dlls. Nothing is ever written into the game folder. A check whose probe fails (no rights, a vanished file, no network) reports ok: a probe never blocks a start.
+/// The install check (#631, docs/launcher.md#the-install-check): eleven read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, path, steam,
+/// setup, windows, disk, display, running, dlls. Nothing is ever written into the game folder (the one fix, <see cref="FixDisplay"/>, writes the graphics file in %APPDATA%). A check whose probe fails (no rights, a vanished file, no network) reports ok: a probe never blocks a start.
 /// The probes after <paramref name="isRunning"/> are what this PC says; a test passes fakes.
 /// </summary>
 /// <param name="install">The game in use (check 1); null or without its exe: none.</param>
@@ -30,9 +30,10 @@ namespace Resurgence.Launcher;
 /// <param name="steamInstalled">Whether Steam is installed for this user; null: not asked (a Steam that is not signed in is then the only reading).</param>
 /// <param name="portUser">The name of the other program that listens on a port (80, 443: the forwarder of the player kit needs both) or null when it is free; null: the ports are not checked.</param>
 /// <param name="cleanDlls">The DLLs of a clean install by name, with size and SHA-256 (check 10); default <see cref="CleanDlls.Files"/>.</param>
+/// <param name="screen">What this PC says of the screen (check 11); null: the check reports ok.</param>
 public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Func<Task<long?>> serverBuild, Func<bool> steamSignedIn, Func<string?> setup, Func<string, bool> isRunning,
     Func<GameInstall, string?>? manifest = null, Func<string, bool>? isNetwork = null, Func<IEnumerable<string>>? oneDrive = null, Func<string, long?>? freeBytes = null, string? temp = null,
-    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null)
+    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null, ScreenProbes? screen = null)
 {
     const long LowBytes = 1L << 30;
     const int LongPath = 200, Archives = 12, NamesShown = 5;
@@ -48,7 +49,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         var http = s.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) } : null;
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
-            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed);
+            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed, screen: ScreenProbes.Real(s, SteamProbes.Real.PlannedMode));
     }
 
     /// <summary>Runs the checks off the calling thread.</summary>
@@ -76,6 +77,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             Safe("setup", () => setup() is { } key ? new("setup", "block", key, null, "setup") : PortInUse() ?? Ok("setup")),
             Info("windows", Windows),
             Info("disk", Disk),
+            Run("display", Display),
             Run("running", x => opening && isRunning(x.ClientExe) ? new("running", "block", "Check.Running", null, "close-game") : Ok("running")),
             Info("dlls", x => Dlls(x, version.Args?.GetValueOrDefault("build"))),
         ];
@@ -258,6 +260,42 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             if (free < LowBytes) return new("disk", "warn", "Check.Disk.Low", new Dictionary<string, string> { ["drive"] = Path.GetPathRoot(Path.GetFullPath(place)) ?? place, ["free"] = Size(free) });
         }
         return Ok("disk", facts);
+    }
+
+    // 11, listed after disk: exclusive full screen at a mode the primary display does not offer (the game closes at start), and a primary display that is no physical screen. Probed on a start as well: it can end the start at once.
+    // Windowed at any size, and a Borderless start (windowed at the screen's size), are never judged.
+    InstallCheck Display(GameInstall g)
+    {
+        if (screen is null) return Ok("display");
+        var modes = screen.Modes();
+        if (modes.Count > 0 && NotOffered(modes).FirstOrDefault().Settings is { } bad)
+            return new("display", "warn", "Check.Display.Mode", new Dictionary<string, string> { ["mode"] = $"{bad.Width}x{bad.Height} {bad.Hz} Hz" }, "fix-display");
+        var primary = screen.Adapters().FirstOrDefault(a => a.Primary);
+        if (primary is not null && (!primary.Attached || !primary.Monitor || VirtualAdapter.IsMatch(primary.Name)))
+            return new("display", "warn", "Check.Display.Virtual", new Dictionary<string, string> { ["adapter"] = primary.Name });
+        return Ok("display", primary is null ? null : new() { ["adapter"] = primary.Name });
+    }
+
+    // ponytail: a name list, not a driver query; a new virtual display tool is missed until its name is added here
+    static readonly Regex VirtualAdapter = new(@"virtual|remote|\brdp\b|indirect|\bidd|spacedesk|parsec|\bvnc\b|citrix|teamviewer|anydesk|mirror", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    /// <summary>The graphics files the game may start with that say exclusive full screen at a mode that is not in <paramref name="modes"/>, each with its settings.</summary>
+    IEnumerable<(string File, GraphicsSettings? Settings)> NotOffered(IReadOnlyList<(int W, int H, int Hz)> modes) =>
+        screen!.GraphicsFiles().Select(f => (f, GameFiles.ReadGraphics(f).Value)).Where(r => r.Value is { Fullscreen: true } s && !modes.Contains((s.Width, s.Height, s.Hz)));
+
+    /// <summary>The fix of <c>Check.Display.Mode</c>: the display's current mode goes into each graphics file that is full screen at a mode the display does not offer; every other value stays. Nothing while the game runs.
+    /// A failure is a Strings key (<c>GameSettings.*</c>).</summary>
+    public Result FixDisplay()
+    {
+        if (screen is null || install() is not { } g) return Result.Fail("GameSettings.NotConfigured");
+        if (isRunning(g.ClientExe)) return Result.Fail("GameSettings.ClientRunning");
+        if (screen.Current() is not { } now) return Result.Fail("GameSettings.SaveFailed");
+        try
+        {
+            foreach (var (file, s) in NotOffered(screen.Modes()).ToList()) GameFiles.WriteGraphics(file, s! with { Width = now.W, Height = now.H, Hz = now.Hz });
+            return Result.Success;
+        }
+        catch (Exception e) when (e is InvalidDataException or IOException or UnauthorizedAccessException) { return Result.Fail("GameSettings.SaveFailed"); }
     }
 
     static string Size(long bytes) => bytes >= LowBytes ? $"{(bytes / (double)LowBytes).ToString("0.#", CultureInfo.InvariantCulture)} GB" : $"{bytes >> 20} MB";

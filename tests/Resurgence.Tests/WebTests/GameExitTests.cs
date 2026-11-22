@@ -128,4 +128,48 @@ public sealed class GameExitTests : UiContext
         Assert.Equal(bridge.LastRun!.Trigger, modal.Parameters![nameof(ReportModal.Trigger)]);
         Assert.Equal(mock == "exit:crash" ? "exitcode" : "nowindow", bridge.LastRun.Trigger);
     }
+
+    static readonly InstallCheck ModeWarning = new("display", "warn", "Check.Display.Mode", new Dictionary<string, string> { ["mode"] = "1366x768 60 Hz" }, "fix-display");
+
+    [Theory]
+    [InlineData("closed")]
+    [InlineData("crash")]
+    public void ADisplayWarningReplacesTheGenericTextAndItsButtonWritesTheScreensMode(string cause)
+    {
+        Use(null);
+        var modal = Services.GetRequiredService<ModalService>();
+        var exit = Early(cause) with { Display = ModeWarning };
+        modal.GameEnded(exit);
+        var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, exit));
+        Assert.Equal("Full screen is set to 1366x768 60 Hz, which your screen does not offer: the game may close at start.", cut.Find(".message").TextContent);
+        Assert.Empty(cut.FindAll(".how"));
+        Assert.Equal(["exit-fix", "exit-ok"], cut.FindAll(".actions .btn").Select(b => b.Id));
+        Assert.Single(cut.FindAll(".btn-primary"));
+
+        cut.Find("#exit-fix").Click();
+        Assert.Contains("fix display", log.Seen);
+        Assert.Null(modal.Type); // done: the dialog closes
+    }
+
+    [Fact]
+    public void AWarningWithoutAFixKeepsTheReportButton()
+    {
+        Use(null);
+        var virtualDisplay = new InstallCheck("display", "warn", "Check.Display.Virtual", new Dictionary<string, string> { ["adapter"] = "Remote Display Adapter" });
+        var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed") with { Display = virtualDisplay }));
+        Assert.Equal("The game draws on Remote Display Adapter, a virtual display: disable it in Device Manager or make your real screen the main display.", cut.Find(".message").TextContent);
+        Assert.Equal(["exit-report", "exit-ok"], cut.FindAll(".actions .btn").Select(b => b.Id));
+    }
+
+    [Fact]
+    public void TheMockedDisplayExitReachesTheDialog()
+    {
+        var bridge = Use("exit:display");
+        var modal = Services.GetRequiredService<ModalService>();
+        modal.GameStarted(bridge);
+        SpinWait.SpinUntil(() => modal.Type is not null, TimeSpan.FromSeconds(10));
+        var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, (GameExit)modal.Parameters![nameof(GameExitDialog.Exit)]!));
+        Assert.Contains("Full screen is set to 1366x768 60 Hz", cut.Find(".message").TextContent);
+        Assert.Equal("exit-fix", cut.Find(".actions .btn").Id);
+    }
 }

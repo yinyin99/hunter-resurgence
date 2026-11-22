@@ -49,4 +49,6 @@ public interface ILauncherBridge
     string ReportConsent { get; set; }
     /// <summary>Runs every install check (#631) and returns one result per check, in the order of the Id list; never throws.</summary>
     Task<IReadOnlyList<InstallCheck>> CheckInstallAsync();
+    /// <summary>The fix of the <c>display</c> check (<c>fix-display</c>): writes the display's current mode into the graphics file that is full screen at a mode the display does not offer. A failure is a <see cref="Result"/> whose Error is a text key (<c>GameSettings.*</c>).</summary>
+    Result FixDisplay();
 }

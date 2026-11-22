@@ -1491,6 +1491,9 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam non è installato: il gioco si avvierà senza Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows ha bloccato un file del gioco ({0}): consentilo in Sicurezza di Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Poco spazio su disco su {0} ({1} rimasti).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Lo schermo intero è impostato su {0}, che il tuo schermo non offre: il gioco potrebbe chiudersi all'avvio.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Il gioco disegna su {0}, uno schermo virtuale: disattivalo in Gestione dispositivi o imposta il tuo schermo reale come principale.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Usa la modalità del mio schermo</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Nella cartella del gioco ci sono file che non fanno parte del gioco: {0}. Strumenti grafici e mod inseriti lì possono impedire l'avvio del gioco. Spostali fuori dalla cartella e riavvia.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Alcuni file del gioco sono stati modificati: {0}. Questo può impedire l'avvio del gioco. In Steam, Proprietà, File installati, Verifica l'integrità dei file di gioco.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Il gioco è già in esecuzione: chiudilo, poi avvialo da qui.</value></data>

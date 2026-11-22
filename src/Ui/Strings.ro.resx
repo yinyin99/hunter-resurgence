@@ -1491,6 +1491,9 @@ Numele:</value></data>
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam nu este instalat: jocul va porni fără Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a blocat un fișier al jocului ({0}): permite-l în Securitate Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Spațiu redus pe disc pe {0} ({1} rămași).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Ecranul complet este setat la {0}, pe care ecranul tău nu îl oferă: jocul se poate închide la pornire.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Jocul desenează pe {0}, un ecran virtual: dezactivează-l în Device Manager sau fă din ecranul tău real ecranul principal.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Folosește modul ecranului meu</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>În folderul jocului sunt fișiere care nu fac parte din joc: {0}. Instrumentele grafice și modurile puse acolo pot împiedica pornirea jocului. Mută-le din folder și pornește din nou.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Fișierele jocului au fost modificate: {0}. Asta poate împiedica pornirea jocului. În Steam, Proprietăți, Fișiere instalate, Verifică integritatea fișierelor jocului.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Jocul rulează deja: închide-l, apoi pornește-l de aici.</value></data>

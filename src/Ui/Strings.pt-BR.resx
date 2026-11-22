@@ -1491,6 +1491,9 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>O Steam não está instalado: o jogo será iniciado sem o Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>O Windows bloqueou um arquivo do jogo ({0}): permita-o na Segurança do Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Pouco espaço em disco em {0} ({1} restantes).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>A tela cheia está definida como {0}, que sua tela não oferece: o jogo pode fechar ao iniciar.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>O jogo desenha em {0}, uma tela virtual: desative-a no Gerenciador de Dispositivos ou torne sua tela real a principal.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Usar o modo da minha tela</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Há arquivos que não fazem parte do jogo na pasta dele: {0}. Ferramentas gráficas e mods colocados ali podem impedir o jogo de iniciar. Tire-os da pasta e inicie de novo.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Arquivos do jogo foram alterados: {0}. Isso pode impedir o jogo de iniciar. No Steam, Propriedades, Arquivos instalados, Verificar integridade dos arquivos de jogo.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>O jogo já está em execução: feche-o e depois inicie-o daqui.</value></data>

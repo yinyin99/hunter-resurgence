@@ -1491,6 +1491,9 @@
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam не установлен: игра запустится без Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows заблокировал файл игры ({0}): разрешите его в Безопасности Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Мало места на диске {0} (осталось {1}).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Полноэкранный режим задан как {0}, которого ваш экран не поддерживает: игра может закрыться при запуске.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Игра рисует на {0}, виртуальном дисплее: отключите его в диспетчере устройств или сделайте основным свой настоящий экран.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Использовать режим моего экрана</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>В папке игры лежат файлы, которые не относятся к игре: {0}. Графические утилиты и моды, помещённые туда, могут помешать запуску игры. Уберите их из папки и запустите игру снова.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Файлы игры были изменены: {0}. Это может помешать запуску игры. В Steam откройте Свойства, Установленные файлы, Проверить целостность файлов игры.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Игра уже запущена: закройте её, затем запустите отсюда.</value></data>

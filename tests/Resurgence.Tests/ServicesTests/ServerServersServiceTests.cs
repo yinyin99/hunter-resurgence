@@ -32,6 +32,7 @@ public class ServerServersServiceTests
         public Result ChooseGameFolder() => Result.Success;
         public void UseAutomaticGameFolder() { }
         public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync() => Task.FromResult<IReadOnlyList<InstallCheck>>([]);
+        public Result FixDisplay() => Result.Success;
         public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result Next = Result.Success;
