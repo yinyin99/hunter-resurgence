@@ -146,8 +146,8 @@
       },
       "SkiaSharp.NativeAssets.Linux.NoDependencies": {
         "type": "Transitive",
-        "resolved": "3.119.1",
-        "contentHash": "5jj6gBCe4K6TLnIERBXZfmUNE0TUyeTaF28RCxdCgIDVDaCAbHwEbk99eNYRFem/ubW/hKdvayZBOt6PaDL05g=="
+        "resolved": "4.157.0",
+        "contentHash": "7skQaAxilNr4giLQPr1HMTFrwhUAJKI2Qlr7Djybi/e24Td/F4j7lIRf7DKJeHfH9mdxvD000o/NciDd8lSg5A=="
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
@@ -294,7 +294,7 @@
           "Microsoft.Data.Sqlite": "[11.0.0, )",
           "Resurgence.Restore": "[1.0.0, )",
           "SkiaSharp": "[3.119.1, )",
-          "SkiaSharp.NativeAssets.Linux.NoDependencies": "[3.119.1, )",
+          "SkiaSharp.NativeAssets.Linux.NoDependencies": "[4.157.0, )",
           "Swashbuckle.AspNetCore.SwaggerUI": "[11.0.1, )"
         }
       }
