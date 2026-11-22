@@ -1,5 +1,7 @@
 using System.IO.Compression;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Launcher;
@@ -12,7 +14,7 @@ public class InstallChecksTests
 {
     const long Gb = 1L << 30;
 
-    static readonly string[] Ids = ["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running"];
+    static readonly string[] Ids = ["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running", "dlls"];
 
     /// <summary>A fictional install: the exe in a subfolder and the archive set under game\archives.</summary>
     static GameInstall Game(TempDir t, bool archives = true)
@@ -29,9 +31,9 @@ public class InstallChecksTests
     static string Manifest(long build, int flags = 4) => $"\"AppState\"\n{{\n\t\"appid\"\t\t\"1\"\n\t\"StateFlags\"\t\t\"{flags}\"\n\t\"buildid\"\t\t\"{build}\"\n}}\n";
 
     static InstallChecks Make(GameInstall? g, string? manifest = null, long? server = null, bool steam = true, string? setup = null, bool running = false, Func<string, bool>? network = null,
-        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null) =>
+        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null, IReadOnlyDictionary<string, (long, string)>? clean = null) =>
         new(() => g, "1", serverBuild ?? (() => Task.FromResult(server)), steamSignedIn ?? (() => steam), () => setup, _ => running, _ => manifest, network ?? (_ => false), () => oneDrive ?? [],
-            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null);
+            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null, clean);
 
     static async Task<InstallCheck> Check(InstallChecks c, string id, bool opening = false) => (await c.RunAsync(opening)).Single(r => r.Id == id);
 
@@ -138,6 +140,103 @@ public class InstallChecksTests
     sealed class Stub(HttpStatusCode code, string body, DateTimeOffset? date = null) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancel) => Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body), Headers = { Date = date } });
+    }
+
+    /// <summary>Two DLLs next to the exe, and the table of a clean install that lists them.</summary>
+    static Dictionary<string, (long, string)> CleanSet(GameInstall g)
+    {
+        var table = new Dictionary<string, (long, string)>();
+        foreach (var (name, text) in new[] { ("steam_api.dll", "steam"), ("sound.dll", "fmod") })
+        {
+            Files.Write(Path.Combine(Path.GetDirectoryName(g.ClientExe)!, name), text);
+            table[name] = (text.Length, Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text))));
+        }
+        return table;
+    }
+
+    [Fact]
+    public async Task ADllThatIsNotPartOfTheGameWarnsAndOpensTheFolderAChangedOneSendsToSteamAndACleanFolderIsOk()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var clean = CleanSet(g);
+        var folder = Path.GetDirectoryName(g.ClientExe)!;
+        Task<InstallCheck> Dlls(string? manifest = null) => Check(Make(g, manifest, clean: clean), "dlls");
+        // the hashes are remembered by path, size and write time, and a clock tick is longer than a rewrite: every rewrite gets a write time of its own
+        var stamp = 0;
+        void Rewrite(string text)
+        {
+            var path = Path.Combine(folder, "steam_api.dll");
+            Files.Write(path, text);
+            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(2 * ++stamp)); // two seconds apart: also a file system with a coarse clock tells them apart
+        }
+
+        var ok = await Dlls();
+        Assert.Equal(("ok", "Check.Ok", null), (ok.Level, ok.Text, ok.Fix));
+
+        Files.Write(Path.Combine(folder, "d3d9.dll"), "wrapper");
+        Files.Write(Path.Combine(folder, "dxgi.dll"), "wrapper");
+        var extra = await Dlls();
+        Assert.Equal(("warn", "Check.Dlls.Extra", "open-folder", "d3d9.dll, dxgi.dll"), (extra.Level, extra.Text, extra.Fix, extra.Args!["files"]));
+
+        File.Delete(Path.Combine(folder, "d3d9.dll"));
+        File.Delete(Path.Combine(folder, "dxgi.dll"));
+        foreach (var replaced in new[] { "stoam", "a longer old steam_api" }) // the size of the clean file, and another size
+        {
+            Rewrite(replaced);
+            var changed = await Dlls();
+            Assert.Equal(("warn", "Check.Dlls.Changed", "verify-files", "steam_api.dll"), (changed.Level, changed.Text, changed.Fix, changed.Args!["files"]));
+        }
+
+        Files.Write(Path.Combine(folder, "d3d9.dll"), "wrapper"); // both: the one the player can fix first
+        Assert.Equal("Check.Dlls.Extra", (await Dlls()).Text);
+        File.Delete(Path.Combine(folder, "d3d9.dll"));
+
+        Rewrite("steam");
+        Files.Write(Path.Combine(folder, "mod.asi"), "x"); // only .dll files are judged by the check (the report lists .asi too)
+        Assert.Equal("ok", (await Dlls()).Level);
+
+        Rewrite("steam"); // not remembered yet: the check has to open it
+        using var held = new FileStream(Path.Combine(folder, "steam_api.dll"), FileMode.Open, FileAccess.Read, FileShare.None); // cannot be read: tells nothing, never a warning (the report names it)
+        Assert.Equal("ok", (await Dlls()).Level);
+    }
+
+    [Fact]
+    public async Task TheDllListIsCutAtFiveNamesAndAGameOfAnotherBuildIsNotJudged()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var clean = CleanSet(g);
+        for (var i = 1; i <= 6; i++) Files.Write(Path.Combine(Path.GetDirectoryName(g.ClientExe)!, $"x{i}.dll"), "x");
+        Assert.Equal("x1.dll, x2.dll, x3.dll, x4.dll, x5.dll, …", (await Check(Make(g, clean: clean), "dlls")).Args!["files"]);
+
+        Assert.Equal("ok", (await Check(Make(g, Manifest(CleanDlls.Build + 1), clean: clean), "dlls")).Level); // the table is of one build
+        Assert.Equal("warn", (await Check(Make(g, Manifest(CleanDlls.Build), clean: clean), "dlls")).Level);
+        Assert.Equal("ok", (await Make(g, clean: clean).RunAsync(false, blocksOnly: true)).Single(r => r.Id == "dlls").Level); // never probed for a start
+    }
+
+    [Fact]
+    public async Task TheCleanTableIsOfTheBuildTheServerIsSetUpToServeAndIsWellFormed()
+    {
+        // the example settings of the server name the supported build (game_build, which GET /stats/game serves): changing one without the other fails here
+        using var example = JsonDocument.Parse(File.ReadAllText(Repo.Path("server", "Server", "settings.example.json")));
+        Assert.Equal(CleanDlls.Build, example.RootElement.GetProperty("game_build").GetInt64());
+
+        Assert.Equal(27, CleanDlls.Files.Count);
+        Assert.All(CleanDlls.Files, f =>
+        {
+            Assert.EndsWith(".dll", f.Key);
+            Assert.True(f.Value.Size > 0);
+            Assert.Matches("^([0-9a-f]{8} ){7}[0-9a-f]{8}$", f.Value.Sha256);
+        });
+
+        // a game of the table's build on a server that serves that build: up to date, and its folder is judged by the real table
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        Files.Write(Path.Combine(Path.GetDirectoryName(g.ClientExe)!, "d3d9.dll"), "wrapper");
+        var all = await Make(g, Manifest(CleanDlls.Build), server: CleanDlls.Build).RunAsync(false);
+        Assert.Equal("ok", all.Single(r => r.Id == "version").Level);
+        Assert.Equal("Check.Dlls.Extra", all.Single(r => r.Id == "dlls").Text);
     }
 
     [Fact]

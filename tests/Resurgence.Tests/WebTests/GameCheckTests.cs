@@ -16,11 +16,14 @@ public sealed class GameCheckTests : UiContext
     sealed class Opened : ILogger<MockLauncherBridge>
     {
         public List<string> Urls { get; } = [];
+        public List<string> Folders { get; } = [];
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (formatter(state, exception) is var line && line.StartsWith("open steam://")) Urls.Add(line[5..]);
+            if (formatter(state, exception) is not { } line) return;
+            if (line.StartsWith("open steam://")) Urls.Add(line[5..]);
+            else if (line.StartsWith("open folder ")) Folders.Add(line[12..]);
         }
     }
 
@@ -59,6 +62,7 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", null)]
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]
+    [InlineData("check:dlls", "warn", "Files that are not part of the game are in its folder: d3d9.dll. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.", "Open folder")]
     [InlineData("folder:none", "block", "The game was not found.", "Choose folder…")]
     public void AProblemShowsItsTextItsLevelAndItsFix(string state, string level, string text, string? button)
     {
@@ -84,6 +88,14 @@ public sealed class GameCheckTests : UiContext
 
         Assert.Equal(["steam://open/main"], log.Urls);
         cut.WaitForAssertion(() => Assert.Equal("Game check: OK", cut.Find("#game-check .text").TextContent));
+    }
+
+    [Fact]
+    public void ForeignDllsSendThePlayerToTheFolderOfTheExe()
+    {
+        var cut = Line("check:dlls", out var log);
+        cut.Find("#game-check-fix").Click();
+        Assert.Equal(["logs"], log.Folders); // the exe's folder, where the DLLs are
     }
 
     [Fact]
@@ -127,8 +139,8 @@ public sealed class GameCheckTests : UiContext
         Assert.Equal(typeof(GameCheckModal), modal.Type);
 
         var all = Render<GameCheckModal>(p => p.Add(a => a.Results, (IReadOnlyList<InstallCheck>)modal.Parameters![nameof(GameCheckModal.Results)]!));
-        Assert.Equal(["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
-        Assert.Equal(["OK", "Blocks the start", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
+        Assert.Equal(["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running", "dlls"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
+        Assert.Equal(["OK", "Blocks the start", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
         Assert.Contains("Low disk space on C:", all.Find("li[data-check=disk] .text").TextContent);
         Assert.Empty(all.FindAll("li.ok .text"));
         Assert.Equal(["Open Steam", "Choose folder…"], all.FindAll("li .fix").Select(b => b.TextContent)); // the old game and the odd path

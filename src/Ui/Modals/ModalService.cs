@@ -120,6 +120,7 @@ public sealed class ModalService
         switch (fix)
         {
             case "choose-folder": Show<GameFolderModal>(); break;
+            case "open-folder": bridge.OpenFolder("logs"); break; // the exe's folder, where the DLLs of the dlls check are
             case "open-steam": bridge.OpenExternal("steam://open/main"); break;
             // the launcher puts its steam_app_id (settings.json) in place of the placeholder
             case "verify-files": bridge.OpenExternal("steam://nav/games/details/{steam_app_id}"); break;

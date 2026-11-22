@@ -1491,6 +1491,8 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ni nameščen: igra se bo zagnala brez Steama.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows je blokiral datoteko igre ({0}): dovolite jo v Varnosti sistema Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Malo prostora na disku {0} (ostaja {1}).</value></data>
+  <data name="Check.Dlls.Extra" xml:space="preserve"><value>V mapi igre so datoteke, ki niso del igre: {0}. Grafična orodja in modifikacije, postavljeni tja, lahko preprečijo zagon igre. Premaknite jih iz mape in znova zaženite.</value></data>
+  <data name="Check.Dlls.Changed" xml:space="preserve"><value>Datoteke igre so bile spremenjene: {0}. To lahko prepreči zagon igre. V Steamu Lastnosti, Nameščene datoteke, Preveri celovitost datotek igre.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Igra že teče: zaprite jo in jo nato zaženite od tukaj.</value></data>
   <data name="Check.OpenSteam" xml:space="preserve"><value>Odpri Steam</value></data>
   <data name="Check.SeeAll" xml:space="preserve"><value>Prikaži vse</value></data>
@@ -1504,6 +1506,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Name.windows" xml:space="preserve"><value>Blokada Windows</value></data>
   <data name="Check.Name.disk" xml:space="preserve"><value>Prostor na disku</value></data>
   <data name="Check.Name.running" xml:space="preserve"><value>Igra ne teče</value></data>
+  <data name="Check.Name.dlls" xml:space="preserve"><value>Datoteke v mapi igre</value></data>
   <data name="Check.Level.Warn" xml:space="preserve"><value>Opozorilo</value></data>
   <data name="Check.Level.Block" xml:space="preserve"><value>Prepreči zagon</value></data>
   <data name="Check.Setup.Port" xml:space="preserve"><value>Vrata {0} uporablja {1}; zaprite ga in poskusite znova.</value></data>

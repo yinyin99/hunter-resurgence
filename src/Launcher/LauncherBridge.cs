@@ -50,7 +50,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
     bool opened;
-    /// <summary>All nine checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
+    /// <summary>All ten checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()
     {
         if (checks is null) return rest.CheckInstallAsync();
@@ -325,7 +325,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     /// <summary>The exit code of a client that quit with Steam missing.</summary>
     const int SteamMissing = 16010;
     // as the signed exit codes of Process: 3236495362 (blocked by Windows app control), 3221225781 (DLL not found) and 3221225785 (STATUS_ENTRYPOINT_NOT_FOUND)
-    const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u), EntryPointNotFound = unchecked((int)3221225785u);
+    internal const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u), EntryPointNotFound = unchecked((int)3221225785u);
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
