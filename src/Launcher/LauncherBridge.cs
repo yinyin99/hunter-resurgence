@@ -18,17 +18,22 @@ namespace Resurgence.Launcher;
 /// <param name="earlyWithin">A game that ends within this long of its start closed right away (20 s).</param>
 /// <param name="runInstaller">Runs one redistributable with its switches and completes when it is done (Windows asks for its rights); null: the mock's.</param>
 /// <param name="clock">The PC's clock against the server's; an early exit 0 names the clock only when it is off (<see cref="GameExit.ClockAhead"/>). Null: never.</param>
+/// <param name="processes">The client's processes with their main windows; null: none is known to have a window.</param>
+/// <param name="bringToFront">Shows a client window over the others.</param>
+/// <param name="stopClient">Closes the client and stops it when it stays (<see cref="GameFiles.StopClientAsync"/>); null: nothing is closed.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
-    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null) : ILauncherBridge
+    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null,
+    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock,
+        processes: GameFiles.ClientProcesses, bringToFront: GameProcess.BringToFront, stopClient: GameFiles.StopClientAsync)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -205,11 +210,27 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     /// <summary>The launcher has updated itself: apply the downloaded update and start the new one (never while the game runs).</summary>
     public void RestartLauncher() { if (restart?.Invoke() != true) rest.RestartLauncher(); }
 
+    /// <summary>A start link is good for 15 minutes (docs/server.md): the refused start is repeated only within this.</summary>
+    static readonly TimeSpan RepeatWithin = TimeSpan.FromMinutes(5);
+    sealed record Refusal(string Url, long At);
+    Refusal? refused; // the start the running game refused: CloseGameAsync repeats it
+
     public Result StartGame(string url)
     {
+        refused = null;
         if (install() is not { } g || !File.Exists(g.ClientExe)) return Result.Fail("Launch.NoGame");
         if (url.Any(c => char.IsWhiteSpace(c) || c == '"')) return Result.Fail("Launch.Failed");
-        if (isRunning(g.ClientExe)) return Result.Fail("Launch.AlreadyRunning");
+        if (isRunning(g.ClientExe))
+        {
+            refused = new(url, Stopwatch.GetTimestamp());
+            // a window: show it and start nothing; none: a copy left behind, probably by a crash
+            if (processes?.Invoke(g.ClientExe).FirstOrDefault(p => p.Window != 0).Window is nint and not 0 and var window)
+            {
+                bringToFront?.Invoke(window);
+                return Result.Fail("Launch.AlreadyRunning");
+            }
+            return Result.Fail("Launch.LeftOver");
+        }
         // version, files and setup block a start with the dashboard's text; display is probed too: when the game then closes right away, its warning is named (WhenGameExitsAsync); ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
         var results = checks?.RunAsync(false, true).GetAwaiter().GetResult();
         if (results?.FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
@@ -238,6 +259,19 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
         return Result.Success;
+    }
+
+    public async Task<Result> CloseGameAsync(bool restart)
+    {
+        if (install() is not { } g) return Result.Success;
+        if (stopClient is not null) await stopClient(g.ClientExe, TimeSpan.FromSeconds(10));
+        if (isRunning(g.ClientExe)) return Result.Fail("Launch.CloseFailed");
+        var was = Interlocked.Exchange(ref refused, null);
+        if (!restart) return Result.Success;
+        // an old link is not repeated (the game would crash on it): the player starts again from the page
+        if (was is not { } r || Stopwatch.GetElapsedTime(r.At) > RepeatWithin) return Result.Fail("Launch.Failed");
+        // off the UI thread: a start may wait for Steam
+        return await Task.Run(() => StartGame(r.Url));
     }
 
     /// <summary>The graphics settings follow the start's mode (<see cref="GameFiles.CarryGraphics"/>); a failure is logged and never blocks the start.</summary>

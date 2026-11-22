@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Ostatnio używany zestaw wyposażenia</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Coś poszło nie tak podczas tworzenia sesji gry. Odśwież listę serwerów i spróbuj dołączyć do innej gry.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Gra jest już uruchomiona.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Kopia gry nadal działa w tle bez okna, prawdopodobnie po awarii. Zamknij ją i uruchom grę ponownie.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Zamknij grę</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Nie udało się zamknąć gry. Zakończ ją w Menedżerze zadań (karta Szczegóły) i uruchom ponownie.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Nie znaleziono gry. Sprawdź jej folder w ustawieniach.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Nie udało się uruchomić gry.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Uruchamianie Steama…</value></data>

@@ -1,10 +1,14 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Resurgence.Launcher;
+
+/// <summary>One process of the client: its id and its main window (0 when it has none).</summary>
+public readonly record struct ClientProcess(int Id, nint Window);
 
 public enum FileProblem { None, NotConfigured, Missing, BadFormat }
 
@@ -68,11 +72,43 @@ public static class GameFiles
         return all.Length > 0;
     }
 
-    /// <summary>Asks every process named like the client exe to close like its window's × (the hunt ends as a normal quit) and stops those still running after <paramref name="grace"/>.</summary>
+    /// <summary>The processes named like the client exe (the same match as <see cref="ClientRunning"/>) with their main windows.</summary>
+    public static IReadOnlyList<ClientProcess> ClientProcesses(string? clientExe)
+    {
+        if (string.IsNullOrEmpty(clientExe)) return [];
+        var all = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe));
+        try { return [.. all.Select(p => new ClientProcess(p.Id, p.MainWindowHandle))]; }
+        finally { foreach (var p in all) p.Dispose(); }
+    }
+
+    /// <summary>Asks every process named like the client exe to close like its window's × (the hunt ends as a normal quit) and stops those still running after <paramref name="grace"/>.
+    /// An error-reporting window that holds one of them (<c>WerFault.exe -p &lt;id&gt;</c>) is ended first: a crashed client stays alive behind it.</summary>
     public static async Task StopClientAsync(string? clientExe, TimeSpan grace)
     {
         if (string.IsNullOrEmpty(clientExe)) return;
-        await StopAsync(Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe)), grace);
+        var all = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(clientExe));
+        var ids = all.Select(p => p.Id).ToArray();
+        await Task.Run(() => EndErrorReporting(ids)); // a WMI query: never on the window's thread
+        await StopAsync(all, grace);
+    }
+
+    /// <summary>The ids of the <c>WerFault.exe</c> processes whose command line names one of <paramref name="clients"/> as <c>-p &lt;id&gt;</c>.</summary>
+    internal static IEnumerable<int> ErrorReportingOf(IReadOnlyCollection<int> clients, IEnumerable<(int Id, string? CommandLine)> werFaults) =>
+        werFaults.Where(w => w.CommandLine is { } c && clients.Any(id => Regex.IsMatch(c, $@"(?<=\s)-p\s+{id}(?!\d)"))).Select(w => w.Id);
+
+    static void EndErrorReporting(int[] clients)
+    {
+        if (clients.Length == 0) return;
+        try
+        {
+            using var s = new ManagementObjectSearcher("SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name = 'WerFault.exe'") { Options = { Timeout = TimeSpan.FromSeconds(5) } };
+            var found = new List<(int, string?)>();
+            foreach (var o in s.Get()) using (o) found.Add((Convert.ToInt32(o["ProcessId"]), o["CommandLine"] as string));
+            foreach (var id in ErrorReportingOf(clients, found))
+                try { using var p = Process.GetProcessById(id); p.Kill(); }
+                catch (Exception e) when (e is ArgumentException or InvalidOperationException or Win32Exception) { } // gone already, or not ours to end
+        }
+        catch (Exception e) when (e is ManagementException or COMException or UnauthorizedAccessException) { } // the client is still stopped by its own id
     }
 
     /// <summary>Close, wait up to <paramref name="grace"/>, then kill what is left; disposes <paramref name="processes"/>.</summary>

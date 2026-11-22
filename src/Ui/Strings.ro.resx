@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Ceva nu a mers bine la crearea sesiunii de joc. Reîncărcați lista de servere și încercați să vă alăturați altui joc.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Jocul rulează deja.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>O copie a jocului încă rulează în fundal, fără fereastră, probabil după o blocare. Închideți-o și porniți din nou.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Închide jocul</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Jocul nu a putut fi închis. Încheiați-l din Task Manager (fila Detalii), apoi porniți din nou.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Jocul nu a fost găsit. Verifică folderul lui în setări.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Jocul nu a putut fi pornit.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Se pornește Steam…</value></data>

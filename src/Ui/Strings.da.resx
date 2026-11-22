@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Noget gik galt under oprettelsen af din spilsession. Genindlæs serverlisten, og prøv at deltage i et andet spil.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kører allerede.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>En kopi af spillet kører stadig i baggrunden uden vindue, sandsynligvis efter et nedbrud. Luk den, og start igen.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Luk spillet</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Spillet kunne ikke lukkes. Afslut det i Jobliste (fanen Detaljer), og start igen.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Spillet blev ikke fundet. Tjek dets mappe i indstillingerne.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Starter Steam…</value></data>

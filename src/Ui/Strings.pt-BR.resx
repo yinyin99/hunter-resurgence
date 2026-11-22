@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Último equipamento usado</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Algo deu errado ao criar a sessão do seu jogo. Recarregue a lista de servidores e tente entrar em outro jogo.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>O jogo já está em execução.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Uma cópia do jogo ainda está em execução em segundo plano, sem janela, provavelmente após uma falha. Feche-a e inicie de novo.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Fechar o jogo</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Não foi possível fechar o jogo. Finalize-o no Gerenciador de Tarefas (guia Detalhes) e inicie de novo.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Jogo não encontrado. Verifique a pasta dele nas configurações.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Não foi possível iniciar o jogo.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Iniciando o Steam…</value></data>
