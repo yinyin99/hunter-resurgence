@@ -746,11 +746,11 @@ public sealed class Store
         return con.Scalar($"SELECT id FROM accounts WHERE {(idOrHandle is long ? "id" : "handle")} = ? AND banned = 0 AND id IS NOT ?", idOrHandle, excluded) as long?;
     }
 
-    /// <summary>The accounts whose handle contains the text (any case), by handle, at most `limit`; never `self`, a banned one or `excluded`.</summary>
+    /// <summary>The accounts whose handle contains the text (any case), the exact handle first, then by handle, at most `limit`; never `self`, a banned one or `excluded`.</summary>
     public List<long> SearchHandles(string text, long self, long? excluded, int limit)
     {
         using var con = Open();
-        return [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id <> ?1 AND id IS NOT ?2 AND instr(lower(handle), lower(?3)) > 0 ORDER BY handle COLLATE NOCASE LIMIT ?4",
+        return [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id <> ?1 AND id IS NOT ?2 AND instr(lower(handle), lower(?3)) > 0 ORDER BY lower(handle) = lower(?3) DESC, handle COLLATE NOCASE LIMIT ?4",
                             self, excluded, text, limit).Select(r => (long)r[0])];
     }
 

@@ -974,14 +974,14 @@ public sealed partial class State
         return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
     }
 
-    /// <summary>Skill/list for the user_id: the player's own, and on a community server any account's of this server
-    /// (<see cref="PublicAccount(long)"/>); null for anyone else (a local server replays their recorded reply, a community
+    /// <summary>Skill/list for the user_id: the player's own, and on a community server another account's the player may see
+    /// (<see cref="SeenAccount"/>); null for anyone else (a local server replays their recorded reply, a community
     /// server sends the empty one).</summary>
     public byte[]? SkillListReply(long account, byte[] formBody)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (userId != Py.Str(Account(account)["user_id"]))
-            return Online && long.TryParse(userId, out var id) && PublicAccount(id) is { } other ? Py.DumpBytes(SkillNumbers(other, Skills.Value)) : null;
+            return Online && long.TryParse(userId, out var id) && SeenAccount(account, id) is { } other ? Py.DumpBytes(SkillNumbers(other, Skills.Value)) : null;
         return Py.DumpBytes(SkillNumbers(account, Skills.Value));
     }
 
@@ -1068,24 +1068,24 @@ public sealed partial class State
     }
 
     /// <summary>Statistics/total for a user_id: the restored statistics plus the server hunts (the open one so far). On a community server that is
-    /// any account's (<see cref="PublicAccount(long)"/>; a new account's base is empty), null for a user id that is none; on a
+    /// the account of one the player may see (<see cref="SeenAccount"/>; a new account's base is empty), null for anyone else; on a
     /// local server only the player's own with a restored profile, else null (the recorded reply is replayed).</summary>
     public byte[]? StatisticsReply(long account, byte[] formBody) => PublicReply(account, formBody, RestoredReads.StatisticsTotal);
 
-    /// <summary>The reply of a per-user_id read of the restored rows: on a community server any account's (null for a user id that is none), else the player's own.</summary>
+    /// <summary>The reply of a per-user_id read of the restored rows: on a community server the account's of one the player may see (<see cref="SeenAccount"/>; null for anyone else), else the player's own.</summary>
     byte[]? PublicReply(long account, byte[] formBody, Func<Db, JsonNode> read)
     {
         var userId = Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id");
         if (!Online || userId == Py.Str(Account(account)["user_id"]))
             return RestoredReply(account, formBody, read);
-        if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } other)
+        if (!long.TryParse(userId, out var id) || SeenAccount(account, id) is not { } other)
             return null;
         using var con = Con(other);
         return Py.DumpBytes(read(con));
     }
 
     /// <summary>Achievement/stats for a user_id: the restored achievements with the times this server stored (<see cref="AwardAchievements"/>).
-    /// On a community server any account's (<see cref="PublicAccount(long)"/>), null for a user id that is none; otherwise as <see cref="StatisticsReply"/>.</summary>
+    /// On a community server the account's of one the player may see (<see cref="SeenAccount"/>), null for anyone else; otherwise as <see cref="StatisticsReply"/>.</summary>
     public byte[]? AchievementReply(long account, byte[] formBody) => PublicReply(account, formBody, RestoredReads.AchievementStats);
 
     const int RecentAchievements = 10;

@@ -454,7 +454,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAnyAccountsPublicProfileIsReadWithoutAToken()
+    public async Task TestAnyAccountsPublicProfileIsReadWithAPlayersToken()
     {
         state.CreateAccount(9, "banned");
         using (var con = state.Store.Open())
@@ -467,28 +467,35 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             PlayerRows.SetExtra(con, "game_user_8_profile.json", O("""{"background": 3, "ribbon": "gold", "hunterscore": 1234}"""));
             con.Commit();
         }
-        state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());  // a hunt just opened: online
-        var p = (await Api(Replay.PUBLIC_USER, null, "hostname=SECOND"))!;
-        Eq("""[8, "second", "second", 0, 1, 0, "freeplay", true, {"distance": 0, "duration": 0}]""",
+        state.NoteLaunch(8, "start=100&reserve=2"u8.ToArray());  // a hunt just opened: online, shown to itself and its friends only
+        var p = (await Api(Replay.PUBLIC_USER, tokenA, "hostname=SECOND"))!;
+        Eq("""[8, "second", "second", 0, 1, 0, "freeplay", false, {"distance": 0, "duration": 0}]""",
            T(p["id"], p["handle"], p["hostname"], p["hunterscore"], p["rank"], p["membership"], p["membershipType"], p["online"], p["stats"]));
         Assert.EndsWith($"/256/{State.DefaultAvatar}.png", (string)p["avatar"]!);
-        // unknown, banned, and the recorded player's account (no player here owns it): null, never an empty profile
+        Eq("true", (await Api(Replay.PUBLIC_USER, tokenB, "hostname=second"))["online"]);  // its own
+        state.Store.AddFriend(ME, 8);
+        state.Store.AddFriend(8, ME);
+        Eq("true", (await Api(Replay.PUBLIC_USER, tokenA, "hostname=second"))["online"]);  // a friend's
+        // unknown, banned, and the recorded player's account (no player here owns it): null, never an empty profile; without a token: token expired
         foreach (var handle in new[] { "nobody", "banned", "hunter" })
-            Assert.Equal("null", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.PUBLIC_USER, null, "hostname=" + handle)).Body));
+            Assert.Equal("null", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.PUBLIC_USER, tokenA, "hostname=" + handle)).Body));
+        Assert.Equal(5, (int)(await Api(Replay.PUBLIC_USER, null, "hostname=second"))["errorCode"]!);
 
-        var v2 = await Send(community, "GET", "apiv2.test", "/game/user/8/profile", null);
+        var v2 = await Send(community, "GET", "apiv2.test", "/game/user/8/profile", tokenA);
         Assert.Equal((200, "state"), (v2.Status, v2.Source));
         Eq("""{"background": 3, "ribbon": "gold", "hunterscore": 0, "earned_achievements": 2}""", JsonNode.Parse(v2.Body));
-        Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", null)).Body);  // the current build's path
+        Assert.Equal(v2.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/profile", tokenA)).Body);  // the current build's path
         Assert.Null(JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second", null)).Body)!["background"]);  // the header sends a name only: not this 3
-        var ranks = await Send(community, "GET", "apiv2.test", "/game/user/8/ranks", null);
+        var ranks = await Send(community, "GET", "apiv2.test", "/game/user/8/ranks", tokenA);
         Assert.Equal((200, "state"), (ranks.Status, ranks.Source));
-        Assert.Equal(ranks.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/ranks", null)).Body);  // the current build's path
+        Assert.Equal(ranks.Body, (await Send(community, "GET", "api.test", "/v1/game/user/8/ranks", tokenA)).Body);  // the current build's path
         foreach (var id in new[] { 7, 9, 99 })
         {
             Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/profile", tokenB)).Status);
             Assert.Equal(404, (await Send(community, "GET", "apiv2.test", $"/game/user/{id}/ranks", tokenB)).Status);
         }
+        Assert.Equal(404, (await Send(community, "GET", "apiv2.test", "/game/user/8/profile", null)).Status);  // without a token
+        Assert.Equal(404, (await Send(community, "GET", "apiv2.test", "/game/user/8/ranks", null)).Status);
     }
 
     [Fact]
@@ -585,6 +592,58 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestWalkingUserIdsWithAValidTokenFindsNothingOutsideTheCallersView()
+    {
+        for (var id = 3001; id <= 3200; id++) state.CreateAccount(id, $"p{id}");  // all at hunterscore 0: on the board by account id, 8 first
+        const long Near = 3050, Far = 3200;  // the top 100; past the top 100 and 50 places below 8
+        using (var con = state.Store.Open(Far))
+            PlayerRows.SetStatistics(con, O("""{"collectables": {}, "weapon": {}, "animal": {"1": {"kills": 2}}, "daily_missions": {}}"""), 12.5, 3600, null, null);
+        async Task<bool> Answers(long id)
+        {
+            var stats = await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, $"user_id={id}");
+            var skills = await Send(community, "POST", "api.test", Replay.SKILL_LIST, tokenB, $"user_id={id}");
+            var hunts = await Send(community, "POST", "api.test", Replay.EXPEDITION_LIST, tokenB, $"user_id={id}&limit=10&offset=0");
+            var hunt = await Send(community, "POST", "api.test", Replay.PUBLIC_EXPEDITION, tokenB, $"user_id={id}");
+            var achievements = await Send(community, "POST", "api.test", Replay.ACHIEVEMENT_STATS, tokenB, $"user_id={id}");
+            var trophies = await Send(community, "POST", "api.test", Replay.TROPHY_LIST, tokenB, $"user_id={id}");
+            var gallery = await Send(community, "POST", "api.test", Replay.GALLERY_LIST, tokenB, $"user_id={id}");
+            var profile = await Send(community, "GET", "apiv2.test", $"/game/user/{id}/profile", tokenB);
+            var ranks = await Send(community, "GET", "apiv2.test", $"/game/user/{id}/ranks", tokenB);
+            var lodges = await Send(community, "GET", "apiv2.test", $"/game/user/{id}/lodges", tokenB);
+            var shown = new[] { stats, skills, hunts, hunt, achievements, trophies, gallery, lodges }.Select(r => r.Source == "state").Append(profile.Status == 200).Append(ranks.Status == 200).Distinct().ToList();
+            return Assert.Single(shown);  // all answer, or none
+        }
+        Assert.True(await Answers(Near));
+        Assert.False(await Answers(Far));
+        Assert.Equal("{}", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.USER_CHALLENGES, tokenB, $"user_id={Far}")).Body));
+        state.Store.AddFriend(8, Far);
+        Assert.False(await Answers(Far));  // a request is no friendship
+        state.Store.AddFriend(Far, 8);
+        Assert.True(await Answers(Far));  // a friend's
+        Eq("""{"duration": 3600, "distance": 12.5, "data": {"collectables": {}, "weapon": {}, "animal": {"1": {"kills": 2}}, "daily_missions": {}}}""",
+           JsonNode.Parse((await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, $"user_id={Far}")).Body));
+    }
+
+    [Fact]
+    public async Task TestReadsOfOtherPlayersByUserIdStopAtTheReadLimitButTheOwnDoNot()
+    {
+        state.CreateAccount(9, "third");
+        var now = 1_000_000.0;
+        state.Clock = () => now;
+        var alerts = new List<long>();
+        state.ReadAlert = alerts.Add;
+        for (var i = 0; i < State.ReadsPerMinute; i++)
+            Assert.Equal("state", (await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, "user_id=9")).Source);
+        Assert.Equal("empty", (await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, "user_id=9")).Source);
+        Assert.Equal("null", Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.PUBLIC_USER, tokenB, "hostname=third")).Body));
+        Assert.Equal([8L], alerts);
+        Assert.Equal("state", (await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, "user_id=8")).Source);  // the own
+        Eq("\"second\"", (await Api(Replay.PUBLIC_USER, tokenB, "hostname=second"))["handle"]);
+        now += 60;
+        Assert.Equal("state", (await Send(community, "POST", "api.test", Replay.STATISTICS_TOTAL, tokenB, "user_id=9")).Source);
+    }
+
+    [Fact]
     public void TestANewAccountsConnectHasItsOwnAccountAndEmptyStatistics()
     {
         var connect = JsonNode.Parse(state.ConnectReply(8))!;
@@ -650,24 +709,29 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal("true", await Call(Replay.FRIEND_ADD, tokenD, 8));
         Eq("[11, 10]", Ids((await Friends(tokenB))["friends"]!));  // by handle, any case: alpha, Third
 
-        // any player's list without a token, paged; its errors
-        async Task<string> List(string body) => Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, body)).Body);
+        // the player's own list with his token, paged; another player's is empty, and without a token: token expired; its errors
+        async Task<string> List(string body, string? token = null) => Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, token ?? tokenB, body)).Body);
         var all = JsonNode.Parse(await List("user_id=8&offset=0&limit=0"))!;
         Eq("[2, [11, 10]]", T(all["total"], Ids(all["friends"]!)));
         Eq(all, JsonNode.Parse(await List("user_id=8")));
         var page = JsonNode.Parse(await List("user_id=8&offset=1&limit=1"))!;
         Eq("[2, [10]]", T(page["total"], Ids(page["friends"]!)));
         Eq("""{"total": 2, "friends": []}""", JsonNode.Parse(await List("user_id=8&offset=5&limit=20")));
+        foreach (var token in new[] { tokenC, tokenD, tokenA })  // a friend of 8, another, a stranger: never 8's friends
+            Eq("""{"total": 0, "friends": []}""", JsonNode.Parse(await List("user_id=8", token)));
+        Assert.Equal(5, (int)JsonNode.Parse(Encoding.ASCII.GetString((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, "user_id=8")).Body))!["errorCode"]!);
         Assert.Equal("""{"errorCode": 400}""", await List("offset=0"));
-        foreach (var body in new[] { "user_id=", "user_id=0", "user_id=-3", "user_id=99", "user_id=7" })
+        foreach (var body in new[] { "user_id=", "user_id=0", "user_id=-3" })
             Assert.Equal("null", await List(body));
+        foreach (var body in new[] { "user_id=99", "user_id=7" })
+            Eq("""{"total": 0, "friends": []}""", JsonNode.Parse(await List(body)));
         foreach (var body in new[] { "user_id=x", "user_id=8&offset=x", "user_id=8&limit=x" })
             Assert.Equal("""{"error": 1, "code": "handlerError"}""", await List(body));
 
         // 8 removes 10: gone on both sides; an own, unknown or the recorded player's id is refused
         Assert.Equal("true", await Call(Replay.FRIEND_REMOVE, tokenB, 10));
         Eq("[]", (await Friends(tokenC))["friends"]);
-        Eq("""{"total": 0, "friends": []}""", JsonNode.Parse(await List("user_id=10")));
+        Eq("""{"total": 0, "friends": []}""", JsonNode.Parse(await List("user_id=10", tokenC)));
         Eq("[11]", Ids((await Friends(tokenB))["friends"]!));
         foreach (var id in new[] { 8, 99, 7 })
             Assert.Equal("""{"errorCode": 400}""", await Call(Replay.FRIEND_ADD, tokenB, id));
@@ -697,7 +761,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         state.CreateAccount(4343, "asker");
         mine = await Api(Replay.ME_FRIENDS, token);
         Eq("[[4242, 8], [4343]]", T(Ids(mine["friends"]!), Ids(mine["requests"]!)));  // later, second
-        Eq("[4242, 8]", Ids(JsonNode.Parse((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, null, "user_id=1001")).Body)!["friends"]!));
+        Eq("[4242, 8]", Ids(JsonNode.Parse((await Send(community, "POST", "api.test", Replay.FRIENDS_LIST, token, "user_id=1001")).Body)!["friends"]!));
 
         // 4343's own restore holds 1001: its request (from 1001's backup) becomes a friendship, whichever restore came first
         var asker = TestZip.Own(uid: "4343", handle: "asker")

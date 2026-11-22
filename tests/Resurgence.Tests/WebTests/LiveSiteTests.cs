@@ -145,9 +145,18 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .avatar").GetAttribute("aria-label"));
         Assert.Equal(["polaroid-back", "avatar-1000000", "polaroid-front"], cut.FindAll(".polaroid .asset-slot").Select(s => s.GetAttribute("aria-label")));  // the avatar between the two pictures
         Assert.Equal("profile-bg-exploration_3", cut.Find(".head .banner").GetAttribute("aria-label"));  // the live site draws the header picture the player chose
-        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs", "/profile/Fox/friends"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source
+        Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source; Friends only on the own profile
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
+    }
+
+    [Fact]
+    public void TheFriendsTabIsOnlyOnTheOwnProfile()
+    {
+        Services.AddSingleton<IProfileService>(Real(new Server("""{"handle":"Hunter01","hunterscore":5,"rank":3}""", "{}")));  // the page's session is Hunter01
+        Live(true);
+        var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Hunter01").Add(h => h.Tab, "skills"));
+        cut.WaitForAssertion(() => Assert.Equal("/profile/Hunter01/friends", cut.FindAll("ul.tabs a").Last().GetAttribute("href")));
     }
 
     [Fact]

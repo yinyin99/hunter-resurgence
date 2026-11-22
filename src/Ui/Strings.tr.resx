@@ -125,6 +125,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Henüz arkadaşınız yok</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Arama sonuçları ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Avcı bulunamadı</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Çok sık arama yaptınız. Bir saat sonra tekrar deneyin.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Arkadaşlık isteği gönder</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Arkadaşlık isteği gönderildi</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Arkadaşlık isteği {0} / {1}</value></data>

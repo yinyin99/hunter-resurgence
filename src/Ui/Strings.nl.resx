@@ -125,6 +125,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Nog geen vrienden</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Zoekresultaten ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Geen jagers gevonden</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Je hebt te vaak gezocht. Probeer het over een uur opnieuw.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Vriendschapsverzoek sturen</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Vriendschapsverzoek verstuurd</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Vriendschapsverzoek {0} van {1}</value></data>
