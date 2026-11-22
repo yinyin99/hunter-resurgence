@@ -1,4 +1,4 @@
-// The store's catalogue on the website's host, the same for everyone: the store and its items for a signed-in player (the session cookie), the reserves and the open games
+// The store's catalogue on the website's host, the same for everyone: the store, its items and the open games for a signed-in player (the session cookie), the reserves
 // for anyone. The website's server calls it over SERVER_URL, the launcher on the public domain, so the reverse proxy routes /catalog/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
@@ -39,7 +39,8 @@ public static class CatalogApi
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
         group.MapGet("/games", () => Json(200, JsonNode.Parse(state.NetworkListReply())!))
             .WithName("GamesList").WithSummary("The open multiplayer sessions, for the website and the launcher")
-            .WithDescription("What `GET /v1/Network/list` answers (docs/server.md, Multiplayer), on the website's host so that the reverse proxy reaches it: `[{id, name, handle, host, description, password, public, singleplayer, freeplayers, hs_min, hs_max, max_players, start_ts, clients_len, clients, reserve}]`, `[]` without a session.")
-            .Produces(200, contentType: "application/json");
+            .WithDescription("What `GET /v1/Network/list` answers (docs/server.md, Multiplayer), on the website's host so that the reverse proxy reaches it: `[{id, name, handle, host, description, password, public, singleplayer, freeplayers, hs_min, hs_max, max_players, start_ts, clients_len, clients, reserve}]`, `[]` without a game. "
+                             + "For a signed-in player (the `hr_session` cookie): 401 `signed_out` without a session; the game's own `/v1/Network/list` is unchanged.")
+            .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json").AddEndpointFilter(SignedIn);
     }
 }

@@ -26,6 +26,7 @@ public class LauncherGuardTests
     [InlineData("profile/x/score/5", true)]
     [InlineData("competitions/details/3", true)]
     [InlineData("missions/daily", true)]
+    [InlineData("servers", true)]
     [InlineData("feed", false)]
     [InlineData("download", false)]
     [InlineData("help/support", false)]

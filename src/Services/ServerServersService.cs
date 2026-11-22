@@ -18,13 +18,13 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
         [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
 
-    /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, as the catalogue: the browser's host, no cookie); none when the server does not answer. The players of a game are not placed on its map (the list has world coordinates).</summary>
+    /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, for a signed-in player: the browser's host and the session cookie); none when signed out (the server is not asked) or when it does not answer. The players of a game are not placed on its map (the list has world coordinates).</summary>
     public async Task<IReadOnlyList<GameServer>> ServersAsync()
     {
+        if (cookie.Value is null) return [];
         try
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, ServerCatalogApi.Games);
-            if (cookie.Host is not null) request.Headers.Host = cookie.Host;
+            using var request = cookie.Request(HttpMethod.Get, ServerCatalogApi.Games);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGame[]>() is { } games)
             {

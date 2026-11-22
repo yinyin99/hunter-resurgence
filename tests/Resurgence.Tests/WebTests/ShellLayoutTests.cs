@@ -44,6 +44,7 @@ public sealed class ShellLayoutTests : UiContext
     [InlineData(false, "/store/item/7")]
     [InlineData(true, "/profile/Fox/score/5")]
     [InlineData(false, "/missions/daily")]
+    [InlineData(true, "/servers")]        // the launcher's open games
     public async Task APageForSignedInPlayersIsTheSignInPromptWhileSignedOut(bool launcher, string path)
     {
         Services.GetRequiredService<HostMode>().Launcher = launcher;
