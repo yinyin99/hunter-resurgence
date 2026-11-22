@@ -200,7 +200,7 @@ public static class HuntersApi
             .RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
             .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
             .WithDescription("The photos of `GET /hunters/<handle>/gallery`: `<account id>/<name>`, for a signed-in player: the `hr_session` cookie, or the keyed link of the gallery's rows (`viewer`, `until`, `key`; the launcher's pages send no cookie). "
-                             + "The file is the original, for every signed-in player; every read of another player's picture counts in the account's read limit (429 `rate_limited`). 401 `signed_out` without a session or a valid link. `Cache-Control: no-store`. "
+                             + "The file is the original, for every signed-in player; every read of another player's picture counts in the account's picture limit (600 a minute, separate from the profile reads; 429 `rate_limited`). 401 `signed_out` without a session or a valid link. `Cache-Control: no-store`. "
                              + "The imported avatar (`avatar.jpg`) is served to anyone. The game's host serves the originals to the game as before.")
             .QueryParams(("viewer", "the account the link is for"), ("until", "Unix seconds the link holds until"), ("key", "the server's key of the link"))
             .Produces(200, contentType: "image/jpeg").Produces(401, contentType: "application/json").Produces(429, contentType: "application/json").Produces(404);

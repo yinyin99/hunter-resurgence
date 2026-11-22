@@ -412,11 +412,12 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal(401, (await Bare(share)).Status);
         Assert.Equal(wide, (await Web(share, ME)).Body);
 
-        // every read of another player's picture counts in the reader's read limit
+        // every read of another player's picture counts in the reader's picture limit, which is not the profile read limit
         var third = PathOf(state.PublicGallery(8, 1, "https://web.test", 9)["rows"]![0]!["url"]);
-        for (var n = 0; n < State.ReadsPerMinute; n++)
+        for (var n = 0; n < State.PicturesPerMinute; n++)
             Assert.Equal(200, (await Bare(third)).Status);
         Assert.Equal(429, (await Bare(third)).Status);
+        Assert.True(state.ReadAllowed(9));  // a gallery page full of pictures leaves the profile reads alone
     }
 
     [Fact]

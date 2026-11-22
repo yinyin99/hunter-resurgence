@@ -210,7 +210,7 @@ What a profile page shows of a player, in the game and on the website (community
 
 ### Read limits
 
-Each account has two caps, in memory (`ReadLimit.cs`; a restart forgets the counts): **120 reads a minute** of profiles, hunts and pictures (`State.ReadAllowed`: every `/hunters/` read and score page of a signed-in player, `Public_user/getByHostname` of another handle, every game read by `user_id` of another id, known or not; the player's own game reads are not counted) and **30 friend searches an hour** (`State.SearchAllowed`, `GET /account/friends/search`). Past a cap the read is refused: 429 `rate_limited` on the website's routes, the reply of a user id that is none here in the game. An account that hits a cap raises one `🚨 Read limit hit` alert in the review channel ([Discord alerts](#discord-alerts)), at most once an hour: perhaps a script collecting the players.
+Each account has three caps, in memory (`ReadLimit.cs`; a restart forgets the counts): **120 reads a minute** of profiles and hunts (`State.ReadAllowed`: every `/hunters/` read and score page of a signed-in player, `Public_user/getByHostname` of another handle, every game read by `user_id` of another id, known or not; the player's own game reads are not counted), **600 pictures a minute** of other players (`State.PictureAllowed`, `/photos/`: a gallery page loads one picture per tile, so pictures have their own, larger cap and never use up the profile reads) and **30 friend searches an hour** (`State.SearchAllowed`, `GET /account/friends/search`). Past a cap the read is refused: 429 `rate_limited` on the website's routes, the reply of a user id that is none here in the game. An account that hits a cap raises one `🚨 Read limit hit` alert in the review channel ([Discord alerts](#discord-alerts)), at most once an hour: perhaps a script collecting the players.
 
 ## The facts file
 
@@ -1018,7 +1018,7 @@ Every alert to `review_webhook` and `signup_webhook` is plain text (no embeds) i
 | `📜 Claim waiting for review` | review | `claim` (`c<id>`), `handle`, `account`, `archived id`, `hunterscore`, `steam`, `run: review list` |
 | `⛔ Upload refused` | review | `handle`, `account`, `steam`, `reason`, `kept` (`r<account id>-<8 hex>`) |
 | `🩺 Problem report` | review | `handle`, `account`, `reference`, `trigger` (`manual`, `short`, `exitcode`, `nowindow`), `size` |
-| `🚨 Read limit hit` | review | `handle`, `account`, `limits` (the two caps of [Read limits](#read-limits)); at most one an hour per account |
+| `🚨 Read limit hit` | review | `handle`, `account`, `limits` (the three caps of [Read limits](#read-limits)); at most one an hour per account |
 | `🆕 New account` | signup | `handle`, `account`, `steam`, `archived` (the claimed handle and its hunterscore, when the sign-up came with a claim), `outcome` (`fresh start`, `claim restored`, `claim waiting for review` or `claim refused (<kind>)`) |
 | `✅ Claim restored` | signup | `handle`, `account`, `archived handle`, `hunterscore`, `steam` |
 
