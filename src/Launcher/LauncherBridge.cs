@@ -221,6 +221,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // the client quit at once because Steam is not there: once more without Steam, and never again
         if (withSteam && QuitEarly(game.Game) == SteamMissing)
         {
+            log?.LogInformation("The game quit with {Code} after {Seconds} s when started with Steam; starting it again without Steam", SteamMissing, (int)game.Ran.Elapsed.TotalSeconds);
             game.Game.Dispose();
             CarryGraphics(false);
             game = Launch(g, url, param, false) is { } retry ? retry with { Retried = true } : null;
@@ -232,7 +233,6 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
-        log?.LogInformation("Game started, mode {Mode}", lastStartMode);
         return Result.Success;
     }
 
@@ -368,7 +368,11 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var info = new ProcessStartInfo(g.ClientExe, Arguments(url, param, withSteam)) { WorkingDirectory = Path.GetDirectoryName(g.ClientExe) };
         // with the app id set the client does not ask Steam to start it again (that would run Steam's launch option), in either mode
         if (steamAppId is not null) info.Environment["SteamAppId"] = info.Environment["SteamGameId"] = steamAppId;
-        return start(info) is { } game ? new(game, withSteam ? "steam" : "nosteam", DateTimeOffset.Now, Stopwatch.StartNew()) : null;
+        var mode = withSteam ? "steam" : "nosteam";
+        var game = start(info);
+        if (game is null) log?.LogWarning("The game did not start, mode {Mode}", mode);
+        else log?.LogInformation("Game process started, mode {Mode}", mode);
+        return game is null ? null : new(game, mode, DateTimeOffset.Now, Stopwatch.StartNew());
     }
 
     /// <summary>Watches a client started with Steam for <c>quitWithin</c> (5 s) or until its window shows: its exit code when it quit, else null.</summary>

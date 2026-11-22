@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Web.WebView2.Core;
 using System.Windows;
+using Resurgence.Services;
 
 namespace Resurgence.Launcher;
 
@@ -35,6 +36,7 @@ public partial class MainWindow : Window
         StateChanged += (_, _) => { if (WindowState != WindowState.Minimized) maximized = WindowState == WindowState.Maximized; };
         // closing while the game runs would stop the forwarder (it lives as long as the launcher process, not as long as the page) and disconnect the game, so the player is asked; Windows shutdown and sign-out are never held up
         Application.Current.SessionEnding += (_, _) => ending = true;
+        Closed += (_, _) => (services.GetService<IKitService>() as LauncherKit)?.LogClosing(); // the forwarder stops with the launcher process
         Closing += (_, e) =>
         {
             if (closing || !NeedsAnswer(ending, GameRunning)) { RememberPlace(); return; }

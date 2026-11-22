@@ -7,8 +7,6 @@ public partial class App : System.Windows.Application
 {
     public App()
     {
-        // errors nothing handles are written to launcher.log (the problem report holds it)
-        LauncherLog.Default.Watch(Dispatcher);
         // dates and numbers follow the UI language too. Only the process defaults are set, so that a language chosen later
         // (LauncherLanguageSwitcher) shows after the reload: assigning CurrentCulture/CurrentUICulture here would pin this thread
         CultureInfo.DefaultThreadCurrentCulture = CultureInfo.DefaultThreadCurrentUICulture =
@@ -21,6 +19,7 @@ public partial class App : System.Windows.Application
         // the elevated copy that player kit setup starts (--hosts on|off): it edits the hosts file and exits, without a window
         if (Kit.HostsArgument(e.Args) is { } on) { Shutdown(Kit.EditHosts(on)); return; }
         started = true;
+        LauncherLog.Default.WatchUi(Dispatcher);
         LauncherLog.Default.Write(LogLevel.Information, $"Launcher {LauncherEnv.AppVersion} started");
         (MainWindow = new MainWindow()).Show();
     }

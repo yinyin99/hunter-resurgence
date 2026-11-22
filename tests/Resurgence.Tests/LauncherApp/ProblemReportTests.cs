@@ -67,8 +67,8 @@ public class ProblemReportTests
         // a made-up event log: one launcher crash, one WebView2 crash, one of another program; only what names an asked exe is returned (as ReadEvents does)
         string[] log = ["event 1000 Application Error: Faulting application name: resurgence-launcher.exe", "event 1001 Windows Error Reporting: msedgewebview2.exe stopped", "event 1000 other.exe crashed"];
         var events = Read(Make(temp, null, events: names => log.Where(l => names.Any(n => l.Contains(n)))).Build("manual").Path)["events.txt"];
-        Assert.Contains("resurgence-launcher.exe", events);
-        Assert.Contains("msedgewebview2.exe", events);
+        Assert.Contains(log[0], events); // the records themselves, not the "none found" text that also names the exes
+        Assert.Contains(log[1], events);
         Assert.DoesNotContain("other.exe", events);
         Assert.Contains("client.exe", Read(Make(temp, NewGame(temp).Install, events: _ => []).Build("manual").Path)["events.txt"]); // none found: the text names every exe asked for
     }

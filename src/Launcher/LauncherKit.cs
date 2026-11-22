@@ -80,8 +80,15 @@ public sealed class LauncherKit(Uri? server, ILogger? log = null) : IKitService
 
     async Task Stop()
     {
-        if (app is not null) log?.LogInformation("The forwarder stops");
+        var running = app is not null;
         await Release();
+        if (running) log?.LogInformation("The forwarder stopped");
+    }
+
+    /// <summary>The launcher is closing: the forwarder lives in this process, so it stops with it; the log says so.</summary>
+    internal void LogClosing()
+    {
+        if (app is not null) log?.LogInformation("The forwarder stops with the launcher");
     }
 
     async Task Release()
