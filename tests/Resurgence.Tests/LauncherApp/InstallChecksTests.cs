@@ -508,7 +508,7 @@ public class InstallChecksTests
     {
         using var t = new TempDir("checks-");
         var g = Game(t);
-        var results = await Make(g, Manifest(100), server: 101, free: _ => 100L << 20, screen: Screen([], [], null, new DisplayAdapter("Fictional Remote Display Adapter", true, true, true))).RunAsync(false);
+        var results = await Make(g, Manifest(100), server: 101, free: _ => 100L << 20, screen: Screen([], [], null, new DisplayAdapter("Fictional Remote Display Adapter", true, false, false))).RunAsync(false);
         var report = new Diagnostics(() => g, [], "1.2.3", () => [], Path.Combine(t.Path, "out"), () => [], () => [], () => [], _ => [], () => results).Build("manual");
         using var zip = ZipFile.OpenRead(report.Path);
         string Read(string name) { using var r = new StreamReader(zip.GetEntry(name)!.Open()); return r.ReadToEnd(); }
@@ -587,13 +587,12 @@ public class InstallChecksTests
 
     [Theory]
     [InlineData("Fictional GPU", true, true, true, false)]
-    [InlineData("Fictional Remote Display Adapter", true, true, true, true)]
-    [InlineData("FICTIONAL VIRTUAL MONITOR", true, true, true, true)]
-    [InlineData("Fictional IddSample Device", true, true, true, true)]
+    [InlineData("Fictional Remote Display Adapter", true, true, true, false)] // a working screen on an adapter named like a virtual one is fine: the name never triggers
+    [InlineData("Fictional Virtual Display Adapter", true, true, true, false)]
     [InlineData("Fictional GPU", true, false, true, true)]  // not part of the desktop
     [InlineData("Fictional GPU", true, true, false, true)]  // no active monitor
-    [InlineData("Fictional Radiant Display", true, true, true, false)] // "rdp" and "idd" are looked for as words
-    public async Task APrimaryDisplayThatIsNoPhysicalScreenWarnsNamingTheAdapter(string name, bool primary, bool attached, bool monitor, bool warns)
+    [InlineData("Fictional Remote Display Adapter", true, false, false, true)]
+    public async Task APrimaryDisplayDeviceThatIsNotOnTheDesktopOrHasNoActiveMonitorWarnsNamingTheAdapter(string name, bool primary, bool attached, bool monitor, bool warns)
     {
         using var t = new TempDir("checks-");
         var r = await Check(Make(Game(t), screen: Screen(Offered, [], null, new DisplayAdapter(name, primary, attached, monitor))), "display");
@@ -606,9 +605,9 @@ public class InstallChecksTests
     {
         using var t = new TempDir("checks-");
         var g = Game(t);
-        var virtualSecond = new DisplayAdapter("Fictional Virtual Display", false, true, false);
+        var virtualSecond = new DisplayAdapter("Fictional Virtual Display", false, false, false);
         Assert.Equal("ok", (await Check(Make(g, screen: Screen(Offered, [], null, virtualSecond, RealGpu)), "display")).Level);
-        var both = Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, new DisplayAdapter("Fictional Virtual Display", true, true, true));
+        var both = Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, new DisplayAdapter("Fictional Virtual Display", true, false, false));
         Assert.Equal("Check.Display.Mode", (await Check(Make(g, screen: both), "display")).Text);
     }
 

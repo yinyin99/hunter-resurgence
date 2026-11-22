@@ -262,8 +262,8 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         return Ok("disk", facts);
     }
 
-    // 11, listed after disk: exclusive full screen at a mode the primary display does not offer (the game closes at start), and a primary display that is no physical screen. Probed on a start as well: it can end the start at once.
-    // Windowed at any size, and a Borderless start (windowed at the screen's size), are never judged.
+    // 11, listed after disk: exclusive full screen at a mode the primary display does not offer (the game closes at start), and a primary display device that is no working screen. Probed on a start as well: it can end the start at once.
+    // Windowed at any size, and a Borderless start (windowed at the screen's size), are never judged. An adapter's name never triggers the second warning: a working screen on an adapter named like a virtual one is fine.
     InstallCheck Display(GameInstall g)
     {
         if (screen is null) return Ok("display");
@@ -271,13 +271,10 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         if (modes.Count > 0 && NotOffered(modes).FirstOrDefault().Settings is { } bad)
             return new("display", "warn", "Check.Display.Mode", new Dictionary<string, string> { ["mode"] = $"{bad.Width}x{bad.Height} {bad.Hz} Hz" }, "fix-display");
         var primary = screen.Adapters().FirstOrDefault(a => a.Primary);
-        if (primary is not null && (!primary.Attached || !primary.Monitor || VirtualAdapter.IsMatch(primary.Name)))
+        if (primary is not null && (!primary.Attached || !primary.Monitor))
             return new("display", "warn", "Check.Display.Virtual", new Dictionary<string, string> { ["adapter"] = primary.Name });
         return Ok("display", primary is null ? null : new() { ["adapter"] = primary.Name });
     }
-
-    // ponytail: a name list, not a driver query; a new virtual display tool is missed until its name is added here
-    static readonly Regex VirtualAdapter = new(@"virtual|remote|\brdp\b|indirect|\bidd|spacedesk|parsec|\bvnc\b|citrix|teamviewer|anydesk|mirror", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     /// <summary>The graphics files the game may start with that say exclusive full screen at a mode that is not in <paramref name="modes"/>, each with its settings.</summary>
     IEnumerable<(string File, GraphicsSettings? Settings)> NotOffered(IReadOnlyList<(int W, int H, int Hz)> modes) =>
