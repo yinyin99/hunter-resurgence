@@ -291,15 +291,12 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         return found is null ? [] : found.Count == 0 ? ["Game folder DLLs: as installed"] : [.. found.Select(Line)];
     }
 
-    // the exit codes of a game that stops before its window opens because a DLL is missing or lacks a function: Windows writes no Application Error for them, only an Application Popup
-    const int EntryPointNotFound = unchecked((int)3221225785), DllNotFound = unchecked((int)3221225781);
-
     string EventsText(List<string> missing, string exe, int? lastExit)
     {
         Func<string, IEnumerable<string>> read = events ?? ReadEvents;
         var list = Try(() => read(exe).ToList(), missing, "events.txt");
-        // its own probe: another log that cannot be read does not hide it
-        if (lastExit is EntryPointNotFound or DllNotFound && Try(() => (popups ?? ReadPopups)(exe).Take(1).ToList(), missing, "application popup") is { Count: > 0 } popup) list = [.. popup, .. list ?? []];
+        // after a DLL or an entry point is missing Windows writes no Application Error, only this popup; its own probe: another log that cannot be read does not hide it
+        if (lastExit is LauncherBridge.EntryPointNotFound or LauncherBridge.DllNotFound && Try(() => (popups ?? ReadPopups)(exe).Take(1).ToList(), missing, "application popup") is { Count: > 0 } popup) list = [.. popup, .. list ?? []];
         return list is null ? "The Windows event log could not be read." : list.Count == 0 ? $"No Application Error or Windows Error Reporting event of the last {EventDays} days names {exe}." : string.Join("\n\n", list);
     }
 
