@@ -442,9 +442,10 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task TestAnyAccountsRanksAreServedToEveryone()
+    public async Task TestAPlayersRanksAreServedToAnotherPlayer()
     {
         await SignIn("99999999999999991", "one");
+        var bearer = ("Authorization", "Bearer " + state.Store.CreateToken(state.Store.Listed("one", null)!.Value));
         state.CreateAccount(9, "third");
         state.CreateAccount(10, "banned");
         using (var con = state.Store.Open(9))  // the species 19 (and its variant 119): the first rank row; the weapon 369: row 41; a count counts before the cap
@@ -452,7 +453,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE handle = 'banned'");
 
-        var game = await Get("apiv2.test", "/game/user/9/ranks");
+        var game = await Get("apiv2.test", "/game/user/9/ranks", bearer);
         Assert.Equal("application/vnd.game_data.user.rank+json; type=collection", game.Headers.Single(h => h.Name == "Content-Type").Value);
         var rows = JsonNode.Parse(game.Body)!.AsArray();
         Assert.Equal(Facts.Default.Ranks.Length, rows.Count);
@@ -460,7 +461,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Eq("""{"id": 41, "category_id": 2, "value": 7}""", rows.Single(r => (long)r!["id"]! == 41));
         Eq("""{"id": 38, "category_id": 3, "value": 0}""", rows.Single(r => (long)r!["id"]! == 38));
         foreach (var id in new[] { 7, 10, 99 })  // the recorded player's, a banned and an unknown user id
-            Assert.Equal(404, (await Get("apiv2.test", $"/game/user/{id}/ranks")).Status);
+            Assert.Equal(404, (await Get("apiv2.test", $"/game/user/{id}/ranks", bearer)).Status);
+        Assert.Equal(404, (await Get("apiv2.test", "/game/user/9/ranks")).Status);  // without a token
 
         var site = JsonNode.Parse((await Get("web.test", "/hunters/third/ranks")).Body)!;
         Assert.Equal(1000, (long)site["cap"]!);

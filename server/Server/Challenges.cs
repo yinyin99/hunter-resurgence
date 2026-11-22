@@ -68,7 +68,7 @@ public sealed partial class State
 
     // ---- the reply
 
-    /// <summary>Challenge/get_user_challenges for a user_id: any account's (<see cref="PublicAccount(long)"/>), `{}` for a user id that is none. The game sends no token.</summary>
+    /// <summary>Challenge/get_user_challenges for a user_id the route already checked (State.SeenAccount: a player the caller may see), `{}` for a user id that is none.</summary>
     public byte[] ChallengesReply(string userId)
     {
         if (!long.TryParse(userId, out var id) || PublicAccount(id) is not { } account)

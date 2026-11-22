@@ -285,7 +285,7 @@ public sealed partial class State
 
     static double Num(JsonNode? n) => n is JsonValue v && double.TryParse(v.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : 0;
 
-    /// <summary>Leaderboard/personal for the form's user_id and season_no: any account's on a community server (null for a user id that is none), else the player's own.</summary>
+    /// <summary>Leaderboard/personal for the form's user_id and season_no: on a community server the account of a player the caller may see (<see cref="SeenAccount"/>; null for anyone else), else the player's own.</summary>
     public byte[]? PersonalBestReply(long account, byte[] formBody)
     {
         var season = long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "season_no"), out var n) ? n : 0;

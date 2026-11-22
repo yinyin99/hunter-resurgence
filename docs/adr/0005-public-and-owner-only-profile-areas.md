@@ -1,6 +1,6 @@
 # Public and owner-only profile areas
 
-Status: accepted
+Status: accepted; amended by [ADR 0010](0010-friends-are-owner-only-and-nobody-lists-the-players.md) (friends are owner-only, reads by user id only for players the caller may see)
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 

@@ -473,7 +473,7 @@ public static class GameApi
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
-            // the account's trophies and the lodges of any account here (community server only); a locked lodge is sent too: the game hides it
+            // the account's trophies and the lodges of a player the caller may see (community server only); a locked lodge is sent too: the game hides it
             var restored = Handle(game, r =>
             {
                 var (lodges, own, trophies) = (Lodges.Match(r.Path), OwnLodges.IsMatch(r.Path), TrophyList.IsMatch(r.Path));
