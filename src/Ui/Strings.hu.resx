@@ -310,7 +310,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Mentés</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Mégsem</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Játék indítása</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Teljes képernyő</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Megjelenítési mód</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Keret nélküli</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Teljes képernyő (kizárólagos)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>Ablakos</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>A teljes képernyőt kitölti, annak saját felbontásán. Az Alt+Tab azonnal vált.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Függőleges szinkron</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Képernyőfelbontás</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

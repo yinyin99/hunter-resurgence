@@ -310,7 +310,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Spara</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Avbryt</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Starta spel</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Helskärm</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Visningsläge</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Kantlös</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Helskärm (exklusiv)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>I fönster</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Täcker hela skärmen i dess egen upplösning. Alt+Tab växlar direkt.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertikal synkronisering</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Skärmupplösning</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

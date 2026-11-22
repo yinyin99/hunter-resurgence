@@ -1,11 +1,13 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Resurgence.Services;
 
 namespace Resurgence.Launcher;
 
 /// <summary>The player's choices in %APPDATA%\hunter-resurgence\launcher.json. A missing or damaged file means the defaults.</summary>
 public sealed class Prefs
 {
-    static readonly JsonSerializerOptions J = new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, WriteIndented = true };
+    static readonly JsonSerializerOptions J = new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, WriteIndented = true, Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) } };
 
     public static string DefaultPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "hunter-resurgence", "launcher.json");
 
@@ -16,6 +18,8 @@ public sealed class Prefs
     public bool CloseOnGameStart { get; set; }
     /// <summary>The Game settings were saved once: the first game start no longer asks for them.</summary>
     public bool GameSettingsSaved { get; set; }
+    /// <summary>The Game settings' display mode (<c>borderless</c>, <c>fullscreen</c>, <c>windowed</c>); null until chosen or until the first start (<see cref="GameSettingsService.Mode"/>). The game's own file only knows fullscreen on or off.</summary>
+    public DisplayMode? DisplayMode { get; set; }
     /// <summary>The launch option line the launcher wrote into Steam, and what was there before (null: nothing). The uninstall puts it back only while the line is still there.</summary>
     public string? SteamOptionSet { get; set; }
     public string? SteamOptionBefore { get; set; }

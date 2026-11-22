@@ -48,7 +48,8 @@
         // the files cannot be read: tell why and show nothing to edit
         if (settings.Error is { } problem) { Modal.Alert(L[problem]); return; }
         var s = settings.Options;
-        (o.Fullscreen, o.Vsync, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso) = (s.Fullscreen, s.Vsync, s.Scene, s.Texture, s.Shadow, s.Msaa, s.Aniso);
+        // its Fullscreen box is any full screen: Borderless or the exclusive one
+        (o.Fullscreen, o.Vsync, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso) = (s.Display != DisplayMode.Windowed, s.Vsync, s.Scene, s.Texture, s.Shadow, s.Msaa, s.Aniso);
         resolution = Math.Max(0, settings.Resolutions.ToList().IndexOf(s.Resolution));
     }
 
@@ -74,7 +75,9 @@
 
     async Task Save()
     {
-        var r = await Service.SaveAsync(new(o.Fullscreen, o.Vsync, settings!.Resolutions.Count > 0 ? settings.Resolutions[resolution] : settings.Options.Resolution, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, settings.Options.ContextualHelp, settings.Options.ExtendedAudio));
+        // a ticked box keeps the exclusive full screen of a player who chose it, else it is Borderless
+        var display = !o.Fullscreen ? DisplayMode.Windowed : settings!.Options.Display == DisplayMode.Fullscreen ? DisplayMode.Fullscreen : DisplayMode.Borderless;
+        var r = await Service.SaveAsync(new(display, o.Vsync, settings!.Resolutions.Count > 0 ? settings.Resolutions[resolution] : settings.Options.Resolution, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, settings.Options.ContextualHelp, settings.Options.ExtendedAudio));
         error = r.Error;
         if (r.Ok) Modal.Close();
     }

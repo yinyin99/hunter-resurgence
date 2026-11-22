@@ -12,6 +12,8 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
     public bool WindowVisible() => windowVisible();
     /// <summary>The exit code once the process is gone; null while it runs or when Windows does not tell.</summary>
     public int? ExitCode() => exitCode();
+    /// <summary>The process id; 0 when not known.</summary>
+    public int Id { get; init; }
     public void Dispose() => dispose?.Invoke();
 
     /// <summary>Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.</summary>
@@ -20,7 +22,7 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         try
         {
             if (Process.Start(info) is not { } p) return null;
-            return new(() => !p.HasExited && HasVisibleWindow((uint)p.Id), () => p.HasExited ? p.ExitCode : null, p.Dispose);
+            return new(() => !p.HasExited && HasVisibleWindow((uint)p.Id), () => p.HasExited ? p.ExitCode : null, p.Dispose) { Id = p.Id };
         }
         catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return null; }
     }

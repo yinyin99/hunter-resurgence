@@ -310,7 +310,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Сохранить</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Отмена</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Начать игру</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Полный экран</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Режим отображения</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Без рамки</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Полный экран (эксклюзивный)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>В окне</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Занимает весь экран в его собственном разрешении. Alt+Tab переключает сразу.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>V-Sync</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Разрешение экрана</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Гц)</value></data>

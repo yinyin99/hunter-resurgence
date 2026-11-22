@@ -7,7 +7,7 @@ public sealed class MockGameSettingsService(ILogger<MockGameSettingsService> log
 {
     static readonly Resolution[] Modes = [new(640, 480, 60), new(800, 600, 60), new(1024, 768, 60), new(1280, 720, 60), new(1366, 768, 60), new(1600, 900, 60), new(1920, 1080, 60), new(1920, 1080, 144), new(2560, 1440, 60)];
 
-    GameOptions options = new(false, false, new(1920, 1080, 60), 2, 0, 0, 0, 0, false, false);
+    GameOptions options = new(DisplayMode.Borderless, false, new(1920, 1080, 60), 2, 0, 0, 0, 0, false, false);
     bool first = mock == "settings:first";
 
     public Task<GameSettings> ReadAsync() => Task.FromResult(new GameSettings(options, Modes, 8192));

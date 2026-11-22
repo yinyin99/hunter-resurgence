@@ -6,11 +6,12 @@ namespace Resurgence.Launcher;
 /// <summary>
 /// The Game settings dialog on the game's real files (<see cref="GameFiles"/>). Nothing is written while the client runs. The client reads another graphics file with <c>/steam</c> than without
 /// (<see cref="Settings.GraphicsFileNoSteam"/>): the file of the mode the game starts in is read and written, both when <paramref name="plannedMode"/> cannot tell
-/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null).
+/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null). The display mode is <see cref="Prefs.DisplayMode"/>: the file only knows fullscreen on or off, and Borderless writes it windowed at the size of
+/// <paramref name="monitor"/> (the primary display's mode, where the game starts).
 /// </summary>
-public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs, Func<string?>? plannedMode = null) : IGameSettingsService
+public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs, Func<string?>? plannedMode = null, Func<(int W, int H, int Hz)?>? monitor = null) : IGameSettingsService
 {
-    static readonly GameOptions None = new(false, false, new(0, 0, 0), 0, 0, 0, 0, 0, null, null);
+    static readonly GameOptions None = new(DisplayMode.Borderless, false, new(0, 0, 0), 0, 0, 0, 0, 0, null, null);
 
     /// <summary>The graphics files the game may start with, the one of <c>/steam</c> first.</summary>
     IEnumerable<string> GraphicsPaths()
@@ -35,18 +36,54 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
             if (read is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.BadFormat"));
             if ((g = read) is not null) break;
         }
+        // before the player's choice a file that says fullscreen shows Borderless: the exclusive full screen only by choice
+        var mode = Mode(g);
         g ??= GameFiles.DefaultGraphics();  // the game never writes this file: Save creates it
         // the options file is optional: without it the contextual help switch is simply not offered
         var o = OptionsPath is { } op ? GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value : null;
-        var current = new Resolution(g.Width, g.Height, g.Hz);
-        if (!modes.Contains(current)) modes = [.. modes.Append(current).OrderBy(m => (m.Width, m.Height, m.Hz))];
-        return Task.FromResult(new GameSettings(ToOptions(g, o), modes, VideoMemoryMb()));
+        var options = Native(ToOptions(g, o, mode));
+        if (!modes.Contains(options.Resolution)) modes = [.. modes.Append(options.Resolution).OrderBy(m => (m.Width, m.Height, m.Hz))];
+        return Task.FromResult(new GameSettings(options, modes, VideoMemoryMb()));
+    }
+
+    /// <summary>The player's choice; before one, Windowed for a file that says windowed, else Borderless (no file yet, or a file that says fullscreen).</summary>
+    internal DisplayMode Mode(GraphicsSettings? g) => prefs.DisplayMode ?? (g is { Fullscreen: false } ? DisplayMode.Windowed : DisplayMode.Borderless);
+
+    /// <summary>Borderless runs at the monitor's size; the other modes keep the chosen resolution.</summary>
+    GameOptions Native(GameOptions o) => o.Display == DisplayMode.Borderless && (monitor ?? GameFiles.CurrentDisplayMode)() is var (w, h, hz) ? o with { Resolution = new(w, h, hz) } : o;
+
+    /// <summary>
+    /// Before a start (<c>/steam</c> or not): the mode before the player's choice becomes his choice (a file written windowed below must not read as Windowed next time), and in Borderless the start's graphics file is
+    /// written windowed at the monitor's size (created when missing). True when the game's window is to be made borderless (<see cref="Borderless"/>); the error, when the file could not be written, never blocks the start.
+    /// </summary>
+    public (bool Borderless, string? Error) PrepareStart(bool withSteam)
+    {
+        if ((withSteam ? settings.GraphicsFile : settings.GraphicsFileNoSteam ?? settings.GraphicsFile) is not { } file) return (false, null);
+        var path = Path.Combine(appData, file);
+        try
+        {
+            var (g, problem) = GameFiles.ReadGraphics(path);
+            var mode = Mode(g);
+            if (prefs.DisplayMode is null)
+            {
+                prefs.DisplayMode = mode;
+                savePrefs();
+            }
+            if (mode != DisplayMode.Borderless) return (false, null);
+            var b = g ?? GameFiles.DefaultGraphics();
+            b = ToGraphics(b, Native(ToOptions(b, null, mode)));
+            if (problem == FileProblem.Missing) GameFiles.CreateGraphics(path, b);
+            else GameFiles.WriteGraphics(path, b);
+            return (true, null);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException) { return (prefs.DisplayMode == DisplayMode.Borderless, e.Message); }
     }
 
     public Task<Result> SaveAsync(GameOptions options)
     {
         // the client reads the files once at start and rewrites them itself
         if (GameFiles.ClientRunning(settings.ClientExe)) return Task.FromResult(Result.Fail("GameSettings.ClientRunning"));
+        options = Native(options);
         try
         {
             var paths = GraphicsPaths().ToList();
@@ -63,6 +100,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
                 GameFiles.WriteOptions(op, settings.OptionsKeyPrefix!, o);
             }
             prefs.GameSettingsSaved = true;
+            prefs.DisplayMode = options.Display;
             savePrefs();
             return Task.FromResult(Result.Success);
         }
@@ -73,13 +111,13 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     public Task<bool> FirstStartAsync() => Task.FromResult(!prefs.GameSettingsSaved);
 
     // the file's anisotropic filtering has Default before Off: the dialog has no Default, it shows Off
-    public static GameOptions ToOptions(GraphicsSettings g, OptionsSettings? o) =>
-        new(g.Fullscreen, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, null);
+    public static GameOptions ToOptions(GraphicsSettings g, OptionsSettings? o, DisplayMode display) =>
+        new(display, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, null);
 
-    /// <summary>Untouched anisotropic filtering stays as the file has it (Default is not turned into Off).</summary>
+    /// <summary>Only Fullscreen writes the file's fullscreen flag; Borderless runs windowed. Untouched anisotropic filtering stays as the file has it (Default is not turned into Off).</summary>
     public static GraphicsSettings ToGraphics(GraphicsSettings g, GameOptions o) => g with
     {
-        Fullscreen = o.Fullscreen, Vsync = o.Vsync, Width = o.Resolution.Width, Height = o.Resolution.Height, Hz = o.Resolution.Hz,
+        Fullscreen = o.Display == DisplayMode.Fullscreen, Vsync = o.Vsync, Width = o.Resolution.Width, Height = o.Resolution.Height, Hz = o.Resolution.Hz,
         Scene = o.Scene, Texture = o.Texture, Shadow = o.Shadow, Msaa = o.Msaa, Aniso = o.Aniso == Math.Max(g.Aniso - 1, 0) ? g.Aniso : o.Aniso + 1,
     };
 

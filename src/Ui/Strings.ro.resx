@@ -310,7 +310,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Salvați</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Anulați</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Începeți jocul</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Ecran complet</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Mod de afișare</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Fără margini</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Ecran complet (exclusiv)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>În fereastră</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Acoperă tot ecranul la rezoluția lui. Alt+Tab comută imediat.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Sincronizare verticală</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Rezoluția ecranului</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

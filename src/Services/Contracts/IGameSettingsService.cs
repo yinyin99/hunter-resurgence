@@ -2,8 +2,12 @@ namespace Resurgence.Services;
 
 public sealed record Resolution(int Width, int Height, int Hz);
 
-/// <summary>Quality values are the list positions of the dialog: Scene and Shadow 0 Low to 3 Very High, Texture 0 to 2, Msaa 0 Off to 3 8x, Aniso 0 Off to 4 16x. A null switch is not offered by the game's files and is not shown.</summary>
-public sealed record GameOptions(bool Fullscreen, bool Vsync, Resolution Resolution, int Scene, int Texture, int Shadow, int Msaa, int Aniso, bool? ContextualHelp, bool? ExtendedAudio);
+/// <summary>How the game shows: Borderless (windowed over the whole monitor, without title bar or border; the default), Fullscreen (the game's exclusive full screen) or Windowed.</summary>
+public enum DisplayMode { Borderless, Fullscreen, Windowed }
+
+/// <summary>Quality values are the list positions of the dialog: Scene and Shadow 0 Low to 3 Very High, Texture 0 to 2, Msaa 0 Off to 3 8x, Aniso 0 Off to 4 16x. A null switch is not offered by the game's files and is not shown.
+/// In Borderless the resolution is the monitor's size.</summary>
+public sealed record GameOptions(DisplayMode Display, bool Vsync, Resolution Resolution, int Scene, int Texture, int Shadow, int Msaa, int Aniso, bool? ContextualHelp, bool? ExtendedAudio);
 
 /// <param name="Resolutions">What the display offers.</param>
 /// <param name="VideoMemoryMb">0 when unknown.</param>

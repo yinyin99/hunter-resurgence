@@ -6,17 +6,27 @@
     @if (settings is not null)
     {
         <div class="rows">
-            <label class="row"><span>@L["GameSettings.Fullscreen"]</span><input class="tick" type="checkbox" id="fullscreen" @bind="fullscreen" /></label>
-            <label class="row"><span>@L["GameSettings.Vsync"]</span><input class="tick" type="checkbox" id="vsync" @bind="vsync" /></label>
-            <label class="row"><span>@L["GameSettings.Resolution"]</span>
-                <select class="field-sel" id="display_mode" @bind="resolution">
-                    @for (var i = 0; i < settings.Resolutions.Count; i++)
-                    {
-                        var r = settings.Resolutions[i];
-                        <option value="@i">@L["GameSettings.ResolutionFormat", r.Width, r.Height, r.Hz]</option>
-                    }
+            <label class="row"><span>@L["GameSettings.Display"]</span>
+                <select class="field-sel" id="window_mode" @bind="display">
+                    <option value="@DisplayMode.Borderless">@L["GameSettings.Borderless"]</option>
+                    <option value="@DisplayMode.Fullscreen">@L["GameSettings.Exclusive"]</option>
+                    <option value="@DisplayMode.Windowed">@L["GameSettings.Windowed"]</option>
                 </select>
-            </label>
+                @* Borderless runs at the screen's own resolution: the resolution list is not offered then *@
+                @if (display == DisplayMode.Borderless) { <small>@L["GameSettings.BorderlessHelp"]</small> }</label>
+            <label class="row"><span>@L["GameSettings.Vsync"]</span><input class="tick" type="checkbox" id="vsync" @bind="vsync" /></label>
+            @if (display != DisplayMode.Borderless)
+            {
+                <label class="row"><span>@L["GameSettings.Resolution"]</span>
+                    <select class="field-sel" id="display_mode" @bind="resolution">
+                        @for (var i = 0; i < settings.Resolutions.Count; i++)
+                        {
+                            var r = settings.Resolutions[i];
+                            <option value="@i">@L["GameSettings.ResolutionFormat", r.Width, r.Height, r.Hz]</option>
+                        }
+                    </select>
+                </label>
+            }
             <label class="row"><span>@L["GameSettings.Scene"]</span><select class="field-sel" id="scene_complexity" @bind="scene">@Levels(4)</select><small>@L["GameSettings.SceneHelp"]</small></label>
             <label class="row"><span>@L["GameSettings.Texture"]</span><select class="field-sel" id="texture_quality" @bind="texture">@Levels(3)</select>
                 @* the warning shows only while High is chosen *@
@@ -37,7 +47,8 @@
 
 @code {
     GameSettings? settings;
-    bool fullscreen, vsync;
+    DisplayMode display;
+    bool vsync;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
     string? error;
@@ -53,8 +64,8 @@
         // the files cannot be read: tell why and show nothing to edit
         if (settings.Error is { } problem) { Modal.Alert(L[problem]); return; }
         var o = settings.Options;
-        (fullscreen, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
-            (o.Fullscreen, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
+        (display, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
+            (o.Display, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
     }
 
     RenderFragment Levels(int count) => b =>
@@ -68,7 +79,7 @@
 
     async Task Save()
     {
-        var result = await Service.SaveAsync(new(fullscreen, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio));
+        var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio));
         if (!result.Ok) { error = result.Error; return; }
         Done?.SetResult(true);
         Modal.Close();

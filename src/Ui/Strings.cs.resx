@@ -310,7 +310,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Uložit</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Storno</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Spustit hru</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Celá obrazovka</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Režim zobrazení</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Bez okrajů</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Celá obrazovka (exkluzivní)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>V okně</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Pokryje celou obrazovku v jejím vlastním rozlišení. Alt+Tab přepíná okamžitě.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertikální synchronizace</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Rozlišení obrazovky</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
