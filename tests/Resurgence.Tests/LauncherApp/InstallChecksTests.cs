@@ -124,7 +124,7 @@ public class InstallChecksTests
     public async Task TheBuildRequestMeasuresThePcClockByTheDateHeader()
     {
         var now = new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
-        var clock = new ServerClock(() => now);
+        var clock = new ServerClock(() => now, () => TimeSpan.Zero);
         Assert.Null(clock.Offset);
         using var http = new HttpClient(new Stub(HttpStatusCode.OK, "{\"build\": 5}", now - TimeSpan.FromHours(3))) { BaseAddress = new("https://server.example.test") };
         Assert.Equal<long?>(5, await InstallChecks.FetchBuild(http, clock));

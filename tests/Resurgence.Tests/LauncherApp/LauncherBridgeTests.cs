@@ -320,7 +320,7 @@ public class LauncherBridgeTests
     static ServerClock ClockOff(TimeSpan pcAhead)
     {
         var now = new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
-        var clock = new ServerClock(() => now);
+        var clock = new ServerClock(() => now, () => TimeSpan.Zero);
         clock.Observe(new HttpResponseMessage { Headers = { Date = now - pcAhead } });
         return clock;
     }
@@ -337,6 +337,18 @@ public class LauncherBridgeTests
         Assert.True(b.StartGame("srv://x").Ok);
         var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
         Assert.Equal(("closed", named is { } n ? TimeSpan.FromSeconds(n) : (TimeSpan?)null), (exit.Cause, exit.ClockAhead));
+    }
+
+    [Fact]
+    public void ACorrectedClockIsNoLongerOff()
+    {
+        var (wall, up) = (new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero), TimeSpan.FromMinutes(7));
+        var clock = new ServerClock(() => wall, () => up);
+        clock.Observe(new HttpResponseMessage { Headers = { Date = wall - TimeSpan.FromHours(3) } });
+        Assert.Equal(TimeSpan.FromHours(3), clock.Ahead);
+        (wall, up) = (wall - TimeSpan.FromHours(3) + TimeSpan.FromMinutes(20), up + TimeSpan.FromMinutes(20)); // the player sets the clock, 20 minutes pass
+        Assert.Null(clock.Ahead);
+        Assert.Equal(TimeSpan.Zero, clock.Offset);
     }
 
     [Fact]
