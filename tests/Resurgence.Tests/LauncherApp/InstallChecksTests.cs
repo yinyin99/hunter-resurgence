@@ -120,9 +120,24 @@ public class InstallChecksTests
         Assert.Null(await InstallChecks.FetchBuild(Reply(HttpStatusCode.InternalServerError, "{\"build\": 123}")));
     }
 
-    sealed class Stub(HttpStatusCode code, string body) : HttpMessageHandler
+    [Fact]
+    public async Task TheBuildRequestMeasuresThePcClockByTheDateHeader()
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancel) => Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body) });
+        var now = new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
+        var clock = new ServerClock(() => now, () => TimeSpan.Zero);
+        Assert.Null(clock.Offset);
+        using var http = new HttpClient(new Stub(HttpStatusCode.OK, "{\"build\": 5}", now - TimeSpan.FromHours(3))) { BaseAddress = new("https://server.example.test") };
+        Assert.Equal<long?>(5, await InstallChecks.FetchBuild(http, clock));
+        Assert.Equal(TimeSpan.FromHours(3), clock.Offset);
+        Assert.Equal(TimeSpan.FromHours(3), clock.Ahead);
+        clock.Observe(new HttpResponseMessage { Headers = { Date = now - TimeSpan.FromMinutes(5) } });
+        Assert.Null(clock.Ahead);      // up to five minutes is in step
+        Assert.Equal(TimeSpan.FromMinutes(5), clock.Offset);
+    }
+
+    sealed class Stub(HttpStatusCode code, string body, DateTimeOffset? date = null) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancel) => Task.FromResult(new HttpResponseMessage(code) { Content = new StringContent(body), Headers = { Date = date } });
     }
 
     [Fact]
