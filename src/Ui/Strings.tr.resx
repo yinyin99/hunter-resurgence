@@ -1546,7 +1546,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Oyunun günlüklerini yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Oyunun ve başlatıcının günlüklerini yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Dosyalar toplanıyor…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapor şu dosyaları içerir:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Bunlar okunamadı ve dışarıda bırakıldı:</value></data>
@@ -1563,7 +1563,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Report.AutoFailed" xml:space="preserve"><value>Sorun raporu gönderilemedi: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Bir şeyler mi ters gitti? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Sorun raporları gönderilsin mi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için günlüklerini ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Oyun başlamazsa başlatıcı, sorunu çözebilmemiz için kendi günlüğünü, oyunun günlüklerini ve çökme olaylarını ve oyunun son çökme dökümünü bize gönderebilir.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Dosyaları göster</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Otomatik gönder</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Her seferinde sor</value></data>

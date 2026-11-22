@@ -52,6 +52,8 @@ public sealed class LauncherUpdater(UpdateManager manager, Func<bool> gameRunnin
     public bool ApplyAndRestart()
     {
         if (downloaded is null || gameRunning()) return false;
+        // the process ends in the next call, without closing its window: the log says that this stop (the forwarder's included) is planned
+        LauncherLog.Default.Write(Microsoft.Extensions.Logging.LogLevel.Information, $"The launcher restarts to install version {downloaded.TargetFullRelease.Version}; the forwarder stops with it");
         manager.ApplyUpdatesAndRestart(downloaded.TargetFullRelease, Environment.GetCommandLineArgs()[1..]); // the restart keeps the arguments (Steam's %command%)
         return true;
     }

@@ -1546,7 +1546,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Skickar spelets loggar till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Skickar spelets och launcherns loggar till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samlar in filerna…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Rapporten innehåller dessa filer:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Dessa kunde inte läsas och är utelämnade:</value></data>
@@ -1563,7 +1563,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Report.AutoFailed" xml:space="preserve"><value>Problemrapporten kunde inte skickas: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Gick något fel? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Skicka problemrapporter?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sina loggar och spelets senaste kraschdump så att vi kan åtgärda det.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Om spelet inte startar kan launchern skicka oss sin egen logg, spelets loggar och kraschhändelser och spelets senaste kraschdump så att vi kan åtgärda det.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Visa filer</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Skicka automatiskt</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Fråga mig varje gång</value></data>

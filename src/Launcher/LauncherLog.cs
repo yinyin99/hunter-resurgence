@@ -25,11 +25,15 @@ public sealed class LauncherLog(string path) : ILoggerProvider
 
     readonly object gate = new();
 
-    /// <summary>Appends one entry (a time in UTC, the level, the text, then the exception with its stack and inner exceptions), scrubbed; the file is closed again at once, so the report can read it while the launcher runs.</summary>
+    /// <summary>
+    /// Appends one entry (a time in UTC, the level, the text, then the exceptions with their stacks); the file is closed again at once, so the report can read it while the launcher runs. The text and the exception messages go through the
+    /// report's line scrub (<see cref="Diagnostics.Scrub(string)"/>); a stack trace, which the runtime wrote, only loses the Windows user name (<see cref="Diagnostics.ScrubNames"/>), so that a method with a Token parameter stays. The
+    /// cut at <see cref="MaxEntryChars"/> comes after the scrub: a credential is never cut in two.
+    /// </summary>
     public void Write(LogLevel level, string text, Exception? error = null)
     {
-        var entry = $"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z {level} {text}{(error is null ? "" : "\n" + error)}";
-        entry = Diagnostics.Scrub(entry.Length > MaxEntryChars ? entry[..MaxEntryChars] + "\n[cut]" : entry);
+        var entry = Diagnostics.Scrub($"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}Z {level} {text}") + (error is null ? "" : "\n" + Describe(error));
+        if (entry.Length > MaxEntryChars) entry = entry[..MaxEntryChars] + "\n[cut]";
         var bytes = Encoding.UTF8.GetBytes(entry + "\n");
         lock (gate)
             try
@@ -40,6 +44,21 @@ public sealed class LauncherLog(string path) : ILoggerProvider
                 o.Write(bytes);
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
+    }
+
+    /// <summary>What <c>Exception.ToString()</c> says, but with the messages scrubbed as free text: the type and message of the exception, its stack, then each inner exception.</summary>
+    static string Describe(Exception error)
+    {
+        var sb = new StringBuilder();
+        void Add(Exception e, string label)
+        {
+            sb.Append(label).Append(e.GetType().FullName).Append(": ").Append(Diagnostics.Scrub(e.Message)).Append('\n');
+            if (e.StackTrace is { } stack) sb.Append(Diagnostics.ScrubNames(stack)).Append('\n');
+            if (e is AggregateException all) foreach (var inner in all.InnerExceptions) Add(inner, "caused by ");
+            else if (e.InnerException is { } one) Add(one, "caused by ");
+        }
+        Add(error, "");
+        return sb.ToString().TrimEnd('\n');
     }
 
     /// <summary>

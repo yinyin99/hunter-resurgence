@@ -48,9 +48,6 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     /// <summary>A line that looks like it carries a credential (a JWT, a token, cookie, bearer or authorization header, or a run of 32 or more hex digits such as the game's session id and refresh token) is replaced as a whole.</summary>
     static readonly Regex Secret = new(@"eyJ[\w-]{8,}\.[\w-]{8,}|token|cookie|bearer|authorization|\bjwt\b|secret|password|[0-9a-f]{32,}", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    /// <summary>A .NET stack frame (<c>   at Type.Method(Args) in path:line 12</c>): it names code, never a credential (a method with a Token parameter would be taken for one), so only the user name goes from it.</summary>
-    static readonly Regex StackFrame = new(@"^\s+at [^\s(]+\(", RegexOptions.CultureInvariant);
-
     /// <summary>The profile folder name in <c>C:\Users\name</c> or <c>\\share\Users\name</c> (either slash): up to the next slash, or, at the end of the path, up to a space or punctuation.</summary>
     static readonly Regex ProfileName = new(@"(?<=[\\/]Users[\\/])(?:[^\\/:*?""<>|\r\n]+(?=[\\/])|[^\s\\/:*?""<>|,;()'\[\]]+)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly Regex? Own = OwnNames(Environment.UserName, Environment.GetEnvironmentVariable("USERPROFILE") ?? "");
@@ -72,7 +69,12 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
     static string OwnReplacement(Match m) => m.Value.LastIndexOfAny(['\\', '/']) is >= 0 and var i ? m.Value[..(i + 1)] + "<user>" : "<user>";
 
     /// <summary>The player's own name and profile path first (they may hold spaces), then any other profile folder.</summary>
-    internal static string Scrub(string text, Regex? own) => string.Join('\n', text.Split('\n').Select(l => !StackFrame.IsMatch(l) && Secret.IsMatch(l) ? Removed : ProfileName.Replace(own?.Replace(l, OwnReplacement) ?? l, "<user>")));
+    internal static string Scrub(string text, Regex? own) => string.Join('\n', text.Split('\n').Select(l => Secret.IsMatch(l) ? Removed : Names(l, own)));
+
+    static string Names(string line, Regex? own) => ProfileName.Replace(own?.Replace(line, OwnReplacement) ?? line, "<user>");
+
+    /// <summary>Only the user-name half of <see cref="Scrub(string)"/>, for a text that is no free text: a stack trace the runtime wrote (<see cref="LauncherLog"/>), whose frames name code (a method with a Token parameter must stay) and paths.</summary>
+    internal static string ScrubNames(string text) => string.Join('\n', text.Split('\n').Select(l => Names(l, Own)));
 
     /// <summary>Builds the zip; never throws for what it reads. ponytail: a zip over <see cref="Limit"/> is rebuilt with the next newest crash dump (it cannot be cut), then without one, then with each file cut to a quarter, until it fits.</summary>
     public ProblemReport Build(string trigger)
@@ -155,15 +157,15 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
-            void Add(string name, string text, Encoding enc)
+            void Add(string name, string text, Encoding enc, Func<string, string>? clean = null)
             {
                 using var s = zip.CreateEntry(name, CompressionLevel.Optimal).Open();
-                s.Write(enc.GetBytes(Scrub(text)));
+                s.Write(enc.GetBytes((clean ?? Scrub)(text)));
                 if (!files.Contains(name)) files.Add(name);
             }
-            void AddFile(string name, string path)
+            void AddFile(string name, string path, Func<string, string>? clean = null)
             {
-                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding);
+                if (Tail(path, cap) is { } read) Add(name, read.Text, read.Encoding, clean);
                 else missing.Add(name);
             }
 
@@ -172,8 +174,9 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             Add("runs.json", runsJson, Encoding.UTF8);
             if (launcherLog is not null)
             {
-                AddFile("launcher.log", launcherLog);
-                if (File.Exists(LauncherLog.OlderOf(launcherLog))) AddFile("launcher.1.log", LauncherLog.OlderOf(launcherLog));
+                // the launcher scrubbed every entry when it wrote it (a stack frame keeps its Token parameters there, which the line scrub would take for credentials): only the user name is cleaned again
+                AddFile("launcher.log", launcherLog, ScrubNames);
+                if (File.Exists(LauncherLog.OlderOf(launcherLog))) AddFile("launcher.1.log", LauncherLog.OlderOf(launcherLog), ScrubNames);
             }
             if (install() is { } g && Path.GetDirectoryName(g.ClientExe) is { } folder && Directory.Exists(folder))
             {

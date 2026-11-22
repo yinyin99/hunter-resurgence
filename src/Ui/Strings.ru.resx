@@ -1546,7 +1546,7 @@
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы игры на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы игры и лаунчера на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Сбор файлов…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>В отчёте эти файлы:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Эти файлы не удалось прочитать, они не включены:</value></data>
@@ -1563,7 +1563,7 @@
   <data name="Report.AutoFailed" xml:space="preserve"><value>Не удалось отправить отчёт о проблеме: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Что-то пошло не так? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Отправлять отчёты о проблемах?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свои журналы и последний дамп сбоя игры, чтобы мы это исправили.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Если игра не запускается, лаунчер может отправить нам свой журнал, журналы и события сбоев игры и последний дамп сбоя игры, чтобы мы это исправили.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Показать файлы</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Отправлять автоматически</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Спрашивать каждый раз</value></data>

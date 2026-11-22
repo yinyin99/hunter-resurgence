@@ -1546,7 +1546,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Vuoi davvero chiudere il launcher e il gioco?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Segnala un problema</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Invia i log del gioco al server della community così possiamo aiutarti. Conservati 30 giorni.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Invia i log del gioco e del launcher al server della community così possiamo aiutarti. Conservati 30 giorni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Raccolta dei file…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Il rapporto contiene questi file:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Questi non sono stati letti e sono stati esclusi:</value></data>
@@ -1563,7 +1563,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Report.AutoFailed" xml:space="preserve"><value>Non è stato possibile inviare il rapporto sul problema: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Qualcosa è andato storto? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Inviare i rapporti sui problemi?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci i suoi log e l'ultimo dump di arresto anomalo del gioco così possiamo risolvere.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Se il gioco non si avvia, il launcher può inviarci il proprio log, i log e gli eventi di arresto anomalo del gioco e l'ultimo dump di arresto anomalo del gioco così possiamo risolvere.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Mostra i file</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Invia automaticamente</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Chiedimelo ogni volta</value></data>

@@ -1546,7 +1546,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux du jeu au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux du jeu et du launcher au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Collecte des fichiers…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Le rapport contient ces fichiers :</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Ceux-ci n'ont pas pu être lus et sont absents :</value></data>
@@ -1563,7 +1563,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Report.AutoFailed" xml:space="preserve"><value>Le rapport de problème n'a pas pu être envoyé : {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Un souci ? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Envoyer des rapports de problème ?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si le jeu ne démarre pas, le launcher peut nous envoyer ses journaux et le dernier vidage de plantage du jeu pour que nous le corrigions.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Si le jeu ne démarre pas, le launcher peut nous envoyer son propre journal, les journaux et événements de plantage du jeu et le dernier vidage de plantage du jeu pour que nous le corrigions.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Afficher les fichiers</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Envoyer automatiquement</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Me demander à chaque fois</value></data>

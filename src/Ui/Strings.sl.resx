@@ -1546,7 +1546,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike igre strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike igre in zaganjalnika strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Zbiranje datotek…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Poročilo vsebuje te datoteke:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Teh datotek ni bilo mogoče prebrati, zato manjkajo:</value></data>
@@ -1563,7 +1563,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Report.AutoFailed" xml:space="preserve"><value>Poročila o težavi ni bilo mogoče poslati: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Je šlo kaj narobe? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Pošiljam poročila o težavah?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene, nam lahko zaganjalnik pošlje svoje dnevnike in zadnji izpis sesutja igre, da jo popravimo.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Če se igra ne zažene, nam lahko zaganjalnik pošlje svoj dnevnik, dnevnike in dogodke sesutja igre ter zadnji izpis sesutja igre, da jo popravimo.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Pokaži datoteke</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Pošlji samodejno</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Vprašaj me vsakič</value></data>

@@ -1546,7 +1546,7 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
-  <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele jocului serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
+  <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele jocului și ale launcherului serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Se adună fișierele…</value></data>
   <data name="Report.Holds" xml:space="preserve"><value>Raportul conține aceste fișiere:</value></data>
   <data name="Report.Missing" xml:space="preserve"><value>Acestea nu au putut fi citite și au fost omise:</value></data>
@@ -1563,7 +1563,7 @@ Numele:</value></data>
   <data name="Report.AutoFailed" xml:space="preserve"><value>Raportul de problemă nu a putut fi trimis: {0}</value></data>
   <data name="Report.Offer" xml:space="preserve"><value>Ceva nu a mers bine? {0}</value></data>
   <data name="Report.ConsentTitle" xml:space="preserve"><value>Trimiteți rapoarte de probleme?</value></data>
-  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalele sale și ultimul dump de blocare al jocului ca să remediem problema.</value></data>
+  <data name="Report.ConsentIntro" xml:space="preserve"><value>Dacă jocul nu pornește, launcherul ne poate trimite jurnalul propriu, jurnalele și evenimentele de blocare ale jocului și ultimul dump de blocare al jocului ca să remediem problema.</value></data>
   <data name="Report.Files" xml:space="preserve"><value>Arată fișierele</value></data>
   <data name="Report.ConsentAuto" xml:space="preserve"><value>Trimite automat</value></data>
   <data name="Report.ConsentAsk" xml:space="preserve"><value>Întreabă-mă de fiecare dată</value></data>

@@ -8,6 +8,9 @@ namespace Resurgence.Tests.LauncherApp;
 public class LauncherLogTests
 {
     [MethodImpl(MethodImplOptions.NoInlining)]
+    static void BoomWithToken(CancellationToken token) => throw new InvalidOperationException("with token");
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
     static void Boom(string message) => throw new InvalidOperationException(message);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -94,8 +97,14 @@ public class LauncherLogTests
         Assert.DoesNotContain("Jane Doe", text);
         Assert.Contains(@"C:\Users\<user>\AppData\x.cfg", text);
         Assert.Contains("at Resurgence.Tests.LauncherApp.LauncherLogTests.Boom", text); // the frame stays
-        // a frame with a Token parameter is code, not a credential
-        Assert.Equal("   at A.B(CancellationToken token) in C:\\Users\\<user>\\x.cs:line 3", Diagnostics.Scrub("   at A.B(CancellationToken token) in C:\\Users\\jane\\x.cs:line 3"));
+        // a frame with a Token parameter is code, not a credential: it stays in the log and in the report; the line scrub itself stays strict
+        try { BoomWithToken(CancellationToken.None); }
+        catch (Exception e) { log.Write(LogLevel.Error, "with a token parameter", e); }
+        Assert.Contains("BoomWithToken(CancellationToken token)", File.ReadAllText(path));
+        var zip = new Diagnostics(() => null, [], "1", () => [], Path.Combine(temp.Path, "out"), () => [], () => [], () => [], _ => [], launcherLog: path).Build("manual").Path;
+        using (var z = System.IO.Compression.ZipFile.OpenRead(zip))
+            Assert.Contains("BoomWithToken(CancellationToken token)", new StreamReader(z.GetEntry("launcher.log")!.Open()).ReadToEnd());
+        Assert.Equal("[line removed: it may hold a credential]", Diagnostics.Scrub("   at X.Y() in C:\\x token=abc"));
     }
 
     [Fact]
@@ -108,5 +117,14 @@ public class LauncherLogTests
         log.Write(LogLevel.Information, "after");
         foreach (var f in new[] { path, LauncherLog.OlderOf(path) }) Assert.InRange(new FileInfo(f).Length, 1, LauncherLog.MaxBytes);
         Assert.Contains("[cut]", File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void ACredentialThatCrossesTheCutIsRemovedNotSplit()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "launcher.log");
+        new LauncherLog(path).Write(LogLevel.Information, new string('x', LauncherLog.MaxEntryChars - 50) + " 0123456789abcdef0123456789abcdef0123"); // a fictional session id, cut by the limit if clipped first
+        Assert.DoesNotContain("0123456789", File.ReadAllText(path));
     }
 }
