@@ -152,7 +152,7 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGalleryPage>() is { } g)
-                return new([.. (g.Rows ?? []).Select(r => new Photo(r.Id, r.Animal, double.TryParse(r.Label, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var score) ? score : 0, r.Url, r.Thumbnail, r.Kill))], g.Page, g.Pages, g.Total);
+                return new([.. (g.Rows ?? []).Select(r => new Photo(r.Id, r.Animal, double.TryParse(r.Label, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var score) ? score : 0, r.Url, r.Thumbnail, r.Kill, r.Share))], g.Page, g.Pages, g.Total);
             log.LogWarning("The server answered {Path} with {Status}: no photos", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

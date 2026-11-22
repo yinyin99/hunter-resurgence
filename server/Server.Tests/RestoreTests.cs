@@ -495,9 +495,10 @@ public class RestoreTests : StateTestBase
         var kills = JsonNode.Parse(state.ExpeditionReply(1001, "null"u8.ToArray(), "expedition_id=9100"u8.ToArray()))!["kills"]!.AsArray();
         Assert.Equal(TestZip.Jpeg("new"), File.ReadAllBytes(state.PhotoFile(Link(kills[0]!["kill"]!["photo"]))!));  // the newest picture of kill 777
         Assert.Null(kills[1]!["kill"]!["photo"]);
-        var hunt = state.PublicHunt(1001, 9100)!["kills"]!.AsArray();
+        var hunt = state.PublicHunt(1001, 9100, own: true)!["kills"]!.AsArray();
         Assert.Equal(Link(kills[0]!["kill"]!["photo"]), Link(hunt[0]!["photo"]));
         Assert.Null(hunt[1]!["photo"]);
+        Assert.Null(state.PublicHunt(1001, 9100)!["kills"]![0]!["photo"]);  // anyone else's page: no link of the original
     }
 
     [Fact]
