@@ -49,7 +49,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
     bool opened;
-    /// <summary>All nine checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
+    /// <summary>All ten checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()
     {
         if (checks is null) return rest.CheckInstallAsync();

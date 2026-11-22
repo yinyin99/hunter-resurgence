@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -56,6 +57,57 @@ public class ProblemReportTests
     {
         if (!OperatingSystem.IsWindows()) return;
         _ = Diagnostics.ReadEvents("no-such-game.exe").ToList(); // must not throw "The specified query is invalid"
+        _ = Diagnostics.ReadPopups("no-such-game.exe").ToList();
+    }
+
+    /// <summary>A clean install of one DLL, steam_api.dll of "steam", as the table of a clean install lists it.</summary>
+    static readonly Dictionary<string, (long, string)> CleanTable = new() { ["steam_api.dll"] = (5, Convert.ToHexString(SHA256.HashData("steam"u8))) };
+
+    static Diagnostics Direct(TempDir temp, GameInstall install, Func<IReadOnlyList<GameRun>>? runs = null, Func<string, IEnumerable<string>>? popups = null) =>
+        new(() => install, [], "1.2.3", runs ?? (() => []), Path.Combine(temp.Path, "out"), () => [], () => [], () => [], exe => [], popups: popups, cleanDlls: CleanTable);
+
+    [Fact]
+    public void TheReportListsEveryExtraOrChangedDllWithItsSizeAndVersionElseSaysAsInstalled()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        Files.Write(Path.Combine(g.Folder, "steam_api.dll"), "steam");
+        Assert.Contains("Game folder DLLs: as installed", Read(Direct(temp, g.Install).Build("manual").Path)["system.txt"]);
+
+        Files.Write(Path.Combine(g.Folder, "d3d9.dll"), "wrapper");
+        Files.Write(Path.Combine(g.Folder, "dinput8.asi"), "mod");
+        Files.Write(Path.Combine(g.Folder, "steam_api.dll"), "steam, old");
+        var system = Read(Direct(temp, g.Install).Build("manual").Path)["system.txt"];
+        Assert.Contains("Game folder DLL: d3d9.dll, extra, 7 bytes, version none", system);
+        Assert.Contains("Game folder DLL: dinput8.asi, extra, 3 bytes, version none", system);
+        Assert.Contains("Game folder DLL: steam_api.dll, changed, 10 bytes, version none", system);
+        Assert.DoesNotContain("as installed", system);
+    }
+
+    [Theory]
+    [InlineData(unchecked((int)3221225785), true)] // STATUS_ENTRYPOINT_NOT_FOUND
+    [InlineData(unchecked((int)3221225781), true)] // STATUS_DLL_NOT_FOUND
+    [InlineData(1, false)]
+    [InlineData(null, false)]
+    public void TheApplicationPopupOfTheLastRunIsInTheEventsOnlyAfterAMissingDllOrEntryPoint(int? exit, bool shown)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var runs = () => (IReadOnlyList<GameRun>)[new(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1), exit, false)];
+        var report = Direct(temp, g.Install, runs, exe => [$"2026-11-22 10:00:00Z  event 26  Application Popup\n{exe} - Entry Point Not Found: the entry point could not be located in d3d9.dll"]).Build("manual");
+        var events = Read(report.Path)["events.txt"];
+        Assert.Equal(shown, events.Contains("could not be located in d3d9.dll"));
+        Assert.Equal(shown, events.Contains("client.exe - Entry Point Not Found"));
+    }
+
+    [Fact]
+    public void AnApplicationPopupProbeThatFailsIsListedAndTheReportStillBuilds()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = NewGame(temp);
+        var report = Direct(temp, g.Install, () => [new(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1), unchecked((int)3221225785), false)], _ => throw new InvalidOperationException("no System log")).Build("manual");
+        Assert.Contains("application popup", report.Missing);
+        Assert.Contains("events.txt", report.Files);
     }
 
     [Fact]

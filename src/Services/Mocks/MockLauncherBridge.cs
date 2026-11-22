@@ -4,7 +4,7 @@ namespace Resurgence.Services.Mocks;
 
 /// <param name="mock">Development states of the "Game folder" window: "folder:two" (a second install seen), "folder:manual" (chosen by the player), "folder:gone" (the chosen folder lost the game), "folder:none" (no game; a start says so),
 /// "folder:refuse" (the picker refuses the folder). States of the game check (docs/website.md#the-game-check): "check:old", "check:updating", "check:newer", "check:files", "check:path", "check:steam",
-/// "check:setup", "check:windows", "check:disk", "check:running" (one problem each) and "check:many" (an old game, a path and a disk warning). Opening Steam "fixes" the problem, as the player would in Steam.
+/// "check:setup", "check:windows", "check:disk", "check:running", "check:dlls" (one problem each) and "check:many" (an old game, a path and a disk warning). Opening Steam "fixes" the problem, as the player would in Steam.
 /// Steam states of a start (docs/website.md#starting-without-steam): "steam:none" (Steam is not installed: the start goes on without it at once) and "steam:wait" (Steam is not signed in: the start waits for it 20 seconds or until "Start without Steam"); "check:steam" is the first one.</param>
 public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? mock = null) : ILauncherBridge
 {
@@ -41,6 +41,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
             check == "windows" ? Problem("windows", "warn", "Check.Windows.Blocked", null, ("file", "crashreport.dll")) : Ok("windows"),
             check is "disk" or "many" ? disk : Ok("disk"),
             check == "running" ? Problem("running", "block", "Check.Running", "close-game") : Ok("running"),
+            check == "dlls" ? Problem("dlls", "warn", "Check.Dlls.Extra", "open-folder", ("files", "d3d9.dll")) : Ok("dlls"),
         ];
         return all;
     }

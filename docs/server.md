@@ -46,7 +46,7 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 | `host_header` | Default `X-Game-Host`, see below |
 | `event` | Optional: the seasonal event the connect reply announces while its window runs, `{name, define, reserves, start, end}` ([Seasonal events](#seasonal-events)); none by default |
 | `event_community_divisor` | Default 20, a whole number of at least 1: the event's community missions need `ceil(number / divisor)` ([Seasonal events](#seasonal-events)) |
-| `game_build` | Optional, a whole number of at least 1: the Steam build id of the game version the server supports. `GET /stats/game` answers `{"build": n}` (`null` when unset, and the launcher then skips its version check) |
+| `game_build` | Optional, a whole number of at least 1: the Steam build id of the game version the server supports. `GET /stats/game` answers `{"build": n}` (`null` when unset, and the launcher then skips its version check). A new build is also a new table of clean DLLs in the launcher (`CleanDlls`, docs/launcher.md#the-install-check); until then the launcher does not judge the DLLs of a game of another build |
 | `max_body_bytes` | Default 16 MiB: the request body limit. The admin API's is 64 KiB |
 
 `serve` needs no change to the PC: it does not read or require the Windows hosts file. How the client is pointed at the server is not part of the server.

@@ -22,10 +22,12 @@ namespace Resurgence.Launcher;
 /// <param name="gpu">Graphics card, driver and screen lines.</param>
 /// <param name="events">Application events of the last 7 days naming the exe, each one formatted.</param>
 /// <param name="installChecks">The install check's results (docs/launcher.md#the-install-check): they go into system.txt and report.json.</param>
+/// <param name="popups">The newest Application Popup events (System log, id 26) naming the exe, each one formatted; default this PC's. Read only after a run that ended with STATUS_ENTRYPOINT_NOT_FOUND or STATUS_DLL_NOT_FOUND.</param>
+/// <param name="cleanDlls">The DLLs of a clean install by name (docs/launcher.md#the-install-check); default <see cref="CleanDlls.Files"/>.</param>
 /// <param name="dumps">Crash dump files that may be the game exe's, by its file name (the default looks where Windows writes them); the newest one written after the last run's start, of up to 32 MiB (a full-memory .hdmp gives way to a .dmp or .mdmp of the same crash), that opens and fits the report limit goes into the zip.</param>
 public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string> settingsFiles, string version, Func<IReadOnlyList<GameRun>> runs, string? outFolder = null,
     Func<IEnumerable<string>>? processes = null, Func<IEnumerable<string>>? antivirus = null, Func<IEnumerable<string>>? gpu = null, Func<string, IEnumerable<string>>? events = null, Func<IReadOnlyList<InstallCheck>>? installChecks = null,
-    Func<string, IEnumerable<string>>? dumps = null)
+    Func<string, IEnumerable<string>>? dumps = null, Func<string, IEnumerable<string>>? popups = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null)
 {
     public const long Limit = 5 * 1024 * 1024;
     const int LogBytes = 2 * 1024 * 1024, NetLogs = 5, EventDays = 7, EventsMax = 20, EventChars = 2000;
@@ -76,9 +78,9 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         var missing = new List<string>();
         var exe = install() is { } g ? Path.GetFileName(g.ClientExe) : null;
         var checks = installChecks is null ? null : Try(() => installChecks(), missing, "install checks");
-        var system = SystemText(missing, exe, checks);
-        var events = exe is null ? "no game folder" : EventsText(missing, exe);
         var history = Try(() => runs(), missing, "runs.json") ?? [];
+        var system = SystemText(missing, exe, checks);
+        var events = exe is null ? "no game folder" : EventsText(missing, exe, history.Count > 0 ? history[^1].ExitCode : null);
         var run = JsonSerializer.Serialize(history, RunHistory.Json);
         var candidates = exe is null ? [] : Dumps(missing, exe, history.Count > 0 ? history[^1].Start : null);
         ProblemReport r;
@@ -268,13 +270,26 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
             sb.AppendLine("Install checks:");
             foreach (var c in checks) sb.AppendLine($"  {c.Id}: {c.Level} {c.Text}" + (c.Args is { Count: > 0 } a ? " (" + string.Join(", ", a.Select(kv => $"{kv.Key}={kv.Value}")) + ")" : ""));
         }
+        foreach (var line in DllLines(missing)) sb.AppendLine(line);
         return sb.ToString();
     }
 
-    string EventsText(List<string> missing, string exe)
+    /// <summary>One line for each <c>.dll</c> or <c>.asi</c> file next to the exe that a clean install does not have (extra) or has otherwise (changed), with its size and file version, or <c>Game folder DLLs: as installed</c>; none without a game folder or when it cannot be read (then listed as missing).</summary>
+    List<string> DllLines(List<string> missing)
+    {
+        var found = install() is { } g ? Try(() => CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files), missing, "game folder DLLs") : null;
+        return found is null ? [] : found.Count == 0 ? ["Game folder DLLs: as installed"]
+            : [.. found.Select(f => $"Game folder DLL: {f.File.Name}, {(f.Changed ? "changed" : "extra")}, {f.File.Length} bytes, version {FileVersionInfo.GetVersionInfo(f.File.FullName).FileVersion ?? "none"}")];
+    }
+
+    // the exit codes of a game that stops before its window opens because a DLL is missing or lacks a function: Windows writes no Application Error for them, only an Application Popup
+    const int EntryPointNotFound = unchecked((int)3221225785), DllNotFound = unchecked((int)3221225781);
+
+    string EventsText(List<string> missing, string exe, int? lastExit)
     {
         Func<string, IEnumerable<string>> read = events ?? ReadEvents;
         var list = Try(() => read(exe).ToList(), missing, "events.txt");
+        if (list is not null && lastExit is EntryPointNotFound or DllNotFound && Try(() => (popups ?? ReadPopups)(exe).Take(1).ToList(), missing, "application popup") is { Count: > 0 } popup) list.InsertRange(0, popup);
         return list is null ? "The Windows event log could not be read." : list.Count == 0 ? $"No Application Error or Windows Error Reporting event of the last {EventDays} days names {exe}." : string.Join("\n\n", list);
     }
 
@@ -314,7 +329,20 @@ public sealed class Diagnostics(Func<GameInstall?> install, IReadOnlyList<string
         while (found.Count < EventsMax && reader.ReadEvent() is { } e)
             using (e)
                 if (e.FormatDescription() is { } text && text.Contains(exe, StringComparison.OrdinalIgnoreCase))
-                    found.Add($"{e.TimeCreated:u}  event {e.Id}  {e.ProviderName}\n{(text.Length > EventChars ? text[..EventChars] + " [cut]" : text)}");
+                    found.Add(Entry(e, text));
         return found;
+    }
+
+    static string Entry(EventRecord e, string text) => $"{e.TimeCreated:u}  event {e.Id}  {e.ProviderName}\n{(text.Length > EventChars ? text[..EventChars] + " [cut]" : text)}";
+
+    /// <summary>The Application Popup events (System log, id 26) of the last <see cref="EventDays"/> days whose text names the exe, newest first: the "entry point … could not be located in … .dll" text of a game that stopped at its start.</summary>
+    internal static IEnumerable<string> ReadPopups(string exe)
+    {
+        var age = (long)TimeSpan.FromDays(EventDays).TotalMilliseconds;
+        using var reader = new EventLogReader(new EventLogQuery("System", PathType.LogName, $"*[System[Provider[@Name='Application Popup'] and (EventID=26) and TimeCreated[timediff(@SystemTime) <= {age}]]]") { ReverseDirection = true });
+        while (reader.ReadEvent() is { } e)
+            using (e)
+                if (e.FormatDescription() is { } text && text.Contains(exe, StringComparison.OrdinalIgnoreCase))
+                    yield return Entry(e, text);
     }
 }

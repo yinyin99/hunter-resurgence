@@ -11,8 +11,8 @@ using Resurgence.Services;
 namespace Resurgence.Launcher;
 
 /// <summary>
-/// The install check (#631, docs/launcher.md#the-install-check): nine read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, path, steam,
-/// setup, windows, disk, running. Nothing is ever written into the game folder. A check whose probe fails (no rights, a vanished file, no network) reports ok: a probe never blocks a start.
+/// The install check (#631, docs/launcher.md#the-install-check): ten read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, path, steam,
+/// setup, windows, disk, running, dlls. Nothing is ever written into the game folder. A check whose probe fails (no rights, a vanished file, no network) reports ok: a probe never blocks a start.
 /// The probes after <paramref name="isRunning"/> are what this PC says; a test passes fakes.
 /// </summary>
 /// <param name="install">The game in use (check 1); null or without its exe: none.</param>
@@ -29,12 +29,13 @@ namespace Resurgence.Launcher;
 /// <param name="blocks">The Windows events of the last 7 days that tell of a blocked file, each formatted.</param>
 /// <param name="steamInstalled">Whether Steam is installed for this user; null: not asked (a Steam that is not signed in is then the only reading).</param>
 /// <param name="portUser">The name of the other program that listens on a port (80, 443: the forwarder of the player kit needs both) or null when it is free; null: the ports are not checked.</param>
+/// <param name="cleanDlls">The DLLs of a clean install by name, with size and SHA-256 (check 10); default <see cref="CleanDlls.Files"/>.</param>
 public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Func<Task<long?>> serverBuild, Func<bool> steamSignedIn, Func<string?> setup, Func<string, bool> isRunning,
     Func<GameInstall, string?>? manifest = null, Func<string, bool>? isNetwork = null, Func<IEnumerable<string>>? oneDrive = null, Func<string, long?>? freeBytes = null, string? temp = null,
-    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null)
+    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null)
 {
     const long LowBytes = 1L << 30;
-    const int LongPath = 200, Archives = 12;
+    const int LongPath = 200, Archives = 12, NamesShown = 5;
     static readonly TimeSpan BuildKept = TimeSpan.FromMinutes(5), BuildMissedKept = TimeSpan.FromMinutes(1);
 
     sealed record Fetched(long? Build, DateTime At);
@@ -76,6 +77,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             Info("windows", Windows),
             Info("disk", Disk),
             Run("running", x => opening && isRunning(x.ClientExe) ? new("running", "block", "Check.Running", null, "close-game") : Ok("running")),
+            Info("dlls", x => Dlls(x, version.Args?.GetValueOrDefault("build"))),
         ];
     });
 
@@ -262,5 +264,19 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     {
         try { return new DriveInfo(Path.GetPathRoot(Path.GetFullPath(path))!).AvailableFreeSpace; }
         catch (Exception e) when (e is ArgumentException or IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    // 10: .dll files next to the exe that a clean install of the supported build does not have, or has in another size or content; a warning only, some players use wrappers on purpose.
+    // A game of another build is not judged (the version check tells of an old or a new one): the table is of one build.
+    InstallCheck Dlls(GameInstall g, string? build)
+    {
+        if (build is not null && build != CleanDlls.Build.ToString(CultureInfo.InvariantCulture)) return Ok("dlls");
+        var foreign = CleanDlls.Foreign(Path.GetDirectoryName(g.ClientExe)!, cleanDlls ?? CleanDlls.Files).Where(f => f.File.Extension.Equals(".dll", StringComparison.OrdinalIgnoreCase)).ToList();
+        InstallCheck Warn(string text, bool changed, string fix)
+        {
+            var names = foreign.Where(f => f.Changed == changed).Select(f => f.File.Name).ToList();
+            return new("dlls", "warn", text, new Dictionary<string, string> { ["files"] = string.Join(", ", names.Take(NamesShown)) + (names.Count > NamesShown ? ", …" : "") }, fix);
+        }
+        return foreign.Any(f => !f.Changed) ? Warn("Check.Dlls.Extra", false, "open-folder") : foreign.Count > 0 ? Warn("Check.Dlls.Changed", true, "verify-files") : Ok("dlls");
     }
 }

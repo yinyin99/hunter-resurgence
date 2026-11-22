@@ -20,6 +20,7 @@ public static class GameCheckText
     public static string? FixLabel(string? fix) => fix switch
     {
         "choose-folder" => "GameFolder.Choose",
+        "open-folder" => "GameFolder.Open",
         "open-steam" or "verify-files" => "Check.OpenSteam",
         "setup" => "Kit.SetUp",
         _ => null,
