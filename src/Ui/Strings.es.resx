@@ -1600,8 +1600,12 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Exit.BlockedHow" xml:space="preserve"><value>Permítalo en Seguridad de Windows (Smart App Control o su programa de seguridad).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>Falta un componente de Windows que el juego necesita.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>Instalar los componentes del juego</value></data>
-  <data name="Exit.Closed" xml:space="preserve"><value>El juego se cerró solo.</value></data>
-  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Compruebe el reloj de su PC y su conexión.</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>El juego se cerró solo antes de que empezara la caza.</value></data>
+  <data name="Exit.ClosedReport" xml:space="preserve"><value>Envíe un informe del problema para que podamos echarle un vistazo.</value></data>
+  <data name="Exit.ClockAhead" xml:space="preserve"><value>El reloj de su PC va {0} adelantado: configúrelo para que se actualice automáticamente.</value></data>
+  <data name="Exit.ClockBehind" xml:space="preserve"><value>El reloj de su PC va {0} atrasado: configúrelo para que se actualice automáticamente.</value></data>
+  <data name="Exit.Dll" xml:space="preserve"><value>Se reemplazó un archivo del juego (a menudo steam_api.dll o la DLL de un mod). Verifique los archivos del juego en Steam.</value></data>
+  <data name="Exit.Verify" xml:space="preserve"><value>Verificar los archivos del juego en Steam</value></data>
   <data name="Exit.Crash" xml:space="preserve"><value>El juego se detuvo.</value></data>
   <data name="Exit.Report" xml:space="preserve"><value>Enviar un informe del problema</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Abrir Seguridad de Windows</value></data>

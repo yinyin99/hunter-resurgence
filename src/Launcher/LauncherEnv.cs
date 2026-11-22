@@ -38,6 +38,9 @@ public sealed class LauncherEnv
         Search = GameFinder.Search(Settings, Prefs.GameFolder, Environment.GetCommandLineArgs().Skip(1), SteamPath);
     }
 
+    /// <summary>The PC's clock against the server's, measured by the install check's request (<see cref="Checks"/>).</summary>
+    public ServerClock Clock { get; } = new();
+
     InstallChecks? checks;
     /// <summary>The install check of this PC (one instance: it remembers the server's build for a few minutes).</summary>
     public InstallChecks Checks => checks ??= InstallChecks.For(this);

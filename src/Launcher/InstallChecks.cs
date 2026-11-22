@@ -46,7 +46,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     {
         var s = env.Settings;
         var http = s.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) } : null;
-        return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http), () => Steam.ActiveAccount() != 0,
+        return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
             portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed);
     }
@@ -122,12 +122,14 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         return build;
     }
 
-    /// <summary>The build the server supports: a positive whole number, else null.</summary>
-    internal static async Task<long?> FetchBuild(HttpClient http)
+    /// <summary>The build the server supports: a positive whole number, else null. The answer's <c>Date</c> header is what <paramref name="clock"/> measures the PC's clock by.</summary>
+    internal static async Task<long?> FetchBuild(HttpClient http, ServerClock? clock = null)
     {
         try
         {
-            using var doc = JsonDocument.Parse(await http.GetStringAsync("/stats/game"));
+            using var answer = await http.GetAsync("/stats/game");
+            clock?.Observe(answer);
+            using var doc = JsonDocument.Parse(await answer.EnsureSuccessStatusCode().Content.ReadAsStringAsync());
             return doc.RootElement.TryGetProperty("build", out var b) && b.ValueKind == JsonValueKind.Number && b.TryGetInt64(out var v) && v > 0 ? v : null;
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or JsonException or InvalidOperationException) { return null; }

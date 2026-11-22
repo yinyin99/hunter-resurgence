@@ -1600,8 +1600,12 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Exit.BlockedHow" xml:space="preserve"><value>Salli se Windows-suojauksessa (Smart App Control tai tietoturvaohjelmasi).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>Pelin tarvitsema Windows-osa puuttuu.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>Asenna pelin osat</value></data>
-  <data name="Exit.Closed" xml:space="preserve"><value>Peli sulkeutui itsestään.</value></data>
-  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Tarkista tietokoneesi kello ja yhteytesi.</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>Peli sulkeutui itsestään ennen kuin metsästys alkoi.</value></data>
+  <data name="Exit.ClosedReport" xml:space="preserve"><value>Lähetä ongelmaraportti, niin voimme tutkia asiaa.</value></data>
+  <data name="Exit.ClockAhead" xml:space="preserve"><value>Tietokoneesi kello on {0} edellä: aseta se päivittymään automaattisesti.</value></data>
+  <data name="Exit.ClockBehind" xml:space="preserve"><value>Tietokoneesi kello on {0} jäljessä: aseta se päivittymään automaattisesti.</value></data>
+  <data name="Exit.Dll" xml:space="preserve"><value>Pelitiedosto on korvattu (usein steam_api.dll tai modin DLL). Tarkista pelin tiedostot Steamissa.</value></data>
+  <data name="Exit.Verify" xml:space="preserve"><value>Tarkista pelin tiedostot Steamissa</value></data>
   <data name="Exit.Crash" xml:space="preserve"><value>Peli pysähtyi.</value></data>
   <data name="Exit.Report" xml:space="preserve"><value>Lähetä ongelmaraportti</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Avaa Windows-suojaus</value></data>

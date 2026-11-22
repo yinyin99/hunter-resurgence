@@ -1600,8 +1600,12 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Exit.BlockedHow" xml:space="preserve"><value>Engedélyezze a Windows biztonságban (Smart App Control vagy a biztonsági programja).</value></data>
   <data name="Exit.Runtime" xml:space="preserve"><value>Hiányzik egy Windows-összetevő, amelyre a játéknak szüksége van.</value></data>
   <data name="Exit.RunRuntimes" xml:space="preserve"><value>A játék összetevőinek telepítése</value></data>
-  <data name="Exit.Closed" xml:space="preserve"><value>A játék magától bezárult.</value></data>
-  <data name="Exit.ClosedCheck" xml:space="preserve"><value>Ellenőrizze a számítógép óráját és a kapcsolatát.</value></data>
+  <data name="Exit.Closed" xml:space="preserve"><value>A játék magától bezárult, mielőtt a vadászat elkezdődött.</value></data>
+  <data name="Exit.ClosedReport" xml:space="preserve"><value>Küldjön hibajelentést, hogy megnézhessük.</value></data>
+  <data name="Exit.ClockAhead" xml:space="preserve"><value>A számítógép órája siet (eltérés: {0}): állítsa automatikus frissítésre.</value></data>
+  <data name="Exit.ClockBehind" xml:space="preserve"><value>A számítógép órája késik (eltérés: {0}): állítsa automatikus frissítésre.</value></data>
+  <data name="Exit.Dll" xml:space="preserve"><value>Egy játékfájlt lecseréltek (gyakran a steam_api.dll vagy egy mod DLL-je). Ellenőrizze a játék fájljait a Steamben.</value></data>
+  <data name="Exit.Verify" xml:space="preserve"><value>Játékfájlok ellenőrzése a Steamben</value></data>
   <data name="Exit.Crash" xml:space="preserve"><value>A játék leállt.</value></data>
   <data name="Exit.Report" xml:space="preserve"><value>Hibajelentés küldése</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>A Windows biztonság megnyitása</value></data>

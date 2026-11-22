@@ -45,7 +45,8 @@ public sealed class GameExitTests : UiContext
     [InlineData(null, "#exit-report")]  // a cause this launcher does not know reads as a crash
     [InlineData("blocked", "#exit-security")]
     [InlineData("runtime", "#exit-runtimes")]
-    [InlineData("closed", null)]
+    [InlineData("dll", "#exit-verify")]
+    [InlineData("closed", "#exit-report")]  // the clock in step: the neutral text with the report button
     public void AnEarlyExitOpensItsOwnDialogWithOneAction(string? cause, string? action)
     {
         Use(null);
@@ -62,7 +63,7 @@ public sealed class GameExitTests : UiContext
     }
 
     [Fact]
-    public void BlockedPointsToWindowsSecurityAndClosedToTheClockAndTheConnection()
+    public void BlockedPointsToWindowsSecurity()
     {
         Use(null);
         var blocked = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("blocked")));
@@ -70,9 +71,33 @@ public sealed class GameExitTests : UiContext
         blocked.Find("#exit-security").Click();
         Assert.Contains("open windowsdefender://appbrowser", log.Seen);
 
-        var closed = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed")));
-        Assert.Contains("clock", closed.Markup);
-        Assert.Empty(closed.FindAll("a"));
+    }
+
+    [Fact]
+    public void ADllCauseSaysAGameFileWasReplacedAndItsButtonOpensSteamsVerifyPage()
+    {
+        Use(null);
+        var cut = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("dll")));
+        Assert.Contains("A game file was replaced", cut.Find(".message").TextContent);
+        Assert.Contains("steam_api.dll", cut.Find(".message").TextContent);
+        cut.Find("#exit-verify").Click();
+        Assert.Contains("open steam://validate/{steam_app_id}", log.Seen);
+    }
+
+    [Fact]
+    public void ClosedBlamesTheClockOnlyWhenItIsOffAndSaysByHowMuch()
+    {
+        Use(null);
+        var neutral = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed")));
+        Assert.Equal("The game closed by itself before the hunt started.", neutral.Find(".message").TextContent);
+        Assert.Equal("Send a problem report so we can look.", neutral.Find(".how").TextContent);
+        Assert.DoesNotContain("clock", neutral.Markup);
+
+        string How(TimeSpan off) => Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed") with { ClockAhead = off })).Find(".how").TextContent;
+        Assert.Equal("Your PC's clock is 3h ahead: set it to update automatically.", How(TimeSpan.FromHours(3)));
+        Assert.Equal("Your PC's clock is 12m behind: set it to update automatically.", How(TimeSpan.FromMinutes(-12)));
+        var clock = Render<GameExitDialog>(p => p.Add(x => x.Exit, Early("closed") with { ClockAhead = TimeSpan.FromHours(3) }));
+        Assert.Equal(["exit-ok"], clock.FindAll(".actions .btn").Select(b => b.Id));  // the clock is the cause: nothing to send
     }
 
     [Theory]

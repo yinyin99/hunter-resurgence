@@ -17,17 +17,18 @@ namespace Resurgence.Launcher;
 /// <param name="quitWithin">How long a start with Steam is watched for the client to quit at once (5 s).</param>
 /// <param name="earlyWithin">A game that ends within this long of its start closed right away (20 s).</param>
 /// <param name="runInstaller">Runs one redistributable with its switches and completes when it is done (Windows asks for its rights); null: the mock's.</param>
+/// <param name="clock">The PC's clock against the server's; an early exit 0 names the clock only when it is off (<see cref="GameExit.ClockAhead"/>). Null: never.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
-    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null) : ILauncherBridge
+    Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
         GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
-        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller)
+        gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -273,17 +274,18 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
             var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
-            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null);
+            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null, early && code == 0 ? clock?.Ahead : null);
         }
         finally { game?.Dispose(); }
     }
 
-    /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry after a start with Steam that quit with 16010 too: both were tried), blocked (app control), runtime (a DLL not found), closed (exit 0), crash (anything else).</summary>
+    /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry after a start with Steam that quit with 16010 too: both were tried), blocked (app control), runtime (a DLL not found), dll (a function a game file imports is missing: a file replaced), closed (exit 0), crash (anything else).</summary>
     internal static string Cause(int code, bool retried) => code switch
     {
         SteamMissing when retried => "steam",
         Blocked => "blocked",
         DllNotFound => "runtime",
+        EntryPointNotFound => "dll",
         0 => "closed",
         _ => "crash",
     };
@@ -320,8 +322,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     /// <summary>The exit code of a client that quit with Steam missing.</summary>
     const int SteamMissing = 16010;
-    // as the signed exit codes of Process: 3236495362 (blocked by Windows app control) and 3221225781 (DLL not found)
-    const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u);
+    // as the signed exit codes of Process: 3236495362 (blocked by Windows app control), 3221225781 (DLL not found) and 3221225785 (STATUS_ENTRYPOINT_NOT_FOUND)
+    const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u), EntryPointNotFound = unchecked((int)3221225785u);
 
     /// <summary>
     /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
