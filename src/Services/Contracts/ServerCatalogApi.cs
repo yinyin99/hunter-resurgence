@@ -1,6 +1,7 @@
 namespace Resurgence.Services;
 
-/// <summary>What the community server serves under <c>/catalog/</c> on the website's host (docs/server.md): the same for everyone, so no cookie. The website's server calls it over <c>SERVER_URL</c>, the launcher on the public domain.</summary>
+/// <summary>What the community server serves under <c>/catalog/</c> on the website's host (docs/server.md): the same for everyone. The store, its items and the games need the session cookie (401 <c>signed_out</c> without one),
+/// the reserves do not. The website's server calls it over <c>SERVER_URL</c>, the launcher on the public domain.</summary>
 public static class ServerCatalogApi
 {
     /// <summary>GET: 200 <see cref="ServerStore"/>, or 404 when the server holds no catalogue.</summary>

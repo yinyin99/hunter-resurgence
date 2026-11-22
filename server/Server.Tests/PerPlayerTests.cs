@@ -53,8 +53,10 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         await local.DisposeAsync();
     }
 
+    /// <summary>A request with the token (none: no token); the website's reads go as a signed-in visitor, ME: the reads of players are for signed-in players only.</summary>
     Task<Reply> Send(Loopback server, string method, string host, string path, string? token, string body = "") => server.SendAsync(method, host, path,
-        [.. FormHeader, .. token is null ? [] : new[] { ("X-Hun-Session", token), ("Authorization", "Bearer " + token) }],
+        [.. FormHeader, .. token is null ? [] : new[] { ("X-Hun-Session", token), ("Authorization", "Bearer " + token) },
+         .. host == "web.test" ? new[] { ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}") } : []],
         Encoding.ASCII.GetBytes(body + (token is null ? "" : "&oauth_access_token=" + token)));
 
     Task<JsonNode> Api(string path, string? token, string body = "") => Send(community, "POST", "api.test", path, token, body).ContinueWith(t => JsonNode.Parse(t.Result.Body)!);
@@ -288,7 +290,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.StartsWith($"https://web.test/photos/8/{cameraFile}?viewer=8&", (string)JsonNode.Parse((await Web("/hunters/second/gallery", 8)).Body)!["rows"]![0]!["url"]!);  // the owner's: the original
         Assert.Equal(200, (await Web("/photos/8/" + cameraFile, 8)).Status);
         Assert.Equal(404, (await Web("/photos/8/nothing.jpg", 8)).Status);
-        Assert.Equal(401, (await Send(community, "GET", "web.test", "/hunters/second/gallery", null)).Status);  // signed out
+        Assert.Equal(401, (await community.SendAsync("GET", "web.test", "/hunters/second/gallery")).Status);  // signed out
         using (var con = state.Store.Open(8))
         {
             con.Begin();

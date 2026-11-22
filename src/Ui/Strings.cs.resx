@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: komunitní server pro {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Stránka nenalezena</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Tato stránka neexistuje.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Pro zobrazení této stránky se přihlaste</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Údaje hráčů, obchod, mise a soutěže jsou jen pro přihlášené lovce.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>JÍT LOVIT</value></data>
   <data name="Online.Player" xml:space="preserve"><value>Hráči: {0}</value></data>
   <data name="Online.Players" xml:space="preserve"><value>Hráči: {0}</value></data>

@@ -26,7 +26,8 @@
     <div class="page @(isPublic ? "public" : "")">
         @if (!eula) { <MenuBar Hidden="quick && Mode.Launcher" /> }
         <div class="body">
-            <main @key="isPublic">@Body</main>
+            @* a page for signed-in players only shows the sign-in prompt instead while signed out (nothing until the session is known): the page is not built, so it asks the server nothing *@
+            <main @key="isPublic">@if (!signInFirst) { @Body } else if (loaded) { <SignInRequired /> }</main>
             @if (!eula) { <aside class="sidebar"></aside> }
         </div>
         @if (!eula) { <Footer /> }
@@ -38,13 +39,15 @@
 @code {
     IJSObjectReference? module;
     DotNetObjectReference<ShellLayout>? self;
-    bool quick, alerted, eula, offered;
+    bool quick, alerted, eula, offered, loaded;
     Session? session;
     Action? changed;
     string? pageBg;
 
     /// <summary>The website without a session shows the public top bar (and the menu, as the original).</summary>
     bool isPublic => !Mode.Launcher && session is null;
+
+    bool signInFirst => session is null && LauncherGuard.NeedsSession(Nav.ToBaseRelativePath(Nav.Uri));
 
     [SupplyParameterFromQuery(Name = "alert")] public string? DevAlert { get; set; }
     /// <summary>Development only: ?modal=settings or ?modal=initial opens the game settings dialog (as the first start does).</summary>
@@ -53,6 +56,7 @@
     protected override async Task OnInitializedAsync()
     {
         session = await Sessions.CurrentAsync();
+        loaded = true;
         if ((pageBg = Images.Url("page-bg")) is null) Images.NoteMissing("page-bg", new Uri(Nav.Uri).AbsolutePath);
         Sessions.Changed += changed = async () => await InvokeAsync(async () =>
         {
@@ -65,9 +69,9 @@
     {
         if (Mode.Dev && DevAlert is not null && !alerted) { alerted = true; Modal.Alert(DevAlert); }
         if (Mode.Dev && DevModal is "settings" or "initial" && !alerted) { alerted = true; Modal.Show<GameSettingsModal>(new Dictionary<string, object?> { [nameof(GameSettingsModal.FirstStart)] = DevModal == "initial" }); }
-        // launcher-only routes and signed-in routes are not served to the public website, nor pages of mock data with a community server: back to the feed
+        // launcher-only routes are not served to the public website, nor pages of mock data with a community server: back to the feed
         var path = Nav.ToBaseRelativePath(Nav.Uri);
-        if (LauncherGuard.Disabled(path) || (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || session is null && LauncherGuard.NeedsSession(path) || Mode.Live && LauncherGuard.MockOnly(path))) Nav.NavigateTo("/feed", replace: true);
+        if (LauncherGuard.Disabled(path) || (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || Mode.Live && LauncherGuard.MockOnly(path))) Nav.NavigateTo("/feed", replace: true);
         // a signed-in hunter who has not accepted the current agreements is sent from the feed to the agreements page
         eula = path.Split('?', '#')[0].Trim('/').Equals("eula", StringComparison.OrdinalIgnoreCase);
         if (session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);

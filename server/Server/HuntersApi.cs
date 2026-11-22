@@ -1,5 +1,5 @@
-// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public (only a hunt page also reads the cookie: the signed-in player's own taxidermy offers). The website's
-// server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
+// The hunterscore board, the hunters' profiles and the minigames' boards, on the website's host: every /hunters/ route for a signed-in player only (the session cookie; a hunt page also shows his own taxidermy offers).
+// The website's server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
@@ -19,13 +19,21 @@ public static class HuntersApi
     static Reply PublicJson(JsonNode body) =>
         new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("Vary", "Accept"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
+    /// <summary>The reply of a /hunters/ route to a request without a session: as the account routes refuse it.</summary>
+    static Reply SignedOut => Json(401, new JsonObject { ["status"] = "signed_out", ["message"] = "Sign in first." });
+
     public static void MapHunters(this WebApplication app, Game game)
     {
         var state = game.State!;
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         long? SignedIn(HttpContext ctx) => SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } c ? state.Store.ResolveWebSession(c) : null;
         if (!state.Online) return;
-        var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
+        var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .AddEndpointFilter(async (f, next) =>
+            {
+                if (SignedIn(f.HttpContext) is not { } account) return SignedOut;
+                return await next(f);
+            });
 
         group.MapGet("", (HttpContext ctx) =>
             {
@@ -163,7 +171,7 @@ public static class HuntersApi
                              + "`expeditionId`, `score` and `harvestValue`. 404 for a handle that is unknown or banned, and for a kill without a harvest here (a restored one).")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
         Reply Refuse(int status, string kind, string message) => Json(status, new JsonObject { ["status"] = kind, ["message"] = message, ["report"] = null });
-        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => SignedIn(ctx) is not { } viewer ? Refuse(401, "signed_out", "Sign in first.")
+        group.MapGet("/{handle}/gallery", (string handle, HttpContext ctx) => SignedIn(ctx) is not { } viewer ? SignedOut
                 : state.PublicAccount(handle) is { } id ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}", viewer))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
@@ -182,7 +190,7 @@ public static class HuntersApi
                     ? new Reply(200, [("Content-Type", "image/jpeg"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff"), ("Content-Security-Policy", "sandbox")], File.ReadAllBytes(file), "state")
                     : status switch
                     {
-                        401 => Refuse(401, "signed_out", "Sign in first."),
+                        401 => SignedOut,
                         403 => Refuse(403, "not_yours", "Only its owner gets the original picture."),
                         429 => Refuse(429, "rate_limited", "Too many reads: wait a minute."),
                         _ => new Reply(404, [], [], "state"),
@@ -192,7 +200,7 @@ public static class HuntersApi
             .WithName("WebPhoto").WithSummary("A stored photo, on the website's host")
             .WithDescription("The photos of `GET /hunters/<handle>/gallery`: `<account id>/<name>`, for a signed-in player: the `hr_session` cookie, or the keyed link of the gallery's rows (`viewer`, `until`, `key`; the launcher's pages send no cookie). "
                              + "A stored file (the original) goes to its owner only. Another player's gallery links its pictures by their display names (`display-<hex>.jpg`, which never tell the original's name): the display-size copy, at most 1280 px on its longest side, encoded again, without metadata; "
-                             + "another player's read of it counts in the account's read limit (429 `rate_limited`). 401 `signed_out` without a session or a valid link, 403 `not_yours` for another player's original. `Cache-Control: no-store`. "
+                             + "every read of another player's picture counts in the account's read limit (429 `rate_limited`). 401 `signed_out` without a session or a valid link, 403 `not_yours` for another player's original. `Cache-Control: no-store`. "
                              + "The imported avatar (`avatar.jpg`) is served to anyone. The game's host serves the originals to the game as before.")
             .QueryParams(("viewer", "the account the link is for"), ("until", "Unix seconds the link holds until"), ("key", "the server's key of the link"))
             .Produces(200, contentType: "image/jpeg").Produces(401, contentType: "application/json").Produces(403, contentType: "application/json").Produces(429, contentType: "application/json").Produces(404);
