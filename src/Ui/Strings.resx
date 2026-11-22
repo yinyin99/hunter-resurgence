@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Something went wrong when creating your game session. Please reload the server list and try joining another game.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>The game is already running.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>A copy of the game is still running in the background without a window, probably after a crash. Close it and start again.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Close the game</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>The game could not be closed. End it in Task Manager (Details tab), then start again.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>The game was not found. Check its folder in the settings.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>The game could not be started.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Starting Steam…</value></data>
