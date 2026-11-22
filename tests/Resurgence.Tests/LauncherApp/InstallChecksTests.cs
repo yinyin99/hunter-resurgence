@@ -147,6 +147,14 @@ public class InstallChecksTests
         var clean = CleanSet(g);
         var folder = Path.GetDirectoryName(g.ClientExe)!;
         Task<InstallCheck> Dlls(string? manifest = null) => Check(Make(g, manifest, clean: clean), "dlls");
+        // the hashes are remembered by path, size and write time, and a clock tick is longer than a rewrite: every rewrite gets a write time of its own
+        var stamp = 0;
+        void Rewrite(string text)
+        {
+            var path = Path.Combine(folder, "steam_api.dll");
+            Files.Write(path, text);
+            File.SetLastWriteTimeUtc(path, new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(++stamp));
+        }
 
         var ok = await Dlls();
         Assert.Equal(("ok", "Check.Ok", null), (ok.Level, ok.Text, ok.Fix));
@@ -160,7 +168,7 @@ public class InstallChecksTests
         File.Delete(Path.Combine(folder, "dxgi.dll"));
         foreach (var replaced in new[] { "stoam", "a longer old steam_api" }) // the size of the clean file, and another size
         {
-            Files.Write(Path.Combine(folder, "steam_api.dll"), replaced);
+            Rewrite(replaced);
             var changed = await Dlls();
             Assert.Equal(("warn", "Check.Dlls.Changed", "verify-files", "steam_api.dll"), (changed.Level, changed.Text, changed.Fix, changed.Args!["files"]));
         }
@@ -169,10 +177,11 @@ public class InstallChecksTests
         Assert.Equal("Check.Dlls.Extra", (await Dlls()).Text);
         File.Delete(Path.Combine(folder, "d3d9.dll"));
 
-        Files.Write(Path.Combine(folder, "steam_api.dll"), "steam");
+        Rewrite("steam");
         Files.Write(Path.Combine(folder, "mod.asi"), "x"); // only .dll files are judged by the check (the report lists .asi too)
         Assert.Equal("ok", (await Dlls()).Level);
 
+        Rewrite("steam"); // not remembered yet: the check has to open it
         using var held = new FileStream(Path.Combine(folder, "steam_api.dll"), FileMode.Open, FileAccess.Read, FileShare.None); // cannot be read: tells nothing, never a warning (the report names it)
         Assert.Equal("ok", (await Dlls()).Level);
     }
