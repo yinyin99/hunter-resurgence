@@ -189,6 +189,30 @@ public class UnlimitedAmmoTests : StateTestBase
     }
 
     [Fact]
+    public void AtAHundredRowsAHiddenLodgeStackBecomesTheBoxSoThePageAlwaysGetsANumber()
+    {
+        Make(true);
+        SetStacks(3);
+        var entries = string.Join(", ", Enumerable.Range(1, 99).Select(i => $$"""{"item_guid": "new_item_{{i}}", "item_id": 77}"""));
+        Clone($"[{entries}]");
+        string oldest;
+        using (var con = state.Store.Open(ME))
+        {
+            oldest = Convert.ToString(con.Scalar("SELECT guid FROM items WHERE account_id = $a AND item_id = 77 ORDER BY guid LIMIT 1 OFFSET 1"), System.Globalization.CultureInfo.InvariantCulture)!;
+            con.Exec($"UPDATE items SET metadata = json_set(metadata, '$.{State.HIDDEN}', 1), units = 2 WHERE account_id = $a AND item_id = 77 AND guid >= ?", long.Parse(oldest));
+        }
+        var reply = Reply(Clone("""[{"item_guid": "new_item_500", "item_id": 77}, {"item_guid": "new_item_501", "item_id": 77}]"""));
+        Assert.Equal(oldest, Py.Str(reply["new_item_500"]));  // the oldest hidden stack, a number
+        Assert.True(reply["new_item_501"] is JsonValue v && v.TryGetValue<long>(out var second) && second > long.Parse(oldest));  // the next hidden one, not the same row twice
+        Assert.Equal(100, Stacks().Split(' ').Length);  // no new row
+        Eq("10", Items()[oldest]!["units"]);  // shown again (the connect's inventory leaves hidden stacks out), a full box
+        // nothing hidden left: nothing to give, as before
+        using (var con = state.Store.Open(ME))
+            con.Exec($"UPDATE items SET metadata = json_remove(metadata, '$.{State.HIDDEN}') WHERE account_id = $a");
+        Assert.Equal("null"u8.ToArray(), Clone("""[{"item_guid": "new_item_600", "item_id": 77}]"""));
+    }
+
+    [Fact]
     public void AMarkedBoxLeftInTheLodgeGoesAtTheNextLaunchAndTheGameIsNeverShownTheMark()
     {
         Make(true);
