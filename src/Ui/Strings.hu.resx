@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Még nincsenek barátaid</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Találatok ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nem található vadász</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Túl gyakran kerestél. Próbáld újra egy óra múlva.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Barátkérelem küldése</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Barátkérelem elküldve</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>{0}. barátkérelem a(z) {1} közül</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Legnagyobb távolságok, {0}. szezon</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Teljes ranglista megtekintése</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Helyezésed</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Legjobb 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>A helyezésed körül</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Jelenleg nincs helyezésed ebben a kategóriában</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Minden idők legjobb vadászpontja</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Helyezés</value></data>

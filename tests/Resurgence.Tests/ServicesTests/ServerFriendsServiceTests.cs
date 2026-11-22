@@ -46,6 +46,13 @@ public class ServerFriendsServiceTests
         Assert.Equal("/account/friends/search?text=ir%20c%26", fake.Seen[0].Request.RequestUri!.PathAndQuery);
     }
 
+    [Fact]
+    public async Task ASearchPastTheHourlyLimitIsNoList()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.TooManyRequests, """{"status":"rate_limited","message":"At most 30 searches an hour: try again later.","report":null}""")));
+        Assert.Null(await service.SearchAsync("abc"));
+    }
+
     [Theory]
     [InlineData("add", true)]   // asks, or accepts the other's request
     [InlineData("add", false)]
@@ -72,7 +79,7 @@ public class ServerFriendsServiceTests
         Assert.Empty(await service.FriendsAsync());
         Assert.Empty(await service.RequestsAsync());
         Assert.Empty(await service.PendingAsync());
-        Assert.Empty(await service.SearchAsync("abc"));
+        Assert.Empty((await service.SearchAsync("abc"))!);
         Assert.Equal(code == HttpStatusCode.OK, (await service.SendRequestAsync("Oak")).Ok);
         Assert.Equal(code == HttpStatusCode.OK, (await service.RemoveAsync("Oak")).Ok);
     }
@@ -83,7 +90,7 @@ public class ServerFriendsServiceTests
         var fake = new Fake(_ => Json(HttpStatusCode.OK, Own));
         var service = Make(fake, session: null);
         Assert.Empty(await service.FriendsAsync());
-        Assert.Empty(await service.SearchAsync("abc"));
+        Assert.Empty((await service.SearchAsync("abc"))!);
         Assert.False((await service.SendRequestAsync("Oak")).Ok);
         Assert.Empty(fake.Seen);
     }

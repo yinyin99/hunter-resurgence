@@ -69,4 +69,9 @@ public static class Alerts
     public static void ProblemReport(JsonObject cfg, long account, string handle, string reference, string trigger, long bytes, HttpClient? http = null) =>
         Review(cfg, Text("\U0001FA7A", "Problem report", null,
             ("handle", Handle(handle)), ("account", account), ("reference", $"`{Name(reference)}`"), ("trigger", Name(trigger)), ("size", Size(bytes))), http);
+
+    /// <summary>An account keeps hitting the read or search limit (review channel): perhaps a script collecting the players. At most one an hour per account (<see cref="State.ReadAllowed"/>).</summary>
+    public static void ReadLimit(JsonObject cfg, long account, string handle, HttpClient? http = null) =>
+        Review(cfg, Text("\U0001F6A8", "Read limit hit", null, ("handle", Handle(handle)), ("account", account),
+            ("limits", $"{State.ReadsPerMinute} profile, hunt or picture reads a minute, {State.SearchesPerHour} friend searches an hour")), http);
 }

@@ -6,8 +6,9 @@ public sealed record Friend(string Handle, bool Online, string Avatar = Avatars.
 public interface IFriendsService
 {
     Task<IReadOnlyList<Friend>> FriendsAsync();
-    /// <summary>Hunters whose handle contains the text, never the signed-in hunter (the friends dropdown searches from 3 characters).</summary>
-    Task<IReadOnlyList<Friend>> SearchAsync(string text);
+    /// <summary>Hunters whose handle contains the text, never the signed-in hunter (the friends dropdown searches from 3 characters); null when the server refuses
+    /// the search because the hunter searched too often (its hourly limit).</summary>
+    Task<IReadOnlyList<Friend>?> SearchAsync(string text);
     /// <summary>Hunters who asked to be friends, oldest first.</summary>
     Task<IReadOnlyList<Friend>> RequestsAsync();
     /// <summary>Hunters the signed-in hunter has asked and who have not answered yet.</summary>

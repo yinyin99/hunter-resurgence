@@ -89,6 +89,7 @@ public static class ServerApp
         if (o.Game.State is { Online: true } state && o.WorkDir is not null)
         {
             var up = o.Game.Cfg;
+            state.ReadAlert = account => Alerts.ReadLimit(up, account, state.Store.HandleOf(account) ?? "");
             var uploads = new Uploads(state, o.WorkDir)
             {
                 Alert = text => Alerts.Review(up, text), Pictures = PictureLinks.FromCfg(up),

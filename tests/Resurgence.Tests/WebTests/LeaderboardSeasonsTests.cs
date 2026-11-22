@@ -152,4 +152,29 @@ public sealed class LeaderboardSeasonsTests : UiContext
 
         Assert.Equal(["Alpine Ibex", "Bison", "Mallard", "Whitetail Deer"], cut.FindAll(names).Select(h => h.TextContent.Trim()));
     }
+
+    [Fact]
+    public async Task SignedOutABoardAsksForASignInAndReadsNothing()
+    {
+        var service = new Waiting();
+        Services.AddSingleton<ILeaderboardsService>(service);
+        await Services.GetRequiredService<ISessionService>().SignOutAsync();
+        var cut = Board("score");
+
+        Assert.Equal("Sign in to see this page", cut.FindAll("h2").Last().TextContent.Trim());
+        Assert.Equal(0, service.Asked);
+        Assert.Empty(cut.FindAll(".skeleton"));
+    }
+
+    [Fact]
+    public void ABoardIsItsTop100ThenThePlayersOwnPlaceWith50AboveAndBelow()
+    {
+        var cut = Board("bustthrough");  // the mock player is 96th
+
+        Assert.Equal(["Your Rank", "Top 100", "Around your rank"], cut.FindAll(".rank-label").Select(l => l.TextContent.Trim()));
+        var around = cut.FindAll("table.board").Last().QuerySelectorAll("tbody tr");
+        Assert.Equal(46, around.Length);  // 101 to 146: the places of the top are not repeated
+        Assert.StartsWith("101", around[0].TextContent.Trim());
+        Assert.Equal(4, cut.FindAll("nav.pager a").Count(a => int.TryParse(a.TextContent, out _)));  // 100 places, 30 a page
+    }
 }

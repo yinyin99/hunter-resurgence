@@ -1,6 +1,6 @@
 # Public and owner-only profile areas
 
-Status: accepted, amended by [ADR 0010](0010-players-data-for-signed-in-players-only.md): "public" below means public to signed-in players, and the website's reads need the session cookie.
+Status: accepted, amended by [ADR 0010](0010-players-data-for-signed-in-players-only.md): "public" below means public to signed-in players, and the website's reads need the session cookie; and by [ADR 0011](0011-friends-are-owner-only-and-nobody-lists-the-players.md): friends are owner-only, and reads by user id answer only for players the caller may see.
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 

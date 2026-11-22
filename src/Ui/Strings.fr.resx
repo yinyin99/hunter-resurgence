@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Aucun ami pour le moment</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Résultats de la recherche ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Aucun chasseur trouvé</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Vous avez cherché trop souvent. Réessayez dans une heure.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Envoyer une demande d’ami</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Demande d’ami envoyée</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Demande d’ami {0} sur {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Meilleures distances de la saison {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Voir le classement complet</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Votre rang</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Les 100 meilleurs</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Autour de votre rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Vous n’êtes pas classé(e) dans cette catégorie actuellement</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Meilleurs Hunter Scores de tous les temps</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>

@@ -28,10 +28,20 @@ public sealed partial class State
     /// <inheritdoc cref="PublicAccount(long)"/>
     public long? PublicAccount(string handle) => offline ? LocalAccount : Store.Listed(handle, LocalAccount);
 
+    /// <summary>The account of another player's `user_id` in a read of <paramref name="caller"/>: <see cref="PublicAccount(long)"/> when the caller is within his read limit
+    /// (<see cref="ReadAllowed"/>: every read of another user id counts, known, seen or not, so walking ids is slow and raises the alert; his own reads are not counted) and may see it
+    /// (<see cref="CanSee"/>: himself, his friends, whoever a board shows him); else null, so walking user ids finds nothing.</summary>
+    public long? SeenAccount(long caller, long userId)
+    {
+        var other = PublicAccount(userId);
+        if (other == caller) return other;
+        return ReadAllowed(caller) && other is { } o && CanSee(caller, o) ? o : null;
+    }
+
     /// <summary>Public_user/getByHostname of an account: who it is (`membership` as its connect `account` has it, the type and
-    /// title as its Me/me does), its hunterscore and rank, `online` while a hunt of it is open and alive, and the distance and
-    /// duration of its statistics (restored base plus the server hunts, the open one so far).</summary>
-    public JsonObject PublicUser(long account)
+    /// title as its Me/me does), its hunterscore and rank, `online` while a hunt of it is open and alive (shown to the account itself and its friends only:
+    /// <paramref name="viewer"/>; false for anyone else), and the distance and duration of its statistics (restored base plus the server hunts, the open one so far).</summary>
+    public JsonObject PublicUser(long account, long? viewer = null)
     {
         using var con = Con(account);
         var me = MeOf(con, account);
@@ -41,7 +51,7 @@ public sealed partial class State
             ["id"] = account, ["handle"] = C(me["handle"]), ["hostname"] = C(me["hostname"]), ["avatar"] = C(me["avatar"]),
             ["hunterscore"] = C(me["hunterscore"]), ["rank"] = Store.Rank(account, LocalAccount),
             ["membership"] = C(G(Account(account), "membership", 0)), ["membershipType"] = C(me["membershipType"]), ["membershipTitle"] = C(me["membershipTitle"]),
-            ["online"] = HuntAlive(con),
+            ["online"] = viewer is { } v && (v == account || Store.FriendsOf(v, LocalAccount).Friends.Contains(account)) && HuntAlive(con),
             ["stats"] = new JsonObject { ["distance"] = C(stats["distance"]), ["duration"] = C(stats["duration"]) },
         };
     }
@@ -80,26 +90,30 @@ public sealed partial class State
         }
     }
 
-    /// <summary>Friend entries of accounts, as Me/friends and User/friendslist send them, sorted by `handle` (upper case, ordinal).</summary>
-    List<JsonNode?> FriendEntries(IEnumerable<long> accounts) => [.. accounts.Select(account =>
+    /// <summary>Friend entries of accounts, as Me/friends and User/friendslist send them, sorted by `handle` (upper case, ordinal); `online` only where <paramref name="online"/> says
+    /// the reader may see it (his friends), else false.</summary>
+    List<JsonNode?> FriendEntries(IEnumerable<long> accounts, Func<long, bool> online) => [.. accounts.Select(account =>
     {
         using var con = Con(account);
         var me = MeOf(con, account);
         return (JsonNode?)new JsonObject
         {
             ["id"] = account, ["handle"] = C(me["handle"]), ["avatar"] = C(me["avatar"]), ["fullbody_avatar"] = C(me["fullbody_avatar"]) ?? 0,
-            ["hostname"] = C(me["hostname"]), ["hunterscore"] = C(me["hunterscore"]), ["online"] = HuntAlive(con),
+            ["hostname"] = C(me["hostname"]), ["hunterscore"] = C(me["hunterscore"]), ["online"] = online(account) && HuntAlive(con),
         };
     }).OrderBy(e => Py.Str(e!["handle"]).ToUpperInvariant(), StringComparer.Ordinal)];
 
-    /// <summary>Me/friends: the account's friends, the players who asked it (`requests`, the same entries) and the user ids it asked (`pending`).</summary>
+    static bool Friend(long _) => true;
+    static bool Stranger(long _) => false;
+
+    /// <summary>Me/friends: the account's friends, the players who asked it (`requests`, the same entries, never online) and the user ids it asked (`pending`).</summary>
     public byte[] MeFriendsReply(long account)
     {
         var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
         return Py.DumpBytes(new JsonObject
         {
-            ["friends"] = new JsonArray([.. FriendEntries(friends)]), ["friendCount"] = friends.Count,
-            ["requests"] = new JsonArray([.. FriendEntries(requests)]), ["requestCount"] = requests.Count,
+            ["friends"] = new JsonArray([.. FriendEntries(friends, Friend)]), ["friendCount"] = friends.Count,
+            ["requests"] = new JsonArray([.. FriendEntries(requests, Stranger)]), ["requestCount"] = requests.Count,
             ["pending"] = new JsonArray([.. pending.Select(id => (JsonNode?)id)]),
         });
     }
@@ -107,21 +121,29 @@ public sealed partial class State
     /// <summary>How many players asked the account to be friends: Me/poll's and Me/me's `friend_requests`.</summary>
     public long FriendRequests(long account) => Store.FriendsOf(account, LocalAccount).Requests.Count;
 
-    /// <summary>Friend/add (ask, or accept the other's request) or Friend/remove (decline, cancel, remove) of `friend_user_id`:
-    /// `true`; `{"errorCode": 400}` for the account's own id or one that is not a player here (<see cref="PublicAccount(long)"/>).</summary>
+    /// <summary>Friend/add (ask, or accept the other's request) or Friend/remove (decline, cancel, remove) of `friend_user_id`: `true`; `{"errorCode": 400}` for the account's own id
+    /// and for any id other than a player of its friends, its requests either way, its multiplayer session or one it may see (<see cref="SeenAccount"/>): asking any id would name
+    /// the player in the website's list of the requests sent, so walking ids would list the handles.</summary>
     public byte[] FriendReply(long account, byte[] formBody, bool add)
     {
-        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "friend_user_id"), out var id) || id == account || PublicAccount(id) is not { } other)
+        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "friend_user_id"), out var id) || id == account)
             return """{"errorCode": 400}"""u8.ToArray();
-        if (add) Store.AddFriend(account, other);
-        else Store.RemoveFriend(account, other);
+        var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
+        var other = PublicAccount(id) is { } o && (friends.Contains(o) || requests.Contains(o) || pending.Contains(o) || InSessionWith(account, o)) ? o : SeenAccount(account, id);
+        if (other is not { } known)
+            return """{"errorCode": 400}"""u8.ToArray();
+        if (add) Store.AddFriend(account, known);
+        else Store.RemoveFriend(account, known);
         return "true"u8.ToArray();
     }
 
-    /// <summary>User/friendslist of `user_id` (any player here, no token): `{total, friends}`, one page by `offset` and `limit` (1 to 50;
-    /// missing, empty or below 1: every friend). No `user_id`: `{"errorCode": 400}`; an empty, non-positive or unknown one: `null`;
+    /// <summary>Are the two accounts in the same open multiplayer session (a player met in a hunt can be asked to be friends).</summary>
+    bool InSessionWith(long a, long b) => games.Open(Clock()).Any(g => g.Members.Any(m => m.Account == a) && g.Members.Any(m => m.Account == b));
+
+    /// <summary>User/friendslist of `user_id` for the caller's own account only (a player sees only his own friends): `{total, friends}`, one page by `offset` and `limit` (1 to 50;
+    /// missing, empty or below 1: every friend). Another player's `user_id`: the empty list. No `user_id`: `{"errorCode": 400}`; an empty or non-positive one: `null`;
     /// a non-numeric value: the handler error.</summary>
-    public byte[] FriendsListReply(byte[] formBody)
+    public byte[] FriendsListReply(long caller, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody), keepBlank: true);
         string? Value(string key) => form.TryGetValue(key, out var v) ? v[0] : null;
@@ -130,9 +152,11 @@ public sealed partial class State
             return """{"error": 1, "code": "handlerError"}"""u8.ToArray();
         if (user is null)
             return """{"errorCode": 400}"""u8.ToArray();
-        if (!long.TryParse(user, out var id) || id <= 0 || PublicAccount(id) is not { } account)
+        if (!long.TryParse(user, out var id) || id <= 0)
             return "null"u8.ToArray();
-        var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends);
+        if (!IsUser(caller, user))
+            return """{"total": 0, "friends": []}"""u8.ToArray();
+        var all = FriendEntries(Store.FriendsOf(caller, LocalAccount).Friends, Friend);
         var page = all.Skip(long.TryParse(offset, out var o) && o > 0 ? (int)Math.Min(o, int.MaxValue) : 0);
         return Py.DumpBytes(new JsonObject
         {
@@ -142,13 +166,13 @@ public sealed partial class State
     }
 
     public const int FriendsPageSize = 20;
-    public const int FriendSearchLimit = 20;
+    public const int FriendSearchLimit = 10, FriendSearchMin = 3;
 
-    /// <summary>What a profile page's friends tab shows of an account, `GET /hunters/&lt;handle&gt;/friends`: one page of its friends by handle,
+    /// <summary>The signed-in player's own friends tab, `GET /hunters/&lt;handle&gt;/friends` of his own handle: one page of his friends by handle,
     /// `{page, pages, total, rows: [{handle, hunterscore, avatar}]}` (`avatar` as <see cref="AvatarUrl"/>, on `site`).</summary>
     public JsonObject PublicFriends(long account, int page, string site)
     {
-        var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends);
+        var all = FriendEntries(Store.FriendsOf(account, LocalAccount).Friends, Friend);
         var pages = Math.Max(1, (all.Count + FriendsPageSize - 1) / FriendsPageSize);
         page = Math.Clamp(page, 1, pages);
         return new JsonObject
@@ -161,16 +185,24 @@ public sealed partial class State
     JsonArray Hunters(IEnumerable<JsonNode?> entries, string site) => new([.. entries.Select(e => (JsonNode?)new JsonObject { ["handle"] = C(e!["handle"]), ["online"] = C(e["online"]), ["avatar"] = AvatarUrl(Py.L(e["id"]), site) })]);
 
     /// <summary>The signed-in website player's friends, `GET /account/friends`: `{friends: [{handle, online, avatar}], requests: [same], pending: [same]}`,
-    /// each by handle (`requests` asked the account, `pending` were asked by it); `avatar` as <see cref="AvatarUrl"/>, on `site`.</summary>
+    /// each by handle (`requests` asked the account, `pending` were asked by it; only friends show `online`); `avatar` as <see cref="AvatarUrl"/>, on `site`.</summary>
     public JsonObject WebFriends(long account, string site)
     {
         var (friends, requests, pending) = Store.FriendsOf(account, LocalAccount);
-        return new JsonObject { ["friends"] = Hunters(FriendEntries(friends), site), ["requests"] = Hunters(FriendEntries(requests), site), ["pending"] = Hunters(FriendEntries(pending), site) };
+        return new JsonObject { ["friends"] = Hunters(FriendEntries(friends, Friend), site), ["requests"] = Hunters(FriendEntries(requests, Stranger), site), ["pending"] = Hunters(FriendEntries(pending, Stranger), site) };
     }
 
-    /// <summary>`GET /account/friends/search?text=`: the players whose handle contains the text, never the account itself, `{hunters: [{handle, online, avatar}]}`.</summary>
-    public JsonObject WebFriendSearch(long account, string text, string site) =>
-        new() { ["hunters"] = Hunters(FriendEntries(Store.SearchHandles(text, account, LocalAccount, FriendSearchLimit)), site) };
+    /// <summary>`GET /account/friends/search?text=`: at most <see cref="FriendSearchLimit"/> players whose handle contains the text (at least <see cref="FriendSearchMin"/> characters,
+    /// else none), the exact handle first, never the account itself, `{hunters: [{handle, online, avatar}]}`; `online` only for the account's friends.</summary>
+    public JsonObject WebFriendSearch(long account, string text, string site)
+    {
+        text = text.Trim();
+        if (text.Length < FriendSearchMin) return new() { ["hunters"] = new JsonArray() };
+        var friends = Store.FriendsOf(account, LocalAccount).Friends;
+        var found = FriendEntries(Store.SearchHandles(text, account, LocalAccount, FriendSearchLimit), friends.Contains)
+            .OrderBy(e => !string.Equals(Py.Str(e!["handle"]), text, StringComparison.OrdinalIgnoreCase));  // stable: the exact handle first, the rest by handle
+        return new() { ["hunters"] = Hunters(found, site) };
+    }
 
     /// <summary>`POST /account/friends/add` (ask, or accept the other's request) or `/remove` (decline, cancel, remove) of a player by handle (any case);
     /// false, and nothing changed, for the account's own handle or one that is not a player here.</summary>
@@ -253,7 +285,7 @@ public sealed partial class State
 
     static double Num(JsonNode? n) => n is JsonValue v && double.TryParse(v.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var d) && double.IsFinite(d) ? d : 0;
 
-    /// <summary>Leaderboard/personal for the form's user_id and season_no: any account's on a community server (null for a user id that is none), else the player's own.</summary>
+    /// <summary>Leaderboard/personal for the form's user_id and season_no: on a community server the account of a player the caller may see (<see cref="SeenAccount"/>; null for anyone else), else the player's own.</summary>
     public byte[]? PersonalBestReply(long account, byte[] formBody)
     {
         var season = long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "season_no"), out var n) ? n : 0;
@@ -367,7 +399,7 @@ public sealed partial class State
     public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
     /// <summary>Trophy/list for the form's user_id: one page (`offset`, `limit`) of the restored trophies (rows of their own kind) of the player's own
-    /// account or, on a community server, of any other account of this server without its hidden ones (<see cref="PublicAccount(long)"/>);
+    /// account or, on a community server, of another account the player may see without its hidden ones (<see cref="SeenAccount"/>);
     /// null for anyone else.</summary>
     public byte[]? TrophyListReply(long account, byte[] formBody)
     {
@@ -376,7 +408,7 @@ public sealed partial class State
         var own = IsOwn(account, formBody);
         if (!own)
         {
-            if (!long.TryParse(Form1(form, "user_id"), out var id) || PublicAccount(id) is not { } other)
+            if (!long.TryParse(Form1(form, "user_id"), out var id) || SeenAccount(account, id) is not { } other)
                 return null;
             account = other;
         }

@@ -9,13 +9,13 @@ public sealed partial class State
 {
     public const int HuntsPageSize = 40;
 
-    /// <summary>The account a hunts read is of: the requester's own (no `user_id`, or its own), else the account of the form's `user_id` when that is a player here
-    /// (<see cref="PublicAccount(long)"/>); null for anyone else.</summary>
+    /// <summary>The account a hunts read is of: the requester's own (no `user_id`, or its own), else the account of the form's `user_id` when the requester may see it
+    /// (<see cref="SeenAccount"/>); null for anyone else.</summary>
     public long? HuntsOf(long account, byte[] formBody)
     {
         if (IsOwn(account, formBody))
             return account;
-        return long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id"), out var id) ? PublicAccount(id) : null;
+        return long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "user_id"), out var id) ? SeenAccount(account, id) : null;
     }
 
     static long Integer(JsonNode? n) => Py.IsNum(n) && double.IsFinite(Py.D(n)) ? Py.L(n) : 0;  // a restored hunt is the player's: any member can be of another type

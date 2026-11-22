@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Ingen venner endnu</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Søgeresultater ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Ingen jægere fundet</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Du har søgt for ofte. Prøv igen om en time.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send venneanmodning</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Venneanmodning sendt</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Venneanmodning {0} af {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Længste skud i sæson {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Se hele ranglisten</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Din rang</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Omkring din rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Du er i øjeblikket ikke rangeret i denne kategori</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Højeste jægerscore nogensinde</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>

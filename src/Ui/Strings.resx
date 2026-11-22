@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>No friends yet</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Search results ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>No hunters found</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>You searched too often. Try again in an hour.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Send friend request</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Friend request sent</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Friend request {0} of {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Top ranges for Season {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>View full leaderboard</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Your Rank</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Around your rank</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>You are currently not ranked in this category</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>All time top Hunter Score</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rank</value></data>

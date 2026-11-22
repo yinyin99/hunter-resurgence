@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Henüz arkadaşınız yok</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Arama sonuçları ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Avcı bulunamadı</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Çok sık arama yaptınız. Bir saat sonra tekrar deneyin.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Arkadaşlık isteği gönder</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Arkadaşlık isteği gönderildi</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Arkadaşlık isteği {0} / {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Sezon {0} için en uzun mesafeler</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Tüm sıralamayı görüntüle</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Sıranız</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>İlk 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Sıranızın çevresi</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Şu an bu kategoride sıralamada değilsiniz</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Tüm zamanların en yüksek avcı skorları</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Sıra</value></data>

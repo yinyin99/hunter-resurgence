@@ -108,8 +108,8 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
             Eq("""[1, "", "2020-09-13", null]""", T(trophies["total"], trophies["rows"]![0]!["name"], trophies["rows"]![0]!["date"], trophies["rows"]![0]!["image"]));
         }
 
-        // the game's public read of a player's hunterscore carries no token
-        var user = await server.SendAsync("POST", "api.test", Replay.PUBLIC_USER, FormHeader, Encoding.ASCII.GetBytes($"hostname={Handle}"));
+        // the game's read of a player's hunterscore by handle, with another player's token
+        var user = await server.SendAsync("POST", "api.test", Replay.PUBLIC_USER, [.. FormHeader, ("Authorization", "Bearer " + otherToken)], Encoding.ASCII.GetBytes($"hostname={Handle}"));
         Eq("2", JsonNode.Parse(user.Body)!["hunterscore"]);
 
         // the game's own trophy list is the caller's: the player's restored one, then the kill once it is taxidermized in the harvest window (the second account has none; Trophy/list rows are of their own kind: the restored ones)

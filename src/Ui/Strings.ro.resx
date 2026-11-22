@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Încă niciun prieten</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Rezultatele căutării ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Nu s-au găsit vânători</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Ai căutat prea des. Încearcă din nou peste o oră.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Cerere de prietenie trimisă</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Cererea de prietenie {0} din {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Cele mai mari distanțe, sezonul {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Vedeți clasamentul complet</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Poziția dvs.</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Primii 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>În jurul poziției dvs.</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Momentan nu sunteți clasat în această categorie</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Top Hunter Score, din toate timpurile</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Poziție</value></data>

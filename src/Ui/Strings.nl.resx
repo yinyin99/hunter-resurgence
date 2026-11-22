@@ -127,6 +127,7 @@
   <data name="Friends.None" xml:space="preserve"><value>Nog geen vrienden</value></data>
   <data name="Friends.Results" xml:space="preserve"><value>Zoekresultaten ({0})</value></data>
   <data name="Friends.NoHunters" xml:space="preserve"><value>Geen jagers gevonden</value></data>
+  <data name="Friends.SearchLimit" xml:space="preserve"><value>Je hebt te vaak gezocht. Probeer het over een uur opnieuw.</value></data>
   <data name="Friends.SendRequest" xml:space="preserve"><value>Vriendschapsverzoek sturen</value></data>
   <data name="Friends.RequestSent" xml:space="preserve"><value>Vriendschapsverzoek verstuurd</value></data>
   <data name="Friends.Request" xml:space="preserve"><value>Vriendschapsverzoek {0} van {1}</value></data>
@@ -557,6 +558,8 @@
   <data name="Board.TopRanges" xml:space="preserve"><value>Topafstanden voor seizoen {0}</value></data>
   <data name="Board.Full" xml:space="preserve"><value>Volledige ranglijst bekijken</value></data>
   <data name="Board.YourRank" xml:space="preserve"><value>Jouw rang</value></data>
+  <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
+  <data name="Board.Around" xml:space="preserve"><value>Rond jouw rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Je staat momenteel niet in de ranglijst van deze categorie</value></data>
   <data name="Board.AllTime" xml:space="preserve"><value>Hoogste Hunter Score aller tijden</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>

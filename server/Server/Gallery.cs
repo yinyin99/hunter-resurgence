@@ -88,14 +88,14 @@ public sealed partial class State
     }
 
     /// <summary>Gallery/list of the form's user_id (the player's own without one): one page (`offset`, `limit`) of the gallery, `{total, photos}`; any other
-    /// account of this server is listed too (<see cref="PublicAccount(long)"/>); null for anyone else.</summary>
+    /// account the player may see is listed too (<see cref="SeenAccount"/>); null for anyone else.</summary>
     public byte[]? GalleryListReply(long account, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         long Number(string key) => long.TryParse(Form1(form, key), out var n) && n > 0 ? n : 0;
         if (!IsOwn(account, formBody))
         {
-            if (!long.TryParse(Form1(form, "user_id"), out var id) || PublicAccount(id) is not { } other)
+            if (!long.TryParse(Form1(form, "user_id"), out var id) || SeenAccount(account, id) is not { } other)
                 return null;
             account = other;
         }

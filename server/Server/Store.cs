@@ -633,14 +633,13 @@ public sealed class Store
                                 id, excluded)!;
     }
 
-    /// <summary>One page of the hunterscore board (the order of Rank) and how many accounts are on it.</summary>
-    public (List<(long Rank, long Id, string Handle, long Hunterscore)> Rows, long Total) Board(long? excluded, int offset, int limit)
+    /// <summary>Rows of the hunterscore board (the order of Rank) from `offset`, at most `limit`.</summary>
+    public List<(long Rank, long Id, string Handle, long Hunterscore)> Board(long? excluded, int offset, int limit)
     {
         using var con = Open();
-        var rows = con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
-                            + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
+        return con.Rows("SELECT id, handle, COALESCE(json_extract(account, '$.hunterscore'), 0) AS hs FROM accounts"
+                        + " WHERE banned = 0 AND id IS NOT ? ORDER BY hs DESC, id LIMIT ? OFFSET ?", excluded, limit, offset)
             .Select((r, i) => (offset + i + 1L, (long)r[0], (string)r[1], Convert.ToInt64(r[2]))).ToList();
-        return (rows, (long)con.Scalar("SELECT COUNT(*) FROM accounts WHERE banned = 0 AND id IS NOT ?", excluded)!);
     }
 
     /// <summary>The account's `avatar_url`; null when it has none.</summary>
@@ -746,11 +745,11 @@ public sealed class Store
         return con.Scalar($"SELECT id FROM accounts WHERE {(idOrHandle is long ? "id" : "handle")} = ? AND banned = 0 AND id IS NOT ?", idOrHandle, excluded) as long?;
     }
 
-    /// <summary>The accounts whose handle contains the text (any case), by handle, at most `limit`; never `self`, a banned one or `excluded`.</summary>
+    /// <summary>The accounts whose handle contains the text (any case), the exact handle first, then by handle, at most `limit`; never `self`, a banned one or `excluded`.</summary>
     public List<long> SearchHandles(string text, long self, long? excluded, int limit)
     {
         using var con = Open();
-        return [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id <> ?1 AND id IS NOT ?2 AND instr(lower(handle), lower(?3)) > 0 ORDER BY handle COLLATE NOCASE LIMIT ?4",
+        return [.. con.Rows("SELECT id FROM accounts WHERE banned = 0 AND id <> ?1 AND id IS NOT ?2 AND instr(lower(handle), lower(?3)) > 0 ORDER BY lower(handle) = lower(?3) DESC, handle COLLATE NOCASE LIMIT ?4",
                             self, excluded, text, limit).Select(r => (long)r[0])];
     }
 

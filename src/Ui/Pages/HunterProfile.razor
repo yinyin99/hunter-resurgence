@@ -75,8 +75,8 @@
     [Parameter] public string? Tab { get; set; }
     [Parameter] public string? Sub { get; set; }
     [Parameter] public int? Arg { get; set; }
-    /// <summary>Does the profile show this tab: every tab on the mock, on the live site only those with a server source (Profile.Tabs).</summary>
-    bool Shown(string key) => profile?.Tabs?.Contains(key) ?? true;
+    /// <summary>Does the profile show this tab: every tab on the mock, on the live site only those with a server source (Profile.Tabs); Friends only on the player's own profile (a player sees only his own friends).</summary>
+    bool Shown(string key) => (key != "friends" || profile?.Own == true) && (profile?.Tabs?.Contains(key) ?? true);
     /// <summary>The tab asked for when the profile shows it, else its first tab; null when it shows none (the header only).</summary>
     string? tab => (tabs.Any(t => t.Key == Tab) || Tab is "expedition" or "score" or "antler") && Shown(Tab!) ? Tab : tabs.Select(t => t.Key).FirstOrDefault(Shown);
     /// <summary>The tab shown as open: an expedition belongs to Statistics, a scoring sheet to none.</summary>

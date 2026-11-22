@@ -11,8 +11,11 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
 {
     public async Task<IReadOnlyList<Friend>> FriendsAsync() => [.. (await ListAsync())?.Friends.Select(ToFriend) ?? []];
 
-    public async Task<IReadOnlyList<Friend>> SearchAsync(string text) =>
-        [.. (await GetAsync<ServerPlayers>($"{ServerAccountApi.FriendSearch}?text={Uri.EscapeDataString(text)}"))?.Hunters?.Select(ToFriend) ?? []];
+    public async Task<IReadOnlyList<Friend>?> SearchAsync(string text) =>
+        await GetAsync($"{ServerAccountApi.FriendSearch}?text={Uri.EscapeDataString(text)}", TooMany) is var found && ReferenceEquals(found, TooMany) ? null : [.. found?.Hunters?.Select(ToFriend) ?? []];
+
+    /// <summary>What <see cref="GetAsync"/> answers for a search the server refused as one too many (429).</summary>
+    static readonly ServerPlayers TooMany = new([]);
 
     public async Task<IReadOnlyList<Friend>> RequestsAsync() => [.. (await ListAsync())?.Requests.Select(ToFriend) ?? []];
 
@@ -28,7 +31,8 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
 
     async Task<ServerFriends?> ListAsync() => await GetAsync<ServerFriends>(ServerAccountApi.Friends) is { Friends: not null, Requests: not null, Pending: not null } f ? f : null;
 
-    async Task<T?> GetAsync<T>(string path) where T : class
+    /// <summary>The server's answer to `path`; <paramref name="tooMany"/> when it answers 429 (the limit of the calls of the hunter), null for any other failure.</summary>
+    async Task<T?> GetAsync<T>(string path, T? tooMany = null) where T : class
     {
         if (cookie.Value is null) return null;
         try
@@ -36,6 +40,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
+            if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests && tooMany is not null) return tooMany;
             log.LogWarning("The server answered {Path} with {Status}: no friends", path.Split('?')[0], (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

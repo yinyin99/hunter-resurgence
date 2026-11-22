@@ -45,12 +45,16 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
     public Task<IReadOnlyList<Board>> BoardsAsync(string kind, int season) => Task.FromResult<IReadOnlyList<Board>>(
         Groups(kind).Select(g => new Board(g.Id, g.Name, Enumerable.Range(1, kind.StartsWith("antlers") ? 10 : 3).Select(n => Row(kind, g.Id, n, season)).ToList())).ToList());
 
-    public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)
+    public async Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)
     {
-        // the tables of the hunter score and of the two games show 30 rows, those of a species the top 100 in pages of 25, those of an antler 50
-        var (size, pages) = kind is "hunterscore" or "lanebandit" or "bustthrough" ? (30, kind == "hunterscore" ? 20 : 4) : kind.StartsWith("antlers") ? (50, 4) : (25, 4);
+        // the tables of the hunter score and of the two games show 30 rows, those of a species 25, those of an antler 50: the top 100, then the player's own place and the 50 above and below it past the top
+        var size = kind is "hunterscore" or "lanebandit" or "bustthrough" ? 30 : kind.StartsWith("antlers") ? 50 : 25;
+        var pages = (99 + size) / size;
         page = Math.Clamp(page, 1, pages);
-        return Task.FromResult(new Page<Ranked>(Enumerable.Range((page - 1) * size + 1, size).Select(n => Row(kind, id, n, season)).ToList(), page, pages, size * pages));
+        var mine = await MyRankAsync(kind, id, season);
+        var from = Math.Max(101, (mine?.Rank ?? 0) - 50);
+        return new Page<Ranked>([.. Enumerable.Range((page - 1) * size + 1, Math.Min(size, 100 - (page - 1) * size)).Select(n => Row(kind, id, n, season))], page, pages,
+            Around: mine is null ? [] : [.. Enumerable.Range(from, Math.Max(0, mine.Rank + 51 - from)).Select(n => n == mine.Rank ? mine : Row(kind, id, n, season))]);
     }
 
     // the player is ranked at the hunter score, in the two games and on every fourth species or antler board (the other boards show "nobody ranked")
