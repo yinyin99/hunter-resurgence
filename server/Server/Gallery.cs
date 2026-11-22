@@ -233,14 +233,15 @@ public sealed partial class State
             if (codec is not { EncodedFormat: SKEncodedImageFormat.Jpeg }) return null;
             var (width, height) = (codec.Info.Width, codec.Info.Height);
             if (width <= 0 || height <= 0 || width > MaxSide || height > MaxSide || (long)width * height > MaxPixels) return null;
-            var scaled = codec.GetScaledDimensions((float)DisplaySize / Math.Max(width, height));  // a JPEG decodes at a smaller scale, which may fall under the box
-            if (Math.Max(width, height) <= DisplaySize || Math.Max(scaled.Width, scaled.Height) < DisplaySize) scaled = codec.Info.Size;
+            var longestSide = Math.Max(width, height);
+            var scaled = longestSide <= DisplaySize ? codec.Info.Size : codec.GetScaledDimensions(Math.Min(1f, (float)Math.Ceiling(DisplaySize * 8.0 / longestSide) / 8));  // a JPEG decodes at the smallest eighth that still covers the box
             using var bitmap = new SKBitmap(new SKImageInfo(scaled.Width, scaled.Height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
             if (codec.GetPixels(bitmap.Info, bitmap.GetPixels()) is not (SKCodecResult.Success or SKCodecResult.IncompleteInput)) return null;
             var longest = Math.Max(bitmap.Width, bitmap.Height);
             using var fitted = longest > DisplaySize  // the decoder leaves it when one side already fits the box
                 ? bitmap.Resize(new SKImageInfo((int)Math.Max(1, Math.Round((double)bitmap.Width * DisplaySize / longest)), (int)Math.Max(1, Math.Round((double)bitmap.Height * DisplaySize / longest)), bitmap.ColorType, SKAlphaType.Opaque), new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear))
                 : null;
+            if (longest > DisplaySize && fitted is null) return null;
             using var image = SKImage.FromBitmap(fitted ?? bitmap);
             using var data = image.Encode(SKEncodedImageFormat.Jpeg, 85);  // a new encode carries none of the original's metadata
             if (data is null) return null;
@@ -249,7 +250,7 @@ public sealed partial class State
             File.Move(part, copy, overwrite: true);
             return copy;
         }
-        catch (IOException)
+        catch (Exception)  // SkiaSharp throws a plain Exception when it cannot allocate
         {
             return null;
         }
