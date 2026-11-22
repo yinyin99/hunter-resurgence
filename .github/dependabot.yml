@@ -23,6 +23,8 @@ updates:
     groups:
       dotnet:
         patterns: ["Microsoft.*", "System.*"]
+      skiasharp: # managed and native packages must stay on one version
+        patterns: ["SkiaSharp*"]
   - package-ecosystem: github-actions
     directories: ["/", "/.github/actions/*"] # "/" covers the workflows; the composite actions (setup-sdk uses setup-dotnet) are looked up per folder
     schedule:
