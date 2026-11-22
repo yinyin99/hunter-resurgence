@@ -185,7 +185,7 @@ public sealed partial class State
             ? v : null;
 
     /// <summary>GET of the website's `/photos/&lt;account&gt;/&lt;name&gt;` by `viewer` (the session's account, else the one the link names): the status and the file to send. 401 without a viewer. A stored file (the original)
-    /// goes to its owner only, 403 for anyone else; a display name (<see cref="DisplayName"/>) of a gallery picture is its display-size copy (<see cref="DisplayCopy"/>), and another player's read of it counts in
+    /// goes to its owner only, 403 for anyone else; a display name (<see cref="DisplayName"/>) of a gallery picture is its display-size copy (<see cref="DisplayCopy"/>). Every read of another player's picture counts in
     /// <see cref="ReadAllowed"/> (429 past it). The imported avatar stays everyone's. 404 for no such picture.</summary>
     public (int Status, string? File) WebPhoto(string name, long? viewer)
     {
@@ -194,9 +194,9 @@ public sealed partial class State
         if (viewer is not { } v) return (401, null);
         var slash = name.IndexOf('/');
         if (slash < 0 || !long.TryParse(name[..slash], NumberStyles.None, CultureInfo.InvariantCulture, out var owner)) return (404, null);
+        if (owner != v && !ReadAllowed(v)) return (429, null);  // every read of another player's picture counts, a refused or missing one too
         if (file is not null) return owner == v ? (200, file) : (403, null);
         if (DisplayedPicture(owner, name[(slash + 1)..]) is not { } original) return (404, null);
-        if (owner != v && !ReadAllowed(v)) return (429, null);
         return DisplayCopy(owner, original) is { } copy ? (200, copy) : (404, null);
     }
 
@@ -240,13 +240,13 @@ public sealed partial class State
             File.Move(part, copy, overwrite: true);
             return copy;
         }
-        catch (Exception e) when (e is SixLabors.ImageSharp.ImageFormatException or SixLabors.ImageSharp.Memory.InvalidMemoryOperationException or IOException)
+        catch (Exception e) when (e is SixLabors.ImageSharp.ImageFormatException or SixLabors.ImageSharp.Memory.InvalidMemoryOperationException or NotSupportedException or IOException)  // NotSupported: a JPEG kind the decoder lacks (lossless)
         {
             return null;
         }
         finally
         {
-            File.Delete(part);
+            if (File.Exists(part)) File.Delete(part);  // a restore may have removed the folder meanwhile
         }
     }
 

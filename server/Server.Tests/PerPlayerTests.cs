@@ -434,9 +434,11 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             Assert.Equal(200, (await Bare(third)).Status);
         Assert.Equal(429, (await Bare(third)).Status);
 
-        // a picture that is no JPEG, as the first of its account: no copy, 404
+        // a picture that is no JPEG, as the first of its account, and a lossless JPEG (a kind the decoder lacks): no copy, 404
         Upload(ME, 3, "not a picture"u8.ToArray());
-        Assert.Equal(404, (await Bare(PathOf(state.PublicGallery(ME, 1, "https://web.test", 8)["rows"]![0]!["url"]))).Status);
+        Upload(ME, 4, [255, 216, 255, 195, 0, 11, 8, 0, 16, 0, 16, 1, 1, 17, 0, 255, 217]);  // start of image, a lossless frame header (SOF3), end of image
+        foreach (var row in state.PublicGallery(ME, 1, "https://web.test", 8)["rows"]!.AsArray())
+            Assert.Equal(404, (await Bare(PathOf(row!["url"]))).Status);
 
         // deleting the picture deletes its copy
         Assert.True(state.DeletePhoto(8, (long)rows[1]!["id"]!));
