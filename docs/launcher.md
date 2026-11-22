@@ -179,6 +179,10 @@ Setting up again replaces all of it (and asks again). It is needed again when th
 
 The administrator window: setup itself runs as you, so the certificate lands in your own trust list. Only when it needs to write the hosts file does the launcher start a second copy of its exe through the Windows permission window, with exactly the command line `--hosts on` (Remove: `--hosts off`); that copy edits the hosts file and exits, without a window or any other work. Any other command line starts the launcher normally. If the launcher itself runs as administrator, no window appears. The forwarder never needs administrator rights.
 
+### When the launcher's page fails
+
+If WebView2's renderer, its GPU process or it stops responding, the launcher logs the kind and reason and reloads the page (the app restores its state from the server); if its browser process exits, the launcher replaces the page control. Neither touches the forwarder, which belongs to the launcher process, so a running game keeps its connection (test: `WebViewRecoveryTests`).
+
 ### How the forwarder works
 
 While the launcher is open it listens on `127.0.0.1` port 443 (HTTPS, with the certificate above) and port 80 (plain HTTP: the game's built-in browser sends some requests that way). Both speak HTTP/1.1 only. Each request is relayed unchanged (method, path and query exactly as sent, headers, body) over normal HTTPS to the community server at `server_url`, and the reply is relayed back with its length in `Content-Length` (never chunked, the game cannot read that) and without `Alt-Svc`, otherwise unchanged. The name the game asked for travels in the header `X-Game-Host`, because the community server sits behind a proxy that hides it; the server reads it only from that proxy ([server.md](server.md#behind-a-reverse-proxy)). Redirects, cookies and compression are not touched. A request the server cannot be reached for gets a 502.
