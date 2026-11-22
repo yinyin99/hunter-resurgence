@@ -45,18 +45,22 @@ public static class Borderless
         public nint Find(int pid)
         {
             (nint Window, long Area) best = default;
+            var name = new char[8];
             EnumWindows((h, _) =>
             {
                 GetWindowThreadProcessId(h, out var owner);
-                if (owner == pid && IsWindowVisible(h) && GetWindow(h, GwOwner) == 0 && GetWindowRect(h, out var r) && (long)(r.Right - r.Left) * (r.Bottom - r.Top) is var area && area > best.Area)
+                // a message box of the game (a start error before its window) is never stretched
+                if (owner == pid && IsWindowVisible(h) && GetWindow(h, GwOwner) == 0 && !name.AsSpan(0, GetClassName(h, name, name.Length)).SequenceEqual("#32770")
+                    && GetWindowRect(h, out var r) && (long)(r.Right - r.Left) * (r.Bottom - r.Top) is var area && area > best.Area)
                     best = (h, area);
                 return true;
             }, 0);
             return best.Window;
         }
 
+        // a monitor Windows does not describe leaves the window alone (it would be sized to nothing)
         public bool Framed(nint window) => PerMonitor(() =>
-            !IsIconic(window) && ((GetWindowLongPtr(window, GwlStyle) & Frame) != 0 || !GetWindowRect(window, out var r) || r != Monitor(window)));
+            Monitor(window) is var m && m != default && !IsIconic(window) && ((GetWindowLongPtr(window, GwlStyle) & Frame) != 0 || !GetWindowRect(window, out var r) || r != m));
 
         public void Unframe(nint window) => PerMonitor(() =>
         {
@@ -89,6 +93,7 @@ public static class Borderless
         [DllImport("user32.dll")] static extern bool IsIconic(nint window);
         [DllImport("user32.dll")] static extern nint GetWindow(nint window, int cmd);
         [DllImport("user32.dll")] static extern bool GetWindowRect(nint window, out Rect rect);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetClassNameW")] static extern int GetClassName(nint window, char[] name, int max);
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")] static extern long GetWindowLongPtr(nint window, int index);
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtrW")] static extern long SetWindowLongPtr(nint window, int index, long value);
         [DllImport("user32.dll")] static extern bool SetWindowPos(nint window, nint after, int x, int y, int width, int height, uint flags);

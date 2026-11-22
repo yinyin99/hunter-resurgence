@@ -54,7 +54,8 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
 
     /// <summary>
     /// Before a start (<c>/steam</c> or not): the mode before the player's choice becomes his choice (a file written windowed below must not read as Windowed next time), and in Borderless the start's graphics file is
-    /// written windowed at the monitor's size (created when missing). True when the game's window is to be made borderless (<see cref="Borderless"/>); the error, when the file could not be written, never blocks the start.
+    /// written windowed at the monitor's size (created when missing). True when the game's window is to be made borderless (<see cref="Borderless"/>). A file that could not be written gives its error and false: the game
+    /// then starts as that file says (perhaps in its exclusive full screen), which is left alone; the start goes on.
     /// </summary>
     public (bool Borderless, string? Error) PrepareStart(bool withSteam)
     {
@@ -76,7 +77,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
             else GameFiles.WriteGraphics(path, b);
             return (true, null);
         }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException) { return (prefs.DisplayMode == DisplayMode.Borderless, e.Message); }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or InvalidDataException) { return (false, e.Message); }
     }
 
     public Task<Result> SaveAsync(GameOptions options)

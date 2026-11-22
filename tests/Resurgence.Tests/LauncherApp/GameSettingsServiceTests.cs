@@ -150,6 +150,9 @@ public class GameSettingsServiceTests
         Assert.Contains($"\"display_mode\": \"{mode.ToString().ToLowerInvariant()}\"", File.ReadAllText(json));
         Assert.Equal(mode, Prefs.Load(json).DisplayMode);
         Assert.Equal(mode, (await new GameSettingsService(Config(), Prefs.Load(json), temp.Path, () => { }, monitor: Monitor).ReadAsync()).Options.Display);
+        // a value this launcher does not know is no choice, and the rest of the file stays
+        File.WriteAllText(json, """{ "display_mode": "stretched", "steam_option_set": "x" }""");
+        Assert.Equal(((DisplayMode?)null, (string?)"x"), (Prefs.Load(json).DisplayMode, Prefs.Load(json).SteamOptionSet));
     }
 
     // #810: before the player's choice a file that says fullscreen (or none) shows Borderless at the monitor's size, a windowed one Windowed
@@ -194,5 +197,10 @@ public class GameSettingsServiceTests
         File.Delete(g);
         Assert.Equal((true, (string?)null), new GameSettingsService(Config(), new Prefs(), temp.Path, () => { }, monitor: Monitor).PrepareStart(true));
         Assert.Equal("129\r\n0\r\n2560 1440 144\r\n1\r\n1\r\n1\r\n0\r\n0\r\n1\r\n0\r\n0\r\n0\r\n", Bytes(g));
+
+        // a file that cannot be written: its error, and the window is left as the game makes it
+        Write(g, "not a settings file");
+        var (borderless, error) = new GameSettingsService(Config(), new Prefs { DisplayMode = DisplayMode.Borderless }, temp.Path, () => { }, monitor: Monitor).PrepareStart(true);
+        Assert.True(!borderless && error is not null);
     }
 }
