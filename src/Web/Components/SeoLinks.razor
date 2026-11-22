@@ -1,8 +1,8 @@
 @implements IDisposable
 @inject NavigationManager Nav
-@* one URL per page and language, and its other languages (docs/website.md#search-engines); none once a page says it does not exist
-   (a profile's Nav.NotFound renders the not-found page in place), nor on the not-found page itself *@
-@if (!notFound && !Nav.ToBaseRelativePath(Nav.Uri).Split('?', '#')[0].Trim('/').Equals("not-found", StringComparison.OrdinalIgnoreCase))
+@* one URL per page and language, and its other languages (docs/website.md#search-engines), on the public pages only (the others are noindex); none once a page says
+   it does not exist (Nav.NotFound renders the not-found page in place) *@
+@if (!notFound && Seo.Indexed(new Uri(Nav.Uri).AbsolutePath))
 {
     var uri = new Uri(Nav.Uri);
     <HeadContent>

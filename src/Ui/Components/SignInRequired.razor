@@ -1,0 +1,20 @@
+@inject ISessionService Sessions
+@inject NavigationManager Nav
+
+@* in place of a page for signed-in players only, while signed out (the server refuses its reads: 401 signed_out) *@
+<h2>@L["SignIn.Required"]</h2>
+<p>@L["SignIn.Required.Why"]</p>
+@if (SignInUrl is { } url)
+{
+    @* the community server signs in: a full page load to Steam and back, as the public bar's link *@
+    <a class="btn btn-primary" href="@url" @onclick="() => Nav.NavigateTo(url, forceLoad: true)" @onclick:preventDefault>@L["Public.SignIn"]</a>
+}
+else
+{
+    <a class="btn btn-primary" href="/splash">@L["Public.SignIn"]</a>
+}
+
+@code {
+    /// <summary>Where the community server signs in and comes back to this page; null (the launcher, the mock site): the start screen signs in.</summary>
+    string? SignInUrl => Sessions.SignInUrl("/" + Nav.ToBaseRelativePath(Nav.Uri));
+}

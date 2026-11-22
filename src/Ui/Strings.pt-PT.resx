@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: servidor comunitário de {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Página não encontrada</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Esta página não existe.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Inicie sessão para ver esta página</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Os dados dos jogadores, a loja, as missões e as competições são apenas para caçadores com sessão iniciada.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>CAÇAR AGORA</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} jogador</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} jogadores</value></data>

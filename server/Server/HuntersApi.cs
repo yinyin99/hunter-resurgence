@@ -1,5 +1,5 @@
-// The hunterscore board, one hunter's place on it and the minigames' boards, on the website's host: public (only a hunt page also reads the cookie: the signed-in player's own taxidermy offers). The website's
-// server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
+// The hunterscore board, the hunters' profiles and the minigames' boards, on the website's host: every /hunters/ route for a signed-in player only (the session cookie; a hunt page also shows his own taxidermy offers).
+// The website's server calls them over SERVER_URL, the launcher on the public domain: the reverse proxy routes /hunters/ and the boards under /leaderboards/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
@@ -19,13 +19,21 @@ public static class HuntersApi
     static Reply PublicJson(JsonNode body) =>
         new(200, [("Content-Type", "application/json"), ("Cache-Control", "public, max-age=60"), ("Vary", "Accept"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(body), "hunters");
 
+    /// <summary>The reply of a /hunters/ route to a request without a session: as the account routes refuse it.</summary>
+    static Reply SignedOut => Json(401, new JsonObject { ["status"] = "signed_out", ["message"] = "Sign in first." });
+
     public static void MapHunters(this WebApplication app, Game game)
     {
         var state = game.State!;
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         long? SignedIn(HttpContext ctx) => SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } c ? state.Store.ResolveWebSession(c) : null;
         if (!state.Online) return;
-        var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)");
+        var group = app.MapGroup("/hunters").RequireHost(game.Web).WithGroupName("game").WithTags("Hunters (web_host)")
+            .AddEndpointFilter(async (f, next) =>
+            {
+                if (SignedIn(f.HttpContext) is not { } account) return SignedOut;
+                return await next(f);
+            });
 
         group.MapGet("", (HttpContext ctx) =>
             {

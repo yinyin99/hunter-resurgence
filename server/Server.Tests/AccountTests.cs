@@ -587,11 +587,13 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
     public async Task TestAKillPageIsFoundByTheHandleInItsUrl()
     {
         HarvestOf8();
-        var page = await Send("GET", "web.test", "/user/second/score/?id=1", null);
+        var signedIn = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(8, TimeSpan.FromHours(1))}");  // the page is for signed-in players
+        Assert.Equal(401, (await Send("GET", "web.test", "/user/second/score/?id=1", null)).Status);
+        var page = await Send("GET", "web.test", "/user/second/score/?id=1", null, null, signedIn);
         Assert.Equal("state", page.Source);
         Assert.Contains("72.270 kg", Encoding.UTF8.GetString(page.Body));
-        Assert.Equal("miss", (await Send("GET", "web.test", "/user/hunter/score/?id=1", null)).Source);  // the local account has no kill 1
-        Assert.Equal("miss", (await Send("GET", "web.test", "/user/nobody/score/?id=1", null)).Source);
+        Assert.Equal("miss", (await Send("GET", "web.test", "/user/hunter/score/?id=1", null, null, signedIn)).Source);  // the local account has no kill 1
+        Assert.Equal("miss", (await Send("GET", "web.test", "/user/nobody/score/?id=1", null, null, signedIn)).Source);
     }
 
     [Fact]

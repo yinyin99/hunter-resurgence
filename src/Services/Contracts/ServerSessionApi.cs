@@ -14,25 +14,26 @@ public static class ServerSessionApi
     public const string SignOut = "/auth/signout";
     /// <summary>Takes <c>?next=</c>, a local path to come back to.</summary>
     public const string SteamLogin = "/auth/steam/login";
-    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>?page=n</c>: 200 <see cref="ServerBoard"/>; GET <c>/hunters/&lt;handle&gt;</c>: 200 <see cref="ServerProfile"/> or 404; GET <c>/hunters/&lt;handle&gt;/statistics</c>: 200 <see cref="Totals"/> or 404.
+    /// Every <c>/hunters/</c> route needs the cookie: 401 <c>signed_out</c> without a session.</summary>
     public const string Hunters = "/hunters";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/skills</c>: 200 <see cref="ServerSkills"/> or 404. With the cookie.</summary>
     public const string SkillsSuffix = "/skills";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/dogs</c>: 200 <see cref="ServerDogs"/> or 404. With the cookie.</summary>
     public const string DogsSuffix = "/dogs";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/achievements</c>: 200 <see cref="ServerAchievements"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/achievements</c>: 200 <see cref="ServerAchievements"/> or 404. With the cookie.</summary>
     public const string AchievementsSuffix = "/achievements";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/trophies?page=n</c>: 200 <see cref="ServerTrophies"/> or 404. With the cookie.</summary>
     public const string TrophiesSuffix = "/trophies";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/ranks</c>: 200 <see cref="ServerRanks"/> or 404. With the cookie.</summary>
     public const string RanksSuffix = "/ranks";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/friends?page=n</c>: 200 <see cref="ServerFriendsPage"/> or 404. Public: no cookie needed.</summary>
     public const string FriendsSuffix = "/friends";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/best</c>: 200 <see cref="ServerBest"/> or 404. With the cookie.</summary>
     public const string BestSuffix = "/best";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/hunts?page=n</c>: 200 <see cref="ServerHunts"/> or 404; GET <c>/hunters/&lt;handle&gt;/hunts/&lt;id|latest&gt;</c>: 200 <see cref="ServerHunt"/> or 404. With the cookie.</summary>
     public const string HuntsSuffix = "/hunts";
-    /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. Public: no cookie needed.</summary>
+    /// <summary>GET <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c>: 200 <see cref="ServerSheet"/> or 404. With the cookie.</summary>
     public const string ScoreSuffix = "/score";
     /// <summary>GET <c>/hunters/&lt;handle&gt;/gallery?page=n</c>: 200 <see cref="ServerGalleryPage"/> or 404. Public: no cookie needed.</summary>
     public const string GallerySuffix = "/gallery";

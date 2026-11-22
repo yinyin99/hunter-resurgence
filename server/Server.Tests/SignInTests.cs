@@ -197,7 +197,16 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     static (string, string) Ck(string name, string? value) => ("Cookie", $"{name}={value}");
 
-    Task<Reply> Get(string host, string path, params (string, string)[] headers) => server.SendAsync("GET", host, path, headers);
+    /// <summary>A GET; a read of players (<c>/hunters</c>, the score page) without a cookie goes as a signed-in visitor (<see cref="Visitor"/>): they are for signed-in players only.</summary>
+    Task<Reply> Get(string host, string path, params (string, string)[] headers) => server.SendAsync("GET", host, path,
+        (path.StartsWith("/hunters", StringComparison.Ordinal) || path.StartsWith("/user/", StringComparison.Ordinal)) && !headers.Any(h => h.Item1 == "Cookie") && Visitor() is { } v ? [.. headers, v] : headers);
+
+    /// <summary>The session cookie of the first account that is not banned; null without one.</summary>
+    (string, string)? Visitor()
+    {
+        using var con = state.Store.Open();
+        return con.Scalar("SELECT id FROM accounts WHERE banned = 0 ORDER BY id LIMIT 1") is long id ? Ck("hr_session", state.Store.CreateWebSession(id, TimeSpan.FromHours(1))) : null;
+    }
 
     Task<Reply> PostForm(string host, string path, string body, params (string, string)[] headers) =>
         server.SendAsync("POST", host, path, [.. Form, ("Origin", "https://" + host), .. headers], Encoding.UTF8.GetBytes(body));
@@ -207,6 +216,13 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     /// <summary>What the website's page of a step reads: the sign-in in progress in this browser.</summary>
     Task<Reply> Pending(string host, string login) => Xhr("GET", host, "/auth/pending", Ck("hr_login", login));
+
+    /// <summary>The refusal of a read for signed-in players to a request without a session.</summary>
+    static void SignedOut(Reply r)
+    {
+        Assert.Equal(401, r.Status);
+        Assert.Equal("signed_out", (string)JsonNode.Parse(r.Body)!["status"]!);
+    }
 
     /// <summary>A refused request of the player's browser is sent to the website's problem page, with the key of its reason.</summary>
     static void Problem(Reply r, string reason)
@@ -887,6 +903,19 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var page = await Get("web.test", "/user/Hunter_One/score/?id=1");
         Assert.Equal(200, page.Status);
         Assert.Contains("text/html", page.Headers.Single(h => h.Name == "Content-Type").Value);
+        // signed out the score sheet is refused; the game's token and the player's cookie read it (docs/server.md#public-reads)
+        SignedOut(await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", []));
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", [("X-Hun-Session", session)])).Status);
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1&oauth_access_token=" + session, [])).Status);
+        Assert.Equal(200, (await server.SendAsync("GET", "web.test", "/user/Hunter_One/score/?id=1", [Ck("hr_session", cookie)])).Status);
+        foreach (var path in new[] { "/hunters/Hunter_One", "/hunters/Hunter_One/statistics", "/hunters/Hunter_One/skills", "/hunters/Hunter_One/trophies", "/hunters/Hunter_One/dogs",
+                                     "/hunters/Hunter_One/ranks", "/hunters/Hunter_One/achievements", "/hunters/Hunter_One/best", "/hunters/Hunter_One/hunts", "/hunters/Hunter_One/hunts/latest",
+                                     "/hunters/Hunter_One/score/1", "/hunters/nobody" })
+        {
+            SignedOut(await server.SendAsync("GET", "web.test", path, []));
+            SignedOut(await server.SendAsync("GET", "web.test", path, [Ck("hr_session", "0000")]));  // a cookie the server does not know
+            Assert.Equal(path.EndsWith("nobody") ? 404 : 200, (await server.SendAsync("GET", "web.test", path, [Ck("hr_session", cookie)])).Status);
+        }
         var hunter = JsonNode.Parse((await Get("web.test", "/hunters/Hunter_One")).Body)!;
         var me = (await Me(cookie, "signup.test"))!;
         var earned = (long)hunter["hunterscore"]!;

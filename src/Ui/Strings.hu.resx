@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: közösségi szerver ({game_full})</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Az oldal nem található</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Ez az oldal nem létezik.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Jelentkezz be az oldal megtekintéséhez</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>A játékosok adatai, a bolt, a küldetések és a versenyek csak a bejelentkezett vadászoknak érhetők el.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>VADÁSSZ!</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} játékos</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} játékos</value></data>

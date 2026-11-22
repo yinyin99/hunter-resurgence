@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: community server for {game_full}</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Page not found</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>This page does not exist.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Sign in to see this page</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Players' data, the store, the missions and the competitions are for signed-in hunters only.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>HUNT NOW</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} player</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} players</value></data>

@@ -27,9 +27,10 @@ public sealed class ServerCache<T> where T : class
 
     public void Fail(DateTime now) => Volatile.Write(ref failedAt, now.Ticks);
 
-    /// <summary>The held reply, else GET <paramref name="path"/> with the browser's <c>Host</c> (the server picks its site by it) and no cookie. Null when the server does not
+    /// <summary>The held reply, else GET <paramref name="path"/> with the browser's <c>Host</c> (the server picks its site by it) and its session <paramref name="cookie"/> when given (a reply for
+    /// signed-in players: the caller asks only with one). Null when the server does not
     /// answer, answers an error, or sends a reply that is not <paramref name="complete"/> (it would break every page until it expires): the caller shows nothing, never the mock.</summary>
-    public async Task<T?> LoadAsync(HttpClient http, string? host, string path, Func<T, bool> complete, ILogger log)
+    public async Task<T?> LoadAsync(HttpClient http, string? host, string path, Func<T, bool> complete, ILogger log, string? cookie = null)
     {
         var now = DateTime.UtcNow;
         if (Get(now) is { } value) return value;
@@ -38,6 +39,7 @@ public sealed class ServerCache<T> where T : class
         {
             using var request = new HttpRequestMessage(HttpMethod.Get, path);
             if (host is not null) request.Headers.Host = host;
+            if (cookie is not null) request.Headers.TryAddWithoutValidation("Cookie", $"{ServerSessionApi.Cookie}={cookie}");
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {

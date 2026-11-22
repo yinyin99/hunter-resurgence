@@ -10,6 +10,8 @@
   <data name="Landing.Heading" xml:space="preserve"><value>Hunter Resurgence: {game_full} topluluk sunucusu</value></data>
   <data name="NotFound.Title" xml:space="preserve"><value>Sayfa bulunamadı</value></data>
   <data name="NotFound.Lead" xml:space="preserve"><value>Bu sayfa mevcut değil.</value></data>
+  <data name="SignIn.Required" xml:space="preserve"><value>Bu sayfayı görmek için giriş yap</value></data>
+  <data name="SignIn.Required.Why" xml:space="preserve"><value>Oyuncu verileri, mağaza, görevler ve yarışmalar yalnızca giriş yapmış avcılar içindir.</value></data>
   <data name="Menu.HuntNow" xml:space="preserve"><value>AVA ÇIK</value></data>
   <data name="Online.Player" xml:space="preserve"><value>{0} oyuncu</value></data>
   <data name="Online.Players" xml:space="preserve"><value>{0} oyuncu</value></data>
