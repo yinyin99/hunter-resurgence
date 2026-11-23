@@ -97,7 +97,7 @@ switch (cmd)
     case "import": Import([.. words.Skip(1)]); break;
     case "review": Review([.. words.Skip(1)]); break;
     case "claim": ClaimCommand([.. words.Skip(1)]); break;
-    case "coverage": await Coverage(words.Contains("--no-recordings")); break;
+    case "coverage": await Coverage(words.Contains("--no-recordings"), words.Contains("--rules")); break;
     case "backup":
         if (words.Count is not (2 or 3)) Die("usage: backup <folder> [keep, default 7]");
         DbBackup.Run(settings.DataDir, words[1], words.Count == 3 ? int.Parse(words[2], CultureInfo.InvariantCulture) : 7);
@@ -390,8 +390,9 @@ void ClaimCommand(string[] a)
 // Default: the recordings answer and the player state is off. --no-recordings: the server as it starts without
 // recordings or mirror (player state from the install and the facts file, on a temporary database), so what is listed
 // as unanswered still needs a recording. Hosts are printed as their settings key (api, static, ...), never by name.
-// Last: the missions the catalogue defines and how many of their objectives the server understands (State.MissionCoverage).
-async Task Coverage(bool noRecordings)
+// Last: the missions the catalogue defines and how many of their objectives the server understands (State.MissionCoverage). --rules adds every objective's rule in words, sorted
+// by mission and objective so two runs can be diffed; the warnings where a rule disagrees with its mission's own data end the report, with or without --rules.
+async Task Coverage(bool noRecordings, bool rules)
 {
     var cfg = settings.Cfg;
     var table = Table(out var hars);
@@ -403,7 +404,7 @@ async Task Coverage(bool noRecordings)
         if (noRecordings && state is null) Die("no connect sample in the install: nothing to start the player state from");
         await using var server = await Loopback.StartAsync(new Replay.Game(served, cfg, state, noRecordings ? Path.Combine(scratch!, "mirror") : settings.MirrorDir));
         await ReplayAll(server, cfg, hars);
-        MissionCoverage(cfg, table);
+        MissionCoverage(cfg, table, rules);
     }
     finally
     {
@@ -415,13 +416,13 @@ async Task Coverage(bool noRecordings)
     }
 }
 
-void MissionCoverage(JsonObject cfg, Replay.HarTable table)
+void MissionCoverage(JsonObject cfg, Replay.HarTable table, bool rules)
 {
     var scratch = Directory.CreateTempSubdirectory("coverage-missions").FullName;
     try
     {
         Console.WriteLine("missions:");
-        foreach (var line in Replay.LoadState(cfg, table, scratch)?.MissionCoverage() ?? ["no recorded connect: no catalogue"])
+        foreach (var line in Replay.LoadState(cfg, table, scratch)?.MissionCoverage(rules) ?? ["no recorded connect: no catalogue"])
             Console.WriteLine("  " + line);
     }
     finally

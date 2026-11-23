@@ -19,7 +19,7 @@ public abstract class MissionTestBase : StateTestBase
         "{\"missions\": [" + string.Join(",", titles.Select((t, i) =>
             $"{{\"id\": {i + 1}, \"title\": {Py.Dumps(JsonValue.Create(t))}, \"dependencies\": [], \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": {Py.Dumps(JsonValue.Create(t))}}}]{extra}}}")) + "]}";
 
-    // ids 50 to 53: a rifle and a shotgun, two ammunitions; 60 to 65: weapons of other classes; 70 to 74: ammunition; 80 and 81: sights
+    // ids 50 to 53: a rifle and a shotgun, two ammunitions; 60 to 67: weapons of other classes; 70 to 74: ammunition; 80 and 81: sights
     static readonly string[] ExtraSpecies =
     [
         """{"id": 3, "name": "Plains Elk"}""", """{"id": 4, "name": "Hill Elk"}""", """{"id": 5, "name": "Test Fox"}""", """{"id": 6, "name": "Spring Pintail"}""", """{"id": 7, "name": "Test Mallard"}""",
@@ -35,6 +35,7 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 64, "name": "Test Crossbow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 65, "name": "Test Muzzleloader", "cat": 1, "subcat": {"name": "Muzzleloaders"}}""",
         """{"id": 70, "name": "Test Tracer Arrows", "cat": 3}""", """{"id": 71, "name": "Wooden Arrows", "cat": 3}""",
         """{"id": 72, "name": "7mm Test Ammunition (HV)", "cat": 3}""", """{"id": 73, "name": "7mm Test Ammunition (HP)", "cat": 3}""", """{"id": 74, "name": "12 GA Test Buckshot Shells", "cat": 3}""",
+        """{"id": 66, "name": "Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 67, "name": "Heavy Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
         """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
     ];
 
