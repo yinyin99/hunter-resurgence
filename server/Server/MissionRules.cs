@@ -86,7 +86,8 @@ public sealed partial class State
     static string CoatName(long id) => id >= 0 && id < Reader.CoatNames.Length ? Reader.CoatNames[id] : "coat " + id;
 
     /// <summary>The rule of every objective in words, one line each, sorted by mission and objective: `mission 1 objective 0: <title> => <kind>; <species>; <gender>; ordered; <conditions>`, the
-    /// conditions sorted; an objective not understood has `not understood, left over: <words>` before the conditions it did read.</summary>
+    /// conditions sorted; an objective not understood has `not understood, left over: <words>` before the conditions it did read; an overridden one (`mission_rules.json`, whose entries are
+    /// written in these words) has `(override)` after its id.</summary>
     public IEnumerable<string> RuleLines()
     {
         foreach (var m in missions.Values.OrderBy(m => m.Id))
@@ -100,7 +101,7 @@ public sealed partial class State
                 if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
                 if (r.Ordered) parts.Add("ordered");
                 parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
-                yield return $"mission {m.Id} objective {o.Id}: {o.Title} => {string.Join("; ", parts)}";
+                yield return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
             }
     }
 

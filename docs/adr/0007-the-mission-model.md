@@ -1,6 +1,6 @@
 # The mission model
 
-Status: accepted
+Status: accepted, amended by [ADR 0012](0012-the-operator-may-state-an-objectives-rule.md): the conditions of an objective may be stated by the operator's `mission_rules.json`; titles, texts and rewards still come only from the recorded catalogue.
 
 Spec: [#244](https://github.com/yinyin99/hunter-resurgence/issues/244)
 

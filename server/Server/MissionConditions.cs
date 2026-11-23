@@ -408,7 +408,7 @@ public sealed partial class State
             + @")\s+(?:colou?red|colou?r\s+variation))(?=\s)", Rx);
 
         /// <summary>The ids of a coat word for an animal of one of `animals` (none known: any).</summary>
-        static long[] CoatIds(string word, IEnumerable<long> animals) =>
+        public static long[] CoatIds(string word, IEnumerable<long> animals) =>
             animals.SelectMany(a => SpeciesCoats.GetValueOrDefault(a, [])).Where(c => c.Word == word).SelectMany(c => c.Ids).ToArray() is { Length: > 0 } own ? own
                 : [.. CoatWords.Where(c => c.Word == word).SelectMany(c => c.Ids), .. Enumerable.Range(0, CoatNames.Length).Where(i => CoatNames[i] == word).Select(i => (long)i)];
 
@@ -878,6 +878,10 @@ public sealed partial class State
         yield return "understood by kind: " + string.Join(", ", byKind);
         yield return "conditions read: " + string.Join(", ", all.SelectMany(x => x.Objective.Rule.Tests ?? []).GroupBy(t => t.Check).OrderBy(g => g.Key).Select(g => $"{g.Key} {g.Count()}"));
         yield return "not understood: of a kind the server does not read " + not.Count(x => x.Objective.Rule.Kind == Kind.Other) + ", with a condition it does not read " + not.Count(x => x.Objective.Rule.Kind != Kind.Other);
+        if (overridden.Count > 0)
+            yield return $"objectives overridden by {MissionRulesFile}: {overridden.Count}";
+        foreach (var (mission, objective) in overridden.Order())
+            yield return $"mission {mission} objective {objective} (override): {missions[mission].Objectives.First(o => o.Id == objective).Title}";
         yield return "objectives not understood, by mission:";
         foreach (var x in not.OrderBy(x => x.Mission))
             yield return $"mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";
