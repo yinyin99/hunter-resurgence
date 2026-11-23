@@ -607,6 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beschrijving</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Doelen</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Vergrendeld. Voltooi eerst:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Reservaten</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Beloningen</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inactief</value></data>
