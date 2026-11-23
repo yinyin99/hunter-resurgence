@@ -11,26 +11,36 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat }
+    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat,
+        Within, Each, SameShot, Different }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
     /// animal state, stance, stand `location`, reserve, coat), the refused ones (`NotAmmo`, `NotState`, `NotCoat`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
     /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one. `Clue` is met by a clue of one of the
-    /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt.</summary>
+    /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt. `Within`, `Each`, `SameShot` and `Different` are met when the event is the `Min`-th of its hunt
+    /// that meets the rule's other conditions, `Max` the seconds they may span (<see cref="Sequenced"/>).</summary>
     sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
+
+    /// <summary>An event of a sequence: its id, when the server received it (null before schema 14) and its kill.</summary>
+    sealed record Step(long Id, double? Ts, Kill Kill);
 
     /// <summary>A kill as the conditions see it: its harvest (event 3) and spawn (event 7), its hits (event 1, in order; a spot's own event 11), the reserve of the hunt it
     /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).
-    /// A clue has its own event (12) and, when asked for, the clues of its animal in its hunt up to it.</summary>
+    /// A clue has its own event (12) and, when asked for, the clues of its animal in its hunt up to it. `Id` is its stored event; `Steps` the harvests (a clue: the clues) of its hunt up to it.</summary>
     sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null,
-                      JsonObject? e12 = null, Func<List<(long Id, JsonObject Body)>>? clues = null)
+                      JsonObject? e12 = null, Func<List<(long Id, JsonObject Body)>>? clues = null, long id = 0, Func<long, List<Step>>? steps = null)
     {
         public readonly JsonObject E3 = e3, E7 = e7, E12 = e12 ?? new();
         public readonly long? Reserve = reserve;
+        public readonly long Id = id;
         public readonly Lazy<List<JsonObject>> Hits = new(hits);
         public readonly Lazy<List<(long Id, JsonObject Body)>> Clues = new(clues ?? (() => []));
         public readonly Lazy<(bool Disqualified, double? Score)> Scored = new(scored);
         public readonly Lazy<double?> Points = new(points ?? (() => null));
+        readonly Dictionary<long, List<Step>> runs = [];
+
+        /// <summary>The harvests (a clue: the clues) of its hunt after event `after` up to this one, in order, this one last.</summary>
+        public List<Step> Steps(long after) => runs.TryGetValue(after, out var r) ? r : runs[after] = steps?.Invoke(after) ?? [];
     }
 
     static double? NumOf(JsonObject? o, string key) => o is not null && Py.IsNum(o[key]) ? Py.D(o[key]) : null;
@@ -57,7 +67,7 @@ public sealed partial class State
         _ => null,
     };
 
-    static bool Meets(Test t, Kill k, long after = 0)
+    static bool Meets(Test t, Kill k, long after = 0, Rule? rule = null)
     {
         var hits = k.Hits.Value;
         var (first, last) = (hits.FirstOrDefault(), hits.LastOrDefault());  // the killing hit is the last: the weapon, ammunition, distance, stand and state are its
@@ -87,12 +97,51 @@ public sealed partial class State
             Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
             Check.Coat => Has(NumOf(k.E7, "texture")),
             Check.NotCoat => NumOf(k.E7, "texture") is { } coat && !t.Ids!.Contains((long)coat),  // an animal with no spawn has no coat: it is no other coat either
+            Check.Within or Check.Each or Check.SameShot or Check.Different => Sequenced(t, k, after, rule) >= t.Min,
             _ => false,
         };
     }
 
-    /// <summary>Does the kill meet every condition of the rule (an unknown one never)? `after` is the last event the mission's progress is not owed from: the clues a count adds up are later.</summary>
-    static bool Meets(Rule rule, Kill k, long after = 0) => !rule.Unknown && (rule.Tests ?? []).All(t => Meets(t, k, after));
+    /// <summary>Does the kill meet every condition of the rule (an unknown one never)? `after` is the last event the mission's progress is not owed from: the clues a count adds up and the
+    /// harvests a sequence counts are later. The sequences come last in the tests, so they are counted only for a kill that meets the rest.</summary>
+    static bool Meets(Rule rule, Kill k, long after = 0) => !rule.Unknown && (rule.Tests ?? []).All(t => Meets(t, k, after, rule));
+
+    static bool IsSequence(Check c) => c is Check.Within or Check.Each or Check.SameShot or Check.Different;
+
+    const double Grace = 10;  // seconds: events reach the server in batches some seconds after they happen
+
+    /// <summary>How many events of the sequence a test asks for this one ends. Of the harvests (a clue: the clues) of its hunt after the event `after` that meet the rule's other conditions (its
+    /// species, gender and tests; without a rule, all), this one included: `Within` counts those received at most `Max` seconds before it, `Each` those that lead to it each at most `Max`
+    /// seconds after the one before, `SameShot` those whose killing hit has its killing hit's `shot_id`, `Different` the animals of the clues received at most `Max` seconds before it.
+    /// A window gets 10 seconds of grace; an event with no time (before schema 14) is within none.</summary>
+    static int Sequenced(Test t, Kill k, long after, Rule? rule)
+    {
+        var steps = k.Steps(after);
+        if (steps.LastOrDefault() is not { } self || self.Id != k.Id)
+            return 0;
+        var such = steps.Where(s => s.Id == k.Id || rule is null || Such(rule, s.Kill, after)).ToList();
+        bool InWindow(Step s) => double.IsPositiveInfinity(t.Max) || s.Ts >= self.Ts - t.Max - Grace;
+        static double? ShotOf(Kill x) => NumOf(x.Hits.Value.LastOrDefault(), "shot_id");
+        switch (t.Check)
+        {
+            case Check.Each:
+                var n = 1;
+                for (var i = such.Count - 2; i >= 0 && such[i + 1].Ts - such[i].Ts <= t.Max + Grace; i--)
+                    n++;
+                return n;
+            case Check.SameShot:
+                return ShotOf(k) is { } shot ? such.Count(s => ShotOf(s.Kill) == shot) : 0;
+            case Check.Different:
+                return such.Where(InWindow).Select(s => NumOf(s.Kill.E12, "individual")).Distinct().Count();
+            default:
+                return such.Count(InWindow);
+        }
+    }
+
+    /// <summary>Does an earlier event of a sequence meet the rule's species, gender and conditions but the sequences?</summary>
+    static bool Such(Rule rule, Kill k, long after) =>
+        AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]) is var (species, gender)
+        && (rule.Species is null || rule.Species == species) && (rule.Gender is null || rule.Gender == gender) && (rule.Tests ?? []).All(t => IsSequence(t.Check) || Meets(t, k, after));
 
     /// <summary>The reserve of the hunt an event happened in: the latest hunt that started before it.</summary>
     static long? ReserveAt(Db con, long eventId) =>
@@ -107,7 +156,7 @@ public sealed partial class State
         {
             var r = ScoreKill(con, e3, harvest, Trophy, AmmoCheck);
             return (r.Disqualified, Py.IsNum(r.Score) ? Py.D(r.Score) : null);
-        }, () => TypicalPoints(e3, TrophyOf(con, individual, eventId)));
+        }, () => TypicalPoints(e3, TrophyOf(con, individual, eventId)), id: eventId, steps: after => StepsOf(con, 3, eventId, after));
     }
 
     // the event id after which the events of the animal `?1` of the event `?2` are: the later of its spawn (the latest event 7 before) and the first event of its hunt
@@ -139,12 +188,24 @@ public sealed partial class State
 
     /// <summary>A found clue (event 12 `e12`, stored as event `eventId`) as a kill with no hit: the reserve of its hunt, its kind and the clues of the same animal in that hunt can be checked.</summary>
     Kill ClueOf(Db con, long eventId, JsonObject e12, JsonObject e7) =>
-        new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null), e12: e12, clues: () => ClueEvents(con, e12["individual"], eventId));
+        new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null), e12: e12, clues: () => ClueEvents(con, e12["individual"], eventId), id: eventId,
+            steps: after => StepsOf(con, 12, eventId, after));
+
+    // the first event of the hunt that the event `?2` is in (0 before any hunt)
+    const string HuntFrom = "COALESCE((SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0)";
 
     /// <summary>The clues (event 12) of the animal `individual` in the hunt that event `eventId` is in, up to that event, with their event ids.</summary>
     static List<(long Id, JsonObject Body)> ClueEvents(Db con, JsonNode? individual, long eventId) =>
-        [.. con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > COALESCE("
-            + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id", individual, eventId).Select(r => ((long)r[0], Parse(r[1])))];
+        [.. con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > " + HuntFrom + " ORDER BY id", individual, eventId)
+            .Select(r => ((long)r[0], Parse(r[1])))];
+
+    /// <summary>The harvests (`ev` 3) or the clues (12) of the hunt that event `eventId` is in, after event `after` and up to `eventId`, in order, each with when the server received it and its kill.</summary>
+    List<Step> StepsOf(Db con, long ev, long eventId, long after) =>
+        [.. con.Rows("SELECT id, body, ts FROM events WHERE account_id = $a AND event = ?1 AND id <= ?2 AND id > ?3 AND id > " + HuntFrom + " ORDER BY id", ev, eventId, after).Select(r =>
+        {
+            var (id, e) = ((long)r[0], Parse(r[1]));
+            return new Step(id, r[2] as double?, ev == 3 ? KillOf(con, e, id) : ClueOf(con, id, e, SpawnBefore(con, e["individual"], id)));
+        })];
 
     /// <summary>The kinds of clue a title names; `Other` (rooting, water bubbles) no title names, and only a trail takes it.</summary>
     enum ClueKind { Blood, Footprints, Droppings, Call, Bedding, Other }
@@ -246,7 +307,7 @@ public sealed partial class State
         // made-up unit is read from the kilograms the title gives after it
         static readonly (Regex Spelling, string Name)[] Spellings =
         [
-            (new(@"\banch(?=[uü]tz\b)", Rx), "ansch"), (new(@"\bsemi[- ]auto(?!matic)\b", Rx), "semi-automatic"), (new(@"\bcanada moose\b", Rx), "moose"),
+            (new(@"\banch(?=[uü]tz\b)", Rx), "ansch"), (new(@"\bsemi[- ]auto(?!matic)\b", Rx), "semi-automatic"), (new(@"\bcanada moose\b", Rx), "moose"), (new(@"\bthirdn\b", Rx), "third"),
             (new(@"\.357 magnum\b(?!\s+(?:revolver|ammunition))", Rx), ".357 revolver"), (new(@"\d+ (?:[a-z]+ )?libras \(or (\d+(?:[.,]\d+)?) kg[^)]*\)", Rx), "$1 kg"),
         ];
 
@@ -267,6 +328,19 @@ public sealed partial class State
             ClueCount = new(@"\b(?<n>\d+|" + string.Join('|', NumberWords[2..11]) + @")\s+(?:\w+\s+){0,4}?(?:tracks?|droppings?|clues?|footprints?|footsteps?|calls?)\b", Rx),
             ClueWord = new(@"\bclues?\b", Rx), Tracks = new(@"\btracks?\b", Rx),
             Trail = new(@"\A\s*(?:locate|find)\b|\bsame\s+animal\b|\bone\s+and\s+the\s+same\b", Rx);
+
+        // several events of one hunt (docs/server.md, "Several events of one hunt"): how many (`two Grey Wolves`, `a fifth Elk`, `three different Elk`) and in what time (`within 5 minutes`,
+        // `with 5 minutes of the first harvest`, `within 10 minutes of each harvest`, `in 5 minutes`, `within a span of 5 min`, `5 minutes after another`)
+        static readonly string Amount = @"\d+|" + string.Join('|', NumberWords[2..11]);
+        static readonly string[] OrdinalWords = "zeroth first second third fourth fifth sixth seventh eighth ninth tenth".Split(' ');
+        static readonly Regex
+            Many = new(@"\A\s+(?<n>" + Amount + @")(?=\s)", Rx), AnyAmount = new(@"\s(?<n>" + Amount + @")(?=\s)", Rx),
+            Minutes = new(@"\s(?:within|with|in)\s+(?:a\s+span\s+of\s+)?(?<m>" + Amount + @")\s+min(?:ute)?s?(?:\s+of\s+(?:(?<each>each\s+harvest)|the\s+first\s+harvest|one\s+another|each\s+other))?(?=\s)", Rx),
+            AfterAnother = new(@"\s(?<m>" + Amount + @")\s+min(?:ute)?s?\s+after\s+another(?=\s)", Rx),
+            SameTime = new(@"\sat\s+the\s+same\s+time(?=\s)", Rx), Different = new(@"\sdifferent(?=\s)", Rx),
+            Ordinal = new(@"\s(?<o>" + string.Join('|', OrdinalWords[2..]) + @")(?=\s)", Rx);
+
+        static double AmountOf(Match m, string group) => long.TryParse(m.Groups[group].Value, out var n) ? n : Array.IndexOf(NumberWords, m.Groups[group].Value);
 
         // the words of a clue's kind, the most specific first (`blood trail` and `droppings track` before the `tracks` they end with)
         static readonly (Regex Word, ClueKind Kind)[] ClueWords =
@@ -495,8 +569,8 @@ public sealed partial class State
 
         /// <summary>The conditions of a clue objective's title (its first word is the verb: `ID`, `Locate`, ...): the reserve, the species and the gender as for a harvest, and a `Clue` test:
         /// the kinds the title names (`footprints`, `droppings`, `call`, `audio clue`, `blood trail`, `bedding`, `tracks`; `any clue` names none: any), and how many clues of the one animal it
-        /// needs (a number before them, else one). `tracks` are footprints, but the clues of one animal's trail (`Locate 3 ... tracks`, `3 tracks from the same animal`) are any clues. A clue
-        /// word it does not read, a place, `different` animals or any other word make it not understood.</summary>
+        /// needs (a number before them, else one). `tracks` are footprints, but the clues of one animal's trail (`Locate 3 ... tracks`, `3 tracks from the same animal`) are any clues. Clues of
+        /// `different` animals (a number or an ordinal of them, a time) are a `Different` test. A clue word it does not read, a place or any other word make it not understood.</summary>
         public (Test[] Tests, string Left) ReadClue(string title, long[]? own = null)
         {
             var tests = new List<Test>();
@@ -505,6 +579,15 @@ public sealed partial class State
             var sn = " " + Normalise(SameHunt.Replace(Coordinates.Replace(s, " "), " ")) + (Coordinates.IsMatch(s) ? " coordinates" : "") + " ";  // a place is not checked: coordinates leave it not understood
             TakeReserve(ref sn, tests);
             TakeSpecies(ref sn, own, tests);
+            // clues of several animals of the hunt (`tracks from three different Elk within a span of 5 min`, `3 clues from different Axis Deer`, `a second different Feral Goat`)
+            Test? different = null;
+            if (Take(ref sn, Different, out _))
+            {
+                var window = Take(ref sn, Minutes, out var span) ? AmountOf(span, "m") * 60 : double.PositiveInfinity;
+                if (Take(ref sn, Ordinal, out var nth)) different = new(Check.Different, Array.IndexOf(OrdinalWords, nth.Groups["o"].Value), window);
+                else if (Take(ref sn, AnyAmount, out var n)) different = new(Check.Different, AmountOf(n, "n"), window);
+                else sn += " different ";  // no number of animals: the word stays, the objective is not understood
+            }
             var count = 1L;
             if (ClueCount.Match(sn) is { Success: true } many)
             {
@@ -528,11 +611,14 @@ public sealed partial class State
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
             tests.Add(new(Check.Clue, count, Ids: kinds));
+            if (different is not null)
+                tests.Add(different);
             return ([.. tests], string.Join(' ', sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => !Stops.Contains(w) && !ClueStops.Contains(w))));
         }
 
-        /// <summary>The conditions the title asks and the words this reader does not understand, empty when it reads all of it (the words of a condition it could not read stay in the title).</summary>
-        public (Test[] Tests, string Left) Read(string title, long[]? own = null, long[]? named = null)
+        /// <summary>The conditions the title asks and the words this reader does not understand, empty when it reads all of it (the words of a condition it could not read stay in the title).
+        /// `hunt`: the title or its mission keeps to one hunt, so an ordinal (`a fifth Elk`) counts the harvests of the hunt.</summary>
+        public (Test[] Tests, string Left) Read(string title, long[]? own = null, long[]? named = null, bool hunt = false)
         {
             var tests = new List<Test>();
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
@@ -573,6 +659,19 @@ public sealed partial class State
             TakeReserve(ref sn, tests);
             TakeCoat(ref sn, tests);  // before the species: a bare coat word is one right before it
             TakeSpecies(ref sn, own, tests);
+            // several harvests of the hunt: `two ... within 5 minutes (of each harvest)`, `an Elk 5 minutes after another`, `two ... with a single shot` (below), `a fifth ...` when the title or
+            // its mission keeps to one hunt; elsewhere an ordinal says nothing more (each harvest finishes one objective, in order)
+            var many = Take(ref sn, Many, out var lead) ? AmountOf(lead, "n") : 1;
+            Test? sequence = null;
+            if (Take(ref sn, Minutes, out var span)) sequence = new(span.Groups["each"].Success ? Check.Each : Check.Within, many, AmountOf(span, "m") * 60);
+            else if (Take(ref sn, AfterAnother, out span)) sequence = new(Check.Within, Math.Max(many, 2), AmountOf(span, "m") * 60);
+            else if (Take(ref sn, Ordinal, out var nth) && hunt) sequence = new(Check.Within, Array.IndexOf(OrdinalWords, nth.Groups["o"].Value));
+            if (sequence is { Min: < 2 })
+            {
+                sequence = null;
+                sn += " minutes ";  // a time for one harvest: the word stays, the objective is not understood
+            }
+            var sameTime = Take(ref sn, SameTime, out _);
             // `except` ends what the title allows: the weapons named after it (a class, a name, a list of them) are the ones it refuses; what else is left of the tail is read as the rest of the title
             var refused = new HashSet<long>();
             if (sn.IndexOf(" except ", StringComparison.Ordinal) is var cut and >= 0)
@@ -598,7 +697,9 @@ public sealed partial class State
                 }
             if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
                 weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
-            if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
+            if (Take(ref sn, OneShot, out _))  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
+                if (many > 1 && sequence is null) sequence = new(Check.SameShot, many);  // `two Rusa Deer (at the same time) with a single shot`: one shot killed them all
+                else tests.Add(new(Check.OneShot));
             while (WeaponNoun.Match(sn) is { Success: true } noun)
                 weaponIds.UnionWith(TakeWords(ref sn, noun, 6, WeaponsOf));
             if (refused.Count > 0 && weaponIds.Count == 0)
@@ -652,6 +753,9 @@ public sealed partial class State
             if (sightIds.Count > 0) tests.Add(new(Check.Scope, Ids: sightIds));
             if (weaponIds.Count > 0) tests.Add(new(Check.Weapon, Ids: weaponIds));
             if (ammoIds.Count > 0) tests.Add(new(Check.Ammo, Ids: ammoIds));
+            if (many > 1 && sequence is null) sn += lead.Value + " ";  // a number with no time and no shot: it stays, the objective is not understood
+            if (sameTime && sequence?.Check != Check.SameShot) sn += " same_time ";
+            if (sequence is not null) tests.Add(sequence);  // last: it is counted only for a harvest that meets the rest
             return ([.. tests], string.Join(' ', sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => !Stops.Contains(w))));
         }
 

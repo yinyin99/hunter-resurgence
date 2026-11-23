@@ -76,6 +76,10 @@ public sealed partial class State
         Check.Clue => "clues: " + (t.Ids!.Count == 0 ? "any" : Names(t.Ids.Select(i => ((ClueKind)i).ToString().ToLowerInvariant()))) + " x" + Num(Math.Max(t.Min, 1)),
         Check.Coat => "coat: " + Names(t.Ids!.Select(CoatName)),
         Check.NotCoat => "not coat: " + Names(t.Ids!.Select(CoatName)),
+        Check.Within => $"in the hunt: {Num(t.Min)}" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
+        Check.Each => $"in the hunt: {Num(t.Min)}, each within {Num(t.Max / 60)} min of the one before",
+        Check.SameShot => $"in the hunt: {Num(t.Min)} killed by one shot",
+        Check.Different => $"in the hunt: {Num(t.Min)} different animals" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
         _ => t.Check.ToString().ToLowerInvariant(),
     };
 
