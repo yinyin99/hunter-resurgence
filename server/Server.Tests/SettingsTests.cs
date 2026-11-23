@@ -95,6 +95,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void SpawnNamedAnimalsDefaultsToFalseAndNeedsTrueOrFalse()
+    {
+        Assert.False((bool)Load(Minimal()).Cfg["spawn_named_animals"]!);
+        var on = Minimal();
+        on["spawn_named_animals"] = true;
+        Assert.True((bool)Load(on).Cfg["spawn_named_animals"]!);
+        foreach (var bad in new JsonNode[] { 0, "true" })
+        {
+            var o = Minimal();
+            o["spawn_named_animals"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void AllLicensesDefaultsToTrueAndNeedsTrueOrFalse()
     {
         Assert.True((bool)Load(Minimal()).Cfg["all_licenses"]!);

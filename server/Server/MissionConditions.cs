@@ -91,8 +91,8 @@ public sealed partial class State
             Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1 && (t.Ids is null || t.Ids.Contains((long)scope)),
             Check.NoScope => NumOf(last, "scope_id") == -1,
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
-            // a title with a place is met by its species (and gender) there; one without a place, by an animal that carries `special`
-            Check.Named => double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
+            // an animal the server placed (<see cref="PlaceNamedAnimals"/>) is met by an animal of its population; else a title with a place is met by its species (and gender) there, one without a place by an animal that carries `special`
+            Check.Named => t.Ids is not null ? NumOf(k.E7, "population") is { } population && t.Ids.Contains((long)population) : double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
             Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
             Check.Coat => Has(NumOf(k.E7, "texture")),
@@ -887,6 +887,11 @@ public sealed partial class State
             yield return $"objectives overridden by {MissionRulesFile}: {overridden.Count}";
         foreach (var (mission, objective) in overridden.Order())
             yield return $"mission {mission} objective {objective} (override): {missions[mission].Objectives.First(o => o.Id == objective).Title}";
+        if (placesNamedAnimals)
+        {
+            var named = all.Select(x => x.Objective.Rule.Tests?.FirstOrDefault(t => t.Check == Check.Named)).Where(t => t is not null).ToList();
+            yield return $"named animals placed (spawn_named_animals): {named.Count(t => t!.Ids is not null)} objectives in {namedPopulations.Count} populations, {named.Count(t => t!.Ids is null)} named-animal objectives keep the 1000 m guess or are never met";
+        }
         yield return "objectives not understood, by mission:";
         foreach (var x in not.OrderBy(x => x.Mission))
             yield return $"mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";

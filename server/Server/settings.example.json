@@ -11,6 +11,7 @@
   "offline_mode": true,
   "all_licenses": true,
   "unlimited_ammo": true,
+  "spawn_named_animals": false,
   "default_inventory_capacity": 20000,
   "listeners": [
     { "address": "127.0.0.1", "port": 443, "cert": "data/leaf.pem", "key": "data/leaf.key", "admin": true },

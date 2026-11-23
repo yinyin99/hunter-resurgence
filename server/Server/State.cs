@@ -681,11 +681,12 @@ public sealed partial class State
     /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
     /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).
     /// seasonal: the event the connect reply announces while its window runs, to the players who play events. missionRules: the operator's `mission_rules.json` (ReadMissionRules),
-    /// which replaces the rules of single objectives; a bad entry throws.</summary>
+    /// which replaces the rules of single objectives; a bad entry throws. spawnNamedAnimals: settings.json `spawn_named_animals`, the hunt's reply places the animals named objectives ask for
+    /// (<see cref="PlaceNamedAnimals"/>); off, the 1000 m guess meets them.</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false)
     {
         this.facts = facts ?? Facts.Default;
         Seasonal = seasonal;
@@ -713,6 +714,9 @@ public sealed partial class State
         {
             LoadMissions();
             OverrideMissionRules(missionRules);
+            placesNamedAnimals = spawnNamedAnimals;
+            if (spawnNamedAnimals)
+                PlaceNamedAnimals();
             LoadChallenges(challenges);
         }
         this.locale = locale;
@@ -1404,6 +1408,8 @@ public sealed partial class State
             for (var i = 0; i < licensed.Count; i++)
                 if (Py.L(licensed[i]) != 2)
                     licensed[i] = 1;
+        if (tutorial is null)
+            AddNamedAnimals(account, clientReserve + 1L, reply);
         Spawns.Apply(reply, TryKey(reserve, out var launched) && reserve is not null ? launched : null);
         return Py.DumpBytes(reply);
     }
