@@ -14,11 +14,12 @@ public sealed record DisplayAdapter(string Name, bool Primary, bool Attached, bo
 /// <param name="Current">The primary display's current mode; null when Windows does not say.</param>
 /// <param name="Adapters">The display adapters.</param>
 /// <param name="GraphicsFiles">The full paths of the graphics files the game may start with.</param>
-public sealed record ScreenProbes(Func<IReadOnlyList<(int W, int H, int Hz)>> Modes, Func<(int W, int H, int Hz)?> Current, Func<IReadOnlyList<DisplayAdapter>> Adapters, Func<IEnumerable<string>> GraphicsFiles)
+/// <param name="Exclusive">The saved display mode is Fullscreen (exclusive) (<see cref="Prefs.DisplayMode"/>): only then is the files' mode judged. Null, like no saved mode: Borderless, whose start writes the files windowed.</param>
+public sealed record ScreenProbes(Func<IReadOnlyList<(int W, int H, int Hz)>> Modes, Func<(int W, int H, int Hz)?> Current, Func<IReadOnlyList<DisplayAdapter>> Adapters, Func<IEnumerable<string>> GraphicsFiles, Func<bool>? Exclusive = null)
 {
     /// <summary>This PC's screen; the graphics files are those of the mode the game is planned to start in (<see cref="Settings.StartGraphicsFiles"/>).</summary>
-    public static ScreenProbes Real(Settings settings, Func<string?> plannedMode) =>
-        new(GameFiles.DisplayModes, GameFiles.CurrentDisplayMode, ReadAdapters, () => settings.StartGraphicsFiles(plannedMode()).Select(f => Path.Combine(GameFiles.AppData, f)));
+    public static ScreenProbes Real(Settings settings, Func<string?> plannedMode, Func<bool>? exclusive = null) =>
+        new(GameFiles.DisplayModes, GameFiles.CurrentDisplayMode, ReadAdapters, () => settings.StartGraphicsFiles(plannedMode()).Select(f => Path.Combine(GameFiles.AppData, f)), exclusive);
 
     const int AttachedToDesktop = 1, Primary = 4, MonitorActive = 1;
 

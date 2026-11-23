@@ -17,7 +17,7 @@ public class GameSettingsServiceTests
         var prefs = new Prefs();
         var saves = new int[1];
         var svc = new GameSettingsService(s, prefs, root, () => saves[0]++);
-        return (svc, prefs, saves, GameSettingsService.ToOptions(GameFiles.ReadGraphics(Path.Combine(root, "g.cfg")).Value!, GameFiles.ReadOptions(Path.Combine(root, "o.bin"), "fake_").Value));
+        return (svc, prefs, saves, GameSettingsService.ToOptions(GameFiles.ReadGraphics(Path.Combine(root, "g.cfg")).Value!, GameFiles.ReadOptions(Path.Combine(root, "o.bin"), "fake_").Value, DisplayMode.Windowed));
     }
 
     [Fact]
@@ -124,8 +124,83 @@ public class GameSettingsServiceTests
         var read = await svc.ReadAsync();
         Assert.Null(read.Error);
         Assert.False(File.Exists(g));
-        Assert.True((await svc.SaveAsync(read.Options with { Fullscreen = true, Resolution = new(1600, 900, 144), Scene = 3 })).Ok);
+        Assert.True((await svc.SaveAsync(read.Options with { Display = DisplayMode.Fullscreen, Resolution = new(1600, 900, 144), Scene = 3 })).Ok);
         Assert.Equal("129\r\n1\r\n1600 900 144\r\n3\r\n1\r\n1\r\n0\r\n0\r\n1\r\n0\r\n0\r\n0\r\n", Bytes(g));
-        Assert.True((await svc.ReadAsync()).Options is { Fullscreen: true, Scene: 3, Resolution: { Width: 1600, Height: 900, Hz: 144 } });
+        Assert.True((await svc.ReadAsync()).Options is { Display: DisplayMode.Fullscreen, Scene: 3, Resolution: { Width: 1600, Height: 900, Hz: 144 } });
+    }
+
+    static readonly Func<(int W, int H, int Hz)?> Monitor = () => (2560, 1440, 144);
+
+    // #810: Borderless runs windowed at the monitor's size, only Fullscreen writes the fullscreen flag; the mode is kept in launcher.json
+    [Theory]
+    [InlineData(DisplayMode.Borderless, "0\n2560 1440 144\n")]
+    [InlineData(DisplayMode.Fullscreen, "1\n1600 900 60\n")]
+    [InlineData(DisplayMode.Windowed, "0\n1600 900 60\n")]
+    public async Task EachDisplayModeWritesItsFileAndIsKeptInThePrefs(DisplayMode mode, string lines)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        Write(g, Gfx);
+        var prefs = new Prefs();
+        var svc = new GameSettingsService(Config(), prefs, temp.Path, () => { }, monitor: Monitor);
+        Assert.True((await svc.SaveAsync((await svc.ReadAsync()).Options with { Display = mode, Resolution = new(1600, 900, 60) })).Ok);
+        Assert.Equal("129\n" + lines + "2\n0\n0\n0\n0\n0\n", Bytes(g));
+        var json = Path.Combine(temp.Path, "launcher.json");
+        prefs.Save(json);
+        Assert.Contains($"\"display_mode\": \"{mode.ToString().ToLowerInvariant()}\"", File.ReadAllText(json));
+        Assert.Equal(mode, Prefs.Load(json).DisplayMode);
+        Assert.Equal(mode, (await new GameSettingsService(Config(), Prefs.Load(json), temp.Path, () => { }, monitor: Monitor).ReadAsync()).Options.Display);
+        // a value this launcher does not know is no choice, and the rest of the file stays
+        File.WriteAllText(json, """{ "display_mode": "stretched", "steam_option_set": "x" }""");
+        Assert.Equal(((DisplayMode?)null, (string?)"x"), (Prefs.Load(json).DisplayMode, Prefs.Load(json).SteamOptionSet));
+    }
+
+    // #810: before the player's choice a file that says fullscreen (or none) shows Borderless at the monitor's size, a windowed one Windowed
+    [Theory]
+    [InlineData("1", DisplayMode.Borderless)]
+    [InlineData("0", DisplayMode.Windowed)]
+    [InlineData(null, DisplayMode.Borderless)]
+    public async Task BeforeAChoiceAFullscreenFileShowsBorderless(string? fullscreen, DisplayMode shown)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        if (fullscreen is not null) Write(Path.Combine(temp.Path, "g.cfg"), Gfx.Replace("129\n0\n", $"129\n{fullscreen}\n"));
+        var read = await new GameSettingsService(Config(), new Prefs(), temp.Path, () => { }, monitor: Monitor).ReadAsync();
+        Assert.Equal(shown, read.Options.Display);
+        Assert.Equal(shown == DisplayMode.Borderless ? new Resolution(2560, 1440, 144) : new Resolution(1920, 1080, 60), read.Options.Resolution);
+    }
+
+    // #810: a Borderless start writes the start's file windowed at the monitor's size (creates a missing one); the mode before a choice becomes the choice; the other modes leave the file alone
+    [Fact]
+    public void ABorderlessStartWritesTheFileWindowedAtTheMonitorsSize()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        var exclusive = Gfx.Replace("129\n0\n", "129\n1\n");
+        Write(g, exclusive);
+        var prefs = new Prefs();
+        var saves = 0;
+        var svc = new GameSettingsService(Config(), prefs, temp.Path, () => saves++, monitor: Monitor);
+        Assert.Equal((true, (string?)null), svc.PrepareStart(true));
+        Assert.Equal("129\n0\n2560 1440 144\n2\n0\n0\n0\n0\n0\n", Bytes(g));
+        Assert.Equal((DisplayMode.Borderless, 1), (prefs.DisplayMode, saves));
+        Assert.Equal((true, (string?)null), svc.PrepareStart(false));
+        Assert.Equal(1, saves); // the choice is saved once
+
+        foreach (var other in new[] { DisplayMode.Fullscreen, DisplayMode.Windowed })
+        {
+            prefs.DisplayMode = other;
+            Write(g, exclusive);
+            Assert.Equal((false, (string?)null), svc.PrepareStart(true));
+            Assert.Equal(exclusive, Bytes(g));
+        }
+
+        File.Delete(g);
+        Assert.Equal((true, (string?)null), new GameSettingsService(Config(), new Prefs(), temp.Path, () => { }, monitor: Monitor).PrepareStart(true));
+        Assert.Equal("129\r\n0\r\n2560 1440 144\r\n1\r\n1\r\n1\r\n0\r\n0\r\n1\r\n0\r\n0\r\n0\r\n", Bytes(g));
+
+        // a file that cannot be written: its error, and the window is left as the game makes it
+        Write(g, "not a settings file");
+        var (borderless, error) = new GameSettingsService(Config(), new Prefs { DisplayMode = DisplayMode.Borderless }, temp.Path, () => { }, monitor: Monitor).PrepareStart(true);
+        Assert.True(!borderless && error is not null);
     }
 }

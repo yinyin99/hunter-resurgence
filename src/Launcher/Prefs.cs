@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Resurgence.Services;
 
 namespace Resurgence.Launcher;
 
@@ -16,6 +18,14 @@ public sealed class Prefs
     public bool CloseOnGameStart { get; set; }
     /// <summary>The Game settings were saved once: the first game start no longer asks for them.</summary>
     public bool GameSettingsSaved { get; set; }
+    /// <summary>The Game settings' display mode as stored (<c>borderless</c>, <c>fullscreen</c>, <c>windowed</c>): text, so a value this launcher does not know reads as no choice instead of damaging the whole file.</summary>
+    [JsonPropertyName("display_mode")] public string? DisplayModeText { get; set; }
+    /// <summary>The Game settings' display mode; null until chosen or until the first start (<see cref="GameSettingsService.Mode"/>). The game's own file only knows fullscreen on or off.</summary>
+    [JsonIgnore] public DisplayMode? DisplayMode
+    {
+        get => Enum.TryParse<DisplayMode>(DisplayModeText, true, out var m) && Enum.IsDefined(m) ? m : null;
+        set => DisplayModeText = value?.ToString().ToLowerInvariant();
+    }
     /// <summary>The launch option line the launcher wrote into Steam, and what was there before (null: nothing). The uninstall puts it back only while the line is still there.</summary>
     public string? SteamOptionSet { get; set; }
     public string? SteamOptionBefore { get; set; }

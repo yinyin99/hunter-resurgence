@@ -49,7 +49,8 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         var http = s.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) } : null;
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
-            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed, screen: ScreenProbes.Real(s, SteamProbes.Real.PlannedMode));
+            portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed,
+            screen: ScreenProbes.Real(s, SteamProbes.Real.PlannedMode, () => env.Prefs.DisplayMode == DisplayMode.Fullscreen));
     }
 
     /// <summary>Runs the checks off the calling thread.</summary>
@@ -263,11 +264,12 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     }
 
     // 11, listed after disk: exclusive full screen at a mode the primary display does not offer (the game closes at start), and a primary display device that is no working screen. Probed on a start as well: it can end the start at once.
-    // Windowed at any size, and a Borderless start (windowed at the screen's size), are never judged. An adapter's name never triggers the second warning: a working screen on an adapter named like a virtual one is fine.
+    // The mode is judged only when the saved display mode is Fullscreen (exclusive): Borderless (also no saved mode) and Windowed starts never use the exclusive full screen, whatever the file says now.
+    // An adapter's name never triggers the second warning: a working screen on an adapter named like a virtual one is fine.
     InstallCheck Display(GameInstall g)
     {
         if (screen is null) return Ok("display");
-        var modes = screen.Modes();
+        var modes = screen.Exclusive?.Invoke() == true ? screen.Modes() : [];
         if (modes.Count > 0 && NotOffered(modes).FirstOrDefault().Settings is { } bad)
             return new("display", "warn", "Check.Display.Mode", new Dictionary<string, string> { ["mode"] = $"{bad.Width}x{bad.Height} {bad.Hz} Hz" }, "fix-display");
         var primary = screen.Adapters().FirstOrDefault(a => a.Primary);

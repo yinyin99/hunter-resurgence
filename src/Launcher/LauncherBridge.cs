@@ -21,11 +21,12 @@ namespace Resurgence.Launcher;
 /// <param name="processes">The client's processes with their main windows; null: none is known to have a window.</param>
 /// <param name="bringToFront">Shows a client window over the others.</param>
 /// <param name="stopClient">Closes the client and stops it when it stays (<see cref="GameFiles.StopClientAsync"/>); null: nothing is closed.</param>
+/// <param name="display">Before a start (<c>/steam</c> or not): writes the graphics file for the display mode (<see cref="GameSettingsService.PrepareStart"/>); true when the game's window is to be made borderless.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
     Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null,
-    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null) : ILauncherBridge
+    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -33,7 +34,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock,
-        processes: GameFiles.ClientProcesses, bringToFront: GameProcess.BringToFront, stopClient: GameFiles.StopClientAsync)
+        processes: GameFiles.ClientProcesses, bringToFront: GameProcess.BringToFront, stopClient: GameFiles.StopClientAsync,
+        display: new GameSettingsService(env.Settings, env.Prefs, GameFiles.AppData, env.Save).PrepareStart)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -255,6 +257,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         }
         // the process of the last start is the one watched (a process the watch never took is let go)
         Interlocked.Exchange(ref started, game)?.Game.Dispose();
+        if (borderless) _ = Task.Run(() => KeepBorderless(game.Game));
         // the mode is told only now, once the game has really started: a start that failed says nothing of Steam
         lastStartMode = withSteam ? "steam" : "nosteam";
         StartStateChanged?.Invoke();
@@ -274,11 +277,24 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         return await Task.Run(() => StartGame(r.Url));
     }
 
-    /// <summary>The graphics settings follow the start's mode (<see cref="GameFiles.CarryGraphics"/>); a failure is logged and never blocks the start.</summary>
+    /// <summary>The graphics settings follow the start's mode (<see cref="GameFiles.CarryGraphics"/>), then the display mode's file is written (<c>display</c>); a failure is logged and never blocks the start.</summary>
     void CarryGraphics(bool withSteam)
     {
-        if (settings is null || appData is null) return;
-        if (GameFiles.CarryGraphics(settings, appData, withSteam) is { } error) log?.LogWarning("The graphics settings could not be copied for the start: {Error}", error);
+        if (settings is not null && appData is not null && GameFiles.CarryGraphics(settings, appData, withSteam) is { } error) log?.LogWarning("The graphics settings could not be copied for the start: {Error}", error);
+        if (display?.Invoke(withSteam) is not var (keep, failed)) return;
+        borderless = keep;
+        if (failed is not null) log?.LogWarning("The graphics file could not be written for the borderless display mode: {Error}", failed);
+    }
+
+    /// <summary>The display mode of the coming start is Borderless (<c>display</c>).</summary>
+    bool borderless;
+
+    /// <summary>Keeps the started game's window borderless until the process has exited (<see cref="Borderless.KeepAsync"/>, every <c>poll</c>).</summary>
+    async Task KeepBorderless(GameProcess game)
+    {
+        // the watch disposes the process once it has exited: it is then gone too
+        bool Running() { try { return game.ExitCode() is null; } catch (InvalidOperationException) { return false; } }
+        await Borderless.KeepAsync(Borderless.Win32, game.Id, Running, poll ?? TimeSpan.FromSeconds(1));
     }
 
     /// <summary>

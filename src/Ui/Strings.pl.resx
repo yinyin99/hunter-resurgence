@@ -313,7 +313,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Zapisz</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Anuluj</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Start gry</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Pełny ekran</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Tryb wyświetlania</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Bez ramki</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Pełny ekran (wyłączny)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>W oknie</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Wypełnia cały ekran w jego własnej rozdzielczości. Alt+Tab przełącza od razu.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Synchronizacja pionowa</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Rozdzielczość ekranu</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

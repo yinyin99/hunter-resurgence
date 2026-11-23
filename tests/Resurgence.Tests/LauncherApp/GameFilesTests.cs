@@ -1,3 +1,4 @@
+using Resurgence.Services;
 using Resurgence.Launcher;
 using static Resurgence.Tests.LauncherApp.Files;
 
@@ -164,12 +165,12 @@ public class GameFilesTests
         Assert.True(read.Error is null && read.Options is { Scene: 0, Aniso: 0, ContextualHelp: null } && read.Resolutions.Contains(read.Options.Resolution), "dialog: reads the graphics file, adds the current mode to the list");
         Assert.True(await svc.FirstStartAsync(), "dialog: first start until the settings were saved");
         var g = new GraphicsSettings { Aniso = 0, Width = 1, Height = 1, Hz = 1 };
-        Assert.True(GameSettingsService.ToOptions(g, null).Aniso == 0 && GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null)).Aniso == 0, "dialog: Default anisotropic filtering stays Default when untouched");
-        Assert.True(GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null) with { Aniso = 2 }).Aniso == 3 && GameSettingsService.ToOptions(g with { Aniso = 5 }, null).Aniso == 4, "dialog: list position and file value differ by one");
-        var saved = await svc.SaveAsync(read.Options with { Scene = 3, Fullscreen = true });
+        Assert.True(GameSettingsService.ToOptions(g, null, DisplayMode.Windowed).Aniso == 0 && GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null, DisplayMode.Windowed)).Aniso == 0, "dialog: Default anisotropic filtering stays Default when untouched");
+        Assert.True(GameSettingsService.ToGraphics(g, GameSettingsService.ToOptions(g, null, DisplayMode.Windowed) with { Aniso = 2 }).Aniso == 3 && GameSettingsService.ToOptions(g with { Aniso = 5 }, null, DisplayMode.Windowed).Aniso == 4, "dialog: list position and file value differ by one");
+        var saved = await svc.SaveAsync(read.Options with { Scene = 3, Display = DisplayMode.Fullscreen });
         var firstStart = await svc.FirstStartAsync();
         Assert.True(saved.Ok && saves == 1 && prefs.GameSettingsSaved && !firstStart, "dialog: save writes the file and remembers it");
-        Assert.True((await svc.ReadAsync()).Options is { Scene: 3, Fullscreen: true }, "dialog: reads back what was saved");
+        Assert.True((await svc.ReadAsync()).Options is { Scene: 3, Display: DisplayMode.Fullscreen }, "dialog: reads back what was saved");
         Assert.True((await new GameSettingsService(new Settings(null, null), new Prefs(), root, () => { }).ReadAsync()).Error == "GameSettings.NotConfigured", "dialog: not configured is reported");
     }
 }

@@ -313,7 +313,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Kaydet</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>İptal</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Oyunu Başlat</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Tam Ekran</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Görüntü Modu</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Kenarlıksız</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Tam Ekran (Özel)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>Pencereli</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Tüm ekranı kendi çözünürlüğünde kaplar. Alt+Tab anında geçiş yapar.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Dikey Senkronizasyon</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Ekran Çözünürlüğü</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

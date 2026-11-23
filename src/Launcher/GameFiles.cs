@@ -245,7 +245,7 @@ public static class GameFiles
         return [.. set];
     }
 
-    /// <summary>The primary display's current mode; null when Windows does not say.</summary>
+    /// <summary>The primary display's current mode (the monitor the game starts on); null when Windows does not say.</summary>
     internal static (int W, int H, int Hz)? CurrentDisplayMode()
     {
         var dm = new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };

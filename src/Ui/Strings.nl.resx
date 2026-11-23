@@ -313,7 +313,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Opslaan</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Annuleren</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Spel starten</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Volledig scherm</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Weergavemodus</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Randloos</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Volledig scherm (exclusief)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>Venster</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Vult het hele scherm op de eigen resolutie. Alt+Tab wisselt meteen.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Verticale sync</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Schermresolutie</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

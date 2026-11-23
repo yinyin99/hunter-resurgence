@@ -39,8 +39,8 @@ public class InstallChecksTests
     static readonly (int, int, int)[] Offered = [(1360, 768, 60), (1920, 1080, 60)];
     static readonly DisplayAdapter RealGpu = new("Fictional GPU", true, true, true);
 
-    /// <summary>A fake screen: its mode list, the graphics files the game may start with, the current mode and the display adapters.</summary>
-    static ScreenProbes Screen((int, int, int)[] modes, string[] files, (int, int, int)? current = null, params DisplayAdapter[] adapters) => new(() => modes, () => current, () => adapters, () => files);
+    /// <summary>A fake screen: its mode list, the graphics files the game may start with, the current mode and the display adapters; the saved display mode is Fullscreen (exclusive).</summary>
+    static ScreenProbes Screen((int, int, int)[] modes, string[] files, (int, int, int)? current = null, params DisplayAdapter[] adapters) => new(() => modes, () => current, () => adapters, () => files, () => true);
 
     static string Graphics(TempDir t, string name, bool fullscreen, int w, int h, int hz)
     {
@@ -539,6 +539,21 @@ public class InstallChecksTests
         Assert.Equal(level, r.Level);
         if (level == "ok") Assert.Equal(("Check.Ok", null), (r.Text, r.Fix));
         else Assert.Equal(("Check.Display.Mode", "fix-display", $"{w}x{h} {hz} Hz"), (r.Text, r.Fix, r.Args!["mode"]));
+    }
+
+    // #810: only a saved Fullscreen (exclusive) is judged; Borderless (and no saved mode) starts windowed at the screen's size, whatever the file says now
+    [Theory]
+    [InlineData(true, "warn")]
+    [InlineData(false, "ok")]
+    [InlineData(null, "ok")]
+    public async Task TheModeIsJudgedOnlyWhenExclusiveFullScreenIsTheSavedMode(bool? exclusive, string level)
+    {
+        using var t = new TempDir("checks-");
+        var screen = Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, RealGpu) with { Exclusive = exclusive is { } e ? () => e : null };
+        Assert.Equal(level, (await Check(Make(Game(t), screen: screen), "display")).Level);
+        // the virtual adapter warning does not depend on the mode
+        var remote = Screen(Offered, [], null, new DisplayAdapter("Fictional Remote Display Adapter", true, false, false)) with { Exclusive = null };
+        Assert.Equal("Check.Display.Virtual", (await Check(Make(Game(t), screen: remote), "display")).Text);
     }
 
     [Fact]

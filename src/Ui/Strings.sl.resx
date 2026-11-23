@@ -313,7 +313,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Shrani</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Prekliči</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Zaženi igro</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Celozaslonski način</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Način prikaza</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Brez robov</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Celozaslonski način (izključni)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>V oknu</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Prekrije cel zaslon v njegovi ločljivosti. Alt+Tab preklopi takoj.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Vertikalna sinhronizacija</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Ločljivost zaslona</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>

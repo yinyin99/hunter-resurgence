@@ -313,7 +313,11 @@
   <data name="GameSettings.Save" xml:space="preserve"><value>Salvar</value></data>
   <data name="GameSettings.Cancel" xml:space="preserve"><value>Cancelar</value></data>
   <data name="GameSettings.StartGame" xml:space="preserve"><value>Iniciar Jogo</value></data>
-  <data name="GameSettings.Fullscreen" xml:space="preserve"><value>Tela Cheia</value></data>
+  <data name="GameSettings.Display" xml:space="preserve"><value>Modo de Exibição</value></data>
+  <data name="GameSettings.Borderless" xml:space="preserve"><value>Sem Bordas</value></data>
+  <data name="GameSettings.Exclusive" xml:space="preserve"><value>Tela Cheia (Exclusiva)</value></data>
+  <data name="GameSettings.Windowed" xml:space="preserve"><value>Janela</value></data>
+  <data name="GameSettings.BorderlessHelp" xml:space="preserve"><value>Cobre a tela inteira na resolução dela. Alt+Tab alterna na hora.</value></data>
   <data name="GameSettings.Vsync" xml:space="preserve"><value>Sincronização Vertical</value></data>
   <data name="GameSettings.Resolution" xml:space="preserve"><value>Resolução da Tela</value></data>
   <data name="GameSettings.ResolutionFormat" xml:space="preserve"><value>{0} x {1} ({2} Hz)</value></data>
