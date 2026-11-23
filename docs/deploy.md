@@ -2,7 +2,7 @@
 
 ## What this is
 
-The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. Without `SERVER_URL` the website is the **mock** website: its pages show fixed, fictional data. With it (as in `compose.yml`) the sign-in, the store and buying, the news, the profiles, the hunterscore and minigame boards, the wallet, the missions, the friends, the messages and the restore page are the community server's, and the pages without a source are hidden ([website.md](website.md#sign-in), [Known limits](#known-limits)). A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says that some pages still show sample content; change or remove it when that is no longer so.
+The [website](website.md) (`src/Web/`) and the community server ([server.md](server.md), `server/Server/`) in containers on one Ubuntu 24.04 VPS, behind Caddy and Cloudflare. Without `SERVER_URL` the website is the **mock** website: its pages show fixed, fictional data. With it (as in `compose.yml`) the sign-in, the store and buying, the profiles, the hunterscore and minigame boards, the wallet, the missions, the friends, the messages and the restore page are the community server's, the news are the project's Discord announcements, and the pages without a source are hidden ([website.md](website.md#sign-in), [Known limits](#known-limits)). A banner at the bottom of every page (`Wip.Banner` in `src/Ui/Strings*.resx`) says that some features of the original are still missing; remove it when that is no longer so.
 
 | File | Purpose |
 |---|---|
@@ -358,7 +358,7 @@ Without them (a fork) the run ends with a notice. To run it again for a release 
 
 ## Known limits
 
-What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some pages still show sample content.
+What the live site (the website with `SERVER_URL`) does not do yet, and why. [website.md](website.md#sign-in) lists what is the server's; the banner (`Wip.Banner`) says that some features of the original are still missing.
 
 - **Profiles** are the server's for every player of the server: the header (handle, membership, hunterscore, rank, avatar) and the website's eight tabs (ranks, achievements, skills, statistics, gallery, trophies, dogs, friends), each read from `GET /hunters/<handle>/<area>`; no tab is hidden. What the tabs leave out: the achievements tab has its overview only (no category pages, no challenges); the statistics tab has no "last hunt" pill (the first row of its history is that hunt) and no season list, and its collectables, like a hunt's collectables, achievements and shed antlers, are empty; the score sheet of a hunt restored from a backup opens only when the zip held its page. A handle the server does not know is "Page not found".
 - **Friends** are the server's: the status bar's list and the request buttons work for a signed-in player. The server keeps no time for a request, so the requests come by handle, not oldest first; the lists have no "Send message" button, as messages cannot be sent.
