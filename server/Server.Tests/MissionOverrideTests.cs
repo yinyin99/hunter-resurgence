@@ -58,6 +58,25 @@ public class MissionOverrideTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheStuckReportTakesTwoObjectivesForEqualByTheirRulesNotTheirTitles()
+    {
+        // mission 1: one title twice, the second overridden; mission 2: two titles overridden to one rule
+        const string Carbine = "Harvest a Test Deer with the Test Carbine";
+        var catalogue = $$"""
+            {"missions": [{"id": 1, "title": "m", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "{{Carbine}}"}, {"id": 1, "title": "{{Carbine}}"}]},
+                          {"id": 2, "title": "n", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer while whistling"}, {"id": 1, "title": "Harvest a Test Deer while humming"}]}]}
+            """;
+        const string Shotgun = "harvest; species: Test Deer; weapon: Test Shotgun";
+        state = New("stuck.db", catalogue, rules: Rules(("1/1", Shotgun), ("2/0", Shotgun), ("2/1", Shotgun)));
+        state.Clock = () => 1_800_000_000;
+        ActivateAll();
+        for (var i = 1; i <= 5; i++)
+            Hb(Shot(i, weapon: 60));  // the .243 rifle: refused by every objective
+        var listed = state.StuckMissions(14).Skip(1).Select(l => string.Join(" | ", l.Split(" | ")[..2])).Order(StringComparer.Ordinal);
+        Assert.Equal([$"mission 1 m | {Carbine}", $"mission 1 m | {Carbine}", "mission 2 n | Harvest a Test Deer while whistling"], listed);  // 2/1 is equal to 2/0, which is open before it
+    }
+
+    [Fact]
     public void TestEveryPrintedRuleReadsBackAsTheSameRule()
     {
         string[] titles =
@@ -122,6 +141,9 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", "harvest; clues: footprints x1", "a harvest rule cannot check \"clues: footprints x1\""),
             ("2/0", "spot; weapon: Test Carbine", "a spot rule cannot check \"weapon: Test Carbine\""),
             ("2/0", "track; species: Test Deer", "a track rule has one clues condition"),
+            ("1/0", "harvest; male; female", "a gender, a species or \"ordered\" is given twice"),
+            ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"ordered\" is given twice"),
+            ("1/0", "harvest; distance: >=100 >=200 m", "\">=100 >=200 m\" has two bounds of one side"),
         ];
         foreach (var (key, rule, says) in bad)
             Assert.StartsWith($"mission_rules.json \"{key}\": {says}", Assert.Throws<InvalidDataException>(() => New("bad.db", catalogue, rules: new JsonObject { [key] = rule.DeepClone() })).Message);

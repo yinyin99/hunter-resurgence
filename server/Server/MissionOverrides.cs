@@ -50,7 +50,7 @@ public sealed partial class State
                     throw new InvalidDataException($"mission {mission} has no objective {objective}");
                 if (value is not JsonValue v || !v.TryGetValue<string>(out var words))
                     throw new InvalidDataException("a rule is a string of words, as coverage --rules prints them");
-                m.Objectives[i] = m.Objectives[i] with { Rule = RuleIn(words, m.Objectives[i].Rule.Text) };
+                m.Objectives[i] = m.Objectives[i] with { Rule = RuleIn(words) };
                 overridden.Add((mission, objective));
             }
             catch (InvalidDataException e)
@@ -59,9 +59,9 @@ public sealed partial class State
             }
     }
 
-    /// <summary>A rule written as <see cref="RuleLines"/> prints it after `=>`: `<kind>; species: <names>; male|female; ordered; <conditions>`, separated by `;`. `text` is the title's,
-    /// kept for nothing but the equal-objective test of the rollback.</summary>
-    Rule RuleIn(string words, string text)
+    /// <summary>A rule written as <see cref="RuleLines"/> prints it after `=>`: `<kind>; species: <names>; male|female; ordered; <conditions>`, separated by `;`. Its `Text` is these
+    /// words, so <see cref="StuckMissions"/> takes two objectives for equal when their rules are, not their titles. A gender, a species or `ordered` given twice stops the start.</summary>
+    Rule RuleIn(string words)
     {
         var parts = words.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
@@ -71,6 +71,8 @@ public sealed partial class State
             "harvest" => Kind.Harvest, "spot" => Kind.Spot, "track" => Kind.Track,
             _ => throw new InvalidDataException($"\"{parts[0]}\" is no kind of rule the file sets: harvest, spot or track"),
         };
+        if (parts.Count(p => p is "male" or "female") > 1 || parts.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || parts.Count(p => p == "ordered") > 1)
+            throw new InvalidDataException("a gender, a species or \"ordered\" is given twice");
         long? speciesId = null, gender = null;
         var ordered = false;
         var tests = new List<Test>();
@@ -95,7 +97,7 @@ public sealed partial class State
             throw new InvalidDataException($"a {parts[0]} rule cannot check \"{Describe(wrong)}\"");
         if (kind == Kind.Track && tests.Count(t => t.Check == Check.Clue) != 1)
             throw new InvalidDataException("a track rule has one clues condition");
-        return new Rule(kind, speciesId, gender, ordered, text, [.. tests]);
+        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests]);
     }
 
     /// <summary>One condition in the words of <see cref="Describe"/>.</summary>
@@ -190,6 +192,8 @@ public sealed partial class State
             var op = w.StartsWith(">=", StringComparison.Ordinal) || w.StartsWith("<=", StringComparison.Ordinal) ? w[..2] : w[..1];
             if (!double.TryParse(w[op.Length..], NumberStyles.Float, CultureInfo.InvariantCulture, out var n))
                 throw new InvalidDataException($"\"{w}\" is no bound: >=, >, <= or < and a number");
+            if (op[0] == '>' ? !double.IsNegativeInfinity(min) : !double.IsPositiveInfinity(max))
+                throw new InvalidDataException($"\"{value}\" has two bounds of one side");
             switch (op)
             {
                 case ">=": min = n; break;

@@ -299,6 +299,23 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
+    public void ACommunityServerReadsTheMissionRulesBesideARecordedCatalogueOnly()
+    {
+        cfg["offline_mode"] = false;
+        var recordings = Directory.CreateDirectory(Path.Combine(tmp, "recordings")).FullName;
+        cfg["recordings_dir"] = recordings;
+        var file = Path.Combine(recordings, State.MissionRulesFile);
+        File.WriteAllText(file, """{"1/0": "harvest"}""");
+        var table = Recorded(Fixtures.CONNECT);
+        Assert.Equal(0, LoadState(cfg, table, Directory.CreateDirectory(Path.Combine(tmp, "a")).FullName)!.OverriddenObjectives);  // no recorded catalogue: the file is not read
+        table.Entries[new("POST", "api.test", APPLICATION, null)] = new Hit(2, "2030-01-01", 200, [("X-Rec", "1")],
+            """{"missions": [{"id": 1, "title": "m", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest while whistling"}]}]}"""u8.ToArray());
+        Assert.Equal(1, LoadState(cfg, table, Directory.CreateDirectory(Path.Combine(tmp, "b")).FullName)!.OverriddenObjectives);
+        File.WriteAllText(file, """{"9/0": "harvest"}""");
+        Assert.StartsWith("mission_rules.json \"9/0\": ", Assert.Throws<InvalidDataException>(() => LoadState(cfg, table, Directory.CreateDirectory(Path.Combine(tmp, "c")).FullName)).Message);
+    }
+
+    [Fact]
     public void ANewAccountNeverStartsFromARecordedConnect()
     {
         var connect = Fixtures.CONNECT;
