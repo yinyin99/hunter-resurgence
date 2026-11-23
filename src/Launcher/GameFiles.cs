@@ -246,7 +246,7 @@ public static class GameFiles
     }
 
     /// <summary>The primary display's current mode; null when Windows does not say.</summary>
-    static (int W, int H, int Hz)? CurrentDisplayMode()
+    internal static (int W, int H, int Hz)? CurrentDisplayMode()
     {
         var dm = new DevMode { dmSize = (ushort)Marshal.SizeOf<DevMode>() };
         return EnumDisplaySettings(null, -1, ref dm) && dm.dmPelsWidth > 0 && dm.dmDisplayFrequency > 1 ? ((int)dm.dmPelsWidth, (int)dm.dmPelsHeight, (int)dm.dmDisplayFrequency) : null;  // -1: ENUM_CURRENT_SETTINGS

@@ -23,6 +23,7 @@ public static class GameCheckText
         "open-folder" => "GameFolder.Open",
         "open-steam" or "verify-files" => "Check.OpenSteam",
         "setup" => "Kit.SetUp",
+        "fix-display" => "Check.FixDisplay",
         "close-game" => "Launch.CloseGame",
         _ => null,
     };

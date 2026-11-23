@@ -14,7 +14,7 @@ public class InstallChecksTests
 {
     const long Gb = 1L << 30;
 
-    static readonly string[] Ids = ["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running", "dlls"];
+    static readonly string[] Ids = ["game", "version", "files", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"];
 
     /// <summary>A fictional install: the exe in a subfolder and the archive set under game\archives.</summary>
     static GameInstall Game(TempDir t, bool archives = true)
@@ -31,9 +31,23 @@ public class InstallChecksTests
     static string Manifest(long build, int flags = 4) => $"\"AppState\"\n{{\n\t\"appid\"\t\t\"1\"\n\t\"StateFlags\"\t\t\"{flags}\"\n\t\"buildid\"\t\t\"{build}\"\n}}\n";
 
     static InstallChecks Make(GameInstall? g, string? manifest = null, long? server = null, bool steam = true, string? setup = null, bool running = false, Func<string, bool>? network = null,
-        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null, IReadOnlyDictionary<string, (long, string)>? clean = null) =>
+        string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null, IReadOnlyDictionary<string, (long, string)>? clean = null,
+        ScreenProbes? screen = null) =>
         new(() => g, "1", serverBuild ?? (() => Task.FromResult(server)), steamSignedIn ?? (() => steam), () => setup, _ => running, _ => manifest, network ?? (_ => false), () => oneDrive ?? [],
-            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null, clean);
+            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null, clean, screen);
+
+    static readonly (int, int, int)[] Offered = [(1360, 768, 60), (1920, 1080, 60)];
+    static readonly DisplayAdapter RealGpu = new("Fictional GPU", true, true, true);
+
+    /// <summary>A fake screen: its mode list, the graphics files the game may start with, the current mode and the display adapters.</summary>
+    static ScreenProbes Screen((int, int, int)[] modes, string[] files, (int, int, int)? current = null, params DisplayAdapter[] adapters) => new(() => modes, () => current, () => adapters, () => files);
+
+    static string Graphics(TempDir t, string name, bool fullscreen, int w, int h, int hz)
+    {
+        var path = Path.Combine(t.Path, name);
+        GameFiles.CreateGraphics(path, new() { Fullscreen = fullscreen, Width = w, Height = h, Hz = hz, Scene = 2, Texture = 1, Shadow = 3, Msaa = 1, Aniso = 2, Vsync = true });
+        return path;
+    }
 
     static async Task<InstallCheck> Check(InstallChecks c, string id, bool opening = false) => (await c.RunAsync(opening)).Single(r => r.Id == id);
 
@@ -494,7 +508,7 @@ public class InstallChecksTests
     {
         using var t = new TempDir("checks-");
         var g = Game(t);
-        var results = await Make(g, Manifest(100), server: 101, free: _ => 100L << 20).RunAsync(false);
+        var results = await Make(g, Manifest(100), server: 101, free: _ => 100L << 20, screen: Screen([], [], null, new DisplayAdapter("Fictional Remote Display Adapter", true, false, false))).RunAsync(false);
         var report = new Diagnostics(() => g, [], "1.2.3", () => [], Path.Combine(t.Path, "out"), () => [], () => [], () => [], _ => [], () => results).Build("manual");
         using var zip = ZipFile.OpenRead(report.Path);
         string Read(string name) { using var r = new StreamReader(zip.GetEntry(name)!.Open()); return r.ReadToEnd(); }
@@ -503,11 +517,155 @@ public class InstallChecksTests
         Assert.Contains("version: block Check.Version.Old (build=100, server=101)", system);
         Assert.Contains("files: ok Check.Ok (archives=pc0..pc11 present)", system);
         Assert.Contains("disk: warn Check.Disk.Low", system);
+        Assert.Contains("display: warn Check.Display.Virtual (adapter=Fictional Remote Display Adapter)", system);
         using var json = JsonDocument.Parse(Read("report.json"));
         Assert.Equal(Ids, json.RootElement.GetProperty("checks").EnumerateArray().Select(c => c.GetProperty("id").GetString()));
 
         // a probe that fails is listed as missing and the report still builds
         var failing = new Diagnostics(() => g, [], "1", () => [], Path.Combine(t.Path, "out2"), () => [], () => [], () => [], _ => [], () => throw new InvalidOperationException("x")).Build("manual");
         Assert.Contains("install checks", failing.Missing);
+    }
+
+    [Theory]
+    [InlineData(true, 1366, 768, 60, "warn")]  // exclusive full screen at a mode the screen does not offer
+    [InlineData(true, 1360, 768, 60, "ok")]
+    [InlineData(true, 1360, 768, 75, "warn")]  // the refresh rate counts
+    [InlineData(false, 1366, 768, 60, "ok")]   // windowed (and Borderless, which is written windowed): any size
+    [InlineData(false, 123, 45, 1, "ok")]
+    public async Task OnlyExclusiveFullScreenAtAnUnofferedModeWarnsAndTheFixIsOffered(bool fullscreen, int w, int h, int hz, string level)
+    {
+        using var t = new TempDir("checks-");
+        var r = await Check(Make(Game(t), screen: Screen(Offered, [Graphics(t, "g.cfg", fullscreen, w, h, hz)], null, RealGpu)), "display");
+        Assert.Equal(level, r.Level);
+        if (level == "ok") Assert.Equal(("Check.Ok", null), (r.Text, r.Fix));
+        else Assert.Equal(("Check.Display.Mode", "fix-display", $"{w}x{h} {hz} Hz"), (r.Text, r.Fix, r.Args!["mode"]));
+    }
+
+    [Fact]
+    public async Task AMissingGraphicsFileOrAModeListThatWindowsDoesNotGiveIsNotJudged()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        Assert.Equal("ok", (await Check(Make(g, screen: Screen(Offered, [Path.Combine(t.Path, "none.cfg")], null, RealGpu)), "display")).Level);
+        Assert.Equal("ok", (await Check(Make(g, screen: Screen([], [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, RealGpu)), "display")).Level);
+        Assert.Equal("ok", (await Check(Make(g), "display")).Level); // no probes: nothing to judge
+    }
+
+    [Fact]
+    public async Task TheFixWritesTheCurrentModeIntoTheFileThatNeedsItAndKeepsEveryOtherValue()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var bad = Graphics(t, "bad.cfg", true, 1366, 768, 60);
+        var fine = Graphics(t, "fine.cfg", true, 1920, 1080, 60);
+        var windowed = Graphics(t, "windowed.cfg", false, 123, 45, 7);
+        var (fineBefore, windowedBefore) = (Files.Bytes(fine), Files.Bytes(windowed));
+        var c = Make(g, screen: Screen(Offered, [bad, fine, windowed], (1360, 768, 60), RealGpu));
+        Assert.Equal("warn", (await Check(c, "display")).Level);
+
+        Assert.True(c.FixDisplay().Ok);
+
+        var (fixedFile, problem) = GameFiles.ReadGraphics(bad);
+        Assert.Equal(FileProblem.None, problem);
+        Assert.Equal(new GraphicsSettings { Fullscreen = true, Width = 1360, Height = 768, Hz = 60, Scene = 2, Texture = 1, Shadow = 3, Msaa = 1, Aniso = 2, Vsync = true }, fixedFile);
+        Assert.Equal((fineBefore, windowedBefore), (Files.Bytes(fine), Files.Bytes(windowed)));
+        Assert.Equal("ok", (await Check(c, "display")).Level);
+    }
+
+    [Fact]
+    public void TheFixRefusesWhileTheGameRunsAndWithoutACurrentModeAndLeavesTheFileAlone()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var bad = Graphics(t, "bad.cfg", true, 1366, 768, 60);
+        var before = Files.Bytes(bad);
+        Assert.Equal("GameSettings.ClientRunning", Make(g, running: true, screen: Screen(Offered, [bad], (1360, 768, 60), RealGpu)).FixDisplay().Error);
+        Assert.Equal("GameSettings.SaveFailed", Make(g, screen: Screen(Offered, [bad], null, RealGpu)).FixDisplay().Error);
+        Assert.Equal("GameSettings.NotConfigured", Make(g).FixDisplay().Error);
+        Assert.Equal(before, Files.Bytes(bad));
+    }
+
+    [Theory]
+    [InlineData("Fictional GPU", true, true, true, false)]
+    [InlineData("Fictional Remote Display Adapter", true, true, true, false)] // a working screen on an adapter named like a virtual one is fine: the name never triggers
+    [InlineData("Fictional Virtual Display Adapter", true, true, true, false)]
+    [InlineData("Fictional GPU", true, false, true, true)]  // not part of the desktop
+    [InlineData("Fictional GPU", true, true, false, true)]  // no active monitor
+    [InlineData("Fictional Remote Display Adapter", true, false, false, true)]
+    public async Task APrimaryDisplayDeviceThatIsNotOnTheDesktopOrHasNoActiveMonitorWarnsNamingTheAdapter(string name, bool primary, bool attached, bool monitor, bool warns)
+    {
+        using var t = new TempDir("checks-");
+        var r = await Check(Make(Game(t), screen: Screen(Offered, [], null, new DisplayAdapter(name, primary, attached, monitor))), "display");
+        Assert.Equal(warns ? "warn" : "ok", r.Level);
+        if (warns) Assert.Equal(("Check.Display.Virtual", null, name), (r.Text, r.Fix, r.Args!["adapter"]));
+    }
+
+    [Fact]
+    public async Task OnlyThePrimaryAdapterIsJudgedAndTheModeComesFirst()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var virtualSecond = new DisplayAdapter("Fictional Virtual Display", false, false, false);
+        Assert.Equal("ok", (await Check(Make(g, screen: Screen(Offered, [], null, virtualSecond, RealGpu)), "display")).Level);
+        var both = Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, new DisplayAdapter("Fictional Virtual Display", true, false, false));
+        Assert.Equal("Check.Display.Mode", (await Check(Make(g, screen: both), "display")).Text);
+    }
+
+    [Fact]
+    public async Task TheDisplayCheckIsProbedForAStartToo()
+    {
+        using var t = new TempDir("checks-");
+        var c = Make(Game(t), screen: Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, RealGpu));
+        Assert.Equal("Check.Display.Mode", (await c.RunAsync(false, blocksOnly: true)).Single(r => r.Id == "display").Text);
+    }
+
+    [Theory]
+    [InlineData(0, true)]            // closed
+    [InlineData(3, true)]            // crash
+    [InlineData(16010, false)]       // Steam: a cause of its own
+    [InlineData(3221225785, false)]  // a replaced game file: a cause of its own
+    public async Task AnEarlyExitAfterADisplayWarningNamesItOnlyWhereTheGenericTextWouldShow(long code, bool named)
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        var checks = Make(g, screen: Screen(Offered, [Graphics(t, "g.cfg", true, 1366, 768, 60)], null, RealGpu));
+        var b = new LauncherBridge(() => g, Rest, _ => false, _ => new GameProcess(() => false, () => unchecked((int)code)), LauncherFakes.Signed, "1", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20), checks: checks);
+        Assert.True(b.StartGame("srv://x").Ok);
+        var exit = (await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.True(exit.Early);
+        Assert.Equal(named ? "Check.Display.Mode" : null, exit.Display?.Text);
+        Assert.Equal(named ? "fix-display" : null, exit.Display?.Fix);
+    }
+
+    [Fact]
+    public async Task AnEarlyExitWithoutADisplayWarningNamesNoDisplayWarningAndTheClockStillWins()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t);
+        LauncherBridge Bridge(ScreenProbes screen, ServerClock? clock = null) =>
+            new(() => g, Rest, _ => false, _ => new GameProcess(() => false, () => 0), LauncherFakes.Signed, "1", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20), checks: Make(g, screen: screen), clock: clock);
+        var fine = Bridge(Screen(Offered, [Graphics(t, "ok.cfg", true, 1360, 768, 60)], null, RealGpu));
+        Assert.True(fine.StartGame("srv://x").Ok);
+        Assert.Null((await fine.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!.Display);
+
+        // the PC's clock is 3 hours ahead of the server's: that is the cause the dialog names
+        var now = new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
+        var off = new ServerClock(() => now, () => TimeSpan.Zero);
+        off.Observe(new HttpResponseMessage { Headers = { Date = now - TimeSpan.FromHours(3) } });
+        var bad = Bridge(Screen(Offered, [Graphics(t, "bad.cfg", true, 1366, 768, 60)], null, RealGpu), off);
+        Assert.True(bad.StartGame("srv://x").Ok);
+        var exit = (await bad.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)))!;
+        Assert.Equal(("closed", TimeSpan.FromHours(3)), (exit.Cause, exit.ClockAhead));
+        Assert.Null(exit.Display);
+    }
+
+    [Fact]
+    public void ThisPcsScreenProbesAnswerWithoutThrowingAndAPrimaryAdapterHasAName()
+    {
+        var real = ScreenProbes.Real(new Settings("1", "client.exe", Path.Combine("fictional", "G_steam.cfg")), () => null);
+        Assert.All(real.Adapters().Where(a => a.Primary), a => Assert.NotEmpty(a.Name));
+        Assert.NotNull(real.Modes());
+        Assert.All(real.GraphicsFiles(), f => Assert.EndsWith(".cfg", f));
+        Assert.Equal(2, real.GraphicsFiles().Count()); // no planned mode: the files of both modes
     }
 }

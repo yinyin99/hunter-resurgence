@@ -40,6 +40,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
             check == "setup" ? Problem("setup", "block", "Kit.NoHosts", "setup") : Ok("setup"),
             check == "windows" ? Problem("windows", "warn", "Check.Windows.Blocked", null, ("file", "crashreport.dll")) : Ok("windows"),
             check is "disk" or "many" ? disk : Ok("disk"),
+            check == "display" ? Problem("display", "warn", "Check.Display.Mode", "fix-display", ("mode", "1366x768 60 Hz")) : check == "virtual" ? Problem("display", "warn", "Check.Display.Virtual", null, ("adapter", "Remote Display Adapter")) : Ok("display"),
             check == "running" ? Problem("running", "block", "Check.Running", "close-game") : Ok("running"),
             check == "dlls" ? Problem("dlls", "warn", "Check.Dlls.Extra", "open-folder", ("files", "d3d9.dll")) : Ok("dlls"),
         ];
@@ -107,7 +108,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     public void StartWithoutSteam() => skipWait.Set();
     public event Action? StartStateChanged;
     public string? LastStartMode { get; private set; }
-    /// <summary>No game runs here: after the old five seconds a normal hunt; "exit:steam|blocked|runtime|noruntime|dll|closed|clock|crash" ends the start within seconds for that cause instead ("noruntime": the runtimes button fails, as with no runtimes in the game folder).</summary>
+    /// <summary>No game runs here: after the old five seconds a normal hunt; "exit:steam|blocked|runtime|noruntime|dll|closed|clock|display|crash" ends the start within seconds for that cause instead ("noruntime": the runtimes button fails, as with no runtimes in the game folder; "display": a closed-right-away exit after a start where the display check warned).</summary>
     public async Task<GameExit?> WhenGameExitsAsync()
     {
         var cause = mock is { } m && m.StartsWith("exit:") ? m[5..] : null;
@@ -118,13 +119,15 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
             return new(0, 5, LastStartMode ?? "steam", false, null);
         }
         await Task.Delay(1500);
-        var code = cause switch { "steam" => 16010, "blocked" => unchecked((int)3236495362), "runtime" or "noruntime" => unchecked((int)3221225781), "closed" or "clock" => 0, "dll" => unchecked((int)3221225785), _ => unchecked((int)3221226505) };
+        var code = cause switch { "steam" => 16010, "blocked" => unchecked((int)3236495362), "runtime" or "noruntime" => unchecked((int)3221225781), "closed" or "clock" or "display" => 0, "dll" => unchecked((int)3221225785), _ => unchecked((int)3221226505) };
         LastRun = new(DateTimeOffset.Now.AddSeconds(-4), TimeSpan.FromSeconds(4), code, cause != "steam", LastStartMode ?? "steam");
-        return new(code, 4, LastStartMode ?? "steam", true, cause == "noruntime" ? "runtime" : cause == "clock" ? "closed" : cause, cause == "clock" ? TimeSpan.FromHours(3) : null);
+        return new(code, 4, LastStartMode ?? "steam", true, cause == "noruntime" ? "runtime" : cause is "clock" or "display" ? "closed" : cause, cause == "clock" ? TimeSpan.FromHours(3) : null,
+            cause == "display" ? new InstallCheck("display", "warn", "Check.Display.Mode", new Dictionary<string, string> { ["mode"] = "1366x768 60 Hz" }, "fix-display") : null);
     }
     public Result RunGameRuntimes() { log.LogInformation("run game runtimes"); return mock == "exit:noruntime" ? Result.Fail("Launch.NoRuntimes") : Result.Success; }
     public void ToggleDevTools() => log.LogInformation("toggle dev tools");
     public void RestartLauncher() => log.LogInformation("restart launcher");
+    public Result FixDisplay() { log.LogInformation("fix display"); check = null; return Result.Success; }
 
     // problem reports: nothing is collected here; a start that "ran" five seconds counts as a short one
     public GameRun? LastRun { get; private set; }

@@ -1,5 +1,6 @@
 @inject ModalService Modal
 @inject ILauncherBridge Bridge
+@inject IKitService Kit
 
 @* "The game closed right away": the game the launcher started ended within seconds (GameExit.Early). The cause is the message, its how-to or error a group of its own, and one action per cause
    (docs/website.md, "The game closed right away"); a real hunt opens "Done hunting for now?" instead *@
@@ -9,7 +10,7 @@
         <h2 id="exit-title">@L["Exit.Title"]</h2>
     </header>
     <section>
-        <p class="message">@L[message]</p>
+        <p class="message">@(Exit.Display is { } warned ? L.Text(warned) : L[message].Value)</p>
         @if (how is not null) { <p class="how">@how</p> }
         @if (error is not null) { <p class="how" id="exit-error" role="alert">@error</p> }
     </section>
@@ -24,6 +25,9 @@
                 break;
             case "dll":
                 <button class="btn btn-primary" id="exit-verify" @onclick="@(() => Bridge.OpenExternal("steam://validate/{steam_app_id}"))">@L["Exit.Verify"]</button>
+                break;
+            case "closed" or "crash" when Exit.Display?.Fix == "fix-display": // the display warning is the cause: its fix first
+                <button class="btn btn-primary" id="exit-fix" @onclick="FixDisplay">@L["Check.FixDisplay"]</button>
                 break;
             case "closed" when Exit.ClockAhead is not null: // the clock is the cause: nothing to send
                 break;
@@ -42,7 +46,7 @@
 
     string icon => Exit.Cause switch { "blocked" => "shield-halved", "runtime" => "download", "closed" => Exit.ClockAhead is null ? "bug" : "clock", "crash" => "bug", _ => "triangle-exclamation" };
     string message => Exit.Cause switch { "steam" => "Exit.Steam", "blocked" => "Exit.Blocked", "runtime" => "Exit.Runtime", "dll" => "Exit.Dll", "closed" => "Exit.Closed", _ => "Exit.Crash" };
-    string? how => Exit.Cause switch
+    string? how => Exit.Display is not null ? null : Exit.Cause switch
     {
         "blocked" => L["Exit.BlockedHow"].Value,
         "closed" when Exit.ClockAhead is { } off => L[off > TimeSpan.Zero ? "Exit.ClockAhead" : "Exit.ClockBehind", Difference(off.Duration())].Value,
@@ -54,6 +58,13 @@
     string Difference(TimeSpan span) => span.TotalHours >= 1 ? L["Fmt.Hours", (int)Math.Round(span.TotalHours)].Value : L["Fmt.Minutes", (int)Math.Round(span.TotalMinutes)].Value;
 
     void RunRuntimes() => error = Bridge.RunGameRuntimes() is { Ok: false } failed ? L[failed.Error ?? "Launch.Failed"].Value : null;
+
+    // the display's current mode is written into the graphics file; done: this dialog closes, a failure opens its own
+    async Task FixDisplay()
+    {
+        await Modal.FixAsync("fix-display", Bridge, Kit);
+        if (Modal.Type == typeof(GameExitDialog)) Modal.Close();
+    }
 
     // the failed start's trigger (GameRun.Trigger), as the Done window offers it; a crash always has one, "short" only guards a run the launcher did not record
     void OpenReport() => Modal.Show<ReportModal>(new Dictionary<string, object?> { [nameof(ReportModal.Trigger)] = Bridge.LastRun?.Trigger ?? "short" });

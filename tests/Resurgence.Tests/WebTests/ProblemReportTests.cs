@@ -27,6 +27,7 @@ public sealed class ProblemReportTests : UiContext
         public void UseAutomaticGameFolder() { }
         public Task<Result> CloseGameAsync(bool restart) => Task.FromResult(Result.Success);
         public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync() => Task.FromResult<IReadOnlyList<InstallCheck>>([]);
+        public Result FixDisplay() => Result.Success;
         public Result ClearCache(string kind) => Result.Success;
         public void OpenExternal(string url) { }
         public Result StartGame(string url) => Result.Success;

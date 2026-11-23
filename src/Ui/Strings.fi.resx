@@ -1494,6 +1494,9 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ei ole asennettuna: peli käynnistyy ilman Steamia.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows esti pelin tiedoston ({0}): salli se Windowsin suojauksessa.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Levytila on vähissä asemalla {0} ({1} jäljellä).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Koko näyttö on asetettu tilaan {0}, jota näyttösi ei tue: peli saattaa sulkeutua käynnistyessä.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Peli piirtää kohteeseen {0}, johon ei ole liitetty näyttöä: tee oikeasta näytöstäsi pääasiallinen näyttö tai poista kyseinen sovitin käytöstä Laitehallinnassa.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Käytä näyttöni tilaa</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Pelin kansiossa on tiedostoja, jotka eivät kuulu peliin: {0}. Siellä olevat grafiikkatyökalut ja modit voivat estää pelin käynnistymisen. Siirrä ne pois kansiosta ja käynnistä uudelleen.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Pelin tiedostoja on muutettu: {0}. Tämä voi estää pelin käynnistymisen. Steamissä Ominaisuudet, Asennetut tiedostot, Tarkista pelitiedostojen eheys.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Peli on jo käynnissä: sulje se ja käynnistä se sitten täältä.</value></data>

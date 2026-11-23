@@ -1494,6 +1494,9 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam není nainstalován: hra se spustí bez Steamu.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows zablokoval soubor hry ({0}): povolte jej v Zabezpečení Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Málo místa na disku {0} (zbývá {1}).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Celá obrazovka je nastavena na {0}, což vaše obrazovka nenabízí: hra se může při spuštění zavřít.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Hra kreslí na {0}, ke kterému není připojena žádná obrazovka: nastavte svou skutečnou obrazovku jako hlavní nebo tento adaptér vypněte ve Správci zařízení.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Použít režim mé obrazovky</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Ve složce hry jsou soubory, které k ní nepatří: {0}. Grafické nástroje a modifikace tam umístěné mohou hře zabránit ve spuštění. Přesuňte je ze složky pryč a spusťte hru znovu.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Herní soubory byly změněny: {0}. To může hře zabránit ve spuštění. Ve Steamu Vlastnosti, Nainstalované soubory, Ověřit integritu herních souborů.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Hra už běží: zavřete ji a spusťte ji odsud.</value></data>

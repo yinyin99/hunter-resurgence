@@ -1494,6 +1494,9 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam is niet geïnstalleerd: het spel start zonder Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows heeft een spelbestand geblokkeerd ({0}): sta het toe in Windows-beveiliging.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Weinig schijfruimte op {0} ({1} over).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Volledig scherm is ingesteld op {0}, wat je scherm niet biedt: het spel kan bij het starten sluiten.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Het spel tekent op {0}, waarop geen scherm is aangesloten: maak je echte scherm het hoofdscherm of schakel die adapter uit in Apparaatbeheer.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Modus van mijn scherm gebruiken</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>In de map van het spel staan bestanden die er niet bij horen: {0}. Grafische hulpprogramma's en mods die daar staan, kunnen voorkomen dat het spel start. Verplaats ze uit de map en start opnieuw.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Spelbestanden zijn gewijzigd: {0}. Hierdoor kan het spel niet starten. In Steam, Eigenschappen, Geïnstalleerde bestanden, Integriteit van gamebestanden verifiëren.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Het spel draait al: sluit het af en start het daarna vanaf hier.</value></data>

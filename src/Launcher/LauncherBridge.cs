@@ -55,7 +55,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
     bool opened;
-    /// <summary>All ten checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
+    /// <summary>All eleven checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()
     {
         if (checks is null) return rest.CheckInstallAsync();
@@ -63,6 +63,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         opened = true;
         return checks.RunAsync(opening);
     }
+    public Result FixDisplay() => checks?.FixDisplay() ?? rest.FixDisplay();
 
     public Result ChooseGameFolder() => chooseFolder?.Invoke() ?? rest.ChooseGameFolder();
     public void UseAutomaticGameFolder() { if (useAutomatic is null) rest.UseAutomaticGameFolder(); else useAutomatic(); }
@@ -230,8 +231,10 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             }
             return Result.Fail("Launch.LeftOver");
         }
-        // version, files and setup block a start with the dashboard's text; ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
-        if (checks?.RunAsync(false, true).GetAwaiter().GetResult().FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
+        // version, files and setup block a start with the dashboard's text; display is probed too: when the game then closes right away, its warning is named (WhenGameExitsAsync); ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
+        var results = checks?.RunAsync(false, true).GetAwaiter().GetResult();
+        if (results?.FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
+        displayWarning = results?.FirstOrDefault(r => r is { Id: "display", Level: "warn" });
         var param = Random.Shared.Next();
         // this start has no mode yet: the last one's must not show while it waits for Steam or if it fails
         lastStartMode = null;
@@ -310,7 +313,11 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             history?.Add(run);
             log?.LogInformation("Game exited: code {Code}, {Seconds} s, window seen {Window}", code?.ToString() ?? "unknown", (int)elapsed.TotalSeconds, window);
             var early = code is not null && elapsed < (earlyWithin ?? TimeSpan.FromSeconds(20));
-            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, early ? Cause(code!.Value, retried) : null, early && code == 0 ? clock?.Ahead : null);
+            var cause = early ? Cause(code!.Value, retried) : null;
+            var ahead = early && code == 0 ? clock?.Ahead : null;
+            // the display warning is named where the generic text would show: not for a cause of its own (Steam, app control, a DLL) nor an off clock
+            var warned = Interlocked.Exchange(ref displayWarning, null);
+            return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, cause, ahead, cause is "closed" or "crash" && ahead is null ? warned : null);
         }
         finally { game?.Dispose(); }
     }
@@ -347,6 +354,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     string? lastStartMode;
     /// <summary>The process of the last start, kept for the watch; the watch takes it.</summary>
     Started? started;
+    /// <summary>The <c>display</c> warning of the last start's install check, until the watch takes it.</summary>
+    InstallCheck? displayWarning;
 
     /// <param name="Retried">a start with Steam quit with 16010 and this process is the start without Steam that followed it</param>
     sealed record Started(GameProcess Game, string Mode, DateTimeOffset At, Stopwatch Ran, bool Retried = false);
