@@ -18,7 +18,7 @@ public sealed partial class State
     /// name of some, or any animal but some, has a `Species` test instead), whether it counts only after the objectives before it, its title in
     /// <see cref="Normalise"/>d words (a place), and the conditions its title asks of the kill, the spot or the clue (<see cref="Reader"/>); `Unknown` when it
     /// has words the server does not understand: it is never met.</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
+    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "");
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
@@ -96,16 +96,17 @@ public sealed partial class State
             long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
             long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
             Test[] tests = [];
-            var unknown = false;
+            var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, unknown) = reader.Read(body, own);
+                (tests, left) = reader.Read(body, own);
             else if (kind == Kind.Track)
-                (tests, unknown) = reader.ReadClue(body, own);
+                (tests, left) = reader.ReadClue(body, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its species, its coat and its name can be checked
-            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat));
-            return new Rule(kind, species, gender, ordered.Success, text, tests, unknown);
+            if (kind == Kind.Spot)
+                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
+            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())

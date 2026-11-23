@@ -277,14 +277,14 @@ public sealed partial class State
         ];
 
         // an animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells
-        static readonly (Regex Word, long[] States, bool First)[] States = [.. new (string, long[], bool)[]
+        public static readonly (string Label, Regex Word, long[] States, bool First)[] States = [.. new (string, string, long[], bool)[]
         {
-            ("airborne", [6, 11], false), ("standing", [3], false), ("walking", [4], false), ("running", [5], false), ("moving", [4, 5, 10], false),
-            (@"charging(?:\s+(?:at\s+)?you)?", [9], false), ("fleeing", [5, 10, 11, 15], false), ("swimming", [7], false),
-            (@"(?:emerging from|diving into)(?:\s+or\s+(?:emerging from|diving into))?\s+an?\s+burrow\s+exit", [13, 14, 15], false),
-            ("idle", [1, 2, 3, 8, 12], false), ("still", [1, 2, 3, 8, 12], false),
-            ("unspooked", [1, 2, 3, 4, 6, 7, 8, 12], true), ("spooked", [5, 10, 11, 15, 16], true),
-        }.Select(x => (new Regex(@"\s(?:(?:while|when)\s+)?(?:(?:it|the animal)\s+(?:s|is)\s+)?" + x.Item1 + @"(?=\s)", Rx), x.Item2, x.Item3))];
+            ("airborne", "airborne", [6, 11], false), ("standing", "standing", [3], false), ("walking", "walking", [4], false), ("running", "running", [5], false), ("moving", "moving", [4, 5, 10], false),
+            ("charging", @"charging(?:\s+(?:at\s+)?you)?", [9], false), ("fleeing", "fleeing", [5, 10, 11, 15], false), ("swimming", "swimming", [7], false),
+            ("burrow exit", @"(?:emerging from|diving into)(?:\s+or\s+(?:emerging from|diving into))?\s+an?\s+burrow\s+exit", [13, 14, 15], false),
+            ("idle", "idle", [1, 2, 3, 8, 12], false), ("still", "still", [1, 2, 3, 8, 12], false),
+            ("unspooked", "unspooked", [1, 2, 3, 4, 6, 7, 8, 12], true), ("spooked", "spooked", [5, 10, 11, 15, 16], true),
+        }.Select(x => (x.Item1, new Regex(@"\s(?:(?:while|when)\s+)?(?:(?:it|the animal)\s+(?:s|is)\s+)?" + x.Item2 + @"(?=\s)", Rx), x.Item3, x.Item4))];
 
         // the `location` of a hit: 1 hunting tower, 2 tree stand, 3 ground blind, 4 tripod, 5 waterfowl blind, 6 tripod rifle rest; a bare "blind" is a ground or a waterfowl blind,
         // a bare "stand" any raised one but the ground blind, a "platform" any of them
@@ -306,7 +306,7 @@ public sealed partial class State
 
         // The coat of an animal is its spawn's (event 7) `texture`. The name of each id, in id order, is the game's own English name of that coat, as its trophy and its harvest
         // show it (several ids share a name: `Common`, `Dark`, `Piebald`, `Chocolate`, `Albino`); the ids from 77 on are coats of the Halloween 2026 event that the game names nowhere.
-        static readonly string[] CoatNames =
+        public static readonly string[] CoatNames =
         [
             "common", "common", "albino", "common", "melanistic", "piebald", "blonde", "chocolate", "cinnamon", "glacier", "gold", "silver tipped", "grey", "cross", "mythical",
             "brown hybrid", "leucistic", "black hybrid", "albino", "bald leucistic", "light grey leucistic", "brown leucistic", "amber leucistic", "common blue", "mallard hybrid",
@@ -388,14 +388,14 @@ public sealed partial class State
             [.. items.Where(i => i.Name.Length > 0).GroupBy(i => i.Name).Select(g => (g.Key, g.Select(i => i.Id).ToArray())).OrderByDescending(n => n.Key.Length)];
 
         /// <summary>Lower case without accents or apostrophes, `12GA` as `12 GA`, then <see cref="Normalise"/>d.</summary>
-        static string Words(string s) => Normalise(Gauge.Replace(Fold(s), "$1 ga"));
+        public static string Words(string s) => Normalise(Gauge.Replace(Fold(s), "$1 ga"));
 
         static string Fold(string s) => new string([.. s.Normalize(System.Text.NormalizationForm.FormD).Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark && c is not ('\'' or '’' or '‘')).Select(c => c is '“' or '”' ? '"' : char.ToLowerInvariant(c))]);
 
         static readonly string[] Generic = ["shells", "ammunition", "bullet", "bullets", "ammo", "arrows", "bolts", "shell"];
 
         /// <summary>An ammunition's name without a bracketed note and its trailing generic words: `.17 HMR HV` names the item whatever follows it.</summary>
-        static string Core(string name)
+        public static string Core(string name)
         {
             var w = Words(Regex.Replace(name, @"\([^)]*\)", "")).Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
             while (w.Count > 1 && Generic.Contains(w[^1])) w.RemoveAt(w.Count - 1);
@@ -485,7 +485,7 @@ public sealed partial class State
         /// the kinds the title names (`footprints`, `droppings`, `call`, `audio clue`, `blood trail`, `bedding`, `tracks`; `any clue` names none: any), and how many clues of the one animal it
         /// needs (a number before them, else one). `tracks` are footprints, but the clues of one animal's trail (`Locate 3 ... tracks`, `3 tracks from the same animal`) are any clues. A clue
         /// word it does not read, a place, `different` animals or any other word make it not understood.</summary>
-        public (Test[] Tests, bool Unknown) ReadClue(string title, long[]? own = null)
+        public (Test[] Tests, string Left) ReadClue(string title, long[]? own = null)
         {
             var tests = new List<Test>();
             var folded = Regex.Replace(Fold(title).Trim(), @"\s+", " ");
@@ -516,11 +516,11 @@ public sealed partial class State
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
             tests.Add(new(Check.Clue, count, Ids: kinds));
-            return ([.. tests], sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(w => !Stops.Contains(w) && !ClueStops.Contains(w)));
+            return ([.. tests], string.Join(' ', sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => !Stops.Contains(w) && !ClueStops.Contains(w))));
         }
 
-        /// <summary>The conditions the title asks and whether it has words this reader does not understand (the words of a condition it could not read stay in the title).</summary>
-        public (Test[] Tests, bool Unknown) Read(string title, long[]? own = null)
+        /// <summary>The conditions the title asks and the words this reader does not understand, empty when it reads all of it (the words of a condition it could not read stay in the title).</summary>
+        public (Test[] Tests, string Left) Read(string title, long[]? own = null)
         {
             var tests = new List<Test>();
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
@@ -628,7 +628,7 @@ public sealed partial class State
             Take(ref sn, ThatWas, out _);
             if (Take(ref sn, AvoidState, out var notNow))  // `the Puma should not be running away or charging you`
                 tests.Add(new(Check.NotState, Ids: AvoidedStates(notNow.Groups["s"].Value)));
-            foreach (var (stateWord, states, first) in States)
+            foreach (var (_, stateWord, states, first) in States)
                 if (Take(ref sn, stateWord, out _))
                     tests.Add(new(first ? Check.FirstState : Check.State, Ids: [.. states]));
             if (Take(ref sn, OffStand, out _) || Take(ref sn, NoStands, out _)) tests.Add(new(Check.Stand, Ids: [0]));
@@ -636,7 +636,7 @@ public sealed partial class State
             if (sightIds.Count > 0) tests.Add(new(Check.Scope, Ids: sightIds));
             if (weaponIds.Count > 0) tests.Add(new(Check.Weapon, Ids: weaponIds));
             if (ammoIds.Count > 0) tests.Add(new(Check.Ammo, Ids: ammoIds));
-            return ([.. tests], sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(w => !Stops.Contains(w)));
+            return ([.. tests], string.Join(' ', sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => !Stops.Contains(w))));
         }
 
         /// <summary>The first occurrence of `what` (words with a space on each side) in `s` becomes one space; false when there is none.</summary>
@@ -709,10 +709,10 @@ public sealed partial class State
 
         // the bits of a hit's `organ2` (bit n is 1 << n): heart 0, right lung 1, left lung 2, liver 3, brain 4, intestines 5, the spine 10, 21 and 22, the shoulder blade 23, the neck
         // bones 24 to 26, the skull 28, the hip bone 29
-        static long Bits(params int[] bits) => bits.Aggregate(0L, (m, b) => m | 1L << b);
+        public static long Bits(params int[] bits) => bits.Aggregate(0L, (m, b) => m | 1L << b);
 
         // the soft organs of a hit's `organ2`: every bit but the bones (and the antlers' 27)
-        static readonly long Organs = Bits([.. Enumerable.Range(0, 30).Where(b => b is not (10 or 21 or 22 or 23 or 24 or 25 or 26 or 27 or 28 or 29))]);
+        public static readonly long Organs = Bits([.. Enumerable.Range(0, 30).Where(b => b is not (10 or 21 or 22 or 23 or 24 or 25 or 26 or 27 or 28 or 29))]);
 
         // a mask is met when all its bits are: the heart, either lung, a double lung shot both, the brain
         static HashSet<long> OrganMasks(string words) =>
@@ -727,8 +727,9 @@ public sealed partial class State
     }
 
     /// <summary>The coverage report of the catalogue's missions: how many objectives the server understands (its kind, species, gender and conditions), how many it does not,
-    /// and the objectives it does not, with their mission ids (those objectives are never met). The `coverage` command prints it.</summary>
-    public IEnumerable<string> MissionCoverage()
+    /// and the objectives it does not, with their mission ids (those objectives are never met); with `rules` every objective's rule in words (<see cref="RuleLines"/>), then the warnings (<see cref="RuleWarnings"/>) when there are any.
+    /// The `coverage` command prints it.</summary>
+    public IEnumerable<string> MissionCoverage(bool rules = false)
     {
         if (missions.Count == 0)
         {
@@ -748,5 +749,16 @@ public sealed partial class State
         yield return "objectives not understood, by mission:";
         foreach (var x in not.OrderBy(x => x.Mission))
             yield return $"mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";
+        if (rules)
+        {
+            yield return "rules:";
+            foreach (var line in RuleLines())
+                yield return line;
+        }
+        var warnings = RuleWarnings().ToList();
+        if (warnings.Count > 0)
+            yield return "warnings:";
+        foreach (var warning in warnings)
+            yield return warning;
     }
 }
