@@ -269,14 +269,18 @@ Repeat the `cp` for every other database of `/data` that was lost (`ls /backups`
 
 ## Missions audit
 
-Once a day a cron line of the `deploy` user posts the server's `admin missions-audit --discord` ([server.md](server.md#missions)) to a Discord webhook: the mission completions of the last 24 hours that look suspicious, and the count of each flag. The webhook's URL is the `MISSIONS_AUDIT_WEBHOOK=<url>` line of `~/web/.env`, which the operator adds by hand (deploys leave the line alone; without it nothing is posted). The script, `~/web/missions-audit.sh`, needs `jq` and `curl` on the host:
+Once a day a cron line of the `deploy` user posts the server's `admin missions-audit --discord` and `admin missions-stuck --discord` ([server.md](server.md#missions)) to a Discord webhook: the mission completions of the last 24 hours that look suspicious with the count of each flag, then the objectives players attempt and nobody completes. The webhook's URL is the `MISSIONS_AUDIT_WEBHOOK=<url>` line of `~/web/.env`, which the operator adds by hand (deploys leave the line alone; without it nothing is posted). The script, `~/web/missions-audit.sh`, needs `jq` and `curl` on the host:
 
 ```
 #!/bin/sh
 cd ~/web && url=$(sed -n 's/^MISSIONS_AUDIT_WEBHOOK=//p' .env) && [ -n "$url" ] || exit 0
-docker compose exec -T server dotnet server.dll admin missions-audit --discord | sed -n '/^\*\*missions audit/,$p' |
-  jq -Rsc 'rtrimstr("\n") | split("\n---8<---\n")[] | {content: ., allowed_mentions: {parse: []}}' |
-  while read -r body; do curl -fsS -o /dev/null -H 'Content-Type: application/json' -d "$body" "$url"; sleep 1; done
+post() {  # $1: the admin command and its options, $2: the first words of its report
+  docker compose exec -T server dotnet server.dll admin $1 --discord | sed -n "/^\*\*$2/,\$p" |
+    jq -Rsc 'rtrimstr("\n") | split("\n---8<---\n")[] | {content: ., allowed_mentions: {parse: []}}' |
+    while read -r body; do curl -fsS -o /dev/null -H 'Content-Type: application/json' -d "$body" "$url"; sleep 1; done
+}
+post missions-audit 'missions audit'
+post missions-stuck 'missions stuck'
 ```
 
 Each message is one post (`allowed_mentions` empty, so a handle such as `@everyone` pings nobody; one second apart, under the webhook's rate limit); `sed` drops what the server prints before the report (a `skip` line for a recording it cannot read). The crontab line (`crontab -e` as `deploy`), with the output kept for a failed post:
@@ -285,7 +289,7 @@ Each message is one post (`allowed_mentions` empty, so a handle such as `@everyo
 30 6 * * * sh ~/web/missions-audit.sh >> ~/web/missions-audit.log 2>&1
 ```
 
-`sh ~/web/missions-audit.sh` by hand posts it at once. The audit only reads the database, so it runs in the live container.
+`sh ~/web/missions-audit.sh` by hand posts it at once. Both reports only read the database, so they run in the live container. The stuck report lists every objective that meets its thresholds, a long post at first: write `post 'missions-stuck --min-candidates 50' 'missions stuck'` in the script for a shorter one.
 
 ## Logs
 

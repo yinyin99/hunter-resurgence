@@ -31,6 +31,9 @@ const string AdminUsage = """
     admin missions-audit [--hours N] [--account <id or handle>] [--discord] lists the mission objectives completed in the last N hours (default 24) that look suspicious, one line per objective
     (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
     2000 characters, separated by a line ---8<---, for a webhook.
+    admin missions-stuck [--days N] [--account <id or handle>] [--discord] [--min-candidates N] [--min-sample N] [--min-share P] lists the open harvest, spot and clue objectives the server understands that players of the last N days (default 14)
+    attempted and never completed: one line per objective with its candidate events, the accounts that have it open, how many accounts completed it here, how many candidates each condition refused and what the most refusing one saw.
+    Listed: at least --min-candidates (5) candidates and no completion, or one condition refusing at least --min-share (90) percent of at least --min-sample (10) candidates. It writes nothing. --discord as for missions-audit.
     """;
 
 const string ImportUsage = """
@@ -205,6 +208,27 @@ void Admin(string[] a)
         long? only = null;
         if (whom != null && (only = AdminApi.ResolveAccount(loaded, whom)) is null) Die($"no account {whom}");
         foreach (var line in loaded.AuditMissions(hours, only, discord)) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "missions-stuck")
+    {
+        var (discord, numbers) = (false, new Dictionary<string, double> { ["--days"] = 14, ["--min-candidates"] = 5, ["--min-sample"] = 10, ["--min-share"] = 90 });
+        string? whom = null;
+        for (var i = 1; i < a.Length; i++)
+            if (a[i] == "--discord") discord = true;
+            else if (a[i] == "--account" && i + 1 < a.Length) whom = a[++i];
+            else if (numbers.ContainsKey(a[i]) && i + 1 < a.Length)
+            {
+                if (!double.TryParse(a[i + 1], NumberStyles.Float, CultureInfo.InvariantCulture, out var number) || !double.IsFinite(number) || number <= 0) Die(AdminUsage);
+                numbers[a[i++]] = number;
+            }
+            else Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (whom != null && (only = AdminApi.ResolveAccount(loaded, whom)) is null) Die($"no account {whom}");
+        foreach (var line in loaded.StuckMissions(numbers["--days"], only, discord, (int)numbers["--min-candidates"], (int)numbers["--min-sample"], numbers["--min-share"])) Console.WriteLine(line);
         return;
     }
     if (a.Length > 0 && a[0] == "spawn")
