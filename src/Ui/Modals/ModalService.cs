@@ -116,6 +116,7 @@ public sealed class ModalService
 
     bool closingGame;
     volatile bool gameClosedByPlayer; // the close button ends the watched game: its exit is no news, the next start's is
+    readonly object gate = new();
     int watch; // the start whose exit is the news: an older start's watcher, finishing late, says nothing
 
     /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, Steam, closing the running game
@@ -149,11 +150,14 @@ public sealed class ModalService
 
     /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.
     /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>
-    public void GameStarted(ILauncherBridge bridge)
+    public void GameStarted(ILauncherBridge bridge) => GameStarted(bridge.WhenGameExitsAsync());
+
+    /// <summary><see cref="GameStarted(ILauncherBridge)"/> for the given watch of the start's game; the start and the dialog of an exit are serialized, so an older start's exit never shows after a newer start.</summary>
+    public void GameStarted(Task<GameExit?> exits)
     {
-        gameClosedByPlayer = false;
-        var mine = Interlocked.Increment(ref watch);
-        _ = bridge.WhenGameExitsAsync().ContinueWith(ran => { if (mine == Volatile.Read(ref watch)) GameEnded(ran.Result); }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+        int mine;
+        lock (gate) { gameClosedByPlayer = false; mine = ++watch; }
+        _ = exits.ContinueWith(ran => { lock (gate) { if (mine == watch) GameEnded(ran.Result); } }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
     }
 
     /// <summary>The game the launcher started has closed: after a real hunt "Done hunting for now?", within seconds of its start "The game closed right away" with the cause's one action (<see cref="GameExitDialog"/>); nothing when it never appeared (null).</summary>

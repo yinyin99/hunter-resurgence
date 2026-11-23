@@ -250,18 +250,20 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
-    public async Task AnOlderStartsWatcherSaysNothingOnceANewStartIsWatched()
+    public async Task AnOlderStartsExitSaysNothingOnceANewStartIsWatched()
     {
         var modal = Services.GetRequiredService<ModalService>();
-        var shown = 0;
-        modal.Changed += () => shown++;
-        var bridge = new MockLauncherBridge(NullLogger(), "exit:crash"); // both watchers end after 1.5 s
-        modal.GameStarted(bridge);
-        modal.GameStarted(bridge);
-        for (var i = 0; i < 100 && modal.Type is null; i++) await Task.Delay(100, Xunit.TestContext.Current.CancellationToken);
-        await Task.Delay(300, Xunit.TestContext.Current.CancellationToken);
+        var (first, second) = (new TaskCompletionSource<GameExit?>(), new TaskCompletionSource<GameExit?>());
+        modal.GameStarted(first.Task);
+        modal.GameStarted(second.Task);
+
+        first.SetResult(new(0, 5, "steam", false, null)); // the first game's exit comes late: a hunt, which would be "Done hunting"
+        await Task.Delay(200, Xunit.TestContext.Current.CancellationToken);
+        Assert.Null(modal.Type);
+
+        second.SetResult(new(3, 2, "nosteam", true, "crash"));
+        for (var i = 0; i < 50 && modal.Type is null; i++) await Task.Delay(20, Xunit.TestContext.Current.CancellationToken);
         Assert.Equal(typeof(GameExitDialog), modal.Type);
-        Assert.Equal(1, shown); // only the newest start's exit
     }
 
     [Fact]
