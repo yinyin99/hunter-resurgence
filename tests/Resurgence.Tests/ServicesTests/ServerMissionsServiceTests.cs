@@ -27,7 +27,7 @@ public class ServerMissionsServiceTests
         {"missions": [
           {"id": 1, "title": "Test One", "desc": "First.", "state": "active", "objectives": ["Harvest a Test Deer"], "reward": "100 gm$", "reserve": "Test Reserve", "species": "Test Deer", "weapon": ""},
           {"id": 2, "title": "Test Two", "desc": "Second.", "state": "available", "objectives": ["Spot a Test Deer", "Then, harvest it"], "reward": "200 gm$", "reserve": "", "species": "", "weapon": "Test Rifle"},
-          {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": ""},
+          {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "", "needs": ["Test Two"]},
           {"id": 4, "title": "Test Four", "desc": "", "state": "completed", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": ""}],
          "groups": [{"id": 10, "title": "Test Pack", "desc": "Both.", "favourite": true, "missions": [3, 4]}, {"id": 11, "title": "Other Pack", "desc": "", "favourite": false, "missions": [1, 2, 99]}],
          "completed": 1, "auto_mission_activate": true, "activate_only_favourite": false, "hide_completed_favourite": true}
@@ -44,6 +44,7 @@ public class ServerMissionsServiceTests
         Assert.Equal(["Spot a Test Deer", "Then, harvest it"], data.Missions[1].Objectives);
         Assert.Equal([("Test Pack", 1, 2, true), ("Other Pack", 0, 2, false)], data.Packs.Select(p => (p.Name, p.Done, p.Total, p.Favourite)));  // 99 has no definition
         Assert.Equal(["Test Three", "Test Four"], data.Packs[0].Missions.Select(m => m.Name));
+        Assert.Equal(["Test Two"], data.Packs[0].Missions[0].Needs);  // why it is locked
         Assert.Equal((1, 4, 0, 2, true, false, true), (data.Completed, data.Total, data.PacksDone, data.PacksTotal, data.Auto, data.OnlyFavourite, data.HideCompletedFavourite));
         Assert.Equal(["Test One"], (await Make(fake).ActiveAsync()).Select(m => m.Name));
     }

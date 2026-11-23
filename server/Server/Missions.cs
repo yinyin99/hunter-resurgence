@@ -291,7 +291,7 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles, reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// objective titles, `needs` (the titles of the missions it depends on that are not completed yet: why a `locked` one is locked; `[]` otherwise), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
     /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
     public JsonObject? WebMissions(long account)
     {
@@ -315,6 +315,8 @@ public sealed partial class State
                 ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Unmarked(Py.Str(G(d, "desc", ""))),
                 ["state"] = rows.TryGetValue(id, out var r) ? r.State == 3 ? "completed" : "active" : available.Contains(id) ? "available" : "locked",
                 ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
+                // ponytail: a dependency without a definition is left out (none in the recorded catalogue), so such a mission would show as locked with no reason
+                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => missions.ContainsKey(n) && !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)missions[n].Title)]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
                 ["reserve"] = First(d["reserves"], i => reserves.GetValueOrDefault(i)), ["species"] = First(d["species"], i => Named(species, i)),
                 ["weapon"] = First(d["weapons"], i => Named(items, i)),

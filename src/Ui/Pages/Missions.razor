@@ -162,6 +162,10 @@ else { <div class="skeleton skeleton-page"></div> }
                         <h5>@L["Mis.Rewards"]</h5><p>@m.Reward</p>
                         <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
                         <h5>@L["Mis.Objectives"]</h5><ol>@foreach (var o in m.Objectives) { <li>@o</li> }</ol>
+                        @if (m.State == "locked" && m.Needs is { Count: > 0 })
+                        {
+                            <h5>@L["Mis.LockedBy"]</h5><ul>@foreach (var n in m.Needs) { <li>@n</li> }</ul>
+                        }
                         @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }
                     </div>
                 }
