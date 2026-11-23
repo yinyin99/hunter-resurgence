@@ -12,23 +12,23 @@ namespace Resurgence.Server;
 public sealed partial class State
 {
     enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat,
-        Within, Each, SameShot, Different }
+        Beard, Spurs, Tusks, Place, Within, Each, SameShot, Different }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
     /// animal state, stance, stand `location`, reserve, coat), the refused ones (`NotAmmo`, `NotState`, `NotCoat`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went
     /// through all the organs of one mask, `OrganOnly` when every shot's organs are within the masks together, `OrganAvoid` when no shot touched one. `Clue` is met by a clue of one of the
     /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt. `Within`, `Each`, `SameShot` and `Different` are met when the event is the `Min`-th of its hunt
-    /// that meets the rule's other conditions, `Max` the seconds they may span (<see cref="Sequenced"/>).</summary>
-    sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null);
+    /// that meets the rule's other conditions, `Max` the seconds they may span (<see cref="Sequenced"/>). `Place` is met when the player was in the place the game names `Place`.</summary>
+    sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null, string? Place = null);
 
     /// <summary>An event of a sequence: its id, when the server received it (null before schema 14) and its kill.</summary>
     sealed record Step(long Id, double? Ts, Kill Kill);
 
     /// <summary>A kill as the conditions see it: its harvest (event 3) and spawn (event 7), its hits (event 1, in order; a spot's own event 11), the reserve of the hunt it
-    /// happened in, and, when asked for, whether a hit was not permitted, the score and the typical points of the antlers (null: the kill has no trophy event, or a non-typical rack).
+    /// happened in, and, when asked for, whether a hit was not permitted, the score, its trophy event (22; {} when it has none) and whether the player was in a place the game names.
     /// A clue has its own event (12) and, when asked for, the clues of its animal in its hunt up to it. `Id` is its stored event; `Steps` the harvests (a clue: the clues) of its hunt up to it.</summary>
-    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<double?>? points = null,
-                      JsonObject? e12 = null, Func<List<(long Id, JsonObject Body)>>? clues = null, long id = 0, Func<long, List<Step>>? steps = null)
+    sealed class Kill(JsonObject e3, JsonObject e7, Func<List<JsonObject>> hits, long? reserve, Func<(bool Disqualified, double? Score)> scored, Func<JsonObject>? trophy = null,
+                      JsonObject? e12 = null, Func<List<(long Id, JsonObject Body)>>? clues = null, long id = 0, Func<long, List<Step>>? steps = null, Func<string, bool>? region = null)
     {
         public readonly JsonObject E3 = e3, E7 = e7, E12 = e12 ?? new();
         public readonly long? Reserve = reserve;
@@ -36,11 +36,15 @@ public sealed partial class State
         public readonly Lazy<List<JsonObject>> Hits = new(hits);
         public readonly Lazy<List<(long Id, JsonObject Body)>> Clues = new(clues ?? (() => []));
         public readonly Lazy<(bool Disqualified, double? Score)> Scored = new(scored);
-        public readonly Lazy<double?> Points = new(points ?? (() => null));
+        public readonly Lazy<JsonObject> Trophy = new(trophy ?? (() => new JsonObject()));
         readonly Dictionary<long, List<Step>> runs = [];
+        readonly Dictionary<string, bool> places = [];
 
         /// <summary>The harvests (a clue: the clues) of its hunt after event `after` up to this one, in order, this one last.</summary>
         public List<Step> Steps(long after) => runs.TryGetValue(after, out var r) ? r : runs[after] = steps?.Invoke(after) ?? [];
+
+        /// <summary>Was the player in the place `name` (<see cref="InPlace"/>)?</summary>
+        public bool In(string name) => places.TryGetValue(name, out var r) ? r : places[name] = region?.Invoke(name) ?? false;
     }
 
     static double? NumOf(JsonObject? o, string key) => o is not null && Py.IsNum(o[key]) ? Py.D(o[key]) : null;
@@ -56,16 +60,24 @@ public sealed partial class State
     static bool In(Test t, double? v) => v is { } x && x >= t.Min && x <= t.Max;
 
     /// <summary>The number a threshold test compares with its bounds: the harvest value, the distance of the killing shot in metres, the weight in kilograms, the score, the typical
-    /// points (a female has none); null for another test, or when the kill does not have it.</summary>
+    /// points (a female has none), and from the trophy event a turkey's beard and the shorter of its spurs (thousandths of a millimetre as sent: millimetres) and a boar's shorter tusk
+    /// (the length of the first point of each side, in millimetres); null for another test, or when the kill does not have it.</summary>
     static double? Measured(Test t, Kill k) => t.Check switch
     {
         Check.Value => NumOf(k.E3, "harvest_value"),
         Check.Distance => NumOf(k.Hits.Value.LastOrDefault(), "distance_cms") / 100,
         Check.Weight => NumOf(k.E7, "weight_grams") / 1000,
         Check.Score => k.Scored.Value.Score,
-        Check.Points => NumOf(k.E7, "gender") != 1 ? k.Points.Value : null,  // a female never has the rack a title asks for
+        Check.Points => NumOf(k.E7, "gender") != 1 ? TypicalPoints(k.E3, k.Trophy.Value) : null,  // a female never has the rack a title asks for
+        Check.Beard => NumOf(k.Trophy.Value, "beard") / 1000,
+        Check.Spurs => NumOf(k.Trophy.Value, "left_spur") is { } left && NumOf(k.Trophy.Value, "right_spur") is { } right ? Math.Min(left, right) / 1000 : null,
+        Check.Tusks => Tusk(k.Trophy.Value, "left_antler") is { } left && Tusk(k.Trophy.Value, "right_antler") is { } right ? Math.Min(left, right) : null,
         _ => null,
     };
+
+    // a tusk is the first point (type 0) of its side of the trophy event, its length as sent (the score scales it by the species' scale factor)
+    static double? Tusk(JsonObject e22, string side) =>
+        e22[side] is JsonObject s && s["points"] is JsonArray points && points.OfType<JsonObject>().FirstOrDefault(p => NumOf(p, "type") == 0) is { } tusk ? NumOf(tusk, "length") : null;
 
     static bool Meets(Test t, Kill k, long after = 0, Rule? rule = null)
     {
@@ -82,7 +94,7 @@ public sealed partial class State
             Check.Organ => NumOf(last, "organ2") is { } bits && t.Ids!.Any(m => ((long)bits & m) == m),
             Check.OrganOnly => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is > 0 and var b && ((long)b & ~t.Ids!.Aggregate(0L, (a, m) => a | m)) == 0),
             Check.OrganAvoid => hits.Count > 0 && hits.All(h => NumOf(h, "organ2") is { } b && t.Ids!.All(m => ((long)b & m) == 0)),
-            Check.Value or Check.Distance or Check.Weight or Check.Score or Check.Points => In(t, Measured(t, k)),
+            Check.Value or Check.Distance or Check.Weight or Check.Score or Check.Points or Check.Beard or Check.Spurs or Check.Tusks => In(t, Measured(t, k)),
             Check.State => Has(NumOf(last, "animal_state")),
             Check.NotState => NumOf(last, "animal_state") is { } state && !t.Ids!.Contains((long)state),
             Check.FirstState => Has(NumOf(first, "animal_state")),
@@ -91,6 +103,7 @@ public sealed partial class State
             Check.Scope => NumOf(last, "scope_id") is { } scope && scope != -1 && (t.Ids is null || t.Ids.Contains((long)scope)),
             Check.NoScope => NumOf(last, "scope_id") == -1,
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
+            Check.Place => k.In(t.Place!),
             // an animal the server placed (<see cref="PlaceNamedAnimals"/>) is met by an animal of its population; else a title with a place is met by its species (and gender) there, one without a place by an animal that carries `special`
             Check.Named => t.Ids is not null ? NumOf(k.E7, "population") is { } population && t.Ids.Contains((long)population) : double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
@@ -147,8 +160,8 @@ public sealed partial class State
     static long? ReserveAt(Db con, long eventId) =>
         con.Scalar("SELECT reserve FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) as long?;
 
-    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits, its score and its antler points are read from the stored events when a condition asks.
-    /// The animal is the one of that event: individual ids are reused by the next hunt, and two harvests may carry the same JSON.</summary>
+    /// <summary>The kill of a harvest (event 3, stored as event `eventId`): its animal's spawn, its hits, its score, its trophy event and the places the player was in at its killing hit are
+    /// read from the stored events when a condition asks. The animal is the one of that event: individual ids are reused by the next hunt, and two harvests may carry the same JSON.</summary>
     Kill KillOf(Db con, JsonObject e3, long eventId, JsonObject? e7 = null)
     {
         var (individual, harvest) = (e3["individual"], Py.Dumps(e3));
@@ -156,7 +169,16 @@ public sealed partial class State
         {
             var r = ScoreKill(con, e3, harvest, Trophy, AmmoCheck);
             return (r.Disqualified, Py.IsNum(r.Score) ? Py.D(r.Score) : null);
-        }, () => TypicalPoints(e3, TrophyOf(con, individual, eventId)), id: eventId, steps: after => StepsOf(con, 3, eventId, after));
+        }, () => TrophyOf(con, individual, eventId), id: eventId, steps: after => StepsOf(con, 3, eventId, after), region: place => InPlace(con, place, individual, eventId, shot: true));
+    }
+
+    /// <summary>Was the player in the place `name` at the event `eventId` (a harvest: at its killing hit, the last hit on its animal `individual`)? The game sends an event 101 when the player
+    /// enters a place it names (`location_name`, `direction` enter) or leaves it; the latest one of that place in the hunt before decides.</summary>
+    static bool InPlace(Db con, string name, JsonNode? individual, long eventId, bool shot)
+    {
+        var at = shot ? con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 1 AND individual = ?1 AND id < ?2 AND id > " + AnimalFrom, individual, eventId) as long? : null;
+        return con.Scalar("SELECT json_extract(body, '$.direction') FROM events WHERE account_id = $a AND event = 101 AND id < ?1 AND id > " + HuntFrom
+            + " AND json_extract(body, '$.location_name') = ?3 ORDER BY id DESC LIMIT 1", at ?? eventId, eventId, name) as string == "enter";
     }
 
     // the event id after which the events of the animal `?1` of the event `?2` are: the later of its spawn (the latest event 7 before) and the first event of its hunt
@@ -184,12 +206,14 @@ public sealed partial class State
     }
 
     /// <summary>A spotted animal (event 11, stored as event `eventId`) as a kill with one hit: the spot itself, which carries the player's stand.</summary>
-    Kill SpotOf(Db con, JsonObject e11, long eventId, JsonObject e7) => new(new JsonObject(), e7, () => [e11], ReserveAt(con, eventId), () => (false, null));
+    Kill SpotOf(Db con, JsonObject e11, long eventId, JsonObject e7) =>
+        new(new JsonObject(), e7, () => [e11], ReserveAt(con, eventId), () => (false, null), region: place => InPlace(con, place, null, eventId, shot: false));
 
-    /// <summary>A found clue (event 12 `e12`, stored as event `eventId`) as a kill with no hit: the reserve of its hunt, its kind and the clues of the same animal in that hunt can be checked.</summary>
+    /// <summary>A found clue (event 12 `e12`, stored as event `eventId`) as a kill with no hit: the reserve of its hunt, its kind, the clues of the same animal in that hunt and the places
+    /// the player was in can be checked.</summary>
     Kill ClueOf(Db con, long eventId, JsonObject e12, JsonObject e7) =>
         new(new JsonObject(), e7, () => [], ReserveAt(con, eventId), () => (false, null), e12: e12, clues: () => ClueEvents(con, e12["individual"], eventId), id: eventId,
-            steps: after => StepsOf(con, 12, eventId, after));
+            steps: after => StepsOf(con, 12, eventId, after), region: place => InPlace(con, place, null, eventId, shot: false));
 
     // the first event of the hunt that the event `?2` is in (0 before any hunt)
     const string HuntFrom = "COALESCE((SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0)";
@@ -264,7 +288,9 @@ public sealed partial class State
             Conversion = new(@"\([^)]*(?:approx|\bft\b|feet|\blbs?\b|yards?|\byd\b|miles|\bkg\b|\bm\b)[^)]*\)", Rx),
             Coordinates = new(@"\(\s*x\s*:[^)]*\)", Rx),
             Place = new(@"\(\s*x\s*:\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:\s*(?<y>-?\d+(?:[.,]\d+)?)\s*\)", Rx),
-            Notes = new(@"\b(?:other organs may be hit|to blame it for making the noise)\b\.?", Rx),
+            // `from Tower 8`, `from Tower 1 (the south eastern tower)`, `from Tower 4 (x 8504, y -25)`: a tower by its catalogue name, a note or its place in brackets after it
+            TowerName = new(@"\s(?:from|on|at|in)\s+(?:the\s+)?tower\s+(?<n>\d+)(?:\s*\((?:the\s+[a-z ]+?\s+tower|x\s*:?\s*(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:?\s*(?<y>-?\d+(?:[.,]\d+)?))\s*\))?(?=[\s.,]|\z)", Rx),
+            Notes = new(@"\b(?:other organs may be hit|to blame it for making the noise|on any map)\b\.?", Rx),
             Gauge = new(@"(\d)\s?ga\b", Rx),
             SameHunt = new(@"\b(?:at any point\s+)?(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session|outing)\b|\bat any point\b", Rx),
             Hundred = new(@"\b(?:at|with|on|of)\s+(?:an?\s+)?100\s?%(?:\s+of)?\s+harvest value", Rx),
@@ -423,9 +449,11 @@ public sealed partial class State
         readonly (long Id, string Core, HashSet<string> Words)[] ammo;
         readonly List<(Regex In, long[] Ids)> ammoNames;
         readonly (long Id, Regex In)[] reserves;
+        readonly (long Reserve, string Name, string Define, double X, double Z)[] towers;
 
-        /// <summary>The catalogue's species (normalised names), items and reserves.</summary>
-        public Reader(IEnumerable<(long Id, string Name)> species, IEnumerable<JsonObject> items, IEnumerable<KeyValuePair<long, string?>> reserves)
+        /// <summary>The catalogue's species (normalised names), items, reserves and hunting towers (their reserve, <see cref="Words"/> of their name, their `define` and position).</summary>
+        public Reader(IEnumerable<(long Id, string Name)> species, IEnumerable<JsonObject> items, IEnumerable<KeyValuePair<long, string?>> reserves,
+                      IEnumerable<(long Reserve, string Name, string Define, double X, double Z)>? towers = null)
         {
             this.species = [.. species.OrderByDescending(s => s.Name.Length)];
             if (this.species.Length > 0)
@@ -462,6 +490,7 @@ public sealed partial class State
                 .Select(g => (new Regex(@"\s" + Regex.Escape(g.Key.Core) + @"(?:\s+(?:" + string.Join('|', Generic) + @"))*" + (g.Key.Note.Length > 0 ? @"\s+" + Regex.Escape(g.Key.Note) : "") + @"(?=\s)", Rx),
                                 g.Select(a => a.Id).ToArray()))];
             this.reserves = [.. reserves.Where(r => r.Value is not null).Select(r => (r.Key, new Regex(@"\s(?:in|at|on|from)(?:\s+the)?\s+" + Regex.Escape(Words(r.Value!)) + @"(?:\s+reserve)?(?=\s)", Rx)))];
+            this.towers = [.. towers ?? []];
         }
 
         /// <summary>Are the short name's words all in the long name, in order (a repeated word needs two)?</summary>
@@ -522,6 +551,19 @@ public sealed partial class State
                     tests.Add(new(Check.Reserve, Ids: [id]));
                     break;
                 }
+        }
+
+        /// <summary>`from Tower 8`: the one hunting tower of that name in the title's reserve (else in the mission's) becomes a `Place` test of its `define`, the place the game names when the
+        /// player is at the tower; coordinates in brackets after it must be the tower's (50 m). No such tower, or other coordinates: the words stay, the objective is not understood.</summary>
+        void TakeTower(ref string sn, Match tower, List<Test> tests, long[]? places)
+        {
+            HashSet<long> inReserve = tests.FirstOrDefault(t => t.Check == Check.Reserve)?.Ids ?? [.. places ?? []];
+            var found = towers.Where(t => inReserve.Contains(t.Reserve) && t.Name == "tower " + tower.Groups["n"].Value).ToList();
+            if (found is [var one] && (!tower.Groups["x"].Success
+                    || Math.Sqrt(Math.Pow(Coordinate(tower.Groups["x"].Value) - one.X, 2) + Math.Pow(Coordinate(tower.Groups["y"].Value) - one.Z, 2)) <= 50))
+                tests.Add(new(Check.Place, Place: one.Define));
+            else
+                sn += " tower_" + tower.Groups["n"].Value + " ";
         }
 
         /// <summary>The title's coat (`a dark Grey Wolf`, `a Chocolate colored Black Bear`, `with fur variation Piebald Black`, `(Blue color variation)`, `with a color other than Common`)
@@ -621,8 +663,9 @@ public sealed partial class State
         }
 
         /// <summary>The conditions the title asks and the words this reader does not understand, empty when it reads all of it (the words of a condition it could not read stay in the title).
-        /// `hunt`: the title or its mission keeps to one hunt, so an ordinal (`a fifth Elk`) counts the harvests of the hunt.</summary>
-        public (Test[] Tests, string Left) Read(string title, long[]? own = null, long[]? named = null, bool hunt = false)
+        /// `hunt`: the title or its mission keeps to one hunt, so an ordinal (`a fifth Elk`) counts the harvests of the hunt. `places`: the mission's reserves, where a tower the title names
+        /// without its reserve is.</summary>
+        public (Test[] Tests, string Left) Read(string title, long[]? own = null, long[]? named = null, bool hunt = false, long[]? places = null)
         {
             var tests = new List<Test>();
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
@@ -633,6 +676,8 @@ public sealed partial class State
             if (Take(ref s, OnlyOrgans, out _)) tests.Add(new(Check.OrganOnly, Ids: [Organs]));  // every hit has organs and none a bone
             var noCrossbows = Take(ref s, NoCrossbows, out _);  // `(no crossbows)`
             var onlyNamed = Take(ref s, OnlyNamed, out _);  // `through the heart and/or lungs. No other vital organs or bones should be hit`
+            var tower = TowerName.Match(s);  // `from Tower 8`: a stand, and the tower's place once the reserve is read (below)
+            if (tower.Success) s = s[..tower.Index] + " from a tower " + s[(tower.Index + tower.Length)..];
             // weapons listed as examples of the class before them (`any semi-auto shotgun (20 GA Semi-Automatic Shotgun, ...)`) say nothing more: when each is part of an item's name
             s = Examples.Replace(s, m => m.Groups["list"].Value.Split(',').All(p => Words(p) is { Length: > 0 } w && weapons.Any(x => (" " + x.Name + " ").Contains(" " + w + " ", StringComparison.Ordinal))) ? " " : m.Value);
             var place = Place.Match(s);  // a coordinate with a fraction is in thousands of metres (6.273 is 6273), a whole one in metres
@@ -661,6 +706,7 @@ public sealed partial class State
             var sn = " " + Normalise(s) + " ";
             if (Take(ref sn, Permitted, out _)) tests.Add(new(Check.Permitted));
             TakeReserve(ref sn, tests);
+            if (tower.Success) TakeTower(ref sn, tower, tests, places);
             TakeCoat(ref sn, tests);  // before the species: a bare coat word is one right before it
             TakeSpecies(ref sn, own, tests);
             // several harvests of the hunt: `two ... within 5 minutes (of each harvest)`, `an Elk 5 minutes after another`, `two ... with a single shot` (below), `a fifth ...` when the title or

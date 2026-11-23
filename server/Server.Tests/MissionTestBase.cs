@@ -54,6 +54,7 @@ public abstract class MissionTestBase : StateTestBase
         foreach (var item in ExtraItems)
             app["items"]!.AsArray().Add(JsonNode.Parse(item));
         app["locations"]![0]!["name"] = "Test Lodge";
+        app["locations"]!.AsArray().Add(JsonNode.Parse("""{"id": 102, "define": "TEST_HUNTING_TOWER_1", "name": "Tower 2", "type": "HUNTING_TOWER", "reserve": 2, "pos": {"x": 100, "y": 0, "z": 200}}"""));
         var connect = CONNECT;
         connect["ethical"] = permitted is null ? new JsonArray() : new JsonArray([.. Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonArray([.. permitted.Where(_ => i == 1).Select(a => (JsonNode?)a)]))]);
         connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
@@ -90,8 +91,9 @@ public abstract class MissionTestBase : StateTestBase
         O($$"""{"event": 12, "individual": {{individual}}, "track_type": {{trackType}}}"""),
     ];
 
-    /// <summary>The player enters a place of the reserve (event 101).</summary>
-    protected static JsonNode Enter(string place) => O($$"""{"event": 101, "location_name": "{{place}}", "direction": "enter", "player_x": 1, "player_y": 2, "player_z": 3}""");
+    /// <summary>The player enters (or leaves) a place of the reserve (event 101).</summary>
+    protected static JsonNode Enter(string place, string direction = "enter") =>
+        O($$"""{"event": 101, "location_name": "{{place}}", "direction": "{{direction}}", "player_x": 1, "player_y": 2, "player_z": 3}""");
 
     protected void Launch(int reserve = 2) => state.NoteLaunch(ME, System.Text.Encoding.ASCII.GetBytes($"start=101&reserve={reserve}"));
 

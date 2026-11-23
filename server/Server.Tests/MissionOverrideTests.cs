@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Resurgence.Server;
+using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
@@ -116,6 +117,7 @@ public class MissionOverrideTests : MissionTestBase
             "Kill two Test Deer at the same time with a single shot",
             "Find the tracks of three different Test Deer within 5 minutes",
             "ID footprints of a second different Test Fox in the same hunt",
+            "Harvest a Test Deer from Tower 2 in Test Reserve",
         ];
         var read = RuleLines(New("read.db", Catalogue(titles)));
         Assert.Equal("", string.Join('\n', read.Where(l => l.Contains("not understood", StringComparison.Ordinal))));  // every title is read, so every kind of condition is printed
@@ -154,6 +156,8 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", "harvest; male; female", "a gender, a species or \"ordered\" is given twice"),
             ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"ordered\" is given twice"),
             ("1/0", "harvest; distance: >=100 >=200 m", "\">=100 >=200 m\" has two bounds of one side"),
+            ("1/0", "harvest; place: east of the lodge", "\"east of the lodge\" is no name of a place"),
+            ("1/0", "harvest; beard: >=76.2", "\">=76.2\" has no unit \"mm\""),
         ];
         foreach (var (key, rule, says) in bad)
             Assert.StartsWith($"mission_rules.json \"{key}\": {says}", Assert.Throws<InvalidDataException>(() => New("bad.db", catalogue, rules: new JsonObject { [key] = rule.DeepClone() })).Message);
@@ -162,5 +166,54 @@ public class MissionOverrideTests : MissionTestBase
         Assert.Throws<InvalidDataException>(() => State.ReadMissionRules(file));
         File.WriteAllText(file, "{\n  // why: the title's weapon is spelled another way\n  \"1/0\": \"harvest; weapon: Test Carbine\",\n}");
         Assert.Equal("harvest; weapon: Test Carbine", (string)State.ReadMissionRules(file)["1/0"]!);
+    }
+
+    [Fact]
+    public void TestAPlaceIsWhereThePlayerWasAtTheKillingShotOrAtTheClueInThatHunt()
+    {
+        const string East = "TEST_EAST_OF_LODGE";
+        state = New("place.db", Catalogue(["Harvest a Test Deer east of the lodge", "Find a Test Deer track east of the lodge"]),
+            rules: Rules(("1/0", $"harvest; species: Test Deer; place: {East}"), ("2/0", $"track; species: Test Deer; clues: footprints x1; place: {East}")));
+        ActivateAll();
+        Launch();
+        Hb(Shot(1));  // the place never entered
+        Hb(Clue(2, 2));
+        Hb(Enter(East));
+        Launch();  // a place entered in the hunt before is not where the player is now
+        Hb(Shot(3));
+        Assert.Equal("", Completed());
+        Hb(Enter(East));
+        var kill = Shot(4);
+        Hb(kill[..^1]);  // the killing shot in the place
+        Hb(Enter(East, "leave"));
+        Hb(Clue(5, 2));  // a clue after leaving it
+        Hb(kill[^1]);  // the harvest after leaving it
+        Assert.Equal("1", Completed());
+        Hb(Enter(East));
+        Hb(Clue(6, 2));
+        Assert.Equal("1,2", Completed());
+        Assert.Contains($"mission 2 objective 0 (override): Find a Test Deer track east of the lodge => track; species: Test Deer; clues: footprints x1; place: {East}", RuleLines(state));
+    }
+
+    [Fact]
+    public void TestTheBeardTheSpursAndTheTusksAreReadFromTheTrophyEventInMillimetres()
+    {
+        static JsonNode[] Trophy(JsonNode[] kill, string features) => [kill[0], O("{\"event\": 22, \"individual\": " + kill[0]["individual"] + ", " + features + "}"), .. kill[1..]];
+        static string Tusks(int left, int right) => $"\"left_antler\": {{\"points\": [{{\"length\": {left}, \"type\": 0}}]}}, \"right_antler\": {{\"points\": [{{\"length\": {right}, \"type\": 0}}]}}";
+        const string Beard = "harvest; species: Test Deer; male; beard: >=76.2 mm", Spurs = "harvest; species: Test Deer; male; spurs: >=12.7 mm", Tusks4 = "harvest; species: Test Deer; male; tusks: >=101.6 mm";
+        state = New("trophy.db", Catalogue(["Harvest a Test Deer with a long beard", "Harvest a Test Deer with long spurs", "Harvest a Test Deer with long tusks"]),
+            rules: Rules(("1/0", Beard), ("2/0", Spurs), ("3/0", Tusks4)));
+        ActivateAll();
+        Hb(Shot(1));  // no trophy event
+        Hb(Trophy(Shot(2), "\"beard\": 76000, \"left_spur\": 12700, \"right_spur\": 12000"));  // a beard of 76 mm, one spur short
+        Hb(Trophy(Shot(3), Tusks(102, 101)));  // one tusk short of 4 inches
+        Assert.Equal("", Completed());
+        Hb(Trophy(Shot(4), "\"beard\": 76200, \"left_spur\": 12700, \"right_spur\": 12700"));
+        Hb(Trophy(Shot(5), Tusks(102, 102)));
+        Assert.Equal("1,2,3", Completed());
+        var lines = RuleLines(state);
+        Assert.Contains($"mission 1 objective 0 (override): Harvest a Test Deer with a long beard => {Beard}", lines);
+        Assert.Contains($"mission 2 objective 0 (override): Harvest a Test Deer with long spurs => {Spurs}", lines);
+        Assert.Contains($"mission 3 objective 0 (override): Harvest a Test Deer with long tusks => {Tusks4}", lines);
     }
 }
