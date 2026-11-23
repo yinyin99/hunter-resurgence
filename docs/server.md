@@ -333,6 +333,7 @@ On a community server `Mission/missions` and the calls the missions page sends a
 | Words of the title | Checked against |
 |---|---|
 | a weapon's name (`using the .22 Air Rifle`), a class (`any shotgun`, `any bow or crossbow`; a bare `bow` is no crossbow) with the name words before it (`any 12 GA Shotgun`, `a Compound Bow`) | the last hit's `weapon_id` |
+| a weapon's name whose words all lie in a longer weapon's name (`.44 Revolver` and `.44 Magnum Revolver`) | also the longer name's weapons (the shorter name's words in order) and the weapons the mission's description names; a title naming the longer name stays exact |
 | an ammunition's name (`using .17 HMR HV ammunition`, `Slug Shells`, `a .243 ammunition`) | the last hit's `ammunition_id` |
 | `permitted` or `ethical` ammunition | no hit of the kill was not permitted (the kill is not disqualified) |
 | `with one shot`, `single shot` | the animal has exactly one hit |
@@ -384,8 +385,8 @@ The kind of a clue is its `track_type` (`State.ClueKinds`): 0 a blood trail, 9 a
 
 **Warnings.** The report ends with `warnings:` (only when there are some), one line each, by mission and then kind. A warning is a lead, not an error: the `weapons` list is the page's filter and is wider than the titles for some missions, and the server starts all the same.
 
-- `weapons`: the mission's `weapons` list has a weapon that no objective accepts, while the objectives accept a weapon of its family (all the words of one name are in the other: the title says `any Recurve Bow`, the list holds the Heavy Recurve Bow too). Objectives that ask nothing of the weapon are not counted; none naming one, no warning.
-- `description`: the mission's `desc` names a weapon or an ammunition (by the item's name, the longest name only) that no objective accepts, while the objectives name others of that kind (the title says `.44 Revolver`, the text `.44 Magnum Revolver`).
+- `weapons`: the mission's `weapons` list has a weapon that no objective accepts, while the objectives accept a weapon of its family (all the words of one name are in the other: the title says `the Heavy Recurve Bow`, the list holds the Recurve Bow too). Objectives that ask nothing of the weapon are not counted; none naming one, no warning.
+- `description`: the mission's `desc` names a weapon or an ammunition (by the item's name, the longest name only) that no objective accepts, while the objectives name others of that kind (the title says `.44 Magnum Revolver`, the text `.44 Revolver`).
 - `species`: the rule of a harvest, spot or clue objective accepts no species of the mission's `species` list.
 - `never met`: a condition of an understood objective that no event can meet: an empty set of accepted ids, a lower bound above the upper one, a named animal without a place (it needs a `special` other than 0, which the game never sends).
 
