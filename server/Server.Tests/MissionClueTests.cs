@@ -153,7 +153,7 @@ public class MissionClueTests : MissionTestBase
     [Fact]
     public void TestAClueObjectiveWithWordsTheServerDoesNotReadIsNeverMetAndTheCoverageCountsIt()
     {
-        state = New("clue-unread.db", Catalogue(["Find a Test Fox track north of the Middle Tower", "ID tracks from three different Test Fox within a span of 5 min", "ID a Test Fox track",
+        state = New("clue-unread.db", Catalogue(["Find a Test Fox track north of the Middle Tower", "ID tracks from different Test Fox", "ID a Test Fox track",
             "ID tracks from a Sitka", "ID tracks from a Test Deer at (X: 10, Y: 20)"]));
         ActivateAll();
         Hb(Clue(1, 2, species: 5));

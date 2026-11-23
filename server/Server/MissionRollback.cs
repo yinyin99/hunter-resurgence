@@ -327,7 +327,7 @@ public sealed partial class State
     }
 
     /// <summary>What a kill had where a condition looked, for the stuck report: the weapon, the ammunition, a species or a reserve by name, the other ids and numbers as they are.</summary>
-    string Seen(Test t, Kill k, long after)
+    string Seen(Test t, Kill k, long after, Rule rule)
     {
         var (hits, e12) = (k.Hits.Value, k.E12);
         var (first, last) = (hits.FirstOrDefault(), hits.LastOrDefault());
@@ -345,6 +345,7 @@ public sealed partial class State
             Check.Reserve => k.Reserve is { } r ? reserves.GetValueOrDefault(r) ?? $"#{r}" : "none",
             Check.Coat or Check.NotCoat => Id(NumOf(k.E7, "texture")),
             Check.Clue => t.Min > 1 && ClueIs(t, e12, k.E7) ? $"{k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7))} of {t.Min} clues" : ClueKindOf(e12, AnimalOf(k.E7, k.E7["species"]).Species)?.ToString() ?? "unknown",
+            Check.Within or Check.Each or Check.SameShot or Check.Different => $"{Sequenced(t, k, after, rule)} of {t.Min}",
             Check.Named => double.IsInfinity(t.Min) ? Id(NumOf(k.E7, "special")) : "away from the place",
             Check.Permitted => "not permitted",
             Check.OneShot => $"{hits.Count} shots",
@@ -357,7 +358,7 @@ public sealed partial class State
     /// clue objective the server understands that is open (and, when ordered, next in line) on an active mission of an account (or `only`) that played in the last `days` days, the
     /// candidates are the events of those days that have the objective's kind, species and gender and that could have finished it: after the mission was activated (a single-hunt mission
     /// forgets its progress when a hunt starts: an event of an earlier hunt counts only when a condition refused it), for an ordered one after the event that finished the one before it, and not one that today's rules give to another objective (<see cref="JudgeMission"/>'s
-    /// replay: an event finishes one). Each candidate is judged by the objective's own conditions (<see cref="Meets(Test, Kill, long)"/>, the test the replay is made of), which counts how
+    /// replay: an event finishes one). Each candidate is judged by the objective's own conditions (<see cref="Meets(Test, Kill, long, Rule)"/>, the test the replay is made of), which counts how
     /// many each refused. An objective is listed with at least
     /// `minCandidates` candidates and no completion (finished by any account here, a restore not counted), or when one condition refused at least `minShare` percent of at least `minSample`
     /// candidates; most candidates first, each with its open accounts, its completions, the refused conditions and the values the most refusing one saw most often.
@@ -420,7 +421,7 @@ public sealed partial class State
                     foreach (var e in events.Value.Where(e => e.Id > floor && !taken.Contains(e.Id) && e.Ts >= from && e.Kind == rule.Kind && (rule.Species is null || rule.Species == e.Species) && (rule.Gender is null || rule.Gender == e.Gender)
                                                               && tests.Where(t => t.Check == Check.Species).All(t => Meets(t, e.Kill, since))))  // a title naming several species: the species is part of the kind
                     {
-                        var refused = tests.Where(t => t.Check != Check.Species && !Meets(t, e.Kill, since)).DistinctBy(t => t.Check).ToList();
+                        var refused = tests.Where(t => t.Check != Check.Species && !Meets(t, e.Kill, since, rule)).DistinctBy(t => t.Check).ToList();
                         if (refused.Count == 0 && m.SingleExpedition && e.Id <= latestHunt)
                             continue;  // a single-hunt mission forgets its progress when a hunt starts: what met everything in an earlier hunt was progress, not a refused attempt
                         s.Candidates++;
@@ -428,7 +429,7 @@ public sealed partial class State
                         {
                             s.Refused[t.Check] = s.Refused.GetValueOrDefault(t.Check) + 1;
                             var values = s.Values.TryGetValue(t.Check, out var v) ? v : s.Values[t.Check] = [];
-                            var seen = Seen(t, e.Kill, since);
+                            var seen = Seen(t, e.Kill, since, rule);
                             values[seen] = values.GetValueOrDefault(seen) + 1;
                         }
                     }
