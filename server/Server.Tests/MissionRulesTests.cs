@@ -40,11 +40,11 @@ public class MissionRulesTests : MissionTestBase
     [Fact]
     public void TestAWeaponOfTheMissionsListThatNoObjectiveAcceptsIsWarnedWhenItsFamilyIsNamed()
     {
-        var w = Warnings("weapons.db", Mission(1, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66, 67]"), Mission(2, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66]"),
-            Mission(3, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66, 50]"), Mission(4, "Harvest a Test Deer", ", \"weapons\": [66, 67]"),
-            Objectives(5, ["Harvest a Test Deer with the Test Bow", "Harvest a Test Deer"], ", \"weapons\": [66, 67]"));  // 5: an objective that asks nothing of the weapon is not counted
-        Assert.Equal(["warning weapons: mission 1: the weapons list has \"heavy test bow\", which no objective accepts, and objectives accept \"test bow\"",
-                      "warning weapons: mission 5: the weapons list has \"heavy test bow\", which no objective accepts, and objectives accept \"test bow\""], w);  // 3: another family; 4: anything goes
+        var w = Warnings("weapons.db", Mission(1, "Harvest a Test Deer with the Heavy Test Bow", ", \"weapons\": [66, 67]"), Mission(2, "Harvest a Test Deer with the Heavy Test Bow", ", \"weapons\": [67]"),
+            Mission(3, "Harvest a Test Deer with the Heavy Test Bow", ", \"weapons\": [67, 50]"), Mission(4, "Harvest a Test Deer", ", \"weapons\": [66, 67]"),
+            Objectives(5, ["Harvest a Test Deer with the Heavy Test Bow", "Harvest a Test Deer"], ", \"weapons\": [66, 67]"));  // 5: an objective that asks nothing of the weapon is not counted
+        Assert.Equal(["warning weapons: mission 1: the weapons list has \"test bow\", which no objective accepts, and objectives accept \"heavy test bow\"",
+                      "warning weapons: mission 5: the weapons list has \"test bow\", which no objective accepts, and objectives accept \"heavy test bow\""], w);  // 3: another family; 4: anything goes
     }
 
     [Fact]

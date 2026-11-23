@@ -340,6 +340,7 @@ public sealed partial class State
         readonly (long Id, string Name)[] species;
         readonly Regex? speciesList, speciesName, coatBefore;
         readonly List<(string Name, long[] Ids)> weaponNames, sightNames;
+        readonly Dictionary<string, long[]> longer;
         readonly List<(long Id, string Name, string Class, HashSet<string> Words)> weapons = [], sights = [];
         readonly (long Id, string Core, HashSet<string> Words)[] ammo;
         readonly List<(Regex In, long[] Ids)> ammoNames;
@@ -372,6 +373,8 @@ public sealed partial class State
                 }
             }
             weaponNames = ByName(weapons);
+            // a name whose words all lie, in order, in a longer name (`.44 Revolver`, `.44 Magnum Revolver`): the title naming the shorter one also accepts the longer
+            longer = weaponNames.ToDictionary(n => n.Name, n => weapons.Where(w => w.Name != n.Name && InOrder(n.Name.Split(' '), w.Name.Split(' '))).Select(w => w.Id).ToArray());
             sightNames = ByName(sights);
             ammo = [.. ammoItems.Where(a => a.Core.Length > 0).Select(a => (a.Id, a.Core, ammoWords[a.Id])).OrderByDescending(a => a.Core.Length)];
             // an ammunition is named by its core and, when the title gives it, the bracketed note after it (`7mm-08 Ammunition (HV)`); by the core alone it is every item of that core
@@ -381,6 +384,15 @@ public sealed partial class State
                 .Select(g => (new Regex(@"\s" + Regex.Escape(g.Key.Core) + @"(?:\s+(?:" + string.Join('|', Generic) + @"))*" + (g.Key.Note.Length > 0 ? @"\s+" + Regex.Escape(g.Key.Note) : "") + @"(?=\s)", Rx),
                                 g.Select(a => a.Id).ToArray()))];
             this.reserves = [.. reserves.Where(r => r.Value is not null).Select(r => (r.Key, new Regex(@"\s(?:in|at|on|from)(?:\s+the)?\s+" + Regex.Escape(Words(r.Value!)) + @"(?:\s+reserve)?(?=\s)", Rx)))];
+        }
+
+        /// <summary>Are the short name's words all in the long name, in order (a repeated word needs two)?</summary>
+        static bool InOrder(string[] shortName, string[] longName)
+        {
+            var at = 0;
+            foreach (var w in longName)
+                if (at < shortName.Length && w == shortName[at]) at++;
+            return at == shortName.Length;
         }
 
         /// <summary>The items by name, the longest name first (items of one name are one entry: skins and variants share it).</summary>
@@ -520,7 +532,7 @@ public sealed partial class State
         }
 
         /// <summary>The conditions the title asks and the words this reader does not understand, empty when it reads all of it (the words of a condition it could not read stay in the title).</summary>
-        public (Test[] Tests, string Left) Read(string title, long[]? own = null)
+        public (Test[] Tests, string Left) Read(string title, long[]? own = null, long[]? named = null)
         {
             var tests = new List<Test>();
             var s = Gauge.Replace(Regex.Replace(Fold(title).Trim(), @"\s+", " "), "$1 ga");
@@ -579,7 +591,11 @@ public sealed partial class State
             var weaponIds = new HashSet<long>();
             foreach (var (name, ids) in weaponNames)
                 if (ReplaceFirst(ref sn, " " + name + " "))
+                {
                     weaponIds.UnionWith(ids);
+                    if (longer[name].Length > 0)  // the longer names and the weapons the mission's own text names are accepted too
+                        weaponIds.UnionWith(longer[name].Concat(named ?? []));
+                }
             if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
                 weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
             if (Take(ref sn, OneShot, out _)) tests.Add(new(Check.OneShot));  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
@@ -645,6 +661,17 @@ public sealed partial class State
             var at = s.IndexOf(what, StringComparison.Ordinal);
             if (at >= 0) s = s[..at] + " " + s[(at + what.Length)..];
             return at >= 0;
+        }
+
+        /// <summary>The weapon items whose name a text (a mission's description) holds whole, the longest name first: `Heavy Recurve Bow` is not also `Recurve Bow`.</summary>
+        public long[] WeaponsIn(string text)
+        {
+            var rest = " " + Words(text) + " ";
+            var found = new List<long>();
+            foreach (var (name, ids) in weaponNames)
+                if (ReplaceFirst(ref rest, " " + name + " "))
+                    found.AddRange(ids);
+            return [.. found];
         }
 
         /// <summary>The weapon items whose name has the quoted words (`"Snakebite"` names the compound bows of that name).</summary>
