@@ -330,6 +330,8 @@ public static class Replay
         if (recorded && neutral is null && !offline)
             throw new InvalidOperationException("a community server needs the install's connect sample: new accounts never start from a recorded connect");
         e.TryGetValue(new("POST", apiHost, APPLICATION, null), out var app);
+        // the operator's rules of single objectives, beside the recorded catalogue: read only with that recording, whose missions it names
+        var missionRules = app is not null && cfg["recordings_dir"] is JsonValue dir ? System.IO.Path.Combine((string)dir!, State.MissionRulesFile) : null;
         // the launcher's locale script: one call that wraps a JSON object
         byte[] Script(Func<string, bool> pick) =>
             e.FirstOrDefault(kv => kv.Key.Params is null && kv.Key.Method == "GET" && kv.Key.Host == staticHost && pick(kv.Key.Path)).Value?.Body ?? [];
@@ -369,7 +371,7 @@ public static class Replay
             startBody: recorded ? neutral : null,
             avatars: avatars is not null ? JsonNode.Parse(avatars.Body) as JsonArray : null,
             challenges: challenges is not null ? JsonNode.Parse(challenges.Body) as JsonArray : null,
-            seasonal: SeasonalEvent.Parse(cfg["event"])) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
+            seasonal: SeasonalEvent.Parse(cfg["event"]), missionRules: File.Exists(missionRules) ? State.ReadMissionRules(missionRules) : null) { CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
                 UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
                 Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],
                 HarvestGmBonus = cfg["harvest_gm_bonus"] is JsonObject bonus ? (Py.D(bonus["multiplier"]), Py.D(bonus["until"])) : null };

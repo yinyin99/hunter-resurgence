@@ -273,6 +273,9 @@ One line of a mission, such as "Harvest a Whitetail Deer buck with at least 8 ty
 Said of an objective the community server can't judge yet: it can't be newly met, and an earlier finish of it stays.
 _Avoid_: unsupported
 
+**Overridden rule**:
+The rule of one objective that the operator states in `mission_rules.json`, in the words `coverage --rules` prints, instead of the server's reading of its title; it is judged like any other rule.
+
 **Clue**:
 What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. No title names the last two, so only an objective that follows one animal's trail counts them.
 

@@ -680,11 +680,12 @@ public sealed partial class State
     /// that shares one weapon skill. offline: a request no token resolves is the local account's (a local server);
     /// false: it is refused (a community server). startBody: the neutral connect (Install.Connect) every new account
     /// starts from; null: connectBody is that start (no recorded connect). facts: the facts file (its rank table scores the hunterscore).
-    /// seasonal: the event the connect reply announces while its window runs, to the players who play events.</summary>
+    /// seasonal: the event the connect reply announces while its window runs, to the players who play events. missionRules: the operator's `mission_rules.json` (ReadMissionRules),
+    /// which replaces the rules of single objectives; a bad entry throws.</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null)
     {
         this.facts = facts ?? Facts.Default;
         Seasonal = seasonal;
@@ -711,6 +712,7 @@ public sealed partial class State
         if (!offline)
         {
             LoadMissions();
+            OverrideMissionRules(missionRules);
             LoadChallenges(challenges);
         }
         this.locale = locale;
