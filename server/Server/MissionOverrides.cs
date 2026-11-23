@@ -18,6 +18,8 @@ public sealed partial class State
     public int OverriddenObjectives => overridden.Count;
 
     static readonly Regex NamedNear = new(@"\Anamed animal near \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\) m\z", RegexOptions.CultureInvariant);
+    // a place the game names when the player enters it (event 101 `location_name`): no catalogue lists them all, so only its form is checked
+    static readonly Regex PlaceDefine = new(@"\A[A-Z0-9_]+\z", RegexOptions.CultureInvariant);
     // `in the hunt: <n>[ within <m> min]`, `<n>, each within <m> min of the one before`, `<n> killed by one shot`, `<n> different animals[ within <m> min]` (<see cref="Describe"/>)
     static readonly Regex InTheHunt = new(@"\A(?<n>\d+)(?:(?<shot> killed by one shot)|, each within (?<e>\d+(?:\.\d+)?) min of the one before|(?<different> different animals)?(?: within (?<m>\d+(?:\.\d+)?) min)?)\z",
         RegexOptions.CultureInvariant);
@@ -92,8 +94,8 @@ public sealed partial class State
         // what an event of the kind carries: a spot has no weapon, hit or harvest; a clue has its kind and its animal
         Check[]? only = kind switch
         {
-            Kind.Spot => [Check.Stand, Check.Reserve, Check.Named, Check.Species, Check.Coat, Check.NotCoat],
-            Kind.Track => [Check.Clue, Check.Reserve, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
+            Kind.Spot => [Check.Stand, Check.Reserve, Check.Place, Check.Named, Check.Species, Check.Coat, Check.NotCoat],
+            Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
             _ => null,
         };
         if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different : !only.Contains(t.Check)) is { } wrong)
@@ -129,6 +131,10 @@ public sealed partial class State
             "weight" => Bounded(Check.Weight, value, " kg"),
             "score" => Bounded(Check.Score, value),
             "typical points" => Bounded(Check.Points, value),
+            "beard" => Bounded(Check.Beard, value, " mm"),
+            "spurs" => Bounded(Check.Spurs, value, " mm"),
+            "tusks" => Bounded(Check.Tusks, value, " mm"),
+            "place" => PlaceDefine.IsMatch(value) ? new(Check.Place, Place: value) : throw new InvalidDataException($"\"{value}\" is no name of a place: capital letters, digits and _"),
             "state" or "first state" => new(name == "state" ? Check.State : Check.FirstState,
                 Ids: Reader.States.FirstOrDefault(s => s.Label == value && s.First == (name == "first state")) is { Label: not null } st ? [.. st.States]
                     : throw new InvalidDataException($"\"{value}\" is no {name}")),

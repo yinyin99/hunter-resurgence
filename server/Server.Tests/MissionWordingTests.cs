@@ -278,4 +278,29 @@ public class MissionWordingTests : MissionTestBase
         Assert.Equal(1, later.ConfirmMissions());
         Assert.Equal(("1", wallet + 10), (Completed(of: later), Gm(later)));
     }
+
+    [Fact]
+    public void TestFromTowerNIsATowerStandAtThePlaceOfThatTowerAndOnAnyMapSaysNothing()
+    {
+        state = New("tower.db", Catalogue(
+        [
+            "Harvest a Test Deer from Tower 2 in Test Reserve",      // 1 the tower of the title's reserve
+            "Harvest a Test Deer from Tower 2 (x 100, y 200).",      // 2 of the mission's reserve; its place in brackets
+            "Harvest a Test Deer from Tower 2 (the central tower)",  // 3 a note in brackets
+            "Harvest a Test Deer from Tower 2 (x 900, y 200)",       // 4 another place: not understood
+            "Harvest a Test Deer from Tower 7 in Test Reserve",      // 5 no such tower: not understood
+            "Harvest any Test Deer on any map.",                     // 6
+        ], extra: ", \"reserves\": [2]"));
+        Launch();
+        ActivateAll();
+        Hb(Shot(1, location: 1));  // from another tower
+        Assert.Equal("6", Completed());
+        Hb(Enter("TEST_HUNTING_TOWER_1"));
+        Hb(Shot(2));  // at the tower, on the ground
+        Assert.Equal("6", Completed());
+        Hb(Shot(3, location: 1));
+        Assert.Equal("1,2,3,6", Completed());
+        Assert.Equal(["mission 4 objective 0: Harvest a Test Deer from Tower 2 (x 900, y 200)", "mission 5 objective 0: Harvest a Test Deer from Tower 7 in Test Reserve"],
+            state.MissionCoverage().SkipWhile(l => l != "objectives not understood, by mission:").Skip(1).TakeWhile(l => l != "warnings:"));
+    }
 }
