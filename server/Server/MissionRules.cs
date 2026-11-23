@@ -44,7 +44,7 @@ public sealed partial class State
     {
         var ids = t.Ids!;
         if (t.Check == Check.NotState)
-            return Names((ids.Contains(9) ? new[] { "charging" } : []).Concat(ids.Contains(5) ? new[] { "running away" } : []).Concat(ids.Except([9, 5, 10, 11, 15]).Select(i => "state " + i)));
+            return Names((ids.Contains(9) ? new[] { "charging" } : []).Concat(ids.Contains(5) ? new[] { "running away" } : []).Concat(ids.Except([9, 5, 6, 10, 15]).Select(i => "state " + i)));
         return Reader.States.FirstOrDefault(s => s.First == (t.Check == Check.FirstState) && ids.SetEquals(s.States)).Label ?? "states " + string.Join(',', ids.Order());
     }
 
