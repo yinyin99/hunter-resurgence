@@ -1,6 +1,7 @@
 // Missions checked again against the harvests and clues already stored: at the server's start (<see cref="ConfirmMissions"/>: what a version that understands more titles
 // finishes late), by the operator (<see cref="RollbackMissions"/>: what the lax rules of an earlier version finished wrongly) and by the daily audit (<see cref="AuditMissions"/>:
-// the recent finishes that look suspicious). docs/server.md, "Missions".
+// the recent finishes that look suspicious) and by the operator's stuck report (<see cref="StuckMissions"/>: the objectives players attempt and nobody completes). docs/server.md, "Missions".
+using System.Globalization;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
@@ -20,16 +21,16 @@ public sealed partial class State
             + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id DESC LIMIT 1", individual, eventId)
             .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
 
-    /// <summary>The harvests and the clues stored after event `after`, in order.</summary>
-    List<Recorded> RecordedOf(Db con, long after) =>
-        [.. con.Rows("SELECT id, event, body, ts FROM events WHERE account_id = $a AND event IN (3, 12) AND id > ? ORDER BY id", after).Select(r =>
+    /// <summary>The harvests and the clues stored after event `after`, in order; with `spots`, the spotted animals (event 11) too, which only the stuck report reads.</summary>
+    List<Recorded> RecordedOf(Db con, long after, bool spots = false) =>
+        [.. con.Rows("SELECT id, event, body, ts FROM events WHERE account_id = $a AND event IN (3, 12" + (spots ? ", 11" : "") + ") AND id > ? ORDER BY id", after).Select(r =>
         {
             var (id, e, ts) = ((long)r[0], Parse(r[2]), r[3] as double?);
-            if ((long)r[1] == 12)
+            if ((long)r[1] is 11 or 12)
             {
                 var e7 = SpawnBefore(con, e["individual"], id);
                 var (clueSpecies, clueGender) = AnimalOf(e7, e7["species"]);
-                return new Recorded(id, Kind.Track, ClueOf(con, id, e, e7), clueSpecies, clueGender, ts);
+                return (long)r[1] == 11 ? new Recorded(id, Kind.Spot, SpotOf(con, e, id, e7), clueSpecies, clueGender, ts) : new Recorded(id, Kind.Track, ClueOf(con, id, e, e7), clueSpecies, clueGender, ts);
             }
             var kill = KillOf(con, e, id);
             var (species, gender) = AnimalOf(kill.E7, e["extended_species"]);
@@ -201,11 +202,14 @@ public sealed partial class State
         return (reopened, kept, notUnderstood);
     }
 
+    /// <summary>The objectives a mission row holds as finished: all of a completed mission's, else the ones it lists.</summary>
+    static List<long> HeldOf(MissionDef m, long state, List<long> done) => state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
+
     /// <summary>The one judging of a held mission, for the rollback and the audit: the objectives it holds (all of a completed mission), how many of its harvest and clue ones have words the server
     /// does not read, the ones that can be judged, and the objectives the stored events meet under today's rules, each with the event that met it. `met` is empty when nothing can be judged.</summary>
     (List<long> Held, int NotUnderstood, List<long> Checkable, List<(Objective Objective, long At)> Met) JudgeMission(MissionDef m, long state, List<long> done, Mark mark, Lazy<List<Recorded>> events, Lazy<List<long>> hunts)
     {
-        var held = state == 3 ? m.Objectives.Select(o => o.Id).ToList() : done;
+        var held = HeldOf(m, state, done);
         bool Judged(long d) => !m.Objectives.First(o => o.Id == d).Rule.Unknown;
         var replayedHeld = held.Where(d => IsReplayed(m, d) && !mark.KeptIds.Contains(d)).ToList();
         var notUnderstood = replayedHeld.Count(d => !Judged(d));
@@ -305,6 +309,145 @@ public sealed partial class State
         var lines = AuditFlags.SelectMany(f => flagged.Where(x => x.Flag == f).Select(x => $"{f} | {x.Line}"));
         var counts = string.Join(", ", AuditFlags.Select(f => $"{f} {flagged.Count(x => x.Flag == f)}"));
         foreach (var line in discord ? DiscordChunks([$"**{Escaped(header)}**", .. lines.Select(l => "- " + Escaped(l)), $"**{Escaped(counts)}**"]) : [header, .. lines, counts])
+            yield return line;
+    }
+
+    // ---- stuck
+
+    /// <summary>What the stuck report knows of one open objective: the accounts that hold it, the candidates (events that have its kind, species and gender), how many each condition
+    /// refused, and the values the refused candidates had.</summary>
+    sealed class Stuck(MissionDef mission, Objective objective)
+    {
+        public readonly MissionDef Mission = mission;
+        public readonly Objective Objective = objective;
+        public readonly List<string> Holders = [];
+        public int Candidates;
+        public readonly Dictionary<Check, int> Refused = [];
+        public readonly Dictionary<Check, Dictionary<string, int>> Values = [];
+    }
+
+    /// <summary>What a kill had where a condition looked, for the stuck report: the weapon, the ammunition, a species or a reserve by name, the other ids and numbers as they are.</summary>
+    string Seen(Test t, Kill k, long after)
+    {
+        var (hits, e12) = (k.Hits.Value, k.E12);
+        var (first, last) = (hits.FirstOrDefault(), hits.LastOrDefault());
+        static string Id(double? v) => v is { } x ? ((long)x).ToString(CultureInfo.InvariantCulture) : "none";
+        string Named(Dictionary<long, JsonObject> from, long? id) => id is { } i ? from.TryGetValue(i, out var o) && Py.IsStr(o["name"]) ? (string)o["name"]! : $"#{i}" : "none";
+        return t.Check switch
+        {
+            Check.Weapon => Named(items, (long?)NumOf(last, "weapon_id")),
+            Check.Ammo or Check.NotAmmo => Named(items, (long?)NumOf(last, "ammunition_id")),
+            Check.State or Check.NotState => Id(NumOf(last, "animal_state")),
+            Check.FirstState => Id(NumOf(first, "animal_state")),
+            Check.Pose => Id(NumOf(last, "pose") % 16),
+            Check.Stand => Id(NumOf(last, "location")),
+            Check.Scope or Check.NoScope => Id(NumOf(last, "scope_id")),
+            Check.Reserve => k.Reserve is { } r ? reserves.GetValueOrDefault(r) ?? $"#{r}" : "none",
+            Check.Coat or Check.NotCoat => Id(NumOf(k.E7, "texture")),
+            Check.Clue => t.Min > 1 && ClueIs(t, e12, k.E7) ? $"{k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7))} of {t.Min} clues" : ClueKindOf(e12, AnimalOf(k.E7, k.E7["species"]).Species)?.ToString() ?? "unknown",
+            Check.Named => double.IsInfinity(t.Min) ? Id(NumOf(k.E7, "special")) : "away from the place",
+            Check.Permitted => "not permitted",
+            Check.OneShot => $"{hits.Count} shots",
+            Check.Organ or Check.OrganOnly or Check.OrganAvoid => Id(NumOf(last, "organ2")),
+            _ => Measured(t, k) is { } v ? v.ToString("0", CultureInfo.InvariantCulture) : "none",
+        };
+    }
+
+    /// <summary>The operator's report of objectives players attempt and nobody completes, read only (no transaction, no lock: it runs in the live container). For every harvest, spot or
+    /// clue objective the server understands that is open (and, when ordered, next in line) on an active mission of an account (or `only`) that played in the last `days` days, the
+    /// candidates are the events of those days that have the objective's kind, species and gender and that could have finished it: after the mission was activated (a single-hunt mission
+    /// forgets its progress when a hunt starts: an event of an earlier hunt counts only when a condition refused it), for an ordered one after the event that finished the one before it, and not one that today's rules give to another objective (<see cref="JudgeMission"/>'s
+    /// replay: an event finishes one). Each candidate is judged by the objective's own conditions (<see cref="Meets(Test, Kill, long)"/>, the test the replay is made of), which counts how
+    /// many each refused. An objective is listed with at least
+    /// `minCandidates` candidates and no completion (finished by any account here, a restore not counted), or when one condition refused at least `minShare` percent of at least `minSample`
+    /// candidates; most candidates first, each with its open accounts, its completions, the refused conditions and the values the most refusing one saw most often.
+    /// `discord`: Markdown messages of at most 2000 characters separated by a line `---8<---`.</summary>
+    public IEnumerable<string> StuckMissions(double days, long? only = null, bool discord = false, int minCandidates = 5, int minSample = 10, double minShare = 90)
+    {
+        if (missions.Count == 0)
+        {
+            yield return "no missions: no recorded catalogue, or a local server";
+            yield break;
+        }
+        var from = Clock() - days * 86400;
+        List<long> accounts;
+        using (var all = Store.Open())
+            accounts = all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+        var completed = new Dictionary<(long Mission, long Objective), int>();
+        var open = new Dictionary<(long Mission, long Objective), Stuck>();
+        var holders = new HashSet<long>();
+        foreach (var account in accounts)
+        {
+            using var con = Con(account);  // no transaction: it would hold the live server's write lock
+            if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
+                continue;
+            var (rows, marks, latestHunt) = (MissionRows(con), Marks(con), LatestHunt(con));
+            var played = (only is null || only == account) && con.Scalar("SELECT 1 FROM events WHERE account_id = $a AND event IN (3, 11, 12) AND ts >= ?", from) is not null;
+            var handle = new Lazy<string>(() => Store.HandleOf(account) ?? account.ToString());
+            var events = new Lazy<List<Recorded>>(() => RecordedOf(con, 0, spots: true));
+            var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
+            foreach (var (id, (state, done)) in rows)
+            {
+                if (!missions.TryGetValue(id, out var m) || marks[id].Restored)
+                    continue;
+                var (mark, held) = (marks[id], HeldOf(m, state, done));
+                var kept = mark.KeptIds;
+                foreach (var o in m.Objectives.Where(o => held.Contains(o.Id) && !kept.Contains(o.Id)))
+                    completed[(id, o.Id)] = completed.GetValueOrDefault((id, o.Id)) + 1;
+                if (state != 2 || !played)
+                    continue;
+                // what today's rules make of the events the mission holds: the event that finished each objective it holds, and what an open one would finish now
+                var judged = new Lazy<List<(Objective Objective, long At)>>(() => JudgeMission(m, state, done, mark, events, hunts).Met);
+                for (var i = 0; i < m.Objectives.Length; i++)
+                {
+                    var (o, rule) = (m.Objectives[i], m.Objectives[i].Rule);
+                    if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && m.Objectives[..i].Any(p => !held.Contains(p.Id)))
+                        || m.Objectives[..i].Any(p => p.Rule.Text == rule.Text && !held.Contains(p.Id))  // an equal one before it that is open takes the event first
+                        // ponytail: an ordered objective is listed only when the replay knows the event that finished every one before it (a harvest or a clue); after a spot, a start or a place the
+                        // candidates would begin too early. A spot that finished one spot objective is not known either and may count as a refused attempt at another of the same animal.
+                        || (rule.Ordered && m.Objectives[..i].Any(p => !IsReplayed(m, p.Id) || !judged.Value.Any(x => x.Objective.Id == p.Id))))
+                        continue;
+                    if (!open.TryGetValue((id, o.Id), out var s))
+                        open[(id, o.Id)] = s = new(m, o);
+                    s.Holders.Add(handle.Value);
+                    holders.Add(account);
+                    var since = mark.Since ?? mark.Seen;  // a row of before schema 30 has no activation event: the last one its progress is not owed from
+                    // the events that could have finished it: after the mission's activation (a single-hunt mission: an earlier hunt's event only when a condition refused it), when ordered after the one before it finished, and none that
+                    // another objective took (an event finishes one objective); the one an open objective is met by now stays: that is the bug the report shows as "no condition refused"
+                    var floor = Math.Max(since, rule.Ordered ? judged.Value.Where(x => m.Objectives[..i].Any(p => p.Id == x.Objective.Id)).Select(x => x.At).DefaultIfEmpty(0).Max() : 0);
+                    var taken = judged.Value.Where(x => x.Objective.Id != o.Id).Select(x => x.At).ToHashSet();
+                    var tests = rule.Tests ?? [];
+                    foreach (var e in events.Value.Where(e => e.Id > floor && !taken.Contains(e.Id) && e.Ts >= from && e.Kind == rule.Kind && (rule.Species is null || rule.Species == e.Species) && (rule.Gender is null || rule.Gender == e.Gender)
+                                                              && tests.Where(t => t.Check == Check.Species).All(t => Meets(t, e.Kill, since))))  // a title naming several species: the species is part of the kind
+                    {
+                        var refused = tests.Where(t => t.Check != Check.Species && !Meets(t, e.Kill, since)).DistinctBy(t => t.Check).ToList();
+                        if (refused.Count == 0 && m.SingleExpedition && e.Id <= latestHunt)
+                            continue;  // a single-hunt mission forgets its progress when a hunt starts: what met everything in an earlier hunt was progress, not a refused attempt
+                        s.Candidates++;
+                        foreach (var t in refused)
+                        {
+                            s.Refused[t.Check] = s.Refused.GetValueOrDefault(t.Check) + 1;
+                            var values = s.Values.TryGetValue(t.Check, out var v) ? v : s.Values[t.Check] = [];
+                            var seen = Seen(t, e.Kill, since);
+                            values[seen] = values.GetValueOrDefault(seen) + 1;
+                        }
+                    }
+                }
+            }
+        }
+        var listed = open.Values.Where(s => s.Candidates > 0).Select(s => (S: s, Done: completed.GetValueOrDefault((s.Mission.Id, s.Objective.Id)), Top: s.Refused.OrderByDescending(r => r.Value).FirstOrDefault()))
+            .Where(x => x.S.Candidates >= minCandidates && x.Done == 0 || x.S.Candidates >= minSample && x.Top.Value * 100.0 >= minShare * x.S.Candidates)
+            .OrderByDescending(x => x.S.Candidates).ThenBy(x => x.S.Mission.Id).ThenBy(x => x.S.Objective.Id).ToList();
+        var header = $"missions stuck, the last {days:0.##} days: {listed.Count} objectives listed of {open.Values.Count(s => s.Candidates > 0)} with candidates among {open.Count} open on {holders.Count} accounts";
+        var lines = listed.Select(x =>
+        {
+            var (s, done, top) = x;
+            var refused = s.Refused.Count == 0 ? "no condition refused" : string.Join(", ", s.Refused.OrderByDescending(r => r.Value).Select(r => $"{r.Key} {r.Value}/{s.Candidates}"));
+            var seen = top.Value == 0 ? "" : $" | {top.Key}: " + string.Join(", ", s.Values[top.Key].OrderByDescending(v => v.Value).Take(3).Select(v => $"{v.Key} ({v.Value})"));
+            var who = string.Join(", ", s.Holders.Take(5)) + (s.Holders.Count > 5 ? $" and {s.Holders.Count - 5} more" : "");
+            return $"mission {s.Mission.Id} {s.Mission.Title} | {s.Objective.Title} | {s.Candidates} candidates, {done} completed | open for {s.Holders.Count} accounts: {who} | {refused}{seen}";
+        });
+        foreach (var line in discord ? DiscordChunks([$"**{Escaped(header)}**", .. lines.Select(l => "- " + Escaped(l))]) : [header, .. lines])
             yield return line;
     }
 
