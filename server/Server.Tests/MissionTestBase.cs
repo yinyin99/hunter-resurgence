@@ -19,7 +19,7 @@ public abstract class MissionTestBase : StateTestBase
         "{\"missions\": [" + string.Join(",", titles.Select((t, i) =>
             $"{{\"id\": {i + 1}, \"title\": {Py.Dumps(JsonValue.Create(t))}, \"dependencies\": [], \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": {Py.Dumps(JsonValue.Create(t))}}}]{extra}}}")) + "]}";
 
-    // ids 50 to 53: a rifle and a shotgun, two ammunitions; 60 to 65: weapons of other classes; 70 to 74: ammunition; 80 and 81: sights
+    // ids 50 to 53: a rifle and a shotgun, two ammunitions; 60 to 67: weapons of other classes; 70 to 74: ammunition; 80 and 81: sights
     static readonly string[] ExtraSpecies =
     [
         """{"id": 3, "name": "Plains Elk"}""", """{"id": 4, "name": "Hill Elk"}""", """{"id": 5, "name": "Test Fox"}""", """{"id": 6, "name": "Spring Pintail"}""", """{"id": 7, "name": "Test Mallard"}""",
@@ -39,6 +39,7 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 103, "name": "Test Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 104, "name": "Test Heavy Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
         """{"id": 107, "name": "Test 30 30 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 108, "name": "Test 30 06 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 105, "name": "Test Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 106, "name": "Test Maker Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
+        """{"id": 66, "name": "Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 67, "name": "Heavy Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
         """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
     ];
 
