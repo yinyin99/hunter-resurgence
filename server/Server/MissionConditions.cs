@@ -654,9 +654,16 @@ public sealed partial class State
             return at >= 0;
         }
 
-        /// <summary>The weapon items whose name a text (a mission's description) holds whole.</summary>
-        public long[] WeaponsIn(string text) =>
-            [.. weapons.Where(w => w.Name.Length > 0 && (" " + Words(text) + " ").Contains(" " + w.Name + " ", StringComparison.Ordinal)).Select(w => w.Id)];
+        /// <summary>The weapon items whose name a text (a mission's description) holds whole, the longest name first: `Heavy Recurve Bow` is not also `Recurve Bow`.</summary>
+        public long[] WeaponsIn(string text)
+        {
+            var rest = " " + Words(text) + " ";
+            var found = new List<long>();
+            foreach (var (name, ids) in weaponNames)
+                if (ReplaceFirst(ref rest, " " + name + " "))
+                    found.AddRange(ids);
+            return [.. found];
+        }
 
         /// <summary>The weapon items whose name has the quoted words (`"Snakebite"` names the compound bows of that name).</summary>
         IEnumerable<long> WeaponsNamed(string quoted)
