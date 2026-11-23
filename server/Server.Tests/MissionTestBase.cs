@@ -35,6 +35,9 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 64, "name": "Test Crossbow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 65, "name": "Test Muzzleloader", "cat": 1, "subcat": {"name": "Muzzleloaders"}}""",
         """{"id": 70, "name": "Test Tracer Arrows", "cat": 3}""", """{"id": 71, "name": "Wooden Arrows", "cat": 3}""",
         """{"id": 72, "name": "7mm Test Ammunition (HV)", "cat": 3}""", """{"id": 73, "name": "7mm Test Ammunition (HP)", "cat": 3}""", """{"id": 74, "name": "12 GA Test Buckshot Shells", "cat": 3}""",
+        """{"id": 101, "name": "Test Revolver", "cat": 1, "subcat": {"name": "Handguns"}}""", """{"id": 102, "name": "Test Magnum Revolver", "cat": 1, "subcat": {"name": "Handguns"}}""",
+        """{"id": 103, "name": "Test Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 104, "name": "Test Heavy Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
+        """{"id": 105, "name": "Test Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 106, "name": "Test Maker Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
     ];
 

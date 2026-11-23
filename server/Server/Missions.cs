@@ -73,7 +73,7 @@ public sealed partial class State
 
         var reader = new Reader(names, items.Values, reserves);
 
-        Rule RuleOf(string title, long[]? own = null)
+        Rule RuleOf(string title, long[]? own = null, long[]? named = null)
         {
             var ordered = OrderedWord.Match(title);
             var rest = title[ordered.Length..];
@@ -98,7 +98,7 @@ public sealed partial class State
             Test[] tests = [];
             var unknown = false;
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, unknown) = reader.Read(body, own);
+                (tests, unknown) = reader.Read(body, own, named);
             else if (kind == Kind.Track)
                 (tests, unknown) = reader.ReadClue(body, own);
             if (tests.Any(t => t.Check == Check.Species))
@@ -118,9 +118,10 @@ public sealed partial class State
                     if (paid.Groups[2].Value.Equals("gm", StringComparison.OrdinalIgnoreCase)) gm += amount;
                     else em += amount;
             var listed = Ids(d["species"]).Select(x => x % 100).Distinct().ToArray();
+            var mentioned = Ids(d["weapons"]).Concat(reader.WeaponsIn(Py.Str(G(d, "desc", "")))).Distinct().ToArray();  // the weapons the mission's own data names
             Rule Build(string title)
             {
-                var rule = RuleOf(title, listed);  // a named animal's title names no species: the mission's own one does
+                var rule = RuleOf(title, listed, mentioned);  // a named animal's title names no species: the mission's own one does
                 return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
             }
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,
