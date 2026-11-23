@@ -30,6 +30,14 @@ public sealed partial class State
 
     string SpeciesName(long id) => species.TryGetValue(id, out var s) && Py.IsStr(s["name"]) ? ((string)s["name"]!).Split(" (")[0] : "species " + id;
 
+    /// <summary>Species by name; more than half of them are `any species except` the others.</summary>
+    string SpeciesNames(IEnumerable<long> ids)
+    {
+        var set = ids.ToHashSet();
+        var all = species.Keys.Where(k => k < 100).ToList();
+        return all.Count(set.Contains) * 2 > all.Count ? "any species except " + Names(all.Where(k => !set.Contains(k)).Select(SpeciesName)) : Names(set.Select(SpeciesName));
+    }
+
     static string Names(IEnumerable<string> names) => string.Join(", ", names.Distinct().Order(StringComparer.Ordinal));
 
     static string StateNames(Test t)
@@ -64,7 +72,7 @@ public sealed partial class State
         Check.Stand => "stand: " + Names(t.Ids!.Select(i => i is >= 0 and < 7 ? StandNames[i] : "stand " + i)),
         Check.Reserve => "reserve: " + Names(t.Ids!.Select(i => reserves.GetValueOrDefault(i) ?? "reserve " + i)),
         Check.Named => double.IsInfinity(t.Min) ? "named animal, no place" : $"named animal near ({Num(t.Min)}, {Num(t.Max)}) m",
-        Check.Species => "species: " + Names(t.Ids!.Select(SpeciesName)),
+        Check.Species => "species: " + SpeciesNames(t.Ids!),
         Check.Clue => "clues: " + (t.Ids!.Count == 0 ? "any" : Names(t.Ids.Select(i => ((ClueKind)i).ToString().ToLowerInvariant()))) + " x" + Num(Math.Max(t.Min, 1)),
         Check.Coat => "coat: " + Names(t.Ids!.Select(CoatName)),
         Check.NotCoat => "not coat: " + Names(t.Ids!.Select(CoatName)),
@@ -84,7 +92,7 @@ public sealed partial class State
                 var parts = new List<string> { r.Kind.ToString().ToLowerInvariant() };
                 if (r.Unknown || r.Kind == Kind.Other)
                     parts.Add("not understood, left over: " + (r.Kind == Kind.Other ? r.Text : r.Left));
-                if (r.Species is { } s) parts.Add("species: " + SpeciesName(s));
+                if (r.Species is { } s && r.Kind is Kind.Harvest or Kind.Spot or Kind.Track) parts.Add("species: " + SpeciesName(s));
                 if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
                 if (r.Ordered) parts.Add("ordered");
                 parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
@@ -103,10 +111,9 @@ public sealed partial class State
             if (!missions.TryGetValue(Py.L(d["id"]), out var m))
                 continue;
             var read = m.Objectives.Where(o => o.Rule.Kind == Kind.Harvest && !o.Rule.Unknown).ToList();
-            // what the objectives accept: null when one of them asks nothing of the item (anything is accepted), else the names of the items they name
+            // the names of the items the objectives name (those that ask nothing of the item do not count); null when none does
             HashSet<string>? Accepted(Check check, Func<long, string> name) =>
-                read.Count == 0 || read.Any(o => !(o.Rule.Tests ?? []).Any(t => t.Check == check)) ? null
-                    : [.. read.SelectMany(o => o.Rule.Tests!.Where(t => t.Check == check).SelectMany(t => t.Ids!)).Select(name)];
+                read.SelectMany(o => o.Rule.Tests!.Where(t => t.Check == check).SelectMany(t => t.Ids!)).Select(name).ToHashSet() is { Count: > 0 } named ? named : null;
             string Weapon(long id) => Reader.Words(ItemName(id));
             string Ammo(long id) => Reader.Core(ItemName(id));
             var (weaponsAccepted, ammoAccepted) = (Accepted(Check.Weapon, Weapon), Accepted(Check.Ammo, Ammo));
@@ -132,9 +139,9 @@ public sealed partial class State
             foreach (var o in m.Objectives.OrderBy(o => o.Id))
             {
                 var r = o.Rule;
-                if (r.Kind != Kind.Other && !r.Unknown && listed.Count > 0
+                if (r.Kind is Kind.Harvest or Kind.Spot or Kind.Track && !r.Unknown && listed.Count > 0
                     && (r.Tests?.FirstOrDefault(t => t.Check == Check.Species)?.Ids ?? (r.Species is { } s ? new HashSet<long> { s } : null)) is { } accepts && !accepts.Overlaps(listed))
-                    found.Add((m.Id, o.Id, 2, $"warning species: mission {m.Id} objective {o.Id}: the rule accepts {Names(accepts.Select(SpeciesName))}, none of the mission's species ({Names(listed.Select(SpeciesName))})"));
+                    found.Add((m.Id, o.Id, 2, $"warning species: mission {m.Id} objective {o.Id}: the rule accepts {SpeciesNames(accepts)}, none of the mission's species ({SpeciesNames(listed)})"));
                 if (!r.Unknown)
                     foreach (var t in r.Tests ?? [])
                         if (Never(t) is { } why)
@@ -157,6 +164,6 @@ public sealed partial class State
     /// the game never sends).</summary>
     string? Never(Test t) =>
         t.Check == Check.Named ? double.IsInfinity(t.Min) ? "a named animal without a place" : null
-        : t.Check != Check.Clue && t.Ids is { Count: 0 } ? Describe(t) + " accepts nothing"
+        : t.Check is not (Check.Clue or Check.NotAmmo or Check.NotState or Check.NotCoat) && t.Ids is { Count: 0 } ? Describe(t) + " accepts nothing"
         : t.Min > t.Max ? Describe(t) + ": the lower bound is above the upper one" : null;
 }

@@ -11,6 +11,10 @@ public class MissionRulesTests : MissionTestBase
 
     static string Missions(params string[] missions) => "{\"missions\": [" + string.Join(",", missions) + "]}";
 
+    // a mission whose objectives are these titles
+    static string Objectives(int id, string[] titles, string extra = "") =>
+        $"{{\"id\": {id}, \"title\": \"m\", \"dependencies\": [], \"rewards\": [], \"objectives\": [{string.Join(",", titles.Select((t, i) => $"{{\"id\": {i}, \"title\": \"{t}\"}}"))}]{extra}}}";
+
     List<string> Warnings(string file, params string[] missions) => [.. New(file, Missions(missions)).MissionCoverage().SkipWhile(l => l != "warnings:").Skip(1)];
 
     [Fact]
@@ -37,8 +41,10 @@ public class MissionRulesTests : MissionTestBase
     public void TestAWeaponOfTheMissionsListThatNoObjectiveAcceptsIsWarnedWhenItsFamilyIsNamed()
     {
         var w = Warnings("weapons.db", Mission(1, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66, 67]"), Mission(2, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66]"),
-            Mission(3, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66, 50]"), Mission(4, "Harvest a Test Deer", ", \"weapons\": [66, 67]"));
-        Assert.Equal(["warning weapons: mission 1: the weapons list has \"heavy test bow\", which no objective accepts, and objectives accept \"test bow\""], w);  // 3: another family; 4: anything goes
+            Mission(3, "Harvest a Test Deer with the Test Bow", ", \"weapons\": [66, 50]"), Mission(4, "Harvest a Test Deer", ", \"weapons\": [66, 67]"),
+            Objectives(5, ["Harvest a Test Deer with the Test Bow", "Harvest a Test Deer"], ", \"weapons\": [66, 67]"));  // 5: an objective that asks nothing of the weapon is not counted
+        Assert.Equal(["warning weapons: mission 1: the weapons list has \"heavy test bow\", which no objective accepts, and objectives accept \"test bow\"",
+                      "warning weapons: mission 5: the weapons list has \"heavy test bow\", which no objective accepts, and objectives accept \"test bow\""], w);  // 3: another family; 4: anything goes
     }
 
     [Fact]
@@ -53,15 +59,17 @@ public class MissionRulesTests : MissionTestBase
     [Fact]
     public void TestARuleThatAcceptsNoSpeciesOfTheMissionsListIsWarned()
     {
-        var w = Warnings("species.db", Mission(1, "Harvest a Test Fox", ", \"species\": [1]"), Mission(2, "Harvest a Test Deer", ", \"species\": [1]"), Mission(3, "Harvest a Test Fox", ", \"species\": []"));
-        Assert.Equal(["warning species: mission 1 objective 0: the rule accepts Test Fox, none of the mission's species (Test Deer)"], w);
+        var w = Warnings("species.db", Mission(1, "Harvest a Test Fox", ", \"species\": [1]"), Mission(2, "Harvest a Test Deer", ", \"species\": [1]"), Mission(3, "Harvest a Test Fox", ", \"species\": []"),
+            Mission(4, "Arrive at Test Fox Bay", ", \"species\": [1]"), Mission(5, "Harvest any animal except a Test Deer", ", \"species\": [1]"));  // 4: an arrival checks no species
+        Assert.Equal(["warning species: mission 1 objective 0: the rule accepts Test Fox, none of the mission's species (Test Deer)",
+                      "warning species: mission 5 objective 0: the rule accepts any species except Test Deer, none of the mission's species (Test Deer)"], w);
     }
 
     [Fact]
     public void TestAConditionNoEventCanMeetIsWarnedAndAMissionWithoutTheProblemsHasNoWarnings()
     {
         var w = Warnings("never.db", Mission(1, "Harvest \\\"Patient Zero\\\" at over 100 meters"), Mission(2, "Harvest a Test Deer between 200 and 100 meters"),
-            Mission(3, "Harvest \\\"Patient Zero\\\" by the large beach (X: 6.273, Y: 6.330)"));
+            Mission(3, "Harvest \\\"Patient Zero\\\" by the large beach (X: 6.273, Y: 6.330)"), Mission(4, "Harvest a Test Deer without using any type of birdshot shells"));  // 4: an empty exclusion refuses nothing
         Assert.Equal(["warning never met: mission 1 objective 0: a named animal without a place",
                       "warning never met: mission 2 objective 0: distance: >=200 <=100 m: the lower bound is above the upper one"], w);
         Assert.DoesNotContain(New("clean.db", Missions(Mission(1, "Harvest a Test Deer with the Test Carbine", ", \"weapons\": [50], \"desc\": \"Test Carbine\", \"species\": [1]"))).MissionCoverage(), l => l.StartsWith("warning", StringComparison.Ordinal));
