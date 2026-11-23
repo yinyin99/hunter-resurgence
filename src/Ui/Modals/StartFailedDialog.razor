@@ -3,13 +3,12 @@
 @inject IKitService Kit
 
 @* a refused start (docs/website.md#the-game-check): the text of the error key, with the values and the fix button of the install check that holds it *@
-<AlertDialog Text="@text" FixLabel="@(GameCheckText.FixLabel(fix) is { } label ? L[label].Value : null)" Fix="() => Modal.FixAsync(fix!, Bridge, Kit, restart)" />
+<AlertDialog Text="@text" FixLabel="@(GameCheckText.FixLabel(fix) is { } label ? L[label].Value : null)" Fix="() => Modal.FixAsync(fix!, Bridge, Kit, Closed)" />
 
 @code {
     /// <summary>The key <see cref="ILauncherBridge.StartGame"/> and the servers' joins fail with: a Check.* or Launch.* key.</summary>
     [Parameter, EditorRequired] public string Error { get; set; } = "";
 
-    bool restart; // closing the running game repeats the start it refused
     string text = "";
     string? fix;
 
@@ -21,6 +20,7 @@
         // the problem is gone by now and its text needs its values: the general text instead of a sentence with holes
         text = check is null && L[Error].Value.Contains("{0}") ? L["Launch.StartFailed"].Value : L.Text(Error, check?.Args);
         fix = check?.Fix ?? Error switch { "Launch.NoGame" => "choose-folder", "Launch.AlreadyRunning" or "Launch.LeftOver" => "close-game", _ => null };
-        restart = Error is "Launch.AlreadyRunning" or "Launch.LeftOver";
     }
+
+    void Closed() => Modal.Alert(L["Launch.Closed"].Value);
 }

@@ -71,17 +71,12 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
         log.LogInformation("open {Url}", url);
         if (url.StartsWith("steam://")) check = null; // the player fixes it in Steam
     }
-    string? refused; // the start the running game refused, repeated by CloseGameAsync
     public Result StartGame(string url)
     {
         log.LogInformation("start game {Url}", url);
-        refused = null;
         // as the launcher: the game and the running game keep their older keys, version, files and setup say the check's text
         if (Checks().FirstOrDefault(c => c.Level == "block") is { } blocked)
-        {
-            if (blocked.Id == "running") refused = url;
             return Result.Fail(blocked.Id switch { "game" => "Launch.NoGame", "running" => "Launch.AlreadyRunning", _ => blocked.Text });
-        }
         LastStartMode = null; // as the launcher: this start has no mode yet
         StartStateChanged?.Invoke();
         if (mock == "steam:wait" && check == "steam")
@@ -96,13 +91,11 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
         StartStateChanged?.Invoke();
         return Result.Success;
     }
-    public Task<Result> CloseGameAsync(bool restart)
+    public Task<Result> CloseGameAsync()
     {
         log.LogInformation("close game");
         if (check == "running") check = null;
-        var url = refused;
-        refused = null;
-        return Task.FromResult(restart && url is not null ? StartGame(url) : Result.Success);
+        return Task.FromResult(Result.Success);
     }
     public bool WaitingForSteam { get; private set; }
     public void StartWithoutSteam() => skipWait.Set();

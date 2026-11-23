@@ -115,10 +115,13 @@ public sealed class ModalService
         Show<StartFailedDialog>(new Dictionary<string, object?> { [nameof(StartFailedDialog.Error)] = r.Error ?? "Launch.Failed" }, "alert");
 
     bool closingGame;
+    volatile bool gameClosedByPlayer; // the close button ends the watched game: its exit is no news, the next start's is
+    readonly object gate = new();
+    int watch; // the start whose exit is the news: an older start's watcher, finishing late, says nothing
 
     /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, Steam, closing the running game
-    /// (<paramref name="restart"/>: from a refused start's dialog, which then repeats that start), or the display's current mode written into the graphics file (a failure is shown like a refused start).</summary>
-    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit, bool restart = false)
+    /// (<paramref name="closed"/> runs once it is closed: a refused start's dialog tells so; the player starts again from the page), or the display's current mode written into the graphics file (a failure is shown like a refused start).</summary>
+    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit, Action? closed = null)
     {
         switch (fix)
         {
@@ -128,13 +131,13 @@ public sealed class ModalService
             // the launcher puts its steam_app_id (settings.json) in place of the placeholder
             case "verify-files": bridge.OpenExternal("steam://nav/games/details/{steam_app_id}"); break;
             case "fix-display": if (bridge.FixDisplay() is { Ok: false } failed) StartFailed(failed); break;
-            case "close-game" when !closingGame: // a second click while it closes would start twice
-                closingGame = true;
+            case "close-game" when !closingGame: // a second click while it closes would stop it twice
+                closingGame = gameClosedByPlayer = true;
                 try
                 {
-                    var closed = await bridge.CloseGameAsync(restart);
-                    if (!closed.Ok) StartFailed(closed);
-                    else if (restart) { Close(); GameStarted(bridge); }
+                    var result = await bridge.CloseGameAsync();
+                    if (!result.Ok) { gameClosedByPlayer = false; StartFailed(result); }
+                    else closed?.Invoke();
                 }
                 finally { closingGame = false; }
                 break;
@@ -147,12 +150,20 @@ public sealed class ModalService
 
     /// <summary>"Done hunting for now?" once the started game has closed (<see cref="ILauncherBridge.WhenGameExitsAsync"/>), whatever else is open then; none when the game never appeared.
     /// The old app opened it five seconds after the start: its texts then read like an error while the game loads, and players started it again.</summary>
-    public void GameStarted(ILauncherBridge bridge) => _ = bridge.WhenGameExitsAsync().ContinueWith(ran => GameEnded(ran.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+    public void GameStarted(ILauncherBridge bridge) => GameStarted(bridge.WhenGameExitsAsync());
+
+    /// <summary><see cref="GameStarted(ILauncherBridge)"/> for the given watch of the start's game; the start and the dialog of an exit are serialized, so an older start's exit never shows after a newer start.</summary>
+    public void GameStarted(Task<GameExit?> exits)
+    {
+        int mine;
+        lock (gate) { gameClosedByPlayer = false; mine = ++watch; }
+        _ = exits.ContinueWith(ran => { lock (gate) { if (mine == watch) GameEnded(ran.Result); } }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+    }
 
     /// <summary>The game the launcher started has closed: after a real hunt "Done hunting for now?", within seconds of its start "The game closed right away" with the cause's one action (<see cref="GameExitDialog"/>); nothing when it never appeared (null).</summary>
     public void GameEnded(GameExit? exit)
     {
-        if (exit is null) return;
+        if (exit is null || gameClosedByPlayer) return;
         if (exit.Early) Show<GameExitDialog>(new Dictionary<string, object?> { [nameof(GameExitDialog.Exit)] = exit }, "alert");
         else Show<GameStartedModal>();
     }

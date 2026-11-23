@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Hra už běží.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>Kopie hry stále běží na pozadí bez okna, pravděpodobně po pádu. Zavřete ji a spusťte hru znovu.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Zavřít hru</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>Hra je zavřená. Spusťte ji znovu odtud.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>Hru se nepodařilo zavřít. Ukončete ji ve Správci úloh (karta Podrobnosti) a spusťte ji znovu.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Hra nebyla nalezena. Zkontrolujte její složku v nastavení.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Hru se nepodařilo spustit.</value></data>

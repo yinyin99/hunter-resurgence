@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Das Spiel läuft bereits.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>Eine Kopie des Spiels läuft noch ohne Fenster im Hintergrund, wahrscheinlich nach einem Absturz. Schließen Sie sie und starten Sie erneut.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Spiel schließen</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>Das Spiel ist geschlossen. Starten Sie es von hier aus neu.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>Das Spiel konnte nicht geschlossen werden. Beenden Sie es im Task-Manager (Registerkarte Details) und starten Sie erneut.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Das Spiel wurde nicht gefunden. Prüfen Sie seinen Ordner in den Einstellungen.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Das Spiel konnte nicht gestartet werden.</value></data>

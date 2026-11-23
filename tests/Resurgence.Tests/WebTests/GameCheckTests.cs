@@ -220,6 +220,53 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
+    public void TheCloseGameButtonOfARefusedStartClosesTheGameAndSaysSo()
+    {
+        Use("check:running");
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<StartFailedDialog>(p => p.Add(a => a.Error, "Launch.AlreadyRunning"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
+        cut.Find("#alert-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal(typeof(AlertDialog), modal.Type));
+        Assert.Equal("The game is closed. Start it again from here.", modal.Parameters!["Text"]);
+    }
+
+    [Fact]
+    public void TheExitOfTheGameThePlayerClosedDoesNotReplaceTheClosedText()
+    {
+        Use("check:running");
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<StartFailedDialog>(p => p.Add(a => a.Error, "Launch.AlreadyRunning"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
+        cut.Find("#alert-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal(typeof(AlertDialog), modal.Type));
+
+        modal.GameEnded(new(0, 5, "steam", false, null)); // the first hunt's watcher finishes after the close
+        Assert.Equal(typeof(AlertDialog), modal.Type);
+
+        modal.GameStarted(Services.GetRequiredService<ILauncherBridge>()); // the next start is watched again
+        modal.GameEnded(new(0, 5, "steam", false, null));
+        Assert.Equal(typeof(GameStartedModal), modal.Type);
+    }
+
+    [Fact]
+    public async Task AnOlderStartsExitSaysNothingOnceANewStartIsWatched()
+    {
+        var modal = Services.GetRequiredService<ModalService>();
+        var (first, second) = (new TaskCompletionSource<GameExit?>(), new TaskCompletionSource<GameExit?>());
+        modal.GameStarted(first.Task);
+        modal.GameStarted(second.Task);
+
+        first.SetResult(new(0, 5, "steam", false, null)); // the first game's exit comes late: a hunt, which would be "Done hunting"
+        await Task.Delay(200, Xunit.TestContext.Current.CancellationToken);
+        Assert.Null(modal.Type);
+
+        second.SetResult(new(3, 2, "nosteam", true, "crash"));
+        for (var i = 0; i < 50 && modal.Type is null; i++) await Task.Delay(20, Xunit.TestContext.Current.CancellationToken);
+        Assert.Equal(typeof(GameExitDialog), modal.Type);
+    }
+
+    [Fact]
     public void TheFixOfARefusedStartRunsAsFromTheLine()
     {
         var log = Use("check:old");
@@ -238,12 +285,12 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
-    public async Task ClosingTheGameFromARefusedStartRepeatsThatStart()
+    public async Task ClosingTheGameFromARefusedStartStartsNothing()
     {
         var b = new MockLauncherBridge(NullLogger(), "check:running");
         Assert.Equal("Launch.AlreadyRunning", b.StartGame("x").Error);
-        Assert.True((await b.CloseGameAsync(true)).Ok);
-        Assert.Equal("steam", b.LastStartMode); // the repeated start went through
+        Assert.True((await b.CloseGameAsync()).Ok);
+        Assert.Null(b.LastStartMode); // no start was repeated
     }
 
     [Fact]

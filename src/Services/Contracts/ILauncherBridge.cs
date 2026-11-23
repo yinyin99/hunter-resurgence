@@ -21,8 +21,8 @@ public interface ILauncherBridge
     void OpenExternal(string url);
     /// <summary>Starts the game client; a failure is a <see cref="Result"/> whose Error is a text key.</summary>
     Result StartGame(string url);
-    /// <summary>Closes the running game like its window's × and stops it when it does not (also an error-reporting window that holds it); then, with <paramref name="restart"/>, repeats the start the running game refused, once. Fails with <c>Launch.CloseFailed</c> when the game is still there, else with the repeated start's error.</summary>
-    Task<Result> CloseGameAsync(bool restart);
+    /// <summary>Closes the running game like its window's × and stops it when it does not (also an error-reporting window that holds it). Starts nothing: the player starts again from the page. Fails with <c>Launch.CloseFailed</c> when the game is still there.</summary>
+    Task<Result> CloseGameAsync();
     /// <summary>Completes when the game the launcher started LAST has closed (after a 16010 fallback: the retry's process, never an exited one). Null when the game never appeared.</summary>
     Task<GameExit?> WhenGameExitsAsync();
     /// <summary>Installs what Steam's first-time setup would, from the redistributables found in the game folder (<c>_CommonRedist</c> or the install's redist folder) or Steam's shared ones: Visual C++ 2010 and 2005 (x86) and DirectX June 2010, one after the other; Windows asks for the rights of each. A failure is a <see cref="Result"/> whose Error is a text key (<c>Launch.NoRuntimes</c> when there are none).</summary>

@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Игра уже запущена.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>Копия игры всё ещё работает в фоне без окна, вероятно, после сбоя. Закройте её и запустите игру снова.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Закрыть игру</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>Игра закрыта. Запустите её снова отсюда.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>Не удалось закрыть игру. Завершите её в диспетчере задач (вкладка «Подробности») и запустите снова.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Игра не найдена. Проверьте её папку в настройках.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Не удалось запустить игру.</value></data>

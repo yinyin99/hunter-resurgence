@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>El juego ya se está ejecutando.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>Una copia del juego sigue ejecutándose en segundo plano sin ventana, probablemente tras un fallo. Ciérrala y vuelve a empezar.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Cerrar el juego</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>El juego está cerrado. Vuelve a iniciarlo desde aquí.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>No se pudo cerrar el juego. Finalízalo en el Administrador de tareas (pestaña Detalles) y vuelve a empezar.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>No se encontró el juego. Comprueba su carpeta en los ajustes.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>No se pudo iniciar el juego.</value></data>
