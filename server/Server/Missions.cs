@@ -18,7 +18,7 @@ public sealed partial class State
     /// name of some, or any animal but some, has a `Species` test instead), whether it counts only after the objectives before it, its title in
     /// <see cref="Normalise"/>d words (a place), and the conditions its title asks of the kill, the spot or the clue (<see cref="Reader"/>); `Unknown` when it
     /// has words the server does not understand: it is never met.</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false);
+    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "");
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
@@ -96,16 +96,17 @@ public sealed partial class State
             long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
             long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
             Test[] tests = [];
-            var unknown = false;
+            var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, unknown) = reader.Read(body, own);
+                (tests, left) = reader.Read(body, own);
             else if (kind == Kind.Track)
-                (tests, unknown) = reader.ReadClue(body, own);
+                (tests, left) = reader.ReadClue(body, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its species, its coat and its name can be checked
-            unknown |= kind == Kind.Spot && tests.Any(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat));
-            return new Rule(kind, species, gender, ordered.Success, text, tests, unknown);
+            if (kind == Kind.Spot)
+                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
+            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -289,7 +290,7 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles, reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// objective titles, `needs` (the titles of the missions it depends on that are not completed yet: why a `locked` one is locked; `[]` otherwise), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
     /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
     public JsonObject? WebMissions(long account)
     {
@@ -313,6 +314,8 @@ public sealed partial class State
                 ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Unmarked(Py.Str(G(d, "desc", ""))),
                 ["state"] = rows.TryGetValue(id, out var r) ? r.State == 3 ? "completed" : "active" : available.Contains(id) ? "available" : "locked",
                 ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
+                // ponytail: a dependency without a definition is left out (none in the recorded catalogue), so such a mission would show as locked with no reason
+                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => missions.ContainsKey(n) && !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)missions[n].Title)]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
                 ["reserve"] = First(d["reserves"], i => reserves.GetValueOrDefault(i)), ["species"] = First(d["species"], i => Named(species, i)),
                 ["weapon"] = First(d["weapons"], i => Named(items, i)),

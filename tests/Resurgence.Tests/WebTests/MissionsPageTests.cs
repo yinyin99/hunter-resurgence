@@ -47,8 +47,9 @@ public sealed class MissionsPageTests : UiContext
     const string Server = """
         {"missions": [
           {"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": [], "reward": "", "reserve": "Test Reserve", "species": "Test Deer", "weapon": ""},
-          {"id": 2, "title": "Test Two", "desc": "", "state": "available", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "Test Rifle"}],
-         "groups": [{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [1, 2]}],
+          {"id": 2, "title": "Test Two", "desc": "", "state": "available", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "Test Rifle"},
+          {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "", "needs": ["Test Two"]}],
+         "groups": [{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [1, 2, 3]}],
          "completed": 0, "auto_mission_activate": false, "activate_only_favourite": false, "hide_completed_favourite": false}
         """;
 
@@ -63,6 +64,11 @@ public sealed class MissionsPageTests : UiContext
 
         Assert.NotEmpty(cut.FindAll("a[href='/missions/daily']"));
         Assert.Equal("/help/day-mission", cut.Find("a.help").GetAttribute("href"));
+        // a locked mission says which mission to finish first and has no activation
+        cut.Find("button.row.pack").Click();
+        cut.FindAll("li[data-pack] .more ul.rows button.row")[2].Click();
+        Assert.Equal(["Test Two"], cut.FindAll("li.open ul.rows li.open .more ul li").Select(l => l.TextContent));
+        Assert.Empty(cut.FindAll("li.open ul.rows li.open .more button.btn"));
         // the select-all entry and the one name each of the three filters has
         Assert.Equal([2, 2, 2], cut.FindAll("ul.pop").Select(u => u.QuerySelectorAll("li").Length));
     }
