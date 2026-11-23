@@ -332,7 +332,7 @@ public class MissionTests : StateTestBase
         Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
             page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["reserve"]));
         Eq("""["Harvest a Test Deer"]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["needs"]);  // locked: the open dependency's title
-        Eq("""[]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!["needs"]);
+        Eq("""[]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!["needs"]);  // nothing is needed by an available one
         Eq("""[{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [4]}, {"id": 11, "title": "", "desc": "", "favourite": false, "missions": [10]}]""", page["groups"]);
 
         Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=1"))).Status);
