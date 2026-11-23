@@ -607,6 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Lukittu. Suorita ensin:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Alueet</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Palkinnot</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Passiivinen</value></data>

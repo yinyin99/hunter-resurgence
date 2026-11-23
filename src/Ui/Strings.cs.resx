@@ -607,6 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>zítra</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Popis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Cíle</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Zamčeno. Nejprve dokončete:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Obory</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Odměny</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Neaktivní</value></data>
