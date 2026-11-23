@@ -204,7 +204,7 @@ The server believes `X-Game-Host` only from `trusted_proxies`, so a client canno
 ```
 settings.json     from server/Server/settings.example.json, with the real values (below)
 install/          the operator's own copy of the game's install folder
-recordings/       the operator's recordings (server.md)
+recordings/       the operator's recordings (server.md); optional `mission_rules.json` there, the rules of single mission objectives (server.md, "Overridden rules"), read at the server's start
 mirror/           the saved static pages (server.md)
 variants.json     optional
 images/           the slot pictures (images.md), mounted read-only in `web`; the game's avatars `avatar-<id>.png` too (server.md#avatars), and the stock copies `avatars/256/<id>.png`

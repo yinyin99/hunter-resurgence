@@ -44,8 +44,8 @@ public abstract class MissionTestBase : StateTestBase
     ];
 
     /// <summary>A state on `file` whose catalogue is made of these missions (the JSON of the catalogue's `missions`) and the species and items above. `permitted`: no ammunition rule
-    /// (every kill is permitted), or these ammunition ids only for species 1.</summary>
-    protected State New(string file, string missions, int[]? permitted = null)
+    /// (every kill is permitted), or these ammunition ids only for species 1. `rules`: the operator's `mission_rules.json`.</summary>
+    protected State New(string file, string missions, int[]? permitted = null, JsonObject? rules = null)
     {
         var app = APP;
         app["missions"] = JsonNode.Parse(missions)!["missions"]!.DeepClone();
@@ -57,7 +57,7 @@ public abstract class MissionTestBase : StateTestBase
         var connect = CONNECT;
         connect["ethical"] = permitted is null ? new JsonArray() : new JsonArray([.. Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonArray([.. permitted.Where(_ => i == 1).Select(a => (JsonNode?)a)]))]);
         connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
-        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
+        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, missionRules: rules);
     }
 
     /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings (or one for each of `organs`) and the harvest. `pose` is the player's stance with the shot's flag;

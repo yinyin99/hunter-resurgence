@@ -512,6 +512,8 @@ async Task Serve()
     Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)settings.Cfg["install_dir"]!).Count} entries");
     var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
+    if (state?.OverriddenObjectives is > 0 and var overrides)
+        Console.WriteLine($"missions: {overrides} objective rules from {State.MissionRulesFile}");
     if (state is not null && state.ConfirmMissions() is > 0 and var confirmed)
         Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests and clues made before this start");
     if (state is not null && (bool?)settings.Cfg["offline_mode"] == false) state.BackfillLodges();  // a community server: the lodges its accounts' lodge items lack
