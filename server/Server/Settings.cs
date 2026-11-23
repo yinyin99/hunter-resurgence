@@ -73,6 +73,13 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var unlimited) => unlimited,
             _ => throw new InvalidDataException("unlimited_ammo: true or false"),
         };
+        // true: a hunt's reply places the animals the player's missions name (docs/server.md#named-animals); off until the game is seen to accept them
+        cfg["spawn_named_animals"] = root["spawn_named_animals"] switch
+        {
+            null => false,
+            JsonValue flag when flag.TryGetValue<bool>(out var placed) => placed,
+            _ => throw new InvalidDataException("spawn_named_animals: true or false"),
+        };
         // a time-limited gm$ multiplier for harvests (docs/server.md#harvest-gm-bonus): {multiplier above 0, until an ISO UTC time}, stored as Unix seconds
         cfg["harvest_gm_bonus"] = root["harvest_gm_bonus"] switch
         {

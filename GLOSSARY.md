@@ -276,6 +276,9 @@ _Avoid_: unsupported
 **Overridden rule**:
 The rule of one objective that the operator states in `mission_rules.json`, in the words `coverage --rules` prints, instead of the server's reading of its title; it is judged like any other rule.
 
+**Named animal**:
+An animal a mission objective names ("Old Mossback" at a place), which the game does not mark. With `spawn_named_animals` the community server places it with the hunt's start and only that animal meets the objective; without the setting, any animal of its species near the place does.
+
 **Clue**:
 What an animal leaves that the player identifies: footprints, droppings, a call, a blood trail, bedding, rooting or water bubbles. No title names the last two, so only an objective that follows one animal's trail counts them.
 

@@ -347,7 +347,7 @@ public sealed partial class State
             Check.Coat or Check.NotCoat => Id(NumOf(k.E7, "texture")),
             Check.Clue => t.Min > 1 && ClueIs(t, e12, k.E7) ? $"{k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7))} of {t.Min} clues" : ClueKindOf(e12, AnimalOf(k.E7, k.E7["species"]).Species)?.ToString() ?? "unknown",
             Check.Within or Check.Each or Check.SameShot or Check.Different => $"{Sequenced(t, k, after, rule)} of {t.Min}",
-            Check.Named => double.IsInfinity(t.Min) ? Id(NumOf(k.E7, "special")) : "away from the place",
+            Check.Named => t.Ids is not null ? Id(NumOf(k.E7, "population")) : double.IsInfinity(t.Min) ? Id(NumOf(k.E7, "special")) : "away from the place",
             Check.Permitted => "not permitted",
             Check.OneShot => $"{hits.Count} shots",
             Check.Organ or Check.OrganOnly or Check.OrganAvoid => Id(NumOf(last, "organ2")),
