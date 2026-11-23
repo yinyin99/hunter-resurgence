@@ -263,12 +263,13 @@ public class MissionConditionTests : MissionTestBase
     public void TestABirdInTheAirIsSpookedWithState6AndCalmWithState11AtItsFirstHit()
     {
         state = New("birds.db", Catalogue(["Harvest a spooked airborne Test Mallard", "Harvest an unspooked airborne Test Mallard", "Harvest a fleeing Test Mallard",  // 1, 2, 3
-                                           "Harvest a spooked airborne Spring Pintail", "Harvest an unspooked airborne Spring Pintail"]));                           // 4, 5
+                                           "Harvest a spooked airborne Spring Pintail", "Harvest an unspooked airborne Spring Pintail",                              // 4, 5
+                                           "Harvest a Test Mallard. The Test Mallard should not be running away or charging you."]));                              // 6
         ActivateAll();
-        Hb(Shot(1, species: 7, animalState: 11));  // flying and not spooked: the first shot at birds nobody shot at
-        Assert.Equal("2", Completed());
-        Hb(Shot(2, species: 7, animalState: 6));  // flying, as the birds are after a shot at them: spooked, and fleeing
-        Assert.Equal("1,2,3", Completed());
+        Hb(Shot(1, species: 7, animalState: 6));  // flying, as the birds are after a shot at them: spooked and fleeing, so it is running away
+        Assert.Equal("1,3", Completed());
+        Hb(Shot(2, species: 7, animalState: 11));  // flying and not spooked: the first shot at birds nobody shot at
+        Assert.Equal("1,2,3,6", Completed());
 
         static JsonNode Hit(int animalState) => O($$"""
             {"event": 1, "individual": 3, "weapon_id": 51, "ammunition_id": 53, "distance_cms": 3000, "organ1": 33, "organ2": 1, "animal_state": {{animalState}}, "location": 0, "scope_id": -1,
@@ -276,7 +277,7 @@ public class MissionConditionTests : MissionTestBase
             """);
         Hb(O("""{"event": 7, "individual": 3, "species": 6, "gender": 0, "weight_grams": 900, "texture": 0, "special": 0}"""), Hit(11), Hit(6),
            O("""{"event": 3, "individual": 3, "extended_species": 6, "harvest_value": 100000, "trophy_integrity": 100000}"""));
-        Assert.Equal("1,2,3,5", Completed());  // calm at its first hit, which is the one that tells: the second finds it flushed by the first
+        Assert.Equal("1,2,3,5,6", Completed());  // calm at its first hit, which is the one that tells: the second finds it flushed by the first
     }
 
     [Fact]

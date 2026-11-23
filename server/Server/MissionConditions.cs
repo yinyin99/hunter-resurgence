@@ -733,7 +733,7 @@ public sealed partial class State
             return [];
         }
 
-        // the `animal_state`s a title refuses: charging 9, and running away (fleeing): running, flying once spooked, trotting, fleeing to a burrow
+        // the `animal_state`s a title refuses: charging 9, and running away (fleeing) 5, 6, 10 and 15: running, flying once spooked, trotting, fleeing to a burrow
         public static readonly long[] RunningAway = [5, 6, 10, 15];
 
         static HashSet<long> AvoidedStates(string words) =>
