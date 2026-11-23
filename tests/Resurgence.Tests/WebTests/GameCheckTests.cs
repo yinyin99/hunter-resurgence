@@ -232,6 +232,24 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
+    public void TheExitOfTheGameThePlayerClosedDoesNotReplaceTheClosedText()
+    {
+        Use("check:running");
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<StartFailedDialog>(p => p.Add(a => a.Error, "Launch.AlreadyRunning"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
+        cut.Find("#alert-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal(typeof(AlertDialog), modal.Type));
+
+        modal.GameEnded(new(0, 5, "steam", false, null)); // the first hunt's watcher finishes after the close
+        Assert.Equal(typeof(AlertDialog), modal.Type);
+
+        modal.GameStarted(Services.GetRequiredService<ILauncherBridge>()); // the next start is watched again
+        modal.GameEnded(new(0, 5, "steam", false, null));
+        Assert.Equal(typeof(GameStartedModal), modal.Type);
+    }
+
+    [Fact]
     public void TheFixOfARefusedStartRunsAsFromTheLine()
     {
         var log = Use("check:old");
