@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>A játék már fut.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>A játék egy példánya még fut a háttérben ablak nélkül, valószínűleg összeomlás után. Zárd be, és indítsd újra.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Játék bezárása</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>A játék bezárult. Indítsd újra innen.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>A játékot nem sikerült bezárni. Fejezd be a Feladatkezelőben (Részletek lap), majd indítsd újra.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>A játék nem található. Ellenőrizd a mappáját a beállításokban.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>A játékot nem sikerült elindítani.</value></data>

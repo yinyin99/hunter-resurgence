@@ -82,7 +82,7 @@ public class LauncherBridgeTests
     }
 
     [Fact]
-    public async Task AWindowlessClientIsLeftOverAndClosingItRepeatsTheStart()
+    public async Task ClosingAWindowlessClientStartsNothing()
     {
         var (b, started, shown, stopped, _, processes, dir) = Running();
         try
@@ -92,18 +92,15 @@ public class LauncherBridgeTests
             Assert.Empty(started);
             Assert.Empty(shown);
 
-            Assert.True((await b.CloseGameAsync(true)).Ok);
+            Assert.True((await b.CloseGameAsync()).Ok);
             Assert.Equal([Path.Combine(dir, "client.exe")], stopped);
-            Assert.Equal(" /connect:srv://x", " " + started.Single().Arguments.Split(' ')[0]);
-
-            Assert.Equal("Launch.Failed", (await b.CloseGameAsync(true)).Error); // the start was repeated once: nothing more
-            Assert.Single(started);
+            Assert.Empty(started); // the player starts again from the page: the refused link is not repeated
         }
         finally { Directory.Delete(dir, true); }
     }
 
     [Fact]
-    public async Task AClientWithAWindowIsShownAndNothingStartsUntilItIsClosed()
+    public async Task AClientWithAWindowIsShownAndClosingItStartsNothing()
     {
         var (b, started, shown, _, _, processes, dir) = Running();
         try
@@ -113,30 +110,22 @@ public class LauncherBridgeTests
             Assert.Equal<nint>([777], shown);
             Assert.Empty(started);
 
-            Assert.True((await b.CloseGameAsync(true)).Ok);
-            Assert.Single(started);
+            Assert.True((await b.CloseGameAsync()).Ok);
+            Assert.Empty(started);
         }
         finally { Directory.Delete(dir, true); }
     }
 
     [Fact]
-    public async Task ClosingWithoutRestartStartsNothingAndAGameThatStaysIsAFailure()
+    public async Task AGameThatStaysIsACloseFailure()
     {
-        var (b, started, _, stopped, _, _, dir) = Running();
-        var (stuck, _, _, _, _, _, dir2) = Running(stopWorks: false);
+        var (stuck, _, _, _, _, _, dir) = Running(stopWorks: false);
         try
         {
-            Assert.Equal("Launch.LeftOver", b.StartGame("srv://x").Error);
-            Assert.True((await b.CloseGameAsync(false)).Ok);
-            Assert.Single(stopped);
-            Assert.Empty(started);
-            Assert.Equal("Launch.Failed", (await b.CloseGameAsync(true)).Error); // the refused start was forgotten: it is not repeated
-            Assert.Empty(started);
-
             Assert.Equal("Launch.LeftOver", stuck.StartGame("srv://x").Error);
-            Assert.Equal("Launch.CloseFailed", (await stuck.CloseGameAsync(true)).Error);
+            Assert.Equal("Launch.CloseFailed", (await stuck.CloseGameAsync()).Error);
         }
-        finally { Directory.Delete(dir, true); Directory.Delete(dir2, true); }
+        finally { Directory.Delete(dir, true); }
     }
 
     [Fact]

@@ -117,8 +117,8 @@ public sealed class ModalService
     bool closingGame;
 
     /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, Steam, closing the running game
-    /// (<paramref name="restart"/>: from a refused start's dialog, which then repeats that start), or the display's current mode written into the graphics file (a failure is shown like a refused start).</summary>
-    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit, bool restart = false)
+    /// (<paramref name="closed"/> runs once it is closed: a refused start's dialog tells so; the player starts again from the page), or the display's current mode written into the graphics file (a failure is shown like a refused start).</summary>
+    public async Task FixAsync(string fix, ILauncherBridge bridge, IKitService kit, Action? closed = null)
     {
         switch (fix)
         {
@@ -128,13 +128,13 @@ public sealed class ModalService
             // the launcher puts its steam_app_id (settings.json) in place of the placeholder
             case "verify-files": bridge.OpenExternal("steam://nav/games/details/{steam_app_id}"); break;
             case "fix-display": if (bridge.FixDisplay() is { Ok: false } failed) StartFailed(failed); break;
-            case "close-game" when !closingGame: // a second click while it closes would start twice
+            case "close-game" when !closingGame: // a second click while it closes would stop it twice
                 closingGame = true;
                 try
                 {
-                    var closed = await bridge.CloseGameAsync(restart);
-                    if (!closed.Ok) StartFailed(closed);
-                    else if (restart) { Close(); GameStarted(bridge); }
+                    var result = await bridge.CloseGameAsync();
+                    if (!result.Ok) StartFailed(result);
+                    else closed?.Invoke();
                 }
                 finally { closingGame = false; }
                 break;

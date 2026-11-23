@@ -238,6 +238,7 @@
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Oyun zaten çalışıyor.</value></data>
   <data name="Launch.LeftOver" xml:space="preserve"><value>Oyunun bir kopyası pencere olmadan arka planda hâlâ çalışıyor, muhtemelen bir çökmeden sonra. Kapatın ve yeniden başlatın.</value></data>
   <data name="Launch.CloseGame" xml:space="preserve"><value>Oyunu kapat</value></data>
+  <data name="Launch.Closed" xml:space="preserve"><value>Oyun kapatıldı. Buradan yeniden başlatın.</value></data>
   <data name="Launch.CloseFailed" xml:space="preserve"><value>Oyun kapatılamadı. Görev Yöneticisi'nde (Ayrıntılar sekmesi) sonlandırın ve yeniden başlatın.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Oyun bulunamadı. Klasörünü ayarlardan kontrol edin.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Oyun başlatılamadı.</value></data>

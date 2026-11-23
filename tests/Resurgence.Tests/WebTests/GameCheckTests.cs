@@ -220,6 +220,18 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
+    public void TheCloseGameButtonOfARefusedStartClosesTheGameAndSaysSo()
+    {
+        Use("check:running");
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<StartFailedDialog>(p => p.Add(a => a.Error, "Launch.AlreadyRunning"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
+        cut.Find("#alert-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal(typeof(AlertDialog), modal.Type));
+        Assert.Equal("The game is closed. Start it again from here.", modal.Parameters!["Text"]);
+    }
+
+    [Fact]
     public void TheFixOfARefusedStartRunsAsFromTheLine()
     {
         var log = Use("check:old");
@@ -238,12 +250,12 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
-    public async Task ClosingTheGameFromARefusedStartRepeatsThatStart()
+    public async Task ClosingTheGameFromARefusedStartStartsNothing()
     {
         var b = new MockLauncherBridge(NullLogger(), "check:running");
         Assert.Equal("Launch.AlreadyRunning", b.StartGame("x").Error);
-        Assert.True((await b.CloseGameAsync(true)).Ok);
-        Assert.Equal("steam", b.LastStartMode); // the repeated start went through
+        Assert.True((await b.CloseGameAsync()).Ok);
+        Assert.Null(b.LastStartMode); // no start was repeated
     }
 
     [Fact]
