@@ -716,7 +716,7 @@ public sealed partial class State
             OverrideMissionRules(missionRules);
             placesNamedAnimals = spawnNamedAnimals;
             if (spawnNamedAnimals)
-                PlaceNamedAnimals();
+                PlaceNamedAnimals(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "named_animals.json"));
             LoadChallenges(challenges);
         }
         this.locale = locale;

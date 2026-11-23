@@ -141,6 +141,24 @@ public class NamedAnimalTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAnIdNeverMovesWhenAnEarlierMissionBecomesPlaceableLater()
+    {
+        var missions = Catalogue(["Harvest Old Mossback the Test Deer", Lake], OnTest);  // 1: a name with no quotes, not read yet; 2: the lake's animal
+        state = Make("keep.db", missions);
+        ActivateAll();
+        Hunt(state);
+        Assert.Equal(160, (long)Assert.Single(Spawn(state.ConnectReply(ME)))!["population_id"]!);
+        Hb(KillOf(1, population: 160, x: 0, z: 0));
+        Assert.Equal("2", Completed());
+        // the operator's entry now places mission 1's animal: it takes the next id, and the harvest of 160 stays mission 2's
+        var later = Make("keep.db", missions, rules: new() { ["1/0"] = "harvest; species: Test Deer; reserve: Test Reserve; named animal near (500, -700) m" });
+        Assert.Equal(161, (long)Assert.Single(Spawn(later.ConnectReply(ME)))!["population_id"]!);
+        Assert.Equal(0, later.ConfirmMissions());
+        Assert.StartsWith("would reopen 0 objectives in 0 missions", later.RollbackMissions(apply: false).Last());
+        Assert.Equal("2", Completed(of: later));
+    }
+
+    [Fact]
     public void TestAnAnimalTheServerCannotPlaceKeepsTheGuessAndGetsNoEntry()
     {
         // 1: no reserve (two listed, none in the title); 2: a coat word of several ids; 3: no species; 4: no place at all
@@ -172,6 +190,10 @@ public class NamedAnimalTests : MissionTestBase
         home.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
         Hunt(home);
         Assert.Empty(Spawn(home.ConnectReply(ME)));  // no deer population on the reserve: no density map to name
+        var taken = Make("taken.db", missions, connectOf: c => c["populations"]!.AsArray().Add(O("""{"index": 160, "animal": "coyote", "density_map": "coyote", "reserve": 2, "groups": []}""")));
+        taken.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
+        Hunt(taken);
+        Assert.Empty(Spawn(taken.ConnectReply(ME)));  // a row has that id: the entry would replace it
     }
 
     [Fact]

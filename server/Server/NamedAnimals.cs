@@ -1,13 +1,14 @@
 // Named mission animals: the animal a title names is no animal the game marks, so the server places it. When a hunt starts, the reply's `spawn` gets one entry (one animal of the
 // objective's species, gender and coat, at its coordinates) for each open named-animal objective of the account's active missions in that reserve; the harvest or the spot of an animal
 // of that population meets the objective, whatever its distance (docs/server.md, "Named animals"). Only with the setting `spawn_named_animals`.
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    // a reserve's population ids are `index * 100 + n`: the game's rows use 0 to 14 (the events', up to 14), the dog templates 96 to 99, the admin spawner 80 and up (<see cref="Spawner"/>)
+    // a reserve's population ids are `index * 100 + n`: the game's rows use 0 to 14 (the events' too), the dog templates are 996, 998 and 999, the admin spawner takes 80 and up (<see cref="Spawner"/>)
     const int NamedFirst = 60, NamedSlots = 20;
 
     /// <summary>What a named animal is: the reserve (the catalogue's number), its species, gender (0 male, 1 female), the coat to force (null: any) and where it is (x, z in metres).</summary>
@@ -35,9 +36,13 @@ public sealed partial class State
     }
 
     /// <summary>Give every objective that names an animal the server can place its population: the rule's named condition then holds for an animal of that population only. Called at the start,
-    /// after the operator's rules are in. A reserve has <see cref="NamedSlots"/> places for named animals; an objective past them keeps the guess.</summary>
-    void PlaceNamedAnimals()
+    /// after the operator's rules are in. An animal takes the next free place of its reserve the first time it is placed and keeps it in `file` (`named_animals.json` in the data folder), so
+    /// an id never moves when a rule or the catalogue changes: harvests already stored stay judged by it, and an animal that is no longer named still holds its place. A reserve has
+    /// <see cref="NamedSlots"/> places; an objective past them keeps the guess.</summary>
+    void PlaceNamedAnimals(string file)
     {
+        var given = File.Exists(file) ? JsonSerializer.Deserialize<Dictionary<string, long>>(File.ReadAllText(file)) ?? [] : [];
+        var changed = false;
         var ofMission = Arr(G(application, "missions", null)).OfType<JsonObject>().Where(d => TryKey(d["id"], out _)).ToDictionary(d => Py.L(d["id"]), d => Ids(d["reserves"]));
         foreach (var m in missions.Values.OrderBy(m => m.Id))
             for (var i = 0; i < m.Objectives.Length; i++)
@@ -47,13 +52,24 @@ public sealed partial class State
                     continue;
                 if (!namedPopulations.TryGetValue(animal, out var population))
                 {
-                    var used = namedPopulations.Keys.Count(a => a.Reserve == animal.Reserve);
-                    if (used == NamedSlots)
-                        continue;
-                    namedPopulations[animal] = population = (animal.Reserve - 1) * 100 + NamedFirst + used;
+                    var key = FormattableString.Invariant($"{animal.Reserve}|{animal.Species}|{animal.Gender}|{animal.Coat}|{animal.X}|{animal.Z}");
+                    if (!given.TryGetValue(key, out population))
+                    {
+                        var free = Enumerable.Range(NamedFirst, NamedSlots).Select(n => (long?)((animal.Reserve - 1) * 100 + n)).FirstOrDefault(id => !given.ContainsValue(id!.Value));
+                        if (free is not { } place)
+                            continue;
+                        given[key] = population = place;
+                        changed = true;
+                    }
+                    namedPopulations[animal] = population;
                 }
                 m.Objectives[i] = o with { Rule = o.Rule with { Tests = [.. o.Rule.Tests!.Select(t => t.Check == Check.Named ? t with { Ids = [population] } : t)] } };
             }
+        if (changed)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(file))!);
+            File.WriteAllText(file, JsonSerializer.Serialize(given));
+        }
     }
 
     /// <summary>The client's group record of an animal: `x` and `z` 0 mean no position, a `texture_id` of -1 and features of -1 a random one (a missing key reads as 0).</summary>
@@ -91,11 +107,13 @@ public sealed partial class State
         {
             var name = facts.Animals[animal.Species];
             var home = rows.OfType<JsonObject>().FirstOrDefault(p => Py.L(p["index"]) / 100 == reserve - 1 && Py.Str(p["animal"]) == name);
-            if (home is null || reply["spawn_licenses"] is JsonArray licenses && (animal.Species >= licenses.Count || Py.L(licenses[(int)animal.Species]) == 2))
+            var map = home is null ? -1 : Array.IndexOf(facts.Animals, Py.Str(home["density_map"]));
+            if (map < 0 || rows.OfType<JsonObject>().Any(p => Py.L(p["index"]) == population)  // a row of that id would be replaced by the entry
+                || reply["spawn_licenses"] is JsonArray licenses && (animal.Species >= licenses.Count || Py.L(licenses[(int)animal.Species]) == 2))
                 continue;
             entries.Add(new JsonObject
             {
-                ["population_id"] = population, ["species"] = animal.Species, ["spawn_map_id"] = Math.Max(Array.IndexOf(facts.Animals, Py.Str(home["density_map"])), 0),
+                ["population_id"] = population, ["species"] = animal.Species, ["spawn_map_id"] = map,
                 ["group"] = new JsonArray(NamedGroup(0, 0, 0, 0, -1), NamedGroup(animal.Gender == 0 ? 1 : 0, animal.Gender == 1 ? 1 : 0, animal.X, animal.Z, animal.Coat ?? -1)),
             });
         }
