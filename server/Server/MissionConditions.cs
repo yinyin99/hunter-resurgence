@@ -733,9 +733,11 @@ public sealed partial class State
             return [];
         }
 
-        // the `animal_state`s a title refuses: charging 9, running away (fleeing) 5, 6, 10 and 15
+        // the `animal_state`s a title refuses: charging 9, and running away (fleeing): running, flying once spooked, trotting, fleeing to a burrow
+        public static readonly long[] RunningAway = [5, 6, 10, 15];
+
         static HashSet<long> AvoidedStates(string words) =>
-            [.. (words.Contains("charging") ? new long[] { 9 } : []).Concat(words.Contains("running") || words.Contains("fleeing") ? [5, 6, 10, 15] : [])];
+            [.. (words.Contains("charging") ? new long[] { 9 } : []).Concat(words.Contains("running") || words.Contains("fleeing") ? RunningAway : [])];
 
         // the bits of a hit's `organ2` (bit n is 1 << n): heart 0, right lung 1, left lung 2, liver 3, brain 4, intestines 5, the spine 10, 21 and 22, the shoulder blade 23, the neck
         // bones 24 to 26, the skull 28, the hip bone 29
