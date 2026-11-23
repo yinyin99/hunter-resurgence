@@ -37,6 +37,7 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 72, "name": "7mm Test Ammunition (HV)", "cat": 3}""", """{"id": 73, "name": "7mm Test Ammunition (HP)", "cat": 3}""", """{"id": 74, "name": "12 GA Test Buckshot Shells", "cat": 3}""",
         """{"id": 101, "name": "Test Revolver", "cat": 1, "subcat": {"name": "Handguns"}}""", """{"id": 102, "name": "Test Magnum Revolver", "cat": 1, "subcat": {"name": "Handguns"}}""",
         """{"id": 103, "name": "Test Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 104, "name": "Test Heavy Recurve Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
+        """{"id": 107, "name": "Test 30 30 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 108, "name": "Test 30 06 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 105, "name": "Test Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 106, "name": "Test Maker Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
     ];

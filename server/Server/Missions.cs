@@ -118,7 +118,7 @@ public sealed partial class State
                     if (paid.Groups[2].Value.Equals("gm", StringComparison.OrdinalIgnoreCase)) gm += amount;
                     else em += amount;
             var listed = Ids(d["species"]).Select(x => x % 100).Distinct().ToArray();
-            var mentioned = Ids(d["weapons"]).Concat(reader.WeaponsIn(Py.Str(G(d, "desc", "")))).Distinct().ToArray();  // the weapons the mission's own data names
+            var mentioned = reader.WeaponsIn(Py.Str(G(d, "desc", "")));  // the weapons the mission's text names
             Rule Build(string title)
             {
                 var rule = RuleOf(title, listed, mentioned);  // a named animal's title names no species: the mission's own one does

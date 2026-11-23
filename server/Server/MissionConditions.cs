@@ -373,8 +373,8 @@ public sealed partial class State
                 }
             }
             weaponNames = ByName(weapons);
-            // a name whose words all lie in a longer name (`.44 Revolver`, `.44 Magnum Revolver`): the title naming the shorter one also accepts the longer
-            longer = weaponNames.ToDictionary(n => n.Name, n => weapons.Where(w => w.Name != n.Name && n.Name.Split(' ').All(w.Words.Contains)).Select(w => w.Id).ToArray());
+            // a name whose words all lie, in order, in a longer name (`.44 Revolver`, `.44 Magnum Revolver`): the title naming the shorter one also accepts the longer
+            longer = weaponNames.ToDictionary(n => n.Name, n => weapons.Where(w => w.Name != n.Name && InOrder(n.Name.Split(' '), w.Name.Split(' '))).Select(w => w.Id).ToArray());
             sightNames = ByName(sights);
             ammo = [.. ammoItems.Where(a => a.Core.Length > 0).Select(a => (a.Id, a.Core, ammoWords[a.Id])).OrderByDescending(a => a.Core.Length)];
             // an ammunition is named by its core and, when the title gives it, the bracketed note after it (`7mm-08 Ammunition (HV)`); by the core alone it is every item of that core
@@ -384,6 +384,15 @@ public sealed partial class State
                 .Select(g => (new Regex(@"\s" + Regex.Escape(g.Key.Core) + @"(?:\s+(?:" + string.Join('|', Generic) + @"))*" + (g.Key.Note.Length > 0 ? @"\s+" + Regex.Escape(g.Key.Note) : "") + @"(?=\s)", Rx),
                                 g.Select(a => a.Id).ToArray()))];
             this.reserves = [.. reserves.Where(r => r.Value is not null).Select(r => (r.Key, new Regex(@"\s(?:in|at|on|from)(?:\s+the)?\s+" + Regex.Escape(Words(r.Value!)) + @"(?:\s+reserve)?(?=\s)", Rx)))];
+        }
+
+        /// <summary>Are the short name's words all in the long name, in order (a repeated word needs two)?</summary>
+        static bool InOrder(string[] shortName, string[] longName)
+        {
+            var at = 0;
+            foreach (var w in longName)
+                if (at < shortName.Length && w == shortName[at]) at++;
+            return at == shortName.Length;
         }
 
         /// <summary>The items by name, the longest name first (items of one name are one entry: skins and variants share it).</summary>

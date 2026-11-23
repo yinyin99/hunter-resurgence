@@ -333,7 +333,7 @@ On a community server `Mission/missions` and the calls the missions page sends a
 | Words of the title | Checked against |
 |---|---|
 | a weapon's name (`using the .22 Air Rifle`), a class (`any shotgun`, `any bow or crossbow`; a bare `bow` is no crossbow) with the name words before it (`any 12 GA Shotgun`, `a Compound Bow`) | the last hit's `weapon_id` |
-| a weapon's name whose words all lie in a longer weapon's name (`.44 Revolver` and `.44 Magnum Revolver`) | also the longer name's weapons and the weapons the mission lists (`weapons`) or its description names; a title naming the longer name stays exact |
+| a weapon's name whose words all lie in a longer weapon's name (`.44 Revolver` and `.44 Magnum Revolver`) | also the longer name's weapons (the shorter name's words in order) and the weapons the mission's description names; a title naming the longer name stays exact |
 | an ammunition's name (`using .17 HMR HV ammunition`, `Slug Shells`, `a .243 ammunition`) | the last hit's `ammunition_id` |
 | `permitted` or `ethical` ammunition | no hit of the kill was not permitted (the kill is not disqualified) |
 | `with one shot`, `single shot` | the animal has exactly one hit |

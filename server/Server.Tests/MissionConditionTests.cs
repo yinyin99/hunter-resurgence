@@ -82,13 +82,21 @@ public class MissionConditionTests : MissionTestBase
         Assert.Equal("", Completed());
         state = New("longer4.db", Catalogue(["Harvest a Test Deer with the Test Revolver"], ", \"weapons\": [60], \"desc\": \"Use a Test Carbine\""));
         ActivateAll();
-        Hb(Shot(2, weapon: 51));  // a weapon of neither
+        Hb(Shot(2, weapon: 60));  // the mission's weapons list is not read; a weapon of neither is refused
         Assert.Equal("", Completed());
-        Hb(Shot(1, weapon: 50));  // the weapon the text names, then the one the mission lists
+        Hb(Shot(1, weapon: 50));  // the weapon the text names
         Assert.Equal("1", Completed());
-        state = New("longer5.db", Catalogue(["Harvest a Test Deer with the Test Revolver"], ", \"weapons\": [60]"));
+        state = New("longer5.db", Catalogue(["Harvest a Test Deer with the Test 30 30 Lever Rifle"]));
         ActivateAll();
-        Hb(Shot(1, weapon: 60));
+        Hb(Shot(1, weapon: 108));  // a repeated word (30 30) is not held by 30 06: each word is used once
+        Assert.Equal("", Completed());
+        state = New("longer6.db", Catalogue(["Harvest a female Test Deer with the Test Revolver"]));
+        ActivateAll();
+        Hb(Shot(1, weapon: 102, gender: 0));  // a male
+        Assert.Equal("", Completed());
+        Hb(Shot(2, weapon: 50, gender: 1));  // a female, another weapon
+        Assert.Equal("", Completed());
+        Hb(Shot(3, weapon: 102, gender: 1));
         Assert.Equal("1", Completed());
     }
 
