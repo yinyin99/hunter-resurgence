@@ -383,6 +383,7 @@ public sealed partial class State
                 continue;
             var (rows, marks, latestHunt) = (MissionRows(con), Marks(con), LatestHunt(con));
             var played = (only is null || only == account) && con.Scalar("SELECT 1 FROM events WHERE account_id = $a AND event IN (3, 11, 12) AND ts >= ?", from) is not null;
+            var handle = new Lazy<string>(() => Store.HandleOf(account) ?? account.ToString());
             var events = new Lazy<List<Recorded>>(() => RecordedOf(con, 0, spots: true));
             var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
             foreach (var (id, (state, done)) in rows)
@@ -401,14 +402,17 @@ public sealed partial class State
                 {
                     var (o, rule) = (m.Objectives[i], m.Objectives[i].Rule);
                     if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && m.Objectives[..i].Any(p => !held.Contains(p.Id)))
-                        || m.Objectives[..i].Any(p => p.Rule.Text == rule.Text && !held.Contains(p.Id)))  // an equal one before it that is open takes the event first
+                        || m.Objectives[..i].Any(p => p.Rule.Text == rule.Text && !held.Contains(p.Id))  // an equal one before it that is open takes the event first
+                        // ponytail: an ordered objective is listed only when the replay knows the event that finished every one before it (a harvest or a clue); after a spot, a start or a place the
+                        // candidates would begin too early. A spot that finished one spot objective is not known either and may count as a refused attempt at another of the same animal.
+                        || (rule.Ordered && m.Objectives[..i].Any(p => !IsReplayed(m, p.Id) || !judged.Value.Any(x => x.Objective.Id == p.Id))))
                         continue;
                     if (!open.TryGetValue((id, o.Id), out var s))
                         open[(id, o.Id)] = s = new(m, o);
-                    s.Holders.Add(Store.HandleOf(account) ?? account.ToString());
+                    s.Holders.Add(handle.Value);
                     holders.Add(account);
                     var since = mark.Since ?? mark.Seen;  // a row of before schema 30 has no activation event: the last one its progress is not owed from
-                    // the events that could have finished it: after the mission's activation (a single-hunt mission: its latest hunt), when ordered after the one before it finished, and none that
+                    // the events that could have finished it: after the mission's activation (a single-hunt mission: an earlier hunt's event only when a condition refused it), when ordered after the one before it finished, and none that
                     // another objective took (an event finishes one objective); the one an open objective is met by now stays: that is the bug the report shows as "no condition refused"
                     var floor = Math.Max(since, rule.Ordered ? judged.Value.Where(x => m.Objectives[..i].Any(p => p.Id == x.Objective.Id)).Select(x => x.At).DefaultIfEmpty(0).Max() : 0);
                     var taken = judged.Value.Where(x => x.Objective.Id != o.Id).Select(x => x.At).ToHashSet();

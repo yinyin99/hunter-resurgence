@@ -140,6 +140,20 @@ public class MissionStuckTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAnOrderedObjectiveAfterASpotIsNotListedBecauseTheReportCannotTellWhereToBegin()
+    {
+        state = Stucked("afterspot.db", """
+            {"missions": [{"id": 1, "title": "Two", "dependencies": [], "rewards": [], "objectives": [
+              {"id": 0, "title": "Spot a Test Deer from a Tree Stand"}, {"id": 1, "title": "Then harvest a Test Deer with the Test Carbine"}]}]}
+            """);
+        ActivateAll();
+        WrongWeapon(5);  // before the spot: the ordered objective is not open
+        state.HeartbeatReply(ME, Events(Spot(20, location: 2)));  // finishes the first
+        WrongWeapon(5, first: 21);
+        Assert.Equal("missions stuck, the last 14 days: 0 objectives listed of 0 with candidates among 0 open on 0 accounts", Assert.Single(Report()));
+    }
+
+    [Fact]
     public void TestASingleHuntMissionCountsAnEarlierHuntsEventOnlyWhenAConditionRefusedIt()
     {
         state = Stucked("single.db", """
