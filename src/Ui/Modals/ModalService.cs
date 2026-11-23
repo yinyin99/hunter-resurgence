@@ -116,6 +116,7 @@ public sealed class ModalService
 
     bool closingGame;
     volatile bool gameClosedByPlayer; // the close button ends the watched game: its exit is no news, the next start's is
+    int watch; // the start whose exit is the news: an older start's watcher, finishing late, says nothing
 
     /// <summary>The button of an install check (<see cref="InstallCheck.Fix"/>): the "Game folder" window, the player kit's setup, Steam, closing the running game
     /// (<paramref name="closed"/> runs once it is closed: a refused start's dialog tells so; the player starts again from the page), or the display's current mode written into the graphics file (a failure is shown like a refused start).</summary>
@@ -151,7 +152,8 @@ public sealed class ModalService
     public void GameStarted(ILauncherBridge bridge)
     {
         gameClosedByPlayer = false;
-        _ = bridge.WhenGameExitsAsync().ContinueWith(ran => GameEnded(ran.Result), CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
+        var mine = Interlocked.Increment(ref watch);
+        _ = bridge.WhenGameExitsAsync().ContinueWith(ran => { if (mine == Volatile.Read(ref watch)) GameEnded(ran.Result); }, CancellationToken.None, TaskContinuationOptions.OnlyOnRanToCompletion, TaskScheduler.Default);
     }
 
     /// <summary>The game the launcher started has closed: after a real hunt "Done hunting for now?", within seconds of its start "The game closed right away" with the cause's one action (<see cref="GameExitDialog"/>); nothing when it never appeared (null).</summary>

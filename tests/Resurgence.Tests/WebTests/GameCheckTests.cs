@@ -250,6 +250,21 @@ public sealed class GameCheckTests : UiContext
     }
 
     [Fact]
+    public async Task AnOlderStartsWatcherSaysNothingOnceANewStartIsWatched()
+    {
+        var modal = Services.GetRequiredService<ModalService>();
+        var shown = 0;
+        modal.Changed += () => shown++;
+        var bridge = new MockLauncherBridge(NullLogger(), "exit:crash"); // both watchers end after 1.5 s
+        modal.GameStarted(bridge);
+        modal.GameStarted(bridge);
+        for (var i = 0; i < 100 && modal.Type is null; i++) await Task.Delay(100, Xunit.TestContext.Current.CancellationToken);
+        await Task.Delay(300, Xunit.TestContext.Current.CancellationToken);
+        Assert.Equal(typeof(GameExitDialog), modal.Type);
+        Assert.Equal(1, shown); // only the newest start's exit
+    }
+
+    [Fact]
     public void TheFixOfARefusedStartRunsAsFromTheLine()
     {
         var log = Use("check:old");
