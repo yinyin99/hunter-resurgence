@@ -31,6 +31,9 @@ public sealed partial class State
     static readonly Regex AtAny = new(@"\A\s*at any (?:point|time)\b(?:\s+(?:(?:during|in|within|throughout)\s+(?:the\s+|a\s+)?(?:same|one|single)\s+(?:hunt|expedition|session)|while\s+in\s+(?<r>[^,:]+)))?\s*[,:]?\s*",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly Regex GoTo = new(@"\A(?:(?:head|go|travel)(?: over| out)? to|make it to)\b", RegexOptions.CultureInvariant);
+    static readonly Regex OneHunt = new(@"\b(?:same|one|single)\s+(?:hunt|expedition|session|outing)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    // the plurals of species names no `s` makes (`two Grey Wolves`, `5 Snow Geese`)
+    static readonly (Regex Plural, string Name)[] Plurals = [(new(@"\bwolves\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant), "wolf"), (new(@"\bgeese\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant), "goose")];
     static readonly Regex TrackWord = new(@"\b(tracks?|droppings?|calls?|audio|blood|bedding|beds?|feeding|footprints?|footsteps?|clues?|scat)\b", RegexOptions.CultureInvariant);
     static readonly Regex Reward = new(@"\A\s*(\d+)\s*(gm|em)\$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly string[] Switches = ["auto_mission_activate", "activate_only_favourite", "hide_completed_favourite"];
@@ -72,8 +75,10 @@ public sealed partial class State
             .OrderByDescending(s => s.Name.Length).ToList();  // the longest name wins: "mule deer" before "deer"
 
         var reader = new Reader(names, items.Values, reserves);
+        // a plural of a species name (`two Snowshoe Hares`, `two Red Foxes`) is read as the name
+        var plural = names.Count == 0 ? null : new Regex(@"\b(" + string.Join('|', names.Select(n => Regex.Escape(n.Name))) + @")e?s\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-        Rule RuleOf(string title, long[]? own = null, long[]? named = null)
+        Rule RuleOf(string title, long[]? own = null, long[]? named = null, bool singleHunt = false)
         {
             var ordered = OrderedWord.Match(title);
             var rest = title[ordered.Length..];
@@ -81,6 +86,10 @@ public sealed partial class State
             rest = rest[lead.Length..];
             var body = lead.Groups["r"].Success ? rest.TrimEnd().TrimEnd('.') + " in " + lead.Groups["r"].Value : rest;  // the reserve is read like one at the end of the title
             var text = Normalise(body);
+            var animals = body;  // the title as its animals are read, plurals as names (a place keeps its words)
+            foreach (var (word, name) in Plurals)
+                animals = word.Replace(animals, name);
+            animals = plural?.Replace(animals, "$1") ?? animals;
             var first = text.Split(' ')[0];
             var kind = first switch
             {
@@ -93,14 +102,15 @@ public sealed partial class State
                 "locate" or "id" or "identify" or "find" or "register" when TrackWord.IsMatch(text) => Kind.Track,
                 _ => Kind.Other,
             };
-            long? species = names.Where(x => (" " + text).Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
+            var words = " " + Normalise(animals);
+            long? species = names.Where(x => words.Contains(" " + x.Name, StringComparison.Ordinal)).Select(x => (long?)x.Id).FirstOrDefault();
             long? gender = Reader.FemaleWord.IsMatch(text) ? (long?)1 : Reader.MaleWord.IsMatch(text) ? (long?)0 : null;
             Test[] tests = [];
             var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, left) = reader.Read(body, own, named);
+                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)));  // a spot's ordinal says nothing, as before
             else if (kind == Kind.Track)
-                (tests, left) = reader.ReadClue(body, own);
+                (tests, left) = reader.ReadClue(animals, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its species, its coat and its name can be checked
@@ -122,7 +132,7 @@ public sealed partial class State
             var mentioned = reader.WeaponsIn(Py.Str(G(d, "desc", "")));  // the weapons the mission's text names
             Rule Build(string title)
             {
-                var rule = RuleOf(title, listed, mentioned);  // a named animal's title names no species: the mission's own one does
+                var rule = RuleOf(title, listed, mentioned, Py.Truthy(d["singleExpedition"]));  // a named animal's title names no species: the mission's own one does
                 return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
             }
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,

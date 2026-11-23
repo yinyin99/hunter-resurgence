@@ -110,6 +110,12 @@ public class MissionOverrideTests : MissionTestBase
             "ID 3 Test Deer tracks from the same animal",
             "ID droppings or a call from a female Test Deer in Test Reserve",
             "Locate any clue of a Test Deer",
+            "Harvest two Test Foxes within 5 minutes",
+            "Harvest two Test Foxes within 10 minutes of each harvest",
+            "Harvest a third Test Fox during the same hunt",
+            "Kill two Test Deer at the same time with a single shot",
+            "Find the tracks of three different Test Deer within 5 minutes",
+            "ID footprints of a second different Test Fox in the same hunt",
         ];
         var read = RuleLines(New("read.db", Catalogue(titles)));
         Assert.Equal("", string.Join('\n', read.Where(l => l.Contains("not understood", StringComparison.Ordinal))));  // every title is read, so every kind of condition is printed
@@ -140,6 +146,10 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", "harvest; state: dancing", "\"dancing\" is no state"),
             ("1/0", "harvest; clues: footprints x1", "a harvest rule cannot check \"clues: footprints x1\""),
             ("2/0", "spot; weapon: Test Carbine", "a spot rule cannot check \"weapon: Test Carbine\""),
+            ("1/0", "harvest; in the hunt: 1", "a sequence is"),
+            ("1/0", "harvest; in the hunt: 2 within soon", "a sequence is"),
+            ("1/0", "harvest; in the hunt: 3 different animals", "a harvest rule cannot check \"in the hunt: 3 different animals\""),
+            ("2/0", "spot; in the hunt: 2", "a spot rule cannot check \"in the hunt: 2\""),
             ("2/0", "track; species: Test Deer", "a track rule has one clues condition"),
             ("1/0", "harvest; male; female", "a gender, a species or \"ordered\" is given twice"),
             ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"ordered\" is given twice"),

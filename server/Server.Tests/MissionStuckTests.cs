@@ -78,7 +78,7 @@ public class MissionStuckTests : MissionTestBase
     [Fact]
     public void TestAnObjectiveTheServerDoesNotUnderstandIsNotListed()
     {
-        state = Stucked("unknown.db", Catalogue(["Harvest a Test Deer 5 minutes after another."]));
+        state = Stucked("unknown.db", Catalogue(["Harvest a Test Deer while whistling."]));
         ActivateAll();
         WrongWeapon(6);
         Assert.Equal("missions stuck, the last 14 days: 0 objectives listed of 0 with candidates among 0 open on 0 accounts", Assert.Single(Report()));

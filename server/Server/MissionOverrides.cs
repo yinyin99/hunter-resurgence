@@ -18,6 +18,9 @@ public sealed partial class State
     public int OverriddenObjectives => overridden.Count;
 
     static readonly Regex NamedNear = new(@"\Anamed animal near \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\) m\z", RegexOptions.CultureInvariant);
+    // `in the hunt: <n>[ within <m> min]`, `<n>, each within <m> min of the one before`, `<n> killed by one shot`, `<n> different animals[ within <m> min]` (<see cref="Describe"/>)
+    static readonly Regex InTheHunt = new(@"\A(?<n>\d+)(?:(?<shot> killed by one shot)|, each within (?<e>\d+(?:\.\d+)?) min of the one before|(?<different> different animals)?(?: within (?<m>\d+(?:\.\d+)?) min)?)\z",
+        RegexOptions.CultureInvariant);
 
     /// <summary>The file's object of `"<mission id>/<objective id>": "<rule in words>"` entries; `//` comments and trailing commas are allowed, a key twice is not. Not JSON or not an
     /// object: the start stops.</summary>
@@ -90,14 +93,14 @@ public sealed partial class State
         Check[]? only = kind switch
         {
             Kind.Spot => [Check.Stand, Check.Reserve, Check.Named, Check.Species, Check.Coat, Check.NotCoat],
-            Kind.Track => [Check.Clue, Check.Reserve, Check.Species, Check.Coat, Check.NotCoat],
+            Kind.Track => [Check.Clue, Check.Reserve, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
             _ => null,
         };
-        if (tests.FirstOrDefault(t => only is null ? t.Check == Check.Clue : !only.Contains(t.Check)) is { } wrong)
+        if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different : !only.Contains(t.Check)) is { } wrong)
             throw new InvalidDataException($"a {parts[0]} rule cannot check \"{Describe(wrong)}\"");
         if (kind == Kind.Track && tests.Count(t => t.Check == Check.Clue) != 1)
             throw new InvalidDataException("a track rule has one clues condition");
-        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests]);
+        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests.OrderBy(t => IsSequence(t.Check))]);  // a sequence last, as the reader puts it
     }
 
     /// <summary>One condition in the words of <see cref="Describe"/>.</summary>
@@ -137,6 +140,7 @@ public sealed partial class State
             "stand" => new(Check.Stand, Ids: NamesIn(value, StandNames.Select((n, i) => ((long)i, n)), "stand")),
             "reserve" => new(Check.Reserve, Ids: NamesIn(value, reserves.Where(r => r.Value is not null).Select(r => (r.Key, r.Value!)), "reserve")),
             "clues" => CluesIn(value),
+            "in the hunt" => SequenceIn(value),
             "coat" or "not coat" => new(name == "coat" ? Check.Coat : Check.NotCoat, Ids: [.. List(value).SelectMany(c =>  // `coat 77`: a coat the game names nowhere, by its id
                 c.StartsWith("coat ", StringComparison.Ordinal) && long.TryParse(c[5..], NumberStyles.None, CultureInfo.InvariantCulture, out var id) ? [id]
                 : Reader.CoatIds(c.ToLowerInvariant(), animals) is { Length: > 0 } ids ? ids : throw new InvalidDataException($"no coat is named \"{c}\""))]),
@@ -215,5 +219,15 @@ public sealed partial class State
         HashSet<long> kinds = value[..at] == "any" ? [] : [.. List(value[..at]).Select(k => Enum.GetNames<ClueKind>().Contains(k, StringComparer.OrdinalIgnoreCase) ? (long)Enum.Parse<ClueKind>(k, true)
             : throw new InvalidDataException($"\"{k}\" is no kind of clue"))];
         return new(Check.Clue, count, Ids: kinds);
+    }
+
+    // a sequence of the hunt as <see cref="Describe"/> prints it, after `in the hunt: `; the number is at least 2
+    static Test SequenceIn(string value)
+    {
+        if (InTheHunt.Match(value) is not { Success: true } m || !long.TryParse(m.Groups["n"].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var n) || n < 2)
+            throw new InvalidDataException("a sequence is \"in the hunt: <n of 2 or more>[ within <m> min]\", \"<n>, each within <m> min of the one before\", \"<n> killed by one shot\" or \"<n> different animals[ within <m> min]\"");
+        static double Seconds(Group g) => g.Success ? double.Parse(g.Value, CultureInfo.InvariantCulture) * 60 : double.PositiveInfinity;
+        return m.Groups["shot"].Success ? new(Check.SameShot, n) : m.Groups["e"].Success ? new(Check.Each, n, Seconds(m.Groups["e"]))
+            : new(m.Groups["different"].Success ? Check.Different : Check.Within, n, Seconds(m.Groups["m"]));
     }
 }

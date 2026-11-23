@@ -119,8 +119,8 @@ public sealed partial class State
         return s;
     }
 
-    /// <summary>Today's daily mission meets an event (<see cref="Advance"/>): an objective of the kind that `meets` accepts is finished (a count of clues adds up those found since the day
-    /// began); the last one completes the day: its gm$ are paid (update 15 and a wallet row), the game is told (update 17) and the day is counted. A frozen account's mission does not count.</summary>
+    /// <summary>Today's daily mission meets an event (<see cref="Advance"/>): an objective of the kind that `meets` accepts is finished (a count of clues and a sequence of harvests add up those
+    /// since the day began); the last one completes the day: its gm$ are paid (update 15 and a wallet row), the game is told (update 17) and the day is counted. A frozen account's mission does not count.</summary>
     void DailyAdvance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now)
     {
         if (dailies.Count == 0)
@@ -132,7 +132,8 @@ public sealed partial class State
             return;
         var finished = Ids(s["objectives"]).ToList();
         var begun = (DateOf(s).DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0;
-        if (Meet(d.Def, finished, kind, meets, kind != Kind.Track ? 0 : (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a AND ts < ?", begun)!) is null)  // only a clue count looks back
+        var from = kind is Kind.Track or Kind.Harvest ? (long)con.Scalar("SELECT COALESCE(MAX(id), 0) FROM events WHERE account_id = $a AND ts < ?", begun)! : 0;
+        if (Meet(d.Def, finished, kind, meets, from) is null)  // a clue count and a sequence of harvests look back to the day's start only
             return;
         s["objectives"] = List(finished);
         if (d.Def.Objectives.All(o => finished.Contains(o.Id)))
