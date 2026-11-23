@@ -102,6 +102,24 @@ public class MissionSequenceTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAnOrdinalOfATitleSayingSameHuntCountsPerHuntOnAnOrdinaryMission()
+    {
+        state = Timed("samehunt.db", """
+            {"missions": [{"id": 1, "title": "Pair", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Fox"}, {"id": 1, "title": "Harvest a second Test Fox during the same hunt."}]},
+             {"id": 2, "title": "Wolves", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest two Forest Wolves within 5 minutes."}]}]}
+            """);
+        Launch();
+        ActivateAll();
+        FoxAt(1, 0);
+        Launch();
+        FoxAt(2, 7200);  // the first of this hunt
+        Assert.Equal("", Completed());
+        FoxAt(3, 7260);
+        Assert.Equal("1", Completed());
+        Assert.Contains("mission 2 objective 0: Harvest two Forest Wolves within 5 minutes. => harvest; species: Forest Wolf; in the hunt: 2 within 5 min", state.RuleLines());
+    }
+
+    [Fact]
     public void TestAnOrdinalOfAMissionNotKeptToOneHuntCountsAcrossHuntsAsEachHarvestFinishesOneObjective()
     {
         state = Timed("across.db", """

@@ -97,7 +97,7 @@ public sealed partial class State
             Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
             Check.Coat => Has(NumOf(k.E7, "texture")),
             Check.NotCoat => NumOf(k.E7, "texture") is { } coat && !t.Ids!.Contains((long)coat),  // an animal with no spawn has no coat: it is no other coat either
-            Check.Within or Check.Each or Check.SameShot or Check.Different => Sequenced(t, k, after, rule) >= t.Min,
+            Check.Within or Check.Each or Check.SameShot or Check.Different => rule is not null && Sequenced(t, k, after, rule) >= t.Min,
             _ => false,
         };
     }
@@ -111,15 +111,15 @@ public sealed partial class State
     const double Grace = 10;  // seconds: events reach the server in batches some seconds after they happen
 
     /// <summary>How many events of the sequence a test asks for this one ends. Of the harvests (a clue: the clues) of its hunt after the event `after` that meet the rule's other conditions (its
-    /// species, gender and tests; without a rule, all), this one included: `Within` counts those received at most `Max` seconds before it, `Each` those that lead to it each at most `Max`
+    /// species, gender and tests), this one included: `Within` counts those received at most `Max` seconds before it, `Each` those that lead to it each at most `Max`
     /// seconds after the one before, `SameShot` those whose killing hit has its killing hit's `shot_id`, `Different` the animals of the clues received at most `Max` seconds before it.
     /// A window gets 10 seconds of grace; an event with no time (before schema 14) is within none.</summary>
-    static int Sequenced(Test t, Kill k, long after, Rule? rule)
+    static int Sequenced(Test t, Kill k, long after, Rule rule)
     {
         var steps = k.Steps(after);
         if (steps.LastOrDefault() is not { } self || self.Id != k.Id)
             return 0;
-        var such = steps.Where(s => s.Id == k.Id || rule is null || Such(rule, s.Kill, after)).ToList();
+        var such = steps.Where(s => s.Id == k.Id || Such(rule, s.Kill, after)).ToList();
         bool InWindow(Step s) => double.IsPositiveInfinity(t.Max) || s.Ts >= self.Ts - t.Max - Grace;
         static double? ShotOf(Kill x) => NumOf(x.Hits.Value.LastOrDefault(), "shot_id");
         switch (t.Check)
@@ -199,7 +199,8 @@ public sealed partial class State
         [.. con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 12 AND individual = ?1 AND id <= ?2 AND id > " + HuntFrom + " ORDER BY id", individual, eventId)
             .Select(r => ((long)r[0], Parse(r[1])))];
 
-    /// <summary>The harvests (`ev` 3) or the clues (12) of the hunt that event `eventId` is in, after event `after` and up to `eventId`, in order, each with when the server received it and its kill.</summary>
+    /// <summary>The harvests (`ev` 3) or the clues (12) of the hunt that event `eventId` is in, after event `after` and up to `eventId`, in order, each with when the server received it and its kill.
+    /// ponytail: each event of a hunt reloads the hunt's earlier ones (quadratic in a hunt's harvests, only for an objective with a sequence); a per-hunt cache if a replay gets slow.</summary>
     List<Step> StepsOf(Db con, long ev, long eventId, long after) =>
         [.. con.Rows("SELECT id, body, ts FROM events WHERE account_id = $a AND event = ?1 AND id <= ?2 AND id > ?3 AND id > " + HuntFrom + " ORDER BY id", ev, eventId, after).Select(r =>
         {
