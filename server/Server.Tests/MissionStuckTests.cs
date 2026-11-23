@@ -123,6 +123,42 @@ public class MissionStuckTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAnOrderedObjectiveCountsOnlyTheEventsAfterTheOneBeforeItFinished()
+    {
+        state = Stucked("floor.db", """
+            {"missions": [{"id": 1, "title": "Two", "dependencies": [], "rewards": [], "objectives": [
+              {"id": 0, "title": "Harvest a Test Deer with the Test Carbine"}, {"id": 1, "title": "Then harvest a Test Deer with the Test Shotgun"}]}]}
+            """);
+        ActivateAll();
+        for (var i = 1; i <= 5; i++)
+            state.HeartbeatReply(ME, Events(Shot(i, weapon: 51)));  // the shotgun: the ordered objective is not open yet, nothing took these
+        state.HeartbeatReply(ME, Events(Shot(6, weapon: 50)));  // the carbine finishes the first
+        Assert.Equal("missions stuck, the last 14 days: 0 objectives listed of 0 with candidates among 1 open on 1 accounts", Assert.Single(Report()));
+        for (var i = 11; i <= 15; i++)
+            state.HeartbeatReply(ME, Events(Shot(i, weapon: 51, value: 100000)));  // the next one meets it and finishes it: the mission is completed
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
+    public void TestASingleHuntMissionCountsAnEarlierHuntsEventOnlyWhenAConditionRefusedIt()
+    {
+        state = Stucked("single.db", """
+            {"missions": [{"id": 1, "title": "Two", "dependencies": [], "singleExpedition": true, "rewards": [], "objectives": [
+              {"id": 0, "title": "Harvest a Test Deer with the Test Carbine"}, {"id": 1, "title": "Harvest a Test Deer with the Test Shotgun"}]}]}
+            """);
+        ActivateAll();
+        for (var i = 1; i <= 5; i++)
+        {
+            Launch();
+            state.HeartbeatReply(ME, Events(Shot(i, weapon: 51)));  // the shotgun finishes the second objective, which the next hunt forgets
+        }
+        Launch();
+        var report = Report();
+        Assert.Equal("missions stuck, the last 14 days: 1 objectives listed of 1 with candidates among 2 open on 1 accounts", report[0]);
+        Assert.Contains("| Harvest a Test Deer with the Test Carbine | 5 candidates, 0 completed | open for 1 accounts: " + Me + " | Weapon 5/5 |", Assert.Single(report[1..]));
+    }
+
+    [Fact]
     public void TestASpotAndAClueAreListedWithTheConditionThatRefusedThem()
     {
         state = Stucked("kinds.db", Catalogue(["Spot a Test Deer from a Tree Stand", "ID droppings from a Test Deer"]));
