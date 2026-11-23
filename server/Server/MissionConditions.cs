@@ -75,7 +75,7 @@ public sealed partial class State
         _ => null,
     };
 
-    // a tusk is the first point (type 0) of its side of the trophy event, as the score reads it
+    // a tusk is the first point (type 0) of its side of the trophy event, its length as sent (the score scales it by the species' scale factor)
     static double? Tusk(JsonObject e22, string side) =>
         e22[side] is JsonObject s && s["points"] is JsonArray points && points.OfType<JsonObject>().FirstOrDefault(p => NumOf(p, "type") == 0) is { } tusk ? NumOf(tusk, "length") : null;
 
@@ -560,7 +560,7 @@ public sealed partial class State
             HashSet<long> inReserve = tests.FirstOrDefault(t => t.Check == Check.Reserve)?.Ids ?? [.. places ?? []];
             var found = towers.Where(t => inReserve.Contains(t.Reserve) && t.Name == "tower " + tower.Groups["n"].Value).ToList();
             if (found is [var one] && (!tower.Groups["x"].Success
-                    || Math.Abs(Coordinate(tower.Groups["x"].Value) - one.X) <= 50 && Math.Abs(Coordinate(tower.Groups["y"].Value) - one.Z) <= 50))
+                    || Math.Sqrt(Math.Pow(Coordinate(tower.Groups["x"].Value) - one.X, 2) + Math.Pow(Coordinate(tower.Groups["y"].Value) - one.Z, 2)) <= 50))
                 tests.Add(new(Check.Place, Place: one.Define));
             else
                 sn += " tower_" + tower.Groups["n"].Value + " ";

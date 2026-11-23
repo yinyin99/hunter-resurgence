@@ -8,7 +8,7 @@ Amends rule 1 of [ADR 0007](0007-the-mission-model.md). **Titles, texts and rewa
 
 - An entry is keyed by mission id and objective id and is written in the words `coverage --rules` prints, so the rule that is checked is the rule that is read ([docs/server.md](../server.md#missions), "Overridden rules"). It replaces the reader's rule of that objective whole.
 - The file is for single objectives the reader gets wrong or cannot read: a typo, one place, one named animal, a weapon the title names loosely. Wordings that many titles share stay the reader's to learn.
-- Loading fails loud: an entry for an objective the catalogue does not have, a word that is no part of a rule, or a name no item, species, coat or reserve of the catalogue has, stops the start with the entry's key. Nothing in the file is skipped.
+- Loading fails loud: an entry for an objective the catalogue does not have, a word that is no part of a rule, or a name no item, species, coat or reserve of the catalogue has, stops the start with the entry's key. Nothing in the file is skipped. A place the game names (`place:`, [#815](https://github.com/yinyin99/hunter-resurgence/issues/815)) is in no catalogue: only its form is checked, and a misspelt one is never met.
 - An overridden rule is judged like any other: by the hunt's events, at the start's re-check of harvests already made, by `admin missions-rollback`, `missions-audit` and `missions-stuck`. One judgement, whatever the rule's source.
 
 ## Considered options

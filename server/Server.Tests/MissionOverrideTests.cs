@@ -211,6 +211,9 @@ public class MissionOverrideTests : MissionTestBase
         Hb(Trophy(Shot(4), "\"beard\": 76200, \"left_spur\": 12700, \"right_spur\": 12700"));
         Hb(Trophy(Shot(5), Tusks(102, 102)));
         Assert.Equal("1,2,3", Completed());
-        Assert.Contains($"mission 3 objective 0 (override): Harvest a Test Deer with long tusks => {Tusks4}", RuleLines(state));
+        var lines = RuleLines(state);
+        Assert.Contains($"mission 1 objective 0 (override): Harvest a Test Deer with a long beard => {Beard}", lines);
+        Assert.Contains($"mission 2 objective 0 (override): Harvest a Test Deer with long spurs => {Spurs}", lines);
+        Assert.Contains($"mission 3 objective 0 (override): Harvest a Test Deer with long tusks => {Tusks4}", lines);
     }
 }
