@@ -134,7 +134,7 @@ public sealed partial class State
                     : throw new InvalidDataException($"\"{value}\" is no {name}")),
             "not state" => new(Check.NotState, Ids: [.. List(value).SelectMany(s => s switch
             {
-                "charging" => new long[] { 9 }, "running away" => [5, 10, 11, 15], _ => throw new InvalidDataException($"\"{s}\" is no state a rule refuses: charging or running away"),
+                "charging" => new long[] { 9 }, "running away" => Reader.RunningAway, _ => throw new InvalidDataException($"\"{s}\" is no state a rule refuses: charging or running away"),
             })]),
             "pose" => new(Check.Pose, Ids: NamesIn(value, PoseNames.Select((n, i) => ((long)i, n)), "pose")),
             "stand" => new(Check.Stand, Ids: NamesIn(value, StandNames.Select((n, i) => ((long)i, n)), "stand")),

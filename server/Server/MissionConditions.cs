@@ -215,8 +215,9 @@ public sealed partial class State
 
     // The `track_type` of an event 12 by the kind of clue it is. 0 (blood trail), 9 (a heard call) and 12 (bedding) are one id each. The other ids come in pairs of one species' clues: its
     // droppings, then its footprints (a trotting or a fleeing animal leaves the footprints' id too): 1 and 2 for a whitetail, 3 and 4 for a mule deer, 16 and 17 for a moose, 5 and 6 for a
-    // turkey, and so on up to 102 and 103 for a wood grouse. 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) are unverified entries, every other id is
-    // verified. 20 (rooting) and 31 (water bubbles, the id of nearly every species' bubbles) are `Other`: only a trail's count takes them.
+    // turkey, and so on up to 102 and 103 for a wood grouse. 38, 39 and 93 (the European rabbit's droppings and footprints, the wendigo's droppings) are unverified entries that no stored
+    // clue carries (the European rabbit left 32 and 33, the wendigo 92 and 69: docs/server.md, "What the stored events show"); every other id is verified. 20 (rooting) and 31 (water
+    // bubbles, the id of nearly every species' bubbles) are `Other`: only a trail's count takes them.
     static readonly Dictionary<long, ClueKind> ClueKinds = ClueTable(
         (ClueKind.Blood, [0]), (ClueKind.Call, [9]), (ClueKind.Bedding, [12]), (ClueKind.Other, [20, 31]),
         (ClueKind.Droppings, [1, 3, 5, 7, 10, 14, 16, 18, 23, 25, 32, 34, 36, 38, 40, 44, 56, 58, 60, 62, 64, 66, 68, 70, 78, 80, 82, 84, 88, 92, 93, 94, 96, 98, 100, 102]),
@@ -351,14 +352,16 @@ public sealed partial class State
             (new(@"\b(?:footprints?|footsteps?)\b", Rx), ClueKind.Footprints),
         ];
 
-        // an animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells
+        // An animal state word, the `animal_state`s of a hit it stands for, and whether the animal's first hit (not its last) is the one that tells. A bird in the air has two states:
+        // 6, flying, and 11, flying and not spooked (the game's own names of them, as its challenge conditions spell them: `Challenges`). The stored hits agree: 6 follows the player's
+        // earlier shot within seconds, 11 is the first shot at birds nobody shot at (docs/server.md, "What the stored events show").
         public static readonly (string Label, Regex Word, long[] States, bool First)[] States = [.. new (string, string, long[], bool)[]
         {
             ("airborne", "airborne", [6, 11], false), ("standing", "standing", [3], false), ("walking", "walking", [4], false), ("running", "running", [5], false), ("moving", "moving", [4, 5, 10], false),
-            ("charging", @"charging(?:\s+(?:at\s+)?you)?", [9], false), ("fleeing", "fleeing", [5, 10, 11, 15], false), ("swimming", "swimming", [7], false),
+            ("charging", @"charging(?:\s+(?:at\s+)?you)?", [9], false), ("fleeing", "fleeing", [5, 6, 10, 15], false), ("swimming", "swimming", [7], false),
             ("burrow exit", @"(?:emerging from|diving into)(?:\s+or\s+(?:emerging from|diving into))?\s+an?\s+burrow\s+exit", [13, 14, 15], false),
             ("idle", "idle", [1, 2, 3, 8, 12], false), ("still", "still", [1, 2, 3, 8, 12], false),
-            ("unspooked", "unspooked", [1, 2, 3, 4, 6, 7, 8, 12], true), ("spooked", "spooked", [5, 10, 11, 15, 16], true),
+            ("unspooked", "unspooked", [1, 2, 3, 4, 7, 8, 11, 12], true), ("spooked", "spooked", [5, 6, 10, 15, 16], true),
         }.Select(x => (x.Item1, new Regex(@"\s(?:(?:while|when)\s+)?(?:(?:it|the animal)\s+(?:s|is)\s+)?" + x.Item2 + @"(?=\s)", Rx), x.Item3, x.Item4))];
 
         // the `location` of a hit: 1 hunting tower, 2 tree stand, 3 ground blind, 4 tripod, 5 waterfowl blind, 6 tripod rifle rest; a bare "blind" is a ground or a waterfowl blind,
@@ -835,9 +838,11 @@ public sealed partial class State
             return [];
         }
 
-        // the `animal_state`s a title refuses: charging 9, running away (fleeing) 5, 10, 11 and 15
+        // the `animal_state`s a title refuses: charging 9, and running away (fleeing) 5, 6, 10 and 15: running, flying once spooked, trotting, fleeing to a burrow
+        public static readonly long[] RunningAway = [5, 6, 10, 15];
+
         static HashSet<long> AvoidedStates(string words) =>
-            [.. (words.Contains("charging") ? new long[] { 9 } : []).Concat(words.Contains("running") || words.Contains("fleeing") ? [5, 10, 11, 15] : [])];
+            [.. (words.Contains("charging") ? new long[] { 9 } : []).Concat(words.Contains("running") || words.Contains("fleeing") ? RunningAway : [])];
 
         // the bits of a hit's `organ2` (bit n is 1 << n): heart 0, right lung 1, left lung 2, liver 3, brain 4, intestines 5, the spine 10, 21 and 22, the shoulder blade 23, the neck
         // bones 24 to 26, the skull 28, the hip bone 29
