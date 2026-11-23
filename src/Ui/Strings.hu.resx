@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Legutóbbi felszerelés</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Hiba történt a játékmenet létrehozásakor. Kérjük, töltsd újra a szerverlistát, és próbálj meg egy másik játékhoz csatlakozni.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>A játék már fut.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>A játék egy példánya még fut a háttérben ablak nélkül, valószínűleg összeomlás után. Zárd be, és indítsd újra.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Játék bezárása</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>A játékot nem sikerült bezárni. Fejezd be a Feladatkezelőben (Részletek lap), majd indítsd újra.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>A játék nem található. Ellenőrizd a mappáját a beállításokban.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>A játékot nem sikerült elindítani.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>A Steam indítása…</value></data>
@@ -1495,6 +1498,9 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>A Steam nincs telepítve: a játék Steam nélkül indul el.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>A Windows blokkolt egy játékfájlt ({0}): engedélyezd a Windows Biztonságban.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Kevés a szabad hely itt: {0} ({1} maradt).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>A teljes képernyő {0} módra van állítva, amelyet a képernyőd nem kínál: a játék induláskor bezárulhat.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>A játék a(z) {0} eszközön rajzol, amelyhez nincs képernyő csatlakoztatva: tedd a valódi képernyődet fő kijelzővé, vagy tiltsd le ezt az adaptert az Eszközkezelőben.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>A képernyőm módjának használata</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>A játék mappájában olyan fájlok vannak, amelyek nem tartoznak a játékhoz: {0}. Az ide tett grafikai eszközök és modok megakadályozhatják a játék indulását. Vidd ki őket a mappából, és indítsd újra.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Játékfájlok megváltoztak: {0}. Ez megakadályozhatja a játék indulását. A Steamben Tulajdonságok, Telepített fájlok, Játékfájlok épségének ellenőrzése.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>A játék már fut: zárd be, majd innen indítsd el.</value></data>

@@ -27,6 +27,13 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return null; }
     }
 
+    /// <summary>Shows a window of the game over the others (restored when minimized).</summary>
+    public static void BringToFront(nint window)
+    {
+        if (IsIconic(window)) ShowWindow(window, 9); // SW_RESTORE
+        SetForegroundWindow(window);
+    }
+
     /// <summary>The process named like the client exe (without extension), or null; the same match as <see cref="GameFiles.ClientRunning"/>.</summary>
     public static GameProcess? Find(string clientExe)
     {
@@ -62,6 +69,9 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
     [DllImport("user32.dll")] static extern bool EnumWindows(EnumWindowsProc callback, nint param);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(nint window, out uint pid);
     [DllImport("user32.dll")] static extern bool IsWindowVisible(nint window);
+    [DllImport("user32.dll")] static extern bool IsIconic(nint window);
+    [DllImport("user32.dll")] static extern bool ShowWindow(nint window, int command);
+    [DllImport("user32.dll")] static extern bool SetForegroundWindow(nint window);
     [DllImport("kernel32.dll", SetLastError = true)] static extern nint OpenProcess(uint access, bool inherit, uint pid);
     [DllImport("kernel32.dll")] static extern bool GetExitCodeProcess(nint process, out uint code);
     [DllImport("kernel32.dll")] static extern bool CloseHandle(nint handle);

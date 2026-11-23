@@ -16,13 +16,15 @@ public static class GameCheckText
     public static InstallCheck? FirstProblem(IReadOnlyList<InstallCheck> checks) =>
         checks.FirstOrDefault(c => c.Level == "block") ?? checks.FirstOrDefault(c => c.Level == "warn");
 
-    /// <summary>The fix button's text key, or null when the fix has no button (close-game: the player closes the game).</summary>
+    /// <summary>The fix button's text key, or null when the fix has no button.</summary>
     public static string? FixLabel(string? fix) => fix switch
     {
         "choose-folder" => "GameFolder.Choose",
         "open-folder" => "GameFolder.Open",
         "open-steam" or "verify-files" => "Check.OpenSteam",
         "setup" => "Kit.SetUp",
+        "fix-display" => "Check.FixDisplay",
+        "close-game" => "Launch.CloseGame",
         _ => null,
     };
 }

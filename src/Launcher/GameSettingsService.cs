@@ -14,12 +14,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     static readonly GameOptions None = new(DisplayMode.Borderless, false, new(0, 0, 0), 0, 0, 0, 0, 0, null, null);
 
     /// <summary>The graphics files the game may start with, the one of <c>/steam</c> first.</summary>
-    IEnumerable<string> GraphicsPaths()
-    {
-        if (settings.GraphicsFile is not { } steam) return [];
-        var noSteam = settings.GraphicsFileNoSteam;
-        return (plannedMode?.Invoke() switch { "nosteam" => new[] { noSteam ?? steam }, _ => [steam, noSteam] }).OfType<string>().Select(f => Path.Combine(appData, f));
-    }
+    IEnumerable<string> GraphicsPaths() => settings.StartGraphicsFiles(plannedMode?.Invoke()).Select(f => Path.Combine(appData, f));
 
     string? OptionsPath => settings.OptionsFile is { } f && settings.OptionsKeyPrefix is not null ? Path.Combine(appData, f) : null;
 

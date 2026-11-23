@@ -17,6 +17,7 @@ public sealed class GameCheckTests : UiContext
     {
         public List<string> Urls { get; } = [];
         public List<string> Folders { get; } = [];
+        public int Fixes { get; private set; }
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
         public bool IsEnabled(LogLevel logLevel) => true;
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
@@ -24,6 +25,7 @@ public sealed class GameCheckTests : UiContext
             if (formatter(state, exception) is not { } line) return;
             if (line.StartsWith("open steam://")) Urls.Add(line[5..]);
             else if (line.StartsWith("open folder ")) Folders.Add(line[12..]);
+            else if (line == "fix display") Fixes++;
         }
     }
 
@@ -59,9 +61,11 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:files", "block", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:steam", "warn", "Steam is not signed in: the game will start without Steam.", "Open Steam")]
     [InlineData("steam:none", "warn", "Steam is not installed: the game will start without Steam.", null)]
-    [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", null)]
+    [InlineData("check:running", "block", "The game is already running: close it, then start it from here.", "Close the game")]
     [InlineData("check:path", "warn", @"The game folder's path has special characters (C:\Users\Zoë\Games\Hunter); a plain folder like C:\Games works best.", "Choose folder…")]
     [InlineData("check:disk", "warn", "Low disk space on C: (600 MB left).", null)]
+    [InlineData("check:display", "warn", "Full screen is set to 1366x768 60 Hz, which your screen does not offer: the game may close at start.", "Use my screen's mode")]
+    [InlineData("check:virtual", "warn", "The game draws on Remote Display Adapter, which has no screen attached: make your real screen the main display, or disable that adapter in Device Manager.", null)]
     [InlineData("check:dlls", "warn", "Files that are not part of the game are in its folder: d3d9.dll. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.", "Open folder")]
     [InlineData("folder:none", "block", "The game was not found.", "Choose folder…")]
     public void AProblemShowsItsTextItsLevelAndItsFix(string state, string level, string text, string? button)
@@ -96,6 +100,16 @@ public sealed class GameCheckTests : UiContext
         var cut = Line("check:dlls", out var log);
         cut.Find("#game-check-fix").Click();
         Assert.Equal(["logs"], log.Folders); // the exe's folder, where the DLLs are
+    }
+
+    [Fact]
+    public void TheDisplayFixWritesTheScreensModeAndTheChecksRunAgain()
+    {
+        var cut = Line("check:display", out var log);
+        cut.Find("#game-check-fix").Click();
+        Assert.Equal(1, log.Fixes);
+        Assert.Null(Services.GetRequiredService<ModalService>().Type); // nothing opened: the checks run again at once
+        cut.WaitForAssertion(() => Assert.Equal("Game check: OK", cut.Find("#game-check .text").TextContent));
     }
 
     [Fact]
@@ -139,8 +153,8 @@ public sealed class GameCheckTests : UiContext
         Assert.Equal(typeof(GameCheckModal), modal.Type);
 
         var all = Render<GameCheckModal>(p => p.Add(a => a.Results, (IReadOnlyList<InstallCheck>)modal.Parameters![nameof(GameCheckModal.Results)]!));
-        Assert.Equal(["game", "version", "files", "path", "steam", "setup", "windows", "disk", "running", "dlls"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
-        Assert.Equal(["OK", "Blocks the start", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
+        Assert.Equal(["game", "version", "files", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
+        Assert.Equal(["OK", "Blocks the start", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK", "OK", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
         Assert.Contains("Low disk space on C:", all.Find("li[data-check=disk] .text").TextContent);
         Assert.Empty(all.FindAll("li.ok .text"));
         Assert.Equal(["Open Steam", "Choose folder…"], all.FindAll("li .fix").Select(b => b.TextContent)); // the old game and the odd path
@@ -178,7 +192,8 @@ public sealed class GameCheckTests : UiContext
     [InlineData("check:old", "Check.Version.Old", "The game is not up to date: update it in Steam.", "Open Steam")]
     [InlineData("check:files", "Check.Files.Missing", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
     [InlineData("check:setup", "Kit.NoHosts", "The hosts file has no block from setup (not run, or removed), so the game still talks to its own servers.", "Set up")]
-    [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", null)]
+    [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", "Close the game")]
+    [InlineData("check:running", "Launch.LeftOver", "A copy of the game is still running in the background without a window, probably after a crash. Close it and start again.", "Close the game")]
     [InlineData("folder:none", "Launch.NoGame", "The game was not found. Check its folder in the settings.", "Choose folder…")]
     [InlineData(null, "Launch.StartFailed", "The game could not be started.", null)]
     public void ARefusedStartSaysWhyAndOffersTheFixOfItsCheck(string? state, string error, string text, string? button)
@@ -212,6 +227,23 @@ public sealed class GameCheckTests : UiContext
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("#alert-fix")));
         cut.Find("#alert-fix").Click();
         Assert.Equal(["steam://open/main"], log.Urls);
+    }
+
+    [Fact]
+    public void TheCloseGameButtonOfTheLineClosesTheGameAndTheLineTurnsGreen()
+    {
+        var cut = Line("check:running", out _);
+        cut.Find("#game-check-fix").Click();
+        cut.WaitForAssertion(() => Assert.Equal("Game check: OK", cut.Find("#game-check .text").TextContent));
+    }
+
+    [Fact]
+    public async Task ClosingTheGameFromARefusedStartRepeatsThatStart()
+    {
+        var b = new MockLauncherBridge(NullLogger(), "check:running");
+        Assert.Equal("Launch.AlreadyRunning", b.StartGame("x").Error);
+        Assert.True((await b.CloseGameAsync(true)).Ok);
+        Assert.Equal("steam", b.LastStartMode); // the repeated start went through
     }
 
     [Fact]

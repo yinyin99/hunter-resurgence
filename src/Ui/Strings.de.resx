@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Letzte benutzte Ausrüstung</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Beim Erstellen Ihrer Spielsitzung ist ein Fehler aufgetreten. Bitte laden Sie die Serverliste neu und versuchen Sie, einem anderen Spiel beizutreten.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Das Spiel läuft bereits.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Eine Kopie des Spiels läuft noch ohne Fenster im Hintergrund, wahrscheinlich nach einem Absturz. Schließen Sie sie und starten Sie erneut.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Spiel schließen</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Das Spiel konnte nicht geschlossen werden. Beenden Sie es im Task-Manager (Registerkarte Details) und starten Sie erneut.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Das Spiel wurde nicht gefunden. Prüfen Sie seinen Ordner in den Einstellungen.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Das Spiel konnte nicht gestartet werden.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Steam wird gestartet…</value></data>
@@ -1495,6 +1498,9 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ist nicht installiert: Das Spiel startet ohne Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows hat eine Spieldatei blockiert ({0}): erlauben Sie sie in der Windows-Sicherheit.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Wenig Speicherplatz auf {0} ({1} frei).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Vollbild ist auf {0} eingestellt, was Ihr Bildschirm nicht anbietet: Das Spiel kann beim Start schließen.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Das Spiel zeichnet auf {0}, an dem kein Bildschirm angeschlossen ist: Machen Sie Ihren echten Bildschirm zum Hauptbildschirm oder deaktivieren Sie diesen Adapter im Geräte-Manager.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Modus meines Bildschirms verwenden</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Im Spielordner liegen Dateien, die nicht zum Spiel gehören: {0}. Grafiktools und Mods an dieser Stelle können verhindern, dass das Spiel startet. Verschieben Sie sie aus dem Ordner und starten Sie erneut.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Spieldateien wurden verändert: {0}. Das kann verhindern, dass das Spiel startet. In Steam Eigenschaften, Installierte Dateien, Integrität der Spieldateien überprüfen.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Das Spiel läuft schon: schließen Sie es und starten Sie es dann von hier aus.</value></data>

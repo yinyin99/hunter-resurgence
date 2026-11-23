@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Ceva nu a mers bine la crearea sesiunii de joc. Reîncărcați lista de servere și încercați să vă alăturați altui joc.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Jocul rulează deja.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>O copie a jocului încă rulează în fundal, fără fereastră, probabil după o blocare. Închideți-o și porniți din nou.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Închide jocul</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Jocul nu a putut fi închis. Încheiați-l din Task Manager (fila Detalii), apoi porniți din nou.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Jocul nu a fost găsit. Verifică folderul lui în setări.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Jocul nu a putut fi pornit.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Se pornește Steam…</value></data>
@@ -1495,6 +1498,9 @@ Numele:</value></data>
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam nu este instalat: jocul va porni fără Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a blocat un fișier al jocului ({0}): permite-l în Securitate Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Spațiu redus pe disc pe {0} ({1} rămași).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Ecranul complet este setat la {0}, pe care ecranul tău nu îl oferă: jocul se poate închide la pornire.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Jocul desenează pe {0}, la care nu este conectat niciun ecran: fă din ecranul tău real ecranul principal sau dezactivează acel adaptor în Device Manager.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Folosește modul ecranului meu</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>În folderul jocului sunt fișiere care nu fac parte din joc: {0}. Instrumentele grafice și modurile puse acolo pot împiedica pornirea jocului. Mută-le din folder și pornește din nou.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Fișierele jocului au fost modificate: {0}. Asta poate împiedica pornirea jocului. În Steam, Proprietăți, Fișiere instalate, Verifică integritatea fișierelor jocului.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Jocul rulează deja: închide-l, apoi pornește-l de aici.</value></data>

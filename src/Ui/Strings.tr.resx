@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Oyun oturumunuz oluşturulurken bir sorun oluştu. Lütfen sunucu listesini yeniden yükleyin ve başka bir oyuna katılmayı deneyin.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Oyun zaten çalışıyor.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Oyunun bir kopyası pencere olmadan arka planda hâlâ çalışıyor, muhtemelen bir çökmeden sonra. Kapatın ve yeniden başlatın.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Oyunu kapat</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Oyun kapatılamadı. Görev Yöneticisi'nde (Ayrıntılar sekmesi) sonlandırın ve yeniden başlatın.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Oyun bulunamadı. Klasörünü ayarlardan kontrol edin.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Oyun başlatılamadı.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Steam başlatılıyor…</value></data>
@@ -1495,6 +1498,9 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam yüklü değil: oyun Steam olmadan başlatılacak.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows bir oyun dosyasını engelledi ({0}): Windows Güvenliği'nde izin verin.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>{0} sürücüsünde disk alanı az ({1} kaldı).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Tam ekran {0} olarak ayarlı, ekranınız bunu sunmuyor: oyun başlarken kapanabilir.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Oyun, ekranı bağlı olmayan {0} üzerine çizim yapıyor: gerçek ekranınızı ana ekran yapın veya bu bağdaştırıcıyı Aygıt Yöneticisi'nde devre dışı bırakın.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Ekranımın modunu kullan</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Oyunun klasöründe oyunun parçası olmayan dosyalar var: {0}. Oraya konan grafik araçları ve modlar oyunun başlamasını engelleyebilir. Bunları klasörün dışına taşıyın ve yeniden başlatın.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Oyun dosyaları değiştirilmiş: {0}. Bu, oyunun başlamasını engelleyebilir. Steam'de Özellikler, Yüklü dosyalar, Oyun dosyalarının bütünlüğünü doğrula.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Oyun zaten çalışıyor: kapatın, sonra buradan başlatın.</value></data>

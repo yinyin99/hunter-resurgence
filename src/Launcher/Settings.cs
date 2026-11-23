@@ -21,6 +21,14 @@ public sealed record Settings(string? SteamAppId, string? ClientExe, string? Gra
     public string? GraphicsFileNoSteam => GraphicsFile is { } f && Path.GetFileName(f) is var name && name.Contains("_steam", StringComparison.Ordinal)
         ? Path.Combine(Path.GetDirectoryName(f)!, name.Replace("_steam", "", StringComparison.Ordinal)) : null;
 
+    /// <summary>The graphics files (names relative to %APPDATA%) the game may start with, the one of <c>/steam</c> first: only the no-Steam one when <paramref name="plannedMode"/> (<see cref="SteamProbes.PlannedMode"/>) is "nosteam", else both.</summary>
+    public IEnumerable<string> StartGraphicsFiles(string? plannedMode)
+    {
+        if (GraphicsFile is not { } steam) return [];
+        var noSteam = GraphicsFileNoSteam;
+        return (plannedMode switch { "nosteam" => new[] { noSteam ?? steam }, _ => [steam, noSteam] }).OfType<string>();
+    }
+
     public bool Configured => SteamAppId is not null && ClientExe is not null;
 
     public static Settings Load(string? path = null)

@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Sist brukte utrustning</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Noe gikk galt under opprettelsen av spilløkten. Last serverlisten på nytt og prøv å bli med i et annet spill.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Spillet kjører allerede.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>En kopi av spillet kjører fortsatt i bakgrunnen uten vindu, sannsynligvis etter et krasj. Lukk den og start på nytt.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Lukk spillet</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Spillet kunne ikke lukkes. Avslutt det i Oppgavebehandling (Detaljer-fanen), og start på nytt.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Fant ikke spillet. Sjekk mappen i innstillingene.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Spillet kunne ikke startes.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Starter Steam…</value></data>
@@ -1495,6 +1498,9 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam er ikke installert: spillet starter uten Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blokkerte en spillfil ({0}): tillat den i Windows-sikkerhet.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Lite diskplass på {0} ({1} igjen).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Fullskjerm er satt til {0}, som skjermen din ikke støtter: spillet kan lukkes ved start.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Spillet tegner på {0}, som ikke har noen skjerm tilkoblet: gjør den ekte skjermen din til hovedskjerm, eller deaktiver adapteren i Enhetsbehandling.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Bruk skjermens modus</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Det ligger filer i spillmappen som ikke hører til spillet: {0}. Grafikkverktøy og modifikasjoner som er lagt der, kan hindre spillet i å starte. Flytt dem ut av mappen og start på nytt.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Spillfiler er endret: {0}. Det kan hindre spillet i å starte. I Steam, Egenskaper, Installerte filer, Verifiser integriteten til spillfilene.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Spillet kjører allerede: lukk det, og start det så herfra.</value></data>

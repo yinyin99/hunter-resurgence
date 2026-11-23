@@ -8,6 +8,22 @@ namespace Resurgence.Tests.LauncherApp;
 public class GameFilesTests
 {
     [Fact]
+    public void OnlyTheErrorReportingThatNamesAClientProcessIsEnded()
+    {
+        (int, string?)[] wer =
+        [
+            (1, "C:\\Windows\\system32\\WerFault.exe -u -p 4242 -s 880"),
+            (2, "WerFault.exe -u -p 42420 -s 880"), // another process whose id starts with the same digits
+            (3, "WerFault.exe -u -p 99 -s 880"),
+            (4, "WerFault.exe -pip 4242"),
+            (5, null),
+            (6, "WerFault.exe -p 7 -s 1"),
+        ];
+        Assert.Equal([1, 6], GameFiles.ErrorReportingOf([4242, 7], wer));
+        Assert.Empty(GameFiles.ErrorReportingOf([], wer));
+    }
+
+    [Fact]
     public async Task GraphicsAndOptionsFilesAreEditedInPlaceAndTheDialogServiceUsesThem()
     {
         using var temp = new TempDir("resurgence-test-");

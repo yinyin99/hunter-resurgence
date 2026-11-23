@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Something went wrong when creating your game session. Please reload the server list and try joining another game.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>The game is already running.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>A copy of the game is still running in the background without a window, probably after a crash. Close it and start again.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Close the game</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>The game could not be closed. End it in Task Manager (Details tab), then start again.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>The game was not found. Check its folder in the settings.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>The game could not be started.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Starting Steam…</value></data>
@@ -1495,6 +1498,9 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam is not installed: the game will start without Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows blocked a game file ({0}): allow it in Windows Security.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Low disk space on {0} ({1} left).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Full screen is set to {0}, which your screen does not offer: the game may close at start.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>The game draws on {0}, which has no screen attached: make your real screen the main display, or disable that adapter in Device Manager.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Use my screen's mode</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Files that are not part of the game are in its folder: {0}. Graphics tools and mods placed there can stop the game from starting. Move them out of the folder and start again.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Game files were changed: {0}. This can stop the game from starting. In Steam, Properties, Installed files, Verify integrity of game files.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>The game is already running: close it, then start it from here.</value></data>

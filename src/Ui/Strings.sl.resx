@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Last used equipment</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Pri ustvarjanju seje igre je prišlo do napake. Osveži seznam strežnikov in se poskusi pridružiti drugi igri.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Igra že teče.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Kopija igre še vedno teče v ozadju brez okna, verjetno po sesutju. Zaprite jo in zaženite znova.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Zapri igro</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Igre ni bilo mogoče zapreti. Končajte jo v upravitelju opravil (zavihek Podrobnosti) in zaženite znova.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Igre ni bilo mogoče najti. Preverite njeno mapo v nastavitvah.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Igre ni bilo mogoče zagnati.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Zagon Steama …</value></data>
@@ -1495,6 +1498,9 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam ni nameščen: igra se bo zagnala brez Steama.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows je blokiral datoteko igre ({0}): dovolite jo v Varnosti sistema Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Malo prostora na disku {0} (ostaja {1}).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Celozaslonski način je nastavljen na {0}, ki ga vaš zaslon ne ponuja: igra se lahko ob zagonu zapre.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Igra riše na {0}, na katerega ni priključen noben zaslon: za glavni zaslon nastavite svoj pravi zaslon ali onemogočite ta vmesnik v upravitelju naprav.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Uporabi način mojega zaslona</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>V mapi igre so datoteke, ki niso del igre: {0}. Grafična orodja in modifikacije, postavljeni tja, lahko preprečijo zagon igre. Premaknite jih iz mape in znova zaženite.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Datoteke igre so bile spremenjene: {0}. To lahko prepreči zagon igre. V Steamu Lastnosti, Nameščene datoteke, Preveri celovitost datotek igre.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Igra že teče: zaprite jo in jo nato zaženite od tukaj.</value></data>

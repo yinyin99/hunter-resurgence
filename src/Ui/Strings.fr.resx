@@ -236,6 +236,9 @@
   <data name="Launch.LoadoutCurrent" xml:space="preserve"><value>Le dernier équipement utilisé</value></data>
   <data name="Launch.Failed" xml:space="preserve"><value>Une erreur est survenue lors de la création de votre session de jeu. Veuillez actualiser la liste des parties et essayer d’en rejoindre une autre.</value></data>
   <data name="Launch.AlreadyRunning" xml:space="preserve"><value>Le jeu est déjà en cours d’exécution.</value></data>
+  <data name="Launch.LeftOver" xml:space="preserve"><value>Une copie du jeu tourne encore en arrière-plan sans fenêtre, probablement après un plantage. Fermez-la et recommencez.</value></data>
+  <data name="Launch.CloseGame" xml:space="preserve"><value>Fermer le jeu</value></data>
+  <data name="Launch.CloseFailed" xml:space="preserve"><value>Le jeu n’a pas pu être fermé. Terminez-le dans le Gestionnaire des tâches (onglet Détails), puis recommencez.</value></data>
   <data name="Launch.NoGame" xml:space="preserve"><value>Le jeu est introuvable. Vérifiez son dossier dans les paramètres.</value></data>
   <data name="Launch.StartFailed" xml:space="preserve"><value>Le jeu n’a pas pu être démarré.</value></data>
   <data name="Launch.StartingSteam" xml:space="preserve"><value>Lancement de Steam…</value></data>
@@ -1495,6 +1498,9 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Check.Steam.NotInstalled" xml:space="preserve"><value>Steam n'est pas installé : le jeu se lancera sans Steam.</value></data>
   <data name="Check.Windows.Blocked" xml:space="preserve"><value>Windows a bloqué un fichier du jeu ({0}) : autorisez-le dans Sécurité Windows.</value></data>
   <data name="Check.Disk.Low" xml:space="preserve"><value>Peu d'espace disque sur {0} ({1} restants).</value></data>
+  <data name="Check.Display.Mode" xml:space="preserve"><value>Le plein écran est réglé sur {0}, que votre écran ne propose pas : le jeu peut se fermer au démarrage.</value></data>
+  <data name="Check.Display.Virtual" xml:space="preserve"><value>Le jeu dessine sur {0}, auquel aucun écran n'est connecté : faites de votre vrai écran l'écran principal ou désactivez cet adaptateur dans le Gestionnaire de périphériques.</value></data>
+  <data name="Check.FixDisplay" xml:space="preserve"><value>Utiliser le mode de mon écran</value></data>
   <data name="Check.Dlls.Extra" xml:space="preserve"><value>Des fichiers qui ne font pas partie du jeu se trouvent dans son dossier : {0}. Les outils graphiques et les mods placés là peuvent empêcher le jeu de démarrer. Déplacez-les hors du dossier et relancez.</value></data>
   <data name="Check.Dlls.Changed" xml:space="preserve"><value>Des fichiers du jeu ont été modifiés : {0}. Cela peut empêcher le jeu de démarrer. Dans Steam, Propriétés, Fichiers installés, Vérifier l'intégrité des fichiers du jeu.</value></data>
   <data name="Check.Running" xml:space="preserve"><value>Le jeu est déjà lancé : fermez-le, puis démarrez-le d'ici.</value></data>
