@@ -74,11 +74,15 @@ public sealed partial class State
             .Select(s => (Id: s.Key, Name: Normalise(((string)s.Value["name"]!).Split(" (")[0]))).Where(s => s.Name.Length > 0)
             .OrderByDescending(s => s.Name.Length).ToList();  // the longest name wins: "mule deer" before "deer"
 
-        var reader = new Reader(names, items.Values, reserves);
+        var towers = Arr(G(application, "locations", null)).OfType<JsonObject>()
+            .Where(l => Py.IsStr(l["type"]) && (string)l["type"]! == "HUNTING_TOWER" && Py.IsStr(l["name"]) && Py.IsStr(l["define"]) && TryKey(l["reserve"], out _)
+                        && l["pos"] is JsonObject pos && Py.IsNum(pos["x"]) && Py.IsNum(pos["z"]))
+            .Select(l => (Py.L(l["reserve"]), Reader.Words((string)l["name"]!), (string)l["define"]!, Py.D(l["pos"]!["x"]), Py.D(l["pos"]!["z"])));
+        var reader = new Reader(names, items.Values, reserves, towers);
         // a plural of a species name (`two Snowshoe Hares`, `two Red Foxes`) is read as the name
         var plural = names.Count == 0 ? null : new Regex(@"\b(" + string.Join('|', names.Select(n => Regex.Escape(n.Name))) + @")e?s\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-        Rule RuleOf(string title, long[]? own = null, long[]? named = null, bool singleHunt = false)
+        Rule RuleOf(string title, long[]? own = null, long[]? named = null, bool singleHunt = false, long[]? places = null)
         {
             var ordered = OrderedWord.Match(title);
             var rest = title[ordered.Length..];
@@ -108,14 +112,14 @@ public sealed partial class State
             Test[] tests = [];
             var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)));  // a spot's ordinal says nothing, as before
+                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)), places);  // a spot's ordinal says nothing, as before
             else if (kind == Kind.Track)
                 (tests, left) = reader.ReadClue(animals, own);
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
-            // a spot has no weapon, hit or harvest: only its stand, its reserve, its species, its coat and its name can be checked
+            // a spot has no weapon, hit or harvest: only its stand, its reserve, its place, its species, its coat and its name can be checked
             if (kind == Kind.Spot)
-                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
+                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Place or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
             return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left);
         }
 
@@ -132,7 +136,7 @@ public sealed partial class State
             var mentioned = reader.WeaponsIn(Py.Str(G(d, "desc", "")));  // the weapons the mission's text names
             Rule Build(string title)
             {
-                var rule = RuleOf(title, listed, mentioned, Py.Truthy(d["singleExpedition"]));  // a named animal's title names no species: the mission's own one does
+                var rule = RuleOf(title, listed, mentioned, Py.Truthy(d["singleExpedition"]), Ids(d["reserves"]));  // a named animal's title names no species: the mission's own one does
                 return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
             }
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,

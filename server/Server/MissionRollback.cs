@@ -343,6 +343,7 @@ public sealed partial class State
             Check.Stand => Id(NumOf(last, "location")),
             Check.Scope or Check.NoScope => Id(NumOf(last, "scope_id")),
             Check.Reserve => k.Reserve is { } r ? reserves.GetValueOrDefault(r) ?? $"#{r}" : "none",
+            Check.Place => "elsewhere",
             Check.Coat or Check.NotCoat => Id(NumOf(k.E7, "texture")),
             Check.Clue => t.Min > 1 && ClueIs(t, e12, k.E7) ? $"{k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7))} of {t.Min} clues" : ClueKindOf(e12, AnimalOf(k.E7, k.E7["species"]).Species)?.ToString() ?? "unknown",
             Check.Within or Check.Each or Check.SameShot or Check.Different => $"{Sequenced(t, k, after, rule)} of {t.Min}",
