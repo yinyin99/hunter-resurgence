@@ -620,7 +620,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Eq("""{"status": "done", "data": []}""", await Api(Replay.LEADERBOARD_PERSONAL, tokenA, "user_id=7&season_no=0"));
 
         var page = JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second/best", null)).Body)!["rows"]!.AsArray();
-        Eq("""["Test Deer", 70.25, 96.14, "Test Rifle", 1]""", T(page[0]!["species"], page[0]!["score"], page[0]!["range"], page[0]!["weapon"], page[0]!["kill"]));
+        Eq("""["Test Deer (Typical)", 70.25, 96.14, "Test Rifle", 1]""", T(page[0]!["species"], page[0]!["score"], page[0]!["range"], page[0]!["weapon"], page[0]!["kill"]));
         Eq("""["#77", 5.5, 1.0, "", 902]""", T(page[1]!["species"], page[1]!["score"], page[1]!["range"], page[1]!["weapon"], page[1]!["kill"]));
         Assert.Equal(1700000000L, (long)page[1]!["ts"]!);
         Eq("""["#79", 0.0, 0.0]""", T(page[2]!["species"], page[2]!["score"], page[2]!["range"]));  // numbers that are not finite count 0
