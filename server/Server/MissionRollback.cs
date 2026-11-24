@@ -331,23 +331,27 @@ public sealed partial class State
 
     static IEnumerable<string> Key(Rule r) => r.Text.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(p => p.ToLowerInvariant()).Order(StringComparer.Ordinal);
 
+    /// <summary>Does the arrival at `place` (normalised) meet an arrive rule: the exact place of an operator's `arrive; place: NAME`, else the place the title names, as `MissionEvent` decides.</summary>
+    static bool ArrivesAt(Rule r, string place) => r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? place == Normalise(at.Place!) : PlaceIn(r.Text, place);
+
     /// <summary>For the ordered objective `i` of an open mission: the last event that finished one of the objectives before it (they are all held), or null when one cannot be told. A harvest or a clue
-    /// is the event today's replay gives it (`judged`); a spot, a place entered or a hunt started is estimated as the first such event after the one before it that meets it (the row keeps
-    /// no event for them); a hunt's event is the one stored before its first.
+    /// is the event today's replay gives it (`judged`); a spot, a place entered or a hunt started is estimated as the first such event that meets it, searched after the one before it when that
+    /// is ordered and from the mission's activation otherwise (the row keeps no event for them); a hunt's event is the one stored before its first.
     /// ponytail: the first matching event, which is not the one that finished it when an earlier objective of the mission took that event; the candidates then begin a little early.</summary>
     long? FinishedBefore(Db con, MissionDef m, int i, long since, List<Recorded> events, List<(Objective Objective, long At)> judged)
     {
         var floor = since;
         foreach (var p in m.Objectives[..i])
         {
+            var from = p.Rule.Ordered ? floor : since;  // one that is not ordered may have been finished before an earlier one
             long? at = p.Rule.Kind switch
             {
                 Kind.Harvest or Kind.Track => judged.Where(x => x.Objective.Id == p.Id).Select(x => (long?)x.At).FirstOrDefault(),
-                Kind.Spot => events.FirstOrDefault(e => e.Kind == Kind.Spot && e.Id > floor && e.Meets(p.Rule, since))?.Id,
-                Kind.Arrive => con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 101 AND id > ? ORDER BY id", floor).Select(r => (Id: (long)r[0], Body: Parse(r[1])))
+                Kind.Spot => events.FirstOrDefault(e => e.Kind == Kind.Spot && e.Id > from && e.Meets(p.Rule, since))?.Id,
+                Kind.Arrive => con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 101 AND id > ? ORDER BY id", from).Select(r => (Id: (long)r[0], Body: Parse(r[1])))
                     .Where(e => Py.IsStr(e.Body["direction"]) && (string)e.Body["direction"]! == "enter" && Py.IsStr(e.Body["location_name"])
-                                && PlaceIn(p.Rule.Text, Normalise((string)e.Body["location_name"]!))).Select(e => (long?)e.Id).FirstOrDefault(),
-                Kind.Start => con.Rows("SELECT first_event, location_id FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) >= ? ORDER BY id", floor)
+                                && ArrivesAt(p.Rule, Normalise((string)e.Body["location_name"]!))).Select(e => (long?)e.Id).FirstOrDefault(),
+                Kind.Start => con.Rows("SELECT first_event, location_id FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) >= ? ORDER BY id", from)
                     .Select(r => (At: r[0] as long? ?? 0, Lodge: r[1] as long?))
                     .Where(x => x.Lodge is { } l && lodgeNames.TryGetValue(l, out var names) && names.Any(n => PlaceIn(p.Rule.Text, n))).Select(x => (long?)x.At).FirstOrDefault(),
                 _ => null,

@@ -169,6 +169,40 @@ public class MissionStuckTests : MissionTestBase
         OrderedAfter("afterstart.db", "Start at Test Lodge.", () => Launch());
 
     [Fact]
+    public void TestAnOrderedObjectiveAfterAnOverriddenArrivePlaceCountsOnlyTheEventsAfterTheArrival()
+    {
+        state = New("afteroverride.db", """
+            {"missions": [{"id": 1, "title": "Two", "dependencies": [], "rewards": [], "objectives": [
+              {"id": 0, "title": "Info message when you are south of the Test Pond"}, {"id": 1, "title": "Then harvest a Test Deer with the Test Carbine"}]}]}
+            """, rules: new JsonObject { ["1/0"] = "arrive; place: TEST_RESERVE_SOUTH_OF_POND2" });
+        state.Clock = () => now;
+        ActivateAll();
+        WrongWeapon(5);
+        state.HeartbeatReply(ME, Events(Enter("TEST_RESERVE_SOUTH_OF_POND2")));
+        WrongWeapon(5, first: 21);
+        var report = Report();
+        Assert.Equal("missions stuck, the last 14 days: 1 objectives listed of 1 with candidates among 1 open on 1 accounts", report[0]);
+        Assert.StartsWith("mission 1 Two | Then harvest a Test Deer with the Test Carbine | 5 candidates, 0 completed", Assert.Single(report[1..]));
+    }
+
+    [Fact]
+    public void TestASpotThatIsNotOrderedMayComeBeforeTheObjectiveBeforeIt()
+    {
+        state = Stucked("unorderedspot.db", """
+            {"missions": [{"id": 1, "title": "Three", "dependencies": [], "rewards": [], "objectives": [
+              {"id": 0, "title": "Harvest a Test Deer with the Test Shotgun"}, {"id": 1, "title": "Spot a Test Deer from a Tree Stand"},
+              {"id": 2, "title": "Then harvest a Test Deer with the Test Carbine"}]}]}
+            """);
+        ActivateAll();
+        state.HeartbeatReply(ME, Events(Spot(20, location: 2)));  // the spot comes first
+        state.HeartbeatReply(ME, Events(Shot(21, weapon: 51)));  // then the shotgun harvest: the carbine one is open from here
+        WrongWeapon(5, first: 22);
+        var report = Report();
+        Assert.Equal("missions stuck, the last 14 days: 1 objectives listed of 1 with candidates among 1 open on 1 accounts", report[0]);
+        Assert.StartsWith("mission 1 Three | Then harvest a Test Deer with the Test Carbine | 5 candidates, 0 completed", Assert.Single(report[1..]));
+    }
+
+    [Fact]
     public void TestAnObjectiveSomeAccountsCompletedStaysListedWithItsCompletionCount()
     {
         state = Stucked("completions.db", Catalogue([Carbine]));
