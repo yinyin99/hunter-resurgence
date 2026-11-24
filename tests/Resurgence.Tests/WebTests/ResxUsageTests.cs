@@ -6,7 +6,7 @@ using Resurgence.Services.Mocks;
 
 namespace Resurgence.Tests.WebTests;
 
-/// <summary>The key parity test cannot see a key the code asks for that no file holds (the page then shows the key), or a key built at run time.</summary>
+/// <summary>The key parity check (tools/checks/translations.mjs) cannot see a key the code asks for that no file holds (the page then shows the key), or a key built at run time.</summary>
 public partial class ResxUsageTests
 {
     static HashSet<string> Keys() => new ResourceManager("Resurgence.Ui.Strings", typeof(Resurgence.Ui.Strings).Assembly)
