@@ -134,7 +134,8 @@ sealed class SuspendedProcess : ISuspendedGame
         if (!VirtualProtectEx(process, (nint)address, bytes.Length, ReadWrite, out var old)) return false;
         var ok = WriteProcessMemory(process, (nint)address, bytes, bytes.Length, out var n) && n == bytes.Length;
         VirtualProtectEx(process, (nint)address, bytes.Length, old, out _);
-        return ok && FlushInstructionCache(process, (nint)address, bytes.Length);
+        if (ok) FlushInstructionCache(process, (nint)address, bytes.Length);
+        return ok;
     }
 
     public uint Allocate(int size)
