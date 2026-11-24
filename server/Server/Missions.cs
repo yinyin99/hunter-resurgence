@@ -371,7 +371,7 @@ public sealed partial class State
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
         Advance(con, kind, (rule, after) =>
-            kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
+            kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && (rule.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? place == Normalise(at.Place!) : PlaceIn(rule.Text, place))
             : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill, after)),
             u =>
             {

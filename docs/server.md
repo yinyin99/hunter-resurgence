@@ -434,10 +434,11 @@ The parts are separated by `;`, names by `, ` and are the catalogue's English na
 
 | Words | Meaning |
 |---|---|
-| `harvest`, `spot`, `track` | the kind (a track is a clue objective); arrivals and starts keep the reader's rule |
+| `harvest`, `spot`, `track` | the kind (a track is a clue objective); starts keep the reader's rule |
+| `arrive; place: <NAME>` | the kind of an arrival the title cannot name (an "Info message" when the player is in an area): met when the player enters the place the game names `NAME`, and no other; nothing else may follow |
 | `species: <names>`, `species: any species except <names>` | one name: that species; several: any of them |
 | `male`, `female`, `ordered` | the gender; counts only after every objective before it is finished |
-| `weapon: <names>`, `ammunition: <names>`, `not ammunition: <names>`, `sight: <names>`, `any sight`, `no sight` | the last hit's weapon, ammunition (is one of them; is none of them) and sight (every item of a name: skins and variants) |
+| `weapon: <names>`, `ammunition: <names>`, `not ammunition: <names>`, `sight: <names>`, `any sight`, `no sight` | the last hit's weapon, ammunition (is one of them; is none of them) and sight (every item of a name: skins and variants; `Name (Variant)` is the one variant of items that share a name) |
 | `permitted`, `one shot` | as the title words of the same name |
 | `organs, one of: <mask> \| <mask>`, `organs only: <mask>`, `avoids: <mask>, <mask>` | a mask is `soft organs`, `bones`, or organs joined by `+`: `heart`, `right lung`, `left lung`, `liver`, `brain`, `intestines`, `spine`, `shoulder blade`, `neck bones`, `skull`, `hip bone`, `bit <n>` |
 | `harvest value: <bounds>`, `distance: <bounds> m`, `weight: <bounds> kg`, `score: <bounds>`, `typical points: <bounds>` | one or two bounds separated by a space: `>=N`, `>N`, `<=N`, `<N` |

@@ -71,12 +71,15 @@ public sealed partial class State
         var parts = words.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
             throw new InvalidDataException("the rule is empty");
+        if (parts[0] == "arrive")  // an arrival the title cannot name: the file gives the place's game name, met by that place only
+            return parts.Length == 2 && TestIn(parts[1], []) is { Check: Check.Place } at ? new Rule(Kind.Arrive, null, null, false, string.Join("; ", parts), [at])
+                : throw new InvalidDataException("an arrive rule is \"arrive; place: <NAME>\"");
         var kind = parts[0] switch
         {
             "harvest" => Kind.Harvest,
             "spot" => Kind.Spot,
             "track" => Kind.Track,
-            _ => throw new InvalidDataException($"\"{parts[0]}\" is no kind of rule the file sets: harvest, spot or track"),
+            _ => throw new InvalidDataException($"\"{parts[0]}\" is no kind of rule the file sets: harvest, spot, track or arrive"),
         };
         if (parts.Count(p => p is "male" or "female") > 1 || parts.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || parts.Count(p => p == "ordered") > 1)
             throw new InvalidDataException("a gender, a species or \"ordered\" is given twice");
@@ -170,8 +173,10 @@ public sealed partial class State
     }
 
     // the catalogue's items of a `cat` (1 weapons, 2 sights, 3 ammunition) by name: items of one name (skins, variants) are all of them
+    // `Crossbow Pistol (Wolfsbane)` is the one variant of items that share a name; the name alone is all of them
     HashSet<long> ItemsIn(string value, long cat, string what) =>
-        NamesIn(value, items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == cat).Select(i => (i.Key, ItemName(i.Key))), what);
+        NamesIn(value, items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == cat)
+            .SelectMany(i => Py.IsStr(i.Value["variationname"]) ? new[] { (i.Key, ItemName(i.Key)), (i.Key, $"{ItemName(i.Key)} ({(string)i.Value["variationname"]!})") } : [(i.Key, ItemName(i.Key))]), what);
 
     // the species of `species: <names>` or `species: any species except <names>` (0 to 99, as printed)
     long[] SpeciesIn(string value)
