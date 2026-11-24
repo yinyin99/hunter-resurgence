@@ -107,11 +107,12 @@ public sealed partial class State
             ? new(place, NumOf(e, "player_x"), NumOf(e, "player_z"), new(() => ReserveAt(con, eventId))) : null;
 
     /// <summary>Does the arrival meet an arrive rule: the exact place of an operator's `arrive; place: NAME`; else the place the title names (<see cref="PlaceIn"/>); else, when the hunt is in
-    /// one of the mission's reserves (none listed: any), the place the title names less strictly (<see cref="PlaceLike"/>) or a point within 200 m of the title's coordinates, whatever the place's name.</summary>
+    /// one of the mission's reserves (none listed: any), a point within 200 m of the title's coordinates, whatever the place's name, or, for a title without coordinates, the place the title names
+    /// less strictly (<see cref="PlaceLike"/>).</summary>
     static bool ArrivesAt(Rule r, Arrival a) =>
         r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? a.Place == Normalise(at.Place!)
         : PlaceIn(r.Text, a.Place) || r.Zone is { } z && (z.Reserves.Length == 0 || a.Reserve.Value is { } here && z.Reserves.Contains(here))
-            && (PlaceLike(r.Text, a.Place) || z.Point is { } n && a.X is { } ax && a.Z is { } az && Math.Sqrt((ax - n.X) * (ax - n.X) + (az - n.Z) * (az - n.Z)) <= 200);
+            && (z.Point is { } n ? a.X is { } ax && a.Z is { } az && Math.Sqrt((ax - n.X) * (ax - n.X) + (az - n.Z) * (az - n.Z)) <= 200 : PlaceLike(r.Text, a.Place));
 
     /// <summary>Read the catalogue's missions and groups (a community server; none without a recorded catalogue).</summary>
     void LoadMissions()

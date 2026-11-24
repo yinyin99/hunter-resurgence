@@ -14,8 +14,8 @@ public class MissionArriveTests : MissionTestBase
         O($$"""{"event": 101, "location_name": "{{place}}", "direction": "enter", "player_x": {{x}}, "player_y": 2, "player_z": {{z}}}""");
 
     [Theory]
-    [InlineData(Chute, "ALASKA_FROZEN_CHUTE")]
-    [InlineData(Chute, ProtocolLiterals.LocationPrefix + "ALASKA_CHUTE")]
+    [InlineData("Then arrive at the Chute", "ALASKA_FROZEN_CHUTE")]
+    [InlineData("Then arrive at the Chute", ProtocolLiterals.LocationPrefix + "ALASKA_CHUTE")]
     [InlineData("Then arrive at Snaketongue Fall", "ALASKA_SNAKETONGUE_FALL")]
     [InlineData("Then arrive at Snaketongue Fall", ProtocolLiterals.LocationPrefix + "ALASKA_SNAKETONGUE_FALLS")]
     [InlineData("Arrive at the Test Pond", "TEST_RESERVE_TEST_POND")]
@@ -57,6 +57,17 @@ public class MissionArriveTests : MissionTestBase
         Assert.Equal(met ? "1" : "", Completed());
     }
 
+    [Fact]
+    public void TestATitleWithCoordinatesIsMetNearThemOnlyNotByALooselyNamedPlaceFarAway()
+    {
+        state = New("far.db", Catalogue([Chute]));
+        ActivateAll();
+        Hb(EnterAt("ALASKA_FROZEN_CHUTE", -1000, -2000));
+        Assert.Equal("", Completed());
+        Hb(EnterAt("ALASKA_FROZEN_CHUTE", -4600, -11100));
+        Assert.Equal("1", Completed());
+    }
+
     [Theory]
     [InlineData(2, true)]
     [InlineData(3, false)]  // the same name in a reserve the mission does not list
@@ -90,10 +101,10 @@ public class MissionArriveTests : MissionTestBase
             """);
         ActivateAll();
         Launch();
-        Hb(Enter("ALASKA_FROZEN_CHUTE"), EnterAt("ALASKA_UNRELATED_PLACE", -4633, -11152));
+        Hb(EnterAt("ALASKA_UNRELATED_PLACE", -4633, -11152));
         Assert.Equal("", Completed());
         Hb(Shot(1));
-        Hb(Enter("ALASKA_FROZEN_CHUTE"));
+        Hb(EnterAt("ALASKA_UNRELATED_PLACE", -4633, -11152));
         Assert.Equal("1", Completed());
     }
 
@@ -129,7 +140,7 @@ public class MissionArriveTests : MissionTestBase
         Assert.Contains("arrive objectives with no coordinates that no known location's name meets: 1", report);
         Assert.Equal(["arrive not matched: mission 2 objective 0: Arrive at the Mystery Spot"], report.Where(l => l.StartsWith("arrive not matched:", StringComparison.Ordinal)));
         ActivateAll();
-        Hb(Enter("TEST_RESERVE_SOUTH_OF_POND2_EXTRA"), Enter("HUNTER_GAME_LOCATION_TEST_RESERVE_SOUTH_OF_POND2"));
+        Hb(Enter("TEST_RESERVE_SOUTH_OF_POND2_EXTRA"), Enter(ProtocolLiterals.LocationPrefix + "TEST_RESERVE_SOUTH_OF_POND2"));
         Assert.Equal("", Completed());  // an operator's place is met by that name only
     }
 }
