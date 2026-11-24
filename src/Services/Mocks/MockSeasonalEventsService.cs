@@ -12,7 +12,7 @@ public sealed class MockSeasonalEventsService(string? mock = null) : ISeasonalEv
         ? new("Halloween 2026", new(2026, 10, 22, 0, 0, 0, TimeSpan.Zero), new(2026, 12, 1, 0, 0, 0, TimeSpan.Zero),
             [new("Harvest 40 Mock Deer", 12, 40, 500, 10), new("Spot 100 Mock Foxes", 100, 100, 200, 0)],
             [new("MockHunter", 9), new("OtherHunter", 4)],
-            [new(new(1201, "Mock Pursuits", "active", "", ["Harvest a Mock Deer.", "Harvest a Mock Fox."], "1000 gm$", "", "", ""), 1)],
+            [new(new(1201, "Mock Pursuits", "active", "", [new("Harvest a Mock Deer.", true), new("Harvest a Mock Fox.", false)], "1000 gm$", "", "", ""), 1)],
             [new(962, "Mock Silver Bullets")])
         : null);
 

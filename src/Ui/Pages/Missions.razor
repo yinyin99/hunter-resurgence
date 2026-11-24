@@ -129,7 +129,7 @@ else { <div class="skeleton skeleton-page"></div> }
 
     static bool Has(string text, string find) => text.Contains(find, StringComparison.OrdinalIgnoreCase);
 
-    bool Found(Mission m) => applied.Length == 0 || Has(m.Name, applied) || Has(m.Description, applied) || m.Objectives.Any(o => Has(o, applied));
+    bool Found(Mission m) => applied.Length == 0 || Has(m.Name, applied) || Has(m.Description, applied) || m.Objectives.Any(o => Has(o.Title, applied));
 
     // client-side, as in the old page: the Filter button narrows the lists; both the missions and the packs (and their favourites) answer to reserve, species, weapon, hide completed and search
     void Apply()
@@ -167,7 +167,7 @@ else { <div class="skeleton skeleton-page"></div> }
                         else
                         {
                             <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
-                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li>@if (m.State == "completed") { <span class="done" aria-hidden="true">✔</span> } else { <span class="done empty" aria-hidden="true"></span> } @o</li> }</ol>
+                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li>@if (o.Done) { <span class="done" aria-hidden="true">✔</span> } else { <span class="done empty" aria-hidden="true"></span> } @o.Title</li> }</ol>
                             @if (m.Reward.Length > 0) { <h5>@L["Mis.Rewards"]</h5><ul class="reward"><li><Icon Name="circle" /> @m.Reward</li></ul> }
                         }
                         @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }

@@ -72,6 +72,22 @@ public sealed class MissionsPageTests : UiContext
     }
 
     [Fact]
+    public void AnActiveMissionTicksEachDoneObjectiveAndKeepsTheEmptyBoxForTheOthers()
+    {
+        var body = Server.Replace("""{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": []""",
+            """{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": [{"title": "A", "done": true}, {"title": "B", "done": true}, {"title": "C", "done": false}]""");
+        Services.AddSingleton(new HostMode { Live = true });
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(body)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
+
+        var cut = Render<Missions>();
+        cut.Find("section.box > ul.rows button.row").Click();
+
+        Assert.Equal(2, cut.FindAll("ol.goals span.done:not(.empty)").Count);
+        Assert.Single(cut.FindAll("ol.goals span.empty"));
+    }
+
+    [Fact]
     public void TheLiveSiteHasTheDailyTabAndHelpAndNoFilterOptionForNone()
     {
         Services.AddSingleton(new HostMode { Live = true });

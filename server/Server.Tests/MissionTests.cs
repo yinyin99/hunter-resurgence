@@ -78,6 +78,8 @@ public class MissionTests : StateTestBase
 
     double Gm(long account = ME) => state.Wallet(account)["gm"]!.GetValue<double>();
 
+    JsonNode? WebObjectives(int mission) => state.WebMissions(ME)!["missions"]!.AsArray().Single(m => (long)m!["id"]! == mission)!["objectives"];
+
     string Objectives(int mission, long account = ME) => Ids(Missions(account)["states"]![mission.ToString()]!["objectives"]);
 
     [Fact]
@@ -146,6 +148,7 @@ public class MissionTests : StateTestBase
         Hb();
         Hb(Spawn(72), Track(72));
         Assert.Equal("0", Objectives(2));
+        Eq("""[{"title": "Locate Test Deer tracks.", "done": true}, {"title": "Harvest a Test Deer.", "done": false}]""", WebObjectives(2));  // the page ticks the finished one
         var next = Hb();  // the objective toast: a mission that is not finished pays nothing
         Assert.Equal("3", Kinds(next));
         Assert.Equal("Mission \"Track and Harvest\", objective \"Locate Test Deer tracks.\" completed.", (string)Update(next, 3)!["text"]!);
@@ -158,6 +161,7 @@ public class MissionTests : StateTestBase
         Assert.True(Gm() >= gm + 250);
         Assert.Equal(["em$ reward"], state.WalletPage(ME, "em", 0).Select(r => (string)r!["summary"]!));
         Assert.Equal("1,2", Ids(Missions()["completed"]));
+        Eq("""[{"title": "Locate Test Deer tracks.", "done": true}, {"title": "Harvest a Test Deer.", "done": true}]""", WebObjectives(2));  // a completed mission has all done
     }
 
     [Fact]
@@ -328,7 +332,7 @@ public class MissionTests : StateTestBase
 
         var page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
         var one = page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!;
-        Eq("""["Hello, take your time & care.", "available", ["Harvest a Test Deer"], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
+        Eq("""["Hello, take your time & care.", "available", [{"title": "Harvest a Test Deer", "done": false}], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
         Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
             page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["reserve"]));
         Eq("""["Harvest a Test Deer"]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["needs"]);  // locked: the open dependency's title

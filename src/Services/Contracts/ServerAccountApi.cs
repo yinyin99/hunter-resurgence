@@ -113,7 +113,7 @@ public sealed record ServerPlaced(ServerPlacedItem[] Items);
 public sealed record ServerLoadout(int Id, string Name);
 
 /// <summary>A mission of <see cref="ServerAccountApi.Missions"/>: <c>State</c> is active, available, completed or locked; <c>Reserve</c>, <c>Species</c> and <c>Weapon</c> are "" for none.</summary>
-public sealed record ServerMission(int Id, string Title, string Desc, string State, string[] Objectives, string Reward, string Reserve, string Species, string Weapon, string[]? Needs = null);
+public sealed record ServerMission(int Id, string Title, string Desc, string State, ServerEventObjective[] Objectives, string Reward, string Reserve, string Species, string Weapon, string[]? Needs = null);
 
 /// <summary>A pack of <see cref="ServerAccountApi.Missions"/>: <c>Missions</c> are mission ids in display order.</summary>
 public sealed record ServerMissionGroup(int Id, string Title, string Desc, bool Favourite, int[] Missions);
