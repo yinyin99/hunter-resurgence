@@ -13,6 +13,7 @@ sealed class TempDir : IDisposable
 
     public void Dispose()
     {
-        try { Directory.Delete(Path, true); } catch (IOException) { }
+        // best effort: Windows refuses a file still in use (an exe whose process is just ending: access denied, not IOException); the temp folder keeps it
+        try { Directory.Delete(Path, true); } catch (Exception e) when (e is IOException or UnauthorizedAccessException) { }
     }
 }
