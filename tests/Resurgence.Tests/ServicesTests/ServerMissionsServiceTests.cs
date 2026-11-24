@@ -25,8 +25,8 @@ public class ServerMissionsServiceTests
     // made-up missions: 1 active, 2 available, 3 locked, 4 completed; the pack holds 3 and 4, the other one 1 and 2
     const string Page = """
         {"missions": [
-          {"id": 1, "title": "Test One", "desc": "First.", "state": "active", "objectives": [{"title": "Harvest a Test Deer", "done": false}], "reward": "100 gm$", "reserve": "Test Reserve", "species": "Test Deer", "weapon": ""},
-          {"id": 2, "title": "Test Two", "desc": "Second.", "state": "available", "objectives": [{"title": "Spot a Test Deer", "done": false}, {"title": "Then, harvest it", "done": false}], "reward": "200 gm$", "reserve": "", "species": "", "weapon": "Test Rifle"},
+          {"id": 1, "title": "Test One", "desc": "First.", "state": "active", "objectives": ["Harvest a Test Deer"], "objectives_done": [true], "reward": "100 gm$", "reserve": "Test Reserve", "species": "Test Deer", "weapon": ""},
+          {"id": 2, "title": "Test Two", "desc": "Second.", "state": "available", "objectives": ["Spot a Test Deer", "Then, harvest it"], "reward": "200 gm$", "reserve": "", "species": "", "weapon": "Test Rifle"},
           {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "", "needs": ["Test Two"]},
           {"id": 4, "title": "Test Four", "desc": "", "state": "completed", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": ""}],
          "groups": [{"id": 10, "title": "Test Pack", "desc": "Both.", "favourite": true, "missions": [3, 4]}, {"id": 11, "title": "Other Pack", "desc": "", "favourite": false, "missions": [1, 2, 99]}],
@@ -42,6 +42,8 @@ public class ServerMissionsServiceTests
         Assert.Equal(["Test One", "Test Two"], data.Missions.Select(m => m.Name));  // the active and the available
         Assert.Equal(("Test Reserve", "Test Deer", "", "active"), (data.Missions[0].Reserve, data.Missions[0].Species, data.Missions[0].Weapon, data.Missions[0].State));
         Assert.Equal(["Spot a Test Deer", "Then, harvest it"], data.Missions[1].Objectives.Select(o => o.Title));
+        Assert.True(data.Missions[0].Objectives.Single().Done);  // from `objectives_done`
+        Assert.All(data.Missions[1].Objectives, o => Assert.False(o.Done));  // no `objectives_done` (an earlier server): none done
         Assert.Equal([("Test Pack", 1, 2, true), ("Other Pack", 0, 2, false)], data.Packs.Select(p => (p.Name, p.Done, p.Total, p.Favourite)));  // 99 has no definition
         Assert.Equal(["Test Three", "Test Four"], data.Packs[0].Missions.Select(m => m.Name));
         Assert.Equal(["Test Two"], data.Packs[0].Missions[0].Needs);  // why it is locked

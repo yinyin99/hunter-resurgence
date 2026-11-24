@@ -328,7 +328,9 @@ public sealed partial class State
             {
                 ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Unmarked(Py.Str(G(d, "desc", ""))),
                 ["state"] = rows.TryGetValue(id, out var r) ? r.State == 3 ? "completed" : "active" : available.Contains(id) ? "available" : "locked",
-                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)new JsonObject { ["title"] = o.Title, ["done"] = rows.TryGetValue(id, out var row) && (row.State == 3 || row.Done.Contains(o.Id)) })]),
+                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
+                // beside `objectives` (titles), not inside it: a launcher of an earlier release reads `objectives` as strings
+                ["objectives_done"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)(rows.TryGetValue(id, out var row) && (row.State == 3 || row.Done.Contains(o.Id))))]),
                 // ponytail: a dependency without a definition is left out (none in the recorded catalogue), so such a mission would show as locked with no reason
                 ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => missions.ContainsKey(n) && !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)missions[n].Title)]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),

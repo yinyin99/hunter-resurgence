@@ -75,7 +75,7 @@ public sealed class MissionsPageTests : UiContext
     public void AnActiveMissionTicksEachDoneObjectiveAndKeepsTheEmptyBoxForTheOthers()
     {
         var body = Server.Replace("""{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": []""",
-            """{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": [{"title": "A", "done": true}, {"title": "B", "done": true}, {"title": "C", "done": false}]""");
+            """{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": ["A", "B", "C"], "objectives_done": [true, true, false]""");
         Services.AddSingleton(new HostMode { Live = true });
         Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(body)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
