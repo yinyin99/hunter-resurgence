@@ -123,9 +123,11 @@ public sealed class HuntingStatisticsTests : UiContext
     }
 
     [Fact]
-    public void SignedOutTheHuntingStatisticsAskTheServerNothing()
+    public async Task SignedOutTheHuntingStatisticsAskTheServerNothing()
     {
-        Services.AddSingleton<ISessionService>(new Resurgence.Services.Mocks.MockSessionService(() => null));
+        var session = new Resurgence.Services.Mocks.MockSessionService();  // signed in until it signs out
+        await session.SignOutAsync();
+        Services.AddSingleton<ISessionService>(session);
         var cut = Board(HttpStatusCode.OK, Fixture, out var server);
 
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("a.btn-primary")));
