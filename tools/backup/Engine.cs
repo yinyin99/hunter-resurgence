@@ -191,8 +191,17 @@ sealed partial class Engine(Settings s, HttpClient http, Action<string> log, Act
             log($"== {key}");
             await (key switch
             {
-                "profile" => Profile(), "inventory" => Inventory(), "setups" => Setups(), "trophies" => Trophies(), "hunts" => Hunts(false), "kills" => Hunts(true),
-                "account" => Account(), "friends" => Friends(), "photos" => Photos(), "history" => History(), _ => Messages(),
+                "profile" => Profile(),
+                "inventory" => Inventory(),
+                "setups" => Setups(),
+                "trophies" => Trophies(),
+                "hunts" => Hunts(false),
+                "kills" => Hunts(true),
+                "account" => Account(),
+                "friends" => Friends(),
+                "photos" => Photos(),
+                "history" => History(),
+                _ => Messages(),
             });
         }
         catch (Exception e) when (e is not OperationCanceledException)

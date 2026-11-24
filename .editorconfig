@@ -5,3 +5,8 @@ end_of_line = lf
 
 [*.{cmd,bat,ps1}]
 end_of_line = crlf
+
+# the repository's style, which `dotnet format whitespace` checks (tools/checks/format.mjs): short initializers on one line, a case's block at the case's indent
+[*.cs]
+csharp_new_line_before_members_in_object_initializers = false
+csharp_indent_case_contents_when_block = false

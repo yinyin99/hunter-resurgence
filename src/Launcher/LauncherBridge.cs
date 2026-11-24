@@ -309,7 +309,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             {
                 game ??= find?.Invoke(g.ClientExe);
                 window |= game?.WindowVisible() == true;
-            // the run ends when the process held has exited; without one, when the exe is gone or the process found has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
+                // the run ends when the process held has exited; without one, when the exe is gone or the process found has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
             } while ((held is not null || isRunning(g.ClientExe)) && game?.ExitCode() is null && await Delay(step));
             var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);

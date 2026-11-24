@@ -47,7 +47,8 @@ static class Forwarder
         {
             AllowAutoRedirect = false, UseCookies = false, AutomaticDecompression = DecompressionMethods.None, UseProxy = false,
             RequestHeaderEncodingSelector = (_, _) => Encoding.Latin1, ResponseHeaderEncodingSelector = (_, _) => Encoding.Latin1,
-        }) { Timeout = TimeSpan.FromMinutes(5) };
+        })
+        { Timeout = TimeSpan.FromMinutes(5) };
         app.Lifetime.ApplicationStopped.Register(http.Dispose);
         var baseUrl = server.AbsoluteUri.TrimEnd('/');
 

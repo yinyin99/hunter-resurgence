@@ -405,8 +405,8 @@ public sealed partial class State
                     var (o, rule) = (m.Objectives[i], m.Objectives[i].Rule);
                     if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && m.Objectives[..i].Any(p => !held.Contains(p.Id)))
                         || m.Objectives[..i].Any(p => p.Rule.Text == rule.Text && !held.Contains(p.Id))  // an equal one before it that is open takes the event first
-                        // ponytail: an ordered objective is listed only when the replay knows the event that finished every one before it (a harvest or a clue); after a spot, a start or a place the
-                        // candidates would begin too early. A spot that finished one spot objective is not known either and may count as a refused attempt at another of the same animal.
+                                                                                                         // ponytail: an ordered objective is listed only when the replay knows the event that finished every one before it (a harvest or a clue); after a spot, a start or a place the
+                                                                                                         // candidates would begin too early. A spot that finished one spot objective is not known either and may count as a refused attempt at another of the same animal.
                         || (rule.Ordered && m.Objectives[..i].Any(p => !IsReplayed(m, p.Id) || !judged.Value.Any(x => x.Objective.Id == p.Id))))
                         continue;
                     if (!open.TryGetValue((id, o.Id), out var s))
