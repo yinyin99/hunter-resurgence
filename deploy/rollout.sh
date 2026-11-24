@@ -8,7 +8,7 @@ domain=$(sed -n 's/^SITE_DOMAIN=//p' .env)
 [ -n "$domain" ] || { echo "SITE_DOMAIN is not set in .env" >&2; exit 2; }
 prev=$(grep -E '^(WEB|SERVER|NATPT)_TAG=' .env)
 
-tags() { while IFS== read -r k v; do sed -i "s/^$k=.*/$k=$v/" .env; done; } # KEY=value lines on stdin
+tags() { while IFS='=' read -r k v; do sed -i "s/^$k=.*/$k=$v/" .env; done; } # KEY=value lines on stdin
 # the services that are not running (restarting, exited) or whose own health check says so
 bad() { docker compose ps -a --format '{{.Service}} {{.State}} {{.Health}}' | awk '$2 != "running" || $3 == "starting" || $3 == "unhealthy" {print $1}'; }
 # Caddy answers on this host with the site's Host header and its origin certificate (not trusted here): anything but a failed dial or Caddy's 502/503/504 counts
