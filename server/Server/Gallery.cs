@@ -74,7 +74,7 @@ public sealed partial class State
                     ["id"] = (long)r[0], ["type"] = Py.FromSql(r[1]), ["url"] = url,
                     ["thumbnail"] = File.Exists(Path.Combine(AccountPhotos(account), ThumbName(file))) ? PhotoUrl(account, ThumbName(file), site) : url,
                     ["label"] = r[4] is DBNull ? C(saved?["label"]) ?? "" : Py.Str(Py.FromSql(r[4])),
-                    ["animal"] = r[3] is DBNull ? C(saved?["animal"]) ?? "" : SpeciesName(Py.FromSql(r[3])) ?? "",
+                    ["animal"] = r[3] is DBNull ? C(saved?["animal"]) ?? "" : BoardName(Py.FromSql(r[3])),
                 };
                 if (kills)
                     row["kill"] = r[6] is not DBNull ? (long?)(long)r[6] : long.TryParse((string?)saved?["kill_id"], out var kill) && SavedPage(account, kill) is not null ? kill : (long?)null;

@@ -219,11 +219,8 @@ public sealed partial class State
         return [.. score.Keys.Union(range.Keys).Order().Select(s => (s, score.TryGetValue(s, out var a) ? a[0] : null, range.TryGetValue(s, out var b) ? b[0] : null))];
     }
 
-    /// <summary>The name of a species by id without its antler type ("Mule Deer"): what the hunting statistics group by, the typical and the non-typical rack together.</summary>
-    public string SpeciesLabel(long species) => SpeciesName(species) ?? "#" + species.ToString(CultureInfo.InvariantCulture);
-
-    /// <summary>The name of a board's species, the catalogue's own: a deer has one board for its typical racks and another for its non-typical ones, named apart ("Mule Deer (Typical)", "Mule Deer (Non-Typical)").</summary>
-    public string BoardName(long species) => Lookup(this.species, (JsonNode)species)?["name"] is { } n && Py.IsStr(n) && (string)n! is { Length: > 0 } s ? s : "#" + species.ToString(CultureInfo.InvariantCulture);
+    /// <summary>The name of a species by id, the catalogue's own, for every list and item (boards, statistics, hunts, gallery, harvests): a deer has a typical and a non-typical name ("Mule Deer (Typical)", "Mule Deer (Non-Typical)"), "#id" if unknown. Sentences use <see cref="SpeciesName"/>, the plain one.</summary>
+    public string BoardName(JsonNode? species) => Lookup(this.species, species)?["name"] is { } n && Py.IsStr(n) && (string)n! is { Length: > 0 } s ? s : "#" + Py.Str(species);
 
     /// <summary>The name of a weapon item ("" when unknown).</summary>
     public string WeaponName(JsonNode? weapon) => Lookup(items, weapon)?["name"] is { } w && Py.IsStr(w) ? (string)w! : "";

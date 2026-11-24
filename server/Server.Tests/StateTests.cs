@@ -260,7 +260,7 @@ public class InventoryTests : StateTestBase
             ["location_id"] = C(expedition["location_id"]), ["end_ts"] = C(expedition["end_ts"]),
         });
         var kill = Assert.Single(reply["kills"]!.AsArray())!;
-        Eq("""[1, 1, "Test Deer", 64350, 0, 0]""", T(kill["id"], kill["expeditionId"], kill["speciesName"], kill["weight"],
+        Eq("""[1, 1, "Test Deer (Typical)", 64350, 0, 0]""", T(kill["id"], kill["expeditionId"], kill["speciesName"], kill["weight"],
                                                        kill["gender"], kill["texture"]));
         Eq("""[{"distance": 82500, "weapon_id": 5, "organ": 8388610, "ammo_id": 10}]""", kill["hits"]);
         Eq("[91.25, 70.25, 4.5]", T(kill["kill"]!["trophy_integrity"], kill["kill"]!["harvest_value"], kill["kill"]!["wound_time"]));
@@ -307,7 +307,7 @@ public class InventoryTests : StateTestBase
         Assert.Contains("scoring/antlers_mule.png", page);  // the worked B&C sheet, not the "no data" block
         // and as data: the typical sheet with its five facts, the rows with their total, six abnormal rows and the sums that end in the score
         var sheet = state.PublicSheet(ME, 1)!;
-        Eq("""["score", "Test Deer", 5, 10, "Total", 6, "Total", 168.8186, "Common (M)", 100]""", T(sheet["kind"], sheet["species"], sheet["facts"]![0]!["value"], sheet["rows"]!.AsArray().Count, sheet["rows"]![9]!["label"],
+        Eq("""["score", "Test Deer (Typical)", 5, 10, "Total", 6, "Total", 168.8186, "Common (M)", 100]""", T(sheet["kind"], sheet["species"], sheet["facts"]![0]!["value"], sheet["rows"]!.AsArray().Count, sheet["rows"]![9]!["label"],
             sheet["abnormal"]!.AsArray().Count, sheet["sums"]![5]!["label"], sheet["sums"]![5]!["value"], sheet["type"], sheet["integrity"]));
     }
 
