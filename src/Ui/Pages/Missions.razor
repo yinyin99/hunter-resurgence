@@ -45,7 +45,7 @@
         <section class="box">
             <h4 @onclick="() => closed ^= 1">@L["Mis.Active"] (@active.Count) <span class="caret"></span></h4>
             @if (active.Count == 0) { <p class="notice">@L["Mis.NoActive"]</p> }
-            else if ((closed & 1) == 0) { @Rows(active) }
+            else if ((closed & 1) == 0) { @Rows(active, "star-regular") }
         </section>
     }
     @if (Show("available"))
@@ -53,7 +53,7 @@
         <section class="box">
             <h4 @onclick="() => closed ^= 2">@L["Mis.Available"] (@available.Count) <span class="caret"></span></h4>
             @if (available.Count == 0) { <p class="notice">@L["Mis.NoAvailable"]</p> }
-            else if ((closed & 2) == 0) { @Rows(available) }
+            else if ((closed & 2) == 0) { @Rows(available, "unlock") }
         </section>
     }
     @if (Show("packs"))
@@ -151,11 +151,11 @@ else { <div class="skeleton skeleton-page"></div> }
         Apply();
     }
 
-    RenderFragment Rows(IReadOnlyList<Mission> list) => @<ul class="rows">
+    RenderFragment Rows(IReadOnlyList<Mission> list, string? icon = null) => @<ul class="rows">
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "")">
-                <button type="button" class="row hover-tint" aria-expanded="@(open.Contains(m.Name) ? "true" : "false")" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(m.State switch { "locked" => "lock", "active" => "paw-regular", "completed" => "paw", _ => "unlock" })" /></button>
+                <button type="button" class="row hover-tint" aria-expanded="@(open.Contains(m.Name) ? "true" : "false")" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name<Icon Name="@(icon ?? (m.State switch { "locked" => "lock", "active" => "paw-regular", "completed" => "paw", _ => "unlock" }))" /></button>
                 @if (open.Contains(m.Name))
                 {
                     <div class="more">
