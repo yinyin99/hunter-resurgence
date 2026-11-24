@@ -1,0 +1,5 @@
+#!/bin/sh
+# commit-msg: the title is a Conventional Commits subject of at most 72 characters; git's own "Merge ..." and "Revert ..." titles pass.
+# Same script as the checks job of ci: tools/checks/commit-title.mjs.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+exec node tools/checks/commit-title.mjs "$(head -n 1 "$1")"

@@ -1,0 +1,16 @@
+#!/bin/sh
+# pre-commit: the staged files through tools/checks, the scripts the checks job of ci runs: no big or build-output files, JSON/YAML parse,
+# .resx keys in every language, .cs files formatted. The scripts read the work tree's copy of each staged file.
+cd "$(git rev-parse --show-toplevel)" || exit 1
+files=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -n "$files" ] || exit 0
+run() { # script, files (one per line); never called with no files: a script with no arguments checks every tracked file
+	printf '%s\n' "$2" | tr '\n' '\0' | xargs -0 node "tools/checks/$1.mjs"
+}
+rc=0
+run big-files "$files" || rc=1
+run parse "$files" || rc=1
+run translations "$files" || rc=1
+cs=$(printf '%s\n' "$files" | grep '\.cs$')
+if [ -n "$cs" ]; then run format "$cs" || rc=1; fi
+exit $rc
