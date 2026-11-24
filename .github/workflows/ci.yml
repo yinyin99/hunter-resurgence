@@ -27,6 +27,44 @@ jobs:
             grep -qvE '^docs/|\.md$' <<< "$files" || code=false
           fi
           echo "code=$code" | tee -a "$GITHUB_OUTPUT"
+  # the scripts of tools/checks/ on the pull request's changed files and title (CONTRIBUTING.md, "Commits"). Not skipped by `changes`: the title rule holds for a docs-only pull request too, and there the job takes seconds
+  checks:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v7
+      - id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          # the title is read now, not taken from the event: a re-run after editing the title checks the new one
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR" --jq .title > "$RUNNER_TEMP/title"
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate --jq '.[] | select(.status != "removed") | .filename' > "$RUNNER_TEMP/files"
+          echo "cs=$(grep -q '\.cs$' "$RUNNER_TEMP/files" && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      # each check runs even when an earlier one failed: one run shows every problem
+      - name: Pull request title
+        if: ${{ !cancelled() }}
+        run: node tools/checks/commit-title.mjs --pr "$(cat "$RUNNER_TEMP/title")"
+      - name: Big files
+        if: ${{ !cancelled() }}
+        run: xargs -r -d '\n' node tools/checks/big-files.mjs < "$RUNNER_TEMP/files"
+      - name: Translations
+        if: ${{ !cancelled() }}
+        run: xargs -r -d '\n' node tools/checks/translations.mjs < "$RUNNER_TEMP/files"
+      - name: JSON and YAML
+        if: ${{ !cancelled() }}
+        run: xargs -r -d '\n' node tools/checks/parse.mjs < "$RUNNER_TEMP/files"
+      - if: ${{ !cancelled() && steps.pr.outputs.cs == 'true' }}
+        uses: ./.github/actions/setup-sdk
+      # main is not format-clean (755 findings in 73 of 423 .cs files, #865): until it is, this step shows red in the log and the job stays green. Delete continue-on-error then.
+      - name: Format
+        if: ${{ !cancelled() && steps.pr.outputs.cs == 'true' }}
+        continue-on-error: true
+        run: xargs -r -d '\n' node tools/checks/format.mjs < "$RUNNER_TEMP/files"
   build:
     needs: changes
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}

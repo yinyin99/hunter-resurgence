@@ -7,28 +7,6 @@ namespace Resurgence.Tests.LauncherApp;
 
 public class TranslationsTests
 {
-    /// <summary>Every language resx has exactly the keys of Strings.resx and the same {0}/{1}... placeholders in each string (a mismatch is a FormatException at runtime); {game} tokens are not holes.</summary>
-    [Fact]
-    public void EveryLanguageHasTheKeysAndPlaceholdersOfStrings()
-    {
-        var en = Read(CultureInfo.InvariantCulture);
-        static string Holes(string s) => string.Join(",", Regex.Matches(s, @"\{(\d+)").Select(m => m.Groups[1].Value).Order());
-        static string Plain(string s) => Regex.Replace(s, "{(game|GAME|game_full)}", "x");
-        var bad = new List<string>();
-        foreach (var culture in Others)
-        {
-            var tr = Read(culture);
-            bad.AddRange(en.Keys.Except(tr.Keys).Select(k => $"{culture}: missing {k}"));
-            bad.AddRange(tr.Keys.Except(en.Keys).Select(k => $"{culture}: extra {k}"));
-            foreach (var (k, v) in tr.Where(p => en.ContainsKey(p.Key)))
-            {
-                if (Holes(v) != Holes(en[k])) bad.Add($"{culture}: {k} has placeholders {{{Holes(v)}}}, English has {{{Holes(en[k])}}}");
-                try { string.Format(Plain(v), "", "", "", ""); } catch (FormatException) { bad.Add($"{culture}: {k} is not a valid format string"); }
-            }
-        }
-        Assert.True(bad.Count == 0, "FAIL translations: " + string.Join("; ", bad));
-    }
-
     /// <summary>Keys whose English text is right in every language: names.</summary>
     static readonly HashSet<string> NamesKeptInEnglish = ["App.Name", "Dialog.Tutorial.Msaa", "Board.LaneBandit", "Board.BustThrough", "Store.Sub.57", "Store.Cat.76", "Store.Cat.104", "Store.Cat.111"];
 
