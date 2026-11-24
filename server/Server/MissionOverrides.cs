@@ -74,7 +74,7 @@ public sealed partial class State
         if (parts[0] == "arrive")  // an arrival the title cannot name: the file gives the place's game name, met by that place only
         {
             var rest = parts[1..].Where(p => p != "ordered").ToArray();
-            return rest.Length == 1 && parts.Length - rest.Length <= 2 && parts.Count(p => p == "ordered") <= 1 && TestIn(rest[0], []) is { Check: Check.Place } at
+            return rest.Length == 1 && parts.Length - rest.Length <= 2 && TestIn(rest[0], []) is { Check: Check.Place } at
                 ? new Rule(Kind.Arrive, null, null, parts.Contains("ordered"), string.Join("; ", parts), [at])
                 : throw new InvalidDataException("an arrive rule is \"arrive[; ordered]; place: <NAME>\"");
         }
