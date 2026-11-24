@@ -47,7 +47,7 @@ public sealed class HuntingStatisticsTests : UiContext
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600, 5, 3 * 3600));
 
         Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "total", "5.00 km (3.11 miles)", "on Hunter Resurgence",
-            "Hunt Duration", "37d\u00A015h", "total", "3h", "on Hunter Resurgence"], rows);
+            "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class HuntingStatisticsTests : UiContext
     {
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600));
 
-        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d\u00A015h"], rows);
+        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h"], rows);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class HuntingStatisticsTests : UiContext
     {
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600, null, 3 * 3600));
 
-        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d\u00A015h", "total", "3h", "on Hunter Resurgence"], rows);
+        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
     const string Fixture = """
