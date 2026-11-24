@@ -138,6 +138,19 @@ public class MissionOverrideTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAnOrderedArriveEntryCountsOnlyAfterTheObjectiveBeforeIt()
+    {
+        var catalogue = """{"missions": [{"id": 1, "title": "Test", "dependencies": [], "rewards": [{"text": "10 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}, {"id": 1, "title": "Info message when you are in the pond"}]}]}""";
+        state = New("ordered-arrive.db", catalogue, rules: Rules(("1/1", "arrive; ordered; place: TEST_RESERVE_POND2")));
+        ActivateAll();
+        Hb(Enter("TEST_RESERVE_POND2"));
+        Assert.Equal("", Completed());
+        Hb(Shot(1));
+        Hb(Enter("TEST_RESERVE_POND2"));
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
     public void TestAWeaponNamedWithItsVariantIsThatItemAndTheNameAloneIsAllOfThem()
     {
         var catalogue = Catalogue(["Harvest a Test Deer while whistling", "Harvest a Test Deer while humming"]);
@@ -160,8 +173,8 @@ public class MissionOverrideTests : MissionTestBase
             ("1-0", "harvest", "a key is <mission id>/<objective id>"),
             ("1/0", 5, "a rule is a string of words"),
             ("1/0", "", "the rule is empty"),
-            ("1/0", "arrive", "an arrive rule is \"arrive; place: <NAME>\""),
-            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive; place: <NAME>\""),
+            ("1/0", "arrive", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
+            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
             ("1/0", "start", "\"start\" is no kind of rule the file sets"),
             ("1/0", "harvest; whistling", "\"whistling\" is no condition the server knows"),
             ("1/0", "harvest; weapon: Test Blaster", "no weapon is named \"Test Blaster\""),

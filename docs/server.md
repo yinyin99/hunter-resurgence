@@ -435,7 +435,7 @@ The parts are separated by `;`, names by `, ` and are the catalogue's English na
 | Words | Meaning |
 |---|---|
 | `harvest`, `spot`, `track` | the kind (a track is a clue objective); starts keep the reader's rule |
-| `arrive; place: <NAME>` | the kind of an arrival the title cannot name (an "Info message" when the player is in an area): met when the player enters the place the game names `NAME`, and no other; nothing else may follow |
+| `arrive[; ordered]; place: <NAME>` | the kind of an arrival the title cannot name (an "Info message" when the player is in an area): met when the player enters the place the game names `NAME`, and no other; `ordered` as for the other kinds (a "Then arrive" objective); nothing else may follow |
 | `species: <names>`, `species: any species except <names>` | one name: that species; several: any of them |
 | `male`, `female`, `ordered` | the gender; counts only after every objective before it is finished |
 | `weapon: <names>`, `ammunition: <names>`, `not ammunition: <names>`, `sight: <names>`, `any sight`, `no sight` | the last hit's weapon, ammunition (is one of them; is none of them) and sight (every item of a name: skins and variants; `Name (Variant)` is the one variant of items that share a name) |

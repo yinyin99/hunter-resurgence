@@ -72,8 +72,12 @@ public sealed partial class State
         if (parts.Length == 0)
             throw new InvalidDataException("the rule is empty");
         if (parts[0] == "arrive")  // an arrival the title cannot name: the file gives the place's game name, met by that place only
-            return parts.Length == 2 && TestIn(parts[1], []) is { Check: Check.Place } at ? new Rule(Kind.Arrive, null, null, false, string.Join("; ", parts), [at])
-                : throw new InvalidDataException("an arrive rule is \"arrive; place: <NAME>\"");
+        {
+            var rest = parts[1..].Where(p => p != "ordered").ToArray();
+            return rest.Length == 1 && parts.Length - rest.Length <= 2 && parts.Count(p => p == "ordered") <= 1 && TestIn(rest[0], []) is { Check: Check.Place } at
+                ? new Rule(Kind.Arrive, null, null, parts.Contains("ordered"), string.Join("; ", parts), [at])
+                : throw new InvalidDataException("an arrive rule is \"arrive[; ordered]; place: <NAME>\"");
+        }
         var kind = parts[0] switch
         {
             "harvest" => Kind.Harvest,
