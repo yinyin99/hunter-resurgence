@@ -167,7 +167,7 @@ else { <div class="skeleton skeleton-page"></div> }
                         else
                         {
                             <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
-                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li>@if (m.State == "completed") { <span class="done">✔</span> } else { <input type="checkbox" disabled /> } @o</li> }</ol>
+                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li>@if (m.State == "completed") { <span class="done">✔</span> } else { <span class="done empty"></span> } @o</li> }</ol>
                             @if (m.Reward.Length > 0) { <h5>@L["Mis.Rewards"]</h5><ul class="reward"><li><Icon Name="circle" /> @m.Reward</li></ul> }
                         }
                         @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }
@@ -205,7 +205,7 @@ else { <div class="skeleton skeleton-page"></div> }
 
     async Task Done(Result r)
     {
-        Modal.Alert(r.Ok ? L["Mis.ActivationDone"] + " " + L["Mis.Enjoy"] : L["Mis.Failed"]);
+        if (!r.Ok) Modal.Alert(L["Mis.Failed"]);
         data = await Service.RegularAsync();
         Options();
         Apply();
