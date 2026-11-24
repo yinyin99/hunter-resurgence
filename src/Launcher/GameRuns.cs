@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using Resurgence.Services;
 
 namespace Resurgence.Launcher;
@@ -16,8 +17,25 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
     public int Id { get; init; }
     public void Dispose() => dispose?.Invoke();
 
-    /// <summary>Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.</summary>
-    public static GameProcess? Start(ProcessStartInfo info)
+    /// <summary>
+    /// Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.
+    /// The known exe is started suspended and gets the log lock first (<see cref="LogLock"/>); any other exe starts as it is.
+    /// </summary>
+    public static GameProcess? Start(ProcessStartInfo info, ILogger? log)
+    {
+        var sha = LogLock.Sha256(info.FileName);
+        if (sha != LogLock.Known.ExeSha256)
+        {
+            log?.LogInformation("The game's log lock is not applied, the game starts without it: not the known exe ({Sha256})", sha ?? "unreadable");
+            return Start(info);
+        }
+        if (SuspendedProcess.Create(info) is not { } game) return null;
+        if (LogLock.Known.ApplyAndResume(game, log)) return game.Started();
+        game.Kill();
+        return null;
+    }
+
+    static GameProcess? Start(ProcessStartInfo info)
     {
         try
         {
@@ -50,7 +68,7 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         });
     }
 
-    static bool HasVisibleWindow(uint pid)
+    internal static bool HasVisibleWindow(uint pid)
     {
         var found = false;
         EnumWindows((h, _) =>

@@ -30,7 +30,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
-        GameFiles.ClientRunning, GameProcess.Start, SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
+        GameFiles.ClientRunning, info => GameProcess.Start(info, bridgeLog), SteamProbes.Real, env.Settings.SteamAppId, updater is null ? null : updater.ApplyAndRestart,
         find: GameProcess.Find, history: new RunHistory(RunHistory.PathNextTo(env.PrefsPath)), reports: Reporter(env, cookie), openFolder: LauncherEnv.OpenFolder, showFile: LauncherEnv.ShowFile, appData: GameFiles.AppData,
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock,
