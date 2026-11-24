@@ -5,6 +5,7 @@ using static Resurgence.Server.Tests.Fixtures;
 namespace Resurgence.Server.Tests;
 
 /// <summary>Every species the game can harvest, shot ethically, gets its score and its gm$ from the facts file's tables alone (made-up measurements, no variants file).</summary>
+[Collection("ProcessState")]  // Scoring.Load replaces the process-wide variant table with the facts file's
 public class HarvestScoreTests : StateTestBase
 {
     // families whose female has no antlers: a doe scores nothing, as the game does
@@ -21,6 +22,12 @@ public class HarvestScoreTests : StateTestBase
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
         Scoring.Load(O("""{"game_web_host": "static.test"}"""), null);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        PinScoring();
     }
 
     static JsonObject Antler() => O("""

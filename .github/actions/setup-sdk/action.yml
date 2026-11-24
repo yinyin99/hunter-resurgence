@@ -14,7 +14,7 @@ runs:
         "version=$v" >> $env:GITHUB_OUTPUT
         $g.sdk | Add-Member -NotePropertyName rollForward -NotePropertyValue disable -Force # also when global.json has none
         $g | ConvertTo-Json -Depth 5 -Compress | Set-Content global.json
-    - uses: actions/setup-dotnet@v6
+    - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
         dotnet-version: ${{ steps.sdk.outputs.version }}
         # the NuGet packages, keyed by every packages.lock.json (exact, since restores are locked)

@@ -7,13 +7,6 @@ namespace Resurgence.Server.Tests;
 /// <summary>A community server whose catalogue is made of invented missions, with a few species, weapons, ammunition and sights, and the events of a kill, a spot and a clue.</summary>
 public abstract class MissionTestBase : StateTestBase
 {
-    protected MissionTestBase()
-    {
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
-    }
-
     /// <summary>Missions with these titles: ids 1 to n, each with one objective (id 0) that is its title; `extra` is more JSON of every mission.</summary>
     protected static string Catalogue(IEnumerable<string> titles, string extra = "") =>
         "{\"missions\": [" + string.Join(",", titles.Select((t, i) =>

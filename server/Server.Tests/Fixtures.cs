@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Web;
@@ -6,12 +7,26 @@ using Resurgence.Server;
 
 namespace Resurgence.Server.Tests;
 
+// Test classes run in parallel (one collection per class). A test that sets process-wide state (an environment variable, the current directory, the console,
+// Scoring's config) is in this collection instead: xUnit runs it alone, after all the parallel ones, and it puts back what it changed.
+[CollectionDefinition("ProcessState", DisableParallelization = true)]
+public sealed class ProcessStateCollection;
+
 /// <summary>Player-state test fixtures; fresh nodes on every access (a node has one parent).</summary>
 public static class Fixtures
 {
     public const string BASE = "https://gameserver.test";
     public const string ICON = "https://static.test/icon.png";
     public const long ME = 7;  // the user id of CONNECT's account: the local account of a State built from it
+
+    /// <summary>Scoring's config is process-wide: pinned here once for every test class, so no test reads files and the parallel ones only read it.</summary>
+    [ModuleInitializer]
+    internal static void PinScoring()
+    {
+        Scoring.StaticHost = "static.test";
+        Scoring.OwnLogo = "testlogo";
+        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9), [40] = (15, 450, 1.3), [54] = (25, 180, 1.1) };
+    }
 
     /// <summary>Delete a test folder: the pooled connections to its database files go first, or Windows keeps them locked.</summary>
     public static void DeleteDir(string dir)

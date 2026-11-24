@@ -27,9 +27,6 @@ public class CommunityMissionTests : StateTestBase
                           seasonal: new("season", "SEASON", [], Start, Start.AddDays(10))) { CommunityDivisor = divisor };
         s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
         s.CreateAccount(B, "second");
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };
         return s;
     }
 

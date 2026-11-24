@@ -17,13 +17,6 @@ public class HunterscoreTests : StateTestBase
           {"id": 3, "title": "Five", "category": "weapon", "items": [5]}]}}
         """);
 
-    public HunterscoreTests()
-    {
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };
-    }
-
     State Online() => new(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: Ranks);
 
     long Stored(long account) => state.Store.AccountJson(account)["hunterscore"] is { } h ? Py.L(h) : 0;
