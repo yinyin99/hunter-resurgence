@@ -326,6 +326,43 @@ public sealed partial class State
         public readonly Dictionary<Check, Dictionary<string, int>> Values = [];
     }
 
+    /// <summary>Two rules are the same objective when their words are, whatever the order of their parts (`;`-separated) and the case: an operator's entry may write them in another order.</summary>
+    static bool SameRule(Rule a, Rule b) => Key(a).SequenceEqual(Key(b));
+
+    static IEnumerable<string> Key(Rule r) => r.Text.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(p => p.ToLowerInvariant()).Order(StringComparer.Ordinal);
+
+    /// <summary>Does the arrival at `place` (normalised) meet an arrive rule: the exact place of an operator's `arrive; place: NAME`, else the place the title names, as `MissionEvent` decides.</summary>
+    static bool ArrivesAt(Rule r, string place) => r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? place == Normalise(at.Place!) : PlaceIn(r.Text, place);
+
+    /// <summary>For the ordered objective `i` of an open mission: the last event that finished one of the objectives before it (they are all held), or null when one cannot be told. A harvest or a clue
+    /// is the event today's replay gives it (`judged`); a spot, a place entered or a hunt started is estimated as the first such event that meets it, searched after the one before it when that
+    /// is ordered and from the mission's activation otherwise (the row keeps no event for them); a hunt's event is the one stored before its first.
+    /// ponytail: the first matching event, which is not the one that finished it when an earlier objective of the mission took that event; the candidates then begin a little early.</summary>
+    long? FinishedBefore(Db con, MissionDef m, int i, long since, List<Recorded> events, List<(Objective Objective, long At)> judged)
+    {
+        var floor = since;
+        foreach (var p in m.Objectives[..i])
+        {
+            var from = p.Rule.Ordered ? floor : since;  // one that is not ordered may have been finished before an earlier one
+            long? at = p.Rule.Kind switch
+            {
+                Kind.Harvest or Kind.Track => judged.Where(x => x.Objective.Id == p.Id).Select(x => (long?)x.At).FirstOrDefault(),
+                Kind.Spot => events.FirstOrDefault(e => e.Kind == Kind.Spot && e.Id > from && e.Meets(p.Rule, since))?.Id,
+                Kind.Arrive => con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 101 AND id > ? ORDER BY id", from).Select(r => (Id: (long)r[0], Body: Parse(r[1])))
+                    .Where(e => Py.IsStr(e.Body["direction"]) && (string)e.Body["direction"]! == "enter" && Py.IsStr(e.Body["location_name"])
+                                && ArrivesAt(p.Rule, Normalise((string)e.Body["location_name"]!))).Select(e => (long?)e.Id).FirstOrDefault(),
+                Kind.Start => con.Rows("SELECT first_event, location_id FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) >= ? ORDER BY id", from)
+                    .Select(r => (At: r[0] as long? ?? 0, Lodge: r[1] as long?))
+                    .Where(x => x.Lodge is { } l && lodgeNames.TryGetValue(l, out var names) && names.Any(n => PlaceIn(p.Rule.Text, n))).Select(x => (long?)x.At).FirstOrDefault(),
+                _ => null,
+            };
+            if (at is not { } last)
+                return null;
+            floor = Math.Max(floor, last);
+        }
+        return floor;
+    }
+
     /// <summary>What a kill had where a condition looked, for the stuck report: the weapon, the ammunition, a species or a reserve by name, the other ids and numbers as they are.</summary>
     string Seen(Test t, Kill k, long after, Rule rule)
     {
@@ -404,19 +441,22 @@ public sealed partial class State
                 {
                     var (o, rule) = (m.Objectives[i], m.Objectives[i].Rule);
                     if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && m.Objectives[..i].Any(p => !held.Contains(p.Id)))
-                        || m.Objectives[..i].Any(p => p.Rule.Text == rule.Text && !held.Contains(p.Id))  // an equal one before it that is open takes the event first
-                                                                                                         // ponytail: an ordered objective is listed only when the replay knows the event that finished every one before it (a harvest or a clue); after a spot, a start or a place the
-                                                                                                         // candidates would begin too early. A spot that finished one spot objective is not known either and may count as a refused attempt at another of the same animal.
-                        || (rule.Ordered && m.Objectives[..i].Any(p => !IsReplayed(m, p.Id) || !judged.Value.Any(x => x.Objective.Id == p.Id))))
+                        || m.Objectives[..i].Any(p => SameRule(p.Rule, rule) && !held.Contains(p.Id)))  // an equal one before it that is open takes the event first
                         continue;
+                    var since = mark.Since ?? mark.Seen;  // a row of before schema 30 has no activation event: the last one its progress is not owed from
+                    var floor = since;
+                    if (rule.Ordered)
+                    {
+                        if (FinishedBefore(con, m, i, since, events.Value, judged.Value) is not { } last)
+                            continue;  // an event that finished one before it is not told: the candidates would begin too early
+                        floor = last;
+                    }
                     if (!open.TryGetValue((id, o.Id), out var s))
                         open[(id, o.Id)] = s = new(m, o);
                     s.Holders.Add(handle.Value);
                     holders.Add(account);
-                    var since = mark.Since ?? mark.Seen;  // a row of before schema 30 has no activation event: the last one its progress is not owed from
                     // the events that could have finished it: after the mission's activation (a single-hunt mission: an earlier hunt's event only when a condition refused it), when ordered after the one before it finished, and none that
                     // another objective took (an event finishes one objective); the one an open objective is met by now stays: that is the bug the report shows as "no condition refused"
-                    var floor = Math.Max(since, rule.Ordered ? judged.Value.Where(x => m.Objectives[..i].Any(p => p.Id == x.Objective.Id)).Select(x => x.At).DefaultIfEmpty(0).Max() : 0);
                     var taken = judged.Value.Where(x => x.Objective.Id != o.Id).Select(x => x.At).ToHashSet();
                     var tests = rule.Tests ?? [];
                     foreach (var e in events.Value.Where(e => e.Id > floor && !taken.Contains(e.Id) && e.Ts >= from && e.Kind == rule.Kind && (rule.Species is null || rule.Species == e.Species) && (rule.Gender is null || rule.Gender == e.Gender)

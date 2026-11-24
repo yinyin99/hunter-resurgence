@@ -305,7 +305,7 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles and `objectives_done` (one flag per objective: the account holds it, all for a completed one), `needs` (the titles of the missions it depends on that are not completed yet: why a `locked` one is locked; `[]` otherwise), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// objective titles and `objectives_done` (one flag per objective: the account holds it, all for a completed one), `needs` (the titles of the missions it depends on that are not completed yet, `#<id>` for one with no definition: why a `locked` one is locked; a restored active or completed mission may carry some too), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
     /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
     public JsonObject? WebMissions(long account)
     {
@@ -331,8 +331,7 @@ public sealed partial class State
                 ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
                 // beside `objectives` (titles), not inside it: a launcher of an earlier release reads `objectives` as strings
                 ["objectives_done"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)(rows.TryGetValue(id, out var row) && (row.State == 3 || row.Done.Contains(o.Id))))]),
-                // ponytail: a dependency without a definition is left out (none in the recorded catalogue), so such a mission would show as locked with no reason
-                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => missions.ContainsKey(n) && !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)missions[n].Title)]),
+                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)(missions.TryGetValue(n, out var dep) ? dep.Title : $"#{n}"))]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
                 ["reserve"] = First(d["reserves"], i => reserves.GetValueOrDefault(i)), ["species"] = First(d["species"], i => Named(species, i)),
                 ["weapon"] = First(d["weapons"], i => Named(items, i)),
@@ -371,7 +370,7 @@ public sealed partial class State
         }
         var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
         Advance(con, kind, (rule, after) =>
-            kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && PlaceIn(rule.Text, place)
+            kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && ArrivesAt(rule, place)
             : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill, after)),
             u =>
             {

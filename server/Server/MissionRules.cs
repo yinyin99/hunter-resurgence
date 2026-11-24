@@ -28,6 +28,22 @@ public sealed partial class State
 
     string ItemName(long id) => items.TryGetValue(id, out var item) && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
 
+    /// <summary>The items of a condition by name. A name is printed bare only when the set holds every item of that name and category; otherwise each held item that has a variant is
+    /// `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>), so the printed words read back to the same set.</summary>
+    string ItemNames(IEnumerable<long> ids)
+    {
+        var held = ids.ToHashSet();
+        static long? CatOf(JsonNode item) => Py.IsNum(item["cat"]) ? Py.L(item["cat"]) : null;
+        string Label(long id)
+        {
+            if (!items.TryGetValue(id, out var item) || !Py.IsStr(item["variationname"]))
+                return ItemName(id);
+            var whole = items.All(o => o.Key == id || held.Contains(o.Key) || ItemName(o.Key) != ItemName(id) || CatOf(o.Value) != CatOf(item));
+            return whole ? ItemName(id) : $"{ItemName(id)} ({(string)item["variationname"]!})";
+        }
+        return Names(held.Select(Label));
+    }
+
     string SpeciesName(long id) => species.TryGetValue(id, out var s) && Py.IsStr(s["name"]) ? ((string)s["name"]!).Split(" (")[0] : "species " + id;
 
     /// <summary>Species by name; more than half of them are `any species except` the others.</summary>
@@ -51,10 +67,10 @@ public sealed partial class State
     /// <summary>One condition in words, with names instead of ids.</summary>
     string Describe(Test t) => t.Check switch
     {
-        Check.Weapon => "weapon: " + Names(t.Ids!.Select(ItemName)),
-        Check.Ammo => "ammunition: " + Names(t.Ids!.Select(ItemName)),
-        Check.NotAmmo => "not ammunition: " + Names(t.Ids!.Select(ItemName)),
-        Check.Scope => t.Ids is null ? "any sight" : "sight: " + Names(t.Ids.Select(ItemName)),
+        Check.Weapon => "weapon: " + ItemNames(t.Ids!),
+        Check.Ammo => "ammunition: " + ItemNames(t.Ids!),
+        Check.NotAmmo => "not ammunition: " + ItemNames(t.Ids!),
+        Check.Scope => t.Ids is null ? "any sight" : "sight: " + ItemNames(t.Ids),
         Check.NoScope => "no sight",
         Check.Permitted => "permitted",
         Check.OneShot => "one shot",

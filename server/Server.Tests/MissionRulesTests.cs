@@ -48,6 +48,22 @@ public class MissionRulesTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheRuleOfATitleThatNamesAShorterWeaponPrintsTheLongerNamesToo()
+    {
+        var lines = New("longer.db", Missions(Mission(1, "Harvest a Test Deer with the Test Revolver"), Mission(2, "Harvest a Test Deer with any Test Recurve Bow"),
+            Mission(3, "Harvest a Test Deer with the Test Bolt Rifle"), Mission(4, "Harvest a Test Deer with the Test Heavy Recurve Bow"), Mission(5, "Harvest a Test Deer with the Test Magnum Revolver")))
+            .MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:").ToList();
+        Assert.Equal(
+        [
+            "mission 1 objective 0: Harvest a Test Deer with the Test Revolver => harvest; species: Test Deer; weapon: Test Magnum Revolver, Test Revolver",
+            "mission 2 objective 0: Harvest a Test Deer with any Test Recurve Bow => harvest; species: Test Deer; weapon: Test Heavy Recurve Bow, Test Recurve Bow",
+            "mission 3 objective 0: Harvest a Test Deer with the Test Bolt Rifle => harvest; species: Test Deer; weapon: Test Bolt Rifle, Test Maker Bolt Rifle",
+            "mission 4 objective 0: Harvest a Test Deer with the Test Heavy Recurve Bow => harvest; species: Test Deer; weapon: Test Heavy Recurve Bow",  // the longer name stays exact
+            "mission 5 objective 0: Harvest a Test Deer with the Test Magnum Revolver => harvest; species: Test Deer; weapon: Test Magnum Revolver",
+        ], lines);
+    }
+
+    [Fact]
     public void TestADescriptionThatNamesAnItemNoObjectiveAcceptsWhileOthersAreNamedIsWarned()
     {
         var w = Warnings("desc.db", Mission(1, "Harvest a Test Deer with the Test Carbine", ", \"desc\": \"Use the Test Shotgun.\""), Mission(2, "Harvest a Test Deer with the Test Carbine", ", \"desc\": \"Use the Test Carbine.\""),
@@ -73,5 +89,31 @@ public class MissionRulesTests : MissionTestBase
         Assert.Equal(["warning never met: mission 1 objective 0: a named animal without a place",
                       "warning never met: mission 2 objective 0: distance: >=200 <=100 m: the lower bound is above the upper one"], w);
         Assert.DoesNotContain(New("clean.db", Missions(Mission(1, "Harvest a Test Deer with the Test Carbine", ", \"weapons\": [50], \"desc\": \"Test Carbine\", \"species\": [1]"))).MissionCoverage(), l => l.StartsWith("warning", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void TestAVariantWeaponIsPrintedWithItsVariantAndThePrintedRuleReadsBackToTheSameLine()
+    {
+        var catalogue = Missions(Mission(1, "Harvest a Test Deer"), Mission(2, "Harvest a Test Deer"));
+        List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
+        static string Rule(string line) => line[(line.IndexOf("=> ", StringComparison.Ordinal) + 3)..];
+        var first = Print(New("variant1.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject
+        {
+            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
+        }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", first[0]);
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol", first[1]);  // both variants: the name alone
+        Assert.Equal(first, Print(New("variant2.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = Rule(first[0]), ["2/0"] = Rule(first[1]) })));
+    }
+
+    [Fact]
+    public void TestAVariantWeaponAmongOtherWeaponsKeepsItsVariantWhenThePrintedRuleReadsBack()
+    {
+        var catalogue = Missions(Mission(1, "Harvest a Test Deer"));
+        List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
+        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Test Carbine" }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Wolfsbane)", first[0]);  // not the bare name: that would be both variants
+        var again = New("variant4.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = first[0][(first[0].IndexOf("=> ", StringComparison.Ordinal) + 3)..] });
+        Assert.Equal(first, Print(again));
     }
 }
