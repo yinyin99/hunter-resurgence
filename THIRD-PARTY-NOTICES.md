@@ -33,4 +33,4 @@ The punch-through server's image (`server/natpt`) is built from RakNet (commit `
 
 The server's tests also use `xunit.v3` (Apache-2.0) and `Microsoft.NET.Test.Sdk` (MIT); they are not shipped.
 
-Font Awesome Free 6.7.2 by [@fontawesome](https://fontawesome.com), copyright 2024 Fonticons, Inc.; the icons are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); they were cut out of the SVG files unchanged except for being merged into one sprite.
+Font Awesome Free 6.7.2 by [@fontawesome](https://fontawesome.com), copyright 2024 Fonticons, Inc.; the icons are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); they were cut out of the SVG files unchanged except for being merged into one sprite, except `paw-regular`, which is the solid paw redrawn as an outline.
