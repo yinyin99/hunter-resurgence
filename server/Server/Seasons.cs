@@ -72,8 +72,9 @@ public sealed partial class State
         return found;
     }
 
-    /// <summary>The board species of a restored trophy row and whether that is a guess. The original's trophy rows give a non-typical rack as its typical species with nothing else to tell it by; a typical rack is scored
-    /// up to the species' `max_score` at most (<see cref="Scoring.Variants"/>), so a score above it is the species' non-typical variant (the species + 100, where it has a row). At or above that variant's `min_score` a rack
+    /// <summary>The board species of a restored trophy row and whether that is a guess. The original's trophy rows give a non-typical rack as its typical species with nothing else to tell it by; a typical rack is rated
+    /// up to the species' `max_score` (<see cref="Scoring.Variants"/>), the top of its trophy-rating range, not a hard cap: the rule takes a score above it as the species' non-typical variant (the species + 100, where it has a row)
+    /// because it rests on the check against labelled racks of the original, where no typical rack was routed wrongly. At or above that variant's `min_score` a rack
     /// could be either: it stays typical and is unsure (counted, <see cref="ComputeBoards"/>); below it, it is typical for sure. A species with no variant is its own board.</summary>
     static (long Board, bool Unsure) RestoredBoard(long species, double score) =>
         species is >= 0 and < 100 && Scoring.Variants.TryGetValue((int)species, out var typical) && Scoring.Variants.TryGetValue((int)species + 100, out var nonTypical)

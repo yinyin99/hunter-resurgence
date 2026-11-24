@@ -168,11 +168,11 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         // the pinned bounds: the species' typical racks score up to 260, its non-typical ones (101) from 70. Above 260 a rack is non-typical for sure, from 70 to 260 it could be either, below 70 it is typical for sure
         Claimed(40, "hotel", [(1, Deer, 300, kill), (2, Deer, 200, kill)], [(3, Deer, 40, kill)]);
         Claimed(41, "india", [(4, Deer, 250, kill)], []);
-        Restored(42, "juliet", Deer, "290.0000", 90000, kill);  // saved bests stay as saved: the original's have typical rows only, so this one is not moved
+        Restored(42, "juliet", Deer, "255.0000", 90000, kill);  // saved bests stay as saved: the original's have typical rows only, none above the species' max_score, so this one (below 260) is not moved
         foreach (var season in (long[])[0, 1])
         {
             Assert.Equal("hotel:300", await Board("score", NonTypical, season));
-            Assert.Equal("juliet:290 india:250 hotel:200", await Board("score", Deer, season));
+            Assert.Equal("juliet:255 india:250 hotel:200", await Board("score", Deer, season));
         }
         Assert.Equal("", await Board("score", NonTypical, 2));
         Assert.Equal("", await Board("range", NonTypical, 0));  // a restored row has no shot distance
