@@ -268,6 +268,31 @@ public class DailyMissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheSequenceOfTheDaysMissionCountsOnlyTheHarvestsSinceTheDayBeganEvenWhenTheEarlierOneIsWithinTheTime()
+    {
+        state = New("sequence.db", facts: Facts.Parse("""
+            {"format": 1,
+             "reserves": [{"id": 2, "name": "Test Reserve", "species": [1]}],
+             "daily_missions": {
+              "cycle": [1],
+              "difficulties": [{"id": 1, "title": "Easy", "alias": "EASY", "cooldown": 30, "color": "green", "reward_id": 130, "reward": 100}],
+              "templates": [{"id": 21, "difficulty": 1, "title": "Harvest two Test Deer", "giver": {"id": 15, "alias": "TEST_GIVER"}, "objectives": ["Harvest two Test Deer within 5 minutes"]}]}}
+            """));
+        var begun = (D0.DayNumber - DateOnly.FromDateTime(DateTime.UnixEpoch).DayNumber) * 86400.0;
+        double at = begun + 60;
+        state.Clock = () => at;
+        SetDay(0);
+        at = begun - 60;
+        Hb(FemaleKill());  // a minute before the day began, in the same hunt
+        at = begun + 60;
+        Hb(FemaleKill());  // two minutes after the first: within the time, but the first is not of today
+        Assert.Equal([false], Completed());
+        at = begun + 120;
+        Hb(FemaleKill());
+        Assert.Equal([true], Completed());
+    }
+
+    [Fact]
     public void TestTheClueCountOfTheDaysMissionAddsUpOnlyTheCluesFoundSinceTheDayBegan()
     {
         SetDay(15);  // the hard mission: two tracks of a deer, then a spot

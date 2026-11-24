@@ -410,5 +410,24 @@ public class MissionConditionTests : MissionTestBase
         Assert.Equal("1", Completed(of: strict));
     }
 
+    [Fact]
+    public void TestAHarvestOnlyConditionInATrackEntryOfTheOperatorsFileIsRefusedAtTheStart()
+    {
+        var catalogue = Catalogue(["Find a Test Deer track"]);
+        foreach (var rule in new[] { "track; species: Test Deer; clues: footprints x1; weapon: Test Carbine", "track; species: Test Deer; clues: footprints x1; one shot" })
+            Assert.StartsWith("mission_rules.json \"1/0\": a track rule cannot check \"" + rule[(rule.LastIndexOf("; ", StringComparison.Ordinal) + 2)..] + "\"",
+                Assert.Throws<InvalidDataException>(() => New("track.db", catalogue, rules: new JsonObject { ["1/0"] = rule })).Message);
+    }
+
+    [Fact]
+    public void TestAClueTitleOfOneDifferentAnimalGivesTheRuleTheOperatorsFileAcceptsToo()
+    {
+        var catalogue = Catalogue(["ID 1 different Test Deer tracks"]);
+        var line = New("one.db", catalogue).MissionCoverage(rules: true).Single(l => l.StartsWith("mission 1 objective 0:", StringComparison.Ordinal) && l.Contains(" => ", StringComparison.Ordinal));
+        Assert.Equal("mission 1 objective 0: ID 1 different Test Deer tracks => track; species: Test Deer; clues: footprints x1", line);
+        var written = New("one2.db", catalogue, rules: new JsonObject { ["1/0"] = line[(line.IndexOf("=> ", StringComparison.Ordinal) + 3)..] });  // the file takes the printed rule
+        Assert.Contains("mission 1 objective 0 (override): ID 1 different Test Deer tracks => track; species: Test Deer; clues: footprints x1", written.MissionCoverage(rules: true));
+    }
+
     static byte[] Q(string form) => Encoding.ASCII.GetBytes(form);
 }
