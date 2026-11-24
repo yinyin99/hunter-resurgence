@@ -222,7 +222,7 @@ public sealed partial class State
     public string SpeciesLabel(long species) => SpeciesName(species) ?? "#" + species.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>The name of a board's species, the catalogue's own: a deer has one board for its typical racks and another for its non-typical ones, named apart ("Mule Deer (Typical)", "Mule Deer (Non-Typical)").</summary>
-    public string BoardName(long species) => Lookup(this.species, (JsonNode)species)?["name"] is { } n && Py.IsStr(n) && (string)n! is { Length: > 0 } s ? s : SpeciesLabel(species);
+    public string BoardName(long species) => Lookup(this.species, (JsonNode)species)?["name"] is { } n && Py.IsStr(n) && (string)n! is { Length: > 0 } s ? s : "#" + species.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>The name of a weapon item ("" when unknown).</summary>
     public string WeaponName(JsonNode? weapon) => Lookup(items, weapon)?["name"] is { } w && Py.IsStr(w) ? (string)w! : "";
