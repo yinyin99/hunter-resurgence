@@ -9,7 +9,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
     static readonly long Second = Store.SecondSeasonStart;  // 2026-11-12 00:00:00 UTC
-    const long Deer = 1, Rabbit = 17, DeerNonTypical = 101;
+    const long Deer = 1, Rabbit = 17, DeerNonTypical = 101, NonTypical = DeerNonTypical;
     Loopback server = null!;
 
     public async ValueTask InitializeAsync()
@@ -159,6 +159,47 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         using (var con = state.Store.Open(42))
             con.Exec("UPDATE trophies SET node = json_set(node, '$.hidden', json('true')) WHERE account_id = $a");
         Assert.Equal("hotel:12", await Board("score", Rabbit, 1));
+    }
+
+    [Fact]
+    public async Task TestARestoredNonTypicalRackRanksOnItsOwnBoardAndOneThatCannotBeToldStaysTypicalAndIsCounted()
+    {
+        var kill = new DateTimeOffset(2025, 5, 21, 12, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+        // the pinned bounds: the species' typical racks score up to 260, its non-typical ones (101) from 70. Above 260 a rack is non-typical for sure, from 70 to 260 it could be either, below 70 it is typical for sure
+        Claimed(40, "hotel", [(1, Deer, 300, kill), (2, Deer, 200, kill)], [(3, Deer, 40, kill)]);
+        Claimed(41, "india", [(4, Deer, 250, kill)], []);
+        Restored(42, "juliet", Deer, "290.0000", 90000, kill);  // saved bests stay as saved: the original's have typical rows only, so this one is not moved
+        foreach (var season in (long[])[0, 1])
+        {
+            Assert.Equal("hotel:300", await Board("score", NonTypical, season));
+            Assert.Equal("juliet:290 india:250 hotel:200", await Board("score", Deer, season));
+        }
+        Assert.Equal("", await Board("score", NonTypical, 2));
+        Assert.Equal("", await Board("range", NonTypical, 0));  // a restored row has no shot distance
+        var top = (await Json($"/leaderboards/score/{NonTypical}?season=1"))["rows"]![0]!;
+        Eq("[1, 0, 300.0]", T(top["rank"], top["kill"], top["value"]));  // kill 0: a restored one
+        // the two that could be either are counted (hotel's 200 and india's 250), not the sure ones nor the saved bests
+        Assert.Equal(2, state.UnsureRestored);
+    }
+
+    [Fact]
+    public async Task TestAServerHarvestOfEachKindIsOnItsOwnBoardInEverySeasonAndAllTime()
+    {
+        state.CreateAccount(50, "kilo");
+        Harvest(50, 1, Deer, "150", Second + 10, cm: 1000);
+        Harvest(50, 2, NonTypical, "300", Second + 20, cm: 2000);
+        Assert.NotNull(state.StartSeason(Second + 1000));
+        Harvest(50, 3, Deer, "160", Second + 1000, cm: 1500);
+        Harvest(50, 4, NonTypical, "310", Second + 1010, cm: 2500);
+        foreach (var (season, typical, nonTypical, typicalRange, nonTypicalRange) in new (long, string, string, string, string)[]
+                 { (1, "", "", "", ""), (2, "kilo:150", "kilo:300", "kilo:10", "kilo:20"), (3, "kilo:160", "kilo:310", "kilo:15", "kilo:25"), (0, "kilo:160", "kilo:310", "kilo:15", "kilo:25") })
+        {
+            Assert.Equal(typical, await Board("score", Deer, season));
+            Assert.Equal(nonTypical, await Board("score", NonTypical, season));
+            Assert.Equal(typicalRange, await Board("range", Deer, season));
+            Assert.Equal(nonTypicalRange, await Board("range", NonTypical, season));
+        }
+        Assert.Equal(0, state.UnsureRestored);  // no restored trophy
     }
 
     [Fact]
