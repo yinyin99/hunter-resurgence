@@ -280,7 +280,7 @@ public sealed class LiveSiteTests : UiContext
     ServerProfileService RealRanks() => new(new HttpClient(new Server("""{"handle":"Fox","hunterscore":5,"rank":3}""", "{}", ranks: Ranks)) { BaseAddress = new Uri("http://server.test") },
         new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
 
-    /// <summary>The counts are written with the culture's thousands separator: pinned (with the UI culture, which picks the labels) to one that has it, so a machine without one cannot hide a missing format.</summary>
+    /// <summary>Pinned (with the UI culture, which picks the labels) to en-US, so the English labels and plain integers do not depend on the machine's culture.</summary>
     static void InEnglish(Action check)
     {
         var before = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
