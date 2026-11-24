@@ -55,7 +55,7 @@ public sealed class MissionsPageTests : UiContext
         """;
 
     [Fact]
-    public void ALockedRowShowsTheClosedPadlockAnAvailableOneTheOpenPadlockAndAnActiveOneAnEmptyPawAndACompletedOneASolidPaw()
+    public void OnlyALockedRowShowsAnIconTheClosedPadlock()
     {
         Services.AddSingleton(new HostMode { Live = true });
         Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
@@ -64,11 +64,27 @@ public sealed class MissionsPageTests : UiContext
         var cut = Render<Missions>();
         cut.Find("button.row.pack").Click();
 
-        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")!.GetAttribute("href")!.Split('#')[1]);
-        Assert.Equal(["paw-regular", "unlock", "lock", "paw"], icons);
-        // outside the packs a section has its own icon on every row: the empty star for Active, the open padlock for Available
-        var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")!.GetAttribute("href")!.Split('#')[1]);
-        Assert.Equal(["star-regular", "unlock"], sections);
+        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
+        Assert.Equal(["none", "none", "lock", "none"], icons);
+        // outside the packs the rows are the same: no icon for Active or Available
+        var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
+        Assert.Equal(["none", "none"], sections);
+    }
+
+    [Fact]
+    public void AnActiveMissionTicksEachDoneObjectiveAndKeepsTheEmptyBoxForTheOthers()
+    {
+        var body = Server.Replace("""{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": []""",
+            """{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": ["A", "B", "C"], "objectives_done": [true, true, false]""");
+        Services.AddSingleton(new HostMode { Live = true });
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(body)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
+
+        var cut = Render<Missions>();
+        cut.Find("section.box > ul.rows button.row").Click();
+
+        Assert.Equal(2, cut.FindAll("ol.goals span.done:not(.empty)").Count);
+        Assert.Single(cut.FindAll("ol.goals span.empty"));
     }
 
     [Fact]
@@ -86,6 +102,7 @@ public sealed class MissionsPageTests : UiContext
         cut.Find("button.row.pack").Click();
         cut.FindAll("li[data-pack] .more ul.rows button.row")[2].Click();
         Assert.Equal(["Test Two"], cut.FindAll("li.open ul.rows li.open .more ul li").Select(l => l.TextContent));
+        Assert.Contains("Test Three", cut.Find("li.open ul.rows li.open .more p.unlock").TextContent);
         Assert.Empty(cut.FindAll("li.open ul.rows li.open .more button.btn"));
         // the select-all entry and the one name each of the three filters has
         Assert.Equal([2, 2, 2], cut.FindAll("ul.pop").Select(u => u.QuerySelectorAll("li").Length));

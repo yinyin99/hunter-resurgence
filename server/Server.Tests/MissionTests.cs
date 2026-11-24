@@ -78,6 +78,8 @@ public class MissionTests : StateTestBase
 
     double Gm(long account = ME) => state.Wallet(account)["gm"]!.GetValue<double>();
 
+    JsonNode? WebObjectives(int mission) => state.WebMissions(ME)!["missions"]!.AsArray().Single(m => (long)m!["id"]! == mission)!["objectives_done"];
+
     string Objectives(int mission, long account = ME) => Ids(Missions(account)["states"]![mission.ToString()]!["objectives"]);
 
     [Fact]
@@ -146,6 +148,7 @@ public class MissionTests : StateTestBase
         Hb();
         Hb(Spawn(72), Track(72));
         Assert.Equal("0", Objectives(2));
+        Eq("[true, false]", WebObjectives(2));  // the page ticks the finished one
         var next = Hb();  // the objective toast: a mission that is not finished pays nothing
         Assert.Equal("3", Kinds(next));
         Assert.Equal("Mission \"Track and Harvest\", objective \"Locate Test Deer tracks.\" completed.", (string)Update(next, 3)!["text"]!);
@@ -158,6 +161,7 @@ public class MissionTests : StateTestBase
         Assert.True(Gm() >= gm + 250);
         Assert.Equal(["em$ reward"], state.WalletPage(ME, "em", 0).Select(r => (string)r!["summary"]!));
         Assert.Equal("1,2", Ids(Missions()["completed"]));
+        Eq("[true, true]", WebObjectives(2));  // a completed mission has all done
     }
 
     [Fact]

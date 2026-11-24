@@ -459,7 +459,7 @@ public static class AccountApi
                 ? Refuse(401, "signed_out", "Sign in first.")
                 : state.WebMissions(account) is { } missions ? Json(200, missions) : Refuse(404, "invalid", "This server has no missions."))
             .WithName("AccountMissions").WithSummary("The player's own missions page")
-            .WithDescription("`{missions: [{id, title, desc, state: active|available|completed|locked, objectives, reward, reserve, species, weapon}], groups: [{id, title, desc, favourite, missions}], completed, "
+            .WithDescription("`{missions: [{id, title, desc, state: active|available|completed|locked, objectives, objectives_done, reward, reserve, species, weapon}], groups: [{id, title, desc, favourite, missions}], completed, "
                              + "auto_mission_activate, activate_only_favourite, hide_completed_favourite}`; 404 `invalid` when the catalogue has no missions.")
             .Produces(200, contentType: "application/json");
 

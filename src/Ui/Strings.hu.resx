@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>holnap</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Leírás</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Feladatok</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Zárolva. Előbb teljesítsd:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>A(z) {0} feloldásához teljesítened kell a következő küldetéseket:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Vadászterületek</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Jutalmak</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inaktív</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Csak a kedvenc küldetések automatikus aktiválása</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Küldetéseidet díj ellenében alaphelyzetbe állíthatod az áruházban.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Irány az áruház</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Teljesített küldetések: {0} / {1}, teljesített küldetéscsomagok: {2} / {3}.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Teljesítettél {0} küldetést {1}-ből, és összesen {2} küldetéscsomagot {3}-ból.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Szűrők</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Megjelenítés:</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Mind</value></data>

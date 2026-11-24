@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>imorgon</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivning</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Låst. Slutför först:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Du måste slutföra följande uppdrag för att låsa upp {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Jaktområden</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Belöningar</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inaktivt</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivera bara favorituppdrag automatiskt</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan återställa dina uppdrag mot en avgift i butiken.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Gå till butiken</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Du har slutfört {0} av {1} uppdrag och {2} av {3} uppdragspaket.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Du har slutfört {0} av {1} uppdrag och totalt {2} av {3} uppdragspaket.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filter</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrera in</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Alla</value></data>

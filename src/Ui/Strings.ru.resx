@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>завтра</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Описание</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Задачи</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Заблокировано. Сначала выполните:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Чтобы разблокировать миссию {0}, нужно выполнить следующие миссии:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Охотугодья</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Награды</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Неактивно</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Автоматически активировать только избранные миссии</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Вы можете сбросить миссии за плату в магазине.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Перейти в магазин</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Вы выполнили миссий: {0} из {1} и серий миссий: {2} из {3}.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Вы выполнили {0} из {1} миссий и всего {2} из {3} наборов миссий.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Фильтры</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Показывать</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Все</value></data>

@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>demain</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Description</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Objectifs</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Verrouillée. Terminez d'abord :</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Vous devez terminer les missions suivantes pour débloquer {0} :</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Réserves</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Récompenses</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inactive</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activer automatiquement uniquement les missions favorites</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Vous pouvez réinitialiser vos missions en échange d’une certaine somme dans la boutique.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Se rendre dans la boutique</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Missions accomplies : {0} sur {1}. Packs de missions accomplis : {2} sur {3}.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Vous avez terminé {0} missions sur {1} et un total de {2} packs de missions sur {3}.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtres</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrer sur</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Toutes</value></data>

@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>i morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivelse</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Låst. Gennemfør først:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Du skal gennemføre følgende missioner for at låse {0} op:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Jagtområder</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Belønninger</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inaktiv</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivér kun favoritmissioner automatisk</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan nulstille dine missioner mod et gebyr i butikken.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Gå til butikken</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Du har gennemført {0} af {1} missioner og {2} af {3} missionspakker.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Du har gennemført {0} af {1} missioner og i alt {2} af {3} missionspakker.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtre</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Vis kun</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Alle</value></data>

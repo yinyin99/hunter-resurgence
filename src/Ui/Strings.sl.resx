@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutri</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Naloge</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Zaklenjeno. Najprej dokončaj:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Za odklenitev misije {0} morate dokončati naslednje misije:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervati</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Nagrade</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Neaktivno</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Samodejno aktiviraj samo priljubljene misije</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Misije lahko proti plačilu ponastaviš v trgovini.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>V trgovino</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Dokončane misije: {0} od {1}; dokončani paketi misij: {2} od {3}.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Dokončali ste {0} od {1} misij in skupaj {2} od {3} paketov misij.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtri</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Vključi</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Vse</value></data>

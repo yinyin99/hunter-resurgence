@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>amanhã</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Descrição</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Objetivos</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Bloqueada. Conclua primeiro:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Tem de concluir as seguintes missões para desbloquear {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Reservas</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Recompensas</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inativa</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Ativar automaticamente apenas as missões favoritas</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Podes repor as tuas missões mediante o pagamento de uma taxa na loja.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Ir para a loja</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Concluíste {0} de {1} missões e {2} de {3} pacotes de missões.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Concluiu {0} de {1} missões e um total de {2} de {3} pacotes de missões.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtros</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrar</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Todas</value></data>

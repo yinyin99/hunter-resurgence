@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>yarın</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Açıklama</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Hedefler</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Kilitli. Önce şunu tamamlayın:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>{0} görevinin kilidini açmak için şu görevleri tamamlamalısınız:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervler</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Ödüller</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Etkin değil</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Yalnızca favori görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Görevlerinizi mağazadan ücret karşılığında sıfırlayabilirsiniz.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Mağazaya git</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>{1} görevden {0} tanesini ve {3} görev paketinden {2} tanesini tamamladınız.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>{1} görevden {0} tanesini ve toplamda {3} görev paketinden {2} tanesini tamamladınız.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtreler</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrele</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Tümü</value></data>

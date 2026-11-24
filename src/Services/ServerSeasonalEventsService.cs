@@ -37,7 +37,7 @@ public sealed class ServerSeasonalEventsService(HttpClient http, ServerCookie co
                 return new(p.Title ?? p.Name, DateTimeOffset.FromUnixTimeSeconds(p.Start), DateTimeOffset.FromUnixTimeSeconds(p.End),
                     [.. (p.Community ?? []).Select(c => new CommunityMission(c.Title, c.Progress, c.Target, c.Gm, c.Em))],
                     [.. (p.Contributors ?? []).Select(c => new Contributor(c.Handle, c.Count))],
-                    [.. (p.Missions ?? []).Select(m => new EventMission(new(m.Id, m.Title, m.State, "", [.. m.Objectives.Select(o => o.Title)], m.Reward, "", "", ""), m.Objectives.Count(o => o.Done)))],
+                    [.. (p.Missions ?? []).Select(m => new EventMission(new(m.Id, m.Title, m.State, "", [.. m.Objectives.Select(o => new MissionObjective(o.Title, o.Done))], m.Reward, "", "", ""), m.Objectives.Count(o => o.Done)))],
                     [.. (p.Items ?? []).Select(i => new EventItem(i.Id, i.Name))]);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)

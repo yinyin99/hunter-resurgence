@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Lukittu. Suorita ensin:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Sinun on suoritettava seuraavat tehtävät avataksesi tehtävän {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Alueet</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Palkinnot</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Passiivinen</value></data>
@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Siirry kauppaan</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Olet suorittanut {0}/{1} tehtävää ja {2}/{3} tehtäväpakettia.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Olet suorittanut {0} / {1} tehtävää ja yhteensä {2} / {3} tehtäväpakettia.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Suodattimet</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Näytä</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Kaikki</value></data>
