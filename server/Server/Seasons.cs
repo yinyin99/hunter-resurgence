@@ -11,14 +11,16 @@ public sealed partial class State
     /// <summary>The first season that holds this server's harvests; an earlier time (a harvest made before the first day) belongs here too, since Season 1 is the restored ones only.</summary>
     public const long FirstServerSeason = 2;
 
-    /// <summary>A kill that may rank: `Rec` is its personal-best record (`{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score`, `species}`), `Kill` its id here (0: restored).</summary>
-    sealed record Cand(long Species, double Score, double Mm, JsonObject Rec, long Ts, long Season, long Kill);
+    /// <summary>A kill that may rank: `Rec` is its personal-best record (`{distance` in mm, `confirm_ts`, `weapon_id`, `animal_id`, `gender`, `texture`, `score`, `species}`), `Kill` its id here (0: restored),
+    /// `Unsure` a restored rack that stays on the typical board though it may be a non-typical one (<see cref="RestoredBoard"/>).</summary>
+    sealed record Cand(long Species, double Score, double Mm, JsonObject Rec, long Ts, long Season, long Kill, bool Unsure = false);
 
     /// <summary>One place on a board.</summary>
     public sealed record BoardRow(long Rank, long Account, string Handle, double Value, JsonNode? Weapon, long Ts, long Kill, long Animal);
 
-    /// <summary>The kills of an account that may rank, with their seasons: the restored personal bests (the saved reply of season 0: each species' best score and best range, as the game saved them),
-    /// else (an archive claim has none) its restored trophies, listed and mounted, by score alone; and this server's harvests that are not hidden and have a score.
+    /// <summary>The kills of an account that may rank, with their seasons: the restored personal bests (the saved reply of season 0: each species' best score and best range, as the game saved them; the original kept
+    /// the non-typical racks out of that reply, so it has typical rows only and they stay as saved), else (an archive claim has none) its restored trophies, listed and mounted, by score alone, each on the board of
+    /// <see cref="RestoredBoard"/>; and this server's harvests that are not hidden and have a score (they carry their variant).
     /// ponytail: every view reads the hit events of each scored kill (a scan of the account's events each); store the last hit on the harvest when that gets slow.</summary>
     List<Cand> Candidates(Db con, IReadOnlyList<Store.Season> seasons)
     {
@@ -38,12 +40,13 @@ public sealed partial class State
                 if (Py.IsNum(row["species"]) && Num(row["score"]) is > 0 and var score)
                 {
                     var ts = Py.IsStr(row["timestamp"]) && DateTimeOffset.TryParse((string)row["timestamp"]!, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var at) ? at.ToUnixTimeSeconds() : (long)Num(row["timestamp"]);
+                    var (board, unsure) = RestoredBoard(Py.L(row["species"]), score);
                     var rec = new JsonObject  // no distance (it stays off the range boards) and no weapon
                     {
                         ["distance"] = 0, ["confirm_ts"] = ts, ["weapon_id"] = null, ["animal_id"] = C(row["id"]), ["gender"] = C(row["gender"]), ["texture"] = C(row["texture_id"]),
-                        ["score"] = Py.Fixed(score, 4), ["species"] = C(row["species"]),
+                        ["score"] = Py.Fixed(score, 4), ["species"] = board,
                     };
-                    found.Add(new(Py.L(row["species"]), score, 0, rec, ts, 1, 0));
+                    found.Add(new(board, score, 0, rec, ts, 1, 0, unsure));
                 }
         foreach (var r in con.Rows("SELECT k.individual, k.harvest, h.body, k.kill_id FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                                    + " WHERE k.account_id = $a AND h.hidden = 0 ORDER BY k.kill_id"))
@@ -69,6 +72,14 @@ public sealed partial class State
         return found;
     }
 
+    /// <summary>The board species of a restored trophy row and whether that is a guess. The original's trophy rows give a non-typical rack as its typical species with nothing else to tell it by; a typical rack is scored
+    /// up to the species' `max_score` at most (<see cref="Scoring.Variants"/>), so a score above it is the species' non-typical variant (the species + 100, where it has a row). At or above that variant's `min_score` a rack
+    /// could be either: it stays typical and is unsure (counted, <see cref="ComputeBoards"/>); below it, it is typical for sure. A species with no variant is its own board.</summary>
+    static (long Board, bool Unsure) RestoredBoard(long species, double score) =>
+        species is >= 0 and < 100 && Scoring.Variants.TryGetValue((int)species, out var typical) && Scoring.Variants.TryGetValue((int)species + 100, out var nonTypical)
+            ? score > typical.Hi ? (species + 100, false) : (species, score >= nonTypical.Lo)
+            : (species, false);
+
     /// <summary>Each species' best score and best range among the kills of a season (0: all of them); the earlier kill wins a tie.</summary>
     static IEnumerable<(long Species, Cand Score, Cand Range)> Bests(IEnumerable<Cand> kills, long season) =>
         kills.Where(c => season == 0 || c.Season == season).OrderBy(c => c.Ts).GroupBy(c => c.Species)
@@ -93,6 +104,10 @@ public sealed partial class State
     static readonly SortedDictionary<long, List<BoardRow>> NoBoards = [];
     CachedBoards? boardCache;
     int boardEpoch;
+    int unsureRestored = -1;
+
+    /// <summary>How many restored trophies the last computation of the boards could not tell typical from non-typical (<see cref="RestoredBoard"/>); -1 before the first one. The operator finds it in the log at the start.</summary>
+    public int UnsureRestored => Volatile.Read(ref unsureRestored);
 
     /// <summary>Drop the kept boards, for a change that must show at once: a season start, a deleted account, a hidden harvest. A set that is being computed meanwhile is not kept (it carries the epoch it started in).</summary>
     public void DropBoards()
@@ -167,10 +182,12 @@ public sealed partial class State
         using (var con = Store.Open())
             accounts = [.. con.Rows("SELECT id, handle FROM accounts WHERE banned = 0 AND id IS NOT ? ORDER BY id", LocalAccount).Select(r => ((long)r[0], (string)r[1]))];
         var all = new Dictionary<(bool Range, long Season), SortedDictionary<long, List<(long Id, string Handle, Cand Kill)>>>();
+        var unsure = 0;
         foreach (var (id, handle) in accounts)
         {
             using var con = Con(id);
             var kills = Candidates(con, seasons);
+            unsure += kills.Count(k => k.Unsure);
             foreach (var season in (long[])[0, .. seasons.Select(s => s.No)])
                 foreach (var (species, score, best) in Bests(kills, season))
                     foreach (var range in (bool[])[false, true])
@@ -181,6 +198,8 @@ public sealed partial class State
                         (board.TryGetValue(species, out var list) ? list : board[species] = []).Add((id, handle, c));
                     }
         }
+        if (Interlocked.Exchange(ref unsureRestored, unsure) != unsure)  // at the start, and again when a restore or a claim changes it: not every round
+            Console.WriteLine($"leaderboards: {unsure} restored trophies could be non-typical racks (their score fits both) and rank on the typical boards");
         return all.ToDictionary(kv => kv.Key, kv =>
         {
             var boards = new SortedDictionary<long, List<BoardRow>>();
