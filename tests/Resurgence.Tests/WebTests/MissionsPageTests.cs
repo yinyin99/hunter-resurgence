@@ -54,6 +54,20 @@ public sealed class MissionsPageTests : UiContext
         """;
 
     [Fact]
+    public void ALockedRowShowsTheClosedPadlockAnAvailableOneTheOpenPadlockAndAnActiveOneAnEmptyStar()
+    {
+        Services.AddSingleton(new HostMode { Live = true });
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
+
+        var cut = Render<Missions>();
+        cut.Find("button.row.pack").Click();
+
+        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")!.GetAttribute("href")!.Split('#')[1]);
+        Assert.Equal(["star-regular", "unlock", "lock"], icons);
+    }
+
+    [Fact]
     public void TheLiveSiteHasTheDailyTabAndHelpAndNoFilterOptionForNone()
     {
         Services.AddSingleton(new HostMode { Live = true });
