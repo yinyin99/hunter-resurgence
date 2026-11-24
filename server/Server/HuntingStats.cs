@@ -124,8 +124,6 @@ public sealed partial class State
         return row;
     }
 
-    string SpeciesLabel(long id) => SpeciesName(JsonValue.Create(id)) ?? "#" + id;
-
     /// <summary>`GET /stats/hunting`: server-wide figures per reserve (playtime, gm$ per hour, gm$ per harvest, harvests per hour) and per species (the same, `hours` the playtime on the reserves where the
     /// species was harvested, by the players who harvested it there; `bestReserve` the reserve where the species paid most gm$ per hour, from reserves of at least <see cref="HuntingMinPlayers"/> players, else null), `since` the day counted from.
     /// Never a name, handle or rank; a row built from fewer than <see cref="HuntingMinPlayers"/> players is left out. Harvest gm$ only, as paid (a time-limited bonus included).</summary>
