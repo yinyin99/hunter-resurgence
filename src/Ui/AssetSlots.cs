@@ -103,7 +103,7 @@ public static class AssetSlots
         new("logo-rating-", "decoration", "62x82", "Footer", Values("logo-rating-", "1", "2", "3", "4")),
         new("species-", "species", "135x135", "Leaderboards", async s =>
         {
-            try { return (await s.Boards.BoardsAsync("score", 0)).Select(b => "species-" + b.Name); }
+            try { return (await s.Boards.BoardsAsync("score", 0)).Select(b => AssetImages.SpeciesSlot(b.Name)); }
             catch (BoardUnavailableException) { return []; }  // the server's boards are not there: no species slots now, like an empty store
         }),
         // the reserves the server's catalogue holds (the website's mock: 01 to 12); marker kinds are the enum's

@@ -22,6 +22,12 @@ public class AssetImagesTests
     [InlineData("map:06 Reserve 06", "map-06-reserve-06")]
     public void KeyNormalises(string name, string key) => Assert.Equal(key, AssetImages.Key(name));
 
+    [Theory]
+    [InlineData("Mule Deer (Typical)")]
+    [InlineData("Mule Deer (Non-Typical)")]
+    [InlineData("Mule Deer")]
+    public void TheTypicalAndTheNonTypicalBoardsOfASpeciesShareOnePicture(string name) => Assert.Equal("species-mule-deer", AssetImages.Key(AssetImages.SpeciesSlot(name)));
+
     [Fact]
     public void NoFolderMeansNoPictures()
     {
