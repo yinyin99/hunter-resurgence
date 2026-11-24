@@ -883,16 +883,15 @@ public class SkillTests : StateTestBase
     JsonNode Numbers() => Reply(state.SkillListReply(ME, "user_id=7"u8.ToArray())!);
 
     [Fact]
-    public void TestANonTypicalSpotToastNamesTheSpeciesWithoutItsType()
+    public void TestANonTypicalWrongAmmunitionToastNamesTheSpeciesWithoutItsType()
     {
         var app = APP;
-        app["species"]!.AsArray().Add(O("""{"id": 101, "name": "Test Deer (Non-Typical)", "define": "MULE_DEER"}"""));
-        var connect = CONNECT;
-        connect["skills"] = LEVELS;
-        state = new State(Path.Combine(tmp, "non-typical.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
-        Hb([O("""{"event": 7, "individual": 9, "species": 101}"""), .. Repeat(O("""{"event": 11, "individual": 9}"""), 8)]);
-        var toasts = Hb();
-        Assert.True(toasts.Any(u => (string?)u!["text"] == "Test Deer Spotting: level 2 reached"), Py.Dumps(toasts));
+        app["species"]!.AsArray().Add(O("""{"id": 117, "name": "Test Rabbit (Non-Typical)", "define": "COTTONTAIL_RABBIT"}"""));
+        state = new State(Path.Combine(tmp, "non-typical.db"), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Hb(O("""{"event": 7, "individual": 413, "species": 117, "gender": 0, "weight_grams": 1100}"""),
+           O("""{"event": 1, "individual": 413, "ammunition_id": 10, "weapon_id": 5}"""));  // .243 on a non-typical rabbit: the typical one's list applies
+        Assert.Equal("Not permitted: Test Bullet may not be used on Test Rabbit. See your inbox.", (string)Assert.Single(Hb())!["text"]!);
     }
 
     [Fact]
