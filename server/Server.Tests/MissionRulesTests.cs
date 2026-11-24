@@ -48,6 +48,22 @@ public class MissionRulesTests : MissionTestBase
     }
 
     [Fact]
+    public void TestTheRuleOfATitleThatNamesAShorterWeaponPrintsTheLongerNamesToo()
+    {
+        var lines = New("longer.db", Missions(Mission(1, "Harvest a Test Deer with the Test Revolver"), Mission(2, "Harvest a Test Deer with any Test Recurve Bow"),
+            Mission(3, "Harvest a Test Deer with the Test Bolt Rifle"), Mission(4, "Harvest a Test Deer with the Test Heavy Recurve Bow"), Mission(5, "Harvest a Test Deer with the Test Magnum Revolver")))
+            .MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:").ToList();
+        Assert.Equal(
+        [
+            "mission 1 objective 0: Harvest a Test Deer with the Test Revolver => harvest; species: Test Deer; weapon: Test Magnum Revolver, Test Revolver",
+            "mission 2 objective 0: Harvest a Test Deer with any Test Recurve Bow => harvest; species: Test Deer; weapon: Test Heavy Recurve Bow, Test Recurve Bow",
+            "mission 3 objective 0: Harvest a Test Deer with the Test Bolt Rifle => harvest; species: Test Deer; weapon: Test Bolt Rifle, Test Maker Bolt Rifle",
+            "mission 4 objective 0: Harvest a Test Deer with the Test Heavy Recurve Bow => harvest; species: Test Deer; weapon: Test Heavy Recurve Bow",  // the longer name stays exact
+            "mission 5 objective 0: Harvest a Test Deer with the Test Magnum Revolver => harvest; species: Test Deer; weapon: Test Magnum Revolver",
+        ], lines);
+    }
+
+    [Fact]
     public void TestADescriptionThatNamesAnItemNoObjectiveAcceptsWhileOthersAreNamedIsWarned()
     {
         var w = Warnings("desc.db", Mission(1, "Harvest a Test Deer with the Test Carbine", ", \"desc\": \"Use the Test Shotgun.\""), Mission(2, "Harvest a Test Deer with the Test Carbine", ", \"desc\": \"Use the Test Carbine.\""),

@@ -660,7 +660,7 @@ public sealed partial class State
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
             tests.Add(new(Check.Clue, count, Ids: kinds));
-            if (different is not null)
+            if (different is { Min: >= 2 })  // one animal is no sequence, and the operator's file refuses it too: the clue alone
                 tests.Add(different);
             return ([.. tests], string.Join(' ', sn.Split(' ', StringSplitOptions.RemoveEmptyEntries).Where(w => !Stops.Contains(w) && !ClueStops.Contains(w))));
         }
