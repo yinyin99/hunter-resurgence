@@ -9,10 +9,11 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    /// <summary>A stored harvest (event 3) or clue (event 12) with its kill, its animal's species and gender, and when the server received it (null before schema 14), ready for the rules.</summary>
-    sealed record Recorded(long Id, Kind Kind, Kill Kill, long? Species, long? Gender, double? Ts)
+    /// <summary>A stored harvest (event 3) or clue (event 12) with its kill, its animal's species and gender, and when the server received it (null before schema 14), ready for the rules; or, for a
+    /// confirmation, a place entered (event 101: `Arrival`, no kill).</summary>
+    sealed record Recorded(long Id, Kind Kind, Kill Kill, long? Species, long? Gender, double? Ts, Arrival? Arrival = null)
     {
-        public bool Meets(Rule r, long after) => (r.Species is null || r.Species == Species) && (r.Gender is null || r.Gender == Gender) && State.Meets(r, Kill, after);
+        public bool Meets(Rule r, long after) => Arrival is { } a ? ArrivesAt(r, a) : (r.Species is null || r.Species == Species) && (r.Gender is null || r.Gender == Gender) && State.Meets(r, Kill, after);
     }
 
     /// <summary>The animal of an event: the latest spawn (event 7) of its individual before it in its hunt (individual ids are reused by the next hunt); {} when there is none.</summary>
@@ -21,11 +22,14 @@ public sealed partial class State
             + "(SELECT first_event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?2 ORDER BY id DESC LIMIT 1), 0) ORDER BY id DESC LIMIT 1", individual, eventId)
             .Select(r => Parse(r[0])).FirstOrDefault() ?? new JsonObject();
 
-    /// <summary>The harvests and the clues stored after event `after`, in order; with `spots`, the spotted animals (event 11) too, which only the stuck report reads.</summary>
-    List<Recorded> RecordedOf(Db con, long after, bool spots = false) =>
-        [.. con.Rows("SELECT id, event, body, ts FROM events WHERE account_id = $a AND event IN (3, 12" + (spots ? ", 11" : "") + ") AND id > ? ORDER BY id", after).Select(r =>
+    /// <summary>The harvests and the clues stored after event `after`, in order; with `spots`, the spotted animals (event 11) too, which only the stuck report reads; with `arrivals`, the places
+    /// entered (event 101), which only the confirmation at the start reads.</summary>
+    List<Recorded> RecordedOf(Db con, long after, bool spots = false, bool arrivals = false) =>
+        [.. con.Rows("SELECT id, event, body, ts FROM events WHERE account_id = $a AND event IN (3, 12" + (spots ? ", 11" : "") + (arrivals ? ", 101" : "") + ") AND id > ? ORDER BY id", after).Select(r =>
         {
             var (id, e, ts) = ((long)r[0], Parse(r[2]), r[3] as double?);
+            if ((long)r[1] == 101)
+                return ArrivalOf(con, id, e) is { } arrival ? new Recorded(id, Kind.Arrive, null!, null, null, ts, arrival) : null;  // an arrival has no kill
             if ((long)r[1] is 11 or 12)
             {
                 var e7 = SpawnBefore(con, e["individual"], id);
@@ -35,7 +39,7 @@ public sealed partial class State
             var kill = KillOf(con, e, id);
             var (species, gender) = AnimalOf(kill.E7, e["extended_species"]);
             return new Recorded(id, Kind.Harvest, kill, species, gender, ts);
-        })];
+        }).OfType<Recorded>()];
 
     /// <summary>Is the objective one a stored event can have finished: a harvest or a clue? A spot, a place and a start leave no stored event the rules can be checked on.</summary>
     static bool IsReplayed(MissionDef m, long objective) => m.Objectives.FirstOrDefault(o => o.Id == objective)?.Rule.Kind is Kind.Harvest or Kind.Track;
@@ -61,10 +65,10 @@ public sealed partial class State
 
     // ---- confirmed later
 
-    /// <summary>At the server's start: every account's active missions are checked again, their open harvest and clue objectives against the harvests and clues made since they were
-    /// activated (those of the latest hunt for a single-hunt mission), in order. An objective an event meets under the rules of this version is finished now, with its rewards,
-    /// as if the event had finished it: a title the server did not understand when the harvest or the clue was made is met once a version understands it. Returns how many
-    /// objectives were finished.</summary>
+    /// <summary>At the server's start: every account's active missions are checked again, their open harvest, clue and arrive objectives against the harvests, the clues and the places entered
+    /// since they were activated (those of the latest hunt for a single-hunt mission), in order. An objective an event meets under the rules of this version is finished now, with its rewards,
+    /// as if the event had finished it: a title the server did not understand when the harvest or the clue was made, or a place it did not match by name or by coordinates when it was
+    /// entered, is met once a version understands it. Returns how many objectives were finished.</summary>
     public int ConfirmMissions()
     {
         if (missions.Count == 0)
@@ -83,8 +87,8 @@ public sealed partial class State
         return confirmed;
     }
 
-    // ponytail: every start checks every open harvest and clue objective of every active mission again, whether an event met it earlier or not; a per-mission checked mark
-    // if the starts get slow
+    // ponytail: every start checks every open harvest, clue and arrive objective of every active mission again, whether an event met it earlier or not; a per-mission checked mark
+    // if the starts get slow; an ordered arrive objective also counts a place entered before the objective before it was finished (the row keeps no event for it)
     int ConfirmAccount(Db con)
     {
         if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
@@ -95,8 +99,8 @@ public sealed partial class State
             again = false;
             var (rows, marks, hunt) = (MissionRows(con), Marks(con), LatestHunt(con));
             var work = rows.Where(r => r.Value.State == 2 && missions.TryGetValue(r.Key, out var m)
-                                       && m.Objectives.Any(o => o.Rule.Kind is Kind.Harvest or Kind.Track && !r.Value.Done.Contains(o.Id))).ToList();
-            var events = work.Count == 0 ? new List<Recorded>() : RecordedOf(con, work.Min(r => marks[r.Key].Seen));
+                                       && m.Objectives.Any(o => o.Rule.Kind is Kind.Harvest or Kind.Track or Kind.Arrive && !r.Value.Done.Contains(o.Id))).ToList();
+            var events = work.Count == 0 ? new List<Recorded>() : RecordedOf(con, work.Min(r => marks[r.Key].Seen), arrivals: true);
             foreach (var (id, (_, done)) in work)
             {
                 var (m, mark) = (missions[id], marks[id]);
@@ -331,9 +335,6 @@ public sealed partial class State
 
     static IEnumerable<string> Key(Rule r) => r.Text.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(p => p.ToLowerInvariant()).Order(StringComparer.Ordinal);
 
-    /// <summary>Does the arrival at `place` (normalised) meet an arrive rule: the exact place of an operator's `arrive; place: NAME`, else the place the title names, as `MissionEvent` decides.</summary>
-    static bool ArrivesAt(Rule r, string place) => r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? place == Normalise(at.Place!) : PlaceIn(r.Text, place);
-
     /// <summary>For the ordered objective `i` of an open mission: the last event that finished one of the objectives before it (they are all held), or null when one cannot be told. A harvest or a clue
     /// is the event today's replay gives it (`judged`); a spot, a place entered or a hunt started is estimated as the first such event that meets it, searched after the one before it when that
     /// is ordered and from the mission's activation otherwise (the row keeps no event for them); a hunt's event is the one stored before its first.
@@ -348,9 +349,8 @@ public sealed partial class State
             {
                 Kind.Harvest or Kind.Track => judged.Where(x => x.Objective.Id == p.Id).Select(x => (long?)x.At).FirstOrDefault(),
                 Kind.Spot => events.FirstOrDefault(e => e.Kind == Kind.Spot && e.Id > from && e.Meets(p.Rule, since))?.Id,
-                Kind.Arrive => con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 101 AND id > ? ORDER BY id", from).Select(r => (Id: (long)r[0], Body: Parse(r[1])))
-                    .Where(e => Py.IsStr(e.Body["direction"]) && (string)e.Body["direction"]! == "enter" && Py.IsStr(e.Body["location_name"])
-                                && ArrivesAt(p.Rule, Normalise((string)e.Body["location_name"]!))).Select(e => (long?)e.Id).FirstOrDefault(),
+                Kind.Arrive => con.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 101 AND id > ? ORDER BY id", from).Select(r => (Id: (long)r[0], Arrival: ArrivalOf(con, (long)r[0], Parse(r[1]))))
+                    .Where(e => e.Arrival is { } a && ArrivesAt(p.Rule, a)).Select(e => (long?)e.Id).FirstOrDefault(),
                 Kind.Start => con.Rows("SELECT first_event, location_id FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) >= ? ORDER BY id", from)
                     .Select(r => (At: r[0] as long? ?? 0, Lodge: r[1] as long?))
                     .Where(x => x.Lodge is { } l && lodgeNames.TryGetValue(l, out var names) && names.Any(n => PlaceIn(p.Rule.Text, n))).Select(x => (long?)x.At).FirstOrDefault(),

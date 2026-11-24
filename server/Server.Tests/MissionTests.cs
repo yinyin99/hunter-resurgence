@@ -19,7 +19,7 @@ public class MissionTests : StateTestBase
           {"id": 4, "title": "Next", "dependencies": [2], "rewards": [{"text": "10 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
           {"id": 5, "title": "One Hunt", "singleExpedition": true, "dependencies": [], "rewards": [{"text": "20 gm$"}],
            "objectives": [{"id": 0, "title": "Locate Test Deer tracks"}, {"id": 1, "title": "Spot a Test Deer"}]},
-          {"id": 6, "title": "Pond", "dependencies": [], "rewards": [{"text": "30 gm$"}], "objectives": [{"id": 0, "title": "Visit Test Pond (x 5, y 6)"}]},
+          {"id": 6, "title": "Pond", "dependencies": [], "rewards": [{"text": "30 gm$"}], "objectives": [{"id": 0, "title": "Visit Test Pond (x 5000, y 6000)"}]},
           {"id": 7, "title": "In Order", "dependencies": [], "rewards": [{"text": "60 gm$"}],
            "objectives": [{"id": 0, "title": "Harvest a Test Deer"}, {"id": 1, "title": "Then, spot a Test Deer"}]},
           {"id": 8, "title": "Clues", "dependencies": [], "rewards": [{"text": "70 gm$"}], "objectives": [{"id": 0, "title": "Locate 2 Test Deer tracks from the same animal"}]},

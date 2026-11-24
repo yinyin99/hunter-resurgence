@@ -533,6 +533,12 @@ public sealed partial class State
 
         static double Coordinate(string n) => Parse(n) is var v && (n.Contains('.') || n.Contains(',')) && Math.Abs(v) < 100 ? v * 1000 : v;
 
+        static readonly Regex ArrivePoint = new(@"(?:\bx\s*:?\s*|\(\s*)(?<x>-?\d+(?:[.,]\d+)?)\s*,?\s*y\s*:?\s*(?<y>-?\d+(?:[.,]\d+)?)", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+        /// <summary>The point a title gives, `(x -4633, y -11152)`, with or without colons, brackets or the first `x`: the map's x and z in metres.</summary>
+        public static (double X, double Z)? PointOf(string title) =>
+            ArrivePoint.Match(title) is { Success: true } m ? (Coordinate(m.Groups["x"].Value), Coordinate(m.Groups["y"].Value)) : null;
+
         static double Parse(string n) => double.Parse(n.Replace(',', '.'), CultureInfo.InvariantCulture);
 
         /// <summary>The quantity's test, or false (nothing added) when it has no word that says over or under.</summary>
@@ -941,6 +947,12 @@ public sealed partial class State
             var named = all.Select(x => x.Objective.Rule.Tests?.FirstOrDefault(t => t.Check == Check.Named)).Where(t => t is not null).ToList();
             yield return $"named animals placed (spawn_named_animals): {named.Count(t => t!.Ids is not null)} objectives in {namedPopulations.Count} populations, {named.Count(t => t!.Ids is null)} named-animal objectives keep the 1000 m guess or are never met";
         }
+        // an arrive objective is met by the place's name or, with coordinates, by a point near them: one with neither a known location's name nor coordinates may never be met (an operator's `place:` is exact, not listed)
+        var unmatched = all.Where(x => x.Objective.Rule is { Kind: Kind.Arrive, Zone.Point: null } r && !(r.Tests ?? []).Any(t => t.Check == Check.Place)
+                                       && !lodgeNames.Values.Any(names => names.Any(n => PlaceLike(r.Text, n)))).OrderBy(x => x.Mission).ThenBy(x => x.Objective.Id).ToList();
+        yield return $"arrive objectives with no coordinates that no known location's name meets: {unmatched.Count}";
+        foreach (var x in unmatched)
+            yield return $"arrive not matched: mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";
         yield return "objectives not understood, by mission:";
         foreach (var x in not.OrderBy(x => x.Mission))
             yield return $"mission {x.Mission} objective {x.Objective.Id}: {x.Objective.Title}";

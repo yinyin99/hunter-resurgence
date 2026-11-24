@@ -123,6 +123,7 @@ public sealed partial class State
                 if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
                 if (r.Ordered) parts.Add("ordered");
                 parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
+                if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");
                 yield return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
             }
     }
