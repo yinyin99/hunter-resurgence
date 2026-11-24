@@ -189,6 +189,8 @@ ssh deploy@<vps> "cd web && sed -i -e 's/^WEB_TAG=.*/WEB_TAG=<older sha>/' -e 's
 
 The next deploy sets the tag again.
 
+Only the newest 20 deploy images of each package stay in GHCR (`ghcr-retention`, weekly, plus `latest` and `buildcache`): a rollback past that is rebuilt by tagging the old commit as above.
+
 A deploy that changes the database schema migrates it at the server's first start, and the older server refuses a newer schema: before such a deploy, copy the database (`docker compose exec -T server-backup dotnet server.dll backup /backups 7`, [Backups](#backups)), since rolling back then means restoring that copy.
 
 ## The community server

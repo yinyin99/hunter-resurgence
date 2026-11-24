@@ -13,7 +13,7 @@ jobs:
     env:
       RestoreLockedMode: "true" # every restore of this job (build, test, publish.cmd) fails with NU1004 when a packages.lock.json does not match its project
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-sdk
       # The tag is the only version: vX.Y.Z or vX.Y.Z-suffix, checked before anything is built.
       - name: Version from the tag
@@ -129,14 +129,14 @@ jobs:
       # Build provenance (attestations need a public repository on this plan: skipped while private).
       - name: Attest
         if: ${{ !github.event.repository.private }}
-        uses: actions/attest@v4
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: |
             tools/backup/bin/Release/net10.0-windows/win-x64/backup-win-x64.zip
             tools/backup/bin/Release/net10.0-windows/win-x64/publish/backup.exe
       - name: Attest the launcher
         if: ${{ env.LAUNCHER == '1' && !github.event.repository.private }}
-        uses: actions/attest@v4
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: |
             src/Launcher/bin/Release/net10.0-windows10.0.17763.0/win-x64/releases/HunterResurgence-win-Setup.exe

@@ -34,7 +34,7 @@ jobs:
     env:
       RestoreLockedMode: "true" # every restore of this job (build, test, publish.cmd) fails with NU1004 when a packages.lock.json does not match its project
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-sdk
       - run: dotnet build hunter-resurgence.slnx -c Release
       # the server's tests run once, in server-ubuntu: the server ships on Linux
@@ -85,7 +85,7 @@ jobs:
     env:
       RestoreLockedMode: "true"
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/setup-sdk
       - run: dotnet test --project server/Server.Tests -c Release
   # the workflows, the compose file, the firewall script and the proxy's routes: errors here show only on main, on a tag or on the VPS
@@ -94,7 +94,7 @@ jobs:
     if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Check the workflows
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -shellcheck=
       - name: Check the compose file
@@ -206,7 +206,7 @@ jobs:
       contents: read
       packages: write # the layer cache, written on main only
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/build-image
         with:
           name: web
@@ -260,7 +260,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/build-image
         with:
           name: natpt
@@ -280,7 +280,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/build-image
         with:
           name: server

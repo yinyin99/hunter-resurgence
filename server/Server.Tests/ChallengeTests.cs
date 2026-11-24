@@ -61,9 +61,6 @@ public class ChallengeTests : StateTestBase
     {
         state = New("state.db");
         state.CreateAccount(P, "player");  // the recorded player's own account is never shown: a public read needs another one
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
     }
 
     JsonObject Rows(long account = P) => (JsonObject)Reply(state.ChallengesReply(account.ToString()));

@@ -28,8 +28,6 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: Ranks);
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
