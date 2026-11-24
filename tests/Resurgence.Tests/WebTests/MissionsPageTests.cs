@@ -48,10 +48,28 @@ public sealed class MissionsPageTests : UiContext
         {"missions": [
           {"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": [], "reward": "", "reserve": "Test Reserve", "species": "Test Deer", "weapon": ""},
           {"id": 2, "title": "Test Two", "desc": "", "state": "available", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "Test Rifle"},
-          {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "", "needs": ["Test Two"]}],
-         "groups": [{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [1, 2, 3]}],
+          {"id": 3, "title": "Test Three", "desc": "", "state": "locked", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": "", "needs": ["Test Two"]},
+          {"id": 4, "title": "Test Four", "desc": "", "state": "completed", "objectives": [], "reward": "", "reserve": "", "species": "", "weapon": ""}],
+         "groups": [{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [1, 2, 3, 4]}],
          "completed": 0, "auto_mission_activate": false, "activate_only_favourite": false, "hide_completed_favourite": false}
         """;
+
+    [Fact]
+    public void ALockedRowShowsTheClosedPadlockAnAvailableOneTheOpenPadlockAndAnActiveOneAnEmptyPawAndACompletedOneASolidPaw()
+    {
+        Services.AddSingleton(new HostMode { Live = true });
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
+
+        var cut = Render<Missions>();
+        cut.Find("button.row.pack").Click();
+
+        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")!.GetAttribute("href")!.Split('#')[1]);
+        Assert.Equal(["paw-regular", "unlock", "lock", "paw"], icons);
+        // outside the packs a section has its own icon on every row: the empty star for Active, the open padlock for Available
+        var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")!.GetAttribute("href")!.Split('#')[1]);
+        Assert.Equal(["star-regular", "unlock"], sections);
+    }
 
     [Fact]
     public void TheLiveSiteHasTheDailyTabAndHelpAndNoFilterOptionForNone()
