@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>mañana</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Descripción</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Objetivos</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Bloqueada. Completa primero:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>Debes completar las siguientes misiones para desbloquear {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Reservas</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Recompensas</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Inactivo</value></data>

@@ -10,7 +10,7 @@ public sealed class MockMissionsService(string? mock = null) : IMissionsService
     static readonly string[] Weapons = ["Rifle Model A", "Shotgun Model B", "Bow Model C"];
 
     static Mission Make(int id, string name, string state, int i, string? species = null) => new(id, name, state, $"A short briefing for {name}: find the animal, take your time and make a clean shot.",
-        [$"Harvest a {species ?? Names.Species[i % Names.Species.Length].Name}"], "100 gm$", Reserves[i % Reserves.Length], species ?? Names.Species[i % Names.Species.Length].Name, Weapons[i % Weapons.Length]);
+        [$"Harvest a {species ?? Names.Species[i % Names.Species.Length].Name}"], "100 gm$", Reserves[i % Reserves.Length], species ?? Names.Species[i % Names.Species.Length].Name, Weapons[i % Weapons.Length], state == "locked" ? [$"{name[..^2]}{int.Parse(name[^2..]) - 1:00}"] : null);
 
     // a pack of a species has missions of that species; every fifth pack is finished
     static MissionPack Pack(int id, string name, int total, string? species)

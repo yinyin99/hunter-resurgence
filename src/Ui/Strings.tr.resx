@@ -607,7 +607,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>yarın</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Açıklama</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Hedefler</value></data>
-  <data name="Mis.LockedBy" xml:space="preserve"><value>Kilitli. Önce şunu tamamlayın:</value></data>
+  <data name="Mis.LockedBy" xml:space="preserve"><value>{0} görevinin kilidini açmak için şu görevleri tamamlamalısınız:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervler</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Ödüller</value></data>
   <data name="Mis.Inactive" xml:space="preserve"><value>Etkin değil</value></data>

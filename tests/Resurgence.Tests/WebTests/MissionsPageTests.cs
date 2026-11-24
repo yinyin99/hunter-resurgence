@@ -55,7 +55,7 @@ public sealed class MissionsPageTests : UiContext
         """;
 
     [Fact]
-    public void ALockedRowShowsTheClosedPadlockAnAvailableOneTheOpenPadlockAndAnActiveOneAnEmptyPawAndACompletedOneASolidPaw()
+    public void ALockedRowShowsTheClosedPadlockAnAvailableOneNoIconAnActiveOneAnEmptyPawAndACompletedOneASolidPaw()
     {
         Services.AddSingleton(new HostMode { Live = true });
         Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
@@ -64,11 +64,11 @@ public sealed class MissionsPageTests : UiContext
         var cut = Render<Missions>();
         cut.Find("button.row.pack").Click();
 
-        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")!.GetAttribute("href")!.Split('#')[1]);
-        Assert.Equal(["paw-regular", "unlock", "lock", "paw"], icons);
-        // outside the packs a section has its own icon on every row: the empty star for Active, the open padlock for Available
-        var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")!.GetAttribute("href")!.Split('#')[1]);
-        Assert.Equal(["star-regular", "unlock"], sections);
+        var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
+        Assert.Equal(["paw-regular", "none", "lock", "paw"], icons);
+        // outside the packs the rows are the same: the empty paw for Active, no icon for Available
+        var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
+        Assert.Equal(["paw-regular", "none"], sections);
     }
 
     [Fact]
@@ -86,6 +86,7 @@ public sealed class MissionsPageTests : UiContext
         cut.Find("button.row.pack").Click();
         cut.FindAll("li[data-pack] .more ul.rows button.row")[2].Click();
         Assert.Equal(["Test Two"], cut.FindAll("li.open ul.rows li.open .more ul li").Select(l => l.TextContent));
+        Assert.Contains("Test Three", cut.Find("li.open ul.rows li.open .more p.unlock").TextContent);
         Assert.Empty(cut.FindAll("li.open ul.rows li.open .more button.btn"));
         // the select-all entry and the one name each of the three filters has
         Assert.Equal([2, 2, 2], cut.FindAll("ul.pop").Select(u => u.QuerySelectorAll("li").Length));
