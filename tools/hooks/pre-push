@@ -1,0 +1,33 @@
+#!/bin/sh
+# pre-push: the maintainer's private-names scan when this clone has it (.git/hooks/publish-check.py, untracked), then the tests of
+# the projects the pushed commits touch: server/Server.Tests for the server, tests/Resurgence.Tests (Windows only) for the rest.
+# The full suites stay in ci. HOOK_TESTS=0 git push skips the tests (the scan still runs).
+cd "$(git rev-parse --show-toplevel)" || exit 1
+in=$(mktemp) || exit 1
+trap 'rm -f "$in"' EXIT
+cat > "$in"
+
+scan="$(git rev-parse --git-common-dir)/hooks/publish-check.py"
+if [ -f "$scan" ]; then python "$scan" < "$in" || exit 1; fi
+[ "${HOOK_TESTS:-1}" = 0 ] && exit 0
+
+# the files the pushed commits change; a new branch, or a remote tip this clone does not have, is compared with origin/main
+zero() { case $1 in *[!0]*) return 1 ;; esac; } # git's all-zero id: no commit on that side
+changed=$(while read -r _ local _ remote; do
+	zero "$local" && continue # a deletion pushes nothing
+	if zero "$remote" || ! git cat-file -e "$remote^{commit}" 2> /dev/null; then remote=$(git merge-base origin/main "$local"); fi
+	git diff --name-only "$remote" "$local"
+done < "$in" | sort -u)
+[ -n "$changed" ] || exit 0
+
+has() { printf '%s\n' "$changed" | grep -qE "$1"; }
+server=false launcher=false
+# Server.Tests: server/ and what it references (src/Restore, src/Services); Resurgence.Tests: src/, tools/backup, tests/
+has '^(server/|src/(Restore|Services)/)' && server=true
+has '^(src/|tools/backup/|tests/)' && launcher=true
+has '(^global\.json$|packages\.lock\.json$|\.csproj$|^Directory\.)' && server=true && launcher=true
+[ "${OS:-}" = Windows_NT ] || launcher=false # net10.0-windows; Windows sets OS for every process, whatever the shell's uname says
+
+if $server; then dotnet test --project server/Server.Tests -c Release || exit 1; fi
+if $launcher; then dotnet test --project tests/Resurgence.Tests -c Release || exit 1; fi
+exit 0

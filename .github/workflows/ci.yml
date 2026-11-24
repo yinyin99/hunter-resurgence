@@ -135,8 +135,8 @@ jobs:
         run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.7 -shellcheck=
       - name: Check the compose file
         run: docker compose -f deploy/compose.yml --env-file deploy/.env.example config -q
-      - name: Check the firewall script
-        run: shellcheck deploy/firewall.sh deploy/rollout.sh
+      - name: Check the shell scripts
+        run: shellcheck deploy/firewall.sh deploy/rollout.sh tools/hooks/*
       # iptables and curl are stubs that log their calls: no ranges from Cloudflare must change nothing
       - name: Firewall script with stubbed iptables
         run: |
