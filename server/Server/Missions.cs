@@ -305,7 +305,7 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles, `needs` (the titles of the missions it depends on that are not completed yet: why a `locked` one is locked; `[]` otherwise), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// objective titles and `objectives_done` (one flag per objective: the account holds it, all for a completed one), `needs` (the titles of the missions it depends on that are not completed yet: why a `locked` one is locked; `[]` otherwise), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
     /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
     public JsonObject? WebMissions(long account)
     {
