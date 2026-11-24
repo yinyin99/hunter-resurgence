@@ -173,6 +173,30 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         Eq("""[[20, false], [23, true]]""", new JsonArray(rows.Select(t => (JsonNode?)T(t!["id"], t["is_skull"])).ToArray()));
     }
 
+    [Fact]
+    public async Task ANonTypicalHarvestIsInTheLodgeEditorAsItsTypicalSpecies()
+    {
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, 24, ?)", Py.Dumps(O($$"""
+                {"species_define": "MULE_DEER_NON_TYPICAL", "timestamp": "{{DateTime.UtcNow.AddHours(-1):yyyy-MM-dd'T'HH:mm:ss'Z'}}", "taxidermized": false, "is_skull": false,
+                 "species": 101, "score": 5, "weight": 100}
+                """)));
+            PlayerRows.AddTrophy(con, "/game/user/trophies", "6", O("""{"id": 6, "species": 101, "species_define": "MULE_DEER_NON_TYPICAL", "hidden": false}"""));
+            con.Commit();
+        }
+        Assert.Equal(200, await Status(24, tokenMe, """{"currency": "gold", "is_skull": true}"""));  // the typical species has a skull
+        Assert.Equal(200, await Status(20, tokenMe, Gold));
+        var rows = JsonNode.Parse((await server.SendAsync("GET", V2, "/game/user/trophies", [("Authorization", "Bearer " + tokenMe)])).Body)!.AsArray();
+        // the non-typical harvest as its typical species, the typical one as it was, the restored row as it was restored
+        Eq("""[[6, 101, "MULE_DEER_NON_TYPICAL"], [20, 1, "MULE_DEER"], [24, 1, "MULE_DEER"]]""",
+           new JsonArray(rows.OrderBy(t => (long)t!["id"]!).Select(t => (JsonNode?)T(t!["id"], t["species"], t["species_define"])).ToArray()));
+        Eq("""[1, "MULE_DEER"]""", T(Page(ME, 24)["species"], Page(ME, 24)["species_define"]));
+        using var mine = state.Store.Open(ME);
+        Assert.Equal(101L, mine.Scalar("SELECT json_extract(body, '$.species') FROM harvests WHERE account_id = $a AND kill_id = 24"));  // stored with its variant
+    }
+
     /// <summary>The taxidermy went live 10 hours ago: harvests 22 (73 h old) and 23 (71 h old) were made before, 20 and 21 (1 h old) after; the grace window of the old ones ends 62 hours from now.</summary>
     void GoneLive()
     {
