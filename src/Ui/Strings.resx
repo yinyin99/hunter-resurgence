@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Nobody is ranked here yet</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>The leaderboard could not be loaded. Please try again.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Try again</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Hunting statistics</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>The hunts of everyone on this server, per reserve and per species. A row built from fewer than 5 hunters is not shown.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>No hunting statistics yet.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Per reserve</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Per species</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Hours hunted</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ per hour</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ per harvest</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Harvests per hour</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Hunters</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Best reserve</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} total · {1} on {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>No season has ended yet</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Top Lane Bandit scores</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is a cool retro arcade game that you can play on your Huntermate to keep you entertained while you wait for that trophy to appear!</value></data>

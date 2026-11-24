@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Здесь пока никого нет в рейтинге</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Не удалось загрузить рейтинг. Попробуйте ещё раз.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Повторить</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Статистика охоты</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Охоты всех игроков на этом сервере по охотугодьям и по видам. Строка, построенная менее чем по 5 охотникам, не показывается.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Статистики охоты пока нет.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>По охотугодьям</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>По видам</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Часов охоты</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ в час</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ за добычу</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Добычи в час</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Охотники</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Лучшее охотугодье</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} всего · {1} на {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ни один сезон ещё не закончился</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Лучшие результаты в Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit — классная ретро-аркада, в которую можно играть на вашем Huntermate, пока вы ждёте появления трофея!</value></data>

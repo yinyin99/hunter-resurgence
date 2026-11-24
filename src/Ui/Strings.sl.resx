@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Tu še nihče nima uvrstitve</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Lestvice ni bilo mogoče naložiti. Poskusite znova.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Poskusi znova</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Lovska statistika</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Lovi vseh igralcev na tem strežniku po rezervatih in po vrstah. Vrstica, ki temelji na manj kot 5 lovcih, ni prikazana.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Lovske statistike še ni.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Po rezervatih</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Po vrstah</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Ur lova</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ na uro</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ na ulov</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Ulovov na uro</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Lovci</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Najboljši rezervat</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} skupaj · {1} na {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Nobena sezona se še ni končala</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najboljši rezultati v igri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je kul retro arkadna igra, ki jo lahko igraš na svoji napravi Huntermate, da si krajšaš čas, medtem ko čakaš, da se pojavi trofeja!</value></data>

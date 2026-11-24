@@ -26,7 +26,12 @@ public sealed record Skill(string Name, string? Group, IReadOnlyList<SkillRing> 
 public sealed record WeaponStat(string Weapon, string Ammo, int Shots, double Accuracy, int Kills, double KillsPerHit, double? Longest, long? WeaponId = null, long? AmmoId = null);
 public sealed record SpeciesStat(string Name, int Spotted, int Tracked, int Harvested);
 public sealed record CollectableStat(string Name, int Collected, int Total, int Max);
-public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds);
+/// <param name="DistanceKm">The total: restored plus this server's.</param>
+/// <param name="HuntSeconds">The total: restored plus this server's.</param>
+/// <param name="DistanceKmHere">The distance of this server's hunts only; null when the server does not send it (an older one), then only the total shows.</param>
+/// <param name="HuntSecondsHere">The time of this server's hunts only; null as <paramref name="DistanceKmHere"/>.</param>
+public sealed record Totals(IReadOnlyList<WeaponStat> Weapons, IReadOnlyList<SpeciesStat> Animals, IReadOnlyList<CollectableStat> Collectables, double DistanceKm, int HuntSeconds,
+    double? DistanceKmHere = null, int? HuntSecondsHere = null);
 /// <summary>A confirmed kill of an expedition; <see cref="Id"/> opens its score sheet.</summary>
 /// <summary>The taxidermy of the player's own harvest: until when it can be bought (<see cref="End"/>, UTC), the price in em$ or in gm$, whether the species has a skull to mount, and what was
 /// bought already (<see cref="Done"/>: <c>taxidermy</c> or <c>skull</c>, null while nothing was).</summary>

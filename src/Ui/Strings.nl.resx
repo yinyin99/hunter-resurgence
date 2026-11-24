@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Hier staat nog niemand in de ranglijst</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Het klassement kon niet worden geladen. Probeer het opnieuw.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Opnieuw proberen</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Jachtstatistieken</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>De jachten van alle spelers op deze server, per reservaat en per soort. Een rij die op minder dan 5 jagers is gebaseerd, wordt niet getoond.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Nog geen jachtstatistieken.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Per reservaat</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Per soort</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Uren gejaagd</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ per uur</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ per afschot</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Afschoten per uur</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Jagers</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Beste reservaat</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} totaal · {1} op {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Er is nog geen seizoen afgelopen</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Topscores Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is een coole retro-arcadegame die je op je Huntermate kunt spelen om je te vermaken terwijl je wacht tot die trofee verschijnt!</value></data>
