@@ -4,6 +4,7 @@ using Resurgence.Server;
 
 namespace Resurgence.Server.Tests;
 
+[Collection("ProcessState")]  // ConsoleOf swaps the process-wide Console.Out, which every server's log lines go to
 public class RequestLogTests : IDisposable
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));

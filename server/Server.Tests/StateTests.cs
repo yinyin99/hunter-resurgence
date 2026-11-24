@@ -41,10 +41,6 @@ public class InventoryTests : StateTestBase
     public InventoryTests()
     {
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        // variant bounds are pinned so tests don't read files
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };
     }
 
     [Fact]
@@ -217,20 +213,6 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestPhotoNamesStayInThePhotosFolder()
     {
-        if (OperatingSystem.IsWindows())  // drive-relative names exist only there
-        {
-            var cwd = Environment.CurrentDirectory;
-            try
-            {
-                Environment.CurrentDirectory = tmp;  // a drive-relative name ("C:x") resolves against the current directory
-                File.WriteAllText(Path.Combine(tmp, "secret.txt"), "x");
-                Assert.Null(state.PhotoFile($"/photos/{Path.GetPathRoot(tmp)![..2]}secret.txt"));
-            }
-            finally
-            {
-                Environment.CurrentDirectory = cwd;
-            }
-        }
         // photo_type comes from the heartbeat: a string is never used as part of the file name
         var u11 = Assert.Single(Hb(O("""{"event": 4, "hash": 5, "photo_type": "..\\..\\escaped"}""")))!;
         Assert.Equal(404, state.UploadReply(ME, new Uri((string)u11["url"]!).Query.TrimStart('?'), "x"u8.ToArray()).Status);
@@ -341,8 +323,6 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestAxisDeerAndFeralGoatScore()
     {
-        Scoring.Variants[40] = (15, 450, 1.3);
-        Scoring.Variants[54] = (25, 180, 1.1);
         // the tines and horn-length families map the trophy event to their own feature sets
         var axisDeer = O("""{"event": 22, "individual": 540, "greatest_spread": 300, "inside_spread_of_main_beams": 254}""");
         axisDeer["left_antler"] = Antler([254, 127, 100, 100], [(0, 508), (1, 127), (2, 254)]);
@@ -999,6 +979,30 @@ public class SkillTests : StateTestBase
     }
 }
 
+/// <summary>A drive-relative photo name ("C:x") resolves against the current directory, which this test moves.</summary>
+[Collection("ProcessState")]
+public class DriveRelativePhotoNameTests : StateTestBase
+{
+    [Fact]
+    public void TestADriveRelativePhotoNameStaysInThePhotosFolder()
+    {
+        if (!OperatingSystem.IsWindows()) return;  // drive-relative names exist only there
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        var cwd = Environment.CurrentDirectory;
+        try
+        {
+            Environment.CurrentDirectory = tmp;
+            File.WriteAllText(Path.Combine(tmp, "secret.txt"), "x");
+            Assert.Null(state.PhotoFile($"/photos/{Path.GetPathRoot(tmp)![..2]}secret.txt"));
+        }
+        finally
+        {
+            Environment.CurrentDirectory = cwd;
+        }
+    }
+}
+
+[Collection("ProcessState")]  // Scoring's variant table is process-wide: the facts file's here
 public class EventCreatureTests : StateTestBase
 {
     public EventCreatureTests()

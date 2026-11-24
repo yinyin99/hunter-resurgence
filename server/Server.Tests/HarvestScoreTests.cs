@@ -5,6 +5,7 @@ using static Resurgence.Server.Tests.Fixtures;
 namespace Resurgence.Server.Tests;
 
 /// <summary>Every species the game can harvest, shot ethically, gets its score and its gm$ from the facts file's tables alone (made-up measurements, no variants file).</summary>
+[Collection("ProcessState")]  // Scoring.Load replaces the process-wide variant table with the facts file's
 public class HarvestScoreTests : StateTestBase
 {
     // families whose female has no antlers: a doe scores nothing, as the game does

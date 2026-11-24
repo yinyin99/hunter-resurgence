@@ -31,9 +31,6 @@ public class DailyMissionTests : StateTestBase
 
     public DailyMissionTests()
     {
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
         state = New("state.db");
         On(D0);
     }

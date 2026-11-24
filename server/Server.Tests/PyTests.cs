@@ -1,8 +1,6 @@
 using System.Text.Json.Nodes;
 using Resurgence.Server;
 
-[assembly: Xunit.v3.Parallelization(Mode = Xunit.Sdk.ParallelMode.None)]
-
 namespace Resurgence.Server.Tests;
 
 public class PyTests

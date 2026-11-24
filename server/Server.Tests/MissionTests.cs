@@ -31,9 +31,6 @@ public class MissionTests : StateTestBase
     public MissionTests()
     {
         state = New("state.db");
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9) };  // pinned, so no test reads files
     }
 
     State New(string name, bool offline = false)

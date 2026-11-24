@@ -243,8 +243,6 @@ public class AccountIsolationTests : StateTestBase
         connect["skills"] = LEVELS;
         state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS, skillList: NUMBERS, itemDefs: ITEM_DEFS);
         state.CreateAccount(B, "second");
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
     }
 
     /// <summary>The state with unlimited ammunition on and item 10 an ammunition.</summary>
@@ -494,8 +492,6 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS, offline: false);
         state.CreateAccount(8, "second");
         (tokenA, tokenB) = (state.Store.CreateToken(ME), state.Store.CreateToken(8));
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
         server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);

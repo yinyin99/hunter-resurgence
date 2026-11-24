@@ -3,6 +3,7 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
+[Collection("ProcessState")]  // Scoring.Load replaces the process-wide config
 public class ScoringTests : IDisposable
 {
     readonly string tmp = Directory.CreateTempSubdirectory("scoring").FullName;

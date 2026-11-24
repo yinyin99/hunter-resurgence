@@ -25,9 +25,6 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         state.CreateAccount(OTHER, "second");
         (tokenMe, tokenOther) = (state.Store.CreateToken(ME), state.Store.CreateToken(OTHER));
         (cookieMe, cookieOther) = (state.Store.CreateWebSession(ME, TimeSpan.FromHours(1)), state.Store.CreateWebSession(OTHER, TimeSpan.FromHours(1)));
-        Scoring.StaticHost = "static.test";
-        Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1) };
         using (var con = state.Store.Open(ME))
         {
             con.Begin();
