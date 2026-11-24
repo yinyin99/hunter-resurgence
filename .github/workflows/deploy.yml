@@ -22,7 +22,7 @@ jobs:
       DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # the whole history: the tagged commit must be on main
           persist-credentials: false
@@ -44,7 +44,7 @@ jobs:
           if [ -n "$DEPLOY_HOST" ] && [ -n "$DEPLOY_USER" ] && [ -n "$DEPLOY_KEY" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"
           else echo "::notice::DEPLOY_HOST, DEPLOY_USER or DEPLOY_KEY is not set: nothing deployed"; fi
       - if: steps.secrets.outputs.ok
-        uses: docker/setup-buildx-action@v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       # the layers come from the cache ci wrote on main for this same commit (.github/actions/build-image): nothing is rebuilt
       - name: Build and push the images
         if: steps.secrets.outputs.ok
