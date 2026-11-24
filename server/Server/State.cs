@@ -164,20 +164,23 @@ public sealed partial class State
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
-    /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.</summary>
+    /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
+    /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
-                                      double gmMultiplier = 1)
+                                      double gmMultiplier = 1, (double X, double Z)? standingAt = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
-        // its statistics are counted again when it closes
-        con.Exec("UPDATE expeditions SET end_ts = NULL, stats = NULL WHERE account_id = $a AND end_ts = last_seen"
+        // its statistics are counted again when it closes, and its distance is the walk measured up to then, which goes on
+        con.Exec("UPDATE expeditions SET end_ts = NULL, stats = NULL, distance = NULL WHERE account_id = $a AND end_ts = last_seen"
                  + " AND id = (SELECT MAX(id) FROM expeditions WHERE account_id = $a)");
+        if (standingAt is { } at)
+            Walk(con, now, at);
         con.Exec("UPDATE expeditions SET last_seen = ? WHERE account_id = $a AND end_ts IS NULL", now);
         var updates = new JsonArray(con.Rows("SELECT id, body FROM pending WHERE account_id = $a ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
         con.Exec("DELETE FROM pending WHERE account_id = $a");
@@ -377,10 +380,39 @@ public sealed partial class State
         return (Latest(7), Latest(22));
     }
 
-    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT before <paramref name="now"/>
+    /// <summary>The metres of the hunt's measured walk (<see cref="Walk"/>) as a whole distance: what a hunt closed with no disconnect has; NULL when no heartbeat position came.</summary>
+    const string WalkedMetres = "CAST(ROUND(walked) AS INTEGER)";
+
+    /// <summary>The fastest anyone walks or drives, in m/s: a step between two heartbeats beyond it over the time between them is a fast travel (a lodge or tent), not a walk.
+    /// ponytail: one speed for every vehicle and no look at the map; lower it if a fast travel of a short gap still counts.</summary>
+    const double MaxSpeed = 25;
+
+    /// <summary>The horizontal position (x and z, metres) of a heartbeat body; null when it has none: a coordinate that is no number, or all three 0 (before the game knows where the player is).</summary>
+    static (double X, double Z)? Position(JsonObject root)
+    {
+        if (!(Py.IsNum(root["xpos"]) && Py.IsNum(root["ypos"]) && Py.IsNum(root["zpos"])))
+            return null;
+        double x = Py.D(root["xpos"]), y = Py.D(root["ypos"]), z = Py.D(root["zpos"]);
+        return double.IsFinite(x) && double.IsFinite(z) && (x != 0 || y != 0 || z != 0) ? (x, z) : null;
+    }
+
+    /// <summary>Add the step from the open hunt's last heartbeat position to <paramref name="at"/> to its `walked`, and keep <paramref name="at"/> as its last position (call inside the heartbeat's transaction,
+    /// before last_seen moves). The first position of a hunt, one after a gap longer than HEARTBEAT_TIMEOUT (the hunt had closed) and a step faster than <see cref="MaxSpeed"/> over the gap add nothing.</summary>
+    static void Walk(Db con, double now, (double X, double Z) at)
+    {
+        if (con.Rows("SELECT id, last_x, last_z, last_seen FROM expeditions WHERE account_id = $a AND end_ts IS NULL ORDER BY id DESC LIMIT 1").FirstOrDefault() is not { } hunt)
+            return;
+        var gap = hunt[3] is DBNull ? 0 : now - Convert.ToDouble(hunt[3]);
+        var step = hunt[1] is DBNull || hunt[2] is DBNull || gap <= 0 || gap > HEARTBEAT_TIMEOUT
+            ? 0 : Math.Sqrt(Math.Pow(at.X - Convert.ToDouble(hunt[1]), 2) + Math.Pow(at.Z - Convert.ToDouble(hunt[2]), 2));
+        con.Exec("UPDATE expeditions SET last_x = ?, last_z = ?, walked = COALESCE(walked, 0) + ? WHERE account_id = $a AND id = ?",
+                 at.X, at.Z, step <= gap * MaxSpeed ? step : 0, hunt[0]);
+    }
+
+    /// <summary>End the open expedition at its last heartbeat if none came for HEARTBEAT_TIMEOUT before <paramref name="now"/>, with the walk measured as its distance
     /// (call inside a transaction); true when it closed one (credit the hunterscore after the commit).</summary>
     public static bool CloseStale(Db con, double now) =>
-        con.Exec("UPDATE expeditions SET end_ts = last_seen WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", now - HEARTBEAT_TIMEOUT) > 0;
+        con.Exec($"UPDATE expeditions SET end_ts = last_seen, distance = COALESCE(distance, {WalkedMetres}) WHERE account_id = $a AND end_ts IS NULL AND last_seen < ?", now - HEARTBEAT_TIMEOUT) > 0;
 
     /// <summary>Close and credit the stale hunts of every account (the timer's work: a quit through the game's menu sends no disconnect).</summary>
     public void CloseStaleHunts()
@@ -1856,7 +1888,7 @@ public sealed partial class State
         return (s, ty, Scoring.Css(sp, s));
     }
 
-    /// <summary>The client's disconnect call: close the open expedition; its body carries distance_travelled.</summary>
+    /// <summary>The client's disconnect call: close the open expedition; its body carries distance_travelled, the hunt's distance (the measured one, <see cref="Walk"/>, when the body has none).</summary>
     public void Disconnect(long account, byte[] body)
     {
         JsonNode? distance;
@@ -1871,7 +1903,7 @@ public sealed partial class State
         games.Leave(account);  // the host leaving ends the session for all
         using var con = Con(account);
         con.Begin();
-        var closed = con.Exec("UPDATE expeditions SET end_ts = ?, distance = ? WHERE account_id = $a AND end_ts IS NULL", Clock(), distance) > 0;
+        var closed = con.Exec($"UPDATE expeditions SET end_ts = ?, distance = COALESCE(?, {WalkedMetres}) WHERE account_id = $a AND end_ts IS NULL", Clock(), distance) > 0;
         con.Commit();
         if (closed)
             UpdateHunterscore(con, account);
@@ -2042,11 +2074,13 @@ public sealed partial class State
     {
         JsonArray events;
         JsonNode? positions = null;
+        (double X, double Z)? position = null;
         try
         {
             var root = JsonNode.Parse(body, documentOptions: new() { AllowDuplicateProperties = false }) as JsonObject ?? throw new JsonException("not a dict"); // a duplicate key (at any depth) is a JsonException here, not an ArgumentException at the first read
             events = root["events"] as JsonArray ?? new JsonArray();
             positions = root["player_positions"];
+            position = Position(root);
         }
         catch (JsonException)
         {
@@ -2056,7 +2090,7 @@ public sealed partial class State
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()));
+                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position);
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null)
             UpdateHunterscore(con, account);
@@ -2083,7 +2117,7 @@ public sealed partial class State
         using var con = Con(account);
         con.Begin();
         var now = Py.Now();
-        var closed = con.Exec("UPDATE expeditions SET end_ts = COALESCE(last_seen, ?) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
+        var closed = con.Exec($"UPDATE expeditions SET end_ts = COALESCE(last_seen, ?), distance = COALESCE(distance, {WalkedMetres}) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
         var tent = tentStart && Py.IsDigit(start) && long.TryParse(start, out var guid) && Py.IsDigit(reserve) && long.TryParse(reserve, out var web) && TentAt(con, guid, web) ? guid : (long?)null;
         long? location = null;
         if (tent is not null)

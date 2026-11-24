@@ -241,13 +241,19 @@ public sealed partial class State
     /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: their item ids `weaponId` and `ammoId`, null when the key is not a number, shots,
     /// accuracy % of shots, kills, kills per hit %, longest hit in metres or null), `animals` (spotted, tracked, harvested per species),
     /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue,
-    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total.</summary>
+    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total. `distanceKmHere` is the distance of the server hunts alone.</summary>
     public JsonObject StatisticsPage(long account)
     {
         JsonNode stats;
+        double hereM;
         using (var con = Con(account))
+        {
             stats = RestoredReads.StatisticsTotal(con);
-        return StatisticsView(stats);
+            hereM = RestoredReads.AddHunts(con, []).Distance;
+        }
+        var page = StatisticsView(stats);
+        page["distanceKmHere"] = hereM / 1000;
+        return page;
     }
 
     /// <summary>The tab's rows of a Statistics/total shaped node (<c>data</c> an object): a hunt's stats are one too.</summary>
