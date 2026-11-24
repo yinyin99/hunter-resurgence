@@ -12,7 +12,7 @@ public abstract class StateTestBase : IDisposable
     protected string Db => Path.Combine(tmp, "state.db");
     protected State state = null!;
 
-    public void Dispose() => DeleteDir(tmp);
+    public virtual void Dispose() => DeleteDir(tmp);
 
     protected static JsonNode Reply(byte[] body) => JsonNode.Parse(body)!;
 
@@ -1014,6 +1014,12 @@ public class EventCreatureTests : StateTestBase
         Scoring.Variants[1] = (30, 260, 1.1);  // what the other state tests pin, since the table is shared
         Scoring.Variants[17] = (600, 1800, 0.9);
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+        PinScoring();
     }
 
     JsonNode Kill(int individual, int species, int weightGrams, int ammo)

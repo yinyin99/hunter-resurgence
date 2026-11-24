@@ -24,6 +24,12 @@ public class HarvestScoreTests : StateTestBase
         state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
     }
 
+    public override void Dispose()
+    {
+        base.Dispose();
+        PinScoring();
+    }
+
     static JsonObject Antler() => O("""
         {"circumference_h1": 200, "circumference_h2": 180, "circumference_h3": 160, "circumference_h4": 140, "palm_length": 300, "palm_width": 200,
          "brow_palm_width": 100, "top_palm_width": 100, "top_palm_length": 100, "nof_points_excluding_brows": 6, "nof_brow_points": 2,

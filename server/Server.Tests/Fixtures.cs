@@ -8,7 +8,7 @@ using Resurgence.Server;
 namespace Resurgence.Server.Tests;
 
 // Test classes run in parallel (one collection per class). A test that sets process-wide state (an environment variable, the current directory, the console,
-// Scoring's config) is in this collection instead: xUnit runs it alone, after all the parallel ones, so it sets up what it needs itself.
+// Scoring's config) is in this collection instead: xUnit runs it alone, after all the parallel ones, and it puts back what it changed.
 [CollectionDefinition("ProcessState", DisableParallelization = true)]
 public sealed class ProcessStateCollection;
 
