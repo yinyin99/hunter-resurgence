@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Vânat pe oră</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Vânători</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Cea mai bună rezervație</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} în total · {1} pe {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>în total</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>pe {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Niciun sezon nu s-a încheiat încă</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Cele mai bune scoruri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit este un joc arcade retro pe care îl puteți juca pe Huntermate pentru a vă distra cât așteptați să apară trofeul!</value></data>

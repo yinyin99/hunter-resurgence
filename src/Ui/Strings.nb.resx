@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Felte dyr per time</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Jegere</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Beste reservat</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} totalt · {1} på {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>totalt</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>på {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen sesong er avsluttet ennå</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Høyeste poeng i Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et kult retro-arkadespill du kan spille på HunterMate for å få tiden til å gå mens du venter på at trofeet skal dukke opp!</value></data>

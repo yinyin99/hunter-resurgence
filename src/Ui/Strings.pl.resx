@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Upolowane zwierzęta na godzinę</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Myśliwi</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Najlepszy rezerwat</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} łącznie · {1} na {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>łącznie</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>na {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Żaden sezon jeszcze się nie zakończył</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najlepsze wyniki Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit to fajna gra arcade w stylu retro, w którą możesz zagrać na swoim Huntermacie, by umilić sobie czekanie na wymarzone trofeum!</value></data>

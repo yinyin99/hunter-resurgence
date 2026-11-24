@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Elejtés óránként</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Vadászok</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Legjobb terület</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} összesen · {1} itt: {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>összesen</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>itt: {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Még egyetlen szezon sem ért véget</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit legjobb pontszámok</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>A Lane Bandit egy klassz retro arcade játék, amelyet a Huntermate-en játszhatsz, hogy szórakoztasson, amíg a trófea megjelenésére vársz!</value></data>

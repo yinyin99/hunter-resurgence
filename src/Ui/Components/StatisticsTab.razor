@@ -18,10 +18,10 @@
             <h4>@L["Prof.Collectables"]</h4>
             <CollectableTable Rows="totals.Collectables" />
             <h4>@L["Stat.Misc"]</h4>
-            <table class="misc tbl"><tbody>
-                <tr><td>@L["Stat.Distance"]</td><td>@L.TotalHere(Fmt.Kilometres(L, totals.DistanceKm), totals.DistanceKmHere is { } hereKm ? Fmt.Kilometres(L, hereKm) : null)</td></tr>
-                <tr><td>@L["Stat.Duration"]</td><td>@L.TotalHere(Fmt.Duration(L, totals.HuntSeconds), totals.HuntSecondsHere is { } hereSeconds ? Fmt.Duration(L, hereSeconds) : null)</td></tr>
-            </tbody></table>
+            <div class="misc-box"><table class="misc tbl"><tbody>
+                <tr><td>@L["Stat.Distance"]</td><td>@Figures(Fmt.Kilometres(L, totals.DistanceKm), totals.DistanceKmHere is { } hereKm ? Fmt.Kilometres(L, hereKm) : null)</td></tr>
+                <tr><td>@L["Stat.Duration"]</td><td>@Figures(L.Playtime(totals.HuntSeconds), totals.HuntSecondsHere is { } hereSeconds ? L.Playtime(hereSeconds) : null)</td></tr>
+            </tbody></table></div>
         }
         break;
     case "history":
@@ -86,6 +86,12 @@
     async Task LoadLast() => last = await Service.ExpeditionAsync(Handle, null) ?? last;
 
     void Season(ChangeEventArgs e) => Nav.NavigateTo($"/profile/{Handle}/statistics/best/{e.Value}");
+
+    // a statistic's total first, then the part of it from this server's hunts (when the server sends it): two figures, one per line, each a value with its small label
+    RenderFragment Figures(string total, string? here) => @<div class="figs">
+        <span class="fig"><span class="val">@total</span>@(" ")@if (here is not null) { <span class="what">@L["Fmt.Total"]</span> }</span>
+        @if (here is not null) { <span class="fig"><span class="val">@here</span>@(" ")<span class="what">@L["Fmt.OnServer", L["App.Name"]]</span></span> }
+    </div>;
 
     RenderFragment Best() => @<div class="best">
         @switch (best!.Status)
