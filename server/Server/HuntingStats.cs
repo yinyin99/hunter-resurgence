@@ -166,6 +166,6 @@ public sealed partial class State
                 ["species"] = SpeciesLabel(s.Key.Species), ["reserve"] = ReserveName(JsonValue.Create(s.Key.Reserve)), ["harvests"] = s.Value.Harvests, ["gm"] = s.Value.Gm,
             })]),
             ["otherGm"] = new JsonObject([.. p.OtherGm.OrderBy(o => o.Key).Select(o => KeyValuePair.Create(o.Key, (JsonNode?)o.Value))]),
-        }))]),
+        })]),
     };
 }
