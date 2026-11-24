@@ -28,11 +28,21 @@ public sealed partial class State
 
     string ItemName(long id) => items.TryGetValue(id, out var item) && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
 
-    /// <summary>The items of a condition by name; a single item that shares its name with another of its kind is `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>).</summary>
-    string ItemNames(IEnumerable<long> ids) =>
-        Names(ids.ToList() is [var id] && items.TryGetValue(id, out var item) && Py.IsStr(item["variationname"]) && Py.IsNum(item["cat"])
-            && items.Any(o => o.Key != id && Py.IsNum(o.Value["cat"]) && Py.L(o.Value["cat"]) == Py.L(item["cat"]) && ItemName(o.Key) == ItemName(id))
-            ? [$"{ItemName(id)} ({(string)item["variationname"]!})"] : ids.Select(ItemName));
+    /// <summary>The items of a condition by name. A name is printed bare only when the set holds every item of that name and category; otherwise each held item that has a variant is
+    /// `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>), so the printed words read back to the same set.</summary>
+    string ItemNames(IEnumerable<long> ids)
+    {
+        var held = ids.ToHashSet();
+        static long? CatOf(JsonNode item) => Py.IsNum(item["cat"]) ? Py.L(item["cat"]) : null;
+        string Label(long id)
+        {
+            if (!items.TryGetValue(id, out var item) || !Py.IsStr(item["variationname"]))
+                return ItemName(id);
+            var whole = items.All(o => o.Key == id || held.Contains(o.Key) || ItemName(o.Key) != ItemName(id) || CatOf(o.Value) != CatOf(item));
+            return whole ? ItemName(id) : $"{ItemName(id)} ({(string)item["variationname"]!})";
+        }
+        return Names(held.Select(Label));
+    }
 
     string SpeciesName(long id) => species.TryGetValue(id, out var s) && Py.IsStr(s["name"]) ? ((string)s["name"]!).Split(" (")[0] : "species " + id;
 

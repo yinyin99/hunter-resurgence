@@ -105,4 +105,15 @@ public class MissionRulesTests : MissionTestBase
         Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol", first[1]);  // both variants: the name alone
         Assert.Equal(first, Print(New("variant2.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = Rule(first[0]), ["2/0"] = Rule(first[1]) })));
     }
+
+    [Fact]
+    public void TestAVariantWeaponAmongOtherWeaponsKeepsItsVariantWhenThePrintedRuleReadsBack()
+    {
+        var catalogue = Missions(Mission(1, "Harvest a Test Deer"));
+        List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
+        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Test Carbine" }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Wolfsbane)", first[0]);  // not the bare name: that would be both variants
+        var again = New("variant4.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = first[0][(first[0].IndexOf("=> ", StringComparison.Ordinal) + 3)..] });
+        Assert.Equal(first, Print(again));
+    }
 }
