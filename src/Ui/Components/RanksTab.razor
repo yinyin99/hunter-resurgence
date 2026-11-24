@@ -15,7 +15,7 @@ else
     {
         <div class="row">
             <AssetSlot Name="@(b.Id > 0 ? "rank-" + b.Id : "rank-" + sub)" Width="114" Height="114" Class="badge" />
-            <div class="what"><h4>@L.Term(b.Name)</h4><div class="bar"><i style="width:@Pct(b)%"></i><b>@b.Level.ToString("N0")</b></div></div>
+            <div class="what"><h4>@L.Term(b.Name)</h4><div class="bar"><i style="width:@Pct(b)%"></i><b>@Fmt.Num(b.Level, "0")</b></div></div>
         </div>
     }
 }
@@ -34,6 +34,6 @@ else
 
     RenderFragment Overview(RankBar b, string slot, bool big) => @<div class="ov">
         <AssetSlot Name="@slot" Width="40" Height="40" />
-        <div class="bar @(big ? "big" : "")"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @b.Done.ToString("N0") / @b.Total.ToString("N0") (@Pct(b)%)</b> }</div>
+        <div class="bar @(big ? "big" : "")"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</b> }</div>
     </div>;
 }
