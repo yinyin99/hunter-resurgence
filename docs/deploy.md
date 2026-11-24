@@ -287,7 +287,7 @@ post() {  # $1: the admin command and its options, $2: the first words of its re
     while read -r body; do curl -fsS -o /dev/null -H 'Content-Type: application/json' -d "$body" "$url"; sleep 1; done
 }
 post missions-audit 'missions audit'
-post missions-stuck 'missions stuck'
+post 'missions-stuck --min-candidates 50' 'missions stuck'
 ```
 
 Each message is one post (`allowed_mentions` empty, so a handle such as `@everyone` pings nobody; one second apart, under the webhook's rate limit); `sed` drops what the server prints before the report (a `skip` line for a recording it cannot read). The crontab line (`crontab -e` as `deploy`), with the output kept for a failed post:
@@ -296,7 +296,7 @@ Each message is one post (`allowed_mentions` empty, so a handle such as `@everyo
 30 6 * * * sh ~/web/missions-audit.sh >> ~/web/missions-audit.log 2>&1
 ```
 
-`sh ~/web/missions-audit.sh` by hand posts it at once. Both reports only read the database, so they run in the live container. The stuck report lists every objective that meets its thresholds, a long post at first: write `post 'missions-stuck --min-candidates 50' 'missions stuck'` in the script for a shorter one.
+`sh ~/web/missions-audit.sh` by hand posts it at once. Both reports only read the database, so they run in the live container. The stuck report's own default is 5 candidates, which listed over 130 objectives at first; the script asks for 50 (`--min-candidates 50`), so the daily post lists only the objectives with many attempts and no completion, or one condition that refuses nearly all of them. Lower the number in the script, or run the command by hand with the default, to see more.
 
 ## Logs
 
