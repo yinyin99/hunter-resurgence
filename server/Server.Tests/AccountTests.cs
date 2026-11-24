@@ -375,6 +375,21 @@ public class AccountIsolationTests : StateTestBase
     }
 
     [Fact]
+    public void TestANonTypicalHarvestIsSentAsItsTypicalSpeciesWithItsVariantApart()
+    {
+        state.NoteLaunch(A, "start=100&reserve=2"u8.ToArray());
+        var events = Harvest(71, 50000);
+        events[^1]["extended_species"] = 101;
+        Hb(A, events);
+        var harvest = Reply(state.HarvestReply(A, 1)!);
+        Eq("""[1, "MULE_DEER"]""", T(harvest["species"], harvest["species_define"]));
+        var page = Encoding.UTF8.GetString(state.ScorePageReply(A, 1)!);
+        Assert.Contains("\"variant\":101,", page);  // the score page's killData: the variant, and the typical species last
+        Assert.Contains("\"species\":1}", page);
+        Assert.Equal(101L, (long)ExpeditionOf(A)["kills"]![0]!["species"]!);  // the hunt's kill names the variant
+    }
+
+    [Fact]
     public void TestExpeditionsStayInTheirAccount()
     {
         state.NoteLaunch(A, "start=100&reserve=2"u8.ToArray());

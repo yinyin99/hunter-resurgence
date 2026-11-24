@@ -2187,12 +2187,26 @@ public sealed partial class State
         ["weight"] = C(spawn["weight_grams"]),
     };
 
+    /// <summary>A harvest page as the game reads it (<see cref="HarvestReply"/>, <see cref="TrophyRows"/>): a non-typical rack, stored with its variant (`species` 100 and up), is a page of
+    /// its typical species and define, as the original sent it; the game has no model for the variant and leaves it out of the lodge editor. The variant stays in the kill's
+    /// `extended_species`, which scoring, the hunterscore, missions and challenges read.</summary>
+    JsonObject AsTypical(JsonObject page)
+    {
+        if (Py.IsNum(page["species"]) && Py.L(page["species"]) >= 100)
+        {
+            var typical = Mod100(page["species"]);
+            page["species"] = typical;
+            page["species_define"] = C(Lookup(species, (JsonNode)typical)?["define"]);
+        }
+        return page;
+    }
+
     /// <summary>GET /game/user/harvest/&lt;kill_id&gt; body: this server's kill, else the harvest record a restore brought; null for an unknown kill.</summary>
     public byte[]? HarvestReply(long account, long killId)
     {
         using var con = Con(account);
         var row = con.Rows("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", killId).FirstOrDefault();
-        return row is not null ? Encoding.UTF8.GetBytes((string)row[0]) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
+        return row is not null ? Py.DumpBytes(AsTypical(Parse(row[0]))) : Online ? RowReply(account, "trophies", "/game/user/harvest", killId.ToString()) : null;
     }
 
     /// <summary>Public_user/expedition: the server expedition named by expedition_id (the latest without it) and its kills; else a hunt a restore saved (the newest without an id); else the recorded reply.</summary>
@@ -2327,10 +2341,10 @@ public sealed partial class State
             ["features"] = f is not null ? C(f) : new JsonObject(),
             ["weight"] = C(entry["weight"]),
             ["expedition"] = expeditions,
-            ["gender"] = C(entry["gender"]), ["variant"] = Mod100(sp), ["id"] = killId, ["texture"] = C(entry["texture"]),
-            ["species"] = C(entry["species"]),
+            ["gender"] = C(entry["gender"]), ["variant"] = C(sp), ["id"] = killId, ["texture"] = C(entry["texture"]),
+            ["species"] = Mod100(sp),  // the original's: the typical species, the variant (a non-typical rack's 100 and up) apart
         };
-        var define = Lookup(species, entry["species"]) is { } s ? Py.Str(G(s, "define", "")) : "";
+        var define = Lookup(species, (JsonNode)Mod100(sp)) is { } s ? Py.Str(G(s, "define", "")) : "";
         var speciesName = (string?)entry["speciesName"] ?? "";
         var reserveName = expedition is not null && TryKey(Py.FromSql(expedition[1]), out var rid)
                           && reserves.TryGetValue(rid, out var rn) ? rn ?? "" : "";

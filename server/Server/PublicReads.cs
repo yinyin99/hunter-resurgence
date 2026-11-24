@@ -376,6 +376,7 @@ public sealed partial class State
         {
             var body = JsonNode.Parse((string)r[1])!;
             if (body is not JsonObject page || !all && !InEditor(page, grace)) continue;
+            AsTypical(page);
             var row = new JsonObject { ["id"] = (long)r[0], ["hidden"] = (long)r[2] != 0 };
             foreach (var field in TrophyFields)
                 row[field] = C(body[field]);

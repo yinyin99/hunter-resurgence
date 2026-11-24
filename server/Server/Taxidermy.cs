@@ -42,7 +42,7 @@ public sealed partial class State
         if (TaxidermyEnd(page, Store.TaxidermyGrace()) is not { } end || Clock() > end)
             return (410, "too_late");
         var skull = product == SKULL;
-        if (skull && !facts.HasSkull((string?)page["species_define"]))
+        if (skull && !facts.HasSkull((string?)AsTypical((JsonObject)page.DeepClone())["species_define"]))
             return (400, "no_skull");
         var (ems, gms) = facts.TaxidermyPrice();
         var price = currency == "gm" ? gms : ems;
@@ -74,7 +74,7 @@ public sealed partial class State
                 offers[(long)r[0]] = new JsonObject
                 {
                     ["end"] = DateTimeOffset.FromUnixTimeSeconds(end).UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture), ["ems"] = ems, ["gms"] = gms,
-                    ["skull"] = facts.HasSkull((string?)page["species_define"]), ["done"] = TaxidermyDone(page),
+                    ["skull"] = facts.HasSkull((string?)AsTypical(page)["species_define"]), ["done"] = TaxidermyDone(page),
                 };
         return offers;
     }
