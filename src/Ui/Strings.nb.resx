@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Ingen er rangert her ennå</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Rangeringen kunne ikke lastes. Prøv igjen.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Prøv igjen</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Jaktstatistikk</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Alles jakter på denne serveren, per reservat og per art. En rad basert på færre enn 5 jegere vises ikke.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Ingen jaktstatistikk ennå.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Per reservat</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Per art</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Timer jaktet</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ per time</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ per felt dyr</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Felte dyr per time</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Jegere</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Beste reservat</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} totalt · {1} på {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen sesong er avsluttet ennå</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Høyeste poeng i Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et kult retro-arkadespill du kan spille på HunterMate for å få tiden til å gå mens du venter på at trofeet skal dukke opp!</value></data>

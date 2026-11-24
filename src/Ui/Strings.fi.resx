@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Täällä ei ole vielä ketään sijoittuneena</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Tulostaulua ei voitu ladata. Yritä uudelleen.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Yritä uudelleen</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Metsästystilastot</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Kaikkien tämän palvelimen metsästäjien metsästykset alueittain ja lajeittain. Riviä, jonka pohjana on alle 5 metsästäjää, ei näytetä.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Metsästystilastoja ei vielä ole.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Alueittain</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Lajeittain</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Metsästystunnit</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ tunnissa</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ saalista kohti</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Saalista tunnissa</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Metsästäjät</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Paras alue</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} yhteensä · {1} palvelimella {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Yksikään kausi ei ole vielä päättynyt</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Parhaat Lane Bandit -tulokset</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>

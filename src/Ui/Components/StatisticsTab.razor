@@ -19,8 +19,8 @@
             <CollectableTable Rows="totals.Collectables" />
             <h4>@L["Stat.Misc"]</h4>
             <table class="misc tbl"><tbody>
-                <tr><td>@L["Stat.Distance"]</td><td>@Fmt.Kilometres(L, totals.DistanceKm)</td></tr>
-                <tr><td>@L["Stat.Duration"]</td><td>@Fmt.Duration(L, totals.HuntSeconds)</td></tr>
+                <tr><td>@L["Stat.Distance"]</td><td>@L.TotalHere(Fmt.Kilometres(L, totals.DistanceKm), totals.DistanceKmHere is { } hereKm ? Fmt.Kilometres(L, hereKm) : null)</td></tr>
+                <tr><td>@L["Stat.Duration"]</td><td>@L.TotalHere(Fmt.Duration(L, totals.HuntSeconds), totals.HuntSecondsHere is { } hereSeconds ? Fmt.Duration(L, hereSeconds) : null)</td></tr>
             </tbody></table>
         }
         break;

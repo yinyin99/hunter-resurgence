@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Încă nu este nimeni clasat aici</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Clasamentul nu a putut fi încărcat. Încearcă din nou.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Încearcă din nou</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Statistici de vânătoare</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Vânătorile tuturor jucătorilor de pe acest server, pe rezervație și pe specie. Un rând bazat pe mai puțin de 5 vânători nu este afișat.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Încă nu există statistici de vânătoare.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Pe rezervație</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Pe specie</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Ore de vânătoare</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ pe oră</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ pe vânat</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Vânat pe oră</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Vânători</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Cea mai bună rezervație</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} în total · {1} pe {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Niciun sezon nu s-a încheiat încă</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Cele mai bune scoruri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit este un joc arcade retro pe care îl puteți juca pe Huntermate pentru a vă distra cât așteptați să apară trofeul!</value></data>

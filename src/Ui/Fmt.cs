@@ -77,6 +77,9 @@ public static class Fmt
     /// <summary>102.89 km (63.93 miles)</summary>
     public static string Kilometres(this IStringLocalizer l, double km) => l["Fmt.Kilometres", km.ToString("0.00", English), (km * 0.621371192).ToString("0.00", English)];
 
+    /// <summary>"1d 3h total · 41h on Hunter Resurgence": a statistic's total and the part of it from this server's hunts; the total alone when the server does not send the part (<paramref name="here"/> null).</summary>
+    public static string TotalHere(this IStringLocalizer l, string total, string? here) => here is null ? total : l["Fmt.TotalHere", total, here, l["App.Name"]];
+
     /// <summary>79.31%: always with a point, in every language.</summary>
     public static string Pct(double v) => v.ToString("0.00", English) + "%";
 

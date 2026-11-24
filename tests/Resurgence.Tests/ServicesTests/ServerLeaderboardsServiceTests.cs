@@ -201,4 +201,36 @@ public class ServerLeaderboardsServiceTests
         Assert.Null(await Make(fake).MyRankAsync("lanebandit", 0, 0));  // the server keeps a place on the hunterscore board only
         Assert.Empty(fake.Seen);
     }
+
+    [Fact]
+    public async Task TheHuntingStatisticsAreTheServersRows()
+    {
+        var fake = new Fake(_ => Json(HttpStatusCode.OK, """
+            {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.5,"gmPerHarvest":310.25,"harvestsPerHour":5.5,"players":12}],
+             "species":[{"species":"Fox","hours":40,"gmPerHour":900,"gmPerHarvest":150,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve A"},
+                        {"species":"Deer","hours":10,"gmPerHour":500,"gmPerHarvest":100,"harvestsPerHour":5,"players":6,"bestReserve":null}]}
+            """));
+        var stats = await Make(fake).HuntingAsync();
+        Assert.Equal([new ReserveHunting("Reserve A", 120.5, 1234.5, 310.25, 5.5, 12)], stats.Reserves);
+        Assert.Equal([new SpeciesHunting("Fox", 40, 900, 150, 6, 9, "Reserve A"), new SpeciesHunting("Deer", 10, 500, 100, 5, 6, null)], stats.Species);
+        var request = Assert.Single(fake.Seen);
+        Assert.Equal("/stats/hunting", request.RequestUri!.AbsolutePath);
+        Assert.Equal("site.test", request.Headers.Host);
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.OK, "{}")]               // a reply without the lists
+    [InlineData(HttpStatusCode.Unauthorized, "{}")]     // signed out: an answer, not an outage
+    [InlineData(HttpStatusCode.NotFound, "{}")]
+    public async Task NoHuntingStatisticsAreAnEmptyOne(HttpStatusCode code, string body)
+    {
+        var stats = await Make(new Fake(_ => Json(code, body))).HuntingAsync();
+        Assert.Equal((0, 0), (stats.Reserves.Count, stats.Species.Count));
+    }
+
+    [Theory]
+    [InlineData(HttpStatusCode.InternalServerError, "{}")]
+    [InlineData(HttpStatusCode.OK, "<html>")]
+    public async Task FailedHuntingStatisticsAreUnavailable(HttpStatusCode code, string body) =>
+        await Assert.ThrowsAsync<BoardUnavailableException>(() => Make(new Fake(_ => Json(code, body))).HuntingAsync());
 }

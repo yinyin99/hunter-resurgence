@@ -70,4 +70,9 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
     // an ended season's best of each species; the first season's winners are the restored accounts' hunters
     public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>(
         season != 1 ? [] : [.. Names.Species.OrderBy(s => s.Name).Select(s => new HallEntry(s.Name, Row("score", s.Id, 1, season), Row("range", s.Id, 1, season)))]);
+
+    // three reserves and eight species, each built from more than 5 hunters (the server leaves a smaller row out)
+    public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats(
+        [.. new[] { "Reserve A", "Reserve B", "Reserve C" }.Select((r, i) => new ReserveHunting(r, 2400.5 - i * 700, 1800 + i * 450.25, 310 + i * 40.5, 5.8 - i * 0.7, 120 - i * 30))],
+        [.. Names.Species.Take(8).Select((s, i) => new SpeciesHunting(s.Name, 150.25 + i * 20, 900 + i * 210.5, 150 + i * 35.75, 6.1 - i * 0.4, 20 + i * 9, "Reserve " + (char)('A' + i % 3)))]));
 }

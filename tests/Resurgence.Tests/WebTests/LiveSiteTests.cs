@@ -392,7 +392,7 @@ public sealed class LiveSiteTests : UiContext
     [InlineData("halloffame", "/")]
     [InlineData("antlers/single", "/leaderboards/score")]
     [InlineData("bustthrough", "/")]
-    public void TheLiveBoardsAreTheServersSix(string path, string landed)
+    public void TheLiveBoardsAreTheServersSixAndItsHuntingStatistics(string path, string landed)
     {
         Services.AddSingleton<ILeaderboardsService>(new ServerLeaderboardsService(
             new HttpClient(new Answer(HttpStatusCode.OK, """{"page": 1, "pages": 1, "total": 0, "rows": []}""")) { BaseAddress = new Uri("http://server.test") }, new ServerCookie(), NullLogger<ServerLeaderboardsService>.Instance));
@@ -402,7 +402,7 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<Leaderboards>(p => p.Add(l => l.Path, path));
 
         Assert.Equal(landed, "/" + nav.ToBaseRelativePath(nav.Uri));
-        Assert.Equal(["/leaderboards/score", "/leaderboards/range", "/leaderboards/hunterscore", "/leaderboards/halloffame", "/leaderboards/lanebandit", "/leaderboards/bustthrough"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["/leaderboards/score", "/leaderboards/range", "/leaderboards/hunterscore", "/leaderboards/halloffame", "/leaderboards/lanebandit", "/leaderboards/bustthrough", "/leaderboards/hunting"], cut.FindAll(".tabs a").Select(a => a.GetAttribute("href")));
     }
 
     // the live help keeps its support tab and the daily missions': the other tabs are the mock's, and their addresses go to /help

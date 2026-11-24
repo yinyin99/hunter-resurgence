@@ -15,6 +15,15 @@ public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);
 /// <summary>Winner of a past season for one species: best score and best range.</summary>
 public sealed record HallEntry(string Species, Ranked? Score, Ranked? Range);
 
+/// <summary>A reserve's row of the hunting statistics: the hours hunted there by every hunter, gm$ earned per hour and per harvest, harvests per hour and the number of hunters behind the row.</summary>
+public sealed record ReserveHunting(string Reserve, double Hours, double GmPerHour, double GmPerHarvest, double HarvestsPerHour, int Players);
+
+/// <summary>A species' row of the hunting statistics, with the reserve where it earns most gm$ per hour (null when none).</summary>
+public sealed record SpeciesHunting(string Species, double Hours, double GmPerHour, double GmPerHarvest, double HarvestsPerHour, int Players, string? BestReserve = null);
+
+/// <summary>The server-wide hunting statistics: figures of all hunters together, never a player's name; a row built from too few hunters is left out by the server.</summary>
+public sealed record HuntingStats(IReadOnlyList<ReserveHunting> Reserves, IReadOnlyList<SpeciesHunting> Species);
+
 /// <summary>A board that could not be read: the server did not answer (in time) or answered an error. An empty board is an answer, not this.</summary>
 public sealed class BoardUnavailableException(string message, Exception? inner = null) : Exception(message, inner);
 
@@ -33,4 +42,6 @@ public interface ILeaderboardsService
     Task<Ranked?> MyRankAsync(string kind, int id, int season);
     /// <summary>The best of each species of an ended season; none for all time and for the current season.</summary>
     Task<IReadOnlyList<HallEntry>> HallAsync(int season);
+    /// <summary>The server-wide hunting statistics; empty when the server has none.</summary>
+    Task<HuntingStats> HuntingAsync();
 }
