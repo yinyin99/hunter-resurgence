@@ -33,6 +33,7 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 107, "name": "Test 30 30 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 108, "name": "Test 30 06 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 105, "name": "Test Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 106, "name": "Test Maker Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 66, "name": "Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 67, "name": "Heavy Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
+        """{"id": 109, "name": "Test Twin Pistol", "variationname": "Standard", "cat": 1, "subcat": {"name": "Handguns"}}""", """{"id": 110, "name": "Test Twin Pistol", "variationname": "Wolfsbane", "cat": 1, "subcat": {"name": "Handguns"}}""",
         """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
     ];
 
