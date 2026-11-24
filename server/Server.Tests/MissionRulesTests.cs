@@ -76,9 +76,8 @@ public class MissionRulesTests : MissionTestBase
     public void TestARuleThatAcceptsNoSpeciesOfTheMissionsListIsWarned()
     {
         var w = Warnings("species.db", Mission(1, "Harvest a Test Fox", ", \"species\": [1]"), Mission(2, "Harvest a Test Deer", ", \"species\": [1]"), Mission(3, "Harvest a Test Fox", ", \"species\": []"),
-            Mission(4, "Arrive at Test Fox Bay", ", \"species\": [1]"), Mission(5, "Harvest any animal except a Test Deer", ", \"species\": [1]"));  // 4: an arrival checks no species
-        Assert.Equal(["warning species: mission 1 objective 0: the rule accepts Test Fox, none of the mission's species (Test Deer)",
-                      "warning species: mission 5 objective 0: the rule accepts any species except Test Deer, none of the mission's species (Test Deer)"], w);
+            Mission(4, "Arrive at Test Fox Bay", ", \"species\": [1]"), Mission(5, "Harvest any animal except a Test Deer", ", \"species\": [1]"));  // 4: an arrival checks no species; 5: the complement leaves the mission's species out on purpose
+        Assert.Equal(["warning species: mission 1 objective 0: the rule accepts Test Fox, none of the mission's species (Test Deer)"], w);
     }
 
     [Fact]
