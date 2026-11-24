@@ -133,8 +133,8 @@ public sealed partial class State
             .Select(g => (Name: ReserveName(JsonValue.Create(g.Key)), Row: Rates(new JsonObject { ["reserve"] = ReserveName(JsonValue.Create(g.Key)), ["players"] = g.Count() },
                 g.Sum(x => x.Value.Seconds), g.Sum(x => x.Value.Gm), g.Sum(x => x.Value.Harvests))))
             .OrderBy(x => x.Name, StringComparer.Ordinal).Select(x => (JsonNode?)x.Row);
-        // a species name can be several ids (the antler types): one cell per player and reserve, the reserve's playtime counted once
-        var cells = players.SelectMany(p => p.Species.Select(s => (p.Account, Name: SpeciesLabel(s.Key.Species), s.Key.Reserve, s.Value, Seconds: p.Reserves[s.Key.Reserve].Seconds)))
+        // a name is one id (the typical and the non-typical deer are listed apart): one cell per player and reserve, the reserve's playtime counted once
+        var cells = players.SelectMany(p => p.Species.Select(s => (p.Account, Name: BoardName(s.Key.Species), s.Key.Reserve, s.Value, Seconds: p.Reserves[s.Key.Reserve].Seconds)))
             .GroupBy(c => (c.Name, c.Account, c.Reserve)).Select(g => (g.Key.Name, g.Key.Account, g.Key.Reserve, Harvests: g.Sum(c => c.Value.Harvests), Gm: g.Sum(c => c.Value.Gm), g.First().Seconds));
         var speciesRows = cells.GroupBy(c => c.Name).Where(g => g.Select(c => c.Account).Distinct().Count() >= HuntingMinPlayers)
             .Select(g =>
@@ -159,7 +159,7 @@ public sealed partial class State
             ["reserves"] = new JsonArray([.. p.Reserves.OrderBy(r => r.Key).Select(r => (JsonNode?)Rates(new JsonObject { ["reserve"] = ReserveName(JsonValue.Create(r.Key)), ["gm"] = r.Value.Gm, ["harvests"] = r.Value.Harvests }, r.Value.Seconds, r.Value.Gm, r.Value.Harvests))]),
             ["species"] = new JsonArray([.. p.Species.OrderBy(s => s.Key.Species).ThenBy(s => s.Key.Reserve).Select(s => (JsonNode?)new JsonObject
             {
-                ["species"] = SpeciesLabel(s.Key.Species), ["reserve"] = ReserveName(JsonValue.Create(s.Key.Reserve)), ["harvests"] = s.Value.Harvests, ["gm"] = s.Value.Gm,
+                ["species"] = BoardName(s.Key.Species), ["reserve"] = ReserveName(JsonValue.Create(s.Key.Reserve)), ["harvests"] = s.Value.Harvests, ["gm"] = s.Value.Gm,
             })]),
             ["otherGm"] = new JsonObject([.. p.OtherGm.OrderBy(o => o.Key).Select(o => KeyValuePair.Create(o.Key, (JsonNode?)o.Value))]),
         })]),

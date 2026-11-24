@@ -266,7 +266,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Assert.Matches($@"\A{Regex.Escape(photos)}1-2-[0-9a-f]{{32}}\.jpg\z", trophyUrl);
         Eq($$"""{"id": 3, "type": 1, "url": "{{cameraUrl}}", "thumbnail": "{{cameraUrl}}", "label": "", "animal": ""}""", other["photos"]![0]);  // no thumbnail sent: the picture itself
         var trophyThumb = trophyUrl[..^".jpg".Length] + "-thumb.jpg";
-        Eq($$"""[1, 2, "Test Deer", "{{trophyUrl}}", "{{trophyThumb}}"]""",
+        Eq($$"""[1, 2, "Test Deer (Typical)", "{{trophyUrl}}", "{{trophyThumb}}"]""",
            T(other["photos"]![1]!["id"], other["photos"]![1]!["type"], other["photos"]![1]!["animal"], other["photos"]![1]!["url"], other["photos"]![1]!["thumbnail"]));
         Assert.False(string.IsNullOrEmpty((string?)other["photos"]![1]!["label"]));  // the kill's score
         Eq("[1]", Ids((await Api(Replay.GALLERY_LIST, tokenA, "user_id=8&offset=1&limit=1"))["photos"]!));
@@ -334,7 +334,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         Hb(O("""{"event": 7, "individual": 71, "species": 1, "gender": 0, "weight_grams": 5000, "texture": 0}"""));  // the id is used again
         Photo("""{"event": 4, "hash": 2, "photo_type": 2, "individual": 71}""");  // the second animal's: no kill
         var photos = state.GalleryListReply(ME, ""u8.ToArray())!;
-        Eq("""[2, ["", "Test Deer"]]""", T(Reply(photos)["total"], new JsonArray(Reply(photos)["photos"]!.AsArray().Select(p => (JsonNode?)p!["animal"]!.DeepClone()).ToArray())));
+        Eq("""[2, ["", "Test Deer (Typical)"]]""", T(Reply(photos)["total"], new JsonArray(Reply(photos)["photos"]!.AsArray().Select(p => (JsonNode?)p!["animal"]!.DeepClone()).ToArray())));
         Assert.Contains("/1-2-", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
         Assert.DoesNotContain("/2-2-", (string)Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]![0]!["kill"]!["photo"]!);
     }

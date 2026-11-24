@@ -334,8 +334,8 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var page = JsonNode.Parse(reply.Body)!;
         var w = page["weapons"]!.AsArray().Single()!;
         Assert.Equal(("Test Rifle", "Test Bullet", 4L, 75.0, 1L, 33.3, 123.0), ((string)w["weapon"]!, (string)w["ammo"]!, (long)w["shots"]!, (double)w["accuracy"]!, (long)w["kills"]!, (double)w["killsPerHit"]!, (double)w["longest"]!));
-        // by name, species the catalogue does not know keep their id
-        Assert.Equal([("99", 0L, 0L, 4L), ("Test Deer", 3L, 2L, 1L)],
+        // by name, species the catalogue does not know are named by their id
+        Assert.Equal([("#99", 0L, 0L, 4L), ("Test Deer (Typical)", 3L, 2L, 1L)],
             page["animals"]!.AsArray().Select(a => ((string)a!["name"]!, (long)a["spotted"]!, (long)a["tracked"]!, (long)a["harvested"]!)));
         Assert.Equal((5.0, 7200L, 0), ((double)page["distanceKm"]!, (long)page["huntSeconds"]!, page["collectables"]!.AsArray().Count));
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/statistics")).Status);
@@ -355,7 +355,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(200, reply.Status);
         var page = JsonNode.Parse(reply.Body)!;
         Assert.Equal(int.MaxValue, (int)page["huntSeconds"]!);
-        Assert.Equal([("2", 0, 0, int.MaxValue), ("Test Deer", 0, 0, 0)],  // a negative counter is 0, a member that is no object counts nothing
+        Assert.Equal([("#2", 0, 0, int.MaxValue), ("Test Deer (Typical)", 0, 0, 0)],  // a negative counter is 0, a member that is no object counts nothing
                      page["animals"]!.AsArray().Select(a => ((string)a!["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!)));
         Assert.Equal(int.MaxValue, (int)page["weapons"]!.AsArray().Single()!["shots"]!);
     }
@@ -382,13 +382,13 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var hunt = JsonNode.Parse((await Get("web.test", $"/hunters/third/hunts/{id}")).Body)!;
         Assert.Equal(id, (long)hunt["id"]!);
         var kill = hunt["kills"]!.AsArray().Single()!;
-        Eq("""["Test Deer", "Test Rifle", "Test Bullet", 96.14, 72.27, true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["distanceM"], kill["weightKg"], kill["sheet"]));
+        Eq("""["Test Deer (Typical)", "Test Rifle", "Test Bullet", 96.14, 72.27, true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["distanceM"], kill["weightKg"], kill["sheet"]));
         Assert.Equal(id, (long)JsonNode.Parse((await Get("web.test", "/hunters/third/hunts/latest")).Body)!["id"]!);
 
         var sheet = await Get("web.test", $"/hunters/THIRD/score/{(long)kill["id"]!}");
         Assert.Equal(200, sheet.Status);
         var s = JsonNode.Parse(sheet.Body)!;
-        Eq("""["Test Deer", "Test Rifle", true, "Idle", "Prone", 1]""", T(s["species"], s["weapon"], s["scope"], s["state"], s["stance"], s["shots"]));
+        Eq("""["Test Deer (Typical)", "Test Rifle", true, "Idle", "Prone", 1]""", T(s["species"], s["weapon"], s["scope"], s["state"], s["stance"], s["shots"]));
         Eq("""[96.14, 72.27, 97, "Test Reserve (-9593, 8198)"]""", T(s["distanceM"], s["weightKg"], s["integrity"], s["shotLocation"]));
 
         foreach (var path in new[] { "/hunters/nobody/hunts", "/hunters/banned/hunts", "/hunters/third/hunts/999", "/hunters/third/hunts/x", "/hunters/banned/hunts/1", "/hunters/nobody/score/1",

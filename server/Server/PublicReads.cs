@@ -240,8 +240,8 @@ public sealed partial class State
 
     /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: their item ids `weaponId` and `ammoId`, null when the key is not a number, shots,
     /// accuracy % of shots, kills, kills per hit %, longest hit in metres or null), `animals` (spotted, tracked, harvested per species),
-    /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue,
-    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total. `distanceKmHere` is the distance of the server hunts alone,
+    /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue (a deer's typical and non-typical rows apart, typical first),
+    /// "#id" where it has none. Restored base plus server hunts (the open one so far), like Statistics/total. `distanceKmHere` is the distance of the server hunts alone,
     /// `huntSecondsHere` the part played on this server (<see cref="HuntSecondsHere"/>).</summary>
     public JsonObject StatisticsPage(long account)
     {
@@ -287,13 +287,13 @@ public sealed partial class State
         var animals = new List<(string Name, JsonObject Row)>();
         foreach (var (sp, c) in total["data"]!["animal"] as JsonObject ?? [])
         {
-            var name = SpeciesName(Key(sp)) ?? sp;
+            var name = Key(sp) is { } id ? BoardName(id) : sp;
             animals.Add((name, new JsonObject { ["name"] = name, ["spotted"] = Count(N(c, "spots")), ["tracked"] = Count(N(c, "tracks")), ["harvested"] = Count(N(c, "kills")) }));
         }
         return new JsonObject
         {
             ["weapons"] = new JsonArray([.. weapons.OrderBy(w => w.Name, StringComparer.Ordinal).Select(w => (JsonNode?)w.Row)]),
-            ["animals"] = new JsonArray([.. animals.OrderBy(a => a.Name, StringComparer.Ordinal).Select(a => (JsonNode?)a.Row)]),
+            ["animals"] = new JsonArray([.. animals.OrderBy(a => a.Name.Split(" (")[0], StringComparer.Ordinal).ThenBy(a => a.Name.EndsWith("(Non-Typical)", StringComparison.Ordinal)).Select(a => (JsonNode?)a.Row)]),
             ["collectables"] = new JsonArray(), ["distanceKm"] = N(total, "distance") / 1000, ["huntSeconds"] = Count(N(total, "duration")),
         };
     }

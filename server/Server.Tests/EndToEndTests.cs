@@ -93,7 +93,7 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
             var total = (await Api(Replay.STATISTICS_TOTAL, viewerToken, $"user_id={Restored}"))["data"]!;
             Eq("""[2, 1, 1]""", T(total["animal"]!["5"]!["kills"], total["animal"]!["1"]!["kills"], total["weapon"]!["5"]!["10"]!["kills"]));
             var animals = (await Hunters("/statistics", viewer))["animals"]!.AsArray();
-            Assert.Equal(1L, (long)animals.Single(a => (string)a!["name"]! == "Test Deer")!["harvested"]!);
+            Assert.Equal(1L, (long)animals.Single(a => (string)a!["name"]! == "Test Deer (Typical)")!["harvested"]!);
 
             // the hunt history: the hunt made here ahead of the three the backup saved
             var list = await Api(Replay.EXPEDITION_LIST, viewerToken, $"user_id={Restored}&offset=0&limit=10");

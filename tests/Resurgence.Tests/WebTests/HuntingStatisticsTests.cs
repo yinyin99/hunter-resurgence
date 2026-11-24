@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Reflection;
 using Bunit;
@@ -31,13 +32,37 @@ public sealed class HuntingStatisticsTests : UiContext
         }
     }
 
-    IReadOnlyList<string> MiscRows(Totals totals)
+    void Serve(Totals totals)
     {
         Stats.Answer = totals;
         Services.AddSingleton(DispatchProxy.Create<IProfileService, Stats>());
+    }
+
+    IReadOnlyList<string> MiscRows(Totals totals)
+    {
+        Serve(totals);
         var cut = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
         // each row: its label, then the figures (a value, and its small label when there are two)
         return [.. cut.FindAll("table.misc td:first-child, table.misc .val, table.misc .what").Select(e => e.TextContent)];
+    }
+
+    /// <summary>The server sends the typical and the non-typical deer under their full names; the page translates each.</summary>
+    [Fact]
+    public void TheStatisticsTabTranslatesTheTypicalAndTheNonTypicalDeer()
+    {
+        Serve(new([], [new("Mule Deer (Typical)", 4, 3, 2), new("Mule Deer (Non-Typical)", 2, 1, 1)], [], 0, 0));
+        var ui = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+            var english = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
+            Assert.Equal(["Mule Deer (Typical)", "Mule Deer (Non-Typical)"], english.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent));
+
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de");
+            var german = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
+            Assert.Equal(["Maultierhirsch (typisch)", "Maultierhirsch (atypisch)"], german.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent));
+        }
+        finally { CultureInfo.CurrentUICulture = ui; }
     }
 
     [Fact]

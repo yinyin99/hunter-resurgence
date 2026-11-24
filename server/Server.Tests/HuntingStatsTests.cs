@@ -131,7 +131,7 @@ public class HuntingStatsTests : StateTestBase
         Assert.Equal(("Test Reserve", 5, 10.5, 54.76, 82.14, 0.67), ((string)reserve["reserve"]!, (int)reserve["players"]!, (double)reserve["hours"]!, (double)reserve["gmPerHour"]!,
                                                                     (double)reserve["gmPerHarvest"]!, (double)reserve["harvestsPerHour"]!));
         var deer = Assert.Single(stats["species"]!.AsArray())!;
-        Assert.Equal(("Test Deer", 5, 10.5, 54.76, 82.14, "Test Reserve"), ((string)deer["species"]!, (int)deer["players"]!, (double)deer["hours"]!, (double)deer["gmPerHour"]!,
+        Assert.Equal(("Test Deer (Typical)", 5, 10.5, 54.76, 82.14, "Test Reserve"), ((string)deer["species"]!, (int)deer["players"]!, (double)deer["hours"]!, (double)deer["gmPerHour"]!,
                                                                            (double)deer["gmPerHarvest"]!, (string)deer["bestReserve"]!));
         Assert.Equal("2026-11-12T00:00:00Z", (string)stats["since"]!);
     }
@@ -149,7 +149,7 @@ public class HuntingStatsTests : StateTestBase
         }
         var stats = state.HuntingStatistics();
         Assert.Equal("Test Reserve", Names(stats["reserves"]!, "reserve"));  // reserve 3 has 4 players
-        Assert.Equal("Test Deer", Names(stats["species"]!, "species"));  // the rabbit has 4
+        Assert.Equal("Test Deer (Typical)", Names(stats["species"]!, "species"));  // the rabbit has 4
         Assert.Equal("Test Reserve", (string)stats["species"]![0]!["bestReserve"]!);  // reserve 3 paid more, but from 4 players
         Assert.DoesNotContain("hunter", stats.ToJsonString());
     }
@@ -171,7 +171,7 @@ public class HuntingStatsTests : StateTestBase
         var first = players[0]!;
         Assert.Equal((2 * Hour, 100.0), ((long)first["huntSecondsHere"]!, (double)first["reserves"]![0]!["gm"]!));
         Assert.Equal("""{"daily":20,"dog":5,"mission":300}""", first["otherGm"]!.ToJsonString());
-        Assert.Equal("Test Deer", (string)first["species"]![0]!["species"]!);
+        Assert.Equal("Test Deer (Typical)", (string)first["species"]![0]!["species"]!);
         Assert.Empty(state.HuntingStatistics()["reserves"]!.AsArray());  // two players: under the floor
 
         Hunt(First + 1, 2, 1 * Hour, 1 * Hour);

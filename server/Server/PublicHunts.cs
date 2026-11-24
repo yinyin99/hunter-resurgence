@@ -115,7 +115,7 @@ public sealed partial class State
         }
         var antlers = new JsonArray([.. (reply["antler_collectables"] as JsonArray ?? []).OfType<JsonObject>().Select(a => (JsonNode?)new JsonObject
         {
-            ["species"] = Py.IsStr(a["species"]) ? Py.Str(a["species"]) : SpeciesName(a["species"]) ?? "#" + Py.Str(a["species"]),
+            ["species"] = Py.IsStr(a["species"]) ? Py.Str(a["species"]) : BoardName(a["species"]),
             ["double"] = Py.Str(a["type"]).Equals("double", StringComparison.OrdinalIgnoreCase), ["score"] = Real(a["score"]),
         })]);
         var view = reply["stats"] is JsonObject stats && stats["data"] is JsonObject ? StatisticsView(stats) : null;

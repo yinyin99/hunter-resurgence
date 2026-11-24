@@ -321,7 +321,7 @@ public class HunterscoreTests : StateTestBase
         Eq("[null, 90, 0]", T(open["end"], open["seconds"], open["distanceKm"]));  // no end, the time since the start, no distance yet
         var w = open["weapons"]!.AsArray().Single()!;
         Eq("""["Test Rifle", "Test Bullet", 2, 1]""", T(w["weapon"], w["ammo"], w["shots"], w["kills"]));
-        Eq("""["Test Deer", 1]""", T(open["animals"]![0]!["name"], open["animals"]![0]!["harvested"]));
+        Eq("""["Test Deer (Typical)", 1]""", T(open["animals"]![0]!["name"], open["animals"]![0]!["harvested"]));
         Eq("""[{"name": "Test Fungus", "score": 78, "ts": %TS%}]""".Replace("%TS%", ((long)now).ToString()), open["collectables"]);
         Assert.Single(open["kills"]!.AsArray());
         // the game's page has the same statistics, without the mark of the stored copy
@@ -397,7 +397,7 @@ public class HunterscoreTests : StateTestBase
         var firstId = (long)state.PublicHunts(B, 1)["rows"]![0]!["id"]!;
         var first = state.PublicHunt(B, firstId)!;
         Eq("""[{"name": "Test Fungus", "score": 78, "ts": 1700000000}]""", first["collectables"]);
-        Eq("""[{"species": "Test Deer", "double": true, "score": 0}]""", first["antlers"]);
+        Eq("""[{"species": "Test Deer (Typical)", "double": true, "score": 0}]""", first["antlers"]);
         Eq("""[{"title": "Picker", "description": "Pick 1 up"}]""", first["achievements"]);
         // the second hunt is closed by the timer, at its last heartbeat, and its three more pickups earn the threshold 5
         now += 100;
@@ -444,7 +444,7 @@ public class HunterscoreTests : StateTestBase
         Assert.Null(w["longest"]);
         Assert.Equal((5L, 10L), ((long)w["weaponId"]!, (long)w["ammoId"]!));
         var a = page["animals"]!.AsArray().Single()!;
-        Assert.Equal(("Test Deer", 0, 0, 1), ((string)a["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!));
+        Assert.Equal(("Test Deer (Typical)", 0, 0, 1), ((string)a["name"]!, (int)a["spotted"]!, (int)a["tracked"]!, (int)a["harvested"]!));
         Assert.Equal(0.466, (double)page["distanceKm"]!, 6);
         Assert.Empty(page["collectables"]!.AsArray());
     }
@@ -518,10 +518,10 @@ public class HunterscoreTests : StateTestBase
         Assert.NotNull(hunt["end"]);
         var w = hunt["weapons"]!.AsArray().Single()!;
         Eq("""["Test Rifle", "Test Bullet", 1]""", T(w["weapon"], w["ammo"], w["kills"]));
-        Eq("""["Test Deer", 1]""", T(hunt["animals"]![0]!["name"], hunt["animals"]![0]!["harvested"]));
+        Eq("""["Test Deer (Typical)", 1]""", T(hunt["animals"]![0]!["name"], hunt["animals"]![0]!["harvested"]));
         Assert.Equal(0.466, (double)hunt["distanceKm"]!, 6);
         var kill = hunt["kills"]!.AsArray().Single()!;
-        Eq("""["Test Deer", "Test Rifle", "Test Bullet", true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["sheet"]));
+        Eq("""["Test Deer (Typical)", "Test Rifle", "Test Bullet", true]""", T(kill["species"], kill["weapon"], kill["ammo"], kill["sheet"]));
         // without an id the newest hunt, which is open: no end, no statistics
         var latest = state.PublicHunt(B, null)!;
         Eq("[null, 0, 0]", T(latest["end"], latest["weapons"]!.AsArray().Count, latest["kills"]!.AsArray().Count));
@@ -529,7 +529,7 @@ public class HunterscoreTests : StateTestBase
 
         // the score sheet of the kill: no antler features, so a sheet without rows; an unknown kill has none
         var sheet = state.PublicSheet(B, (long)kill["id"]!)!;
-        Eq("""["antler", "Test Deer", "Test Rifle", "Test Bullet", false, 1, "None"]""", T(sheet["kind"], sheet["species"], sheet["weapon"], sheet["ammo"], sheet["scope"], sheet["shots"], sheet["platform"]));
+        Eq("""["antler", "Test Deer (Typical)", "Test Rifle", "Test Bullet", false, 1, "None"]""", T(sheet["kind"], sheet["species"], sheet["weapon"], sheet["ammo"], sheet["scope"], sheet["shots"], sheet["platform"]));
         Assert.Empty(sheet["rows"]!.AsArray());
         Assert.Null(state.PublicSheet(B, 999));
     }
