@@ -27,5 +27,19 @@ public static class StatsApi
             .WithDescription($"`{{players, games}}`, counts only: `players` the accounts with a hunt open and a heartbeat in the last {State.HEARTBEAT_TIMEOUT} s (a banned account is not counted), `games` the open multiplayer sessions "
                              + $"(the list of `GET /catalog/games`). Counted at most once in {State.OnlineCacheSeconds} s and sent with `Cache-Control: public, max-age={State.OnlineCacheSeconds}`.")
             .Produces(200, contentType: "application/json");
+        stats.MapGet("/hunting", (HttpContext ctx) =>
+            {
+                var signedIn = SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } cookie && state.Store.ResolveWebSession(cookie) is not null;
+                return signedIn
+                    ? new Reply(200, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(state.HuntingStatistics()), "stats")
+                    : new Reply(401, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")],
+                                Py.DumpBytes(new JsonObject { ["status"] = "signed_out", ["message"] = "Sign in first." }), "stats");
+            })
+            .WithName("HuntingStats").WithSummary("Hunting statistics of the whole server: per reserve and per species")
+            .WithDescription("`{reserves: [{reserve, hours, gmPerHour, gmPerHarvest, harvestsPerHour, players}], species: [{species, hours, gmPerHour, gmPerHarvest, harvestsPerHour, players, bestReserve}], since}` for a signed-in player (the session cookie; 401 `signed_out` without one). "
+                             + $"Server-wide figures only, never a player's name, handle or rank: a row built from fewer than {State.HuntingMinPlayers} players is left out, and `bestReserve` (null when no reserve has that many players) counts only reserves of that many. `hours` is the playtime on this server since `since` (the setting `playtime_since`); "
+                             + "a species' `hours` is the playtime on the reserves where its players harvested it. gm$ are the harvest rewards as paid (a time-limited bonus included); the mission, daily and dog rewards are not counted. "
+                             + $"Computed on demand and kept {(int)State.HuntingTtl.TotalMinutes} minutes.")
+            .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json");
     }
 }

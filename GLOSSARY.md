@@ -29,6 +29,13 @@ _Avoid_: the app, backup app
 The data of one game account: statistics, inventory, trophies, hunt history and more.
 _Avoid_: account data
 
+**Server playtime**:
+The time a player hunted on this community server, from the hunts it recorded since the opening day; the profile's hunt time is this plus the restored playtime (the original's).
+_Avoid_: playtime here
+
+**Hunting statistics**:
+Server-wide figures from the hunts, harvests and gm$ rewards: playtime, gm$ per hour and harvests per hour per reserve and per species; never per player for players, and a figure of fewer than 5 players is not shown.
+
 **Backup**:
 One copy of a profile at one moment, kept as a backup folder and a backup zip.
 
