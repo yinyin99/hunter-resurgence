@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Harvests per hour</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Hunters</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Best reserve</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} total · {1} on {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>total</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>on {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>No season has ended yet</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Top Lane Bandit scores</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit is a cool retro arcade game that you can play on your Huntermate to keep you entertained while you wait for that trophy to appear!</value></data>

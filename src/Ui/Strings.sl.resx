@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Ulovov na uro</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Lovci</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Najboljši rezervat</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} skupaj · {1} na {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>skupaj</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>na {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Nobena sezona se še ni končala</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Najboljši rezultati v igri Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit je kul retro arkadna igra, ki jo lahko igraš na svoji napravi Huntermate, da si krajšaš čas, medtem ko čakaš, da se pojavi trofeja!</value></data>

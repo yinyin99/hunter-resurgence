@@ -36,7 +36,8 @@ public sealed class HuntingStatisticsTests : UiContext
         Stats.Answer = totals;
         Services.AddSingleton(DispatchProxy.Create<IProfileService, Stats>());
         var cut = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
-        return [.. cut.FindAll("table.misc td").Select(td => td.TextContent)];
+        // each row: its label, then the figures (a value, and its small label when there are two)
+        return [.. cut.FindAll("table.misc td:first-child, table.misc .val, table.misc .what").Select(e => e.TextContent)];
     }
 
     [Fact]
@@ -45,8 +46,8 @@ public sealed class HuntingStatisticsTests : UiContext
         // 903 h of hunting, 3 of them here; 2,005 km, 5 of them here
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600, 5, 3 * 3600));
 
-        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles) total · 5.00 km (3.11 miles) on Hunter Resurgence",
-            "Hunt Duration", "37d 15h 0m 00s total · 3h 0m 00s on Hunter Resurgence"], rows);
+        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "total", "5.00 km (3.11 miles)", "on Hunter Resurgence",
+            "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
     [Fact]
@@ -54,7 +55,7 @@ public sealed class HuntingStatisticsTests : UiContext
     {
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600));
 
-        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h 0m 00s"], rows);
+        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h"], rows);
     }
 
     [Fact]
@@ -62,7 +63,7 @@ public sealed class HuntingStatisticsTests : UiContext
     {
         var rows = MiscRows(new([], [], [], 2005, 903 * 3600, null, 3 * 3600));
 
-        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h 0m 00s total · 3h 0m 00s on Hunter Resurgence"], rows);
+        Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
     const string Fixture = """

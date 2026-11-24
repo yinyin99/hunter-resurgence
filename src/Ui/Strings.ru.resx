@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Добычи в час</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Охотники</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Лучшее охотугодье</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} всего · {1} на {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>всего</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>на {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ни один сезон ещё не закончился</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Лучшие результаты в Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit — классная ретро-аркада, в которую можно играть на вашем Huntermate, пока вы ждёте появления трофея!</value></data>

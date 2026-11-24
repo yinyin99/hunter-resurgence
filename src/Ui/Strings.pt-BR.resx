@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Abates por hora</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Caçadores</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Melhor reserva</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} no total · {1} no {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>no total</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>no {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Nenhuma temporada terminou ainda</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Maiores pontuações do Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit é um jogo de arcade retrô muito legal que você pode jogar no seu HunterMate para se entreter enquanto espera aquele troféu aparecer!</value></data>

@@ -1,9 +1,21 @@
 h3 { margin: 0 0 20px; text-align: right; font-size: 26px; line-height: 38px; font-weight: 300; color: var(--text-3); }
 h4 { margin: 0 0 4px; font-size: 18px; line-height: 26px; font-weight: 400; color: #fff; }
 p { margin: 0 0 14px; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.misc-box { container-type: inline-size; }
 .misc { margin: 0 0 20px; }
-.misc td { padding: 4px 6px; }
+.misc td { padding: 4px 6px; vertical-align: baseline; }
 .misc td:first-child { width: 44%; }
+/* a total and its part on this server: two figures, the total first, one per line (6px between), each a value then its small label (8px between; the label wraps under the value when the room is short, a number never parts from its unit) */
+.figs { display: flex; flex-direction: column; gap: 6px; }
+.fig { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }
+.val { color: var(--text-1); font-size: var(--fs-btn-lg); font-variant-numeric: tabular-nums; }
+.what { color: var(--text-3); font-size: var(--fs-btn-sm); }
+/* narrow: the label above its figures instead of a column that leaves them 56% of the width */
+@container (max-width: 30rem) {
+    .misc td { display: block; }
+    .misc td:first-child { width: auto; padding-block-end: 0; }
+    .misc td + td { border-top: 0; padding-block-start: 0; }
+}
 .hist { margin: 0 0 20px; font-size: 13px; }
 .hist td { padding: 3px 6px; }
 .hist a { color: var(--primary); }

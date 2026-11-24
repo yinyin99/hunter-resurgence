@@ -54,6 +54,10 @@ public class FmtTests
         Assert.Equal("1 KB", l.Size(1536));
         Assert.Equal("9m 05s", l.Elapsed(9 * 60 + 5));
         Assert.Equal("1d 1h 1m 01s", l.Duration(90061));
+        Assert.Equal("37d 15h", l.Playtime(903 * 3600));
+        Assert.Equal("3h", l.Playtime(3 * 3600));
+        Assert.Equal("1234d", l.Playtime(1234 * 86400));
+        Assert.Equal("12m 5s", l.Playtime(12 * 60 + 5));
         Assert.Equal("a few seconds ago", l.Ago(TimeSpan.FromSeconds(30)));
         Assert.Equal("2 minutes ago", l.Ago(TimeSpan.FromSeconds(100)));
     });

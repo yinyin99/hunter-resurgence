@@ -131,7 +131,7 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
 
     public Task<Totals> TotalsAsync(string handle) => Task.FromResult(new Totals(WeaponStats,
         Names.Species.Take(24).Select((s, i) => new SpeciesStat(s.Name, i * 7 % 6, i * 5 % 21, i * 3 % 11)).ToList(),
-        [new("Common Mushroom", 1, 12, 12)], 100.0, 2 * 86400, 12.5, 5 * 3600));
+        [new("Common Mushroom", 1, 12, 12)], 2005.0, 903 * 3600, 12.5, 5 * 3600));
 
     Expedition Make(long id, int n)
     {

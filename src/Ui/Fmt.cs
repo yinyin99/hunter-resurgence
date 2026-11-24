@@ -77,8 +77,20 @@ public static class Fmt
     /// <summary>102.89 km (63.93 miles)</summary>
     public static string Kilometres(this IStringLocalizer l, double km) => l["Fmt.Kilometres", km.ToString("0.00", English), (km * 0.621371192).ToString("0.00", English)];
 
-    /// <summary>"1d 3h total · 41h on Hunter Resurgence": a statistic's total and the part of it from this server's hunts; the total alone when the server does not send the part (<paramref name="here"/> null).</summary>
-    public static string TotalHere(this IStringLocalizer l, string total, string? here) => here is null ? total : l["Fmt.TotalHere", total, here, l["App.Name"]];
+    /// <summary>37d 15h, 3h 12m, 12m 5s: the two largest units (a zero second unit is left out), each unit text glued with a no-break space so a number never parts from its unit.</summary>
+    public static string Playtime(this IStringLocalizer l, int seconds)
+    {
+        string Unit(string key, int n) => l[key, n.ToString(English)].Value.Replace(' ', '\u00A0');
+        string Part(string key, int n) => n > 0 ? Unit(key, n) : "";
+        var (big, small) = seconds switch
+        {
+            >= 86400 => (Unit("Fmt.Days", seconds / 86400), Part("Fmt.Hours", seconds / 3600 % 24)),
+            >= 3600 => (Unit("Fmt.Hours", seconds / 3600), Part("Fmt.Minutes", seconds / 60 % 60)),
+            >= 60 => (Unit("Fmt.Minutes", seconds / 60), Part("Fmt.Seconds", seconds % 60)),
+            _ => (Unit("Fmt.Seconds", seconds), ""),
+        };
+        return (big + " " + small).TrimEnd();
+    }
 
     /// <summary>79.31%: always with a point, in every language.</summary>
     public static string Pct(double v) => v.ToString("0.00", English) + "%";

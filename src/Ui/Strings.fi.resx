@@ -595,7 +595,8 @@
   <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Saalista tunnissa</value></data>
   <data name="Board.HuntingPlayers" xml:space="preserve"><value>Metsästäjät</value></data>
   <data name="Board.HuntingBest" xml:space="preserve"><value>Paras alue</value></data>
-  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} yhteensä · {1} palvelimella {2}</value></data>
+  <data name="Fmt.Total" xml:space="preserve"><value>yhteensä</value></data>
+  <data name="Fmt.OnServer" xml:space="preserve"><value>palvelimella {0}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Yksikään kausi ei ole vielä päättynyt</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Parhaat Lane Bandit -tulokset</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit on hieno retroarcadepeli, jota voit pelata Huntermatellasi viihdyttääksesi itseäsi odottaessasi trofeeriistan ilmestymistä!</value></data>
