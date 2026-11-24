@@ -74,7 +74,7 @@ public static class HuntersApi
             .WithDescription("`{weapons: [{weapon, ammo, shots, accuracy, kills, killsPerHit, longest}], animals: [{name, spotted, tracked, harvested}], collectables: [], "
                              + "distanceKm, distanceKmHere, huntSeconds, huntSecondsHere}`: the restored statistics plus the server hunts (the open one so far); `distanceKmHere` is the server hunts' distance alone; "
                              + "`huntSecondsHere` is the part played on this server only, in whole seconds "
-                             + "(hunts that started before the setting `playtime_since` left out; a closed hunt with no heartbeat after its start counts 0); 404 for a handle that is unknown or banned.")
+                             + "(hunts that started before the setting `playtime_since` left out; an open hunt counts up to its last heartbeat, a hunt with no heartbeat after its start 0); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/skills", (string handle) => state.PublicAccount(handle) is { } id

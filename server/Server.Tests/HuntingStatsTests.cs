@@ -96,6 +96,20 @@ public class HuntingStatsTests : StateTestBase
         Assert.Equal(1 * Hour + 1800, state.HuntSecondsHere(con));
     }
 
+    [Fact]
+    public void AnOpenHuntCountsUpToItsLastHeartbeatAndOneWithoutAHeartbeatCountsZeroHoweverOldItIs()
+    {
+        state = Online();
+        Players(1);
+        Hunt(First, 2, 20 * Hour, null, heartbeat: false);  // a launch that crashed: open for ever, never a heartbeat
+        var beaten = Hunt(First, 2, 10 * Hour, null);  // open, its last heartbeat now
+        using var con = state.Store.Open(First);
+        con.Exec("UPDATE expeditions SET last_seen = start_ts + 3600 WHERE account_id = $a AND id = ?", beaten);  // it stopped beating after 1 h
+        Assert.Equal(1 * Hour, state.HuntSecondsHere(con));
+        now += 24 * Hour;
+        Assert.Equal(1 * Hour, state.HuntSecondsHere(con));  // a day later: nothing more
+    }
+
     /// <summary>Five players on reserve 2: each a closed hunt of 2 h with one harvest paid 100; the first also an open hunt of 30 min (a harvest paid 50) and a no-heartbeat hunt (a harvest paid 25).</summary>
     void FivePlayersOnReserve2()
     {

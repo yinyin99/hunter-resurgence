@@ -99,3 +99,76 @@ public class DistanceTests : StateTestBase
         Assert.Equal(0.35, (double)page["distanceKmHere"]!, 6);
     }
 }
+
+public class DistanceHereTests : StateTestBase
+{
+    double now = Py.Now();
+
+    public DistanceHereTests()
+    {
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES) { Clock = () => now };
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+    }
+
+    void At(double seconds, double x, double z)
+    {
+        now += seconds;
+        state.HeartbeatReply(ME, Encoding.ASCII.GetBytes(FormattableString.Invariant($$"""{"events": [], "xpos": {{x}}, "ypos": 50, "zpos": {{z}}}""")));
+    }
+
+    double Here() => (double)state.StatisticsPage(ME)["distanceKmHere"]! * 1000;
+
+    [Fact]
+    public void TestAStaleHuntReopenedByALateHeartbeatMeasuresOnAndTakesItsDistanceAgainAtTheNextClose()
+    {
+        At(30, 0, 0);
+        At(30, 0, 100);
+        now += 200;
+        state.CloseStaleHunts();  // the timer closes it with 100 m
+        Assert.Equal(100, Here(), 3);
+        At(300, 0, 5_000);        // late: the hunt reopens; the step over the gap is no walk
+        Assert.Equal(100, Here(), 3);  // the open hunt's walk so far
+        At(30, 0, 5_050);         // 50 m more
+        Assert.Equal(150, Here(), 3);
+        now += 200;
+        state.CloseStaleHunts();
+        Assert.Equal(150, Here(), 3);
+        Eq("150", Reply(state.ExpeditionReply(ME, "{}"u8.ToArray()))["stats"]!["distance"]);
+    }
+
+    [Fact]
+    public void TestTheOpenHuntsWalkSoFarIsInTheDistanceHere()
+    {
+        At(30, 0, 0);
+        At(30, 60, 80);
+        Assert.Equal(100, Here(), 3);
+    }
+
+    [Fact]
+    public void TestANewLaunchClosesTheHuntWithItsMeasuredDistance()
+    {
+        At(30, 0, 0);
+        At(30, 0, 100);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // the player started another hunt from the launcher: no disconnect came
+        Assert.Equal(100, Here(), 3);
+        Assert.Equal(0.1, (double)state.StatisticsPage(ME)["distanceKm"]!, 6);  // the closed hunt's statistics hold it
+    }
+
+    [Fact]
+    public void TestAHuntBeforePlaytimeSinceIsNoDistanceHereButStaysInTheTotal()
+    {
+        At(30, 0, 0);
+        At(30, 0, 300);
+        state.Disconnect(ME, "{}"u8.ToArray());
+        using (var con = state.Store.Open(ME))
+            con.Exec("UPDATE expeditions SET start_ts = ? WHERE account_id = $a", State.DefaultPlaytimeSince - 1);  // a hunt of before the opening day
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        At(30, 0, 0);
+        At(30, 0, 100);
+        now += 200;
+        state.CloseStaleHunts();
+        var page = state.StatisticsPage(ME);
+        Assert.Equal(0.1, (double)page["distanceKmHere"]!, 6);
+        Assert.Equal(0.4, (double)page["distanceKm"]!, 6);
+    }
+}

@@ -1,5 +1,5 @@
-// How many hunters are online and how many multiplayer games are open, on the website's host: public, no cookie, counts only. The launcher calls it on the
-// public domain and the website's server over SERVER_URL, so the reverse proxy routes /stats/ here. Online only.
+// How many hunters are online and how many multiplayer games are open, on the website's host: public, no cookie, counts only; and the server-wide hunting statistics, for a signed-in player only (the session cookie).
+// The launcher calls them on the public domain and the website's server over SERVER_URL, so the reverse proxy routes /stats/ here. Online only.
 using System.Text.Json.Nodes;
 using static Resurgence.Server.Replay;
 
@@ -29,7 +29,7 @@ public static class StatsApi
             .Produces(200, contentType: "application/json");
         stats.MapGet("/hunting", (HttpContext ctx) =>
             {
-                var signedIn = SignIn.CookieOf(ctx.Request.Headers.Cookie.ToString(), SignIn.SessionCookie) is { } cookie && state.Store.ResolveWebSession(cookie) is not null;
+                var signedIn = SignIn.Session(state.Store, ctx.Request.Headers.Cookie.ToString()) is not null;
                 return signedIn
                     ? new Reply(200, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")], Py.DumpBytes(state.HuntingStatistics()), "stats")
                     : new Reply(401, [("Content-Type", "application/json"), ("Cache-Control", "no-store"), ("X-Content-Type-Options", "nosniff")],

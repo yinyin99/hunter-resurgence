@@ -26,21 +26,19 @@ public sealed partial class State
 
     sealed record ServerHunt(long Id, long? Reserve, double Seconds, bool NoHeartbeat);
 
-    /// <summary>The account's hunts made here since <see cref="PlaytimeSince"/>. A hunt's seconds: an open one lasts until now; a closed one from its start to its end, but one that closed without a heartbeat
-    /// after its start (it has no last heartbeat) counts 0 rather than a guess.</summary>
-    List<ServerHunt> ServerHunts(Db con)
-    {
-        var now = Clock();
-        return [.. con.Rows("SELECT id, reserve, start_ts, end_ts, last_seen FROM expeditions WHERE account_id = $a AND start_ts >= ?", PlaytimeSince).Select(r =>
+    /// <summary>The account's hunts made here since <see cref="PlaytimeSince"/>. A hunt's seconds: a closed one from its start to its end, an open one from its start to its last heartbeat (so far: the stale close
+    /// ends a hunt that stopped beating, and one that never got a heartbeat is never closed by it, so "until now" would grow for ever); a hunt with no heartbeat after its start counts 0 rather than a guess.</summary>
+    List<ServerHunt> ServerHunts(Db con) =>
+        [.. con.Rows("SELECT id, reserve, start_ts, end_ts, last_seen FROM expeditions WHERE account_id = $a AND start_ts >= ?", PlaytimeSince).Select(r =>
         {
             var start = Convert.ToDouble(r[2]);
-            var noHeartbeat = r[3] is not DBNull && r[4] is DBNull;
-            var seconds = r[3] is DBNull ? now - start : noHeartbeat ? 0 : Convert.ToDouble(r[3]) - start;
-            return new ServerHunt((long)r[0], r[1] is long reserve ? reserve : null, Math.Max(0, seconds), noHeartbeat);
+            var open = r[3] is DBNull;
+            var seen = r[4] is not DBNull;
+            var seconds = open ? seen ? Convert.ToDouble(r[4]) - start : 0 : seen ? Convert.ToDouble(r[3]) - start : 0;
+            return new ServerHunt((long)r[0], r[1] is long reserve ? reserve : null, Math.Max(0, seconds), !open && !seen);
         })];
-    }
 
-    /// <summary>The seconds the account hunted on this server since <see cref="PlaytimeSince"/> (`huntSecondsHere`); the open hunt so far.</summary>
+    /// <summary>The seconds the account hunted on this server since <see cref="PlaytimeSince"/> (`huntSecondsHere`); the open hunt up to its last heartbeat.</summary>
     public long HuntSecondsHere(Db con) => (long)ServerHunts(con).Sum(h => h.Seconds);
 
     sealed class Cell { public double Seconds, Gm; public long Harvests; }

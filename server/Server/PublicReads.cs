@@ -251,7 +251,7 @@ public sealed partial class State
         using (var con = Con(account))
         {
             stats = RestoredReads.StatisticsTotal(con);
-            hereM = RestoredReads.AddHunts(con, []).Distance;
+            hereM = DistanceHere(con);
             here = HuntSecondsHere(con);
         }
         var page = StatisticsView(stats);
@@ -259,6 +259,11 @@ public sealed partial class State
         page["huntSecondsHere"] = here;
         return page;
     }
+
+    /// <summary>The metres the account walked on this server since <see cref="PlaytimeSince"/>, the hunts <see cref="HuntSecondsHere"/> counts: a hunt's `distance` (the game's own, or the measured one set at its close),
+    /// else the walk measured so far (`walked`, the open hunt's), else 0.</summary>
+    double DistanceHere(Db con) =>
+        Convert.ToDouble(con.Scalar("SELECT COALESCE(SUM(COALESCE(distance, ROUND(walked), 0)), 0) FROM expeditions WHERE account_id = $a AND start_ts >= ?", PlaytimeSince));
 
     /// <summary>The tab's rows of a Statistics/total shaped node (<c>data</c> an object): a hunt's stats are one too.</summary>
     JsonObject StatisticsView(JsonNode stats)
