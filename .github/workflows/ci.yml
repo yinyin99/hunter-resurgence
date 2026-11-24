@@ -60,10 +60,8 @@ jobs:
         run: xargs -r -d '\n' node tools/checks/parse.mjs < "$RUNNER_TEMP/files"
       - if: ${{ !cancelled() && steps.pr.outputs.cs == 'true' }}
         uses: ./.github/actions/setup-sdk
-      # main is not format-clean (755 findings in 73 of 423 .cs files, #865): until it is, this step shows red in the log and the job stays green. Delete continue-on-error then.
       - name: Format
         if: ${{ !cancelled() && steps.pr.outputs.cs == 'true' }}
-        continue-on-error: true
         run: xargs -r -d '\n' node tools/checks/format.mjs < "$RUNNER_TEMP/files"
   build:
     needs: changes
