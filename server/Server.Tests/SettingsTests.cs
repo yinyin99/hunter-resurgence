@@ -91,6 +91,21 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void PlaytimeSinceDefaultsToTheOpeningDayAndNeedsAnIsoTime()
+    {
+        Assert.Equal(new DateTimeOffset(2026, 11, 12, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)Load(Minimal()).Cfg["playtime_since"]!);
+        var set = Minimal();
+        set["playtime_since"] = "2026-12-01T06:00:00";  // no zone: UTC
+        Assert.Equal(new DateTimeOffset(2026, 12, 1, 6, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)Load(set).Cfg["playtime_since"]!);
+        foreach (var bad in new JsonNode[] { "yesterday", 5 })
+        {
+            var o = Minimal();
+            o["playtime_since"] = bad;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void SpawnNamedAnimalsDefaultsToFalseAndNeedsTrueOrFalse()
     {
         Assert.False((bool)Load(Minimal()).Cfg["spawn_named_animals"]!);

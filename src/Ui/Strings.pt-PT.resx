@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Ainda ninguém está classificado aqui</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Não foi possível carregar a classificação. Tente novamente.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Tentar novamente</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Estatísticas de caça</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>As caçadas de todos os jogadores deste servidor, por reserva e por espécie. Uma linha calculada com menos de 5 caçadores não é apresentada.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Ainda sem estatísticas de caça.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Por reserva</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Por espécie</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Horas de caça</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ por hora</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ por abate</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Abates por hora</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Caçadores</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Melhor reserva</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} no total · {1} no {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ainda não terminou nenhuma temporada</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Melhores pontuações do Lane Bandit</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>O Lane Bandit é um jogo de arcada retro fixe que podes jogar no teu HunterMate para te entreteres enquanto esperas que aquele troféu apareça!</value></data>

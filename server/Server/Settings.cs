@@ -100,6 +100,13 @@ public sealed class Settings
         };
         cfg["default_inventory_capacity"] = Whole(root, "default_inventory_capacity", State.DefaultInventoryCapacity, 1);  // grams every player carries; docs/server.md#backpack-capacity
         cfg["game_build"] = root["game_build"] is null ? null : Whole(root, "game_build", 0, 1);  // the game's Steam build id the server supports, served by GET /stats/game; unset: null
+        // the day the server opened (Unix seconds): hunts that started before it are no server playtime (docs/server.md#server-playtime-and-hunting-statistics); an ISO time, no zone means UTC
+        cfg["playtime_since"] = root["playtime_since"] switch
+        {
+            null => State.DefaultPlaytimeSince,
+            JsonValue iso when iso.TryGetValue<string>(out var text) && DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var since) => since.ToUnixTimeSeconds(),
+            _ => throw new InvalidDataException("playtime_since: an ISO time such as \"2026-11-12T00:00:00Z\""),
+        };
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)

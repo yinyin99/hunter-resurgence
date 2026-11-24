@@ -9,8 +9,8 @@ namespace Resurgence.Services;
 public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cookie, ILogger<ServerLeaderboardsService> log) : ILeaderboardsService
 {
     const string Hunterscore = "hunterscore";
-    /// <summary>The boards the server has, in the order of the tabs; the live site offers these only.</summary>
-    public static readonly string[] Kinds = ["score", "range", Hunterscore, "halloffame", "lanebandit", "bustthrough"];
+    /// <summary>The boards the server has, in the order of the tabs; the live site offers these only. <c>hunting</c> is the hunting statistics, a page of the boards' strip.</summary>
+    public static readonly string[] Kinds = ["score", "range", Hunterscore, "halloffame", "lanebandit", "bustthrough", "hunting"];
 
     static bool Species(string kind) => kind is "score" or "range";
 
@@ -30,6 +30,9 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
         await GetAsync<ServerHall>($"{ServerSessionApi.Leaderboards}/halloffame?season={season}") is { Rows: not null } h
             ? [.. h.Rows.Select(x => new HallEntry(x.Species, x.Score is { } s ? Row(s) : null, x.Range is { } r ? Row(r) : null))]
             : [];
+
+    public async Task<HuntingStats> HuntingAsync() =>
+        await GetAsync<HuntingStats>(ServerSessionApi.HuntingStatistics) is { Reserves: not null, Species: not null } h ? h : new([], []);
 
     public async Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)
     {

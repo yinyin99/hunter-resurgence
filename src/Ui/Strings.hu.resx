@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Itt még senki nem szerepel a ranglistán</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>A ranglistát nem sikerült betölteni. Próbáld újra.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Próbáld újra</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Vadászati statisztikák</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Az ezen a szerveren játszó összes vadász vadászatai területenként és fajonként. Az 5-nél kevesebb vadászból számított sor nem jelenik meg.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Még nincs vadászati statisztika.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Területenként</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Fajonként</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Vadászott órák</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ óránként</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ elejtésenként</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Elejtés óránként</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Vadászok</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Legjobb terület</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} összesen · {1} itt: {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Még egyetlen szezon sem ért véget</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Lane Bandit legjobb pontszámok</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>A Lane Bandit egy klassz retro arcade játék, amelyet a Huntermate-en játszhatsz, hogy szórakoztasson, amíg a trófea megjelenésére vársz!</value></data>

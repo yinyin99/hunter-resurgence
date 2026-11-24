@@ -94,6 +94,20 @@ public class ServerProfileServiceTests
         Assert.Equal((0, 5.0, 7200), (t.Collectables.Count, t.DistanceKm, t.HuntSeconds));
     }
 
+    [Fact]
+    public async Task TheStatisticsCarryThePartOfThisServerWhenTheServerSendsIt()
+    {
+        var t = await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"weapons":[],"animals":[],"collectables":[],"distanceKm":2005.0,"huntSeconds":3250800,"distanceKmHere":5.0,"huntSecondsHere":10800}"""))).TotalsAsync("fox");
+        Assert.Equal((2005.0, 3250800, (double?)5.0, (int?)10800), (t.DistanceKm, t.HuntSeconds, t.DistanceKmHere, t.HuntSecondsHere));
+    }
+
+    [Fact]
+    public async Task AnOlderServerSendsNoPartAndTheTotalsStand()
+    {
+        var t = await Make(new Fake(_ => Json(HttpStatusCode.OK, """{"weapons":[],"animals":[],"collectables":[],"distanceKm":5.0,"huntSeconds":7200}"""))).TotalsAsync("fox");
+        Assert.Equal((5.0, 7200, (double?)null, (int?)null), (t.DistanceKm, t.HuntSeconds, t.DistanceKmHere, t.HuntSecondsHere));
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.NotFound, "{}")]
     [InlineData(HttpStatusCode.OK, "<html>")]

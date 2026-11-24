@@ -72,7 +72,9 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterStatistics").WithSummary("A hunter's statistics tab: weapons, animals, distance and hunt time")
             .WithDescription("`{weapons: [{weapon, ammo, shots, accuracy, kills, killsPerHit, longest}], animals: [{name, spotted, tracked, harvested}], collectables: [], "
-                             + "distanceKm, huntSeconds}`: the restored statistics plus the server hunts (the open one so far); 404 for a handle that is unknown or banned.")
+                             + "distanceKm, distanceKmHere, huntSeconds, huntSecondsHere}`: the restored statistics plus the server hunts (the open one so far); `distanceKmHere` is the server hunts' distance alone; "
+                             + "`huntSecondsHere` is the part played on this server only, in whole seconds "
+                             + "(hunts that started before the setting `playtime_since` left out; an open hunt counts up to its last heartbeat, a hunt with no heartbeat after its start 0); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/skills", (string handle) => state.PublicAccount(handle) is { } id

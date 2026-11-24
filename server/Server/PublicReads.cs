@@ -241,14 +241,29 @@ public sealed partial class State
     /// <summary>The statistics tab of an account, `GET /hunters/&lt;handle&gt;/statistics`: `weapons` (one row per weapon and ammo: their item ids `weaponId` and `ammoId`, null when the key is not a number, shots,
     /// accuracy % of shots, kills, kills per hit %, longest hit in metres or null), `animals` (spotted, tracked, harvested per species),
     /// `collectables` (always empty: the server has no names for them), `distanceKm` and `huntSeconds`; names from the catalogue,
-    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total.</summary>
+    /// the id where it has none. Restored base plus server hunts (the open one so far), like Statistics/total. `distanceKmHere` is the distance of the server hunts alone,
+    /// `huntSecondsHere` the part played on this server (<see cref="HuntSecondsHere"/>).</summary>
     public JsonObject StatisticsPage(long account)
     {
         JsonNode stats;
+        double hereM;
+        long here;
         using (var con = Con(account))
+        {
             stats = RestoredReads.StatisticsTotal(con);
-        return StatisticsView(stats);
+            hereM = DistanceHere(con);
+            here = HuntSecondsHere(con);
+        }
+        var page = StatisticsView(stats);
+        page["distanceKmHere"] = hereM / 1000;
+        page["huntSecondsHere"] = here;
+        return page;
     }
+
+    /// <summary>The metres the account walked on this server since <see cref="PlaytimeSince"/>, the closed hunts <see cref="HuntSecondsHere"/> counts: each one's `distance` (the game's own, or the measured one set at its close).
+    /// The open hunt adds 0 until it closes, as in the total.</summary>
+    double DistanceHere(Db con) =>
+        Convert.ToDouble(con.Scalar("SELECT COALESCE(SUM(COALESCE(distance, 0)), 0) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND start_ts >= ?", PlaytimeSince));
 
     /// <summary>The tab's rows of a Statistics/total shaped node (<c>data</c> an object): a hunt's stats are one too.</summary>
     JsonObject StatisticsView(JsonNode stats)

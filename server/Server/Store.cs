@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 30;
+    public const int Version = 31;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -236,7 +236,9 @@ public sealed class Store
             first_event INTEGER, distance INTEGER, last_seen REAL,
             stats TEXT,   -- a hunt's statistics (State.HuntStatsOf): stored at its close; an open hunt's counts so far carry "open": true and are stored again by the heartbeats that bring events of it
             start_time INTEGER,   -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
-            tent INTEGER);        -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
+            tent INTEGER,         -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
+            last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
+            walked REAL);         -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -459,6 +461,8 @@ public sealed class Store
                             AND EXISTS (SELECT 1 FROM json_each(e.body, '$.active') a WHERE a.value = missions.mission_id)), '[]') WHERE kept = '[]';
                         """);
             }
+            if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
+                con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
         }
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");

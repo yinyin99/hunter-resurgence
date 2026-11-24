@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Ingen er rangeret her endnu</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Rangeringen kunne ikke indlæses. Prøv igen.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Prøv igen</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Jagtstatistik</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Alles jagter på denne server, pr. jagtområde og pr. art. En række bygget på færre end 5 jægere vises ikke.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Ingen jagtstatistik endnu.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Pr. jagtområde</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Pr. art</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Timer jaget</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ pr. time</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ pr. nedlagt dyr</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Nedlagte dyr pr. time</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Jægere</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Bedste jagtområde</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} i alt · {1} på {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen sæson er slut endnu</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Højeste Lane Bandit-scorer</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit er et fedt retro-arkadespil, som du kan spille på din Huntermate, så du har noget at underholde dig med, mens du venter på, at trofæet dukker op!</value></data>

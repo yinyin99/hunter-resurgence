@@ -584,6 +584,18 @@
   <data name="Board.Empty" xml:space="preserve"><value>Ingen är rankad här ännu</value></data>
   <data name="Board.LoadFailed" xml:space="preserve"><value>Topplistan kunde inte läsas in. Försök igen.</value></data>
   <data name="Board.Retry" xml:space="preserve"><value>Försök igen</value></data>
+  <data name="Board.Hunting" xml:space="preserve"><value>Jaktstatistik</value></data>
+  <data name="Board.HuntingInfo" xml:space="preserve"><value>Alla spelares jakter på den här servern, per jaktområde och per art. En rad som bygger på färre än 5 jägare visas inte.</value></data>
+  <data name="Board.HuntingEmpty" xml:space="preserve"><value>Ingen jaktstatistik ännu.</value></data>
+  <data name="Board.HuntingReserves" xml:space="preserve"><value>Per jaktområde</value></data>
+  <data name="Board.HuntingSpecies" xml:space="preserve"><value>Per art</value></data>
+  <data name="Board.HuntingHours" xml:space="preserve"><value>Timmar jagade</value></data>
+  <data name="Board.HuntingGmHour" xml:space="preserve"><value>gm$ per timme</value></data>
+  <data name="Board.HuntingGmHarvest" xml:space="preserve"><value>gm$ per fälld</value></data>
+  <data name="Board.HuntingHarvestsHour" xml:space="preserve"><value>Fällda per timme</value></data>
+  <data name="Board.HuntingPlayers" xml:space="preserve"><value>Jägare</value></data>
+  <data name="Board.HuntingBest" xml:space="preserve"><value>Bästa jaktområde</value></data>
+  <data name="Fmt.TotalHere" xml:space="preserve"><value>{0} totalt · {1} på {2}</value></data>
   <data name="Board.NoHall" xml:space="preserve"><value>Ingen säsong har tagit slut ännu</value></data>
   <data name="Board.TopLane" xml:space="preserve"><value>Högsta Lane Bandit-poäng</value></data>
   <data name="Board.LaneInfo" xml:space="preserve"><value>Lane Bandit är ett coolt retro-arkadspel som du kan spela på din Huntermate för att hålla dig underhållen medan du väntar på att trofén ska dyka upp!</value></data>

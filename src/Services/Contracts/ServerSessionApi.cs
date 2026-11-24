@@ -42,6 +42,8 @@ public static class ServerSessionApi
     /// <c>/seasons</c> 200 <see cref="ServerSeasons"/>; <c>/&lt;score|range&gt;</c> 200 <see cref="ServerSpeciesBoards"/>; <c>/&lt;score|range&gt;/&lt;species&gt;?page=n</c> 200 <see cref="ServerRowsPage"/>;
     /// <c>/&lt;score|range&gt;/&lt;species&gt;/me</c> 200 <see cref="ServerRow"/> or 404 when not ranked; <c>/halloffame</c> 200 <see cref="ServerHall"/>, none for all time and the current season.</summary>
     public const string Leaderboards = "/leaderboards";
+    /// <summary>GET with the cookie (401 when signed out): 200 <see cref="HuntingStats"/>, the server-wide hunting statistics.</summary>
+    public const string HuntingStatistics = "/stats/hunting";
 }
 
 /// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet.</summary>

@@ -116,6 +116,26 @@ else if (loaded)
                 @Around(kind)
             }
             break;
+        case "hunting":
+            <section class="panel head info">
+                <h4>@L["Board.Hunting"]</h4>
+                <p>@L["Board.HuntingInfo"]</p>
+            </section>
+            @if (hunting is { Reserves.Count: 0, Species.Count: 0 }) { <p class="norank">@L["Board.HuntingEmpty"]</p> }
+            else
+            {
+                <h4 class="part">@L["Board.HuntingReserves"]</h4>
+                <table class="board stats">
+                    <thead><tr><th class="hunter">@L["Stat.Reserve"]</th><th>@L["Board.HuntingHours"]</th><th>@L["Board.HuntingGmHour"]</th><th>@L["Board.HuntingGmHarvest"]</th><th>@L["Board.HuntingHarvestsHour"]</th><th>@L["Board.HuntingPlayers"]</th></tr></thead>
+                    <tbody>@foreach (var r in hunting!.Reserves) { <tr><td class="hunter">@r.Reserve</td><td>@Fmt.Num(r.Hours, "0.0")</td><td>@Fmt.Num(r.GmPerHour, "0")</td><td>@Fmt.Num(r.GmPerHarvest, "0")</td><td>@Fmt.Num(r.HarvestsPerHour, "0.0")</td><td>@r.Players</td></tr> }</tbody>
+                </table>
+                <h4 class="part">@L["Board.HuntingSpecies"]</h4>
+                <table class="board stats">
+                    <thead><tr><th class="hunter">@L["Stat.Species"]</th><th>@L["Board.HuntingHours"]</th><th>@L["Board.HuntingGmHour"]</th><th>@L["Board.HuntingGmHarvest"]</th><th>@L["Board.HuntingHarvestsHour"]</th><th>@L["Board.HuntingPlayers"]</th><th>@L["Board.HuntingBest"]</th></tr></thead>
+                    <tbody>@foreach (var s in hunting.Species) { <tr><td class="hunter">@L.Term(s.Species)</td><td>@Fmt.Num(s.Hours, "0.0")</td><td>@Fmt.Num(s.GmPerHour, "0")</td><td>@Fmt.Num(s.GmPerHarvest, "0")</td><td>@Fmt.Num(s.HarvestsPerHour, "0.0")</td><td>@s.Players</td><td>@s.BestReserve</td></tr> }</tbody>
+                </table>
+            }
+            break;
     }
 }
 else
@@ -130,6 +150,7 @@ else
     IReadOnlyList<Board> boards = [];
     IReadOnlyList<Ranked> rows = [], around = [];
     IReadOnlyList<HallEntry> hall = [];
+    HuntingStats? hunting;
     /// <summary>The seasons the selector offers: 0, all time, and every season; <see cref="ended"/> the ended ones, the hall of fame's.</summary>
     IReadOnlyList<int> all = [], ended = [];
     Ranked? mine;
@@ -139,7 +160,7 @@ else
     /// <summary>The board is read: <see cref="loaded"/>, or <see cref="failed"/> when the server did not answer (the empty text is for a board it answered as empty); <see cref="signedOut"/>: the boards are for signed-in players only.</summary>
     bool loaded, failed, signedOut;
 
-    /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double), then a species or antler id, then a page.</summary>
+    /// <summary>What follows /leaderboards/: the board (score, range, hunterscore, halloffame, lanebandit, bustthrough, antlers/single, antlers/double, or hunting: the server-wide hunting statistics), then a species or antler id, then a page.</summary>
     [Parameter] public string? Path { get; set; }
 
     /// <summary>The season of a species board or the hall of fame: 0 is all time; missing is the current season (the hall's: the last ended one).</summary>
@@ -151,6 +172,7 @@ else
         [
             (L["Board.Score"], "/leaderboards/score"), (L["Board.Range"], "/leaderboards/range"), (L["Board.HunterScore"], "/leaderboards/hunterscore"), (L["Board.HallOfFame"], "/leaderboards/halloffame"),
             (L["Board.LaneBandit"], "/leaderboards/lanebandit"), (L["Board.BustThrough"], "/leaderboards/bustthrough"), (L["Board.Single"], "/leaderboards/antlers/single"), (L["Board.Double"], "/leaderboards/antlers/double"),
+            (L["Board.Hunting"], "/leaderboards/hunting"),
         ];
         // the community server has no antler boards: the live site offers the boards it has
         if (Mode.Live) tabs = [.. tabs.Where(t => ServerLeaderboardsService.Kinds.Contains(t.Href["/leaderboards/".Length..]))];
@@ -171,6 +193,12 @@ else
         if (signedOut = await Sessions.CurrentAsync() is null) return;
         try
         {
+            if (kind == "hunting")
+            {
+                hunting = await Service.HuntingAsync();
+                loaded = true;
+                return;
+            }
             var (now, seasons) = await Service.SeasonsAsync();
             current = now;
             all = [0, .. seasons.Select(s => s.No).OrderBy(n => n)];
