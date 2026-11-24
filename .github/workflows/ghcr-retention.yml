@@ -1,0 +1,51 @@
+name: ghcr-retention
+
+# Keeps what a rollback needs in the three image packages: the newest 20 tagged versions (one per deploy),
+# `latest` and `buildcache`. Everything else goes, untagged versions older than a week included (a superseded
+# `buildcache` or `latest` manifest; the images are single manifests, so no kept tag points at an untagged child).
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Only print what would be deleted
+        type: boolean
+        default: true
+
+permissions:
+  packages: write
+
+concurrency: ghcr-retention
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      # a scheduled run has no inputs and deletes
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+    steps:
+      - run: |
+          repo="${GITHUB_REPOSITORY#*/}"
+          repo="${repo,,}"
+          for pkg in web server natpt; do
+            echo "::group::$repo-$pkg"
+            gh api --paginate "users/$GITHUB_REPOSITORY_OWNER/packages/container/$repo-$pkg/versions?per_page=100" \
+              | jq -r --arg cut "$(date -u -d '7 days ago' +%FT%TZ)" '
+                  def t: .metadata.container.tags;
+                  # the API lists newest first
+                  [.[] | select((t | length) > 0 and ((t | index("latest") or index("buildcache")) | not))] as $sha
+                  | ($sha[20:] + [.[] | select((t | length) == 0 and .created_at < $cut)])[]
+                  | "\(.id) \(t | join(",")) \(.created_at)"' > delete.txt
+            echo "delete $(wc -l < delete.txt) versions of $repo-$pkg:"
+            cat delete.txt
+            if [ "$DRY_RUN" != true ]; then
+              while read -r id _; do
+                gh api -X DELETE "users/$GITHUB_REPOSITORY_OWNER/packages/container/$repo-$pkg/versions/$id"
+              done < delete.txt
+            fi
+            echo "::endgroup::"
+          done
