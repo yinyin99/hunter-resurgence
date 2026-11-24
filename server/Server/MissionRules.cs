@@ -28,6 +28,12 @@ public sealed partial class State
 
     string ItemName(long id) => items.TryGetValue(id, out var item) && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
 
+    /// <summary>The items of a condition by name; a single item that shares its name with another of its kind is `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>).</summary>
+    string ItemNames(IEnumerable<long> ids) =>
+        Names(ids.ToList() is [var id] && items.TryGetValue(id, out var item) && Py.IsStr(item["variationname"]) && Py.IsNum(item["cat"])
+            && items.Any(o => o.Key != id && Py.IsNum(o.Value["cat"]) && Py.L(o.Value["cat"]) == Py.L(item["cat"]) && ItemName(o.Key) == ItemName(id))
+            ? [$"{ItemName(id)} ({(string)item["variationname"]!})"] : ids.Select(ItemName));
+
     string SpeciesName(long id) => species.TryGetValue(id, out var s) && Py.IsStr(s["name"]) ? ((string)s["name"]!).Split(" (")[0] : "species " + id;
 
     /// <summary>Species by name; more than half of them are `any species except` the others.</summary>
@@ -51,10 +57,10 @@ public sealed partial class State
     /// <summary>One condition in words, with names instead of ids.</summary>
     string Describe(Test t) => t.Check switch
     {
-        Check.Weapon => "weapon: " + Names(t.Ids!.Select(ItemName)),
-        Check.Ammo => "ammunition: " + Names(t.Ids!.Select(ItemName)),
-        Check.NotAmmo => "not ammunition: " + Names(t.Ids!.Select(ItemName)),
-        Check.Scope => t.Ids is null ? "any sight" : "sight: " + Names(t.Ids.Select(ItemName)),
+        Check.Weapon => "weapon: " + ItemNames(t.Ids!),
+        Check.Ammo => "ammunition: " + ItemNames(t.Ids!),
+        Check.NotAmmo => "not ammunition: " + ItemNames(t.Ids!),
+        Check.Scope => t.Ids is null ? "any sight" : "sight: " + ItemNames(t.Ids),
         Check.NoScope => "no sight",
         Check.Permitted => "permitted",
         Check.OneShot => "one shot",

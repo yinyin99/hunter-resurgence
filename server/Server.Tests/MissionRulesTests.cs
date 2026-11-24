@@ -90,4 +90,19 @@ public class MissionRulesTests : MissionTestBase
                       "warning never met: mission 2 objective 0: distance: >=200 <=100 m: the lower bound is above the upper one"], w);
         Assert.DoesNotContain(New("clean.db", Missions(Mission(1, "Harvest a Test Deer with the Test Carbine", ", \"weapons\": [50], \"desc\": \"Test Carbine\", \"species\": [1]"))).MissionCoverage(), l => l.StartsWith("warning", StringComparison.Ordinal));
     }
+
+    [Fact]
+    public void TestAVariantWeaponIsPrintedWithItsVariantAndThePrintedRuleReadsBackToTheSameLine()
+    {
+        var catalogue = Missions(Mission(1, "Harvest a Test Deer"), Mission(2, "Harvest a Test Deer"));
+        List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
+        static string Rule(string line) => line[(line.IndexOf("=> ", StringComparison.Ordinal) + 3)..];
+        var first = Print(New("variant1.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject
+        {
+            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
+        }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", first[0]);
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol", first[1]);  // both variants: the name alone
+        Assert.Equal(first, Print(New("variant2.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = Rule(first[0]), ["2/0"] = Rule(first[1]) })));
+    }
 }
