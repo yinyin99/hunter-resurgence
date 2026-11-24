@@ -260,10 +260,10 @@ public sealed partial class State
         return page;
     }
 
-    /// <summary>The metres the account walked on this server since <see cref="PlaytimeSince"/>, the hunts <see cref="HuntSecondsHere"/> counts: a hunt's `distance` (the game's own, or the measured one set at its close),
-    /// else the walk measured so far (`walked`, the open hunt's), else 0.</summary>
+    /// <summary>The metres the account walked on this server since <see cref="PlaytimeSince"/>, the closed hunts <see cref="HuntSecondsHere"/> counts: each one's `distance` (the game's own, or the measured one set at its close).
+    /// The open hunt adds 0 until it closes, as in the total.</summary>
     double DistanceHere(Db con) =>
-        Convert.ToDouble(con.Scalar("SELECT COALESCE(SUM(COALESCE(distance, ROUND(walked), 0)), 0) FROM expeditions WHERE account_id = $a AND start_ts >= ?", PlaytimeSince));
+        Convert.ToDouble(con.Scalar("SELECT COALESCE(SUM(COALESCE(distance, 0)), 0) FROM expeditions WHERE account_id = $a AND end_ts IS NOT NULL AND start_ts >= ?", PlaytimeSince));
 
     /// <summary>The tab's rows of a Statistics/total shaped node (<c>data</c> an object): a hunt's stats are one too.</summary>
     JsonObject StatisticsView(JsonNode stats)

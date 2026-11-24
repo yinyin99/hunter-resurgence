@@ -127,9 +127,9 @@ public class DistanceHereTests : StateTestBase
         state.CloseStaleHunts();  // the timer closes it with 100 m
         Assert.Equal(100, Here(), 3);
         At(300, 0, 5_000);        // late: the hunt reopens; the step over the gap is no walk
-        Assert.Equal(100, Here(), 3);  // the open hunt's walk so far
+        Assert.Equal(0, Here(), 3);  // open again: it adds nothing until it closes
         At(30, 0, 5_050);         // 50 m more
-        Assert.Equal(150, Here(), 3);
+        Assert.Equal(0, Here(), 3);
         now += 200;
         state.CloseStaleHunts();
         Assert.Equal(150, Here(), 3);
@@ -137,10 +137,13 @@ public class DistanceHereTests : StateTestBase
     }
 
     [Fact]
-    public void TestTheOpenHuntsWalkSoFarIsInTheDistanceHere()
+    public void TestTheOpenHuntAddsNothingToTheDistanceHereUntilItCloses()
     {
         At(30, 0, 0);
         At(30, 60, 80);
+        Assert.Equal(0, Here(), 3);  // like the total, which counts the open hunt's distance only once it closes
+        now += 200;
+        state.CloseStaleHunts();
         Assert.Equal(100, Here(), 3);
     }
 
