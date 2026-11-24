@@ -20,11 +20,11 @@ public sealed class SpeciesFullNameTests : UiContext
         {
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
             var english = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
-            Assert.Equal(["Mule Deer (Typical)", "Mule Deer (Non-Typical)"], english.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent).Where(t => !t.StartsWith("Distance") && !t.StartsWith("Hunt Dur") && !t.StartsWith("Entfernung") && !t.StartsWith("Jagddauer")));
+            Assert.Equal(["Mule Deer (Typical)", "Mule Deer (Non-Typical)"], english.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent));
 
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de");
             var german = Render<StatisticsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "lifetime"));
-            Assert.Equal(["Maultierhirsch (typisch)", "Maultierhirsch (atypisch)"], german.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent).Where(t => !t.StartsWith("Distance") && !t.StartsWith("Hunt Dur") && !t.StartsWith("Entfernung") && !t.StartsWith("Jagddauer")));
+            Assert.Equal(["Maultierhirsch (typisch)", "Maultierhirsch (atypisch)"], german.FindAll("table.tbl-c td:first-child").Select(e => e.TextContent));
         }
         finally { CultureInfo.CurrentUICulture = ui; }
     }
