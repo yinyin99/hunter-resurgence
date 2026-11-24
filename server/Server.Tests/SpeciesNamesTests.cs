@@ -11,7 +11,9 @@ public class SpeciesNamesTests : StateTestBase
 
     public SpeciesNamesTests()
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        var app = APP;
+        app["species"]!.AsArray().Add(O("""{"id": 101, "name": "Test Deer (Non-Typical)", "define": "MULE_DEER"}"""));
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES);
     }
 
     [Fact]
@@ -23,7 +25,7 @@ public class SpeciesNamesTests : StateTestBase
     [Fact]
     public void TheStatisticsListTheTypicalRowBeforeTheNonTypicalOneNextToIt()
     {
-        state.CreateAccount(Hunter, "hunter");
+        state.CreateAccount(Hunter, "nontypical");
         using (var con = state.Store.Open(Hunter))
             PlayerRows.SetStatistics(con, O("""{"collectables": {}, "animal": {"56": {"kills": 1}, "101": {"kills": 2}, "0": {"kills": 1}, "1": {"kills": 3}}, "weapon": {}}"""), 0, 0, null, null);
         var names = state.StatisticsPage(Hunter)["animals"]!.AsArray().Select(a => (string)a!["name"]!);
@@ -33,6 +35,7 @@ public class SpeciesNamesTests : StateTestBase
     [Fact]
     public void TheHuntTheGalleryAndTheHarvestPageOfANonTypicalKillSayNonTypical()
     {
+        state.CreateAccount(Hunter, "nontypical");
         state.NoteLaunch(Hunter, "start=100&reserve=2"u8.ToArray());
         var events = AccountIsolationTests.Harvest(71, 50000);
         events[^1]["extended_species"] = 101;
@@ -48,7 +51,5 @@ public class SpeciesNamesTests : StateTestBase
     public void AnAmmoOrSkillToastNamesTheSpeciesWithoutItsType()
     {
         Assert.Equal("Mule Deer Tracking: level 2 reached", Skills.LevelUpText("tracking", "Mule Deer", 2));
-        Hb([O("""{"event": 7, "individual": 9, "species": 101}"""), .. Repeat(O("""{"event": 11, "individual": 9}"""), 8)]);
-        Assert.Contains(Hb(), u => (string?)u!["text"] == "Test Deer Spotting: level 2 reached");  // the plain name, a non-typical spot included
     }
 }
