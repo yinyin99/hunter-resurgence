@@ -17,8 +17,9 @@ public sealed partial class State
     /// <summary>What an objective needs: its kind, the species (catalogue id, 0 to 99) and gender (0 male, 1 female) its title names (null: any; a title that names several species, a short
     /// name of some, or any animal but some, has a `Species` test instead), whether it counts only after the objectives before it, its title in
     /// <see cref="Normalise"/>d words (a place), and the conditions its title asks of the kill, the spot or the clue (<see cref="Reader"/>); `Unknown` when it
-    /// has words the server does not understand: it is never met.</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "");
+    /// has words the server does not understand: it is never met. `Near` is an arrive objective's point from the title's coordinates (the map's x and z) and the reserves it
+    /// may be in (none listed: any).</summary>
+    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "", (double X, double Z, long[] Reserves)? Near = null);
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
@@ -53,19 +54,47 @@ public sealed partial class State
         return string.Join(' ', sb.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
-    /// <summary>Does the title name the place (both <see cref="Normalise"/>d)? A define carries its reserve in front and a number behind
-    /// (`REGION_CALM_POND`): the place's own words match, then without leading ones, down to two words (one for a one-word place).
-    /// ponytail: a title that names only the place's tail matches any place with that tail (two hunting towers); the title's coordinates are not used.</summary>
+    // words that name no place alone: the last word of a place is tried by itself only when it is none of these
+    static readonly HashSet<string> CommonWords = ["lodge", "tower", "campsite", "camp", "site", "point", "bay", "lake", "pond", "creek", "river", "falls", "fall", "hill", "pass", "island", "bridge", "road", "area", "north", "south", "east", "west"];
+
+    /// <summary>Does the title name the place (both <see cref="Normalise"/>d)? A define carries `HUNTER_GAME_LOCATION_` and its reserve in front and a number behind
+    /// (`REGION_CALM_POND`): the place's own words match, then without leading ones, down to two words (one for a one-word place), with or without a final `s`; then its last word alone, unless
+    /// it is a common word, shorter than 4 letters or a number.
+    /// ponytail: a title that names only the place's tail matches any place with that tail (two hunting towers), or any place ending in the same uncommon word; a title with coordinates
+    /// is also met near them (<see cref="ArrivesAt"/>).</summary>
     static bool PlaceIn(string title, string place)
     {
         var words = place.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
+        if (words.Count > 3 && words[0] == "hunter" && words[1] == "game" && words[2] == "location")
+            words.RemoveRange(0, 3);
         while (words.Count > 1 && words[^1].All(char.IsAsciiDigit))
             words.RemoveAt(words.Count - 1);
-        for (var i = 0; words.Count > 0 && i < Math.Max(1, words.Count - 1); i++)
-            if ((" " + title + " ").Contains(" " + string.Join(' ', words.Skip(i)) + " ", StringComparison.Ordinal))
+        if (words.Count == 0)
+            return false;
+        var padded = " " + title + " ";
+        bool Has(IEnumerable<string> w) => padded.Contains(" " + string.Join(' ', w) + " ", StringComparison.Ordinal);
+        var last = words[^1];
+        var other = last.EndsWith('s') ? last[..^1] : last + "s";  // a final `s` is optional
+        for (var i = 0; i < Math.Max(1, words.Count - 1); i++)
+            if (Has(words.Skip(i)) || Has(words.Skip(i).SkipLast(1).Append(other)))
                 return true;
-        return false;
+        return last.Length >= 4 && !last.All(char.IsAsciiDigit) && !CommonWords.Contains(last) && (Has([last]) || Has([other]));
     }
+
+    /// <summary>The player entering a place (event 101, `direction` enter): its normalised name, its position in metres (the map's x and z) and the reserve of the hunt it is in (read when asked).</summary>
+    sealed record Arrival(string Place, double? X, double? Z, Lazy<long?> Reserve);
+
+    /// <summary>The arrival an event 101 stored as `eventId` is; null for a place left or an event without a name.</summary>
+    static Arrival? ArrivalOf(Db con, long eventId, JsonObject e) =>
+        Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && Py.IsStr(e["location_name"]) && Normalise((string)e["location_name"]!) is { Length: > 0 } place
+            ? new(place, NumOf(e, "player_x"), NumOf(e, "player_z"), new(() => ReserveAt(con, eventId))) : null;
+
+    /// <summary>Does the arrival meet an arrive rule: the exact place of an operator's `arrive; place: NAME`, else the place the title names (<see cref="PlaceIn"/>) or, when the title
+    /// has coordinates, a point within 200 m of them in one of the mission's reserves, whatever the place's name.</summary>
+    static bool ArrivesAt(Rule r, Arrival a) =>
+        r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? a.Place == Normalise(at.Place!)
+        : PlaceIn(r.Text, a.Place) || r.Near is { } n && a.X is { } ax && a.Z is { } az && Math.Sqrt((ax - n.X) * (ax - n.X) + (az - n.Z) * (az - n.Z)) <= 200
+            && (n.Reserves.Length == 0 || a.Reserve.Value is { } here && n.Reserves.Contains(here));
 
     /// <summary>Read the catalogue's missions and groups (a community server; none without a recorded catalogue).</summary>
     void LoadMissions()
@@ -120,7 +149,7 @@ public sealed partial class State
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its place, its species, its coat and its name can be checked
             if (kind == Kind.Spot)
                 left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Place or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
-            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left);
+            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left, kind == Kind.Arrive && Reader.PointOf(body) is { } point ? (point.X, point.Z, places ?? []) : null);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -368,9 +397,9 @@ public sealed partial class State
             (animalSpecies, gender) = AnimalOf(animal, kind == Kind.Harvest ? e["extended_species"] : animal["species"]);
             kill = kind == Kind.Harvest ? KillOf(con, e, eventId, animal) : kind == Kind.Spot ? SpotOf(con, e, eventId, animal) : ClueOf(con, eventId, e, animal);
         }
-        var place = Py.IsStr(e["location_name"]) ? Normalise((string)e["location_name"]!) : "";
+        var arrival = ArrivalOf(con, eventId, e);
         Advance(con, kind, (rule, after) =>
-            kind == Kind.Arrive ? Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && place.Length > 0 && ArrivesAt(rule, place)
+            kind == Kind.Arrive ? arrival is not null && ArrivesAt(rule, arrival)
             : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill, after)),
             u =>
             {
