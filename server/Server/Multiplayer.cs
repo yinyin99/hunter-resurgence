@@ -34,8 +34,11 @@ public sealed class Games
         public double Start;
         public List<Member> Members = [];  // the host first
         public bool Ready => Members[0].Port > 0 && Members[0].Guid != "";  // the host's event 29 came
-        public Game Copy() => new() { Id = Id, Host = Host, Reserve = Reserve, Name = Name, Description = Description, Password = Password, Time = Time, Public = Public, Free = Free,
-                                       HsMin = HsMin, HsMax = HsMax, Max = Max, Start = Start, Members = [.. Members.Select(m => m.Copy())] };
+        public Game Copy() => new()
+        {
+            Id = Id, Host = Host, Reserve = Reserve, Name = Name, Description = Description, Password = Password, Time = Time, Public = Public, Free = Free,
+            HsMin = HsMin, HsMax = HsMax, Max = Max, Start = Start, Members = [.. Members.Select(m => m.Copy())]
+        };
     }
 
     readonly object gate = new();

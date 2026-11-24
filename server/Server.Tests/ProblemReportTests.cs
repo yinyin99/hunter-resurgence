@@ -38,8 +38,8 @@ public class ProblemReportTests : StateTestBase, IAsyncLifetime
     {
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
-            using (var w = new StreamWriter(zip.CreateEntry(name).Open()))
-                w.Write("Windows, a graphics card");
+        using (var w = new StreamWriter(zip.CreateEntry(name).Open()))
+            w.Write("Windows, a graphics card");
         return ms.ToArray();
     }
 

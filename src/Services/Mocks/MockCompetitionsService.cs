@@ -90,7 +90,7 @@ public sealed class MockCompetitionsService(string? mock = null) : ICompetitions
     // entrants in the order of their results
     public Task<Page<Participant>> ParticipantsAsync(int id, int page)
     {
-        var all = Enumerable.Range(1, mock == "competitions:many" ? 45 : 2).Select(n => new Participant(n, Names.Handle(17 + (n - 1) * 8 % 64), (160 - (n - 1) * (mock == "competitions:many" ? 0.9 : 10)  - (mock == "competitions:many" ? id % 7 * 0.01 : 0)).ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture))).ToList();
+        var all = Enumerable.Range(1, mock == "competitions:many" ? 45 : 2).Select(n => new Participant(n, Names.Handle(17 + (n - 1) * 8 % 64), (160 - (n - 1) * (mock == "competitions:many" ? 0.9 : 10) - (mock == "competitions:many" ? id % 7 * 0.01 : 0)).ToString("0.0000", System.Globalization.CultureInfo.InvariantCulture))).ToList();
         var pages = (all.Count + ICompetitionsService.ParticipantsPageSize - 1) / ICompetitionsService.ParticipantsPageSize;
         page = Math.Clamp(page, 1, pages);
         return Task.FromResult(new Page<Participant>(all.Skip((page - 1) * ICompetitionsService.ParticipantsPageSize).Take(ICompetitionsService.ParticipantsPageSize).ToList(), page, pages, all.Count));

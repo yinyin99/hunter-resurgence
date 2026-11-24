@@ -73,7 +73,9 @@ public sealed partial class State
             throw new InvalidDataException("the rule is empty");
         var kind = parts[0] switch
         {
-            "harvest" => Kind.Harvest, "spot" => Kind.Spot, "track" => Kind.Track,
+            "harvest" => Kind.Harvest,
+            "spot" => Kind.Spot,
+            "track" => Kind.Track,
             _ => throw new InvalidDataException($"\"{parts[0]}\" is no kind of rule the file sets: harvest, spot or track"),
         };
         if (parts.Count(p => p is "male" or "female") > 1 || parts.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || parts.Count(p => p == "ordered") > 1)

@@ -24,7 +24,8 @@ public class CommunityMissionTests : StateTestBase
         var app = APP;
         app["missions"] = JsonNode.Parse("""[{"id": 1, "title": "Personal", "dependencies": [], "rewards": [{"text": "50 gm$"}, {"text": "Test Scope"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}, {"id": 1, "title": "Spot a Test Deer"}]}]""");
         var s = new State(Path.Combine(tmp, db), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: EventFacts,
-                          seasonal: new("season", "SEASON", [], Start, Start.AddDays(10))) { CommunityDivisor = divisor };
+                          seasonal: new("season", "SEASON", [], Start, Start.AddDays(10)))
+        { CommunityDivisor = divisor };
         s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
         s.CreateAccount(B, "second");
         return s;

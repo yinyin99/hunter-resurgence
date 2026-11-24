@@ -11,8 +11,11 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    enum Check { Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat,
-        Beard, Spurs, Tusks, Place, Within, Each, SameShot, Different }
+    enum Check
+    {
+        Weapon, Ammo, NotAmmo, Permitted, OneShot, Organ, OrganOnly, OrganAvoid, Value, Distance, Weight, Score, Points, State, NotState, FirstState, Pose, Stand, Scope, NoScope, Reserve, Named, Species, Clue, Coat, NotCoat,
+        Beard, Spurs, Tusks, Place, Within, Each, SameShot, Different
+    }
 
     /// <summary>One condition. `Min` and `Max` bound a number (an open bound is the next number up or down); `Ids` are the accepted ids (species, weapon, ammunition, sight,
     /// animal state, stance, stand `location`, reserve, coat), the refused ones (`NotAmmo`, `NotState`, `NotCoat`) or, for the organ checks, the bit masks: `Organ` is met when the killing shot went

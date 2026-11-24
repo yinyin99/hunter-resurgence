@@ -1235,11 +1235,14 @@ public sealed partial class State
     /// <summary>`GET /account/messages`: `{conversations: [{handle, preview, ts, unread, avatar}]}`, the notice sender's first, then the restored ones as saved; `avatar` is the partner's
     /// (<see cref="AvatarUrl"/>, on `site`) when they have an account here, else null.</summary>
     public JsonObject WebConversations(long account, string site) =>
-        new() { ["conversations"] = new JsonArray([.. Conversations(account).Select(c => (JsonNode?)new JsonObject
+        new()
+        {
+            ["conversations"] = new JsonArray([.. Conversations(account).Select(c => (JsonNode?)new JsonObject
         {
             ["handle"] = Plain(c?["handle"]), ["preview"] = Plain(c?["preview"]), ["ts"] = Time(c?["ts"]), ["unread"] = !Py.Truthy(c?["read"]),
             ["avatar"] = long.TryParse(Plain(c?["user_id"]), out var partner) && PublicAccount(partner) is { } other ? AvatarUrl(other, site) : null,
-        })]) };
+        })])
+        };
 
     /// <summary>`GET /account/messages/thread?handle=`: `{messages: [{mine, content, ts}]}` newest first, read only; null for a handle that is no conversation.
     /// A message is the player's own when its author's user id is not the partner's.</summary>
@@ -1248,10 +1251,13 @@ public sealed partial class State
         if (Conversations(account).FirstOrDefault(c => string.Equals(Plain(c?["handle"]), handle, StringComparison.OrdinalIgnoreCase)) is not { } c) return null;
         var partner = Plain(c["user_id"]);
         var messages = (ThreadOf(account, partner, false) as JsonObject)?["messages"] as JsonArray ?? [];
-        return new() { ["messages"] = new JsonArray([.. messages.Select(m => (JsonNode?)new JsonObject
+        return new()
+        {
+            ["messages"] = new JsonArray([.. messages.Select(m => (JsonNode?)new JsonObject
         {
             ["mine"] = m?["user_id"] is { } author && Plain(author) != partner, ["content"] = Plain(m?["content"]), ["ts"] = Time(m?["ts"]),
-        })]) };
+        })])
+        };
     }
 
     Db Con(long account) => Store.Open(account);

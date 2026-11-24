@@ -94,9 +94,12 @@ public class InstallTests : IDisposable
             Assert.DoesNotContain(leak, text);
         var c = Template();
         Eq($$"""{"user_id": {{Install.LocalUserId}}, "handle": "{{Install.LocalHandle}}", "hunterscore": 0, "membership": 0, "face": 3, "gender": 1}""",
-           new JsonObject { ["user_id"] = c["account"]!["user_id"]!.DeepClone(), ["handle"] = c["account"]!["handle"]!.DeepClone(),
+           new JsonObject
+           {
+               ["user_id"] = c["account"]!["user_id"]!.DeepClone(), ["handle"] = c["account"]!["handle"]!.DeepClone(),
                ["hunterscore"] = c["account"]!["hunterscore"]!.DeepClone(), ["membership"] = c["account"]!["membership"]!.DeepClone(),
-               ["face"] = c["account"]!["face"]!.DeepClone(), ["gender"] = c["account"]!["gender"]!.DeepClone() });
+               ["face"] = c["account"]!["face"]!.DeepClone(), ["gender"] = c["account"]!["gender"]!.DeepClone()
+           });
         Assert.Equal("https://game_web.test/media/avatar/256/1.png", (string)c["account"]!["avatar_url"]!);
         Eq("""{"domains": {"main": "https://game_web.test", "subdomains": {"avatar": "https://game_web.test/media/avatar/", "static": "https://game_web.test/"}}, "enable_logging": false, "nat": {"pt_server": {"ip": "web.test", "port": 10000}}}""", c["config"]);
         Eq("""{"achievement_stats": [{"category_id": 1, "group_id": 2, "id": 3, "triggers": {"a": 0}, "value": 0}], "bust_through_score": 0, "user_stats": {"animal": {}, "collectables": {}, "daily_missions": {}, "distance": 0, "duration": 0, "weapon": {}}}""", c["user_stats"]);

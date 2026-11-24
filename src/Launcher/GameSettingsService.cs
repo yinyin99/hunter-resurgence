@@ -113,8 +113,16 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     /// <summary>Only Fullscreen writes the file's fullscreen flag; Borderless runs windowed. Untouched anisotropic filtering stays as the file has it (Default is not turned into Off).</summary>
     public static GraphicsSettings ToGraphics(GraphicsSettings g, GameOptions o) => g with
     {
-        Fullscreen = o.Display == DisplayMode.Fullscreen, Vsync = o.Vsync, Width = o.Resolution.Width, Height = o.Resolution.Height, Hz = o.Resolution.Hz,
-        Scene = o.Scene, Texture = o.Texture, Shadow = o.Shadow, Msaa = o.Msaa, Aniso = o.Aniso == Math.Max(g.Aniso - 1, 0) ? g.Aniso : o.Aniso + 1,
+        Fullscreen = o.Display == DisplayMode.Fullscreen,
+        Vsync = o.Vsync,
+        Width = o.Resolution.Width,
+        Height = o.Resolution.Height,
+        Hz = o.Resolution.Hz,
+        Scene = o.Scene,
+        Texture = o.Texture,
+        Shadow = o.Shadow,
+        Msaa = o.Msaa,
+        Aniso = o.Aniso == Math.Max(g.Aniso - 1, 0) ? g.Aniso : o.Aniso + 1,
     };
 
     /// <summary>Dedicated video memory of the biggest display adapter, from the display driver's registry entries; 0 when unknown.</summary>

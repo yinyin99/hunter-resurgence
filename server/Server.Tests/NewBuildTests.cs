@@ -257,7 +257,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
         var (access, _) = await Tokens();
         var before = Py.Dumps(state.Inventory(Account));
         var rows = new JsonArray(state.Inventory(Account).Select(i => (JsonNode?)new JsonObject
-            { ["event"] = 6, ["item"] = (string)i!["guid"]!, ["parent_item"] = "", ["quantity"] = 0 }).ToArray());
+        { ["event"] = 6, ["item"] = (string)i!["guid"]!, ["parent_item"] = "", ["quantity"] = 0 }).ToArray());
         rows.Add(new JsonObject { ["event"] = 101, ["direction"] = "enter", ["location_name"] = "TEST_LODGE", ["x"] = 1, ["y"] = 2, ["z"] = 3 });
         var reply = await Post(ProtocolLiterals.WebRpcBase + "/heartbeat", new JsonObject { ["events"] = rows }, Bearer(access));
         Assert.Equal(("state", 0), (reply.Source, (int)Body(reply)["err"]!));
@@ -295,7 +295,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
 
         // the in-game inventory page's move: `mapping` is a string in the JSON body, the reply `null`
         var move = await Post("/v1/inventory/move_multiple2?locale=en_US", new JsonObject
-            { ["mapping"] = """[{"item_guid": 200, "slot_id": 5}]""", ["clonedItems"] = "[]", ["oauth_access_token"] = access }, Bearer(access));
+        { ["mapping"] = """[{"item_guid": 200, "slot_id": 5}]""", ["clonedItems"] = "[]", ["oauth_access_token"] = access }, Bearer(access));
         Assert.Equal(("state", "null"), (move.Source, Encoding.UTF8.GetString(move.Body)));
         Assert.Equal(5, (long)state.Inventory(Account).Single(i => (string)i!["guid"]! == "200")!["slot"]!);
         Assert.Equal("""{"success": false}""", Encoding.UTF8.GetString((await Post("/v1/inventory/buy?locale=en_US", new JsonObject { ["item_id"] = 999999, ["amount"] = 1, ["wallet"] = "GOLD" }, Bearer(access))).Body));
