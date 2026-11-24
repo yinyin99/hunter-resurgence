@@ -104,7 +104,7 @@ public sealed class Settings
         cfg["playtime_since"] = root["playtime_since"] switch
         {
             null => State.DefaultPlaytimeSince,
-            JsonValue v when v.TryGetValue<string>(out var text) && DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var since) => since.ToUnixTimeSeconds(),
+            JsonValue iso when iso.TryGetValue<string>(out var text) && DateTimeOffset.TryParse(text, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out var since) => since.ToUnixTimeSeconds(),
             _ => throw new InvalidDataException("playtime_since: an ISO time such as \"2026-11-12T00:00:00Z\""),
         };
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
