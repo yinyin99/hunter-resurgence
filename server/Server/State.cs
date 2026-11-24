@@ -2465,7 +2465,7 @@ public sealed partial class State
                 ["organ"] = C(h["organ2"]), ["ammo_id"] = C(h["ammunition_id"]),
             }).ToArray()),
             ["expeditionId"] = C(expeditionId),
-            ["speciesName"] = BoardName(G(e3, "extended_species", page["species"])),
+            ["speciesName"] = BoardName(Py.IsNum(e3["extended_species"]) ? e3["extended_species"] : page["species"]),
             ["weight"] = C(page["weight"]), ["gender"] = C(page["gender"]),
             ["kill"] = new JsonObject
             {
