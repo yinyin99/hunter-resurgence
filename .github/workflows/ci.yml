@@ -100,7 +100,7 @@ jobs:
       - name: Check the compose file
         run: docker compose -f deploy/compose.yml --env-file deploy/.env.example config -q
       - name: Check the firewall script
-        run: shellcheck deploy/firewall.sh
+        run: shellcheck deploy/firewall.sh deploy/rollout.sh
       # iptables and curl are stubs that log their calls: no ranges from Cloudflare must change nothing
       - name: Firewall script with stubbed iptables
         run: |
@@ -117,6 +117,32 @@ jobs:
           grep -qx -- '-A CLOUDFLARE -s 198.51.100.0/24 -j RETURN' "$LOG"
           grep -qx -- '-A CLOUDFLARE -j DROP' "$LOG"
           grep -qx -- '-I DOCKER-USER -i eth0 -p tcp -m multiport --dports 80,443 -j CLOUDFLARE' "$LOG"
+      # docker, curl and sleep are stubs that log their calls: a healthy roll-out writes the new tags and nothing more, an unhealthy one (a container restarting, or Caddy answering 502) writes the previous tags back
+      - name: Roll-out script with stubbed docker
+        run: |
+          dir=$(mktemp -d)
+          printf '%s\n' '#!/bin/sh' 'echo "docker $*" >> "$LOG"' 'case "$*" in "compose ps"*) printf "%b" "$PS";; esac' > "$dir/docker"
+          printf '%s\n' '#!/bin/sh' 'echo "$CODE"' > "$dir/curl"
+          printf '%s\n' '#!/bin/sh' 'exit 0' > "$dir/sleep"
+          chmod +x "$dir"/*
+          export PATH="$dir:$PATH" LOG="$dir/log"
+          script=$PWD/deploy/rollout.sh
+          cd "$dir"
+          run() { # PS, CODE
+            printf '%s\n' SITE_DOMAIN=site.test WEB_TAG=old1 SERVER_TAG=old2 NATPT_TAG=latest SERVER_DIR=/srv > .env
+            : > "$LOG"
+            PS=$1 CODE=$2 sh "$script" 0123abc
+          }
+          run 'web running healthy\nserver running healthy\ncaddy running\n' 200
+          grep -qx WEB_TAG=0123abc .env && grep -qx SERVER_TAG=0123abc .env && grep -qx NATPT_TAG=0123abc .env
+          [ "$(grep -c 'compose up -d' "$LOG")" = 1 ]
+          if grep -q 'compose logs' "$LOG"; then exit 1; fi
+          if run 'web running healthy\nserver restarting \ncaddy running\n' 200; then exit 1; fi
+          grep -qx WEB_TAG=old1 .env && grep -qx SERVER_TAG=old2 .env && grep -qx NATPT_TAG=latest .env
+          [ "$(grep -c 'compose up -d' "$LOG")" = 2 ]
+          grep -qx 'docker compose logs --no-color --tail 30 server' "$LOG"
+          if run 'web running healthy\nserver running healthy\n' 502; then exit 1; fi
+          grep -qx WEB_TAG=old1 .env
       # the real Caddyfile in front of two stub backends that answer their own name: each path must reach the right one (docs/deploy.md)
       - name: Proxy routes
         run: |
