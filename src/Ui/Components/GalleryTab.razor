@@ -59,14 +59,14 @@ else if (photos is not null)
     // the lightbox goes through the pictures of the page
     void Open(int at) => Modal.Show<VideoModal>(new Dictionary<string, object?>
     {
-        ["Title"] = "", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => Caption(p, ": ", true)).ToList(), ["Slots"] = photos!.Rows.Select(p => $"photo-{p.Id}").ToList(),
+        ["Title"] = "", ["Index"] = at, ["Titles"] = photos!.Rows.Select(p => Caption(p, ": ")).ToList(), ["Slots"] = photos!.Rows.Select(p => $"photo-{p.Id}").ToList(),
         ["Urls"] = photos!.Rows.All(p => p.Thumbnail is not null) ? photos.Rows.Select(p => p.Url).ToList() : new List<string>()
     });
 
     string Name(Photo p) => Caption(p, ": ") is { Length: > 0 } c ? c : "#" + p.Id;
 
     // a photo of a kill shows the animal and its score; one without a kill, nothing but the picture
-    string Caption(Photo p, string separator, bool term = false) => (term ? L.Term(p.Animal) : p.Animal) + (p.Score > 0 ? separator + Fmt.Score(p.Score) : "");
+    string Caption(Photo p, string separator) => L.Term(p.Animal) + (p.Score > 0 ? separator + Fmt.Score(p.Score) : "");
 
     // the page goes on from the list the service has left; a page that is now empty gives way to the one before
     async Task Delete(Photo p)

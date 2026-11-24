@@ -72,7 +72,7 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
     // the own gallery starts empty (as captured), with the hook "profile:photos" it has 30 pictures; deleting changes the list
     readonly List<Photo> own = mock == "profile:photos" ? [.. Photos()] : [];
 
-    static IEnumerable<Photo> Photos() => Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, Names.Species[i * 3 % Names.Species.Length].Name, 10.5 + i * 1.25, $"https://example.test/gallery/{5000000 + i}.jpg"));
+    static IEnumerable<Photo> Photos() => Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, i switch { 1 => "Mule Deer (Typical)", 2 => "Mule Deer (Non-Typical)", _ => Names.Species[i * 3 % Names.Species.Length].Name }, 10.5 + i * 1.25, $"https://example.test/gallery/{5000000 + i}.jpg"));
 
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => Task.FromResult(Slice<Photo>(handle == Own ? own : [.. Photos()], page, 24));
 
@@ -110,7 +110,7 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
                 [new("1. Length of Main Beam", 40.0, 40.0, 80.0), new("2.1 Length of Typical Tines T-1", 12.0, 12.0, 24.0), new("2.2 Length of Typical Tines T-2", 10.0, 10.0, 20.0),
                  new("2.3 Length of Typical Tines T-3", 1.0, 1.0, 2.0), new("3. Circumference of Burr", 6.0, 6.0, 12.0), new("4. Circumference of Main Beam", 6.0, 6.0, 12.0),
                  new("5. Inside Span of Main Beams", null, null, 45.0)], [], [], "", false, "", 0, "", "", "", "", 0, "Common (M)", 0, 100, "Place B (2000, 3000)", 0, when.AddYears(-1), 100000050, 97.5, null));
-        return Task.FromResult<ScoreSheet?>(new("score", "Mule Deer", [new("A. No. Points on Right Antler", 5), new("No. Points on Left Antler", 5), new("B. Tip to Tip Spread", 20.0), new("C. Greatest Spread", 24.0), new("D. Inside Spread of Main Beams", 22.0)],
+        return Task.FromResult<ScoreSheet?>(new("score", "Mule Deer (Typical)", [new("A. No. Points on Right Antler", 5), new("No. Points on Left Antler", 5), new("B. Tip to Tip Spread", 20.0), new("C. Greatest Spread", 24.0), new("D. Inside Spread of Main Beams", 22.0)],
             [R("F. Length of Main Beam", 22.0, 24.0), R("G-1. Length of First Point, if Present", 4.0, 4.0), R("G-2. Length of Second Point", 18.0, 17.0), R("G-3. Length of Third Point, if Present", 13.0, 13.0),
              R("G-4. Length of Fourth Point, if Present", 14.0, 14.0), R("H-1. Circumference at Smallest Place Between Burr and First Point", 4.5, 4.5),
              R("H-2. Circumference at Smallest Place Between First and Second Points", 4.0, 4.5), R("H-3. Circumference at Smallest Place Between Main Beam and Third Point", 4.5, 4.0),
@@ -130,7 +130,7 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
     ];
 
     public Task<Totals> TotalsAsync(string handle) => Task.FromResult(new Totals(WeaponStats,
-        Names.Species.Take(24).Select((s, i) => new SpeciesStat(s.Name, i * 7 % 6, i * 5 % 21, i * 3 % 11)).ToList(),
+        [.. Names.Species.Take(22).Select((s, i) => new SpeciesStat(s.Name, i * 7 % 6, i * 5 % 21, i * 3 % 11)), new("Mule Deer (Typical)", 4, 3, 2), new("Mule Deer (Non-Typical)", 2, 1, 1)],
         [new("Common Mushroom", 1, 12, 12)], 2005.0, 903 * 3600, 12.5, 5 * 3600));
 
     Expedition Make(long id, int n)
@@ -139,7 +139,7 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
         var start = new DateTime(2026, 10, 22, 11, 16, 0).AddHours(-n * 9).AddMinutes(-n * 7);
         var open = id == Latest && mock == "profile:ongoing";
         if (id == Latest && !open) return new(id, Reserves[0], Lodges[0], start, start.AddMinutes(2), [], [], [], [], 0, 90, [], []);
-        var species = Names.Species[(n * 5) % Names.Species.Length].Name;
+        var species = n switch { 1 => "Mule Deer (Typical)", 2 => "Mule Deer (Non-Typical)", _ => Names.Species[(n * 5) % Names.Species.Length].Name };
         return new(id, Reserves[n % 3], Lodges[n % 3], start, open ? null : start.AddMinutes(38 + n), [WeaponStats[n % 5]], [new(species, 2, 1, 1)], [new Pickup("Common Mushroom", 12.5, start.AddMinutes(10))],
             open ? [] : [new Achievement("Hunter", "Harvest 1 " + species, DateOnly.FromDateTime(start))], open ? 0 : 3.2 + n, (38 + n) * 60 + n * 17 % 60, [new ShedAntler(species, n % 2 == 0, 40.5)],
             [new(100000200 + n, species, WeaponStats[n % 5].Weapon, WeaponStats[n % 5].Ammo, 120.0 + n, 100.0 + n, 85.0 + n, start.AddMinutes(20))]);
