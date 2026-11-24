@@ -31,11 +31,12 @@ public static class Alerts
             if (Interlocked.Exchange(ref badUrlLogged, 1) == 0) Console.Error.WriteLine($"{key}: not an https URL, no alerts are sent");
             return;
         }
+        var client = http ?? Shared;  // the client of now, not of when the background task starts (a test swaps Shared for the next test)
         _ = Task.Run(async () =>
         {
             try
             {
-                using var reply = await (http ?? Shared).PostAsJsonAsync(uri, new { content = text });
+                using var reply = await client.PostAsJsonAsync(uri, new { content = text });
                 reply.EnsureSuccessStatusCode();
             }
             catch (Exception e)

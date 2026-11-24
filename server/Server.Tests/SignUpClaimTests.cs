@@ -157,4 +157,14 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         await Task.Delay(200);
         Assert.Empty(hook.Texts);
     }
+
+    [Fact]
+    public async Task AnAlertGoesToTheClientOfWhenItWasSent()
+    {
+        var later = new Capture();
+        Alerts.Signup(Cfg, "sent");
+        Alerts.Shared = new HttpClient(later);  // the next test's client: an earlier test's alert still on its way must not land there
+        Assert.Equal("sent", await OneAlert());
+        Assert.Empty(later.Texts);
+    }
 }
