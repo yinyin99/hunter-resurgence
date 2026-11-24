@@ -17,5 +17,8 @@ runs:
     - uses: actions/setup-dotnet@v6
       with:
         dotnet-version: ${{ steps.sdk.outputs.version }}
+        # the NuGet packages, keyed by every packages.lock.json (exact, since restores are locked)
+        cache: true
+        cache-dependency-path: "**/packages.lock.json"
     - shell: pwsh
       run: dotnet --version
