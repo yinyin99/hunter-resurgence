@@ -51,8 +51,10 @@ public sealed partial class State
     {
         var set = ids.ToHashSet();
         var all = species.Keys.Where(k => k < 100).ToList();
-        return all.Count(set.Contains) * 2 > all.Count ? "any species except " + Names(all.Where(k => !set.Contains(k)).Select(SpeciesName)) : Names(set.Select(SpeciesName));
+        return IsExcept(set) ? "any species except " + Names(all.Where(k => !set.Contains(k)).Select(SpeciesName)) : Names(set.Select(SpeciesName));
     }
+
+    bool IsExcept(HashSet<long> set) => species.Keys.Count(k => k < 100 && set.Contains(k)) * 2 > species.Keys.Count(k => k < 100);
 
     static string Names(IEnumerable<string> names) => string.Join(", ", names.Distinct().Order(StringComparer.Ordinal));
 
@@ -165,7 +167,7 @@ public sealed partial class State
             {
                 var r = o.Rule;
                 if (r.Kind is Kind.Harvest or Kind.Spot or Kind.Track && !r.Unknown && listed.Count > 0
-                    && (r.Tests?.FirstOrDefault(t => t.Check == Check.Species)?.Ids ?? (r.Species is { } s ? new HashSet<long> { s } : null)) is { } accepts && !accepts.Overlaps(listed))
+                    && (r.Tests?.FirstOrDefault(t => t.Check == Check.Species)?.Ids ?? (r.Species is { } s ? new HashSet<long> { s } : null)) is { } accepts && !accepts.Overlaps(listed) && !IsExcept(accepts))  // `any animal except <species>` leaves the mission's own out on purpose
                     found.Add((m.Id, o.Id, 2, $"warning species: mission {m.Id} objective {o.Id}: the rule accepts {SpeciesNames(accepts)}, none of the mission's species ({SpeciesNames(listed)})"));
                 if (!r.Unknown)
                     foreach (var t in r.Tests ?? [])
