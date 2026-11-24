@@ -198,6 +198,12 @@ public static class AdminApi
              .WithName("GetDiagnostics").WithSummary("The account's last 30 days: crash reports, hunts without a disconnect, hunts under 60 s, event 30 count")
              .WithDescription("`crashes`: the kept crash and error reports (time, kind, module, frames with the crashing one first, message); `noDisconnect`: hunts that ended without the game's disconnect call; "
                               + "`short`: closed hunts under 60 s (both newest first, at most 100); `event30`: how many times the game said the connection to the host failed.").ProducesProblem(404).ProducesProblem(503);
+
+        admin.MapGet("/hunting", Results<Ok<JsonObject>, ProblemHttpResult> () => state is null ? NoState() : TypedResults.Ok(state.HuntingAdmin()))
+             .WithName("GetHuntingStatistics").WithSummary("Every player's server playtime and hunting figures, with names")
+             .WithDescription("`{since, players: [{account, handle, huntSecondsHere, reserves: [{reserve, gm, harvests, hours, gmPerHour, gmPerHarvest, harvestsPerHour}], species: [{species, reserve, harvests, gm}], otherGm: {mission, community, daily, dog}}]}`, "
+                              + "most playtime first: the hunts since `playtime_since`, the gm$ of the harvests (`CSS Reward` wallet rows) on the hunts' reserves and, apart, the mission, community, daily and dog rewards since then. No 5-player floor. "
+                              + "Computed on demand and kept an hour, like `GET /stats/hunting`.").ProducesProblem(503);
     }
 
     public const int MaxStacks = 1000;  // one transaction per grant
