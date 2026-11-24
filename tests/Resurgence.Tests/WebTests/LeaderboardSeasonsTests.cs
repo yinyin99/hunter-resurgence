@@ -78,6 +78,19 @@ public sealed class LeaderboardSeasonsTests : UiContext
         public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], []));
     }
 
+    /// <summary>The typical and the non-typical rack of a deer are two boards of the server, named apart.</summary>
+    sealed class TwoDeer : ILeaderboardsService
+    {
+        static readonly Ranked One = new(1, "a", 1);
+        public Task<(int Current, IReadOnlyList<Season> Seasons)> SeasonsAsync() => new Unsorted().SeasonsAsync();
+        public Task<IReadOnlyList<Board>> BoardsAsync(string kind, int season) =>
+            Task.FromResult<IReadOnlyList<Board>>([new Board(1, "Mule Deer (Typical)", [One]), new Board(101, "Mule Deer (Non-Typical)", [One])]);
+        public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([One], 1, 1));
+        public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
+        public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([]);
+        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], []));
+    }
+
     /// <summary>A service whose boards come when the test says, or fail: the page's states while it waits and after.</summary>
     sealed class Waiting : ILeaderboardsService
     {
@@ -153,6 +166,28 @@ public sealed class LeaderboardSeasonsTests : UiContext
         var cut = Board(path);
 
         Assert.Equal(["Alpine Ibex", "Bison", "Mallard", "Whitetail Deer"], cut.FindAll(names).Select(h => h.TextContent.Trim()));
+    }
+
+    [Fact]
+    public void TheTypicalAndTheNonTypicalBoardsAreTwoEntriesOfTheSpeciesList()
+    {
+        Services.AddSingleton<ILeaderboardsService>(new TwoDeer());
+        var cut = Board("score");
+
+        Assert.Equal(["Mule Deer (Non-Typical)", "Mule Deer (Typical)"], cut.FindAll("section.tile h4").Select(h => h.TextContent.Trim()));
+        Assert.Equal(["/leaderboards/score/101", "/leaderboards/score/1"], cut.FindAll("a.btn.full").Select(a => a.GetAttribute("href")));
+    }
+
+    [Fact]
+    public void AChosenBoardIsKeptWhenTheSeasonChanges()
+    {
+        Services.AddSingleton<ILeaderboardsService>(new TwoDeer());
+        var cut = Board("score/101", 1);
+
+        Assert.Equal("Mule Deer (Non-Typical)", cut.Find("h3").TextContent.Trim());
+        cut.Find("select#leaderboard-season-selector").Change("0");
+
+        Assert.EndsWith("/leaderboards/score/101?season=0", Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().Uri);
     }
 
     [Fact]

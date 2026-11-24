@@ -9,12 +9,14 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
     static readonly long Second = Store.SecondSeasonStart;  // 2026-11-12 00:00:00 UTC
-    const long Deer = 1, Rabbit = 17;
+    const long Deer = 1, Rabbit = 17, DeerNonTypical = 101, NonTypical = DeerNonTypical;
     Loopback server = null!;
 
     public async ValueTask InitializeAsync()
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}]""")!);
+        var app = APP;
+        app["species"]!.AsArray().Add(JsonNode.Parse("""{"id": 101, "name": "Test Deer (Non-Typical)", "define": "MULE_DEER_NON_TYPICAL"}"""));
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false, avatars: (JsonArray)JsonNode.Parse("""[{"id": 1000000, "url": "https://avatar.test/256/1000000.png", "gender": "m"}]""")!);
         var tick = Py.Now();
         state.Clock = () => tick += 90000;  // every board read is past the kept boards, so a test sees its latest data; the tests of the kept boards fix the clock
         var table = new Replay.HarTable();
@@ -160,6 +162,47 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestARestoredNonTypicalRackRanksOnItsOwnBoardAndOneThatCannotBeToldStaysTypicalAndIsCounted()
+    {
+        var kill = new DateTimeOffset(2025, 5, 21, 12, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+        // the pinned bounds: the species' typical racks score up to 260, its non-typical ones (101) from 70. Above 260 a rack is non-typical for sure, from 70 to 260 it could be either, below 70 it is typical for sure
+        Claimed(40, "hotel", [(1, Deer, 300, kill), (2, Deer, 200, kill)], [(3, Deer, 40, kill)]);
+        Claimed(41, "india", [(4, Deer, 250, kill)], []);
+        Restored(42, "juliet", Deer, "255.0000", 90000, kill);  // saved bests stay as saved: the original's have typical rows only, none above the species' max_score, so this one (below 260) is not moved
+        foreach (var season in (long[])[0, 1])
+        {
+            Assert.Equal("hotel:300", await Board("score", NonTypical, season));
+            Assert.Equal("juliet:255 india:250 hotel:200", await Board("score", Deer, season));
+        }
+        Assert.Equal("", await Board("score", NonTypical, 2));
+        Assert.Equal("", await Board("range", NonTypical, 0));  // a restored row has no shot distance
+        var top = (await Json($"/leaderboards/score/{NonTypical}?season=1"))["rows"]![0]!;
+        Eq("[1, 0, 300.0]", T(top["rank"], top["kill"], top["value"]));  // kill 0: a restored one
+        // the two that could be either are counted (hotel's 200 and india's 250), not the sure ones nor the saved bests
+        Assert.Equal(2, state.UnsureRestored);
+    }
+
+    [Fact]
+    public async Task TestAServerHarvestOfEachKindIsOnItsOwnBoardInEverySeasonAndAllTime()
+    {
+        state.CreateAccount(50, "kilo");
+        Harvest(50, 1, Deer, "150", Second + 10, cm: 1000);
+        Harvest(50, 2, NonTypical, "300", Second + 20, cm: 2000);
+        Assert.NotNull(state.StartSeason(Second + 1000));
+        Harvest(50, 3, Deer, "160", Second + 1000, cm: 1500);
+        Harvest(50, 4, NonTypical, "310", Second + 1010, cm: 2500);
+        foreach (var (season, typical, nonTypical, typicalRange, nonTypicalRange) in new (long, string, string, string, string)[]
+                 { (1, "", "", "", ""), (2, "kilo:150", "kilo:300", "kilo:10", "kilo:20"), (3, "kilo:160", "kilo:310", "kilo:15", "kilo:25"), (0, "kilo:160", "kilo:310", "kilo:15", "kilo:25") })
+        {
+            Assert.Equal(typical, await Board("score", Deer, season));
+            Assert.Equal(nonTypical, await Board("score", NonTypical, season));
+            Assert.Equal(typicalRange, await Board("range", Deer, season));
+            Assert.Equal(nonTypicalRange, await Board("range", NonTypical, season));
+        }
+        Assert.Equal(0, state.UnsureRestored);  // no restored trophy
+    }
+
+    [Fact]
     public async Task TestTheOverviewListsTheTopThreeOfEachSpeciesAndEachRowCarriesItsKill()
     {
         Scene();
@@ -170,7 +213,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         }
         var board = (await Json("/leaderboards/score?season=2"))["boards"]!.AsArray();
         Eq("[1, 17]", T(board[0]!["species"], board[1]!["species"]));
-        Eq("""["Test Deer", "Test Rabbit"]""", T(board[0]!["name"], board[1]!["name"]));
+        Eq("""["Test Deer (Typical)", "Test Rabbit"]""", T(board[0]!["name"], board[1]!["name"]));
         Eq("""["rabbit3", "rabbit2", "rabbit1"]""", new JsonArray([.. board[1]!["top"]!.AsArray().Select(r => (JsonNode?)r!["handle"]!.DeepClone())]));
         var row = board[0]!["top"]![0]!;
         Eq("""[1, "charlie", 70.0, "Test Rifle", 1]""", T(row["rank"], row["handle"], row["value"], row["weaponName"], row["kill"]));
@@ -178,6 +221,32 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Assert.Equal(Second, (long)row["ts"]!);
         var restored = (await Json("/leaderboards/range?season=1"))["boards"]![0]!["top"]![0]!;
         Eq("""["alpha", 120.0, 0]""", T(restored["handle"], restored["value"], restored["kill"]));  // a restored kill has no sheet here
+    }
+
+    [Fact]
+    public async Task TestTheTypicalAndTheNonTypicalBoardsOfASpeciesAreNamedApartEverywhere()
+    {
+        state.CreateAccount(30, "kilo");
+        Harvest(30, 1, Deer, "70", Second + 10, cm: 10000);
+        state.CreateAccount(31, "lima");
+        Harvest(31, 1, DeerNonTypical, "210", Second + 10, cm: 20000);
+        // the overview: two boards, each with its own hunter
+        var boards = (await Json("/leaderboards/score?season=2"))["boards"]!.AsArray();
+        Eq("""[[1, "Test Deer (Typical)", "kilo"], [101, "Test Deer (Non-Typical)", "lima"]]""",
+            new JsonArray([.. boards.Select(b => (JsonNode?)new JsonArray(b!["species"]!.DeepClone(), b["name"]!.DeepClone(), b["top"]![0]!["handle"]!.DeepClone()))]));
+        Assert.Equal("kilo:70", await Board("score", Deer));
+        Assert.Equal("lima:210", await Board("score", DeerNonTypical));
+        // the original's page names them the same, ids 1 and 101 each with its define
+        var all = (await Call(Replay.LEADERBOARDS_ALL, "type=1")).AsArray();
+        Eq("""[[1, "Test Deer (Typical)"], [101, "Test Deer (Non-Typical)"]]""", new JsonArray([.. all.Select(b => (JsonNode?)new JsonArray(b!["id"]!.DeepClone(), b["name"]!.DeepClone()))]));
+        // the personal bests of the hunter of the non-typical rack
+        var best = (await Json("/hunters/lima/best", Session(31)))["rows"]!.AsArray();
+        Eq("""["Test Deer (Non-Typical)"]""", new JsonArray([.. best.Select(r => (JsonNode?)r!["species"]!.DeepClone())]));
+        // the Hall of Fame of an ended season
+        Assert.NotNull(state.StartSeason(Second + 1000));
+        var hall = (await Json("/leaderboards/halloffame?season=2"))["rows"]!.AsArray();
+        Eq("""[[1, "Test Deer (Typical)", "kilo"], [101, "Test Deer (Non-Typical)", "lima"]]""",
+            new JsonArray([.. hall.Select(h => (JsonNode?)new JsonArray(h!["id"]!.DeepClone(), h["species"]!.DeepClone(), h["score"]!["handle"]!.DeepClone()))]));
     }
 
     [Fact]
@@ -216,7 +285,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         Eq("[]", (await Json("/leaderboards/halloffame"))["rows"]);
         // Season 1 has ended
         var hall = (await Json("/leaderboards/halloffame?season=1"))["rows"]!.AsArray();
-        Eq("""[1, "Test Deer", "alpha", "alpha"]""", T(hall[0]!["id"], hall[0]!["species"], hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
+        Eq("""[1, "Test Deer (Typical)", "alpha", "alpha"]""", T(hall[0]!["id"], hall[0]!["species"], hall[0]!["score"]!["handle"], hall[0]!["range"]!["handle"]));
         Assert.Single(hall);
         // Season 2 ends when the next starts
         Assert.NotNull(state.StartSeason(Second + 1000));

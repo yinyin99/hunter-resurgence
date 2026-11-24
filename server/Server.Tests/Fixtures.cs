@@ -25,7 +25,7 @@ public static class Fixtures
     {
         Scoring.StaticHost = "static.test";
         Scoring.OwnLogo = "testlogo";
-        Scoring.Variants = new() { [1] = (30, 260, 1.1), [17] = (600, 1800, 0.9), [40] = (15, 450, 1.3), [54] = (25, 180, 1.1) };
+        Scoring.Variants = new() { [1] = (30, 260, 1.1), [101] = (70, 355, 1.5), [17] = (600, 1800, 0.9), [40] = (15, 450, 1.3), [54] = (25, 180, 1.1) };
     }
 
     /// <summary>Delete a test folder: the pooled connections to its database files go first, or Windows keeps them locked.</summary>

@@ -56,6 +56,9 @@ public sealed class AssetImages
         return sb.ToString();
     }
 
+    /// <summary>The slot of a species' picture: "species-" and its name without the antler type, so the typical and the non-typical deer boards share the picture: "Mule Deer (Non-Typical)" → "species-Mule Deer" (<see cref="Key"/> makes "species-mule-deer").</summary>
+    public static string SpeciesSlot(string name) => "species-" + name.Split(" (")[0];
+
     /// <summary>The pictures in <paramref name="dir"/>: file name → version (the file's time, hex ticks). Null or missing folder: none. Read once at start: the operator restarts the website after changing the files.</summary>
     public static Dictionary<string, string> Index(string? dir) =>
         string.IsNullOrEmpty(dir) || !Directory.Exists(dir) ? []
