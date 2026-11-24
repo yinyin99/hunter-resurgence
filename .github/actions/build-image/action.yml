@@ -1,0 +1,27 @@
+name: build-image
+description: docker buildx build with the layer cache kept in the image's GHCR package (tag buildcache); read always, written on pushes to main only (the job needs packages write)
+inputs:
+  name:
+    description: the package's suffix, web, server or natpt
+    required: true
+  options:
+    description: the other buildx arguments (file, tags, --load, context)
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: docker/setup-buildx-action@v4
+    - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+    # mode=max keeps the build stage's layers too (the restore); ignore-error: a cache that cannot be written never fails the build
+    - shell: bash
+      env:
+        NAME: ${{ inputs.name }}
+      run: |
+        cache="ghcr.io/${GITHUB_REPOSITORY,,}-$NAME:buildcache"
+        to=()
+        if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ]; then to=(--cache-to "type=registry,ref=$cache,mode=max,ignore-error=true"); fi
+        docker buildx build --cache-from "type=registry,ref=$cache" "${to[@]}" ${{ inputs.options }}

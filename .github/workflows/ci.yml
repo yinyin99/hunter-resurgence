@@ -8,7 +8,28 @@ on:
 permissions:
   contents: read
 jobs:
+  # a pull request that changes only docs/** and *.md files skips every other job (a skipped required check counts as passed); on a push, by hand, or when this job fails, they all run
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      code: ${{ steps.files.outputs.code }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          code=true
+          if [ -n "$PR" ]; then
+            files=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR/files" --paginate --jq '.[].filename')
+            grep -qvE '^docs/|\.md$' <<< "$files" || code=false
+          fi
+          echo "code=$code" | tee -a "$GITHUB_OUTPUT"
   build:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: windows-latest
     env:
       RestoreLockedMode: "true" # every restore of this job (build, test, publish.cmd) fails with NU1004 when a packages.lock.json does not match its project
@@ -16,7 +37,8 @@ jobs:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-sdk
       - run: dotnet build hunter-resurgence.slnx -c Release
-      - run: dotnet test hunter-resurgence.slnx -c Release --no-build
+      # the server's tests run once, in server-ubuntu: the server ships on Linux
+      - run: dotnet test --project tests/Resurgence.Tests -c Release --no-build
       # the release's publish and zip step, with the example settings: a change that breaks it fails the pull request, not a release tag (tags cannot be reused)
       - name: Publish the backup tool
         shell: cmd
@@ -55,8 +77,10 @@ jobs:
           $p = Start-Process "$root\Update.exe" -ArgumentList "--uninstall", "--silent" -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw "uninstall exited with $($p.ExitCode)" }
           if (Test-Path "HKCU:\Software\Classes\hunter-resurgence") { throw "the link scheme is still registered" }
-  # the server's tests on Linux too: operators run the community server on a VPS (the build job above runs them on Windows with the rest of the solution)
+  # the server's tests, on Linux only: operators run the community server on a VPS
   server-ubuntu:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
     env:
       RestoreLockedMode: "true"
@@ -66,6 +90,8 @@ jobs:
       - run: dotnet test --project server/Server.Tests -c Release
   # the workflows, the compose file, the firewall script and the proxy's routes: errors here show only on main, on a tag or on the VPS
   scripts:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -147,10 +173,18 @@ jobs:
           echo restart ok
   # the website's container image (deploy/): builds, starts, serves the banner, the import map of shell.js and the search engine tags, lists Linux time zones, serves robots.txt, sends the security headers, and shows the operator's pictures from IMAGES_DIR
   docker:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # the layer cache, written on main only
     steps:
       - uses: actions/checkout@v7
-      - run: docker build -f src/Web/Dockerfile -t web:ci .
+      - uses: ./.github/actions/build-image
+        with:
+          name: web
+          options: -f src/Web/Dockerfile -t web:ci --load .
       - name: Smoke test
         run: |
           docker run -d --name web -p 8080:8080 web:ci
@@ -193,10 +227,18 @@ jobs:
         run: docker logs web; docker logs web-img
   # the punch-through server's image (server/natpt): RakNet builds with the one-line change, and the server starts and listens
   docker-natpt:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v7
-      - run: docker build -t natpt:ci server/natpt
+      - uses: ./.github/actions/build-image
+        with:
+          name: natpt
+          options: -t natpt:ci --load server/natpt
       - name: Smoke test
         run: |
           docker run -d --name natpt natpt:ci
@@ -205,10 +247,18 @@ jobs:
           exit 1
   # the community server's container image (deploy/): builds, starts on plain HTTP with an empty install, answers, may write /data, and the backup command runs
   docker-server:
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v7
-      - run: docker build -f server/Server/Dockerfile -t server:ci .
+      - uses: ./.github/actions/build-image
+        with:
+          name: server
+          options: -f server/Server/Dockerfile -t server:ci --load .
       - name: Smoke test
         run: |
           mkdir -p srv/install

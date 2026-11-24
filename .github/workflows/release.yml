@@ -6,6 +6,7 @@ permissions:
   contents: write
   id-token: write
   attestations: write
+  actions: read # gh run list: the tagged commit's ci
 jobs:
   release:
     runs-on: windows-latest
@@ -25,7 +26,17 @@ jobs:
           "VERSION=$ver" >> $env:GITHUB_ENV
       - run: dotnet build tools/backup -c Release -p:Version=${{ env.VERSION }}
       - run: dotnet build src/Launcher -c Release -p:Version=${{ env.VERSION }}
-      - run: dotnet test tests/Resurgence.Tests -c Release
+      # the same tests already passed when the tagged commit's ci on main did (a push run of ci is on main only); otherwise, or while it still runs, they run here
+      - name: The commit's ci on main
+        id: ci
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh run list --workflow ci --commit "$GITHUB_SHA" --event push --status success --limit 1 --json databaseId --jq length)
+          if [ "$n" = 1 ]; then echo "passed=true" >> "$GITHUB_OUTPUT"; echo "ci passed on main: no second test run"; fi
+      - if: steps.ci.outputs.passed != 'true'
+        run: dotnet test tests/Resurgence.Tests -c Release
       # One repository secret per settings.json key. Values are never printed; every key is required, so a missing secret fails the release.
       - name: Write settings.json
         shell: pwsh
