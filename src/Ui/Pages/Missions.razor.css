@@ -7,7 +7,7 @@
 .aside { float: right; font-size: 14px; line-height: 30px; color: var(--text-2); }
 .grid { display: grid; grid-template-columns: 270px 270px; gap: 18px 182px; margin: 0 0 18px; }
 .grid label, .search { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
-select { display: block; width: 100%; height: 30px; margin-top: 4px; padding: 0 8px; border: 1px solid var(--surface-6); border-radius: var(--r-2); background-color: var(--surface-7); font-size: 14px; color: var(--text-1); }
+select { color-scheme: dark; display: block; width: 100%; height: 30px; margin-top: 4px; padding: 0 8px; border: 1px solid var(--surface-6); border-radius: var(--r-2); background-color: var(--surface-7); font-size: 14px; color: var(--text-1); }
 .grid ::deep .multi { margin-top: 4px; }
 .hide { display: block; margin: 0 0 16px; font-size: 14px; color: var(--text-2); }
 .search input { display: block; width: 224px; height: 38px; margin: 4px 0 24px; font-size: 14px; }
@@ -29,11 +29,13 @@ form .btn { padding: 6px 12px; font-size: 14px; line-height: 20px; }
 .more h5 { margin: 14px 0 4px; font-size: 14px; font-weight: 400; color: #fff; }
 .more p.unlock { margin: 10px 0 4px; color: #fff; }
 .goals { list-style: decimal; }
+.goals .done { display: inline-block; width: 13px; margin-right: 2px; font-size: 12px; line-height: 1; text-align: center; color: #fff; }
 .goals input { width: 13px; height: 13px; margin: 0 2px 0 0; vertical-align: -2px; }
 .reward { margin: 0 0 6px; padding: 0 0 0 28px; list-style: none; }
 .reward ::deep .icon { width: 8px; height: 8px; margin-right: 2px; }
 .more p, .more li { margin: 0; font-size: 14px; line-height: 20px; color: var(--text-3); }
 .more ol { margin: 0 0 10px; padding-left: 20px; }
+.more ul:not(.reward):not(.rows) { list-style: disc; }
 .more .btn { margin-top: 8px; padding: 4px 12px; font-size: 14px; }
 .packs .row.pack { min-height: 60px; padding: 4px 10px; }
 .packline { position: relative; }

@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Alleen favoriete missies automatisch activeren</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Je kunt je missies in de winkel tegen betaling resetten.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Naar de winkel</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Je hebt {0} van de {1} missies en {2} van de {3} missiepakketten voltooid.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Je hebt {0} van {1} missies voltooid en in totaal {2} van {3} missiepakketten.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filters</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filteren op</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Alles</value></data>

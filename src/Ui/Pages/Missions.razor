@@ -14,8 +14,8 @@
     <button type="button" class="btn btn-primary all" @onclick="ActivateAll">@L["Mis.ActivateAll"]</button>
     <label class="check"><input class="tick" type="checkbox" id="auto-activate" checked="@data.Auto" @onchange='e => Automatic("auto", e)' /> @L["Mis.Auto"]</label>
     <label class="check"><input class="tick" type="checkbox" id="activate-only-favourite" checked="@data.OnlyFavourite" @onchange='e => Automatic("onlyfavourite", e)' /> @L["Mis.OnlyFavourite"]</label>
-    <p class="line">@L["Mis.ResetDesc"] <a href="/store/item/221">@L["Mis.GoToStore"]</a></p>
     <p class="line">@L["Mis.Completion", data.Completed, data.Total, data.PacksDone, data.PacksTotal]</p>
+    <p class="line">@L["Mis.ResetDesc"] <a href="/store/item/221">@L["Mis.GoToStore"]</a></p>
 
     <section class="box filters">
         <h4>@L["Mis.Filters"]</h4>
@@ -151,12 +151,12 @@ else { <div class="skeleton skeleton-page"></div> }
         Apply();
     }
 
-    // the game's mission row: a caret and the title; no icon for an available one, a padlock on a locked one (greyed), a paw on an active or completed one
+    // the game's mission row: a caret and the title; only a locked one (greyed) has an icon, the small closed padlock
     RenderFragment Rows(IReadOnlyList<Mission> list) => @<ul class="rows">
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "") @(m.State == "locked" ? "locked" : "")">
-                <button type="button" class="row hover-tint" aria-expanded="@(open.Contains(m.Name) ? "true" : "false")" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name@switch (m.State) { case "locked": <Icon Name="lock" />; break; case "active": <Icon Name="paw-regular" />; break; case "completed": <Icon Name="paw" />; break; }</button>
+                <button type="button" class="row hover-tint" aria-expanded="@(open.Contains(m.Name) ? "true" : "false")" @onclick="() => Toggle(m.Name)"><span class="tri"></span>@m.Name@if (m.State == "locked") { <Icon Name="lock" /> }</button>
                 @if (open.Contains(m.Name))
                 {
                     <div class="more">
@@ -167,7 +167,7 @@ else { <div class="skeleton skeleton-page"></div> }
                         else
                         {
                             <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
-                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li><input type="checkbox" disabled checked="@(m.State == "completed")" /> @o</li> }</ol>
+                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var o in m.Objectives) { <li>@if (m.State == "completed") { <span class="done">✔</span> } else { <input type="checkbox" disabled /> } @o</li> }</ol>
                             @if (m.Reward.Length > 0) { <h5>@L["Mis.Rewards"]</h5><ul class="reward"><li><Icon Name="circle" /> @m.Reward</li></ul> }
                         }
                         @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }

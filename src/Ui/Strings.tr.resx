@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Yalnızca favori görevleri otomatik olarak etkinleştir</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Görevlerinizi mağazadan ücret karşılığında sıfırlayabilirsiniz.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Mağazaya git</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>{1} görevden {0} tanesini ve {3} görev paketinden {2} tanesini tamamladınız.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>{1} görevden {0} tanesini ve toplamda {3} görev paketinden {2} tanesini tamamladınız.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtreler</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrele</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Tümü</value></data>

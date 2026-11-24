@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Activar automáticamente solo las misiones favoritas</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Puedes restablecer tus misiones pagando en la tienda.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Ir a la tienda</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Has completado {0} de {1} misiones y {2} de {3} paquetes de misiones.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Has completado {0} de {1} misiones y un total de {2} de {3} paquetes de misiones.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtros</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrar por</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Todas</value></data>

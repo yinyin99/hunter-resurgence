@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktivoi automaattisesti vain suosikkitehtävät</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Voit nollata tehtäväsi maksua vastaan kaupassa.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Siirry kauppaan</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Olet suorittanut {0}/{1} tehtävää ja {2}/{3} tehtäväpakettia.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Olet suorittanut {0} / {1} tehtävää ja yhteensä {2} / {3} tehtäväpakettia.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Suodattimet</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Näytä</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Kaikki</value></data>

@@ -55,7 +55,7 @@ public sealed class MissionsPageTests : UiContext
         """;
 
     [Fact]
-    public void ALockedRowShowsTheClosedPadlockAnAvailableOneNoIconAnActiveOneAnEmptyPawAndACompletedOneASolidPaw()
+    public void OnlyALockedRowShowsAnIconTheClosedPadlock()
     {
         Services.AddSingleton(new HostMode { Live = true });
         Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(Server)) { BaseAddress = new Uri("http://server.test") },
@@ -65,10 +65,10 @@ public sealed class MissionsPageTests : UiContext
         cut.Find("button.row.pack").Click();
 
         var icons = cut.FindAll("li[data-pack] .more ul.rows button.row").Select(b => b.QuerySelector("use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
-        Assert.Equal(["paw-regular", "none", "lock", "paw"], icons);
-        // outside the packs the rows are the same: the empty paw for Active, no icon for Available
+        Assert.Equal(["none", "none", "lock", "none"], icons);
+        // outside the packs the rows are the same: no icon for Active or Available
         var sections = cut.FindAll("section.box > ul.rows").Take(2).Select(u => u.QuerySelector("button.row use")?.GetAttribute("href")!.Split('#')[1] ?? "none");
-        Assert.Equal(["paw-regular", "none"], sections);
+        Assert.Equal(["none", "none"], sections);
     }
 
     [Fact]

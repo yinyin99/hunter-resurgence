@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Automaticky aktivovat pouze oblíbené mise</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Mise můžete za poplatek resetovat v obchodě.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Do obchodu</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Splněné mise: {0} z {1}, balíčky misí: {2} z {3}.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Dokončili jste {0} z {1} misí a celkem {2} z {3} balíčků misí.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtry</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtr</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Všechny</value></data>

@@ -625,7 +625,7 @@
   <data name="Mis.OnlyFavourite" xml:space="preserve"><value>Aktiver bare favorittoppdrag automatisk</value></data>
   <data name="Mis.ResetDesc" xml:space="preserve"><value>Du kan tilbakestille oppdragene dine mot betaling i butikken.</value></data>
   <data name="Mis.GoToStore" xml:space="preserve"><value>Gå til butikken</value></data>
-  <data name="Mis.Completion" xml:space="preserve"><value>Du har fullført {0} av {1} oppdrag og {2} av {3} oppdragspakker.</value></data>
+  <data name="Mis.Completion" xml:space="preserve"><value>Du har fullført {0} av {1} oppdrag og totalt {2} av {3} oppdragspakker.</value></data>
   <data name="Mis.Filters" xml:space="preserve"><value>Filtre</value></data>
   <data name="Mis.FilterIn" xml:space="preserve"><value>Filtrer på</value></data>
   <data name="Mis.All" xml:space="preserve"><value>Alle</value></data>
