@@ -199,8 +199,11 @@ public sealed partial class State
         return [.. score.Keys.Union(range.Keys).Order().Select(s => (s, score.TryGetValue(s, out var a) ? a[0] : null, range.TryGetValue(s, out var b) ? b[0] : null))];
     }
 
-    /// <summary>The name of a species by id for a board.</summary>
+    /// <summary>The name of a species by id without its antler type ("Mule Deer"): what the hunting statistics group by, the typical and the non-typical rack together.</summary>
     public string SpeciesLabel(long species) => SpeciesName(species) ?? "#" + species.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>The name of a board's species, the catalogue's own: a deer has one board for its typical racks and another for its non-typical ones, named apart ("Mule Deer (Typical)", "Mule Deer (Non-Typical)").</summary>
+    public string BoardName(long species) => Lookup(this.species, (JsonNode)species)?["name"] is { } n && Py.IsStr(n) && (string)n! is { Length: > 0 } s ? s : SpeciesLabel(species);
 
     /// <summary>The name of a weapon item ("" when unknown).</summary>
     public string WeaponName(JsonNode? weapon) => Lookup(items, weapon)?["name"] is { } w && Py.IsStr(w) ? (string)w! : "";
@@ -217,7 +220,7 @@ public sealed partial class State
 
     JsonObject PageBoard(long species, List<BoardRow> rows, bool range, int top, string site) => new()
     {
-        ["id"] = species, ["define"] = Py.Str(Lookup(this.species, (JsonNode)species)?["define"]).ToLowerInvariant(), ["name"] = Py.Str(Lookup(this.species, (JsonNode)species)?["name"] ?? SpeciesLabel(species)),
+        ["id"] = species, ["define"] = Py.Str(Lookup(this.species, (JsonNode)species)?["define"]).ToLowerInvariant(), ["name"] = BoardName(species),
         ["scoretype"] = range ? 2 : 1, ["total"] = 1000, ["records"] = new JsonArray([.. rows.Take(top).Select(r => (JsonNode?)PageRow(r, range, false, site))]),
     };
 

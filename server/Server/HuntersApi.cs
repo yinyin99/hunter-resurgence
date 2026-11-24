@@ -243,7 +243,7 @@ public static class HuntersApi
                 {
                     ["rows"] = new JsonArray([.. state.HallOfFame(season).Select(h => (JsonNode?)new JsonObject
                     {
-                        ["id"] = h.Species, ["species"] = state.SpeciesLabel(h.Species),
+                        ["id"] = h.Species, ["species"] = state.BoardName(h.Species),
                         ["score"] = h.Score is { } s ? RowJson(s) : null, ["range"] = h.Range is { } r ? RowJson(r) : null,
                     })]),
                 }))
@@ -261,7 +261,7 @@ public static class HuntersApi
                         {
                             ["boards"] = new JsonArray([.. state.Boards(kind == "range", season).Select(b => (JsonNode?)new JsonObject
                             {
-                                ["species"] = b.Key, ["name"] = state.SpeciesLabel(b.Key), ["top"] = new JsonArray([.. b.Value.Take(OverviewTop).Select(r => (JsonNode?)RowJson(r))]),
+                                ["species"] = b.Key, ["name"] = state.BoardName(b.Key), ["top"] = new JsonArray([.. b.Value.Take(OverviewTop).Select(r => (JsonNode?)RowJson(r))]),
                             })]),
                         });
                 if (!Store.GameIds.ContainsKey(kind)) return Json(404, new JsonObject { ["error"] = "no such board" });

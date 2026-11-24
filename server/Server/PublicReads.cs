@@ -321,7 +321,7 @@ public sealed partial class State
                 var s = r["score"]!;
                 return (JsonNode?)new JsonObject
                 {
-                    ["species"] = SpeciesName(r["specie"]) ?? "#" + Py.Str(r["specie"]), ["score"] = Num(s["score"]), ["range"] = Num(s["distance"]) / 1000,
+                    ["species"] = BoardName(Py.L(r["specie"])), ["score"] = Num(s["score"]), ["range"] = Num(s["distance"]) / 1000,
                     ["weapon"] = Lookup(items, s["weapon_id"])?["name"] is { } w && Py.IsStr(w) ? C(w) : "", ["ts"] = (long)Num(s["confirm_ts"]), ["kill"] = (long)Num(s["animal_id"]),
                 };
             })]),
