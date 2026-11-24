@@ -883,6 +883,19 @@ public class SkillTests : StateTestBase
     JsonNode Numbers() => Reply(state.SkillListReply(ME, "user_id=7"u8.ToArray())!);
 
     [Fact]
+    public void TestANonTypicalSpotToastNamesTheSpeciesWithoutItsType()
+    {
+        var app = APP;
+        app["species"]!.AsArray().Add(O("""{"id": 101, "name": "Test Deer (Non-Typical)", "define": "MULE_DEER"}"""));
+        var connect = CONNECT;
+        connect["skills"] = LEVELS;
+        state = new State(Path.Combine(tmp, "non-typical.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
+        Hb([O("""{"event": 7, "individual": 9, "species": 101}"""), .. Repeat(O("""{"event": 11, "individual": 9}"""), 8)]);
+        var toasts = Hb();
+        Assert.True(toasts.Any(u => (string?)u!["text"] == "Test Deer Spotting: level 2 reached"), Py.Dumps(toasts));
+    }
+
+    [Fact]
     public void TestSeedAndReplies()
     {
         Assert.Null(state.SkillListReply(ME, "user_id=8"u8.ToArray()));  // another player: replayed recording

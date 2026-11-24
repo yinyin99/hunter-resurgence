@@ -46,10 +46,4 @@ public class SpeciesNamesTests : StateTestBase
         Assert.Equal("Test Deer (Non-Typical)", (string)state.PublicHunt(Hunter, null)!["kills"]![0]!["species"]!);
         Assert.Equal("Test Deer (Non-Typical)", (string)Reply(state.GalleryListReply(Hunter, [])!)["photos"]![0]!["animal"]!);
     }
-
-    [Fact]
-    public void AnAmmoOrSkillToastNamesTheSpeciesWithoutItsType()
-    {
-        Assert.Equal("Mule Deer Tracking: level 2 reached", Skills.LevelUpText("tracking", "Mule Deer", 2));
-    }
 }

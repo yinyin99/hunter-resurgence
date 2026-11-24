@@ -392,7 +392,7 @@ public class RestoreTests : StateTestBase
         Assert.Null(state.PublicSheet(1001, 777));  // until the saved kill page is unpacked
         Assert.Null(state.PublicHunt(1001, 9101));
         // what the backup lists: its antlers and the achievements of its stats, no pickups
-        Eq("""[[], [{"species": "Test Deer", "double": true, "score": 40.5}], [{"title": "Marksman", "description": "Harvest 1 animal"}]]""", T(hunt["collectables"], hunt["antlers"], hunt["achievements"]));
+        Eq("""[[], [{"species": "Test Deer (Typical)", "double": true, "score": 40.5}], [{"title": "Marksman", "description": "Harvest 1 animal"}]]""", T(hunt["collectables"], hunt["antlers"], hunt["achievements"]));
     }
 
     JsonArray Gallery(long account) => JsonNode.Parse(state.GalleryListReply(account, []))!["photos"]!.AsArray();
