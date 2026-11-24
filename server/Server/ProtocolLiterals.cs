@@ -29,4 +29,7 @@ public static class ProtocolLiterals
 
     /// <summary>Prefix of the texture constant names in the game's web script: `PREFIX_NAME:id` values and `case n("PREFIX_NAME"):return"name"`.</summary>
     public const string TexturePrefix = "HUNTER_GAME_TEXTURE_";
+
+    /// <summary>Prefix of the place names (`location_name` of event 101) the game sends for some of its places: `PREFIX` then the reserve and the place.</summary>
+    public const string LocationPrefix = "HUNTER_GAME_LOCATION_";
 }

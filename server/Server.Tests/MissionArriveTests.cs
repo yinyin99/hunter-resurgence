@@ -15,9 +15,9 @@ public class MissionArriveTests : MissionTestBase
 
     [Theory]
     [InlineData(Chute, "ALASKA_FROZEN_CHUTE")]
-    [InlineData(Chute, "HUNTER_GAME_LOCATION_ALASKA_CHUTE")]
+    [InlineData(Chute, ProtocolLiterals.LocationPrefix + "ALASKA_CHUTE")]
     [InlineData("Then arrive at Snaketongue Fall", "ALASKA_SNAKETONGUE_FALL")]
-    [InlineData("Then arrive at Snaketongue Fall", "HUNTER_GAME_LOCATION_ALASKA_SNAKETONGUE_FALLS")]
+    [InlineData("Then arrive at Snaketongue Fall", ProtocolLiterals.LocationPrefix + "ALASKA_SNAKETONGUE_FALLS")]
     [InlineData("Arrive at the Test Pond", "TEST_RESERVE_TEST_POND")]
     public void TestAPlaceTheGameNamesWithOtherWordsMeetsTheObjective(string title, string place)
     {
@@ -34,6 +34,7 @@ public class MissionArriveTests : MissionTestBase
     [InlineData("Arrive at the Grand Lodge", "ALASKA_FROZEN_LODGE")]
     [InlineData("Arrive at the Old Lodge", "ALASKA_LODGE")]
     [InlineData("Arrive at the Chute", "ALASKA_FROZEN_CHUTES_OF_DOOM")]
+    [InlineData("Arrive at Copper Hills", "ALASKA_WINDY_HILLS")]
     public void TestACommonWordOrAnotherPlaceAloneDoesNotMeetTheObjective(string title, string place)
     {
         state = New("common.db", Catalogue([title]));
@@ -54,6 +55,30 @@ public class MissionArriveTests : MissionTestBase
         Launch(reserve);
         Hb(EnterAt("ALASKA_UNRELATED_PLACE", x, z));
         Assert.Equal(met ? "1" : "", Completed());
+    }
+
+    [Theory]
+    [InlineData(2, true)]
+    [InlineData(3, false)]  // the same name in a reserve the mission does not list
+    public void TestAPlaceNamedLooselyMeetsTheObjectiveOnlyInTheMissionsReserve(int reserve, bool met)
+    {
+        state = New($"reserve-{reserve}.db", Catalogue(["Then arrive at the Chute"], ", \"reserves\": [2]"));
+        ActivateAll();
+        Launch(reserve);
+        Hb(Enter("ALASKA_FROZEN_CHUTE"));
+        Assert.Equal(met ? "1" : "", Completed());
+    }
+
+    [Theory]
+    [InlineData("Arrive at the Chute (-4633, y -11152)")]
+    [InlineData("Arrive at the Chute, at Tower 6, x -4633, y -11152")]
+    [InlineData("Arrive at the Chute (x: -4.633, y: -11.152)")]  // a fraction below 100 is in thousands of metres
+    public void TestTheCoordinatesOfATitleMayBeWrittenInOtherWays(string title)
+    {
+        state = New("forms.db", Catalogue([title]));
+        ActivateAll();
+        Hb(EnterAt("ALASKA_UNRELATED_PLACE", -4500, -11100));
+        Assert.Equal("1", Completed());
     }
 
     [Fact]
