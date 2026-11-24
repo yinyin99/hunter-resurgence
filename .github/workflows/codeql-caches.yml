@@ -1,0 +1,22 @@
+name: codeql-caches
+# CodeQL's default setup saves an overlay base database per language for every push to main (about 1 GB a day) and reads only the newest:
+# every 6 hours, delete the others, so the Actions caches stay far under their 10 GB limit (docs/deploy.md)
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+permissions:
+  actions: write
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      # the key is codeql-overlay-base-database-<n>-<hash>-<language>-<codeql version>-<sha>-…: keep the newest per prefix up to the version
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh cache list --key codeql-overlay-base-database- --limit 1000 --sort created_at --order desc --json id,key \
+            --jq '.[] | "\(.id) \(.key | capture("^(?<p>.+?)-[0-9]+\\.[0-9]+\\.[0-9]+-").p)"' |
+            awk 'seen[$2]++ { print $1 }' |
+            while read -r id; do gh cache delete "$id"; done
