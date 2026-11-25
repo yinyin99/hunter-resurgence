@@ -194,9 +194,8 @@ public sealed class Claims(State state, Archive archive, string dataDir)
     public List<Pending> Waiting(long? id = null)
     {
         using var con = Store.Open();
-        return con.Rows("SELECT id, account_id, archived_uid, handle, hunterscore, ts, note, keep_handle, EXISTS (SELECT 1 FROM restore_audit a WHERE a.account_id = claims.account_id AND a.mode = 'my-account') "
-                        + "FROM claims WHERE state = 'waiting' AND (?1 IS NULL OR id = ?1) ORDER BY id", id)
-            .Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0, (long)r[8] != 0)).ToList();
+        var rows = con.Rows("SELECT id, account_id, archived_uid, handle, hunterscore, ts, note, keep_handle FROM claims WHERE state = 'waiting' AND (?1 IS NULL OR id = ?1) ORDER BY id", id);
+        return rows.Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0, BackupRestored((long)r[1]))).ToList();
     }
 
     /// <summary>The operator's approve of a waiting claim: the same restore as an automatic one. `keepHandle`: the account keeps its own name whatever the player chose. Status 404: no such waiting claim.</summary>
