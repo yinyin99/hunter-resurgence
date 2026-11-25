@@ -207,8 +207,8 @@ public class ServerServersServiceTests
     const string Games = """
         [{"id": 4000000001, "name": "Test game", "handle": "HostOne", "host": 7, "description": "Come and hunt.", "password": false, "public": true, "singleplayer": false, "freeplayers": true,
           "hs_min": 100, "hs_max": 2000, "max_players": 4, "start_ts": 1700000000, "clients_len": 2,
-          "clients": [{"user_id": 7, "handle": "HostOne", "guid": "1", "color": 1, "avatar": "https://site.test/images/avatars/12.png", "x": 1.5, "y": 2, "z": 3, "hunterscore": 1500},
-                      {"user_id": 8, "handle": "Guest", "guid": "2", "color": 2, "avatar": null, "x": 4, "y": 5, "z": 6, "hunterscore": 300}],
+          "clients": [{"user_id": 7, "handle": "HostOne", "guid": "1", "color": 1, "avatar": "https://site.test/images/avatars/12.png", "x": 1.5, "y": 2, "z": 3, "mapX": 25.5, "mapY": 75, "hunterscore": 1500},
+                      {"user_id": 8, "handle": "Guest", "guid": "2", "color": 2, "avatar": null, "x": 4, "y": 5, "z": 6, "mapX": null, "mapY": null, "hunterscore": 300}],
           "reserve": {"id": 2, "name": "Test Reserve"}},
          {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800,
           "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}},
@@ -227,6 +227,8 @@ public class ServerServersServiceTests
             games.Select(g => (g.Id, g.Name, g.Host, g.Reserve, g.Players, g.Max, g.Password, g.MinScore, g.MaxScore)));
         Assert.Equal(["Come and hunt.", "", ""], games.Select(g => g.Description));
         Assert.Equal([("HostOne", 1500, "avatar-12"), ("Guest", 300, Avatars.Default)], games[0].Roster.Select(p => (p.Handle, p.HunterScore, p.Avatar)));
+        Assert.Equal([(25.5, 75.0), ((double?)null, (double?)null)], games[0].Roster.Select(p => (p.X, p.Y)));  // the server's percent of the map, none for a player without a position
+        Assert.Equal([(double?)null], games[1].Roster.Select(p => p.X));  // a game that sends none places nobody
         Assert.Equal(int.MaxValue, games[2].Roster.Single().HunterScore);
         Assert.Equal([true, false, false], games.Select(g => g.Limited));
         Assert.Equal([null, null, "hunterscore"], games.Select(g => g.Why));  // the server's reason, none from a server that does not send one
