@@ -83,8 +83,8 @@ public class MissionAuditTests : MissionTestBase
         Hb(Shot(1));
         Assert.Equal("1", Completed());
         Hb(Shot(2, species: 5));  // a fox: no harvest of the account in the window would date nothing
-        using (var con = state.Store.Open())
-            con.Exec("DELETE FROM events WHERE id = (SELECT MIN(id) FROM events WHERE event = 3)");  // the harvest that finished it is gone: the rule is the same, nothing meets it
+        using (var con = state.Store.Open(ME))
+            con.Exec("DELETE FROM events WHERE account_id = $a AND id = (SELECT MIN(id) FROM events WHERE account_id = $a AND event = 3)");  // the harvest that finished it is gone: the rule is the same, nothing meets it
         var report = Audit();
         Assert.Equal($"unmet | mission 1 Harvest a Test Deer | Harvest a Test Deer | {state.Store.HandleOf(ME)} | no harvest or clue since its activation meets it", Assert.Single(Flagged(report, "unmet")));
         Assert.Empty(Flagged(report, "rule changed"));
@@ -118,8 +118,8 @@ public class MissionAuditTests : MissionTestBase
         state = Audited("before.db", Catalogue(["Harvest a Test Deer"]));
         ActivateAll();
         Hb(Shot(1, distance: 2000));
-        using (var con = state.Store.Open())
-            con.Exec("UPDATE missions SET rules = '{}'");  // as a row finished before schema 36
+        using (var con = state.Store.Open(ME))
+            con.Exec("UPDATE missions SET rules = '{}' WHERE account_id = $a");  // as a row finished before schema 36
         var strict = New("before.db", Catalogue(["Harvest a Test Deer"]), rules: Stricter("1/0"));
         strict.Clock = () => now;
         var report = Audit(of: strict);
