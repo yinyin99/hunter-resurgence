@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 31;
+    public const int Version = 32;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -145,6 +145,15 @@ public sealed class Store
             PRIMARY KEY (account_id, day)) WITHOUT ROWID;
         """;
 
+    // banned_steam: the Steam ids the operator banned, with the time and the reason; not tied to an account row, so a delete of the account does not lift it. A lifted ban keeps its row (lifted_ts)
+    // so the review list can say the id was banned before. steam_deletions: when the account of a Steam id was deleted (Steam id and time only), for the claim cooldown after a delete.
+    const string SteamTables = """
+        CREATE TABLE IF NOT EXISTS banned_steam (
+            steam_id64 TEXT PRIMARY KEY, ts INTEGER NOT NULL, reason TEXT NOT NULL, lifted_ts INTEGER) WITHOUT ROWID;
+        CREATE TABLE IF NOT EXISTS steam_deletions (
+            steam_id64 TEXT PRIMARY KEY, ts INTEGER NOT NULL) WITHOUT ROWID;
+        """;
+
     // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge
     // runs over every account at once. `frames` is a JSON array of "module+offset" texts, the crashing frame first.
     const string CrashReports = $"""
@@ -212,6 +221,7 @@ public sealed class Store
         {Challenges}
         {DailyMissions}
         {ClaimTables}
+        {SteamTables}
         {CommunityProgress}
         {Loadouts}
 
@@ -463,6 +473,7 @@ public sealed class Store
             }
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
+            if (version < 32) con.Script(SteamTables);
         }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
@@ -557,14 +568,63 @@ public sealed class Store
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
-    /// sessions, its Steam id and handle; and its friend edges both ways. Files are the caller's.</summary>
-    public void DeleteAccount(long id)
+    /// sessions, its Steam id and handle; and its friend edges both ways. Files are the caller's. Its Steam id and the time `at` (default now)
+    /// stay in `steam_deletions` for the claim cooldown; nothing else of the account does.</summary>
+    public void DeleteAccount(long id, long? at = null)
     {
         using var con = Open();
         con.Begin();
+        con.Exec("INSERT OR REPLACE INTO steam_deletions (steam_id64, ts) SELECT steam_id64, ?2 FROM accounts WHERE id = ?1 AND steam_id64 IS NOT NULL", id, at ?? Now());
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", id);
         con.Exec("DELETE FROM accounts WHERE id = ?", id);
         con.Commit();
+    }
+
+    /// <summary>When the account this Steam id had was last deleted (Unix seconds); null when none was, or the record is older than the claim cooldown and was purged.</summary>
+    public long? DeletedAt(string steamId64)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT ts FROM steam_deletions WHERE steam_id64 = ?", steamId64) as long?;
+    }
+
+    // ---- bans by Steam id
+
+    /// <summary>Is this Steam id banned now: no sign-in with it makes or opens an account.</summary>
+    public bool IsBanned(string steamId64)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT 1 FROM banned_steam WHERE steam_id64 = ? AND lifted_ts IS NULL", steamId64) is not null;
+    }
+
+    /// <summary>Ban the Steam id (a ban again replaces the time and the reason) and set `banned` on its current account, if any; returns that account.</summary>
+    public long? Ban(string steamId64, string reason, long at)
+    {
+        using var con = Open();
+        con.Begin();
+        con.Exec("INSERT INTO banned_steam (steam_id64, ts, reason, lifted_ts) VALUES (?1, ?2, ?3, NULL) ON CONFLICT (steam_id64) DO UPDATE SET ts = ?2, reason = ?3, lifted_ts = NULL", steamId64, at, reason);
+        con.Exec("UPDATE accounts SET banned = 1 WHERE steam_id64 = ?", steamId64);
+        var account = con.Scalar("SELECT id FROM accounts WHERE steam_id64 = ?", steamId64) as long?;
+        con.Commit();
+        return account;
+    }
+
+    /// <summary>Lift the ban of the Steam id and of its current account, if any; the row stays with its lift time. False: it was not banned.</summary>
+    public bool Unban(string steamId64, long at)
+    {
+        using var con = Open();
+        con.Begin();
+        var lifted = con.Exec("UPDATE banned_steam SET lifted_ts = ?2 WHERE steam_id64 = ?1 AND lifted_ts IS NULL", steamId64, at) > 0;
+        lifted |= con.Exec("UPDATE accounts SET banned = 0 WHERE steam_id64 = ? AND banned = 1", steamId64) > 0;
+        con.Commit();
+        return lifted;
+    }
+
+    /// <summary>When the Steam id was banned and, if it was lifted, when; null when it never was.</summary>
+    public (long Ts, long? Lifted)? BanOf(string steamId64)
+    {
+        using var con = Open();
+        var rows = con.Rows("SELECT ts, lifted_ts FROM banned_steam WHERE steam_id64 = ?", steamId64).ToList();
+        return rows.Count == 0 ? null : ((long)rows[0][0], rows[0][1] as long?);
     }
 
     // ---- friends (the Friends table)
@@ -865,13 +925,14 @@ public sealed class Store
         con.Exec("DELETE FROM web_sessions WHERE hash = ?", Hash(cookie));
     }
 
-    /// <summary>Drop the tokens and cookies that have expired (at startup).</summary>
+    /// <summary>Drop the tokens and cookies that have expired, and the deletion times older than the claim cooldown (at startup).</summary>
     public void PurgeExpired()
     {
         using var con = Open();
         var now = Now();
         con.Exec("DELETE FROM tokens WHERE expires_ts <= ?", now);
         con.Exec("DELETE FROM web_sessions WHERE expires_ts <= ?", now);
+        con.Exec("DELETE FROM steam_deletions WHERE ts <= ?", now - Claims.CooldownHours * 3600L);
     }
 
     static string Hash(string token) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(token)));

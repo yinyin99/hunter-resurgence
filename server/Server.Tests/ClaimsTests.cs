@@ -72,6 +72,21 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, c2.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'claims_uid'"));
     }
 
+    [Fact]
+    public void TestSchemaOfVersion31GetsTheBanAndDeletionTables()
+    {
+        var file = Path.Combine(tmp, "v31.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("DROP TABLE banned_steam");
+            con.Exec("DROP TABLE steam_deletions");
+            con.Exec("PRAGMA user_version = 31");
+        }
+        using var check = new Store(file).Open();
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name IN ('banned_steam', 'steam_deletions')"));
+    }
+
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
     void MakeArchive()
@@ -278,6 +293,75 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal("restored", Make().Claim(player, "alpha", false, false).Kind);
         Assert.Equal(Restorer.GmFloor, (double)state.Wallet(player)["gm"]!);
         Assert.Equal("player", state.Store.HandleOf(player));  // useOldName false: the account's own name
+    }
+
+    [Fact]
+    public void TestAClaimWithin24HoursOfDeletingTheSteamIdsAccountIsRefusedAndAfterThatAllowed()
+    {
+        var now = 1_800_000_000.0;
+        state.Clock = () => now;
+        var (first, _) = SignedIn("first");
+        var steam = state.Store.SteamId64(first)!;
+        new Uploads(state, tmp).Delete(first);  // POST /account/delete: the Steam id and the time stay
+        Assert.Equal((long)now, state.Store.DeletedAt(steam));
+        var again = state.Store.NextServerId();
+        state.CreateAccount(again, "second", steam);  // the same Steam id signs in again
+        var claims = Make();
+
+        now += 23 * 3600;
+        var refused = claims.Claim(again, "alpha", true, false);
+        Assert.Equal((409, "refused"), (refused.Status, refused.Kind));
+        Assert.Contains(DateTimeOffset.FromUnixTimeSeconds(1_800_000_000 + 24 * 3600).ToString("yyyy-MM-dd HH:mm 'UTC'"), refused.Message);  // it says when the claim is possible
+        Assert.False(Owns(again, 9001));
+        Assert.Null(claims.Of(again));
+        Assert.Equal(0L, Count(again, "claim_lookups"));  // the refusal costs no lookup
+
+        now += 2 * 3600;  // 25 hours after the delete
+        Assert.Equal("restored", claims.Claim(again, "alpha", true, false).Kind);
+        Assert.True(Owns(again, 9001));
+    }
+
+    [Fact]
+    public void TestTheOperatorsClaimAndAnAccountOfAnotherSteamIdIgnoreTheCooldown()
+    {
+        state.Clock = () => 1_800_000_000;
+        var (first, _) = SignedIn("first");
+        var steam = state.Store.SteamId64(first)!;
+        new Uploads(state, tmp).Delete(first);
+        var again = state.Store.NextServerId();
+        state.CreateAccount(again, "second", steam);
+        var (other, _) = SignedIn("other");
+        Assert.Equal("restored", Make().Claim(other, "alpha", true, false).Kind);
+        Assert.Equal("restored", Make().Claim(again, "alpha", true, false, byOperator: true).Kind);
+    }
+
+    [Fact]
+    public void TestOnlyTheSteamIdAndTheTimeOfADeleteAreKeptAndOldOnesArePurged()
+    {
+        var (account, _) = SignedIn("gone");
+        var steam = state.Store.SteamId64(account)!;
+        new Uploads(state, tmp).Delete(account);
+        using var con = state.Store.Open();
+        Assert.Equal([steam], con.Rows("SELECT steam_id64 FROM steam_deletions").Select(r => (string)r[0]));
+        Assert.Equal(2L, (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('steam_deletions')")!);  // Steam id and time, nothing else
+        con.Exec("UPDATE steam_deletions SET ts = ts - ?", (Claims.CooldownHours + 1) * 3600L);
+        state.Store.PurgeExpired();
+        Assert.Null(state.Store.DeletedAt(steam));
+    }
+
+    [Fact]
+    public void TestAClaimOfASteamIdBannedBeforeSaysSoInTheAlertAndTheReviewList()
+    {
+        state.Clock = () => 1_800_000_000;
+        var (player, _) = SignedIn("player");
+        var steam = state.Store.SteamId64(player)!;
+        Assert.NotNull(AdminApi.Ban(state, steam, "test").Done);
+        Assert.NotNull(AdminApi.Unban(state, steam).Done);
+        var alerts = new List<string>();
+        var claims = Make(alerts);
+        Assert.Equal("review", claims.Claim(player, "bravo", true, false).Kind);
+        Assert.Contains("\nearlier ban: 2027-01-15, lifted 2027-01-15", Assert.Single(alerts));
+        Assert.Equal("2027-01-15, lifted 2027-01-15", Assert.Single(claims.Waiting()).EarlierBan);
     }
 
     [Fact]

@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Możesz odzyskać tylko jeden profil. Jeśli masz zip z kopią zapasową, prześlij go zamiast tego.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Wybierz zip z kopią zapasową i prześlij go.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Usuń moje dane</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>To usuwa Twoje konto na tym serwerze i wszystko, co z nim zapisano: Twoje id Steam, nazwę, dane z gry, przechowywane zipy kopii i Twoje zdjęcia. Zostaniesz wylogowany, a logowanie w launcherze przestanie działać. Tego nie można cofnąć.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>To usuwa Twoje konto na tym serwerze i wszystko, co z nim zapisano: Twoją nazwę, dane z gry, przechowywane zipy kopii i Twoje zdjęcia. Tylko Twoje id Steam i czas usunięcia zostają na 24 godziny, aby nowe konto nie mogło od razu przejąć starego profilu. Zostaniesz wylogowany, a logowanie w launcherze przestanie działać. Tego nie można cofnąć.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumiem, usuń wszystko</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Usuń moje dane</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Nie udało się usunąć danych. Spróbuj ponownie.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Czego konta nie zawierają</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Twojego adresu e-mail, prawdziwego imienia i nazwiska, adresu pocztowego ani numeru telefonu: nie są wymagane i nie są przechowywane na koncie. Jeśli kopia zawiera takie pole, nie jest ono przywracane.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Usuwanie Twoich danych</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Zaloguj się, otwórz Przywróć kopię zapasową i użyj Usuń moje dane. Usuwa to konto, jego dane z gry, przechowywane zipy i zdjęcia oraz wylogowuje Cię. Twoje id Steam zostaje wtedy zapomniane; ponowne logowanie tworzy nowe konto.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Zaloguj się, otwórz Przywróć kopię zapasową i użyj Usuń moje dane. Usuwa to konto, jego dane z gry, przechowywane zipy i zdjęcia oraz wylogowuje Cię. Twoje id Steam zostaje wtedy zapomniane, z tym że przez 24 godziny jest przechowywane razem z czasem usunięcia i niczym więcej, aby nowe konto nie mogło od razu przejąć starego profilu; id Steam zablokowane przez operatora pozostaje zablokowane. Ponowne logowanie tworzy nowe konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operator tego serwera widzi wszystko powyższe.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Raporty o problemach</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Gdy uruchomienie gry się nie powiedzie (działała krócej niż minutę, zakończyła się błędem lub nie pokazała okna), launcher przygotowuje raport: dzienniki i ustawienia gry, własny dziennik launchera, zdarzenia awarii gry, launchera i jego przeglądarki (WebView2) w systemie Windows, nazwy programów antywirusowych, boosterów i nakładek, wersję i język systemu Windows, kartę graficzną i ekrany oraz Twoje ostatnie uruchomienia. Jego pliki tekstowe nie zawierają haseł ani tokenów. Jest wysyłany tylko wtedy, gdy wybierzesz „Wysyłaj automatycznie” (pytanie pojawia się raz, można to zmienić w Ustawieniach), w przeciwnym razie tylko po naciśnięciu Wyślij. Jest przechowywany przy Twoim koncie przez 30 dni i operatorzy mogą go odczytać. Powiadomienie z Twoją nazwą użytkownika, numerem Twojego konta i numerem referencyjnym raportu trafia na prywatny kanał Discord operatorów. Usuń moje dane usuwa Twoje raporty.</value></data>
@@ -1569,7 +1569,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ten link do logowania wygasł. Zacznij od nowa w launcherze lub narzędziu do kopii zapasowej.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ten link do logowania jest nieprawidłowy. Zacznij od nowa w launcherze lub narzędziu do kopii zapasowej.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam nie potwierdził logowania. Zacznij od nowa.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>To konto nie może się zalogować.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>To konto jest zablokowane i nie może się zalogować.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Czy na pewno chcesz zamknąć launcher i grę?</value></data>

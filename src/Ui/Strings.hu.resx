@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Csak egy profilt igényelhetsz. Ha van mentési zipod, inkább azt töltsd fel.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Válaszd ki a mentési zipet, és töltsd fel.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Adataim törlése</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Ez törli a fiókodat ezen a szerveren és mindent, ami hozzá tartozik: a Steam-azonosítódat, a nevedet, a játékadataidat, a megőrzött mentési zipeket és a fotóidat. Kijelentkeztetünk, és a launcher bejelentkezése nem fog működni. Ez nem vonható vissza.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Ez törli a fiókodat ezen a szerveren és mindent, ami hozzá tartozik: a nevedet, a játékadataidat, a megőrzött mentési zipeket és a fotóidat. Csak a Steam-azonosítód és a törlés ideje marad meg 24 órára, hogy egy új fiók ne igényelhessen azonnal egy régi profilt. Kijelentkeztetünk, és a launcher bejelentkezése nem fog működni. Ez nem vonható vissza.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Megértettem, töröljön mindent</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Adataim törlése</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Az adatok törlése nem sikerült. Próbáld újra.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Mit nem tárolnak a fiókok</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Az e-mail-címed, valódi neved, postacímed vagy telefonszámod: ezeket nem kérjük, és nem tároljuk a fiókodban. Ha egy mentés ilyen mezőt tartalmaz, az nem áll vissza.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Adataid törlése</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Jelentkezz be, nyisd meg a Mentés visszaállítása oldalt, és használd az Adataim törlése gombot. Ez törli a fiókot, a játékadatait, a megőrzött zipeket és a fotókat, és kijelentkeztet. A Steam-azonosítód ezután feledésbe merül; újbóli bejelentkezéskor új fiók jön létre.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Jelentkezz be, nyisd meg a Mentés visszaállítása oldalt, és használd az Adataim törlése gombot. Ez törli a fiókot, a játékadatait, a megőrzött zipeket és a fotókat, és kijelentkeztet. A Steam-azonosítód ezután feledésbe merül, azzal a kivétellel, hogy 24 órára megmarad a törlés idejével együtt, és semmi mással, hogy egy új fiók ne igényelhessen azonnal egy régi profilt; az üzemeltető által kitiltott Steam-azonosító kitiltva marad. Újbóli bejelentkezéskor új fiók jön létre.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>A szerver üzemeltetője mindezt láthatja.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Hibajelentések</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Ha egy játékindítás sikertelen (egy percnél rövidebb ideig futott, hibával állt le, vagy nem jelent meg ablak), a launcher jelentést állít össze: a játék naplóit és beállításait, a launcher saját naplóját, a játékhoz, a launcherhez és a böngészőjéhez (WebView2) tartozó Windows-összeomlási eseményeket, a víruskereső, booster és overlay programok nevét, a Windows verzióját és nyelvét, a videokártyát és a képernyőket, valamint a legutóbbi indításaidat. A szöveges fájljai nem tartalmaznak jelszavakat vagy tokeneket. Csak akkor küldi el, ha az „Automatikus küldés” lehetőséget választottad (egyszer kérdezi meg, a Beállításokban módosítható), egyébként csak a Küldés gomb megnyomásakor. 30 napig a fiókodnál tárolódik, és az üzemeltetők elolvashatják. A felhasználóneveddel, a fiókszámoddal és a jelentés hivatkozásával ellátott értesítés az üzemeltetők privát Discord-csatornájára érkezik. Az Adataim törlése eltávolítja a jelentéseidet.</value></data>
@@ -1569,7 +1569,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ez a bejelentkezési hivatkozás lejárt. Kezdd elölről a launcherből vagy a mentőeszközből.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ez a bejelentkezési hivatkozás érvénytelen. Kezdd elölről a launcherből vagy a mentőeszközből.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>A Steam nem erősítette meg a bejelentkezést. Kezdd elölről.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ez a fiók nem jelentkezhet be.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ez a fiók ki van tiltva, és nem tud bejelentkezni.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ez az űrlap nem erről a szerverről származik.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>

@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Yalnızca bir profil talep edebilirsiniz. Yedek zip'iniz varsa onu yükleyin.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Yedek zip'inizi seçin ve yükleyin.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Verilerimi sil</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Bu işlem bu sunucudaki hesabınızı ve onunla saklanan her şeyi siler: Steam id'nizi, adınızı, oyun verilerinizi, saklanan yedek zip dosyalarını ve fotoğraflarınızı. Oturumunuz kapatılır ve başlatıcıdaki oturum açma çalışmaz. Geri alınamaz.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Bu işlem bu sunucudaki hesabınızı ve onunla saklanan her şeyi siler: adınızı, oyun verilerinizi, saklanan yedek zip dosyalarını ve fotoğraflarınızı. Yalnızca Steam id'niz ve silme zamanı 24 saat kalır; böylece yeni bir hesap eski bir profili hemen sahiplenemez. Oturumunuz kapatılır ve başlatıcıdaki oturum açma çalışmaz. Geri alınamaz.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Anlıyorum, her şeyi sil</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Verilerimi sil</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Veriler silinemedi. Tekrar deneyin.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Hesapların içermedikleri</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-posta adresiniz, gerçek adınız, posta adresiniz veya telefon numaranız: bunlar istenmez ve hesabınızda saklanmaz. Bir yedek böyle bir alan içeriyorsa geri yüklenmez.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Oturum açın, “Yedeği geri yükle” sayfasını açın ve “Verilerimi sil” düğmesini kullanın. Hesabı, oyun verilerini, saklanan zip dosyalarını ve fotoğrafları siler ve oturumunuzu kapatır. Steam id'niz ardından unutulur; yalnızca 24 saat boyunca silme zamanıyla birlikte saklanır, başka hiçbir şey saklanmaz; böylece yeni bir hesap eski bir profili hemen sahiplenemez. Operatörün yasakladığı bir Steam id yasaklı kalır. Yeniden oturum açmak yeni bir hesap oluşturur.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Bu sunucunun operatörü yukarıdakilerin tümünü görebilir.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Sorun raporları</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Bir oyun başlatma başarısız olduğunda (bir dakikadan kısa çalıştığında, hatayla sonlandığında veya hiç pencere göstermediğinde) başlatıcı bir rapor hazırlar: oyunun günlükleri ve ayarları, başlatıcının kendi günlüğü, oyun, başlatıcı ve tarayıcısı (WebView2) için Windows çökme olayları, virüsten koruma, hızlandırıcı ve yer paylaşımı (overlay) programlarının adları, Windows sürümünüz ve diliniz, ekran kartınız ve ekranlarınız ve son başlatmalarınız. Metin dosyaları parola veya belirteç içermez. Yalnızca “Otomatik gönder” seçeneğini seçtiyseniz gönderilir (bir kez sorulur, Ayarlar’dan değiştirilebilir); aksi halde yalnızca Gönder’e bastığınızda gönderilir. Hesabınızla birlikte 30 gün saklanır ve operatörler okuyabilir. Kullanıcı adınızı, hesap numaranızı ve raporun referansını içeren bir bildirim operatörlerin özel Discord kanalına gider. “Verilerimi sil” raporlarınızı siler.</value></data>
@@ -1569,7 +1569,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Bu oturum açma bağlantısının süresi doldu. Launcher’dan veya yedekleme aracından yeniden başlayın.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Bu oturum açma bağlantısı geçerli değil. Launcher’dan veya yedekleme aracından yeniden başlayın.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam oturum açmayı onaylamadı. Yeniden başlayın.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Bu hesap oturum açamaz.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Bu hesap yasaklandı ve oturum açamaz.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>

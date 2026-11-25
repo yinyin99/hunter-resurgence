@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Můžete požádat jen o jeden profil. Pokud máte zip se zálohou, nahrajte ho místo toho.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Vyberte svůj zip se zálohou a nahrajte ho.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Smazat mé údaje</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tím smažete svůj účet na tomto serveru i vše, co je s ním uloženo: své Steam ID, své jméno, herní data, uchované zipy záloh a své fotky. Budete odhlášeni a přihlášení v launcheru přestane fungovat. Nelze to vrátit zpět.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tím smažete svůj účet na tomto serveru i vše, co je s ním uloženo: své jméno, herní data, uchované zipy záloh a své fotky. Pouze vaše Steam ID a čas smazání zůstanou 24 hodin, aby nový účet nemohl hned převzít starý profil. Budete odhlášeni a přihlášení v launcheru přestane fungovat. Nelze to vrátit zpět.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumím, smazat vše</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Smazat mé údaje</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Údaje se nepodařilo smazat. Zkuste to znovu.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Co účty neobsahují</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Vaši e-mailovou adresu, skutečné jméno, poštovní adresu ani telefonní číslo: nevyžadují se a v účtu se neukládají. Pokud záloha takové pole obsahuje, neobnoví se.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Smazání vašich údajů</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene; novým přihlášením vznikne nový účet.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Přihlaste se, otevřete „Obnovit zálohu“ a použijte „Smazat mé údaje“. Smaže se účet, jeho herní data, uchované zipy i fotky a budete odhlášeni. Vaše Steam ID se pak zapomene, jen na 24 hodin zůstane spolu s časem smazání a ničím jiným, aby nový účet nemohl hned převzít starý profil; Steam ID zablokované provozovatelem zůstává zablokované. Novým přihlášením vznikne nový účet.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operátor tohoto serveru vidí vše výše uvedené.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Hlášení problémů</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Když se spuštění hry nepodaří (běželo méně než minutu, skončilo chybou nebo nezobrazilo okno), launcher sestaví hlášení: protokoly a nastavení hry, vlastní protokol launcheru, události pádu hry, launcheru a jeho prohlížeče (WebView2) ve Windows, názvy antivirových programů, booster a overlay programů, verze a jazyk Windows, grafická karta a obrazovky a vaše poslední spuštění. Jeho textové soubory neobsahují žádná hesla ani tokeny. Odešle se jen tehdy, pokud jste zvolili „Odesílat automaticky“ (zeptáme se jednou, změnit lze v části Nastavení), jinak jen po stisknutí tlačítka Odeslat. Uchovává se u vašeho účtu 30 dní a provozovatelé ho mohou číst. Oznámení s vaší přezdívkou, číslem vašeho účtu a referencí hlášení se odešle do soukromého kanálu provozovatelů na Discordu. Smazat mé údaje vaše hlášení odstraní.</value></data>
@@ -1569,7 +1569,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Odkaz pro přihlášení vypršel. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Odkaz pro přihlášení není platný. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam přihlášení nepotvrdil. Začněte znovu.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet se nesmí přihlásit.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet je zablokován a nemůže se přihlásit.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tento formulář nepochází z tohoto serveru.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Toto přihlášení už bylo potvrzeno.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>

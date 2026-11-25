@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Você só pode reivindicar um perfil. Se tiver um zip de backup, envie-o no lugar.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Escolha seu zip de backup e envie.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Excluir meus dados</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto exclui sua conta neste servidor e tudo o que está guardado com ela: seu id da Steam, seu nome, seus dados de jogo, os zips de backup guardados e suas fotos. Você sai da conta e o login do launcher deixa de funcionar. Não é possível desfazer.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto exclui sua conta neste servidor e tudo o que está guardado com ela: seu nome, seus dados de jogo, os zips de backup guardados e suas fotos. Só seu id da Steam e o horário da exclusão ficam por 24 horas, para que uma conta nova não possa reivindicar logo um perfil antigo. Você sai da conta e o login do launcher deixa de funcionar. Não é possível desfazer.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Entendo, excluir tudo</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Excluir meus dados</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Não foi possível excluir os dados. Tente novamente.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não guardam</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Seu e-mail, nome verdadeiro, endereço postal ou telefone: eles não são pedidos nem guardados na sua conta. Se um backup tiver um campo assim, ele não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Excluindo seus dados</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Entre, abra Restaurar seu backup e use Excluir meus dados. Isso exclui a conta, seus dados de jogo, os zips guardados e as fotos, e encerra sua sessão. Seu id da Steam é então esquecido; entrar de novo cria uma conta nova.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Entre, abra Restaurar seu backup e use Excluir meus dados. Isso exclui a conta, seus dados de jogo, os zips guardados e as fotos, e encerra sua sessão. Seu id da Steam é então esquecido, exceto que por 24 horas ele fica guardado com o horário da exclusão e nada mais, para que uma conta nova não possa reivindicar logo um perfil antigo; um id da Steam banido pelo operador continua banido. Entrar de novo cria uma conta nova.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>O operador deste servidor pode ver tudo o que está acima.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Relatórios de problemas</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Quando a inicialização do jogo falha (ele rodou por menos de um minuto, terminou com erro ou não mostrou janela), o launcher monta um relatório: os logs e as configurações do jogo, o log do próprio launcher, eventos de falha do Windows referentes ao jogo, ao launcher e ao navegador dele (WebView2), os nomes de antivírus, boosters e programas de sobreposição, a versão e o idioma do Windows, a placa de vídeo e os monitores e suas inicializações recentes. Seus arquivos de texto não contêm senhas nem tokens. É enviado somente se você escolheu "Enviar automaticamente" (perguntado uma vez, pode ser alterado em Ajustes); caso contrário, só quando você pressiona Enviar. Fica guardado com sua conta por 30 dias e os operadores podem lê-lo. Um aviso com seu nome de usuário, o número da sua conta e a referência do relatório vai para o canal privado do Discord dos operadores. Excluir meus dados remove seus relatórios.</value></data>
@@ -1569,7 +1569,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Este link de entrada expirou. Comece de novo pelo launcher ou pela ferramenta de backup.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Este link de entrada não é válido. Comece de novo pelo launcher ou pela ferramenta de backup.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>A Steam não confirmou a entrada. Comece de novo.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta não pode entrar.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta está banida e não pode entrar.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tem certeza de que deseja fechar o launcher e o jogo?</value></data>

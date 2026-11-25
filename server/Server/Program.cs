@@ -15,6 +15,8 @@ const string AdminUsage = """
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
     --account names another account (user id or handle); without it the local account gets it.
     admin faces [--apply] makes every account's face a 3D face of its body's gender (dry run without --apply: prints the counts).
+    admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any.
+    admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
     admin rescore [--account <id or handle>] [--kill <id>] [--apply] scores the stored harvests again with today's rules (every account, one, or with --kill, that account's one harvest) and prints one JSON line per harvest whose score changes:
@@ -55,7 +57,7 @@ const string ReviewUsage = """
     An id is a number for a zip, c<number> for a claim (c12), or r<account>-<8 hex> for a refused zip (r2000000001-1a2b3c4d).
     --account <account id> (zips only): refuse, and change nothing, when the waiting zip belongs to another account: copy it from the alert or from list.
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
-    A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note.
+    A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note; then, when the claiming Steam id was banned before and the ban lifted, "steam id banned before: <ban date>, lifted <date>".
     A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
     approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
     its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
@@ -244,6 +246,28 @@ void Admin(string[] a)
         Console.WriteLine($"spawn entry {spawner.Add(req).Id} added: the next hunt has it");
         return;
     }
+    if (a.Length > 0 && a[0] == "ban")
+    {
+        if (a.Length < 2) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        var (done, _, error) = AdminApi.Ban(loaded, a[1], string.Join(' ', a[2..]));
+        if (done is null) Die(error!);
+        Console.WriteLine($"banned Steam id {done!.Steam}" + (done.Account is { } banned ? $" and its account {banned}" : " (it has no account)"));
+        return;
+    }
+    if (a.Length > 0 && a[0] == "unban")
+    {
+        if (a.Length != 2) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        var (done, _, error) = AdminApi.Unban(loaded, a[1]);
+        if (done is null) Die(error!);
+        Console.WriteLine($"lifted the ban of Steam id {done!.Steam}" + (done.Account is { } lifted ? $" and of its account {lifted}" : ""));
+        return;
+    }
     string? who = null;
     if (a.Length >= 2 && a[^2] == "--account") { who = a[^1]; a = a[..^2]; }
     if (a.Length is not (2 or 3) || a[0] is not ("item" or "em" or "gm") || (a[0] != "item" && a.Length == 3)) Die(AdminUsage);
@@ -356,7 +380,8 @@ void Review(string[] a)
             foreach (var z in refusedZips)
                 Console.WriteLine($"{z.Id}\trefused\taccount {z.Account}\thandle {z.Handle ?? "(deleted)"}\t{DateTimeOffset.FromUnixTimeSeconds(z.Ts):u}\t{z.Size} bytes\t{z.Reason}");
             foreach (var c in waiting)
-                Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{(c.BackupRestored ? "backup restored\t" : "")}{c.Note}");
+                Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{(c.BackupRestored ? "backup restored\t" : "")}{c.Note}"
+                                  + (c.EarlierBan is { } earlier ? $"\tsteam id banned before: {earlier}" : ""));
             if (kept.Count + waiting.Count + refusedZips.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":

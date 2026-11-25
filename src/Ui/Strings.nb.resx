@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Du kan bare kreve én profil. Har du en zip-fil med sikkerhetskopi, last den opp i stedet.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Velg zip-filen med sikkerhetskopien og last den opp.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Slett dataene mine</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter kontoen din på denne serveren og alt som er lagret med den: Steam-ID-en din, navnet ditt, spilldataene dine, de lagrede zip-filene med sikkerhetskopier og bildene dine. Du blir logget ut, og innloggingen i launcheren slutter å fungere. Det kan ikke angres.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter kontoen din på denne serveren og alt som er lagret med den: navnet ditt, spilldataene dine, de lagrede zip-filene med sikkerhetskopier og bildene dine. Bare Steam-ID-en din og tidspunktet for slettingen blir værende i 24 timer, slik at en ny konto ikke straks kan overta en gammel profil. Du blir logget ut, og innloggingen i launcheren slutter å fungere. Det kan ikke angres.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jeg forstår, slett alt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Slett dataene mine</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Dataene kunne ikke slettes. Prøv igjen.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Hva kontoer ikke inneholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-postadressen din, ditt virkelige navn, postadresse eller telefonnummer: det etterspørres ikke og lagres ikke i kontoen din. Hvis en sikkerhetskopi inneholder et slikt felt, gjenopprettes det ikke.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletting av dataene dine</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Logg inn, åpne Gjenopprett sikkerhetskopien din og bruk Slett dataene mine. Det sletter kontoen, spilldataene, de lagrede zip-filene og bildene, og logger deg ut. Steam-ID-en din glemmes deretter; ny innlogging oppretter en ny konto.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Logg inn, åpne Gjenopprett sikkerhetskopien din og bruk Slett dataene mine. Det sletter kontoen, spilldataene, de lagrede zip-filene og bildene, og logger deg ut. Steam-ID-en din glemmes deretter, bortsett fra at den i 24 timer beholdes sammen med tidspunktet for slettingen og ingenting annet, slik at en ny konto ikke straks kan overta en gammel profil; en Steam-ID som operatøren har utestengt, forblir utestengt. Ny innlogging oppretter en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren av denne serveren kan se alt det ovennevnte.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Problemrapporter</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spillstart mislykkes (den kjørte under ett minutt, endte med en feil eller viste ikke noe vindu), setter launcheren sammen en rapport: spillets logger og innstillinger, launcherens egen logg, Windows-krasjhendelser for spillet, launcheren og nettleseren den bruker (WebView2), navnene på antivirus-, booster- og overlay-programmer, Windows-versjonen og -språket ditt, grafikkortet og skjermene dine, og de siste startene dine. Tekstfilene inneholder ingen passord eller tokens. Den sendes bare hvis du valgte "Send automatisk" (spørres én gang, kan endres under Innstillinger), ellers bare når du trykker Send. Den lagres sammen med kontoen din i 30 dager, og operatørene kan lese den. Et varsel med handlen din, kontonummeret ditt og rapportens referanse sendes til operatørenes private Discord-kanal. Slett dataene mine fjerner rapportene dine.</value></data>
@@ -1569,7 +1569,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Denne påloggingslenken har utløpt. Start på nytt fra launcheren eller sikkerhetskopiverktøyet.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Denne påloggingslenken er ugyldig. Start på nytt fra launcheren eller sikkerhetskopiverktøyet.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekreftet ikke påloggingen. Start på nytt.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne kontoen kan ikke logge inn.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne kontoen er utestengt og kan ikke logge inn.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dette skjemaet kommer ikke fra denne serveren.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Denne påloggingen er allerede bekreftet.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på at du vil lukke launcheren og spillet?</value></data>

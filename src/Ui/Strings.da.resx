@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Du kan kun gøre krav på én profil. Har du en backup-zip, så upload den i stedet.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Vælg din backup-zip, og upload den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Slet mine data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter din konto på denne server og alt, der er gemt med den: dit Steam-id, dit navn, dine spildata, de gemte backup-zips og dine fotos. Du bliver logget ud, og launcherens login holder op med at virke. Det kan ikke fortrydes.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter din konto på denne server og alt, der er gemt med den: dit navn, dine spildata, de gemte backup-zips og dine fotos. Kun dit Steam-id og tidspunktet for sletningen bliver i 24 timer, så en ny konto ikke straks kan overtage en gammel profil. Du bliver logget ud, og launcherens login holder op med at virke. Det kan ikke fortrydes.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jeg forstår det, slet alt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Slet mine data</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Dataene kunne ikke slettes. Prøv igen.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Hvad konti ikke indeholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-mailadresse, dit rigtige navn, din postadresse eller dit telefonnummer: der spørges ikke efter dem, og de gemmes ikke på din konto. Hvis en backup indeholder et sådant felt, gendannes det ikke.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletning af dine data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Log ind, åbn Gendan din backup, og brug Slet mine data. Det sletter kontoen, dens spildata, de gemte zips og fotos og logger dig ud. Dit Steam-id glemmes derefter; hvis du logger ind igen, oprettes en ny konto.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Log ind, åbn Gendan din backup, og brug Slet mine data. Det sletter kontoen, dens spildata, de gemte zips og fotos og logger dig ud. Dit Steam-id glemmes derefter, bortset fra at det i 24 timer bliver gemt sammen med tidspunktet for sletningen og intet andet, så en ny konto ikke straks kan overtage en gammel profil; et Steam-id, som operatøren har udelukket, forbliver udelukket. Hvis du logger ind igen, oprettes en ny konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatøren af denne server kan se alt ovenstående.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Fejlrapporter</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Når en spilstart mislykkes (den kørte under et minut, endte med en fejl eller viste intet vindue), samler launcheren en rapport: spillets logfiler og indstillinger, launcherens egen logfil, Windows-nedbrudshændelser for spillet, launcheren og dens browser (WebView2), navnene på antivirus-, booster- og overlay-programmer, din Windows-version og dit sprog, grafikkort og skærme samt dine seneste starter. Dens tekstfiler indeholder ingen adgangskoder eller tokens. Den sendes kun, hvis du har valgt "Send automatisk" (spørges én gang, kan ændres under Indstillinger), ellers kun når du trykker på Send. Den gemmes sammen med din konto i 30 dage, og operatørerne kan læse den. En besked med dit handle, dit kontonummer og rapportens reference sendes til operatørernes private Discord-kanal. Slet mine data fjerner dine rapporter.</value></data>
@@ -1569,7 +1569,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Dette loginlink er udløbet. Start forfra fra launcheren eller backupværktøjet.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Dette loginlink er ikke gyldigt. Start forfra fra launcheren eller backupværktøjet.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekræftede ikke login. Start forfra.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne konto må ikke logge ind.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne konto er udelukket og kan ikke logge ind.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>

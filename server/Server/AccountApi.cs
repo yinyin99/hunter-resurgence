@@ -186,7 +186,7 @@ public static class AccountApi
                             $"{SignIn.SessionCookie}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
             })
             .WithName("AccountDelete").WithSummary("Delete the account and all its data (form `confirm=delete`)")
-            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out.")
+            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out. Only the Steam id and the time of the delete are kept, 24 hours, for the claim cooldown.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/report", async (HttpContext ctx) =>
