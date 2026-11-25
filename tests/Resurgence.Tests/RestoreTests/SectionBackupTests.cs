@@ -298,7 +298,7 @@ public class SectionBackupTests
         var twice = Sections();
         twice.Raw.Add(("backup_2002/index.json", """{"user_id":"2002","files":[]}"""u8.ToArray()));
         twice.Raw.Add(("backup_2002/json_me.json", "{}"u8.ToArray()));
-        Assert.Equal("more than one folder with an index.json: a backup holds one", twice.Refused());
+        Assert.Equal("more than one folder with an index.json or a public profile: a backup holds one", twice.Refused());
     }
 
     [Fact]

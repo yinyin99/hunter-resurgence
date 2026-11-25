@@ -78,9 +78,10 @@ static partial class SectionBackup
     {
         var indexes = new List<(ZipArchiveEntry? Index, string Prefix)>();
         var withSection = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var e in zip.Entries.Where(e => e.FullName.AsSpan().Count('/') <= 1))
+        foreach (var e in zip.Entries.Where(e => e.FullName.AsSpan().Count('/') <= 2))
         {
             var cut = e.FullName.LastIndexOf('/') + 1;
+            if (e.FullName.AsSpan().Count('/') == 2 && !PublicFolder().IsMatch(e.FullName[..cut])) continue;  // two levels down: only a public profile's folder
             if (e.FullName[cut..] == "index.json") indexes.Add((e, e.FullName[..cut]));
             else if (SectionFile().IsMatch(e.FullName.AsSpan(cut))) withSection.Add(e.FullName[..cut]);
         }
