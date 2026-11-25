@@ -330,8 +330,8 @@ public sealed class LiveSiteTests : UiContext
     [Fact]
     public void TheAchievementsTabShowsTheServersOverviewAndMilestonePagesButNoChallenges()
     {
-        var (c, u) = (System.Globalization.CultureInfo.CurrentCulture, System.Globalization.CultureInfo.CurrentUICulture);
-        (System.Globalization.CultureInfo.CurrentCulture, System.Globalization.CultureInfo.CurrentUICulture) = (System.Globalization.CultureInfo.GetCultureInfo("en"), System.Globalization.CultureInfo.GetCultureInfo("en"));  // the texts' separators follow the culture
+        var (c, u) = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (CultureInfo.GetCultureInfo("en"), CultureInfo.GetCultureInfo("en"));  // the texts' separators follow the culture
         try
         {
             const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
@@ -348,6 +348,9 @@ public sealed class LiveSiteTests : UiContext
             Assert.Equal("0", bar.GetAttribute("tabindex"));
             Assert.Equal("0.8", bar.GetAttribute("style")!.Split(':')[1]);
             Assert.Equal("Animals Unlocked: 4 / 5 (80.0%)", bar.QuerySelector(".tip")!.TextContent);
+            Assert.Equal("img", bar.GetAttribute("role"));
+            Assert.Equal("Animals", bar.GetAttribute("aria-label"));
+            Assert.Equal("tip-ov-0", bar.GetAttribute("aria-describedby"));
             Assert.Equal(bar.GetAttribute("aria-describedby"), bar.QuerySelector(".tip")!.Id);
             Assert.Equal(5, cut.FindAll("ul.pills a").Count);
             cut = Render<AchievementsTab>(p => p.Add(a => a.Handle, "Fox").Add(a => a.Sub, "weapons"));
@@ -363,7 +366,7 @@ public sealed class LiveSiteTests : UiContext
             Assert.Equal(tips[1].GetAttribute("aria-describedby"), tips[1].QuerySelector(".tip")!.Id);
             Assert.Null(tips[0].QuerySelector(".meter"));
         }
-        finally { (System.Globalization.CultureInfo.CurrentCulture, System.Globalization.CultureInfo.CurrentUICulture) = (c, u); }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (c, u); }
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>
