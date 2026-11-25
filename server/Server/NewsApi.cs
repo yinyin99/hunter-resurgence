@@ -89,8 +89,8 @@ public static class NewsApi
                 });
             })
             .WithName("SetNewsPicture").WithSummary("Store a post's picture")
-            .WithDescription($"The request body is the picture: a JPEG, PNG or WebP file of at most {News.MaxPictureBytes >> 20} MB, checked by its first bytes and stored as it is, never resized. Returns the post.")
-            .Accepts<byte[]>("application/octet-stream").ProducesProblem(400).ProducesProblem(404);
+            .WithDescription($"The request body is the picture, whatever its `Content-Type`: a JPEG, PNG or WebP file of at most {News.MaxPictureBytes >> 20} MB, checked by its first bytes and stored as it is, never resized. Returns the post.")
+            .ProducesProblem(400).ProducesProblem(404);
 
         admin.MapPut("/news/{id:long}/picture-slot/{slot}", (long id, string slot) => Run(() =>
             {

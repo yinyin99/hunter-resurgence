@@ -589,7 +589,7 @@ public class NewsApiTests : IAsyncLifetime
         Assert.Equal(404, (await server.SendAsync("GET", "web.test", $"/news/{later}/picture")).Status);  // not yet public
         Assert.Equal(404, (await server.SendAsync("GET", "web.test", "/news/9999/picture")).Status);
         Assert.Equal(404, (await server.SendAsync("GET", "web.test", $"/news/{news.Add(new("None", "b", At: "2026-12-01T00:00:00Z"))}/picture")).Status);
-        Assert.StartsWith($"/news/{id}/picture?v=", (string)(await Feed())["posts"]![0]!["picture"]!);
+        Assert.StartsWith($"/news/{id}/picture?v=", (string)(await Feed())["posts"]!.AsArray().Single(p => (long)p!["id"]! == id)!["picture"]!);
     }
 
     [Fact]
