@@ -32,7 +32,7 @@ public sealed partial class State
     /// harvester's lodge is taken down, the score is judged again on the shooter's hits, the harvester's missions lose only the objectives that harvest had finished and no other event meets, the shooter's missions and
     /// challenges are checked again (the confirmation of #718), the hunterscore of both is made again, and a record per account is kept in `mission_rollbacks`. A failed move is undone whole and counted.
     /// **The gm$ are not moved**: what the harvester was paid stays his and the shooter gets none (a wallet row of 0 keeps `admin rescore` from paying it). One line per moved harvest (kill, species, from, to, gm$) with a
-    /// line under it for each mission objective reopened, then a total. Without `apply` nothing is written.
+    /// line under it for each mission objective reopened and each mission activated to stay unlocked, then a total. Without `apply` nothing is written.
     /// ponytail: a challenge the harvester completed with the harvest stays completed (a completed challenge keeps no event); the shooter's challenges see the shooter's latest events as the harvest's hunt.</summary>
     public IEnumerable<string> MoveMpHarvests(bool apply)
     {
@@ -89,15 +89,19 @@ public sealed partial class State
                 gms = Convert.ToInt64(con.Scalar("SELECT COALESCE(SUM(amount), 0) FROM wallet_log WHERE account_id = $a AND summary = ?", $"CSS Reward (Animal Id: {h.Kill})"));
             var line = $"kill {h.Kill}, species {h.Species}, from account {h.Account} to account {shooter}, gm$ {gms} stay with {h.Account}";
             List<(long Mission, long Was, List<long> Objectives)> reopened;
+            List<long> activated;
             long newKill = 0;
             string? failure = null;
             try
             {
-                (newKill, reopened) = apply ? MoveMpHarvest(h, shooter, shooterHunt.Id, gms, gone[h.Account]) : (0, MpReopened(h, gone[h.Account]));
+                if (apply)
+                    (newKill, reopened, activated) = MoveMpHarvest(h, shooter, shooterHunt.Id, gms, gone[h.Account]);
+                else
+                    (reopened, activated) = MpReopened(h, gone[h.Account]);
             }
             catch (Exception ex)
             {
-                (failure, reopened) = (ex.Message, []);
+                (failure, reopened, activated) = (ex.Message, [], []);
             }
             if (failure is not null)
             {
@@ -114,10 +118,12 @@ public sealed partial class State
                 reopenedTotal += objectives.Count;
                 yield return $"  {(apply ? "reopened" : "would reopen")} account {h.Account}: mission {mission} ({(was == 3 ? "completed, active again" : "active")}) objectives {string.Join(", ", objectives)}";
             }
+            if (activated.Count > 0)
+                yield return $"  {(apply ? "activated" : "would activate")} account {h.Account}, so that nobody is locked out: missions {string.Join(", ", activated)}";
         }
         if (apply && moved > 0)
             DropBoards();
-        yield return $"{(apply ? "moved" : "would move")} {moved} harvests (gm$ {gmsStay} stay with the harvesters, no wallet changes), {(apply ? "reopened" : "would reopen")} {reopenedTotal} mission objectives; kept {kept} second harvests"
+        yield return $"{(apply ? "moved" : "would move")} {moved} harvests (gm$ {gmsStay} stay with the harvesters, none are moved), {(apply ? "reopened" : "would reopen")} {reopenedTotal} mission objectives; kept {kept} second harvests"
             + (failed > 0 ? $"; {failed} failed and undone" : "") + (apply ? "" : " (dry run: nothing written, --apply writes)");
     }
 
@@ -129,23 +135,24 @@ public sealed partial class State
     }
 
     /// <summary>The mission objectives <see cref="MoveMpHarvests"/> would reopen for the harvester of `h`, read only.</summary>
-    List<(long Mission, long Was, List<long> Objectives)> MpReopened(MpHarvest h, HashSet<long> gone)
+    (List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated) MpReopened(MpHarvest h, HashSet<long> gone)
     {
         if (missions.Count == 0)
-            return [];
+            return ([], []);
         using var con = Con(h.Account);
-        return RollbackAccount(con, false, h.EventId, gone).Reopened;
+        var (reopened, activated, _) = RollbackAccount(con, false, h.EventId, gone);
+        return (reopened, activated);
     }
 
     /// <summary>One harvest of <see cref="MoveMpHarvests"/>, in one transaction that spans both accounts (<see cref="Db.Sharing"/>): the harvester's mission rollback for what the harvest finished, its page, kill row and events
     /// to the shooter's account under a new kill id (the number is chosen by <see cref="NextKillId"/>, which also avoids the one the harvester's gm$ row names), the mounted trophy taken down, the score judged again on the
     /// shooter's hits, the 0 gm$ row, the shooter's missions and challenges, both hunterscores and a record per account. Any failure rolls all of it back. The shooter's kill id and the objectives reopened.</summary>
-    (long Kill, List<(long Mission, long Was, List<long> Objectives)> Reopened) MoveMpHarvest(MpHarvest h, long to, long toHunt, long gms, HashSet<long> gone)
+    (long Kill, List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated) MoveMpHarvest(MpHarvest h, long to, long toHunt, long gms, HashSet<long> gone)
     {
         using var con = Con(h.Account);
         con.Begin();
         var theirs = con.Sharing(to);
-        var reopened = missions.Count == 0 ? [] : RollbackAccount(con, true, h.EventId, gone).Reopened;
+        var (reopened, activated, _) = missions.Count == 0 ? ([], [], 0) : RollbackAccount(con, true, h.EventId, gone);
         var kill = NextKillId(theirs);
         var page = Parse(con.Scalar("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", h.Kill)!);
         page["expedition_id"] = toHunt;
@@ -189,8 +196,9 @@ public sealed partial class State
         var record = new JsonObject { ["mpHarvest"] = new JsonObject { ["kill"] = h.Kill, ["species"] = h.Species, ["from"] = h.Account, ["to"] = to, ["newKill"] = kill, ["gms"] = gms } };
         theirs.Exec("INSERT INTO mission_rollbacks (account_id, ts, record) VALUES ($a, ?, ?)", (long)Clock(), Py.Dumps(record));
         record["reopened"] = new JsonArray([.. reopened.Select(r => (JsonNode?)new JsonObject { ["mission"] = r.Mission, ["was"] = r.Was == 3 ? "completed" : "active", ["objectives"] = List(r.Objectives) })]);
+        record["activated"] = List(activated);
         con.Exec("INSERT INTO mission_rollbacks (account_id, ts, record) VALUES ($a, ?, ?)", (long)Clock(), Py.Dumps(record));
         con.Commit();
-        return (kill, reopened);
+        return (kill, reopened, activated);
     }
 }

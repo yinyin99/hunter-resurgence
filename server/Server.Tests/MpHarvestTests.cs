@@ -149,6 +149,20 @@ public class MpHarvestTests : StateTestBase
     }
 
     [Fact]
+    public void TestTwoDifferentAnimalsWithOneNumberTwentyMinutesApartBothCountForTheHarvester()
+    {
+        var clock = now;
+        state.Clock = () => clock;
+        Game(GUEST);
+        Beat(HOST, Skinned(460, 1));  // nobody hit it: the host's
+        clock += 1200;
+        Beat(GUEST, Spawn(460));  // the number is used by another animal, found dead again
+        Beat(HOST, Skinned(460, 2));
+        Assert.Equal((2L, 0L, 2L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(HOST, "events", "event = 3")));
+        Assert.Equal(33.0 + 66 * 2, Gm(HOST));
+    }
+
+    [Fact]
     public void TestASinglePlayerHarvestIsTheHarvestersEvenWhenAnotherPlayerHitTheSameNumber()
     {
         Game(GUEST);
@@ -191,7 +205,7 @@ public class MpHarvestTests : StateTestBase
         var dry = past.MoveMpHarvests(apply: false).ToList();
         Assert.Equal(2, dry.Count);
         Assert.StartsWith($"would move kill 1, species 1, from account {HOST} to account {GUEST}, gm$ 66 stay with {HOST}", dry[0]);
-        Assert.StartsWith("would move 1 harvests (gm$ 66 stay with the harvesters, no wallet changes), would reopen 0 mission objectives; kept 0 second harvests", dry[1]);
+        Assert.StartsWith("would move 1 harvests (gm$ 66 stay with the harvesters, none are moved), would reopen 0 mission objectives; kept 0 second harvests", dry[1]);
         Assert.Equal((3L, 0L, 4L, 0L), (Count(HOST, "kills"), Count(GUEST, "kills"), hs(HOST), hs(GUEST)));  // a dry run writes nothing
 
         var applied = past.MoveMpHarvests(apply: true).ToList();

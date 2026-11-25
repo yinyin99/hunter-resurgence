@@ -293,18 +293,20 @@ public sealed partial class State
 
     /// <summary>Whose a harvest (event 3, `eventId` its stored row in `con`'s account, the harvester's) is: null, the harvester's, which is every harvest outside a multiplayer game, one of an animal
     /// nobody hit and one whose last hit is the harvester's own; (shooter, false), the harvest of the member who shot the animal last (another member's newest event 1 on the same `individual`, of the
-    /// same species (a hit names the catalogue number plus one) when it names one, after that member joined and before this event); (_, true), a second harvest of an animal a member already harvested since its last hit, which counts for nobody.</summary>
+    /// same species (a hit names the catalogue number plus one) when it names one, after that member joined, within <see cref="MpHitWindow"/> before this event); (_, true), a second harvest of an animal a member already harvested since its last hit
+    /// (within the same window, so an earlier harvest of another animal that had the same `individual` number does not count), which counts for nobody.</summary>
     (long Account, bool Ignore)? CreditOf(Db con, JsonObject e3, long eventId)
     {
         if (con.Account is not { } me || games.SnapshotOf(me) is not { } game)
             return null;
         var (individual, variant) = (e3["individual"], e3["extended_species"]);
-        var members = game.Members.Select(m => (m.Account, m.Joined, Db: m.Account == me ? con : Con(m.Account))).ToList();
+        var at = con.Scalar("SELECT ts FROM events WHERE account_id = $a AND id = ?", eventId) is double ts ? ts : double.MinValue;
+        var members = game.Members.Select(m => (m.Account, Since: Math.Max(m.Joined, at - MpHitWindow), Db: m.Account == me ? con : Con(m.Account))).ToList();
         try
         {
             (long Account, long Id)? last = null;
-            foreach (var (account, joined, db) in members)
-                foreach (var r in db.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 1 AND individual = ? AND ts >= ? AND id < ? ORDER BY id DESC", individual, joined, eventId))
+            foreach (var (account, since, db) in members)
+                foreach (var r in db.Rows("SELECT id, body FROM events WHERE account_id = $a AND event = 1 AND individual = ? AND ts >= ? AND id < ? ORDER BY id DESC", individual, since, eventId))
                 {
                     var species = Parse(r[1])["species"];
                     if (Py.IsNum(species) && Py.IsNum(variant) && Py.L(species) != Py.L(variant) % 100 + 1)
@@ -313,9 +315,9 @@ public sealed partial class State
                         last = (account, (long)r[0]);
                     break;
                 }
-            foreach (var (_, joined, db) in members)
+            foreach (var (_, since, db) in members)
                 if (db.Scalar("SELECT 1 FROM events WHERE account_id = $a AND event = 3 AND individual = ? AND json_extract(body, '$.extended_species') IS ? AND ts >= ? AND id > ? AND id < ? LIMIT 1",
-                              individual, variant, joined, last?.Id ?? 0, eventId) is not null)
+                              individual, variant, since, last?.Id ?? 0, eventId) is not null)
                     return (0, true);
             return last is { } l && l.Account != me ? (l.Account, false) : null;
         }
