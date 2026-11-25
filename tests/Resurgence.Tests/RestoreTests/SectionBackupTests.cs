@@ -127,6 +127,21 @@ public class SectionBackupTests
     }
 
     [Fact]
+    public void ACompetitionsAndLodgeContentsOfAPublicSaveReadToTheirEndpoints()
+    {
+        var read = PublicSave().Section("competitions_previous", """{"competitions":[{"id":5}],"total":1}""")
+            .Section("competition_pages", """{"5":{"info":[{"id":5}],"entrants":[],"entrants_total":0},"6":{"info":[{"id":6}],"entrants":[],"entrants_total":0}}""")
+            .Section("lodge_contents", """{"61":{"id":61,"animal_slots":[]}}""").Read();
+        var extras = read.Model.Extras;
+        Assert.Contains("Page_content_list_previous_competitions.json", extras.Keys);
+        Assert.Contains("Page_content_competitions_new__competition_id=5.json", extras.Keys);
+        Assert.Contains("Page_content_competitions_new__competition_id=6.json", extras.Keys);
+        var lodge = Assert.Single(read.Model.Lodges.Where(l => l.Source == "/game/user/lodge"));
+        Assert.Equal("61", lodge.Id);
+        Assert.Empty(read.Report.Rejected);
+    }
+
+    [Fact]
     public void APublicSaveOneLevelDownAndTheV2ProfileIdRead()
     {
         var z = PublicSave("saves/tool_public_sample/", """{"hostname":"sample"}""").Section("v2_profile", """{"id":1001,"hunterscore":1}""");
