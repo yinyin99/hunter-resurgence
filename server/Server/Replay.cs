@@ -22,6 +22,7 @@ public static class Replay
     public const string CONNECT = ProtocolLiterals.RpcBase + "/connect";
     public const string MOVE_MULTIPLE2 = "/v1/Inventory/move_multiple2";
     public const string BUY = "/v1/Inventory/buy";
+    public const string REFILL_BARREL = "/v1/Inventory/refillBarrel";
     public const string DISCOUNTS = "/v1/Application/discounts";
     public const string AVATARS = "/v1/Avatar/getAvatars";
     public const string CHALLENGES = "/v1/Challenge/get_challenges";

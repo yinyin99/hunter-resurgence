@@ -519,11 +519,13 @@ public sealed partial class State
     List<(long ItemId, JsonNode?[] Own)> OwnRows(long account)
     {
         List<object[]> rows;
+        var now = Clock();
         using (var con = Con(account))
             rows = con.Rows($"SELECT item_id, guid, slot, units, metadata FROM items WHERE account_id = $a AND {Shown} ORDER BY item_id, guid");
         return [.. rows.GroupBy(r => (long)r[0]).Select(g => (g.Key, g.Select(r =>
         {
             var metadata = Parse(r[4]);
+            Feeders.Refresh(metadata, now);
             JsonNode? Take(string key)
             {
                 metadata.TryGetPropertyValue(key, out var value);

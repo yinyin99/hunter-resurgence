@@ -749,6 +749,26 @@ A heartbeat changes an item's place and units, one account's rows only:
 
 The connect reply gives a placed item its `position` and `direction` (the restored rows' shape, without the reserve). `Inventory/list` and `Inventory/dict` (`{<item id>: [{id, slot, units, metadata, location}]}`; own user id only, another gets `{}`) give an item in slot 23 with a position `location: {reserve, pos: {x, y, z}, dir: {x, y, z}}`, `pos` in metres and `dir` the direction divided by 1000 (left out when the item has no direction); every other item has `location: null`.
 
+### Bait feeders
+
+A placed feeder (an item whose catalogue row has `bait_item`) keeps its timers in its metadata, in Unix seconds, and every reply that carries the metadata (the connect, `Inventory/list`, `Inventory/dict`, the admin inventory) works its shown fields out for the time of the reply, so nothing has to run in between:
+
+```
+bait_amount(t)   = max(0, bait_amount_org - floor((t - start_bait_ts) / 8640))      # 10 units a day
+penalty_remaining = ceil((1800 - (t - shot_ts)) / 60) minutes, while t - shot_ts < 1800
+feeder_status(t) = Penalty  if bait_amount > 0 and penalty_remaining > 0
+                   Active   if bait_amount > 0 and t - delay_start_ts >= 14400      # 4 h warm-up
+                   Inactive otherwise
+bait_attractiveness(t) = 100 if Active, else 0
+```
+
+A row without `bait_amount_org` and `start_bait_ts` (a feeder never filled) is left as it is.
+
+- **Bait added in a hunt**: event 23 with `bait_amount` on a feeder. When the amount is above what the feeder holds, `bait_amount_org` is the new amount and `start_bait_ts` and `start_attr_ts` are now. An empty feeder restarts its warm-up (`delay_start_ts` now, `bait_attractiveness_org` 0); one that still holds bait keeps `delay_start_ts` and gets `bait_attractiveness_org` 100, so it stays active. A lower or equal amount (the game also sends the amount when bait is eaten) changes nothing. The amount is clamped to 0 to 50.
+- **`Inventory/refillBarrel`** (the Bait Sites page's Refill, community server only): JSON `{barrel_id, currency, max_amount}`. The bait the account owns for the feeder's kind (the `define` the feeder's `bait_item` names) is moved into it up to `max_amount` (at most 50), by the rule above, and leaves its stacks at once (a running hunt sees it at the next connect). The service is paid with `pack` (one use of an owned refill pack, item type 38), or `gold` (em$) or `silver` (gm$) at the price of the refill service (item 791), which leaves no item; the new balance comes as update 15 with the next heartbeat. The reply is `{price, success: true, metadata}` with `start_attr_ts`, `bait_attractiveness`, `feeder_status`, `bait_amount`, `start_bait_ts` and `bait_amount_org`; `price` is 0 for a pack (the original's reply for a pack is not known). `{"success": false}` for an invalid request, a feeder that is not the account's, no bait or no room, no pack, an unknown service or too little currency.
+- **Shots near a feeder**: `shot_ts` is stored and read, but nothing sets it yet: which event the game sends for a shot near a feeder (a hit, a kill, or none: the game sends event 23 `{bear_baited}` only for a baited bear) is not known, so no feeder is in `Penalty` here.
+- **Refills before the rule**: until the rule existed, event 23 only merged `bait_amount` and left the old timers, so such a feeder stayed inactive and its amount fell to 0. At every start, for each feeder with refill events newer than its `start_bait_ts`, the rule is applied again to those events in order, at their own times (so the warm-up counts from the first add, the amount and `start_bait_ts` from the last). A feeder the rule handled has `start_bait_ts` at its last refill and is left alone, so the step is idempotent and needs no schema number.
+
 ## Lodges and trophy visibility
 
 A lodge is the rows it has (`lodges`, one row of `/game/user/lodges` and one of `/game/user/lodge` per lodge id, as read): the ones a restore stored for the account, and one for each unit of a lodge item the account buys in the store (a catalogue item of the facts file's `trophy_lodge.lodges`, bought in the launcher, on the website or in the game, or added with `admin item`). A new lodge is named for its layout (`Rustic Lodge`), unlocked, style 0, empty, with `lodge_engine_id`, `lodge_type_define` and `lodge_type_id` (the item id) of its layout and the account's next lodge id (a whole number above every lodge id of the account). At start, and after each restore (a restore brings the lodge items of the inventory, and the lodge rows only when the save had them), a community server adds the lodges an account lacks, idempotently: one for each unit of a lodge item it owns beyond the lodges of that type it has (a purchase made before the store added lodges, or a restore's inventory). **A new account starts with no lodge**: the start kit ([Starting data](#starting-data)) holds none, and the original's free start did not either; the selection page then says the player owns none. On a community server the player edits them, with a Bearer token, on API v2 and at the same path under `/v1` on the game's web host (the game sends the JSON body as `text/plain`; the body is read whatever its content type, and the web host's JSON-to-form rewrite ([The current build](#the-current-build)) leaves a PUT alone):

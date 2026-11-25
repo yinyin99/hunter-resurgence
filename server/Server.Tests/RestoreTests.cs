@@ -184,7 +184,7 @@ public class RestoreTests : StateTestBase
         Eq("[1.5, 2]", T(skills["tracking"]![0], skills["spotting"]![0]));
         using var con = state.Store.Open(1001);
         var items = new JsonObject();
-        foreach (var i in State.Items(con))
+        foreach (var i in State.Items(con, state.Clock()))
             items[(string)i!["guid"]!] = i.DeepClone();
         // units only where the catalogue says so; a placed item's position and direction are millimetres and leave the metadata
         Eq("""{"item_id": 500, "slot": 1, "guid": "9001", "metadata": {}, "units": 3}""", items["9001"]);

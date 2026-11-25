@@ -531,6 +531,9 @@ public sealed class Store
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
             ReconnectFriends(con, (long)row[0]);
+        // every start: a feeder refilled before the refill rule existed gets its fields from its refill events (Feeders.Backfill); it only touches a feeder whose last refill is newer than its start time, so no schema step and no version
+        foreach (var row in con.Rows("SELECT id FROM accounts"))
+            Feeders.Backfill(con.Sharing((long)row[0]));
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
         con.Commit();

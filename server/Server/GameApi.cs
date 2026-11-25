@@ -108,6 +108,11 @@ public static class GameApi
                                 + "still the balance. `{\"success\": false}` for an unknown item, a missing price, a service or "
                                 + "too little currency.")
                .Body<BuyForm>(Form).Produces<BuyReply>();
+            api.MapExactPost(game, REFILL_BARREL, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.RefillBarrelReply(a, r.Body), "state"), WithJsonToken(r)))
+               .WithName("RefillBarrel").WithSummary("Fill a placed feeder with the bait the account owns (the Bait Sites page's Refill)")
+               .WithDescription("Moves bait of the feeder's kind into it up to `max_amount` (at most 50) and restarts its timers (docs/server.md, \"Bait feeders\"). Paid with a refill pack (`pack`, one use) or the refill service's em$ (`gold`) or gm$ (`silver`) price. "
+                                + "`{price, success: true, metadata}` with the feeder's new fields, or `{\"success\": false}`.")
+               .Body<RefillBarrelRequest>("application/json").Produces<BuyReply>();
             api.MapExactPost(game, LAUNCH_START, r => Own(game, r, a =>
                 {
                     s.NoteLaunch(a, r.Body);
@@ -809,6 +814,9 @@ public static class GameApi
         [property: Description("Count (usually 1)")] long amount,
         [property: Description("`GOLD` (em, catalogue price, discounted) or `SILVER` (gm, catalogue `silver_price`, not discounted)")] string wallet,
         string? oauth_access_token);
+
+    public sealed record RefillBarrelRequest([property: Description("The feeder's item guid")] long barrel_id, [property: Description("`pack`, `gold` or `silver`")] string currency,
+        [property: Description("Fill up to this amount, at most 50")] long max_amount, string? oauth_access_token);
 
     public sealed record BuyReply([property: Description("Price charged, absent on failure")] double? price, bool success);
 
