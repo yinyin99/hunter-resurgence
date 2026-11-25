@@ -57,7 +57,7 @@ const string ReviewUsage = """
     An id is a number for a zip, c<number> for a claim (c12), or r<account>-<8 hex> for a refused zip (r2000000001-1a2b3c4d).
     --account <account id> (zips only): refuse, and change nothing, when the waiting zip belongs to another account: copy it from the alert or from list.
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
-    A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, note; then, when the claiming Steam id was banned before and the ban lifted, "steam id banned before: <ban date>, lifted <date>".
+    A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, "backup restored" when the account restored its own backup, note; then, when the claiming Steam id was banned before and the ban lifted, "steam id banned before: <ban date>, lifted <date>".
     A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
     approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
     its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
