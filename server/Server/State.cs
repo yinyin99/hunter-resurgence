@@ -173,7 +173,7 @@ public sealed partial class State
     /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
     /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).
     /// credit (<see cref="TryCredit"/>) is asked for each harvest (event 3) with the connection and the event's stored row: true when the harvest is not this account's (the shooter's, written in this transaction, or a second one of the animal) and is dropped here;
-    /// false (also when the shooter's write failed and was undone) leaves it the account's.</summary>
+    /// false (also when the shooter's write failed and was undone) leaves it the account's. isFeeder(item id) is true for a feeder, the items whose event 23 `bait_amount` is a refill.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
@@ -181,7 +181,7 @@ public sealed partial class State
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
                                       double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
-                                      Func<Db, JsonObject, long, bool>? credit = null)
+                                      Func<Db, JsonObject, long, bool>? credit = null, Func<long, bool>? isFeeder = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -247,14 +247,15 @@ public sealed partial class State
                         if (Py.D(xp) < old) metadata["experience"] = old;
                     }
                 }
-                if (metadata.ContainsKey("bait_amount"))
+                if (metadata.ContainsKey("bait_amount")
+                    && con.Rows($"SELECT item_id, metadata FROM items WHERE account_id = $a AND guid = ? AND {Shown}", long.Parse(Py.Str(e["item"]))).FirstOrDefault() is { } feeder
+                    && isFeeder?.Invoke((long)feeder[0]) == true)
                 {
-                    // a feeder: bait added restarts its timers (Feeders.Refill); the game also sends the amount when it is eaten, which changes nothing; the shown fields come from the model at reply time
+                    // a feeder (its catalogue row has `bait_item`): bait added restarts its timers (Feeders.Refill); the game also sends the amount when it is eaten, which changes nothing; the shown fields come from the model at reply time
                     metadata = metadata.DeepClone().AsObject();
                     var added = metadata["bait_amount"];
                     metadata.Remove("bait_amount");
-                    if (Py.IsNum(added) && con.Rows($"SELECT metadata FROM items WHERE account_id = $a AND guid = ? AND {Shown}", long.Parse(Py.Str(e["item"]))).FirstOrDefault() is { } feeder
-                        && Feeders.Refill(Parse(feeder[0]), Math.Clamp(Py.L(added), 0, Feeders.MaxAmount), now) is { } fields)
+                    if (Py.IsNum(added) && Feeders.Refill(Parse(feeder[1]), Math.Clamp(Py.L(added), 0, Feeders.MaxAmount), now) is { } fields)
                         foreach (var (key, value) in fields)
                             metadata[key] = value!.DeepClone();
                 }
@@ -2174,7 +2175,7 @@ public sealed partial class State
             updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                 (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()),
-                                (c, e, id) => TryCredit(c, e, id, shooters));
+                                (c, e, id) => TryCredit(c, e, id, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
         }
         finally
         {

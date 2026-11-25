@@ -40,7 +40,7 @@ public sealed partial class State
             var packIds = items.Values.Where(i => Is(i["type"], RefillPackType)).Select(i => Py.L(i["id"]));
             if (con.Rows($"SELECT guid FROM items WHERE account_id = $a AND item_id IN ({string.Join(',', packIds.Append(-1))}) AND units > 0 ORDER BY guid LIMIT 1").FirstOrDefault() is not { } pack)
                 return BUY_FAILED;
-            con.Exec("UPDATE items SET units = units - 1 WHERE account_id = $a AND guid = ?", pack[0]);
+            con.Exec("UPDATE items SET units = units - 1, slot = CASE WHEN units - 1 <= 0 THEN 0 ELSE slot END WHERE account_id = $a AND guid = ?", pack[0]);
         }
         else
         {

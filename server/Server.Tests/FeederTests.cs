@@ -16,7 +16,7 @@ public class FeederTests : StateTestBase
         app["items"]!.AsArray().Add(O("""{"id": 136, "name": "Test Barrel", "define": "TEST_BARREL", "type": 12, "bait_item": "TEST_BAIT", "units": null}"""));
         app["items"]!.AsArray().Add(O("""{"id": 137, "name": "Test Bait", "define": "TEST_BAIT", "type": 4, "units": {"count": 50, "name": "uses"}}"""));
         app["items"]!.AsArray().Add(O("""{"id": 787, "name": "Test Refill Pack", "define": "TEST_PACK", "type": 38, "units": {"count": 25, "name": "units"}, "price": 105, "silver_price": 1785, "notbuyable": 0}"""));
-        app["items"]!.AsArray().Add(O("""{"id": 791, "name": "Test Refill", "define": "TEST_REFILL", "type": 37, "units": {"count": 1, "name": "uses"}, "price": 5, "silver_price": 85, "notbuyable": 0}"""));
+        app["items"]!.AsArray().Add(O("""{"id": 791, "name": "Bait Site Refill", "define": "FEEDER_REFILL", "type": 37, "units": {"count": 1, "name": "uses"}, "price": 5, "silver_price": 85, "notbuyable": 0, "sellable": null}"""));
         foreach (var item in app["items"]!.AsArray().OfType<JsonObject>().Where(i => (long)i["id"]! is 136 or 137 or 787 or 791))  // what a built item definition reads
         {
             item["fit"] = new JsonObject();
@@ -177,6 +177,13 @@ public class FeederTests : StateTestBase
         // bait eaten (a lower amount) changes nothing
         Hb(O("""{"event": 23, "item": "300", "metadata": {"bait_amount": 10}}"""));
         Eq("""["Active", 50, 100, 0]""", Shown(Meta()));
+    }
+
+    [Fact]
+    public void ABaitAmountOnAnItemThatIsNotAFeederIsMerged()
+    {
+        Hb(O("""{"event": 23, "item": "100", "metadata": {"bait_amount": 7}}"""));
+        Eq("""{"bait_amount": 7}""", Items()["100"]!["metadata"]);
     }
 
     [Fact]
