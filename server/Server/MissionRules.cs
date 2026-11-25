@@ -101,7 +101,7 @@ public sealed partial class State
         Check.Within => $"in the hunt: {Num(t.Min)}" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
         Check.Each => $"in the hunt: {Num(t.Min)}, each within {Num(t.Max / 60)} min of the one before",
         Check.SameShot => $"in the hunt: {Num(t.Min)} killed by one shot",
-        Check.Different => $"in the hunt: {Num(t.Min)} different animals" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
+        Check.Different => $"in the {(t.Across ? "mission" : "hunt")}: {Num(t.Min)} different animals" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
         _ => t.Check.ToString().ToLowerInvariant(),
     };
 
