@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 33;
+    public const int Version = 34;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -125,11 +125,21 @@ public sealed class Store
         CREATE INDEX friends_other ON friends (other_id);
         """;
 
-    // one row per change of a wallet balance made here: `amount` is signed, `after` the balance after it, `item_ids` the item ids bought (JSON array)
+    // one row per change of a wallet balance made here: `amount` is signed, `after` the balance after it, `item_ids` the item ids bought (JSON array).
+    // `base` is the amount without any bonus and `bonus_event` the events_log row that changed it (null: none); a row from before they existed has base NULL, which reads as `amount` (docs/server.md#reward-bases-and-events)
     const string WalletLog = $"""
         CREATE TABLE wallet_log (
-            n INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, currency TEXT NOT NULL, amount REAL NOT NULL, after REAL NOT NULL, summary TEXT NOT NULL, item_ids TEXT NOT NULL);
+            n INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, currency TEXT NOT NULL, amount REAL NOT NULL, after REAL NOT NULL, summary TEXT NOT NULL, item_ids TEXT NOT NULL,
+            base REAL, bonus_event INTEGER);
         CREATE INDEX wallet_log_account ON wallet_log (account_id, currency, n);
+        """;
+
+    // the periods that changed what a hunt paid or how it was played: a gm$ or mission bonus (multiplier set) or a seasonal event (none); shared, not per player.
+    // kind: gm_bonus | mission_bonus | seasonal | ...; applies_to: what the multiplier multiplies (`harvest_gm`), empty for none; times are Unix seconds, the period is start_ts <= t < end_ts
+    const string EventsLog = """
+        CREATE TABLE IF NOT EXISTS events_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, kind TEXT NOT NULL, start_ts INTEGER NOT NULL, end_ts INTEGER NOT NULL,
+            multiplier REAL, applies_to TEXT NOT NULL DEFAULT '');
         """;
 
     // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
@@ -225,6 +235,7 @@ public sealed class Store
         {UploadResults}
         {CrashReports}
         {WalletLog}
+        {EventsLog}
         {Missions}
         {Challenges}
         {DailyMissions}
@@ -483,6 +494,10 @@ public sealed class Store
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
             if (version < 32) con.Script(SteamTables);
+            // every start, guarded by its own checks and not by the version: a database made by another branch's schema number (merge or deploy in any order) gets the table and the columns too
+            con.Script(EventsLog);
+            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
+                con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);

@@ -201,7 +201,8 @@ public static class AdminApi
 
         admin.MapGet("/hunting", Results<Ok<JsonObject>, ProblemHttpResult> () => state is null ? NoState() : TypedResults.Ok(state.HuntingAdmin()))
              .WithName("GetHuntingStatistics").WithSummary("Every player's server playtime and hunting figures, with names")
-             .WithDescription("`{since, players: [{account, handle, huntSecondsHere, reserves: [{reserve, gm, harvests, hours, gmPerHour, gmPerHarvest, harvestsPerHour}], species: [{species, reserve, harvests, gm}], otherGm: {mission, community, daily, dog}}]}`, "
+             .WithDescription("`{since, events: [{name, kind, start, end, multiplier}], players: [{account, handle, huntSecondsHere, reserves: [{reserve, gm, baseGm, harvests, hours, gmPerHour, gmPerHarvest, harvestsPerHour, comparableGmPerHour, comparableGmPerHarvest}], species: [{species, reserve, harvests, gm, baseGm}], otherGm: {mission, community, daily, dog}}]}`, "
+                              + "`baseGm` and the `comparable` rates are the gm$ without any bonus (`wallet_log.base`); `events` are the events overlapping the period, whose bonuses a paid figure includes. "
                               + "most playtime first: the hunts since `playtime_since`, the gm$ of the harvests (`CSS Reward` wallet rows) on the hunts' reserves and, apart, the mission, community, daily and dog rewards since then. No 5-player floor. "
                               + "Computed on demand and kept an hour, like `GET /stats/hunting`.").ProducesProblem(503);
 
