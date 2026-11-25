@@ -324,6 +324,7 @@ public class ServerProfileServiceTests
         Assert.Equal((false, 704, 8040, 9), duration.Progress(7));  // 1424 h after 720, towards 8760
         Assert.Equal((false, 1424, 20000, 7), duration.Progress(8));
         Assert.Equal((false, 0, 1, 0), new Milestone("Easy", 0, [1, 25], 0).Progress(0));  // the first step counts from 0
+        Assert.Equal((false, 999, 1000, 99), new Milestone("Kills", 0, [1000], 999).Progress(0));  // 99.9% is not 100: only a reached step is full
     }
 
     [Theory]
