@@ -42,6 +42,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests && tooMany is not null) return tooMany;
             log.LogWarning("The server answered {Path} with {Status}: no friends", path.Split('?')[0], (int)response.StatusCode);
+            cookie.Refused(response);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

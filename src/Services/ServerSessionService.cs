@@ -6,10 +6,18 @@ namespace Resurgence.Services;
 /// <summary>The browser's session cookie, the cookie of a sign-in in progress and host of the request that started the circuit; the website fills it from the root component's parameters (the documented way to carry request state into a circuit), never from HttpContext later.</summary>
 public sealed class ServerCookie
 {
-    public string? Value { get; set; }
+    string? session;
+    /// <summary>The session; a missing or empty cookie is no session.</summary>
+    public string? Value { get => session; set => session = string.IsNullOrEmpty(value) ? null : value; }
     /// <summary>The sign-in in progress (<see cref="ServerSessionApi.LoginCookie"/>), while there is one.</summary>
     public string? Login { get; set; }
     public string? Host { get; set; }
+
+    /// <summary>The server refused the session (401: expired or revoked): the browser is signed out, so the services stop asking for this circuit.</summary>
+    public void Refused(HttpResponseMessage response)
+    {
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) Value = null;
+    }
 
     /// <summary>A request to the server as this browser: its session cookie and the cookie of its sign-in when it has them, and the host it used.</summary>
     public HttpRequestMessage Request(HttpMethod method, string path)

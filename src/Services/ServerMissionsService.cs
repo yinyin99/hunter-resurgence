@@ -87,6 +87,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<T>() is { } s) return s;
             log.LogWarning("The server answered {Path} with {Status}: no missions", path, (int)response.StatusCode);
+            cookie.Refused(response);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

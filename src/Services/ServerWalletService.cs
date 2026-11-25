@@ -43,6 +43,7 @@ public sealed class ServerWalletService(HttpClient http, ServerCookie cookie, Mo
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
             log.LogWarning("The server answered {Path} with {Status}: nothing of the wallet", path.Split('?')[0], (int)response.StatusCode);
+            cookie.Refused(response);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
