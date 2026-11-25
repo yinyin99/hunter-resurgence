@@ -1632,4 +1632,6 @@
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Открыть Безопасность Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>В папке игры нет компонентов для установки: проверьте файлы игры в Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Готово</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Запускать игру через Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Изменить…</value></data>
 </root>

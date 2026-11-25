@@ -307,9 +307,34 @@ public class LauncherBridgeTests
     }
 
     /// <summary>A bridge whose starts end as the test says (Steam installed and signed in); the watch must never look the game up by name.</summary>
-    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null, ServerClock? clock = null) =>
+    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null, ServerClock? clock = null, Func<bool>? startWithSteam = null) =>
         new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, steam ?? LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
-            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin, clock: clock);
+            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin, clock: clock, startWithSteam: startWithSteam);
+
+    [Fact]
+    public void TheStartWithSteamBoxCheckedStartsWithSteam()
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => true, () => null), startWithSteam: () => true);
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal(["steam"], s.Modes);
+        Assert.EndsWith(" /steam", s.Started[0].Arguments);
+    }
+
+    [Fact]
+    public void TheStartWithSteamBoxUncheckedNeverAsksSteamNorWaitsForIt()
+    {
+        using var s = new Start();
+        var asked = new List<string>();
+        // Steam is installed but nobody is signed in: with the box checked the start would start it and wait for a sign-in
+        var steam = new SteamProbes(() => { asked.Add("installed"); return true; }, () => { asked.Add("signed-in"); return false; }, () => { asked.Add("start"); return true; }, () => asked.Add("stop"));
+        var b = Watching(s, _ => new GameProcess(() => true, () => null), steam: steam, startWithSteam: () => false);
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal(["nosteam"], s.Modes);
+        Assert.DoesNotContain("/steam", s.Started[0].Arguments);
+        Assert.Empty(asked); // Steam is neither probed, started nor waited for
+        Assert.False(b.WaitingForSteam);
+    }
 
     [Fact]
     public async Task AfterA16010FallbackTheWatchFollowsTheRetryAndTheExitedFirstProcessIsIgnored()

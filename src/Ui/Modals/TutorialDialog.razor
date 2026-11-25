@@ -81,7 +81,7 @@
     {
         // a ticked box keeps the exclusive full screen of a player who chose it, else it is Borderless
         var display = !o.Fullscreen ? DisplayMode.Windowed : settings!.Options.Display == DisplayMode.Fullscreen ? DisplayMode.Fullscreen : DisplayMode.Borderless;
-        var r = await Service.SaveAsync(new(display, o.Vsync, settings!.Resolutions.Count > 0 ? settings.Resolutions[resolution] : settings.Options.Resolution, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, settings.Options.ContextualHelp, settings.Options.ExtendedAudio));
+        var r = await Service.SaveAsync(new(display, o.Vsync, settings!.Resolutions.Count > 0 ? settings.Resolutions[resolution] : settings.Options.Resolution, o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, settings.Options.ContextualHelp, settings.Options.ExtendedAudio, settings.Options.StartWithSteam));
         error = r.Error;
         if (r.Ok) Modal.Close();
     }

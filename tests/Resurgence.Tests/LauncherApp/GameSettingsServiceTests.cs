@@ -55,6 +55,25 @@ public class GameSettingsServiceTests
     }
 
     [Fact]
+    public async Task TheStartWithSteamBoxSurvivesAReloadAndUncheckedWritesOnlyTheNoSteamFile()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var s = new Settings("1", "no-such-client.exe", "gSettings_steam_live.cfg", "o.bin", "fake_");
+        var (steam, noSteam, json) = (Path.Combine(temp.Path, "gSettings_steam_live.cfg"), Path.Combine(temp.Path, "gSettings_live.cfg"), Path.Combine(temp.Path, "launcher.json"));
+        Write(steam, Gfx);
+        Write(noSteam, Gfx);
+        var prefs = new Prefs();
+        Assert.True(prefs.StartWithSteam); // checked by default
+        var svc = new GameSettingsService(s, prefs, temp.Path, () => prefs.Save(json));
+        var read = await svc.ReadAsync();
+        Assert.True(read.Options.StartWithSteam);
+        Assert.True((await svc.SaveAsync(read.Options with { Scene = 3, StartWithSteam = false })).Ok);
+        Assert.False(Prefs.Load(json).StartWithSteam);
+        Assert.Equal((false, true), (GameFiles.ReadGraphics(steam).Value!.Scene == 3, GameFiles.ReadGraphics(noSteam).Value!.Scene == 3));
+        Assert.False((await new GameSettingsService(s, Prefs.Load(json), temp.Path, () => { }).ReadAsync()).Options.StartWithSteam);
+    }
+
+    [Fact]
     public async Task AMissingFileOfTheOtherModeIsCreatedWhenBothAreWritten()
     {
         using var temp = new TempDir("resurgence-test-");

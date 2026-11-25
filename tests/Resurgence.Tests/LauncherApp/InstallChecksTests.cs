@@ -32,9 +32,9 @@ public class InstallChecksTests
 
     static InstallChecks Make(GameInstall? g, string? manifest = null, long? server = null, bool steam = true, string? setup = null, bool running = false, Func<string, bool>? network = null,
         string[]? oneDrive = null, Func<string, long?>? free = null, string[]? events = null, Func<Task<long?>>? serverBuild = null, Func<bool>? steamSignedIn = null, Func<int, string?>? ports = null, bool? installed = null, IReadOnlyDictionary<string, (long, string)>? clean = null,
-        ScreenProbes? screen = null) =>
+        ScreenProbes? screen = null, Func<bool>? startWithSteam = null) =>
         new(() => g, "1", serverBuild ?? (() => Task.FromResult(server)), steamSignedIn ?? (() => steam), () => setup, _ => running, _ => manifest, network ?? (_ => false), () => oneDrive ?? [],
-            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null, clean, screen);
+            free ?? (_ => 10 * Gb), @"C:\fictional-temp", () => events ?? [], ports, installed is { } i ? () => i : null, clean, screen, startWithSteam);
 
     static readonly (int, int, int)[] Offered = [(1360, 768, 60), (1920, 1080, 60)];
     static readonly DisplayAdapter RealGpu = new("Fictional GPU", true, true, true);
@@ -296,6 +296,19 @@ public class InstallChecksTests
         Assert.Equal("Check.Path.Network", (await Check(unc, "path")).Text);
 
         Assert.Equal("ok", (await Check(Make(Game(t), oneDrive: []), "path")).Level);
+    }
+
+    [Fact]
+    public async Task WithTheStartWithSteamBoxUncheckedTheGameCheckSaysNothingOfSteam()
+    {
+        using var t = new TempDir("checks-");
+        foreach (var installed in new bool?[] { true, false })
+        {
+            var r = await Check(Make(Game(t), steam: false, installed: installed, startWithSteam: () => false), "steam");
+            Assert.Equal(("ok", null), (r.Level, r.Fix));
+        }
+        Assert.Equal("ok", (await Check(Make(null, steam: false, startWithSteam: () => false), "steam")).Level); // no Steam is needed even without a game
+        Assert.Equal("warn", (await Check(Make(Game(t), steam: false, startWithSteam: () => true), "steam")).Level);
     }
 
     [Fact]

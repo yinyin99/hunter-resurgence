@@ -1632,4 +1632,6 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Otwórz Zabezpieczenia Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folder gry nie zawiera składników do zainstalowania: zweryfikuj grę w Steamie.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Gotowe</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Uruchamiaj grę przez Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Zmień…</value></data>
 </root>

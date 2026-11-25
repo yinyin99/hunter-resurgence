@@ -1632,4 +1632,6 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Åpne Windows-sikkerhet</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Spillmappen har ingen komponenter å installere: bekreft spillet i Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Fullført</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start spillet via Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Endre…</value></data>
 </root>

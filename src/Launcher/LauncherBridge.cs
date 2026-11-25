@@ -21,12 +21,13 @@ namespace Resurgence.Launcher;
 /// <param name="processes">The client's processes with their main windows; null: none is known to have a window.</param>
 /// <param name="bringToFront">Shows a client window over the others.</param>
 /// <param name="stopClient">Closes the client and stops it when it stays (<see cref="GameFiles.StopClientAsync"/>); null: nothing is closed.</param>
+/// <param name="startWithSteam">The Game settings' box "Start the game using Steam"; false: every start goes without Steam. Null: checked.</param>
 /// <param name="display">Before a start (<c>/steam</c> or not): writes the graphics file for the display mode (<see cref="GameSettingsService.PrepareStart"/>); true when the game's window is to be made borderless.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
     Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null,
-    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null) : ILauncherBridge
+    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null, Func<bool>? startWithSteam = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -35,7 +36,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock,
         processes: GameFiles.ClientProcesses, bringToFront: GameProcess.BringToFront, stopClient: GameFiles.StopClientAsync,
-        display: new GameSettingsService(env.Settings, env.Prefs, GameFiles.AppData, env.Save).PrepareStart)
+        display: new GameSettingsService(env.Settings, env.Prefs, GameFiles.AppData, env.Save).PrepareStart, startWithSteam: () => env.Prefs.StartWithSteam)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -374,14 +375,14 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     internal const int Blocked = unchecked((int)3236495362u), DllNotFound = unchecked((int)3221225781u), EntryPointNotFound = unchecked((int)3221225785u);
 
     /// <summary>
-    /// True: start with <c>/steam</c>. Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
+    /// True: start with <c>/steam</c>. The box "Start the game using Steam" unchecked or Steam not installed: false at once. Signed in: true. Installed with nobody signed in: Steam is started minimized and waited for (<see cref="WaitingForSteam"/>) at most
     /// <c>steamWait</c> (20 s) or until <see cref="StartWithoutSteam"/>; false when it is late, so a Steam that updates itself does not hold the start, and the next start tries it again. Only the player's press
     /// of Start without Steam leaves Steam closed: the Steam this start launched, still without anybody signed in, is asked to exit (<see cref="SteamProbes.StopStarted"/>; never one that ran before). When the 20 s
     /// run out Steam is left alone, the player may be typing a sign-in code.
     /// </summary>
     bool SteamUp()
     {
-        if (!steam.Installed()) return false;
+        if (startWithSteam?.Invoke() == false || !steam.Installed()) return false;
         if (steam.SignedIn()) return true;
         if (!steam.Start()) return false;
         skipSteam.Reset();

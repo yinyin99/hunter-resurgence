@@ -31,9 +31,10 @@ namespace Resurgence.Launcher;
 /// <param name="portUser">The name of the other program that listens on a port (80, 443: the forwarder of the player kit needs both) or null when it is free; null: the ports are not checked.</param>
 /// <param name="cleanDlls">The DLLs of a clean install by name, with size and SHA-256 (check 10); default <see cref="CleanDlls.Files"/>.</param>
 /// <param name="screen">What this PC says of the screen (check 11); null: the check reports ok.</param>
+/// <param name="startWithSteam">The Game settings' box "Start the game using Steam"; false: the start never uses Steam, so check 4 reports ok. Null: checked.</param>
 public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Func<Task<long?>> serverBuild, Func<bool> steamSignedIn, Func<string?> setup, Func<string, bool> isRunning,
     Func<GameInstall, string?>? manifest = null, Func<string, bool>? isNetwork = null, Func<IEnumerable<string>>? oneDrive = null, Func<string, long?>? freeBytes = null, string? temp = null,
-    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null, ScreenProbes? screen = null)
+    Func<IEnumerable<string>>? blocks = null, Func<int, string?>? portUser = null, Func<bool>? steamInstalled = null, IReadOnlyDictionary<string, (long Size, string Sha256)>? cleanDlls = null, ScreenProbes? screen = null, Func<bool>? startWithSteam = null)
 {
     const long LowBytes = 1L << 30;
     const int LongPath = 200, Archives = 12, NamesShown = 5;
@@ -50,7 +51,8 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
             portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed,
-            screen: ScreenProbes.Real(s, SteamProbes.Real.PlannedMode, () => env.Prefs.DisplayMode == DisplayMode.Fullscreen));
+            startWithSteam: () => env.Prefs.StartWithSteam,
+            screen: ScreenProbes.Real(s, () => env.Prefs.StartWithSteam ? SteamProbes.Real.PlannedMode() : "nosteam", () => env.Prefs.DisplayMode == DisplayMode.Fullscreen));
     }
 
     /// <summary>Runs the checks off the calling thread.</summary>
@@ -71,7 +73,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             Run("files", Files),
             Info("path", PathCheck),
             // the game starts without Steam when it is not installed or not signed in: a warning, a block only when there is no game to start
-            Safe("steam", () => steamSignedIn() ? Ok("steam")
+            Safe("steam", () => startWithSteam?.Invoke() == false || steamSignedIn() ? Ok("steam")
                 : g is null ? new("steam", "block", "Check.Steam.SignedOut", null, "open-steam")
                 : steamInstalled?.Invoke() == false ? new("steam", "warn", "Check.Steam.NotInstalled")
                 : new("steam", "warn", "Check.Steam.Fallback", null, "open-steam")),

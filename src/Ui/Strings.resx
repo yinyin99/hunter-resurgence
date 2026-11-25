@@ -1632,4 +1632,6 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Open Windows Security</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>The game folder has no components to install: verify the game in Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Done</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start the game using Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Change…</value></data>
 </root>

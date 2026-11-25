@@ -1632,4 +1632,6 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Abrir Seguridad de Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>La carpeta del juego no tiene componentes que instalar: verifique el juego en Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Hecho</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Iniciar el juego con Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Cambiar…</value></data>
 </root>

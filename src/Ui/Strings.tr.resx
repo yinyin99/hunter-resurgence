@@ -1632,4 +1632,6 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows Güvenliği'ni aç</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Oyun klasöründe yüklenecek bileşen yok: oyunu Steam'de doğrulayın.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Tamamlandı</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Oyunu Steam ile başlat</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Değiştir…</value></data>
 </root>

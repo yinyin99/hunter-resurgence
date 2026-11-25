@@ -60,11 +60,10 @@ public sealed class SettingsMenuTests : UiContext
     }
 
     [Fact]
-    public void TheGameFolderEntryOpensItsWindow()
+    public void TheMenuHasNoGameFolderEntry()
     {
         Services.GetRequiredService<HostMode>().Launcher = true;
-        Render<SettingsMenu>().Find("#game-folder").Click();
-        Assert.Equal(typeof(GameFolderModal), Services.GetRequiredService<ModalService>().Type);
+        Assert.Empty(Render<SettingsMenu>().FindAll("#game-folder"));
     }
 
     [Fact]

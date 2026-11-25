@@ -1632,4 +1632,6 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Ouvrir Sécurité Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Le dossier du jeu ne contient aucun composant à installer : vérifiez le jeu dans Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Terminé</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Lancer le jeu avec Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Modifier…</value></data>
 </root>

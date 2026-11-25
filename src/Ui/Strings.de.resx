@@ -1632,4 +1632,6 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows-Sicherheit öffnen</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Der Spielordner enthält keine Komponenten zum Installieren: Überprüfen Sie das Spiel in Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Erledigt</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Spiel über Steam starten</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Ändern…</value></data>
 </root>
