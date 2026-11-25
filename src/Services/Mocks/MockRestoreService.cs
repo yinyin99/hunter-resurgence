@@ -32,11 +32,12 @@ public sealed class MockRestoreService : IRestoreService
         }
         for (var i = 1; i <= 5; i++) { await Task.Delay(250); progress?.Report(length * i / 5); }
         bool Has(string end) => names.Any(n => n.EndsWith(end));
-        string? why = Has(".zip") ? "Your backup is inside another folder or zip: upload the backup zip itself"
+        const string choose = "Choose the zip your backup tool made, as it is: not a folder, not a zip you made yourself.";
+        string? why = Has(".zip") ? "Your backup is inside another folder or zip. " + choose
             : Has(".py") ? "This zip holds a program, not a backup: upload the file the program made (it ends in _PRIVATE.zip)"
-            : Has(".jpg") ? "This zip holds only pictures, not a backup"
+            : Has(".jpg") ? "This zip holds only pictures, not a backup. " + choose
             : Has("manifest.json") || Has("index.json") || Has("mock-restored") || Has("mock-rejected") ? null
-            : "This file cannot be read as a backup: not a backup zip. Nothing was changed.";
+            : "This file cannot be read as a backup: not a backup zip. Nothing was changed. " + choose;
         if (why is not null)
         {
             decisions.Add(new(Now, "refused", null, null, false, why));

@@ -1042,17 +1042,62 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         return ms.ToArray();
     }
 
+    const string Choose = "Choose the zip your backup tool made, as it is: not a folder, not a zip you made yourself.";
+
     [Theory]
     [InlineData("This zip holds a program, not a backup: upload the file the program made (it ends in _PRIVATE.zip)", "backup.py", "tool.exe", "readme.txt")]
-    [InlineData("This zip holds only pictures, not a backup", "a.jpg", "photos/b.PNG")]
-    [InlineData("Your backup is inside another folder or zip: upload the backup zip itself", "x_PRIVATE.zip")]
-    [InlineData("Your backup is inside another folder or zip: upload the backup zip itself", "a/b/manifest.json", "a/b/data.json")]
-    [InlineData("This file cannot be read as a backup: not a backup zip. Nothing was changed.", "notes.txt")]
+    [InlineData("This zip holds only pictures, not a backup. " + Choose, "a.jpg", "photos/b.PNG")]
+    [InlineData("Your backup is inside another folder or zip. " + Choose, "x_PRIVATE.zip")]
+    [InlineData("Your backup is inside another folder or zip. " + Choose, "a/b/manifest.json", "a/b/data.json")]
+    [InlineData("This file cannot be read as a backup: not a backup zip. Nothing was changed. " + Choose, "notes.txt")]
     public async Task TestARefusedZipSaysWhatToDoInsteadOfNotABackup(string message, params string[] entries)
     {
         var (reply, body) = await Upload(ZipOf(entries));
         Assert.Equal((400, "invalid", message), (reply.Status, Status(body), (string)body["message"]!));
         var done = Assert.Single((await RestoreStatusOf(cookie))["decisions"]!.AsArray())!;
         Assert.Equal(("refused", message), ((string)done["kind"]!, (string)done["reason"]!));
+    }
+
+    /// <summary>The backup zip of <see cref="TestZip.Own"/> with every entry one folder down, as a zip of the folder (not of its content) holds it.</summary>
+    byte[] InAFolder(string name)
+    {
+        using var from = new ZipArchive(new MemoryStream(Own(name, "1.0")));
+        using var ms = new MemoryStream();
+        using (var to = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
+            foreach (var e in from.Entries)
+            {
+                using var src = e.Open();
+                using var dst = to.CreateEntry("backup/" + e.FullName).Open();
+                src.CopyTo(dst);
+            }
+        return ms.ToArray();
+    }
+
+    [Fact]
+    public async Task TestABackupZippedInsideOneFolderIsReadFromThatFolder()
+    {
+        var (reply, body) = await Upload(InAFolder("folder.zip"));
+        Assert.Equal((200, "review"), (reply.Status, Status(body)));
+        var done = Operator.Approve(Waiting(player));
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("stored: items 2, wallet 2", done.Report);
+    }
+
+    [Fact]
+    public async Task TestARefusedZipIsLoggedWithItsSizeAndItsFirstFiveEntryNames()
+    {
+        var lines = new List<string>();
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0, Log = lines.Add };
+        var zip = ZipOf("a.txt", "bad\nname.txt", "d.txt", "e.txt", "f.txt", "g.txt", "h.txt");
+        Assert.Equal("invalid", (await Send(uploads, player, zip)).Kind);
+        Assert.Equal($"refused zip of account {player}: {zip.Length} bytes, 7 entries, first: a.txt, bad?name.txt, d.txt, e.txt, f.txt", Assert.Single(lines));
+        // not a zip at all: the size, no names
+        lines.Clear();
+        Assert.Equal("invalid", (await Send(uploads, player, "not a zip"u8.ToArray())).Kind);
+        Assert.Equal($"refused zip of account {player}: 9 bytes, no entries read", Assert.Single(lines));
+        // a zip that is kept for review is not a refusal: nothing is logged
+        lines.Clear();
+        Assert.Equal("review", (await Send(uploads, player, Own("ok.zip", "3.0"))).Kind);
+        Assert.Empty(lines);
     }
 }
