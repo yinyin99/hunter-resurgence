@@ -24,6 +24,9 @@ public sealed partial class State
     static readonly Regex InTheHunt = new(@"\A(?<n>\d+)(?:(?<shot> killed by one shot)|, each within (?<e>\d+(?:\.\d+)?) min of the one before|(?<different> different animals)?(?: within (?<m>\d+(?:\.\d+)?) min)?)\z",
         RegexOptions.CultureInvariant);
 
+    // `in the mission: <n> different animals` (<see cref="Describe"/>): the animals of every hunt since the mission was activated
+    static readonly Regex InTheMission = new(@"\A(?<n>\d+) different animals\z", RegexOptions.CultureInvariant);
+
     /// <summary>The file's object of `"<mission id>/<objective id>": "<rule in words>"` entries; `//` comments and trailing commas are allowed, a key twice is not. Not JSON or not an
     /// object: the start stops.</summary>
     public static JsonObject ReadMissionRules(string path)
@@ -156,6 +159,8 @@ public sealed partial class State
             "reserve" => new(Check.Reserve, Ids: NamesIn(value, reserves.Where(r => r.Value is not null).Select(r => (r.Key, r.Value!)), "reserve")),
             "clues" => CluesIn(value),
             "in the hunt" => SequenceIn(value),
+            "in the mission" => InTheMission.Match(value) is { Success: true } across && long.TryParse(across.Groups["n"].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n >= 2
+                ? new(Check.Different, n, Across: true) : throw new InvalidDataException("an across-hunts rule is \"in the mission: <n of 2 or more> different animals\""),
             "coat" or "not coat" => new(name == "coat" ? Check.Coat : Check.NotCoat, Ids: [.. List(value).SelectMany(c =>  // `coat 77`: a coat the game names nowhere, by its id
                 c.StartsWith("coat ", StringComparison.Ordinal) && long.TryParse(c[5..], NumberStyles.None, CultureInfo.InvariantCulture, out var id) ? [id]
                 : Reader.CoatIds(c.ToLowerInvariant(), animals) is { Length: > 0 } ids ? ids : throw new InvalidDataException($"no coat is named \"{c}\""))]),

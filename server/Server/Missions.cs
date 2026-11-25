@@ -25,6 +25,17 @@ public sealed partial class State
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
+    /// <summary>The n-th `another <animal>` clue objective of a mission needs the n-th different animal: n is 1 and the `earlier` objectives of the mission that ask for the same species, gender and
+    /// kinds of clue, however they are worded (the reader leaves `another` as 1); the first one needs no other animal, so it has no test.</summary>
+    static Rule Settle(Rule rule, IEnumerable<Rule> earlier)
+    {
+        if (rule.Tests?.FirstOrDefault(t => t.Check == Check.Different && t.Min < 2) is not { } another)
+            return rule;
+        static HashSet<long> Of(Rule r, Check c) => r.Tests?.FirstOrDefault(t => t.Check == c)?.Ids ?? [];
+        var n = 1 + earlier.Count(e => e.Kind == Kind.Track && e.Species == rule.Species && e.Gender == rule.Gender && Of(e, Check.Species).SetEquals(Of(rule, Check.Species)) && Of(e, Check.Clue).SetEquals(Of(rule, Check.Clue)));
+        return rule with { Tests = [.. rule.Tests.Where(t => t != another), .. n < 2 ? [] : new[] { another with { Min = n } }] };
+    }
+
     /// <summary>`Gm` and `Em` are the sums of the `N gm$` and `N em$` entries of `rewards`; the other entries (items, a trophy) are not paid.</summary>
     sealed record MissionDef(long Id, string Title, bool SingleExpedition, long[] Dependencies, long Gm, long Em, Objective[] Objectives);
 
@@ -161,7 +172,7 @@ public sealed partial class State
             if (kind is Kind.Harvest or Kind.Spot)
                 (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)), places);  // a spot's ordinal says nothing, as before
             else if (kind == Kind.Track)
-                (tests, left) = reader.ReadClue(animals, own);
+                (tests, left) = reader.ReadClue(animals, own, singleHunt || OneHunt.IsMatch(title));
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its place, its species, its coat and its name can be checked
@@ -186,16 +197,17 @@ public sealed partial class State
                 var rule = RuleOf(title, listed, mentioned, Py.Truthy(d["singleExpedition"]), Ids(d["reserves"]));  // a named animal's title names no species: the mission's own one does
                 return rule.Species is null && listed.Length == 1 && (rule.Tests ?? []).Any(t => t.Check == Check.Named) ? rule with { Species = listed[0] } : rule;
             }
+            var objectives = Arr(d["objectives"]).OfType<JsonObject>().Where(o => TryKey(o["id"], out _))
+                .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), Build(Py.Str(G(o, "title", ""))))).ToArray();
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,
-                [.. Arr(d["objectives"]).OfType<JsonObject>().Where(o => TryKey(o["id"], out _))
-                    .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), Build(Py.Str(G(o, "title", ""))))).ToArray()]);
+                [.. objectives.Select((o, i) => o with { Rule = Settle(o.Rule, objectives[..i].Select(p => p.Rule)) })]);
         }
         foreach (var g in Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)))
             missionGroups[Py.L(g["id"])] = Ids(g["missions"]);
         foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
             lodgeNames[Py.L(loc["id"])] = [.. new[] { loc["name"], loc["define"] }.Where(Py.IsStr).Select(n => Normalise((string)n!)).Where(n => n.Length > 0)];
-        LoadDailyMissions(title => RuleOf(title));
-        LoadCommunity(title => RuleOf(title));
+        LoadDailyMissions(title => Settle(RuleOf(title), []));
+        LoadCommunity(title => Settle(RuleOf(title), []));
     }
 
     static long[] Ids(JsonNode? n) => [.. Arr(n).Where(x => TryKey(x, out _)).Select(Py.L).Distinct()];

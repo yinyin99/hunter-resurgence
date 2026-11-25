@@ -117,6 +117,8 @@ public class MissionOverrideTests : MissionTestBase
             "Kill two Test Deer at the same time with a single shot",
             "Find the tracks of three different Test Deer within 5 minutes",
             "ID footprints of a second different Test Fox in the same hunt",
+            "ID footprints of a second Test Deer",
+            "ID footprints of a third Test Deer in the same hunt",
             "Harvest a Test Deer from Tower 2 in Test Reserve",
         ];
         var read = RuleLines(New("read.db", Catalogue(titles)));

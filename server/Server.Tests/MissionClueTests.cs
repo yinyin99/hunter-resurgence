@@ -223,4 +223,97 @@ public class MissionClueTests : MissionTestBase
         Assert.Equal(1, later.ConfirmMissions());
         Assert.Equal("1", Completed(of: later));
     }
+
+    // one mission whose objectives are these titles and a last one (a harvest of a fox) that no test finishes, so the mission stays active
+    static string Mission(string[] titles, bool single = false) =>
+        """{"missions": [{"id": 1, "title": "Test", "singleExpedition": """ + (single ? "true" : "false") + """, "dependencies": [], "rewards": [{"text": "10 gm$"}], "objectives": [""" +
+        string.Join(",", titles.Append("Harvest a Test Fox").Select((t, i) => "{\"id\": " + i + ", \"title\": \"" + t + "\"}")) + "]}]}";
+
+    string Done() => string.Join(",", Reply(state.MissionsReply(ME)!)["states"]!["1"]!["objectives"]!.AsArray().Select(i => (long)i!));
+
+    [Fact]
+    public void TestAnotherAnimalNeedsTheNextDifferentAnimalAndAnotherTrackAnyAnimal()
+    {
+        state = New("another.db", Mission(["ID the tracks of a Test Deer.", "Then ID the tracks of another Test Deer.", "Then ID the tracks of another Test Deer."]));
+        ActivateAll();
+        for (var i = 0; i < 3; i++)
+            Hb(Clue(1, 2));  // three footprints of one deer
+        Assert.Equal("0", Done());
+        Hb(Clue(2, 2));
+        Assert.Equal("0,1", Done());
+        Hb(Clue(1, 2));  // the first deer again: two animals so far
+        Assert.Equal("0,1", Done());
+        Hb(Clue(3, 2));
+        Assert.Equal("0,1,2", Done());
+
+        state = New("another-track.db", Mission(["ID a track from a Test Deer", "ID another track from a Test Deer", "ID another set of tracks"]));
+        ActivateAll();
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 2));  // another track says nothing more: each track finishes one objective
+        Assert.Equal("0,1,2", Done());
+    }
+
+    [Fact]
+    public void TestAnotherMaleNeedsAMaleAndASecondOrThirdAnimalIsTheSecondOrThird()
+    {
+        state = New("gender.db", Mission(["ID tracks of a Test Deer", "ID Tracks of another male Test Deer", "ID tracks of a third Test Deer"]));
+        ActivateAll();
+        Hb(Clue(1, 2));
+        Hb(Clue(2, 2, gender: 1));  // a female: no other male yet
+        Assert.Equal("0", Done());
+        Hb(Clue(3, 2));
+        Assert.Equal("0,1", Done());
+        Hb(Clue(1, 2));  // a third animal of the hunt is needed, whichever clue
+        Assert.Equal("0,1,2", Done());
+    }
+
+    [Fact]
+    public void TestAnotherAnimalOfALaterHuntCountsInAMissionOfSeveralHuntsAndNotInASingleHuntOne()
+    {
+        state = New("hunts.db", Mission(["ID the tracks of a Test Deer", "ID the tracks of another Test Deer"]));
+        ActivateAll();
+        Launch();
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 2));
+        Assert.Equal("0", Done());
+        Launch();
+        Hb(Clue(1, 2));  // the next hunt's animal of that number is another one
+        Assert.Equal("0,1", Done());
+
+        state = New("single.db", Mission(["ID the tracks of a Test Deer", "ID the tracks of another Test Deer"], single: true));
+        ActivateAll();
+        Launch();
+        Hb(Clue(1, 2));
+        Launch();  // the hunt forgets the progress of a single-hunt mission
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 2));
+        Assert.Equal("0", Done());
+        Hb(Clue(2, 2));
+        Assert.Equal("0,1", Done());
+    }
+
+    [Fact]
+    public void TestTheStartFinishesAnotherAnimalObjectivesTheirEarlierReadingNeverMet()
+    {
+        state = New("another-start.db", Mission(["ID the tracks of a Test Deer", "ID the tracks of another Test Deer while whistling"]));  // not read: never met
+        ActivateAll();
+        Hb(Clue(1, 2));
+        Hb(Clue(1, 2));
+        var later = New("another-start.db", Mission(["ID the tracks of a Test Deer", "ID the tracks of another Test Deer"]));
+        Assert.Equal(0, later.ConfirmMissions());  // one animal
+        Hb(Clue(2, 2));
+        Assert.Equal(1, New("another-start.db", Mission(["ID the tracks of a Test Deer", "ID the tracks of another Test Deer"])).ConfirmMissions());
+    }
+
+    [Fact]
+    public void TestTheCoveragePrintsTheDifferentAnimalsAnotherAsks()
+    {
+        state = New("another-rules.db", Mission(["ID tracks of a Test Deer", "ID tracks of another Test Deer", "ID the call of another Test Deer", "ID tracks of a male Test Deer", "ID tracks of another male Test Deer in the same hunt", "ID another track"]));
+        var lines = state.MissionCoverage(rules: true).Where(l => l.StartsWith("mission 1 objective", StringComparison.Ordinal)).ToList();
+        Assert.Contains("mission 1 objective 1: ID tracks of another Test Deer => track; species: Test Deer; clues: footprints x1; in the mission: 2 different animals", lines);
+        Assert.Contains("mission 1 objective 2: ID the call of another Test Deer => track; species: Test Deer; clues: call x1", lines);  // another animal's call, the first one: no other animal
+        Assert.Contains("mission 1 objective 4: ID tracks of another male Test Deer in the same hunt => track; species: Test Deer; male; clues: footprints x1; in the hunt: 2 different animals", lines);
+        Assert.Contains("mission 1 objective 5: ID another track => track; clues: footprints x1", lines);
+    }
 }
