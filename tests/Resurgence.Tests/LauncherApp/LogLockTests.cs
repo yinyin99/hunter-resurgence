@@ -50,7 +50,7 @@ public class LogLockTests
         var noPage = Game();
         noPage.CanAllocate = false;
         var noWrite = Game();
-        noWrite.CanWrite = false;
+        noWrite.WritesAllowed = 0;
         var tableOutside = Synthetic with { Table = 8190 };
         foreach (var (patch, game) in new[] { (Synthetic, unknownImage), (Synthetic, noPage), (Synthetic, noWrite), (tableOutside, Game()) })
         {
@@ -89,7 +89,8 @@ public class LogLockTests
         public byte[] Memory => memory;
         public List<(uint Address, byte[] Bytes)> Writes { get; } = [];
         public bool CanAllocate { get; set; } = true;
-        public bool CanWrite { get; set; } = true;
+        /// <summary>How many writes succeed; every later one fails.</summary>
+        public int WritesAllowed { get; set; } = int.MaxValue;
         public int Allocated { get; private set; }
         public bool Resumed { get; private set; }
         public uint Image => image;
@@ -99,7 +100,7 @@ public class LogLockTests
 
         public bool Write(uint address, byte[] bytes)
         {
-            if (!CanWrite) return false;
+            if (Writes.Count >= WritesAllowed) return false;
             Writes.Add((address, bytes));
             if (address >= image && address - image + bytes.Length <= memory.Length) bytes.CopyTo(memory, address - image);
             return true;

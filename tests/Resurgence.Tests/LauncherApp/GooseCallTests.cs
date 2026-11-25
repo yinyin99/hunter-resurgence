@@ -66,16 +66,29 @@ public class GooseCallTests
         var noPage = Game();
         noPage.CanAllocate = false;
         var noWrite = Game();
-        noWrite.CanWrite = false;
-        foreach (var (patch, game, why) in new[] {
-            (Goose, new FakeGame(0, new byte[8192]), "the game's memory could not be read"),
-            (Goose, noPage, "no memory could be allocated in the game"),
-            (Goose with { Args = 8190 }, Game(), "the game's memory could not be read"),
-            (Goose, noWrite, "the function could not be written") })
+        noWrite.WritesAllowed = 0;
+        foreach (var (patch, game, why, allocated) in new[] {
+            (Goose, new FakeGame(0, new byte[8192]), "the game's memory could not be read", 0),
+            (Goose with { Args = 8190 }, Game(), "the game's memory could not be read", 0),
+            (Goose, noPage, "no memory could be allocated in the game", GooseCall.Size),
+            (Goose, noWrite, "the function could not be written", GooseCall.Size) })
         {
             Assert.Equal(why, patch.Apply(game));
             Assert.Empty(game.Writes);
+            Assert.Equal(allocated, game.Allocated);
         }
+    }
+
+    [Fact]
+    public void AFailedCallWriteIsReportedAndTheCallKeepsItsBytes()
+    {
+        var game = Game();
+        game.WritesAllowed = 1;
+        var call = game.Read(Image + 100, 5);
+        Assert.Equal("the registration call could not be written", Goose.Apply(game));
+        Assert.Equal([Page], game.Writes.Select(w => w.Address));
+        Assert.Equal(Goose.Code(Image, Page), game.Writes[0].Bytes);
+        Assert.Equal(call, game.Read(Image + 100, 5));
     }
 
     [Fact]
