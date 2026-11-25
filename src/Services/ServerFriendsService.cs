@@ -34,7 +34,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
     /// <summary>The server's answer to `path`; <paramref name="tooMany"/> when it answers 429 (the limit of the calls of the hunter), null for any other failure.</summary>
     async Task<T?> GetAsync<T>(string path, T? tooMany = null) where T : class
     {
-        if (cookie.Value is null) return null;
+        if (cookie.Value is not { } sent) return null;
         try
         {
             using var request = cookie.Request(HttpMethod.Get, path);
@@ -42,7 +42,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<T>();
             if (response.StatusCode == System.Net.HttpStatusCode.TooManyRequests && tooMany is not null) return tooMany;
             log.LogWarning("The server answered {Path} with {Status}: no friends", path.Split('?')[0], (int)response.StatusCode);
-            cookie.Refused(response);
+            cookie.Refused(response, sent);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
@@ -54,7 +54,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
     async Task<Result> ChangeAsync(string action, string handle)
     {
         var path = $"{ServerAccountApi.Friends}/{action}";
-        if (cookie.Value is null) return Result.Fail("Store.Oops");
+        if (cookie.Value is not { } sent) return Result.Fail("Store.Oops");
         try
         {
             using var request = cookie.Request(HttpMethod.Post, path);
@@ -63,6 +63,7 @@ public sealed class ServerFriendsService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return Result.Success;
             log.LogWarning("The server refused {Path} ({Status})", path, (int)response.StatusCode);
+            cookie.Refused(response, sent);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
         {

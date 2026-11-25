@@ -11,10 +11,12 @@ public class SignedOutCallsTests
     sealed class Fake : HttpMessageHandler
     {
         public int Seen;
+        public Action? During;
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
             Seen++;
+            During?.Invoke();
             return Task.FromResult(new HttpResponseMessage(HttpStatusCode.Unauthorized));
         }
     }
@@ -64,5 +66,23 @@ public class SignedOutCallsTests
         Assert.Equal((1, 1), (fake.Seen, w.Count));
         await AskAsync(service, fake, cookie, w);
         Assert.Equal((1, 1), (fake.Seen, w.Count));
+    }
+
+    [Fact]
+    public async Task ASignInDuringARequestSurvivesItsRefusal()
+    {
+        var cookie = new ServerCookie { Value = "old" };
+        var fake = new Fake { During = () => cookie.Value = "new" };
+        await AskAsync("inventory", fake, cookie, new Warnings());
+        Assert.Equal("new", cookie.Value);
+    }
+
+    [Fact]
+    public async Task ARefusedChangeSignsOutToo()
+    {
+        var (fake, cookie) = (new Fake(), new ServerCookie { Value = "old" });
+        var friends = new ServerFriendsService(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, cookie, new Sink<ServerFriendsService>(new Warnings()));
+        Assert.False((await friends.SendRequestAsync("Oak")).Ok);
+        Assert.Null(cookie.Value);
     }
 }

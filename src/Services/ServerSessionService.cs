@@ -13,10 +13,11 @@ public sealed class ServerCookie
     public string? Login { get; set; }
     public string? Host { get; set; }
 
-    /// <summary>The server refused the session (401: expired or revoked): the browser is signed out, so the services stop asking for this circuit.</summary>
-    public void Refused(HttpResponseMessage response)
+    /// <summary>The server refused the session <paramref name="sent"/> (401: expired or revoked): it is dropped from this holder (the website's circuit, the launcher's run; the launcher's
+    /// <c>session.dat</c> keeps it until the next sign-in or sign-out), so the services stop asking. A newer session, signed in while the request was in flight, stays.</summary>
+    public void Refused(HttpResponseMessage response, string? sent)
     {
-        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) Value = null;
+        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized && sent is not null) Interlocked.CompareExchange(ref session, null, sent);
     }
 
     /// <summary>A request to the server as this browser: its session cookie and the cookie of its sign-in when it has them, and the host it used.</summary>
