@@ -11,10 +11,10 @@ public interface IGameWindow
     bool Framed(nint window);
     /// <summary>Removes WS_CAPTION and WS_THICKFRAME from the window's style and places it over its whole monitor (SWP_FRAMECHANGED), and tells the shell it is a full-screen window.</summary>
     void Unframe(nint window);
-    /// <summary>True while the window, or another window of its process (a message box), is the foreground window.</summary>
-    bool Foreground(nint window);
-    /// <summary>The game is in the background: the window is not topmost and the shell no longer takes it for a full-screen window, so the taskbar shows over it. Its size does not change.</summary>
-    void Background(nint window);
+    /// <summary>True while the window, or another window of its process (a message box), is the foreground window; null while there is no foreground window (a secure desktop, the lock screen), which changes nothing. <paramref name="front"/> is the foreground window.</summary>
+    bool? Foreground(nint window, out nint front);
+    /// <summary>The game is in the background: the window is not topmost and placed just behind <paramref name="front"/> (the window the player went to, not above it), and the shell no longer takes it for a full-screen window, so the taskbar shows over it. Its size does not change.</summary>
+    void Background(nint window, nint front);
     /// <summary>The game is back in the foreground: the shell takes the window for a full-screen window again and hides the taskbar under it.</summary>
     void Fullscreen(nint window);
 }
@@ -43,7 +43,8 @@ public static class Borderless
                 var first = w != seen;
                 if (first) back = false;
                 seen = w;
-                if (windows.Foreground(w))
+                if (windows.Foreground(w, out var front) is not bool foreground) { } // no foreground window (secure desktop, lock screen): nothing changes
+                else if (foreground)
                 {
                     if (windows.Framed(w)) windows.Unframe(w);
                     else if (back) windows.Fullscreen(w);
@@ -52,7 +53,7 @@ public static class Borderless
                 else
                 {
                     if (first && windows.Framed(w)) windows.Unframe(w); // a window that appears behind another one is made borderless too
-                    if (!back) windows.Background(w);
+                    if (!back) windows.Background(w, front);
                     back = true;
                 }
             }
@@ -102,18 +103,24 @@ public static class Borderless
             MarkFullscreen(window, true);
         }
 
-        public bool Foreground(nint window)
+        public bool? Foreground(nint window, out nint front)
         {
-            var front = GetForegroundWindow();
-            if (front == 0) return false;
+            front = GetForegroundWindow();
+            if (front == 0) return null;
             GetWindowThreadProcessId(window, out var pid);
             GetWindowThreadProcessId(front, out var frontPid);
             return pid == frontPid;
         }
 
-        public void Background(nint window)
+        public void Background(nint window, nint front)
         {
-            if ((GetWindowLongPtr(window, GwlExStyle) & Topmost) != 0) SetWindowPos(window, NoTopmost, 0, 0, 0, 0, InPlace);
+            // dropping topmost puts the window above every other non-topmost one: it goes back just behind the window the player went to (not to the bottom, which breaks the Alt+Tab order).
+            // Behind a topmost window it would become topmost itself, so then it stays where it is.
+            if ((GetWindowLongPtr(window, GwlExStyle) & Topmost) != 0)
+            {
+                SetWindowPos(window, NoTopmost, 0, 0, 0, 0, InPlace);
+                if ((GetWindowLongPtr(front, GwlExStyle) & Topmost) == 0) SetWindowPos(window, front, 0, 0, 0, 0, InPlace);
+            }
             MarkFullscreen(window, false);
         }
 

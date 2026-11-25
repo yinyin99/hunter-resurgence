@@ -14,8 +14,10 @@ public class BorderlessTests
         public nint Find(int pid) { Pid = pid; return Window; }
         public bool Framed(nint window) => window == Window && Frame;
         public void Unframe(nint window) { Unframed++; Frame = false; }
-        public bool Foreground(nint window) => window == Window && Front;
-        public void Background(nint window) => Backgrounded++;
+        public bool NoFront; // no foreground window (secure desktop, lock screen)
+        public nint Other = 100, Behind; // the window the player went to; the window the game was placed behind
+        public bool? Foreground(nint window, out nint front) { front = NoFront ? 0 : Front ? window : Other; return NoFront ? null : window == Window && Front; }
+        public void Background(nint window, nint front) { Backgrounded++; Behind = front; }
         public void Fullscreen(nint window) => Fullscreened++;
     }
 
@@ -78,5 +80,31 @@ public class BorderlessTests
         var checks = 0;
         await Borderless.KeepAsync(w, 42, () => ++checks <= 2, TimeSpan.Zero);
         Assert.Equal((1, 1), (w.Unframed, w.Backgrounded));
+    }
+
+    [Fact]
+    public async Task InTheBackgroundTheGameIsPlacedBehindTheWindowThePlayerWentTo()
+    {
+        var w = new FakeWindow { Window = 7, Frame = false, Front = false, Other = 55 };
+        var checks = 0;
+        await Borderless.KeepAsync(w, 42, () => ++checks <= 2, TimeSpan.Zero);
+        Assert.Equal((1, (nint)55), (w.Backgrounded, w.Behind));
+    }
+
+    [Fact]
+    public async Task WithoutAForegroundWindowNothingChanges()
+    {
+        var w = new FakeWindow { Window = 7, Frame = false, NoFront = true };
+        var checks = 0;
+        // the game is in front, a secure desktop takes the foreground (lock screen, UAC), then the game is in front again: no background, no full screen again
+        await Borderless.KeepAsync(w, 42, () => ++checks switch
+        {
+            1 => true,
+            2 => !(w.NoFront = false),
+            3 => w.NoFront = true,
+            4 => !(w.NoFront = false),
+            _ => false,
+        }, TimeSpan.Zero);
+        Assert.Equal((0, 0, 0), (w.Backgrounded, w.Fullscreened, w.Unframed));
     }
 }
