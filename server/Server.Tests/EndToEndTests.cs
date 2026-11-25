@@ -34,7 +34,7 @@ public class EndToEndTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     /// <summary>An account the way the first sign-in makes it: its id, its cookie and a game token.</summary>
     (long Id, string Cookie, string Token) SignedIn(string handle, string steam)

@@ -31,7 +31,7 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     Task<Reply> Send(string method, string host, string path, long? who = null, string body = "", string? session = null) =>
         server.SendAsync(method, host, path, [("Content-Type", "application/x-www-form-urlencoded"), .. who is { } w ? [("Authorization", "Bearer " + tokens[w])] : Array.Empty<(string, string)>(),

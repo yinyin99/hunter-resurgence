@@ -27,7 +27,7 @@ public class AvatarPictureTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(new HarTable(), cfg, state, Path.Combine(tmp, "mirror")));
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     Task<Reply> Get(string host, string path) => server.SendAsync("GET", host, path, []);
 

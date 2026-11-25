@@ -97,7 +97,7 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'admin_messages'"));
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     void MakeArchive()
     {

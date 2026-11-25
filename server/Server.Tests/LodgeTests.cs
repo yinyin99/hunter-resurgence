@@ -43,7 +43,7 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(new HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     /// <summary>A request as the game sends an edit: JSON as text/plain (or the type given), the JWT as a Bearer token.</summary>
     async Task<(int Status, string Body)> Call(string method, string host, string path, string? token, string body = "", string type = "text/plain")

@@ -28,7 +28,7 @@ public class StoreAvatarTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(table, new JsonObject(Cfg.Select(kv => KeyValuePair.Create(kv.Key, kv.Value?.DeepClone()))) { ["images_dir"] = Path.Combine(tmp, "images") }, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     static string Names(JsonNode? list) => string.Join(",", ((JsonArray)list!).Select(a => (string)a!["name"]! + ((bool)a["unlocked"]! ? "+" : "-")));
 

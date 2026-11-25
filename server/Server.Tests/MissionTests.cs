@@ -374,7 +374,7 @@ public class MissionApiTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     async Task<string> Post(string path, string body = "")
     {

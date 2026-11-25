@@ -320,7 +320,7 @@ public class ChallengeApiTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     async Task<JsonNode?> Call(string method, string body, bool token = true)
     {

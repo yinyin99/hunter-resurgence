@@ -45,7 +45,7 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     static void AddHarvest(Db con, long kill, string species, int hoursAgo) =>
         con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", kill, Py.Dumps(O($$"""

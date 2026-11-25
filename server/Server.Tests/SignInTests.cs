@@ -173,7 +173,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask InitializeAsync() => await StartAsync(offline: false);
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     async Task StartAsync(bool offline, params (string Method, string Host, string Path, string Body)[] recorded)
     {

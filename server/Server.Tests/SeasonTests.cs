@@ -25,7 +25,7 @@ public class SeasonTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     static string Iso(long ts) => DateTimeOffset.FromUnixTimeSeconds(ts).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'");
 

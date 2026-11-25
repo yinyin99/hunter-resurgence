@@ -47,7 +47,7 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(table, Cfg, state, tmp), tmp, steamHttp: new HttpClient(fake));  // the server looks for archive.db in the work folder
     }
 
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask StopServersAsync()
     {
         Alerts.Shared = oldShared;
         await server.DisposeAsync();
