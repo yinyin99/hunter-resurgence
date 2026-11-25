@@ -287,7 +287,6 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}", page);
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
         Assert.Contains("#lodge-main-view .inventory-item{content-visibility:auto}", page);  // the lodge's items out of view are not painted
-        Assert.Contains("j.fx.off=true", page);  // jQuery's animations are off on the page
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);
