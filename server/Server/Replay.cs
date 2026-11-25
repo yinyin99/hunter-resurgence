@@ -404,7 +404,7 @@ public static class Replay
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
     /// (the record's `time`). It also removes what the old site's page sent to third-party services and loaded without need (issue #829): the page's tag manager and analytics ids are emptied, the script's error-reporting init never runs and its 2 s preload of 61 pictures is dropped. Each script rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The page's ids are matched by key instead (a page without them is served unchanged, with no warning). The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
-    /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
+    /// asks for it under a new `?t=` token, so a copy the game cached before is not used. The page also paints less (issue #829: on a weak PC the page is drawn on the CPU and stuttered on hover, click and scroll): the lodge's tiles (a fixed size each, about 200 with a large picture) are not painted while scrolled out of view (<see cref="PaintFix"/>), and the page's jQuery animations are off (each re-render faded in every tile).</summary>
     static class TimerFix
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
@@ -487,7 +487,10 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             return text;
         }
 
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + ClientStyle)];
+        /// <summary>Less to paint on the in-game inventory page (issue #829): `content-visibility:auto` skips painting the lodge's tiles scrolled out of view (they have a fixed size in the page's style, so layout, scrolling and the drop targets do not change; the hover info and the drag picture are clones appended to `body`, so the rule's clipping does not reach them), and the script sets `jQuery.fx.off` as soon as the page's script defines jQuery (it loads later than the head), so no tile fades in. Where jQuery is already defined it is set at once.</summary>
+        const string PaintFix = "<script>(function(){function s(j){if(j&&j.fx)j.fx.off=true}if(window.jQuery)return s(window.jQuery);Object.defineProperty(window,'jQuery',{configurable:true,set:function(v){Object.defineProperty(window,'jQuery',{value:v,writable:true,configurable:true,enumerable:true});s(v)}})})()</script>"
+            + "<style>body#inventory .lodge-view .item-stack{content-visibility:auto}</style>";
+        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + PaintFix + ClientStyle)];
         public static Reply Apply(Req r, Reply reply)
         {
             if (reply.Status != 200 || r.Method != "GET") return reply;
