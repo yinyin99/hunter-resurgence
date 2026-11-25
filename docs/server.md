@@ -823,6 +823,8 @@ The game plays multiplayer peer to peer: the joiners connect straight to the hos
 | `POST /v1/Map/locations` | API | `[{id, define, name, description, reserve, type, pos, metadata}]`: the catalogue's locations of the reserve of the session `network_id` (else of `reserve`; `[]` for neither). The world items placed in the session are not listed. |
 | `POST /auth/launch` with `mp` | web | The same two calls for the launcher and the website's start page, see [Sign-in and tokens](#sign-in-and-tokens). |
 
+**Who may join.** `Games.Why` is the one rule of whether a player may join a session: the first of `own` (the player hosts it), `friends` (friends only and the host is not the player's friend), `hunterscore` (the player's hunterscore is outside the session's range), `starting` (the host's port and network id are not known yet), `password` (the session has one and none, or a wrong one, was given), `full`; null when the player may. `Launch/join` refuses with it (`own_game`, `not_allowed` for `friends` and `hunterscore`, `host_not_ready`, `password`, `full`), and `GET /catalog/games` adds to each session, for the signed-in caller, `joinable` (true when `why` is null) and `why`, so the list and the join never disagree. A session with a password is never `joinable`: its `why` is `password`.
+
 **The connect reply.** The `session` of `start_mp` or `join` is the token the game connects with (`X-Hun-Session`), and its `network` says what the player is. Any other connect, a single-player hunt among them, keeps `"singleplayer": true` and sends no `ip`.
 
 - **Host:** `{"singleplayer": false, "host": H, "user_id": H, "handle", "ip", "max_players": N, "clients": null}`. `ip` is the address the connect came from.

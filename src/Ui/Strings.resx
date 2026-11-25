@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOST YOUR OWN GAME</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>This game is password protected</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Password required</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Friends only</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Full</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Your game</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Starting…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Patching...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Server location: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europe</value></data>

@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>GĂZDUIȚI PROPRIUL JOC</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Acest joc este protejat cu parolă</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parolă necesară</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Doar prieteni</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Plin</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Jocul tău</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Se pornește…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Se aplică patch-ul...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Locația serverului: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

@@ -212,7 +212,7 @@ public class ServerServersServiceTests
           "reserve": {"id": 2, "name": "Test Reserve"}},
          {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800,
           "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}},
-         {"id": 4000000003, "name": "Wide game", "handle": "HostThree", "password": false, "hs_min": -5, "hs_max": 99999999999, "max_players": 8, "start_ts": 1700000000,
+         {"id": 4000000003, "name": "Wide game", "handle": "HostThree", "password": false, "hs_min": -5, "hs_max": 99999999999, "max_players": 8, "start_ts": 1700000000, "joinable": false, "why": "hunterscore",
           "clients": [{"user_id": 10, "handle": "HostThree", "guid": "4", "hunterscore": 99999999999}], "reserve": {"id": 4}}]
         """;
 
@@ -229,6 +229,9 @@ public class ServerServersServiceTests
         Assert.Equal([("HostOne", 1500, "avatar-12"), ("Guest", 300, Avatars.Default)], games[0].Roster.Select(p => (p.Handle, p.HunterScore, p.Avatar)));
         Assert.Equal(int.MaxValue, games[2].Roster.Single().HunterScore);
         Assert.Equal([true, false, false], games.Select(g => g.Limited));
+        Assert.Equal([null, null, "hunterscore"], games.Select(g => g.Why));  // the server's reason, none from a server that does not send one
+        Assert.Equal([true, false, false], games.Select(g => g.Joinable));  // a game with a password is not one the filter lists
+        Assert.Equal([false, false, true], games.Select(g => g.Refused));  // and its Join stays on: it asks for the password
         Assert.All(games, g => Assert.Equal("", g.Country));
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);

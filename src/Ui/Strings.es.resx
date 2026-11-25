@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>CREA TU PROPIA PARTIDA</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Esta partida está protegida con contraseña</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Se requiere contraseña</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Solo amigos</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Puntuación del Cazador {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Llena</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Tu partida</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Iniciando…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aplicando parche...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Ubicación del servidor: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

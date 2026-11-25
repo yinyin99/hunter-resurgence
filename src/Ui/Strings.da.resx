@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>VÆR VÆRT FOR DIT EGET SPIL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Dette spil er beskyttet med adgangskode</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Adgangskode påkrævet</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Kun for venner</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Jægerscore {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Fuldt</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Dit spil</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Starter…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Opdaterer...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverplacering: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

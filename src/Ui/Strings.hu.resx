@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>INDÍTS SAJÁT JÁTÉKOT</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ez a játék jelszóval védett</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Jelszó szükséges</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Csak barátoknak</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Vadászpont {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Megtelt</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>A te játékod</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Indul…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Frissítés...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Szerver helye: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Európa</value></data>

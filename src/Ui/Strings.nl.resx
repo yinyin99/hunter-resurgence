@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>HOST JE EIGEN SPEL</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Dit spel is met een wachtwoord beveiligd</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Wachtwoord vereist</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Alleen vrienden</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Vol</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Jouw spel</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Wordt gestart…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Patchen...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Serverlocatie: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

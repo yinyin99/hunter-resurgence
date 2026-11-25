@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>KENDİ OYUNUNUZU KURUN</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Bu oyun şifre korumalıdır</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parola gerekli</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Yalnızca arkadaşlar</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Avcı skoru {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Dolu</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Senin oyunun</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Başlıyor…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Yama uygulanıyor...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Avrupa</value></data>
