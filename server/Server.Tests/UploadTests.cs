@@ -28,7 +28,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         (player, cookie) = SignedIn("player", Steam);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     /// <summary>An account the way the first sign-in makes it (the server's own range of ids) and its cookie.</summary>
     (long Id, string Cookie) SignedIn(string handle, string steam)
@@ -839,7 +839,8 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.False(Directory.Exists(first));
         Assert.Equal("mine", File.ReadAllText(Path.Combine(moved, "9-2.jpg")));
         Assert.Equal(6, Directory.GetFiles(moved).Length);  // the second backup's five pictures (the first's were replaced) and the photo taken here
-        Assert.Equal(1L, (long)state.Store.Open(1002).Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '9-2.jpg'")!);
+        using (var con = state.Store.Open(1002))
+            Assert.Equal(1L, (long)con.Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = '9-2.jpg'")!);
         Assert.NotNull(state.PhotoFile("/photos/1002/9-2.jpg"));
         Assert.Null(state.PhotoFile("/photos/1001/9-2.jpg"));
         Operator.Delete(1002);
