@@ -230,6 +230,64 @@ public class MissionWordingTests : MissionTestBase
     }
 
     [Fact]
+    public void TestWhileStandingIsThePlayersStanceAndAStandingAnimalIsTheAnimalsState()
+    {
+        state = New("standing.db", Catalogue(
+        [
+            "Harvest a charging Test Deer while standing.",         // 1
+            "Harvest a Test Deer with one shot while standing up",  // 2
+            "Harvest a standing Test Deer",                         // 3
+        ]));
+        ActivateAll();
+        Hb(Shot(1, animalState: 9, pose: 2049));  // charging, crouching
+        Assert.Equal("", Completed());
+        Hb(Shot(2, animalState: 9, pose: 2048));  // charging, upright
+        Assert.Equal("1,2", Completed());
+        Hb(Shot(3, animalState: 3, pose: 2049));  // standing animal, crouching player
+        Assert.Equal("1,2,3", Completed());
+    }
+
+    [Fact]
+    public void TestTheRealWhileStandingTitlesAreThePlayersPoseAndNoAnimalState()
+    {
+        var titles = new[]
+        {
+            "Harvest a charging Water Buffalo with a score of 200 or higher while standing.",
+            "Harvest an unspooked male Sambar Deer with a double lung shot while standing. Other organs may be hit.",
+            "Then, harvest a male Rusa Deer with one shot while standing at under 20 meters.",
+            "Then, harvest an unspooked male Rusa Deer at under 20 meters (Approx. 65 feet) while standing.",
+        };
+        var lines = New("real-standing.db", Catalogue(titles)).MissionCoverage(rules: true).Where(l => l.Contains(" => ", StringComparison.Ordinal)).ToList();
+        foreach (var title in titles)
+        {
+            var line = Assert.Single(lines, l => l.Contains(title, StringComparison.Ordinal));
+            Assert.Contains("pose: standing", line);
+            Assert.DoesNotContain("state: standing", line);
+        }
+        Assert.Contains("state: charging", lines.Single(l => l.Contains("Water Buffalo", StringComparison.Ordinal)));
+        Assert.Contains("score: >=200", lines.Single(l => l.Contains("Water Buffalo", StringComparison.Ordinal)));
+    }
+
+    [Fact]
+    public void TestAChargingScoreKillIsMetStandingButNotCrouching()
+    {
+        state = New("score-standing.db", Catalogue(["Harvest a charging Test Rabbit with a score of 200 or higher while standing."]));
+        ActivateAll();
+        Hb(Shot(1, species: 17, animalState: 9, grams: 234, pose: 2049));  // a rabbit scores its weight in grams; crouching
+        Assert.Equal("", Completed());
+        Hb(Shot(2, species: 17, animalState: 9, grams: 234, pose: 2048));
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
+    public void TestAStandingAnimalIsTheAnimalsState()
+    {
+        var line = New("moose.db", Catalogue(["Harvest a standing Test Deer"])).MissionCoverage(rules: true).Single(l => l.Contains(" => ", StringComparison.Ordinal));
+        Assert.Contains("state: standing", line);
+        Assert.DoesNotContain("pose:", line);
+    }
+
+    [Fact]
     public void TestWeightRangeAndScoreWordsAndTheWordsThatOnlyNameTheGender()
     {
         state = New("numbers.db", Catalogue(

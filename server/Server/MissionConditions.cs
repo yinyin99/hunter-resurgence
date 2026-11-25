@@ -325,7 +325,7 @@ public sealed partial class State
             MountedWith = new(@"\s(?:mounted|fitted|equipped)\s+with(?=\s)", Rx),
             SightNoun = new(@"\ssights?(?=\s)", Rx),
             ThatWas = new(@"\sthat\s+(?:was|were)\s+(?:shot|killed|hit)(?=\s)", Rx),
-            Stance = new(@"\s(?:while\s+)?(?<p>prone|crouching|crouched|standing upright|upright)(?=\s)", Rx),
+            Stance = new(@"\s(?:(?:while\s+)?(?<p>prone|crouching|crouched|standing upright|upright)|while\s+(?<p>standing(?:\s+up)?))(?=\s)", Rx),
             ExceptAnimal = new(@"\s(?:any\s+)?animals?\s+except(?=\s)", Rx),
             SpeciesOf = new(@"\s(?:one\s+of\s+)?(?:any\s+)?species\s+of(?=\s)", Rx),
             Duck = new(@"\sducks?(?=\s)", Rx),
