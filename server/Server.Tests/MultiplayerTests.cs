@@ -274,8 +274,83 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.NotEmpty(Json(await Send("GET", "api.test", "/v1/Network/list")).AsArray());
         var reply = await server.SendAsync("GET", "web.test", "/catalog/games", signedIn);
         Assert.Equal(("catalog", 200), (reply.Source, reply.Status));
-        Eq(await List(), Json(reply));
-        Assert.Equal("Test Camp", (string)Json(reply)[0]!["name"]!);
+        var listed = Json(reply);
+        var game = listed[0]!.AsObject();
+        Assert.Equal((false, "starting"), ((bool)game["joinable"]!, (string?)game["why"]));  // the host's game has not reported its port yet
+        game.Remove("joinable");
+        game.Remove("why");
+        Eq(await List(), listed);  // the game's own list has neither
+        Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
+    }
+
+    /// <summary>The first game of `GET /catalog/games` as `who` sees it.</summary>
+    async Task<JsonNode> Listed(long who) =>
+        Json(await server.SendAsync("GET", "web.test", "/catalog/games", [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(who, TimeSpan.FromHours(1))}")]))[0]!;
+
+    /// <summary>The list gives `who` this `why` (and `joinable` when it is null), and `Launch/join` lets the player in exactly when it is null: the same answer, for the same player and game.</summary>
+    async Task Agrees(long who, string? why)
+    {
+        var game = await Listed(who);
+        Assert.Equal((why is null, why), ((bool)game["joinable"]!, (string?)game["why"]));
+        Assert.Equal(why is null, (string?)Json(await Join(who))["status"] == "ok");
+    }
+
+    void Score(long who, int score)
+    {
+        using var con = state.Store.Open(who);
+        con.Exec("UPDATE accounts SET account = json_set(account, '$.hunterscore', ?) WHERE id = ?", score, who);
+    }
+
+    [Fact]
+    public async Task TestTheGamesListSaysWhyAPlayerCannotJoinAndTheJoinAgrees()
+    {
+        await Host();
+        await Agrees(GUEST, "starting");  // the host's port and network id are not known yet
+
+        await ReadyHost();  // a new game of the host; max 3
+        await Agrees(HOST, "own");
+        await Agrees(THIRD, null);
+        await Agrees(GUEST, null);
+        state.CreateAccount(14, "fourth");
+        tokens[14] = state.Store.CreateToken(14);
+        await Agrees(14, "full");
+
+        await ReadyHost("&public_game=0");
+        await Agrees(THIRD, "friends");
+        state.Store.AddFriend(GUEST, HOST);
+        await Agrees(GUEST, "friends");  // a request only
+        state.Store.AddFriend(HOST, GUEST);
+        await Agrees(GUEST, null);
+
+        await ReadyHost("&hs_min=100&hs_max=200");
+        await Agrees(THIRD, "hunterscore");  // below
+        Score(THIRD, 300);
+        await Agrees(THIRD, "hunterscore");  // above
+        Score(THIRD, 150);
+        await Agrees(THIRD, null);
+
+        await ReadyHost("&password=s3cret");
+        await Agrees(GUEST, "password");  // a password game is never joinable, whatever the player
+        await Agrees(HOST, "own");
+    }
+
+    [Fact]
+    public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
+    {
+        var host = new Games.Member(HOST, "s", 0);
+        var g = new Games.Game { Host = HOST, Public = false, Password = "pw", HsMin = 100, Max = 2, Members = [host] };
+        string? Why(long who, long score, bool friend, string? password = null) => Games.Why(g, who, score, _ => friend, password);
+        Assert.Equal("own", Why(HOST, 50, false));
+        Assert.Equal("friends", Why(GUEST, 50, false));
+        Assert.Equal("hunterscore", Why(GUEST, 50, true));
+        Assert.Equal("starting", Why(GUEST, 150, true));  // the host's port and network id are not known
+        (host.Port, host.Guid) = (32303, Guid1);
+        Assert.Equal("password", Why(GUEST, 150, true));  // none given
+        Assert.Equal("password", Why(GUEST, 150, true, "wrong"));
+        g.Members.Add(new(THIRD, "t", 0));
+        Assert.Equal("full", Why(GUEST, 150, true, "pw"));
+        g.Members.RemoveAt(1);
+        Assert.Null(Why(GUEST, 150, true, "pw"));
     }
 
     Task<Reply> Online() => Send("GET", "web.test", "/stats/online");

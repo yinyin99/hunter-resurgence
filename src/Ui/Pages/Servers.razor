@@ -35,7 +35,7 @@
                     @foreach (var g in shown)
                     {
                         <tr class="@(g == active ? "selected" : "")" @onclick="() => selected = g">
-                            <td class="name">@g.Name</td>
+                            <td class="name">@g.Name@if (Reason(g) is { } why) { <small class="why">@why</small> }</td>
                             <td>@reserves.GetValueOrDefault(g.Reserve)</td>
                             <td class="players">@g.Players/@g.Max</td>
                             <td class="host"><a href="/profile/@g.Host" @onclick:stopPropagation>@g.Host</a></td>
@@ -66,7 +66,8 @@
             <p class="muted">@L["Servers.Details"]</p>
             <h3>@s.Name</h3>
             @if (s.Description.Length > 0) { <p class="description">@s.Description</p> }
-            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready)" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = s, [nameof(JoinMapModal.Loadout)] = loadout })">@(ready ? L["Servers.Join"].Value : L["Servers.Patching"].Value)</button>
+            @if (Reason(s) is { } refusal) { <p class="refusal">@refusal</p> }
+            <button class="btn btn-primary btn-large btn-block" disabled="@(!ready || s.Refused)" @onclick="() => Modal.Show<JoinMapModal>(new Dictionary<string, object?> { [nameof(JoinMapModal.Server)] = s, [nameof(JoinMapModal.Loadout)] = loadout })">@(ready ? L["Servers.Join"].Value : L["Servers.Patching"].Value)</button>
             <h5>@L["Servers.Details"]</h5>
             <p class="line">@L["Servers.HostLabel"] <a href="/profile/@s.Host">@s.Host</a></p>
             <p class="line">@L["Servers.ReserveLabel"] @reserves.GetValueOrDefault(s.Reserve)</p>
@@ -105,6 +106,17 @@
     string query = "";
     bool allowedOnly;
 
+    /// <summary>Why the server says the player cannot join a game (a game with a password asks for it instead: its lock says so).</summary>
+    string? Reason(GameServer g) => g.Why switch
+    {
+        "friends" => L["Servers.WhyFriends"].Value,
+        "hunterscore" => L["Servers.WhyHunterscore", g.MinScore, g.MaxScore].Value,
+        "full" => L["Servers.WhyFull"].Value,
+        "own" => L["Servers.WhyOwn"].Value,
+        "starting" => L["Servers.WhyStarting"].Value,
+        _ => null,
+    };
+
     /// <summary>The old search: every word must be part of game name plus host.</summary>
     IReadOnlyList<GameServer> shown
     {
@@ -112,7 +124,7 @@
         {
             var rows = all
                 .Where(g => query.Split(' ', StringSplitOptions.RemoveEmptyEntries).All(w => (g.Name + g.Host).Contains(w, StringComparison.OrdinalIgnoreCase)))
-                .Where(g => !allowedOnly || !g.Password);
+                .Where(g => !allowedOnly || g.Joinable);
             Func<GameServer, object> key = sortBy switch
             {
                 "name" => g => g.Name.ToLowerInvariant(),

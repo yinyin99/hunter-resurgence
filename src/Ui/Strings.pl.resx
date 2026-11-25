@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>UTWÓRZ WŁASNĄ GRĘ</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Ta gra jest chroniona hasłem</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Wymagane hasło</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Tylko dla znajomych</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Punkty Myśliwego {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Pełna</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>Twoja gra</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Uruchamianie…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aktualizowanie...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Lokalizacja serwera: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

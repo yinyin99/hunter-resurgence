@@ -10,11 +10,16 @@ public sealed record GamePlayer(string Handle, int HunterScore, int? X = 50, int
 /// <summary>A saved equipment set the player can start with. The choice "last used equipment" (id 0) is not listed.</summary>
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }
+/// <param name="Why">The server's reason this player cannot join: <c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player.</param>
 public sealed record GameServer(long Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, string Country, Distance Distance,
-    int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster)
+    int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster, string? Why = null)
 {
     /// <summary>The host limited the hunter score: the game shows its limits (0 and 99999 mean none).</summary>
     public bool Limited => MinScore > 0 || MaxScore < 99999;
+    /// <summary>The filter "games I'm allowed to join" lists these: a game with a password is not one.</summary>
+    public bool Joinable => Why is null && !Password;
+    /// <summary>The player cannot join and a password would not help: the Join button is off.</summary>
+    public bool Refused => Why is not (null or "password");
 }
 public sealed record NewGame(string Name, string Description, bool FriendsOnly, string? Password, int MaxPlayers, int? MinScore, int? MaxScore);
 public sealed record Tutorial(int Id, string Title, string Description, int Reserve);

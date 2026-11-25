@@ -82,19 +82,28 @@ public sealed class Games
         }
     }
 
-    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game` (the player hosts it), `not_allowed` (a friends-only session of a stranger, or a hunterscore out of
-    /// its range), `host_not_ready` (the host's port and network id are not known yet), `password`, `full`. `session` makes the player's session token once it is let in.</summary>
+    /// <summary>Why the player cannot join `g` now, the first of: `own` (the player hosts it), `friends` (a friends-only session of a stranger), `hunterscore` (a score out of its range), `starting` (the host's port and
+    /// network id are not known yet), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
+    public static string? Why(Game g, long account, long score, Func<long, bool> friendOf, string? password = null)
+    {
+        if (g.Host == account) return "own";
+        if (!g.Public && !friendOf(g.Host)) return "friends";
+        if (score < g.HsMin || score > g.HsMax) return "hunterscore";
+        if (!g.Ready) return "starting";
+        if (g.Password != "" && (password is null || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password)))) return "password";
+        return g.Members.Count(m => m.Account != account) >= g.Max ? "full" : null;
+    }
+
+    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `password`, `full`.
+    /// `session` makes the player's session token once it is let in.</summary>
     public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session)
     {
         lock (gate)
         {
             Prune(now);
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
-            if (g.Host == account) return (null, "own_game", null);
-            if ((!g.Public && !friendOf(g.Host)) || score < g.HsMin || score > g.HsMax) return (null, "not_allowed", null);
-            if (!g.Ready) return (null, "host_not_ready", null);
-            if (g.Password != "" && !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password))) return (null, "password", null);
-            if (g.Members.Count(m => m.Account != account) >= g.Max) return (null, "full", null);
+            if (Why(g, account, score, friendOf, password) is { } why)
+                return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", _ => why }, null);
             LeaveLocked(account);
             var token = session();
             g.Members.Add(new(account, token, now));
@@ -178,7 +187,7 @@ public sealed partial class State
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
         if (Num(Form1(form, "network_id")) is not { } id) return ("gone", null);
-        var score = Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
+        var score = HunterScore(account);
         var friends = Store.FriendsOf(account, LocalAccount).Friends;  // read before the lock: every heartbeat waits on it
         var (joined, error, session) = games.Join(Clock(), id, account, Form1(form, "password"), score,
             friends.Contains, () => Store.CreateToken(account, Lifetimes.Session));  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
@@ -223,26 +232,41 @@ public sealed partial class State
         });
     }
 
-    /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent).</summary>
-    public byte[] NetworkListReply() => Py.DumpBytes(new JsonArray([.. games.Open(Clock()).Select(g =>
+    long HunterScore(long account) => Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
+
+    /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `joinable` and `why`, the refusal
+    /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`).</summary>
+    public byte[] NetworkListReply(long? caller = null)
     {
-        var reserve = Arr(G(application, "reserves", null)).OfType<JsonObject>().FirstOrDefault(r => TryKey(r["id"], out var k) && k == g.Reserve);
-        return (JsonNode?)new JsonObject
+        var score = caller is { } me ? HunterScore(me) : 0;
+        var friends = caller is { } you ? Store.FriendsOf(you, LocalAccount).Friends : [];
+        return Py.DumpBytes(new JsonArray([.. games.Open(Clock()).Select(g =>
         {
-            ["id"] = g.Id, ["name"] = g.Name, ["handle"] = Store.HandleOf(g.Host), ["host"] = g.Host, ["description"] = g.Description == "" ? null : g.Description,
-            ["password"] = g.Password != "", ["public"] = g.Public, ["singleplayer"] = false, ["freeplayers"] = g.Free, ["hs_min"] = g.HsMin, ["hs_max"] = g.HsMax,
-            ["max_players"] = g.Max, ["start_ts"] = (long)g.Start, ["clients_len"] = g.Members.Count,
-            ["clients"] = new JsonArray([.. g.Members.Select(m => (JsonNode?)new JsonObject
+            var reserve = Arr(G(application, "reserves", null)).OfType<JsonObject>().FirstOrDefault(r => TryKey(r["id"], out var k) && k == g.Reserve);
+            var list = new JsonObject
             {
-                ["user_id"] = m.Account, ["handle"] = Store.HandleOf(m.Account), ["guid"] = m.Guid, ["color"] = m.Color, ["avatar"] = Avatar(m.Account),
-                ["x"] = Coord(m.X), ["y"] = Coord(m.Y), ["z"] = Coord(m.Z), ["hunterscore"] = Store.AccountJson(m.Account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0,
-            })]),
-            ["reserve"] = new JsonObject
+                ["id"] = g.Id, ["name"] = g.Name, ["handle"] = Store.HandleOf(g.Host), ["host"] = g.Host, ["description"] = g.Description == "" ? null : g.Description,
+                ["password"] = g.Password != "", ["public"] = g.Public, ["singleplayer"] = false, ["freeplayers"] = g.Free, ["hs_min"] = g.HsMin, ["hs_max"] = g.HsMax,
+                ["max_players"] = g.Max, ["start_ts"] = (long)g.Start, ["clients_len"] = g.Members.Count,
+                ["clients"] = new JsonArray([.. g.Members.Select(m => (JsonNode?)new JsonObject
+                {
+                    ["user_id"] = m.Account, ["handle"] = Store.HandleOf(m.Account), ["guid"] = m.Guid, ["color"] = m.Color, ["avatar"] = Avatar(m.Account),
+                    ["x"] = Coord(m.X), ["y"] = Coord(m.Y), ["z"] = Coord(m.Z), ["hunterscore"] = HunterScore(m.Account),
+                })]),
+                ["reserve"] = new JsonObject
+                {
+                    ["id"] = g.Reserve, ["define"] = C(reserve?["define"]) ?? "", ["name"] = C(reserve?["name"]) ?? "", ["species"] = new JsonArray(), ["border"] = new JsonArray(),
+                },
+            };
+            if (caller is { } who)
             {
-                ["id"] = g.Reserve, ["define"] = C(reserve?["define"]) ?? "", ["name"] = C(reserve?["name"]) ?? "", ["species"] = new JsonArray(), ["border"] = new JsonArray(),
-            },
-        };
-    })]));
+                var why = Games.Why(g, who, score, friends.Contains);
+                list["joinable"] = why is null;
+                list["why"] = why;
+            }
+            return (JsonNode?)list;
+        })]));
+    }
 
     /// <summary>Map/locations: the catalogue's locations of the reserve of session `network_id` (else of `reserve`), `[]` for neither.</summary>
     public byte[] MapLocationsReply(byte[] formBody)

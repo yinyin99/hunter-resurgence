@@ -276,6 +276,11 @@
   <data name="Servers.HostOwn" xml:space="preserve"><value>OSPITA LA TUA PARTITA</value></data>
   <data name="Servers.Locked" xml:space="preserve"><value>Questa partita è protetta da password</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Password richiesta</value></data>
+  <data name="Servers.WhyFriends" xml:space="preserve"><value>Solo amici</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyFull" xml:space="preserve"><value>Piena</value></data>
+  <data name="Servers.WhyOwn" xml:space="preserve"><value>La tua partita</value></data>
+  <data name="Servers.WhyStarting" xml:space="preserve"><value>Avvio…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aggiornamento...</value></data>
   <data name="Servers.Location" xml:space="preserve"><value>Posizione server: {0}</value></data>
   <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>

@@ -18,7 +18,9 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     static readonly IReadOnlyList<GameServer> Servers = Rows.Select((r, i) => new GameServer(i + 1, $"{r.Host}'s game", i == 0 ? "Placeholder description of the game. The host writes a short text here for the other players." : "",
         r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Country, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
-        Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList())).ToList();
+        Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
+        // a few games the player cannot join, to see the reasons
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", _ => null })).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",
