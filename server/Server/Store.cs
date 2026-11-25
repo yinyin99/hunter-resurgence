@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 32;
+    public const int Version = 33;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -154,6 +154,13 @@ public sealed class Store
             steam_id64 TEXT PRIMARY KEY, ts INTEGER NOT NULL) WITHOUT ROWID;
         """;
 
+    // what the operator sent to players (AdminMessages): one row per `admin message`, with the account it went to (NULL: every account, `recipients` of them) and the text;
+    // it goes with its account when that is deleted. Not in PlayerTables: a broadcast has no account.
+    const string AdminMessagesTable = """
+        CREATE TABLE IF NOT EXISTS admin_messages (
+            id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, account_id INTEGER REFERENCES accounts (id) ON DELETE CASCADE, recipients INTEGER NOT NULL, text TEXT NOT NULL);
+        """;
+
     // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge
     // runs over every account at once. `frames` is a JSON array of "module+offset" texts, the crashing frame first.
     const string CrashReports = $"""
@@ -222,6 +229,7 @@ public sealed class Store
         {DailyMissions}
         {ClaimTables}
         {SteamTables}
+        {AdminMessagesTable}
         {CommunityProgress}
         {Loadouts}
 
@@ -474,6 +482,7 @@ public sealed class Store
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
             if (version < 32) con.Script(SteamTables);
+            if (version < 33) con.Script(AdminMessagesTable);
         }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
