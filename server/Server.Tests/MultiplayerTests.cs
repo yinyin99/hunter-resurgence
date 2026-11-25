@@ -391,6 +391,17 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         await Positions(session, (HOST, 0, 1000));
         Assert.Equal(["-"], await Places(GUEST));  // a password game is not joinable without it
         Assert.Equal(["50,50"], await Places(HOST));
+
+        // the game's own list cannot name its caller: a game not open to all sends neutral coordinates, any other the real ones
+        await Positions(session, (HOST, 400, 700));
+        var own = (await List())[0]!["clients"]![0]!;
+        Assert.Equal((0L, 0L, 0L), ((long)own["x"]!, (long)own["y"]!, (long)own["z"]!));
+        session = await ReadyHost();
+        await Positions(session, (HOST, 400, 700));
+        own = (await List())[0]!["clients"]![0]!;
+        Assert.Equal((400L, 80L, 700L), ((long)own["x"]!, (long)own["y"]!, (long)own["z"]!));
+        await Positions(session, (HOST, 5000, -300));  // off the map: on its edge
+        Assert.Equal(["100,0"], await Places(GUEST));
     }
 
     [Fact]

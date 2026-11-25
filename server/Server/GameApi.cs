@@ -141,7 +141,7 @@ public static class GameApi
             api.MapMethods(NETWORK_LIST, ["GET", "POST"], Handle(game, r => s.Online && r.Path == NETWORK_LIST && r.Method is "GET" or "POST" ? new(200, JsonAnyOrigin(), s.NetworkListReply(), "state") : null))
                .WithName("NetworkList").WithSummary("The open multiplayer sessions")
                .WithDescription("No token (the original refuses one). `[{id, name, handle, host, description, password, public, singleplayer, freeplayers, hs_min, hs_max, max_players, start_ts, clients_len, "
-                                + "clients: [{user_id, handle, guid, color, avatar, x, y, z, hunterscore}], reserve: {id, define, name, species, border}}]`, oldest first; `id` is the `network_id` of Launch/join. `[]` on a local server.")
+                                + "clients: [{user_id, handle, guid, color, avatar, x, y, z, hunterscore}], reserve: {id, define, name, species, border}}]`, oldest first; `id` is the `network_id` of Launch/join. Without a token the caller is unknown: `x`, `y`, `z` are 0 for the players of a friends-only or password session. `[]` on a local server.")
                .Produces(200, contentType: "application/json");
             api.MapExactPost(game, MAP_LOCATIONS, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.MapLocationsReply(r.Body), "state")))
                .WithName("MapLocations").WithSummary("The locations of a multiplayer session's reserve")
