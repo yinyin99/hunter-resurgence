@@ -164,7 +164,7 @@ public static class Restorer
         State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            pictures = state.PreparePictures(con, read, hashes, replace: fill is null && !merge, keepFiles: fill is not null);
+            pictures = state.PreparePictures(con, read, hashes, replace: fill is null && !merge, keepFiles: fill is not null || merge);
             report = merge ? Merge(con, model, read.Report, sha, pictures.Report) : Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
                           finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill);  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
@@ -231,14 +231,22 @@ public static class Restorer
         foreach (var (path, body) in wanted)
         {
             Strip(body);
-            extras += PlayerRows.AddExtraIfAbsent(con, path, body);
+            if (PlayerRows.AddExtra(con, path, body)) extras++;
         }
-        foreach (var l in m.Lodges)
+        // a saved lodge is added (both of its rows) only when the account has no lodge of that id and none of that type: a claim without lodges leaves the account the empty lodges the server gave it for its lodge items
+        static long? TypeOf(JsonNode? node) =>
+            node?["lodge_type_id"] is { } t ? Py.IsNum(t) ? Py.L(t) : Py.IsStr(t) && long.TryParse((string)t!, out var n) ? n : null : null;
+        var have = con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?)", State.LodgeList, State.LodgeOne).Select(r => ((string)r[0], TypeOf(JsonNode.Parse((string)r[1])))).ToList();
+        foreach (var lodge in m.Lodges.GroupBy(l => l.Id))
         {
-            if (con.Scalar("SELECT 1 FROM lodges WHERE account_id = $a AND source = ? AND id = ?", l.Source, l.Id) is not null) continue;
-            Strip(l.Node);
-            PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
-            lodges++;
+            var type = lodge.Select(l => TypeOf(l.Node)).FirstOrDefault(t => t is not null);
+            if (have.Any(h => h.Item1 == lodge.Key || type is not null && h.Item2 == type)) continue;
+            foreach (var l in lodge)
+            {
+                Strip(l.Node);
+                PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
+                lodges++;
+            }
         }
         var text = new StringBuilder(layerA.ToText());
         text.AppendLine("account: archive claim kept, missing parts added");

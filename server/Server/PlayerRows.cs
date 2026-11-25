@@ -70,10 +70,6 @@ public static class PlayerRows
     public static void AddLodge(Db con, string source, string id, JsonNode? node) =>
         con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
 
-    /// <summary>A saved reply the account lacks (one it has stays); 1 when added.</summary>
-    public static int AddExtraIfAbsent(Db con, string path, JsonNode? body) =>
-        con.Exec("INSERT OR IGNORE INTO extras (account_id, path, body) VALUES ($a, ?, ?)", path, Py.Dumps(body));
-
     /// <summary>A saved reply with no typed home, keyed by its path in the zip.</summary>
     public static void SetExtra(Db con, string path, JsonNode? body) =>
         con.Exec("INSERT OR REPLACE INTO extras (account_id, path, body) VALUES ($a, ?, ?)", path, Py.Dumps(body));

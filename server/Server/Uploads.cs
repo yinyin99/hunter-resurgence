@@ -526,9 +526,8 @@ public sealed class Uploads(State state, string dataDir)
             var merge = model.Identity.Mode == "public" && FromClaim(account, uid);  // the claim's profile stays: the save only adds what it lacked
             var finalId = merge || Store.Played(account) ? account : uid;  // an account that has played keeps its id: what it played stays under it and no restored id can clash with the ids handed out here
             var current = (string)Store.AccountJson(account)["handle"]!;
-            var adopt = !keepHandle && zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
+            var adopt = !merge && !keepHandle && zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
             var handle = adopt ? zipHandle! : current;
-            if (merge) (handle, adopt) = (current, false);
             var summary = merge ? MergeSummary : Summary(model, handle != current, zipHandle is not null && !adopt, keepHandle);
             try
             {
