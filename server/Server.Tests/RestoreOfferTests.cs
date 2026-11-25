@@ -43,6 +43,7 @@ public class RestoreOfferTests : StateTestBase
     [InlineData("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, '{0}', 1, 'n', 0)", "waiting")]
     [InlineData("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, note, keep_handle) VALUES (5, 1, 'h', 1, '{0}', 1, 'n', 0)", "rejected")]
     [InlineData("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 1, 'archive:7', 'm', 'r')", "")]
+    [InlineData("INSERT INTO restore_audit (account_id, ts, zip_sha256, mode, report) VALUES ($a, 1, 'archive:7', 'm', 'r'), ($a, 2, 'abc', 'merge', 'r')", "")]
     public void TestAnArchiveClaimNeverBlocksTheOffer(string insert, string state)
     {
         var store = new Store(Path.Combine(tmp, "claim.db"));

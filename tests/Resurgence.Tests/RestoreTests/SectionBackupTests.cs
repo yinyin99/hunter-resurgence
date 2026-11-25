@@ -26,6 +26,9 @@ sealed class SectionZip
     /// <summary>The index.json text as it is, when a test needs one no JsonObject can hold.</summary>
     public string? IndexText;
 
+    /// <summary>A public profile's folder: no index.json.</summary>
+    public bool NoIndex;
+
     public byte[] Build()
     {
         Index["files"] ??= new JsonArray([.. sections.Select(s => (JsonNode?)s.Name)]);
@@ -33,7 +36,7 @@ sealed class SectionZip
         using (var z = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
             void Put(string name, byte[] body) { using var s = z.CreateEntry(name).Open(); s.Write(body); }
-            Put(Prefix + "index.json", Encoding.UTF8.GetBytes(IndexText ?? Index.ToJsonString()));
+            if (!NoIndex) Put(Prefix + "index.json", Encoding.UTF8.GetBytes(IndexText ?? Index.ToJsonString()));
             foreach (var (name, body) in sections) Put(Prefix + name, body);
             foreach (var (name, body) in Raw) Put(name, body);
         }
@@ -105,6 +108,66 @@ public class SectionBackupTests
         return z;
     }
 
+    /// <summary>A public save: a folder `tool_public_<handle>` with no index.json and no `me` section.</summary>
+    static SectionZip PublicSave(string folder = "tool_public_sample/", string profile = """{"id":1001,"handle":"Sample","hostname":"sample","hunterscore":1234}""") =>
+        new SectionZip { Prefix = folder, NoIndex = true }.Section("profile", profile).Section("trophies", Trophies).Section("expeditions", Expeditions)
+            .Section("hunt_details", $$"""{"9100":{{Hunt}}}""").Section("gallery", Gallery);
+
+    [Fact]
+    public void PublicSaveWithoutAnIndexReadsWithTheIdOfItsProfile()
+    {
+        var read = PublicSave().Read();
+        Assert.Equal(Uid, read.Model.Identity.Uid);
+        Assert.Equal("sample", read.Model.Identity.Handle);
+        Assert.Equal("public", read.Model.Identity.Mode);
+        Assert.Null(read.Model.Identity.SteamId64);
+        Assert.Null(read.Model.Wallet);
+        Assert.Single(read.Model.Trophies);
+        Assert.Contains(read.Model.Extras.Keys, k => k.StartsWith("Public_user_expedition", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void CompetitionsAndLodgeContentsOfAPublicSaveReadToTheirEndpoints()
+    {
+        var read = PublicSave().Section("competitions_previous", """{"competitions":[{"id":5}],"total":1}""")
+            .Section("competition_pages", """{"5":{"info":[{"id":5}],"entrants":[],"entrants_total":0},"6":{"info":[{"id":6}],"entrants":[],"entrants_total":0}}""")
+            .Section("lodge_contents", """{"61":{"id":61,"animal_slots":[]}}""").Read();
+        var extras = read.Model.Extras;
+        Assert.Contains("Page_content_list_previous_competitions.json", extras.Keys);
+        Assert.Contains("Page_content_competitions_new__competition_id=5.json", extras.Keys);
+        Assert.Contains("Page_content_competitions_new__competition_id=6.json", extras.Keys);
+        var lodge = Assert.Single(read.Model.Lodges.Where(l => l.Source == "/game/user/lodge"));
+        Assert.Equal("61", lodge.Id);
+        Assert.Contains("animal_slots", lodge.Node!.ToJsonString());
+        Assert.Empty(read.Report.Rejected);
+    }
+
+    [Fact]
+    public void LodgeListAndItsContentsAreTheTwoRowsOfOneLodge()
+    {
+        var read = PublicSave().Section("v2_lodges", """[{"id":61,"name":"Lodge"}]""").Section("lodge_contents", """{"61":{"id":61,"name":"Lodge","animal_slots":[{"slot_id":1}]}}""").Read();
+        // the server keeps a lodge as two rows, as a new lodge gets them: the list's entry and the single lodge with its slots
+        var rows = read.Model.Lodges.Select(l => (l.Source, l.Id)).ToList();
+        Assert.Equal([("/game/user/lodge", "61"), ("/game/user/lodges", "61")], rows);
+        Assert.Contains("animal_slots", read.Model.Lodges.Single(l => l.Source == "/game/user/lodge").Node!.ToJsonString());
+        Assert.DoesNotContain("animal_slots", read.Model.Lodges.Single(l => l.Source == "/game/user/lodges").Node!.ToJsonString());
+    }
+
+    [Fact]
+    public void PublicSaveOneLevelDownAndTheV2ProfileIdRead()
+    {
+        var z = PublicSave("saves/tool_public_sample/", """{"hostname":"sample"}""").Section("v2_profile", """{"id":1001,"hunterscore":1}""");
+        Assert.Equal(Uid, z.Read().Model.Identity.Uid);
+    }
+
+    [Fact]
+    public void PublicSaveWhoseHandleIsNotItsProfilesIsRefused() =>
+        Assert.Contains("hostname", PublicSave("tool_public_other/").Refused());
+
+    [Fact]
+    public void PublicSaveWithNoReadableIdIsRefused() =>
+        Assert.Contains("no readable user id", PublicSave(profile: """{"hostname":"sample"}""").Refused());
+
     static string Json(object o) => JsonSerializer.Serialize(o, Importer.Json);
 
     [Fact]
@@ -168,7 +231,7 @@ public class SectionBackupTests
     [Fact]
     public void SectionsWithoutAnEndpointAreKeptAndWhatIsOutsideTheFolderIsIgnored()
     {
-        var z = Sections().Section("observed", """{"me/me":{"a":1}}""").Section("competitions_list", "[]")
+        var z = Sections().Section("observed", """{"me/me":{"a":1}}""").Section("results", "[]")
             .Section("gallery_all", """{"photos":["https://photos.example/p/b.jpg"]}""");
         z.Raw.Add(("backup_1001_converted/json_account.json", """{"made":"up"}"""u8.ToArray()));
         z.Raw.Add(("backup_1001_converted/README.txt", "made up"u8.ToArray()));
@@ -176,7 +239,7 @@ public class SectionBackupTests
         Assert.Empty(r.Report.Rejected);
         Assert.Empty(r.Report.Missing.Where(x => x.Contains("index.json")));
         Assert.Equal("""{"me/me":{"a":1}}""", r.Model.Extras["json_observed.json"]!.ToJsonString());
-        Assert.Contains("json_competitions_list.json", r.Model.Extras.Keys);
+        Assert.Contains("json_results.json", r.Model.Extras.Keys);
         Assert.Equal("""{"photos":["https://photos.example/p/b.jpg"]}""", r.Model.Extras["Gallery_list_all.json"]!.ToJsonString());
         Assert.Contains("unknown endpoint: 2 file(s), kept in Extras", r.Report.Unsupported);
         Assert.Contains("/v1/Gallery/list_all: 1 file(s), kept in Extras", r.Report.Unsupported);
@@ -262,7 +325,7 @@ public class SectionBackupTests
         var twice = Sections();
         twice.Raw.Add(("backup_2002/index.json", """{"user_id":"2002","files":[]}"""u8.ToArray()));
         twice.Raw.Add(("backup_2002/json_me.json", "{}"u8.ToArray()));
-        Assert.Equal("more than one folder with an index.json: a backup holds one", twice.Refused());
+        Assert.Equal("more than one folder with an index.json or a public profile: a backup holds one", twice.Refused());
     }
 
     [Fact]
