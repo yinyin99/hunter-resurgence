@@ -62,10 +62,12 @@ public sealed partial class State
 
     /// <summary>Rows in the connect reply's inventory.items shape (guid as a string). A placed item keeps its
     /// `position` and `direction` in the metadata under <see cref="POSITION"/> and <see cref="DIRECTION"/>; they leave it
-    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped. A hidden lodge stack (<see cref="HIDDEN"/>) is left out unless <paramref name="all"/>.</summary>
-    public static JsonArray Items(Db con, bool all = false) => new(con.Rows($"SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a AND {(all ? "1" : Shown)} ORDER BY guid").Select(r =>
+    /// here as the row's own members. The row has no reserve: <see cref="RESERVE"/> is dropped. A hidden lodge stack (<see cref="HIDDEN"/>) is left out unless <paramref name="all"/>.
+    /// A feeder's shown fields are those of the time <paramref name="now"/> (<see cref="Feeders.Refresh"/>).</summary>
+    public static JsonArray Items(Db con, double now, bool all = false) => new(con.Rows($"SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a AND {(all ? "1" : Shown)} ORDER BY guid").Select(r =>
     {
         var metadata = JsonNode.Parse((string)r[3])!.AsObject();
+        Feeders.Refresh(metadata, now);
         var row = new JsonObject { ["item_id"] = Py.FromSql(r[1]), ["slot"] = Py.FromSql(r[2]), ["guid"] = Py.Str(Py.FromSql(r[0])) };
         metadata.Remove(RESERVE);
         metadata.Remove(CLONE);
@@ -164,14 +166,14 @@ public sealed partial class State
     /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
-    /// stamina) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
+    /// stamina; a feeder's `bait_amount` is a refill, <see cref="Feeders.Refill"/>) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
     /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
     /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).
     /// credit (<see cref="TryCredit"/>) is asked for each harvest (event 3) with the connection and the event's stored row: true when the harvest is not this account's (the shooter's, written in this transaction, or a second one of the animal) and is dropped here;
-    /// false (also when the shooter's write failed and was undone) leaves it the account's.</summary>
+    /// false (also when the shooter's write failed and was undone) leaves it the account's. isFeeder(item id) is true for a feeder, the items whose event 23 `bait_amount` is a refill.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
@@ -179,7 +181,7 @@ public sealed partial class State
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
                                       double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
-                                      Func<Db, JsonObject, long, bool>? credit = null)
+                                      Func<Db, JsonObject, long, bool>? credit = null, Func<long, bool>? isFeeder = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -244,6 +246,18 @@ public sealed partial class State
                             updates.Add(new JsonObject { ["amount"] = balance, ["type"] = "gm", ["update"] = 15 });
                         if (Py.D(xp) < old) metadata["experience"] = old;
                     }
+                }
+                if (metadata.ContainsKey("bait_amount")
+                    && con.Rows($"SELECT item_id, metadata FROM items WHERE account_id = $a AND guid = ? AND {Shown}", long.Parse(Py.Str(e["item"]))).FirstOrDefault() is { } feeder
+                    && isFeeder?.Invoke((long)feeder[0]) == true)
+                {
+                    // a feeder (its catalogue row has `bait_item`): bait added restarts its timers (Feeders.Refill); the game also sends the amount when it is eaten, which changes nothing; the shown fields come from the model at reply time
+                    metadata = metadata.DeepClone().AsObject();
+                    var added = metadata["bait_amount"];
+                    metadata.Remove("bait_amount");
+                    if (Py.IsNum(added) && Feeders.Refill(Parse(feeder[1]), Math.Clamp(Py.L(added), 0, Feeders.MaxAmount), now) is { } fields)
+                        foreach (var (key, value) in fields)
+                            metadata[key] = value!.DeepClone();
                 }
                 con.Exec($"UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ? AND {Shown}",
                          Py.Dumps(metadata), long.Parse(Py.Str(e["item"])));
@@ -1128,7 +1142,7 @@ public sealed partial class State
         var table = Arr(G(connect, "dog_skills", null)).OfType<JsonObject>().Where(r => Py.IsNum(r["xp"]) && Py.IsNum(r["lvl"])).OrderBy(r => Py.D(r["xp"])).ToList();
         using var con = Con(account);
         var dogs = new JsonArray();
-        foreach (var row in Items(con).OfType<JsonObject>())
+        foreach (var row in Items(con, Clock()).OfType<JsonObject>())
         {
             var item = items.GetValueOrDefault(Py.L(row["item_id"]));
             if (item is null || !Is(G(item, "cat", null), DogCategory) || !Is(G(item, "type", null), DogType)) continue;
@@ -1374,7 +1388,7 @@ public sealed partial class State
         using (var con = Con(account))
         {
             con.Begin();  // items read and their pending update 10 dropped atomically: a buy in between is not lost
-            rows = Items(con);
+            rows = Items(con, Clock());
             if (AllLicenses)
                 UnlimitedLicenses(rows);
             // the game adds the capacity of every owned Increased Capacity row, so a second copy would add 10 more: it gets one
@@ -1917,7 +1931,7 @@ public sealed partial class State
     public JsonArray Inventory(long account)
     {
         using var con = Con(account);
-        return Items(con, all: true);
+        return Items(con, Clock(), all: true);
     }
 
     public JsonObject Wallet(long account)
@@ -2161,7 +2175,7 @@ public sealed partial class State
             updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                 (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()),
-                                (c, e, id) => TryCredit(c, e, id, shooters));
+                                (c, e, id) => TryCredit(c, e, id, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
         }
         finally
         {
