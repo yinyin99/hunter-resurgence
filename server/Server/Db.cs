@@ -21,6 +21,7 @@ public sealed class Db : IDisposable
 
     readonly SqliteConnection con;
     readonly long? account;
+    readonly bool owns = true;
     bool inTx;
 
     /// <summary>The account this connection serves, null for the shared tables only (accounts, tokens).</summary>
@@ -43,6 +44,17 @@ public sealed class Db : IDisposable
         }
     }
 
+    Db(SqliteConnection shared, long account)
+    {
+        con = shared;
+        this.account = account;
+        owns = false;
+    }
+
+    /// <summary>This connection, and the transaction it is in, as another account's: `$a` is `other` in what is run through the result, which is the one way a change spans two accounts in one transaction.
+    /// It must not outlive this Db, which owns the connection and the transaction (a view's Begin and Commit throw).</summary>
+    public Db Sharing(long other) => new(con, other);
+
     /// <summary>Run statements as written, no account check: the schema and the pragmas.</summary>
     internal void Script(string sql)
     {
@@ -53,12 +65,14 @@ public sealed class Db : IDisposable
 
     public void Begin()
     {
+        if (!owns) throw new InvalidOperationException("a shared view takes part in its owner's transaction");
         Script("BEGIN IMMEDIATE");
         inTx = true;
     }
 
     public void Commit()
     {
+        if (!owns) throw new InvalidOperationException("a shared view takes part in its owner's transaction");
         Script("COMMIT");
         inTx = false;
     }
@@ -128,6 +142,8 @@ public sealed class Db : IDisposable
 
     public void Dispose()
     {
+        if (!owns)
+            return;
         if (inTx)
             try { Script("ROLLBACK"); }
             catch (SqliteException) { }  // the connection is closed below either way

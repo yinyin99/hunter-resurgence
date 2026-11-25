@@ -172,14 +172,17 @@ public sealed partial class State
         yield return $"{(apply ? "reopened" : "would reopen")} {objectivesTotal} objectives in {missionsTotal} missions; kept: not understood {notUnderstood} finished objectives" + (apply ? "" : " (dry run: nothing written, --apply writes)");
     }
 
-    (List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated, int KeptNotUnderstood) RollbackAccount(Db con, bool apply)
+    /// <summary>The rollback of one account. With `moving` (the id of a harvest event that leaves the account, <see cref="MoveMpHarvests"/>; `gone`: the ones that left before it, which a dry run still sees) only the objectives
+    /// the stored events meet now and meet no more without that event are reopened: what that harvest finished, not whatever today's rules do not meet.</summary>
+    (List<(long Mission, long Was, List<long> Objectives)> Reopened, List<long> Activated, int KeptNotUnderstood) RollbackAccount(Db con, bool apply, long? moving = null, ISet<long>? gone = null)
     {
         var reopened = new List<(long Mission, long Was, List<long> Objectives)>();
         if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
             return (reopened, [], 0);
         var (rows, marks) = (MissionRows(con), Marks(con));
         var before = Available(rows).Select(m => m.Id).ToList();
-        var events = new Lazy<List<Recorded>>(() => RecordedOf(con, 0));
+        var events = new Lazy<List<Recorded>>(() => [.. RecordedOf(con, 0).Where(h => gone is null || !gone.Contains(h.Id))]);
+        var without = new Lazy<List<Recorded>>(() => [.. events.Value.Where(h => h.Id != moving)]);
         var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
         var notUnderstood = 0;
         foreach (var (id, (state, done)) in rows)
@@ -192,6 +195,12 @@ public sealed partial class State
             if (checkable.Count == 0)
                 continue;
             var drop = checkable.Where(d => !met.Any(x => x.Objective.Id == d)).ToList();
+            if (moving is not null)  // what the leaving harvest finished: met with it, not met without it
+            {
+                var after = JudgeMission(m, state, done, mark, without, hunts).Met;
+                drop = checkable.Where(d => met.Any(x => x.Objective.Id == d) && !after.Any(x => x.Objective.Id == d)).ToList();
+                met = after;
+            }
             if (drop.Count == 0)
                 continue;
             reopened.Add((id, state, drop));

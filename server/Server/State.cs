@@ -169,14 +169,17 @@ public sealed partial class State
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
     /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
-    /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).</summary>
+    /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).
+    /// credit (<see cref="TryCredit"/>) is asked for each harvest (event 3) with the connection and the event's stored row: true when the harvest is not this account's (the shooter's, written in this transaction, or a second one of the animal) and is dropped here;
+    /// false (also when the shooter's write failed and was undone) leaves it the account's.</summary>
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
-                                      double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null)
+                                      double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
+                                      Func<Db, JsonObject, long, bool>? credit = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -193,6 +196,11 @@ public sealed partial class State
             if (node is not JsonObject e) continue;
             JsonNode? species = null;
             var eventId = con.Insert("INSERT INTO events (account_id, event, body, ts) VALUES ($a, ?, ?, ?)", e["event"], Py.Dumps(e), now);
+            if (Is(e["event"], 3) && credit?.Invoke(con, e, eventId) == true)
+            {
+                con.Exec("DELETE FROM events WHERE account_id = $a AND id = ?", eventId);  // not this account's harvest: nothing of it stays here
+                continue;
+            }
             if (Is(e["event"], 1) || Is(e["event"], 11) || Is(e["event"], 12))
             {
                 var row = con.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ?"
@@ -257,41 +265,7 @@ public sealed partial class State
             else if (Is(e["event"], 33))
                 MoveUnits(con, e);
             else if (Is(e["event"], 3))
-            {
-                var harvest = Py.Dumps(e);
-                var killId = Math.Max(NextId(con, "kills", "kill_id"), (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/game/user/harvest')")!);
-                killId = Math.Max(killId, (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(s.value, '$.trophy_id') AS INTEGER)), 0) + 1 FROM lodges l, json_each(l.node, '$.animal_slots') s WHERE l.account_id = $a")!);
-                // a new kill id is above every restored harvest id and every animal of a restored lodge. ponytail: kills that already exist, and kills made before a later restore, are not renumbered
-                con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
-                         killId, e["individual"], e["extended_species"], harvest);
-                var (e7, disqualified, score, scoreType, css) = ScoreKill(con, e, harvest, trophy, ammoCheck);
-                var baseCss = css;  // what the harvest pays without the bonus
-                css = Py.Round(css * gmMultiplier, 1);  // the confirm-kill screen's "Reward" is round(css): the bonus shows there as it is paid
-                var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
-                con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
-                    e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
-                // a harvest in a hunt that already closed (a heartbeat after its close): its statistics are counted again
-                con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND id = ? AND end_ts IS NOT NULL", Py.FromSql(expedition?[0]));
-                var update = new JsonObject
-                {
-                    ["individual"] = C(e["individual"]),
-                    ["trophy_shot"] = disqualified ? 0 : 1,
-                    ["score_text"] = disqualified ? "Disqualified " : Py.Truthy(score) ? $"Score: {Py.Fixed(Py.D(score), 4)}" : "No score",
-                    ["update"] = 6,
-                    ["score_type"] = scoreType,
-                    ["score"] = disqualified ? (JsonNode)(-1) : Py.Truthy(score) ? C(score) : 0,
-                    ["kill_id"] = killId,
-                    ["css"] = css,
-                };
-                con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
-                if (Py.RoundInt(css) > 0)
-                    updates.Add(new JsonObject
-                    {
-                        ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})", null,
-                                                 gmMultiplier == 1 ? null : Py.RoundInt(Py.Round(baseCss, 1)), gmMultiplier == 1 ? null : gmEvent),
-                        ["type"] = "gm", ["update"] = 15,
-                    });
-            }
+                StoreHarvest(con, e, trophy, ammoCheck, harvestPage, gmMultiplier, gmEvent, gold => updates.Add(gold));
             else if (Is(e["event"], 4))
             {
                 var photoId = con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, spawn)"
@@ -320,6 +294,56 @@ public sealed partial class State
         }
         con.Commit();
         return updates;
+    }
+
+    /// <summary>The id of the account's next kill: above its kills, every restored harvest id, every animal of a restored lodge, every kill a gm$ payment row (`CSS Reward (Animal Id: n)`) or a restored picture names (a harvest
+    /// moved to another player, <see cref="MoveMpHarvests"/>, leaves its payment behind: its id is not given again). ponytail: kills that already exist, and kills made before a later restore, are not renumbered.</summary>
+    static long NextKillId(Db con) => new[]
+    {
+        NextId(con, "kills", "kill_id"),
+        (long)con.Scalar("SELECT COALESCE(MAX(CAST(id AS INTEGER)), 0) + 1 FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/game/user/harvest')")!,
+        (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(s.value, '$.trophy_id') AS INTEGER)), 0) + 1 FROM lodges l, json_each(l.node, '$.animal_slots') s WHERE l.account_id = $a")!,
+        (long)con.Scalar("SELECT COALESCE(MAX(CAST(substr(summary, 24) AS INTEGER)), 0) + 1 FROM wallet_log WHERE account_id = $a AND summary LIKE 'CSS Reward (Animal Id: %'")!,
+        (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(saved, '$.kill_id') AS INTEGER)), 0) + 1 FROM photos WHERE account_id = $a AND saved IS NOT NULL")!,
+    }.Max();
+
+    /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
+    /// `spawn` stands in for the animal's spawn event when the account's own events have none.</summary>
+    static void StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
+                             Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
+                             Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null)
+    {
+        var harvest = Py.Dumps(e);
+        var killId = NextKillId(con);
+        con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
+                 killId, e["individual"], e["extended_species"], harvest);
+        var (e7, disqualified, score, scoreType, css) = ScoreKill(con, e, harvest, trophy, ammoCheck, spawn);
+        var baseCss = css;  // what the harvest pays without the bonus
+        css = Py.Round(css * gmMultiplier, 1);  // the confirm-kill screen's "Reward" is round(css): the bonus shows there as it is paid
+        var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+        con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
+            e, e7, Py.FromSql(expedition?[0]), Py.FromSql(expedition?[1]), score, scoreType)));
+        // a harvest in a hunt that already closed (a heartbeat after its close): its statistics are counted again
+        con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND id = ? AND end_ts IS NOT NULL", Py.FromSql(expedition?[0]));
+        var update = new JsonObject
+        {
+            ["individual"] = C(e["individual"]),
+            ["trophy_shot"] = disqualified ? 0 : 1,
+            ["score_text"] = disqualified ? "Disqualified " : Py.Truthy(score) ? $"Score: {Py.Fixed(Py.D(score), 4)}" : "No score",
+            ["update"] = 6,
+            ["score_type"] = scoreType,
+            ["score"] = disqualified ? (JsonNode)(-1) : Py.Truthy(score) ? C(score) : 0,
+            ["kill_id"] = killId,
+            ["css"] = css,
+        };
+        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
+        if (Py.RoundInt(css) > 0)
+            gold(new JsonObject
+            {
+                ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})", null,
+                                         gmMultiplier == 1 ? null : Py.RoundInt(Py.Round(baseCss, 1)), gmMultiplier == 1 ? null : gmEvent),
+                ["type"] = "gm", ["update"] = 15,
+            });
     }
 
     /// <summary>The guid of an item event's `item` (a string of digits), else null.</summary>
@@ -365,9 +389,11 @@ public sealed partial class State
     /// The heartbeat and <see cref="Rescore"/> both use it.</summary>
     public static (JsonObject E7, bool Disqualified, JsonNode? Score, string? Type, double Css) ScoreKill(
         Db con, JsonObject e3, string harvest, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-        Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck)
+        Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck, JsonObject? spawn = null)
     {
         var (e7, e22) = KillEvents(con, e3["individual"], harvest);
+        if (e7.Count == 0 && spawn is not null)
+            e7 = spawn;  // a harvest moved to its shooter, whose own events have no spawn of the animal: the harvester's (<see cref="CreditHarvest"/>)
         var hits = KillHits(con, e3["individual"], harvest);
         var disqualified = hits.Any(h => ammoCheck(h, e7["species"]) is not null);
         var (score, type, css) = disqualified ? (null, null, 0.0) : trophy(e3, e7, e22, hits.Count > 0 ? hits[^1] : null);
@@ -2125,9 +2151,26 @@ public sealed partial class State
         }
         NoteNetwork(account, events, positions);
         using var con = Con(account);
-        var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
-                               id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()));
+        var harvesting = events.OfType<JsonObject>().Any(e => Is(e["event"], 3));
+        if (harvesting)
+            Monitor.Enter(harvestGate);  // a harvest's owner is read from the players' stored events: two harvests of one animal at once must not both miss the other
+        JsonArray updates;
+        List<long> shooters = [];
+        try
+        {
+            updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
+                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
+                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()),
+                                (c, e, id) => TryCredit(c, e, id, shooters));
+        }
+        finally
+        {
+            if (harvesting)
+                Monitor.Exit(harvestGate);
+        }
+        foreach (var shooter in shooters.Distinct())
+            using (var theirs = Con(shooter))  // the shooter's hunterscore follows its harvest (the rows are committed with this heartbeat)
+                UpdateHunterscore(theirs, shooter, closing: theirs.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null);
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null)
             UpdateHunterscore(con, account);
