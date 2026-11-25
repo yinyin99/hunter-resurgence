@@ -15,8 +15,20 @@ public sealed record Progress(int Score, int Max, int Rank, Achievement? Latest)
 public sealed record Challenge(string Title, string Description);
 public sealed record AchievementSummary(IReadOnlyList<RankBar> Categories, int Unlocked, IReadOnlyList<Achievement> Recent);
 /// <summary>A row of milestones: <see cref="Steps"/> are the goals, <see cref="Value"/> the player's count, <see cref="Done"/> of the steps reached;
-/// <see cref="Icon"/> the achievement's picture path without extension (the live site), null on the mock.</summary>
-public sealed record Milestone(string Title, int Done, IReadOnlyList<int> Steps, int Value, string? Icon = null);
+/// <see cref="Icon"/> the achievement's picture path without extension (the live site), null on the mock; <see cref="StepTitle"/> and <see cref="StepText"/> the
+/// catalogue's texts of a step, "%d" standing for its threshold.</summary>
+public sealed record Milestone(string Title, int Done, IReadOnlyList<int> Steps, int Value, string? Icon = null, string StepTitle = "", string StepText = "")
+{
+    /// <summary>Step <paramref name="i"/>'s progress: a reached step is full; the next one counts from the step before it (1424 h of 8760 after 720 is 704 of 8040);
+    /// a later one counts from 0 (<see cref="Value"/> of its threshold). <c>Percent</c> is rounded, at most 99 for a step not reached.</summary>
+    public (bool Reached, int Have, int Need, int Percent) Progress(int i)
+    {
+        if (i < Done) return (true, Steps[i], Steps[i], 100);
+        var prev = i == Done && i > 0 ? Steps[i - 1] : 0;
+        var (have, need) = (Math.Max(Value - prev, 0), Steps[i] - prev);
+        return (false, have, need, Math.Min((int)Math.Round(100.0 * have / Math.Max(need, 1), MidpointRounding.AwayFromZero), 99));
+    }
+}
 /// <summary>A round gauge: Spotting, Tracking or Shooting, its level and the percent to the next level.</summary>
 public sealed record SkillRing(string Label, int Level, int Percent);
 /// <summary>A skill card; weapon skills have a <see cref="Group"/> (the weapon category).</summary>

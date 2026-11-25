@@ -332,7 +332,7 @@ public sealed class LiveSiteTests : UiContext
     {
         const string header = """{"handle":"Fox","hunterscore":5,"rank":3}""";
         const string achievements = """{"categories":[{"name":"Animals","level":1,"done":4,"total":5}],"unlocked":4,"recent":[{"title":"25 Mule Deer","description":"25 Mule Deer harvested.","date":"2023-11-15"}]}""";
-        const string ranks = """{"cap":1000,"ranks":[],"milestones":[{"category":"weapons","title":"Test Rifle","icon":"1/82_90","steps":[1,25],"value":3}]}""";
+        const string ranks = """{"cap":1000,"ranks":[],"milestones":[{"category":"weapons","title":"Test Rifle","stepTitle":"%d Test Rifle","stepText":"%d Test Rifle harvests in the reserve.","icon":"1/82_90","steps":[1,25],"value":3}]}""";
         Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server(header, "{}", ranks: ranks, achievements: achievements)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
@@ -344,6 +344,13 @@ public sealed class LiveSiteTests : UiContext
         cut = Render<AchievementsTab>(p => p.Add(a => a.Handle, "Fox").Add(a => a.Sub, "weapons"));
         cut.WaitForAssertion(() => Assert.Contains("Test Rifle", cut.Find("div.row h4").TextContent));
         Assert.Contains("ach-icon-1/82_90", cut.Find("div.row").TextContent);  // the labelled box names its slot
+        var tips = cut.FindAll(".steps > span");  // a focusable step names its tooltip: the texts with the threshold, then Done or the progress within the step
+        Assert.All(tips, s => Assert.Equal("0", s.GetAttribute("tabindex")));
+        Assert.Equal(["1 Test Rifle", "25 Test Rifle"], tips.Select(s => s.QuerySelector("b")!.TextContent));
+        Assert.Equal("25 Test Rifle harvests in the reserve.", tips[1].QuerySelectorAll("span")[0].TextContent);
+        Assert.Contains("2/24 (8%)", tips[1].QuerySelector(".tip")!.TextContent);
+        Assert.Equal(tips[1].GetAttribute("aria-describedby"), tips[1].QuerySelector(".tip")!.Id);
+        Assert.Null(tips[0].QuerySelector(".meter"));
     }
 
     /// <summary>The profile of <see cref="Inner"/> with only <see cref="Tabs"/> shown.</summary>

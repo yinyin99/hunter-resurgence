@@ -1631,4 +1631,5 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Exit.Report" xml:space="preserve"><value>Enviar um relatório do problema</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Abrir a Segurança do Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>A pasta do jogo não tem componentes para instalar: verifique o jogo no Steam.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Concluído</value></data>
 </root>

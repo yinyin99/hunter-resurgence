@@ -1631,4 +1631,5 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Exit.Report" xml:space="preserve"><value>Wyślij zgłoszenie problemu</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Otwórz Zabezpieczenia Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folder gry nie zawiera składników do zainstalowania: zweryfikuj grę w Steamie.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Gotowe</value></data>
 </root>

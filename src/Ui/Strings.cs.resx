@@ -1631,4 +1631,5 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Exit.Report" xml:space="preserve"><value>Odeslat hlášení o problému</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Otevřít Zabezpečení Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Složka hry neobsahuje žádné součásti k instalaci: ověřte hru ve Steamu.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Hotovo</value></data>
 </root>

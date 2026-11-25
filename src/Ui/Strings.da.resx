@@ -1631,4 +1631,5 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Exit.Report" xml:space="preserve"><value>Send en problemrapport</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Åbn Windows-sikkerhed</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Spilmappen har ingen komponenter at installere: bekræft spillets filer i Steam.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Færdig</value></data>
 </root>
