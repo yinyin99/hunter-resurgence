@@ -307,9 +307,21 @@ public class LauncherBridgeTests
     }
 
     /// <summary>A bridge whose starts end as the test says (Steam installed and signed in); the watch must never look the game up by name.</summary>
-    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null, ServerClock? clock = null) =>
+    static LauncherBridge Watching(Start s, Func<ProcessStartInfo, GameProcess?> start, RunHistory? history = null, TimeSpan? earlyWithin = null, SteamProbes? steam = null, ServerClock? clock = null, Func<bool>? startWithSteam = null) =>
         new(() => new(Path.GetDirectoryName(s.Exe)!, s.Exe), Rest, _ => false, i => { s.Started.Add(i); return start(i); }, steam ?? LauncherFakes.Signed, "123", poll: TimeSpan.FromMilliseconds(1), quitWithin: TimeSpan.FromMilliseconds(20),
-            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin, clock: clock);
+            find: _ => throw new InvalidOperationException("a game with a handle is never looked up by name"), history: history, earlyWithin: earlyWithin, clock: clock, startWithSteam: startWithSteam);
+
+    [Theory]
+    [InlineData(true, "steam")]
+    [InlineData(false, "nosteam")]
+    public void TheStartWithSteamBoxDecidesTheMode(bool box, string mode)
+    {
+        using var s = new Start();
+        var b = Watching(s, _ => new GameProcess(() => true, () => null), startWithSteam: () => box);
+        Assert.True(b.StartGame("srv://x").Ok);
+        Assert.Equal([mode], s.Modes);
+        Assert.Equal(box, s.Started[0].Arguments.EndsWith(" /steam"));
+    }
 
     [Fact]
     public async Task AfterA16010FallbackTheWatchFollowsTheRetryAndTheExitedFirstProcessIsIgnored()

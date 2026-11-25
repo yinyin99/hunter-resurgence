@@ -6,7 +6,7 @@ namespace Resurgence.Launcher;
 /// <summary>
 /// The Game settings dialog on the game's real files (<see cref="GameFiles"/>). Nothing is written while the client runs. The client reads another graphics file with <c>/steam</c> than without
 /// (<see cref="Settings.GraphicsFileNoSteam"/>): the file of the mode the game starts in is read and written, both when <paramref name="plannedMode"/> cannot tell
-/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null). The display mode is <see cref="Prefs.DisplayMode"/>: the file only knows fullscreen on or off, and Borderless writes it windowed at the size of
+/// (<see cref="SteamProbes.PlannedMode"/>: "nosteam" or null). With <see cref="Prefs.StartWithSteam"/> off only the no-Steam file counts. The display mode is <see cref="Prefs.DisplayMode"/>: the file only knows fullscreen on or off, and Borderless writes it windowed at the size of
 /// <paramref name="monitor"/> (the primary display's mode, where the game starts).
 /// </summary>
 public sealed class GameSettingsService(Settings settings, Prefs prefs, string appData, Action savePrefs, Func<string?>? plannedMode = null, Func<(int W, int H, int Hz)?>? monitor = null) : IGameSettingsService
@@ -14,14 +14,14 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     static readonly GameOptions None = new(DisplayMode.Borderless, false, new(0, 0, 0), 0, 0, 0, 0, 0, null, null);
 
     /// <summary>The graphics files the game may start with, the one of <c>/steam</c> first.</summary>
-    IEnumerable<string> GraphicsPaths() => settings.StartGraphicsFiles(plannedMode?.Invoke()).Select(f => Path.Combine(appData, f));
+    IEnumerable<string> GraphicsPaths(bool withSteam) => settings.StartGraphicsFiles(withSteam ? plannedMode?.Invoke() : "nosteam").Select(f => Path.Combine(appData, f));
 
     string? OptionsPath => settings.OptionsFile is { } f && settings.OptionsKeyPrefix is not null ? Path.Combine(appData, f) : null;
 
     public Task<GameSettings> ReadAsync()
     {
         var modes = GameFiles.DisplayModes().Select(m => new Resolution(m.W, m.H, m.Hz)).ToList();
-        var paths = GraphicsPaths().ToList();
+        var paths = GraphicsPaths(prefs.StartWithSteam).ToList();
         if (paths.Count == 0) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.NotConfigured"));
         GraphicsSettings? g = null;
         foreach (var gp in paths)
@@ -36,7 +36,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         g ??= GameFiles.DefaultGraphics();  // the game never writes this file: Save creates it
         // the options file is optional: without it the contextual help switch is simply not offered
         var o = OptionsPath is { } op ? GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value : null;
-        var options = Native(ToOptions(g, o, mode));
+        var options = Native(ToOptions(g, o, mode)) with { StartWithSteam = prefs.StartWithSteam };
         if (!modes.Contains(options.Resolution)) modes = [.. modes.Append(options.Resolution).OrderBy(m => (m.Width, m.Height, m.Hz))];
         return Task.FromResult(new GameSettings(options, modes, VideoMemoryMb()));
     }
@@ -82,7 +82,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         options = Native(options);
         try
         {
-            var paths = GraphicsPaths().ToList();
+            var paths = GraphicsPaths(options.StartWithSteam).ToList();
             if (paths.Count == 0) return Task.FromResult(Result.Fail("GameSettings.NotConfigured"));
             // every file the game may start with gets the choices, so they apply either way; each keeps what the dialog does not show
             var read = paths.Select(gp => (gp, GameFiles.ReadGraphics(gp))).ToList();
@@ -97,6 +97,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
             }
             prefs.GameSettingsSaved = true;
             prefs.DisplayMode = options.Display;
+            prefs.StartWithSteam = options.StartWithSteam;
             savePrefs();
             return Task.FromResult(Result.Success);
         }

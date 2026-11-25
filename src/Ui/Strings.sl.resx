@@ -1632,4 +1632,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Odpri Varnost sistema Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Mapa igre nima komponent za namestitev: preverite igro v Steamu.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Končano</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Zaženi igro prek Steama</value></data>
 </root>

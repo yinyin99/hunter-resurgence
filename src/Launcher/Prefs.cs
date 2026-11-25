@@ -16,6 +16,8 @@ public sealed class Prefs
     /// <summary>Install folder chosen by hand; wins over detection while the client is found in it.</summary>
     public string? GameFolder { get; set; }
     public bool CloseOnGameStart { get; set; }
+    /// <summary>The Game settings' "Start the game using Steam" box: unchecked, every start goes without Steam (no <c>/steam</c>, Steam is neither started nor waited for).</summary>
+    public bool StartWithSteam { get; set; } = true;
     /// <summary>The Game settings were saved once: the first game start no longer asks for them.</summary>
     public bool GameSettingsSaved { get; set; }
     /// <summary>The Game settings' display mode as stored (<c>borderless</c>, <c>fullscreen</c>, <c>windowed</c>): text, so a value this launcher does not know reads as no choice instead of damaging the whole file.</summary>

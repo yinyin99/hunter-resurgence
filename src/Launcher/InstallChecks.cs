@@ -50,7 +50,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
             portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed,
-            screen: ScreenProbes.Real(s, SteamProbes.Real.PlannedMode, () => env.Prefs.DisplayMode == DisplayMode.Fullscreen));
+            screen: ScreenProbes.Real(s, () => env.Prefs.StartWithSteam ? SteamProbes.Real.PlannedMode() : "nosteam", () => env.Prefs.DisplayMode == DisplayMode.Fullscreen));
     }
 
     /// <summary>Runs the checks off the calling thread.</summary>

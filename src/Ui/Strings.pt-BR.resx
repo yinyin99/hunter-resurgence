@@ -1632,4 +1632,5 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Abrir a Segurança do Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>A pasta do jogo não tem componentes para instalar: verifique o jogo na Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Concluído</value></data>
+  <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Iniciar o jogo usando o Steam</value></data>
 </root>

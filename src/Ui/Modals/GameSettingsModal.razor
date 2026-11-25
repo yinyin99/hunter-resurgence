@@ -1,11 +1,15 @@
 @inject ModalService Modal
 @inject IGameSettingsService Service
+@inject ILauncherBridge Bridge
 
 <div class="gs" role="dialog" aria-modal="true" aria-labelledby="gs-title">
     <h1 id="gs-title">@L[FirstStart ? "GameSettings.Initial" : "GameSettings.Title"]</h1>
     @if (settings is not null)
     {
         <div class="rows">
+            @* the folder in use; the button opens the Game folder window *@
+            <div class="row"><span>@L["Settings.GameFolder"]</span><input id="game-folder-path" class="field line" readonly aria-label="@L["Settings.GameFolder"]" value="@(Bridge.GameInstall.Folder ?? L["GameFolder.None"].Value)" /><button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Choose"]</button></div>
+            <label class="row"><span>@L["GameSettings.StartWithSteam"]</span><input class="tick" type="checkbox" id="start_with_steam" @bind="startWithSteam" /></label>
             <label class="row"><span>@L["GameSettings.Display"]</span>
                 <select class="field-sel" id="window_mode" @bind="display">
                     <option value="@DisplayMode.Borderless">@L["GameSettings.Borderless"]</option>
@@ -48,7 +52,7 @@
 @code {
     GameSettings? settings;
     DisplayMode display;
-    bool vsync;
+    bool vsync, startWithSteam;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
     string? error;
@@ -66,6 +70,7 @@
         var o = settings.Options;
         (display, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
             (o.Display, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
+        startWithSteam = o.StartWithSteam;
     }
 
     RenderFragment Levels(int count) => b =>
@@ -79,7 +84,7 @@
 
     async Task Save()
     {
-        var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio));
+        var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio, startWithSteam));
         if (!result.Ok) { error = result.Error; return; }
         Done?.SetResult(true);
         Modal.Close();
