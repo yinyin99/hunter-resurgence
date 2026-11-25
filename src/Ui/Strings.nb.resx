@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Skriv inn en gyldig e-postadresse.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Feil kode. Prøv igjen.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>SPILL GRATIS</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Følg prosjektet på GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence er under utvikling</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Fellesskapsserveren bygges åpent. Kontoer, gjenoppretting av sikkerhetskopien din og denne nettsiden tar form, og serveren åpner for alle snart.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Offentlig spilling åpner snart.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>De offisielle serverne er stengt</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>De offisielle serverne stengte 11. november 2026. Sikkerhetskopiverktøyet lagret profilen din: inventar, troféer, statistikk og mer. Fellesskapsserveren er åpen nå.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>De offisielle serverne stengte 11. november 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: Spillsjekk og funksjonen «Rapporter et problem» lagt til</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcheren sjekker nå spillet ditt før hver jakt: versjon, filer, mappe, Steam og oppsett. Hvis noe er galt, forteller den hvordan du fikser det. Hvis spillet ikke blir funnet, velg mappen under Innstillinger, Spillmappe. Hvis spillet ikke starter, sender Innstillinger, Rapporter et problem oss loggene dine.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcheren sjekker nå spillet ditt før hver jakt.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Les det her</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Gå på jakt</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ENSPILLER</value></data>

@@ -3,6 +3,7 @@
 @inject ISessionService Sessions
 @inject ModalService Modal
 @inject Branding Brand
+@inject INewsFeedService NewsFeed
 
 <PageTitle>@L["Landing.Heading"]</PageTitle>
 
@@ -25,17 +26,28 @@
         @if (string.IsNullOrWhiteSpace(Ref)) { <OnlineNow Place="1" /> }
     </section>
 }
-<h2 class="latest @(signedIn == false ? "after-hero" : "")">@L["Feed.LatestNews"]</h2>
-<FeedCarousel />
+@if (posts.Count > 0)
+{
+    <h2 class="latest @(signedIn == false ? "after-hero" : "")">@L["Feed.LatestNews"]</h2>
+    <FeedCarousel Posts="posts" />
+}
 <div class="columns">
     <div class="news">
         <h3>@L["Feed.News"]</h3>
-        @foreach (var post in NewsPosts.All)
+        @foreach (var post in posts)
         {
             <article id="@post.Anchor">
-                <h4>@L[$"News.{post.Id}.Title"]</h4>
-                <p class="when">@Fmt.DateTime(post.When)</p>
-                <p class="excerpt">@L[$"News.{post.Id}.Text"] <ExternalLink Key="@post.LinkKey">@L[post.LinkText]</ExternalLink></p>
+                <h4>@Brand.Expand(post.Title)</h4>
+                <p class="when">@Fmt.DateTime(post.Published.UtcDateTime)</p>
+                <NewsBody Text="@Brand.Expand(post.Body)" />
+                @* a link of the project's own (link:<key>) is the one settings.json holds, plain text without it; any other is an https address *@
+                @if (post.Link is { } link && post.LinkText is { } linkText)
+                {
+                    <p class="excerpt">
+                        @if (link.StartsWith(BrandLink, StringComparison.Ordinal)) { <ExternalLink Key="@link[BrandLink.Length..]">@linkText</ExternalLink> }
+                        else if (link.StartsWith("https://", StringComparison.Ordinal)) { <a href="@link" target="_blank" rel="noopener">@linkText</a> }
+                    </p>
+                }
             </article>
         }
     </div>
@@ -45,9 +57,16 @@
 @code {
     [SupplyParameterFromQuery(Name = "ref")] public string? Ref { get; set; }
 
-    bool? signedIn;
+    const string BrandLink = "link:";
 
-    protected override async Task OnInitializedAsync() => signedIn = await Sessions.CurrentAsync() is not null;
+    bool? signedIn;
+    IReadOnlyList<NewsPost> posts = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        signedIn = await Sessions.CurrentAsync() is not null;
+        posts = await NewsFeed.PostsAsync(System.Globalization.CultureInfo.CurrentUICulture.Name);
+    }
 
     void Trailer() => Modal.Show<VideoModal>(new Dictionary<string, object?> { ["Title"] = "Watch the trailer" });
 }

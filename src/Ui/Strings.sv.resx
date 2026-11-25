@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Ange en giltig e-postadress.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Felaktig kod. Försök igen.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>SPELA GRATIS</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Följ projektet på GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence är under utveckling</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Communityservern byggs öppet. Konton, återställning av din säkerhetskopia och den här webbplatsen tar form, och servern öppnar för allmänheten snart.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Öppnar för alla snart.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>De officiella servrarna har stängts</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>De officiella servrarna stängdes den 11 november 2026. Säkerhetskopieringsverktyget sparade din profil: inventarie, troféer, statistik och mer. Community-servern är öppen nu.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>De officiella servrarna stängdes den 11 november 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: Spelkontroll och funktionen ”Rapportera ett problem” tillagda</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launchern kontrollerar nu ditt spel före varje jakt: version, filer, mapp, Steam och inställning. Om något är fel berättar den hur du åtgärdar det. Om spelet inte hittas, välj dess mapp under Inställningar, Spelmapp. Om spelet inte startar skickar Inställningar, Rapportera ett problem dina loggar till oss.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launchern kontrollerar nu ditt spel före varje jakt.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Läs här</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Jaga</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ENSPELARLÄGE</value></data>

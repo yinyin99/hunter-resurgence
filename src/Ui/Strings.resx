@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Please enter a valid email address.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Incorrect code. Please try again.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>PLAY FOR FREE</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Follow the project on GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence is in development</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>The community server is being built in the open. Accounts, restoring your backup and this website are taking shape, and the server opens to the public soon.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Public play opens soon.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>The official servers have closed</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>The official servers closed on 11 November 2026. The backup tool saved your profile: inventory, trophies, statistics and more. The community server is open now.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>The official servers closed on 11 November 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: Game check and "Report a problem" feature added</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>The launcher now checks your game before every hunt: version, files, folder, Steam and setup. If something is wrong, it tells you how to fix it. If the game is not found, choose its folder in Settings, Game Folder. If the game won't start, Settings, Report a problem sends us your logs.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>The launcher now checks your game before every hunt.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Read it here</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Go Hunting</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE PLAYER</value></data>

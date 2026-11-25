@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Introduceți o adresă de e-mail validă.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Cod incorect. Încercați din nou.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>JUCAȚI GRATUIT</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Urmăriți proiectul pe GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence este în dezvoltare</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Serverul comunității este construit în mod deschis. Conturile, restaurarea backup-ului dvs. și acest site prind contur, iar serverul se deschide în curând publicului.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Jocul se deschide în curând.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Serverele oficiale s-au închis</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026. Instrumentul de backup v-a salvat profilul: inventar, trofee, statistici și altele. Serverul comunității este deschis acum.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Serverele oficiale s-au închis la 11 noiembrie 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: verificarea jocului și funcția „Raportează o problemă” adăugate</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcherul vă verifică acum jocul înainte de fiecare vânătoare: versiunea, fișierele, folderul, Steam și configurarea. Dacă ceva nu este în regulă, vă spune cum să remediați. Dacă jocul nu este găsit, alegeți folderul lui în Setări, Folderul jocului. Dacă jocul nu pornește, Setări, Raportează o problemă ne trimite jurnalele dvs.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcherul vă verifică acum jocul înainte de fiecare vânătoare.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Citiți aici</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Mergeți la vânătoare</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>SINGLE-PLAYER</value></data>

@@ -49,6 +49,7 @@ const string AdminUsage = """
     admin message --account <id or handle> "<text>" | admin message --all [--yes] "<text>" puts one unread inbox message from the server's notice sender (the one the review decisions write) in one account's inbox or in every account's: plain text, kept as written, at most 2000 characters.
     --all asks for confirmation with the number of accounts; --yes answers it (needed when the input is not a terminal). The game, the launcher and the website show the message as unread.
     admin messages [--account <id or handle>] lists the replies players left to the server, newest first; admin messages --sent lists what was sent (time, recipient, text), newest first; --account narrows either to one account (--sent: its messages and the ones to everyone).
+    admin news add|list|edit|hide|lang publishes and changes the posts of the website's and the launcher's feed (state.db in the data folder; a running server shows a change within a minute): `admin news` prints its options.
     """;
 
 const string ImportUsage = """
@@ -140,6 +141,14 @@ Replay.HarTable Table(out List<string> hars)
 
 void Admin(string[] a)
 {
+    if (a.Length > 0 && a[0] == "news")
+    {
+        var path = Path.Combine(settings.DataDir, "state.db");
+        if (!File.Exists(path)) Die($"no database at {path}: the server has not run here yet");
+        var code = NewsCommand.Run(a[1..], new News(new Store(path), settings.DataDir), settings.Cfg, Console.Out, Console.Error, Console.In);
+        if (code != 0) Environment.Exit(code);
+        return;
+    }
     if (a.Length > 0 && a[0] == "rescore")
     {
         if (AdminApi.ParseRescoreArgs(a[1..]) is not var (name, kill, apply)) { Die(AdminUsage); return; }

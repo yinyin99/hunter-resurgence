@@ -32,7 +32,7 @@ public static class AssetSlots
     [
         L("logo-large", "decoration", "654x164", "BrowserNotice, SignupCard, PublicBar, Eula, SignInLayout"), L("logo-bar", "decoration", "173x44", "StatusBar"),
         L("logo-hero", "decoration", "485x120", "Feed"), L("logo-landing", "decoration", "1000x250", "AutoLogin"), L("logo-splash", "decoration", "483x65", "Splash"),
-        L("bg-hero", "decoration", "980x550", "Feed"), L("browser-bg", "decoration", "1280x760", "BrowserNotice"), L("page-bg", "decoration", "", "ShellLayout"),
+        L("bg-hero", "decoration", "980x550", "Feed"), L("news-default", "news", "805x380", "Feed, FeedCarousel"), L("browser-bg", "decoration", "1280x760", "BrowserNotice"), L("page-bg", "decoration", "", "ShellLayout"),
         L("frame-leather", "decoration", "1280x760", "SignupLayout"), L("gift-frame", "decoration", "561x288", "Signup Page2 to Page5"),
         L("gift-shotgun", "decoration", "467x99", "Signup Page2"), L("gift-licenses", "decoration", "476x193", "Signup Page3"), L("gift-membership", "decoration", "441x149", "Signup Page4"),
         L("paper-notice", "decoration", "", "Paper"), L("icon-store", "decoration", "46x46", "MenuBar"), L("recruit-hero", "decoration", "940x310", "InviteFriends", mockOnly: true),
@@ -114,7 +114,6 @@ public static class AssetSlots
             [.. Enum.GetNames<MarkerKind>().Where(k => !s.Mode.Live || k is not (nameof(MarkerKind.Bait) or nameof(MarkerKind.Feeder))).Select(k => "marker-" + k.ToLowerInvariant()).SelectMany(k => new[] { k, k + "-active" })])),  // -active is optional (docs/images.md)
         new("avatar-", "avatars", "60x60", "Settings, everywhere a player is drawn", async s => (await s.Account.AvatarsAsync()).Where(a => a.Id.StartsWith("avatar-", StringComparison.Ordinal)).Select(a => a.Id)),
         new("video-", "help", "185x138", "Help, VideoModal", async s => (await s.Help.TutorialsAsync()).SelectMany(t => t.Videos).Select(v => "video-" + v.Id)),
-        new("competition-hero-", "news", "805x380", "Feed", _ => Task.FromResult<IEnumerable<string>>([.. NewsPosts.All.Select(p => p.Picture)])),  // before the competitions: the first listing of a key wins
         new("competition-hero-", "competitions", "980x340", "CompetitionView", MockOnly(CompetitionHeroes)),  // the live site sends /competitions to the feed
         new("competition-", "competitions", "45x45", "CompetitionTable", MockOnly(Values("competition-", "board", "weight"))),
         new("em-pack-", "bank", "100x80", "BankModal", MockOnly(async s => (await s.Bank.CatalogAsync()).EmPacks.Select(p => "em-pack-" + p.Ems))),

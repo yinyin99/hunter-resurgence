@@ -27,6 +27,7 @@ public static class MockServices
         .AddSingleton<IOnlineService, MockOnlineService>()
         .AddSingleton<IRestoreOfferService, MockRestoreOfferService>()
         .AddSingleton<INewsService, MockNewsService>()
+        .AddSingleton<INewsFeedService, MockNewsFeedService>()
         .AddSingleton<IHelpService, MockHelpService>()
         .AddSingleton<IServersService, MockServersService>()
         .AddSingleton<IPatchService, MockPatchService>()

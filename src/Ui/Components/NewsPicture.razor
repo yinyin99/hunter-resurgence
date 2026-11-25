@@ -1,0 +1,17 @@
+@if (Picture is not null)
+{
+    <img class="asset-slot has-image @Class" src="@Picture" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="" />
+}
+else
+{
+    @* a post without a picture of its own: the operator's default slide picture *@
+    <AssetSlot Name="news-default" Width="Width" Height="Height" Class="@Class" />
+}
+
+@code {
+    /// <summary>The post's picture (an address), or null for the default slide picture.</summary>
+    [Parameter] public string? Picture { get; set; }
+    [Parameter] public int Width { get; set; } = 805;
+    [Parameter] public int Height { get; set; } = 380;
+    [Parameter] public string? Class { get; set; }
+}

@@ -14,6 +14,7 @@ public static class AdminApi
         var state = game.State;
         var log = app.Services.GetRequiredService<RequestLog>();
         var reports = app.Services.GetService<ProblemReports>();
+        if (app.Services.GetService<News>() is { } news) admin.MapNewsAdmin(news, game.Cfg);
 
         admin.MapGet("/status", () => TypedResults.Ok(new Status(
                 state is null || workDir is null ? null : Path.Combine(workDir, "state.db"), harCount,

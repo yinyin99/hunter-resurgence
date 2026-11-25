@@ -1,0 +1,49 @@
+@foreach (var block in NewsMarkdown.Parse(Text))
+{
+    switch (block)
+    {
+        case NewsMarkdown.Paragraph p:
+            <p>@Inlines(p.Content)</p>
+            break;
+        case NewsMarkdown.ListBlock { Ordered: true } l:
+            <ol>@foreach (var item in l.Items) { <li>@Inlines(item)</li> }</ol>
+            break;
+        case NewsMarkdown.ListBlock l:
+            <ul>@foreach (var item in l.Items) { <li>@Inlines(item)</li> }</ul>
+            break;
+    }
+}
+
+@code {
+    /// <summary>The post's body: Markdown (<see cref="NewsMarkdown"/>), drawn as elements, never as HTML.</summary>
+    [Parameter, EditorRequired] public string Text { get; set; } = "";
+
+    RenderFragment Inlines(IReadOnlyList<NewsMarkdown.Inline> items) => b =>
+    {
+        foreach (var item in items)
+            switch (item)
+            {
+                case NewsMarkdown.Plain t:
+                    b.AddContent(0, t.Text);
+                    break;
+                case NewsMarkdown.Strong s:
+                    b.OpenElement(1, "strong");
+                    b.AddContent(2, Inlines(s.Content));
+                    b.CloseElement();
+                    break;
+                case NewsMarkdown.Emphasis e:
+                    b.OpenElement(3, "em");
+                    b.AddContent(4, Inlines(e.Content));
+                    b.CloseElement();
+                    break;
+                case NewsMarkdown.Link l:
+                    b.OpenElement(5, "a");
+                    b.AddAttribute(6, "href", l.Url);
+                    b.AddAttribute(7, "target", "_blank");
+                    b.AddAttribute(8, "rel", "noopener");
+                    b.AddContent(9, Inlines(l.Content));
+                    b.CloseElement();
+                    break;
+            }
+    };
+}

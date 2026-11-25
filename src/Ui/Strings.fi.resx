@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Anna kelvollinen sähköpostiosoite.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Väärä koodi. Yritä uudelleen.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>PELAA ILMAISEKSI</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Seuraa projektia GitHubissa</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence on kehitteillä</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Yhteisöpalvelinta rakennetaan avoimesti. Tilit, varmuuskopion palautus ja tämä sivusto ovat muotoutumassa, ja palvelin avautuu pian kaikille.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Julkinen pelaaminen alkaa pian.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Viralliset palvelimet on suljettu</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Viralliset palvelimet suljettiin 11. marraskuuta 2026. Varmuuskopiotyökalu tallensi profiilisi: varusteet, palkinnot, tilastot ja muuta. Yhteisöpalvelin on nyt auki.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Viralliset palvelimet suljettiin 11. marraskuuta 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: pelin tarkistus ja „Ilmoita ongelmasta“ -toiminto lisätty</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcher tarkistaa nyt pelisi ennen jokaista metsästystä: version, tiedostot, kansion, Steamin ja asetukset. Jos jokin on pielessä, se kertoo, miten sen korjaa. Jos peliä ei löydy, valitse sen kansio kohdasta Asetukset, Pelin kansio. Jos peli ei käynnisty, Asetukset, Ilmoita ongelmasta lähettää meille lokitiedostosi.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcher tarkistaa nyt pelisi ennen jokaista metsästystä.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Lue se täältä</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Metsästämään</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>YKSINPELI</value></data>
