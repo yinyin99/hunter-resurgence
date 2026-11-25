@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nee</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Mijn oude naam gebruiken</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Dit vervangt je voorwerpen, vaardigheden, prestaties, trofeeën en jachthutten op deze server door het oude profiel. Jachten, afschotten en foto's die je hier maakte blijven. Je kunt maar één profiel claimen.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Dit vervangt je voorwerpen, vaardigheden, prestaties, trofeeën en jachthutten op deze server door het oude profiel. Als je al je eigen back-up hebt hersteld, wordt daar niets van vervangen: de claim voegt alleen toe wat de back-up mist. Jachten, afschotten en foto's die je hier maakte blijven. Je kunt maar één profiel claimen.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Dit profiel claimen</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Je claim voor {0} (gedaan op {1}) wacht op een operator.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Je oude profiel {0} is hersteld ({1}).</value></data>

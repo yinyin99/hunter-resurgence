@@ -87,7 +87,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                 return byOperator || Spend(account) ? new(404, "unknown", "There is no archived player with this name.") : new(429, "limit", "You used your lookups for today. Try again tomorrow.");
             if (byOperator) return Restore(account, player, useOldName);
             if (!confirmOverwrite && Store.Played(account))
-                return new(409, "confirm", "This account has played. A claim replaces its items, skills, achievements, trophies and lodges; hunts, kills and photos made here stay. Confirm to go on.");
+                return new(409, "confirm", BackupRestored(account)
+                    ? "This account has played and restored its own backup. A claim replaces nothing of that backup: it only adds what the backup lacks; hunts, kills and photos made here stay. Confirm to go on."
+                    : "This account has played. A claim replaces its items, skills, achievements, trophies and lodges; hunts, kills and photos made here stay. Confirm to go on.");
             if (player.Hunterscore >= ReviewScore) return Review(account, player, useOldName, $"waiting for the operator: hunterscore {ReviewScore} or more");
             using (var con = Store.Open())
                 if (con.Scalar("SELECT 1 FROM claims WHERE archived_uid = ? AND account_id <> ?", player.Uid, account) is not null)
@@ -114,8 +116,15 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         }
         // the archive's own text: Alerts.Handle keeps only plain name characters
         Alert(Alerts.Text("\U0001F4DC", "Claim waiting for review", "review list", ("claim", $"c{id}"), ("handle", Alerts.Handle(p.Handle)), ("account", account),
-            ("archived id", p.Uid), ("hunterscore", p.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account)))));
+            ("archived id", p.Uid), ("hunterscore", p.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account))), ("backup restored", BackupRestored(account) ? "yes, the claim adds only what the backup lacks" : null)));
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
+    }
+
+    /// <summary>Has the account a restore of its own backup (an audit row of mode `my-account`), whose rows an approved claim must not replace.</summary>
+    bool BackupRestored(long account)
+    {
+        using var con = Store.Open(account);
+        return con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND mode = 'my-account'") is not null;
     }
 
     double Balance(long account, string currency)
@@ -123,6 +132,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         using var con = Store.Open(account);
         return con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency) is double d ? d : 0;
     }
+
+    /// <summary>Called after a claim has decided whether the account's own backup is restored and before it writes (a seam for the test of a backup approved in that gap).</summary>
+    public Action? BeforeWrite { get; init; }
 
     /// <summary>The restore itself: the archived replies replace the account's profile rows, the account keeps its user id and its hunts, kills and photos, and the claim row is written in the same transaction.</summary>
     ClaimOutcome Restore(long account, ArchivedPlayer p, bool useOldName)
@@ -139,14 +151,30 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             Console.Error.WriteLine($"claim of account {account}: archived {p.Uid}: {e.Message}");
             return new(409, "refused", "This profile cannot be restored.");
         }
+        while (true)
+            try
+            {
+                return Write(account, p, useOldName, read);
+            }
+            catch (Restorer.FillChangedException)  // a backup was approved since Write looked (another process may approve): decide again
+            {
+            }
+    }
+
+    ClaimOutcome Write(long account, ArchivedPlayer p, bool useOldName, Restored read)
+    {
         var current = (string)Store.AccountJson(account)["handle"]!;
-        var adopt = useOldName && NameFree(account, p.Handle);
+        var fill = BackupRestored(account) ? new HashSet<string>() : null;  // the account's own backup was restored: the claim only adds what that left empty (checked again inside the write transaction)
+        BeforeWrite?.Invoke();
+        var adopt = fill is null && useOldName && NameFree(account, p.Handle);
         var handle = adopt ? p.Handle : current;
         var (em, gm) = (Balance(account, "em"), Math.Max(Balance(account, "gm"), Restorer.GmFloor));  // an archived profile has no wallet: the account keeps its own (gm$ at least the floor)
         var m = read.Model;
-        var text = $"Your old profile was restored: {m.Items.Count} items, {m.Trophies.Count} trophies and {m.Lodges.Count} lodges, and its skills, statistics and achievements where the archive had them. "
-                   + $"Your user id is unchanged and your name is {handle}.";
-        if (useOldName && !adopt) text += " The old name was not used: it is not allowed or belongs to another player.";
+        var text = fill is null
+            ? $"Your old profile was restored: {m.Items.Count} items, {m.Trophies.Count} trophies and {m.Lodges.Count} lodges, and its skills, statistics and achievements where the archive had them. "
+              + $"Your user id is unchanged and your name is {handle}."
+            : $"Your old profile was added to the backup you restored: only what the backup left empty was taken from it, and nothing of the backup was replaced. Your user id is unchanged and your name is {handle}.";
+        if (fill is null && useOldName && !adopt) text += " The old name was not used: it is not allowed or belongs to another player.";
         // the player's own avatar, when the archive holds no picture of it, is fetched now as an upload's gallery links are (a claim has no zip, so the fetched picture is a temporary zip)
         string? links = Path.Combine(dataDir, $"claim-{account}.pictures");
         try
@@ -158,10 +186,13 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                 con.Exec("INSERT INTO claims (account_id, archived_uid, handle, hunterscore, state, ts, decided_ts, note, keep_handle) VALUES (?1, ?2, ?3, ?4, 'restored', ?5, ?5, '', ?6) "
                          + "ON CONFLICT (account_id) DO UPDATE SET archived_uid = ?2, handle = ?3, hunterscore = ?4, state = 'restored', decided_ts = ?5, note = '', keep_handle = ?6",
                          account, p.Uid, p.Handle, p.Hunterscore, Store.Now(), useOldName ? 0L : 1L);
-                PlayerRows.SetWallet(con, "em", em);
-                PlayerRows.SetWallet(con, "gm", gm);
+                if (fill is null)
+                {
+                    PlayerRows.SetWallet(con, "em", em);
+                    PlayerRows.SetWallet(con, "gm", gm);
+                }
                 Uploads.Notify(con, text);
-            }, links);
+            }, links, fill: fill, checkFill: true);
         }
         catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the name was taken between the check and the write
         {
@@ -175,14 +206,14 @@ public sealed class Claims(State state, Archive archive, string dataDir)
     }
 
     /// <summary>A claim waiting for the operator.</summary>
-    public sealed record Pending(long Id, long Account, long Uid, string Handle, long Hunterscore, long Ts, string Note, bool KeepHandle);
+    public sealed record Pending(long Id, long Account, long Uid, string Handle, long Hunterscore, long Ts, string Note, bool KeepHandle, bool BackupRestored);
 
-    /// <summary>The waiting claims, oldest first (one when `id` is given).</summary>
+    /// <summary>The waiting claims, oldest first (one when `id` is given). BackupRestored: the account has a restore of its own backup, which the claim will not replace.</summary>
     public List<Pending> Waiting(long? id = null)
     {
         using var con = Store.Open();
-        return con.Rows("SELECT id, account_id, archived_uid, handle, hunterscore, ts, note, keep_handle FROM claims WHERE state = 'waiting' AND (?1 IS NULL OR id = ?1) ORDER BY id", id)
-            .Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0)).ToList();
+        var rows = con.Rows("SELECT id, account_id, archived_uid, handle, hunterscore, ts, note, keep_handle FROM claims WHERE state = 'waiting' AND (?1 IS NULL OR id = ?1) ORDER BY id", id);
+        return rows.Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0, BackupRestored((long)r[1]))).ToList();
     }
 
     /// <summary>The operator's approve of a waiting claim: the same restore as an automatic one. `keepHandle`: the account keeps its own name whatever the player chose. Status 404: no such waiting claim.</summary>

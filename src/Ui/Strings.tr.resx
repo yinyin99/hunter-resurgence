@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>evet</value></data>
   <data name="Claim.No" xml:space="preserve"><value>hayır</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Eski adımı kullan</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Bu, bu sunucudaki eşyalarınızı, becerilerinizi, başarımlarınızı, kupalarınızı ve kulübelerinizi eski profille değiştirir. Burada yaptığınız avlar, vurduklarınız ve fotoğraflar kalır. Yalnızca bir profil geri alabilirsiniz.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Bu, bu sunucudaki eşyalarınızı, becerilerinizi, başarımlarınızı, kupalarınızı ve kulübelerinizi eski profille değiştirir. Kendi yedeğinizi zaten geri yüklediyseniz, ondan hiçbir şey değiştirilmez: talep yalnızca yedekte eksik olanı ekler. Burada yaptığınız avlar, vurduklarınız ve fotoğraflar kalır. Yalnızca bir profil geri alabilirsiniz.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Bu profili geri al</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>{0} için talebiniz ({1} tarihli) bir operatörü bekliyor.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Eski profiliniz {0} geri yüklendi ({1}).</value></data>

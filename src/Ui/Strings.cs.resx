@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>ano</value></data>
   <data name="Claim.No" xml:space="preserve"><value>ne</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Použít mé staré jméno</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Tím se vaše předměty, dovednosti, úspěchy, trofeje a chaty na tomto serveru nahradí starým profilem. Lovy, zásahy a fotky vytvořené zde zůstanou. Získat zpět můžete jen jeden profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Tím se vaše předměty, dovednosti, úspěchy, trofeje a chaty na tomto serveru nahradí starým profilem. Pokud jste už obnovili vlastní zálohu, nic z ní se nenahradí: nárok pouze doplní to, co v záloze chybí. Lovy, zásahy a fotky vytvořené zde zůstanou. Získat zpět můžete jen jeden profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Získat tento profil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Vaše žádost o {0} (podaná {1}) čeká na operátora.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Váš starý profil {0} byl obnoven ({1}).</value></data>

@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nej</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Använd mitt gamla namn</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Detta ersätter dina föremål, färdigheter, prestationer, troféer och stugor på den här servern med den gamla profilen. Jakter, fällda djur och foton du gjort här blir kvar. Du kan bara hämta en profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Detta ersätter dina föremål, färdigheter, prestationer, troféer och stugor på den här servern med den gamla profilen. Om du redan har återställt din egen säkerhetskopia ersätts inget av den: anspråket lägger bara till det som kopian saknar. Jakter, fällda djur och foton du gjort här blir kvar. Du kan bara hämta en profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Hämta den här profilen</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Din begäran för {0} (gjord {1}) väntar på en operatör.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Din gamla profil {0} återställdes ({1}).</value></data>

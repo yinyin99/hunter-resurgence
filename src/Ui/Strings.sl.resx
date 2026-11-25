@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>
   <data name="Claim.No" xml:space="preserve"><value>ne</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Uporabi moje staro ime</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>To na tem strežniku zamenja vaše predmete, spretnosti, dosežke, trofeje in koče s starim profilom. Lovi, odstreli in fotografije, narejene tukaj, ostanejo. Zahtevate lahko samo en profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>To na tem strežniku zamenja vaše predmete, spretnosti, dosežke, trofeje in koče s starim profilom. Če ste že obnovili svojo varnostno kopijo, se nič iz nje ne zamenja: zahtevek doda le tisto, česar v kopiji ni. Lovi, odstreli in fotografije, narejene tukaj, ostanejo. Zahtevate lahko samo en profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Zahtevaj ta profil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Vaša zahteva za {0} (oddana {1}) čaka na operaterja.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Vaš stari profil {0} je obnovljen ({1}).</value></data>

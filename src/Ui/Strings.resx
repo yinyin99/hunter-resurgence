@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>yes</value></data>
   <data name="Claim.No" xml:space="preserve"><value>no</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Use my old name</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>This replaces your items, skills, achievements, trophies and lodges on this server with the old profile. Hunts, kills and photos you made here stay. You can claim only one profile.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>This replaces your items, skills, achievements, trophies and lodges on this server with the old profile. If you already restored your own backup, nothing of it is replaced: the claim only adds what the backup lacks. Hunts, kills and photos you made here stay. You can claim only one profile.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Claim this profile</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Your claim for {0} (made {1}) is waiting for an operator.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Your old profile {0} was restored ({1}).</value></data>

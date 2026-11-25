@@ -174,6 +174,102 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Contains("Your old profile was restored", Assert.Single(Notices(player)));
     }
 
+    /// <summary>The rows of an account whose own backup was restored (an audit row of mode `my-account`): two trophies, a loadout, a wallet, a profile, an extra, a photo, one item; no lodges, skills, statistics or achievements.</summary>
+    void RestoreOwnBackup(long account)
+    {
+        using var con = state.Store.Open(account);
+        con.Begin();
+        PlayerRows.ClearModel(con);
+        PlayerRows.AddItem(con, 7001, 500, 1, 1, []);
+        PlayerRows.SetWallet(con, "em", 50);
+        PlayerRows.SetWallet(con, "gm", 20000);
+        PlayerRows.SetProfile(con, new JsonObject { ["handle"] = "player", ["hunterscore"] = 7 });
+        PlayerRows.AddTrophy(con, "Trophy_list", "1", new JsonObject { ["id"] = 1 });
+        PlayerRows.AddTrophy(con, "Trophy_list", "2", new JsonObject { ["id"] = 2 });
+        con.Exec("INSERT INTO loadouts (account_id, name, color, entries) VALUES ($a, 'mine', 3, '[]')");
+        PlayerRows.SetExtra(con, "Backup_only.json", new JsonObject { ["kept"] = true });
+        con.Exec("INSERT INTO photos (account_id, file, saved) VALUES ($a, 'p.jpg', '{}')");
+        PlayerRows.AddAudit(con, new string('b', 64), "my-account", "restored: 1");
+        con.Commit();
+        Directory.CreateDirectory(Path.Combine(tmp, "photos", account.ToString(CultureInfo.InvariantCulture)));
+        File.WriteAllBytes(Path.Combine(tmp, "photos", account.ToString(CultureInfo.InvariantCulture), "p.jpg"), [1, 2, 3]);
+    }
+
+    [Fact]
+    public void TestAClaimOverARestoredBackupReplacesNothingAndFillsOnlyWhatItLacks()
+    {
+        var (player, _) = SignedIn("player");
+        RestoreOwnBackup(player);
+        var done = Make().Claim(player, "alpha", useOldName: true, confirmOverwrite: false);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("nothing of the backup was replaced", done.Message);
+        // what the backup restored stays
+        Assert.True(Owns(player, 7001));
+        Assert.False(Owns(player, 9001));
+        Assert.Equal(2L, Count(player, "trophies"));
+        Assert.Equal(1L, Count(player, "loadouts"));
+        Eq("""{"em": 50, "gm": 20000}""", state.Wallet(player));
+        Assert.Equal("player", state.Store.HandleOf(player));  // the archived name is not taken
+        using (var con = state.Store.Open(player))
+        {
+            Assert.Equal("player", con.Scalar("SELECT json_extract(body, '$.handle') FROM profile WHERE account_id = $a"));  // (its hunterscore is the computed one: UpdateHunterscore)
+            Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM extras WHERE account_id = $a AND path = 'Backup_only.json'"));
+            Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM photos WHERE account_id = $a AND file = 'p.jpg' AND saved IS NOT NULL"));
+        }
+        Assert.Equal([1, 2, 3], File.ReadAllBytes(Path.Combine(tmp, "photos", player.ToString(CultureInfo.InvariantCulture), "p.jpg")));
+        // what the backup lacked comes from the archive
+        Assert.Equal(2L, Count(player, "lodges"));
+        using (var con = state.Store.Open(player))
+            Assert.Equal(1L, con.Scalar("SELECT COUNT(*) FROM achievements WHERE account_id = $a AND id = 12"));  // the archive's achievement
+        Assert.Equal(1L, Count(player, "statistics"));
+        Assert.NotEqual(0L, Count(player, "skills"));
+        Assert.Equal("restored", Make().Of(player)!.State);
+        Assert.Equal(2L, Count(player, "restore_audit"));
+    }
+
+    [Fact]
+    public void TestABackupApprovedAfterTheClaimLookedIsNotReplaced()
+    {
+        var (player, _) = SignedIn("player");
+        var hits = 0;
+        var claims = new Claims(state, new Archive(ArchivePath), tmp) { BeforeWrite = () => { if (hits++ == 0) RestoreOwnBackup(player); } };  // the backup lands between the check and the write
+        var done = claims.Claim(player, "alpha", useOldName: true, confirmOverwrite: false);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("nothing of the backup was replaced", done.Message);
+        Assert.Equal(2, hits);  // decided again after the write found the backup
+        Assert.True(Owns(player, 7001));
+        Assert.False(Owns(player, 9001));
+        Assert.Equal(2L, Count(player, "trophies"));
+        Assert.Equal(1L, Count(player, "loadouts"));
+        Eq("""{"em": 50, "gm": 20000}""", state.Wallet(player));
+        Assert.Equal("player", state.Store.HandleOf(player));
+        Assert.Equal(1L, Count(player, "photos"));
+        Assert.Equal(2L, Count(player, "lodges"));  // what the backup lacked is filled
+        Assert.Equal("restored", claims.Of(player)!.State);
+    }
+
+    [Fact]
+    public void TestTheReviewOfAClaimShowsAnEarlierBackupAndApprovingItReplacesNothing()
+    {
+        var (player, _) = SignedIn("player");
+        var (other, _) = SignedIn("other");
+        RestoreOwnBackup(player);
+        var alerts = new List<string>();
+        var claims = Make(alerts);
+        Assert.Equal("review", claims.Claim(player, "bravo", true, false).Kind);
+        Assert.Equal("review", claims.Claim(other, "bravo", true, false).Kind);
+        Assert.Contains("backup restored: yes", alerts[0]);
+        Assert.DoesNotContain("backup restored", alerts[1]);
+        Assert.Equal([true, false], claims.Waiting().Select(c => c.BackupRestored));
+        Assert.Equal("restored", claims.Approve(claims.Waiting()[0].Id).Kind);
+        Assert.True(Owns(player, 7001));
+        Assert.False(Owns(player, 9501));
+        Assert.Equal("player", state.Store.HandleOf(player));
+        Assert.Equal("restored", claims.Of(player)!.State);
+        Assert.Equal("restored", claims.Approve(claims.Waiting().Single().Id).Kind);  // an account without a backup is replaced as before
+        Assert.True(Owns(other, 9501));
+    }
+
     [Fact]
     public void TestTheGmFloorHoldsForAnAccountBelowIt()
     {

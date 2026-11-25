@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nein</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Meinen alten Namen verwenden</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Dies ersetzt deine Gegenstände, Fähigkeiten, Erfolge, Trophäen und Hütten auf diesem Server durch das alte Profil. Jagden, Abschüsse und Fotos, die du hier gemacht hast, bleiben. Du kannst nur ein Profil übernehmen.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Dies ersetzt deine Gegenstände, Fähigkeiten, Erfolge, Trophäen und Hütten auf diesem Server durch das alte Profil. Hast du schon dein eigenes Backup wiederhergestellt, wird nichts davon ersetzt: Die Übernahme ergänzt nur, was dem Backup fehlt. Jagden, Abschüsse und Fotos, die du hier gemacht hast, bleiben. Du kannst nur ein Profil übernehmen.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Dieses Profil übernehmen</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Deine Anfrage für {0} (gestellt am {1}) wartet auf einen Operator.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Dein altes Profil {0} wurde wiederhergestellt ({1}).</value></data>

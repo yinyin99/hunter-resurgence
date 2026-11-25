@@ -85,8 +85,8 @@ public sealed partial class State
     /// <summary>Inside the restore's transaction: with `replace`, delete the account's restored gallery rows; then add one per saved gallery entry whose picture the zip holds, or the fetched pictures
     /// hold under its link (oldest first; its `type`, `label`, `animal` and `kill_id` as saved). A picture the account already has (the same file hash, from <see cref="HashPictures"/>) is not added again.
     /// The kill photos, score pages and images need no row: they are named by their zip path.
-    /// Nothing is written to disk here: <see cref="Unpack"/> does that once the transaction has committed.</summary>
-    internal Unpacking PreparePictures(Db con, Restored read, PictureHashes hashes, bool replace)
+    /// Nothing is written to disk here: <see cref="Unpack"/> does that once the transaction has committed. `keepFiles`: a stored file the account's folder has already is not written again (an archive claim over a backup restore).</summary>
+    internal Unpacking PreparePictures(Db con, Restored read, PictureHashes hashes, bool replace, bool keepFiles = false)
     {
         List<string> stale = replace ? con.Rows("SELECT file FROM photos WHERE account_id = $a AND saved IS NOT NULL AND file IS NOT NULL").Select(r => (string)r[0]).ToList() : [];
         if (replace) con.Exec("DELETE FROM photos WHERE account_id = $a AND saved IS NOT NULL");
@@ -123,6 +123,7 @@ public sealed partial class State
                      + $"avatar and background pictures {others.Count(m => m.Path.StartsWith("images/", StringComparison.Ordinal))}"
                      + (missing > 0 ? $"; pictures from links: {fetched} of {missing}" : "")
                      + (already > 0 ? $"; {already} gallery picture{(already == 1 ? "" : "s")} already in the gallery" : "");
+        if (keepFiles) files.RemoveAll(f => File.Exists(Path.Combine(AccountPhotos(con.Account!.Value), f.Item1)));
         return new(files, stale, report, replace);
     }
 

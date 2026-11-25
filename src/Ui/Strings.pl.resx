@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>tak</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nie</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Użyj mojej starej nazwy</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Zastąpi to Twoje przedmioty, umiejętności, osiągnięcia, trofea i chaty na tym serwerze starym profilem. Polowania, upolowane zwierzęta i zdjęcia wykonane tutaj zostają. Możesz odzyskać tylko jeden profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Zastąpi to Twoje przedmioty, umiejętności, osiągnięcia, trofea i chaty na tym serwerze starym profilem. Jeśli Twoja własna kopia zapasowa została już przywrócona, nic z niej nie zostanie zastąpione: odzyskanie dodaje tylko to, czego w kopii brakuje. Polowania, upolowane zwierzęta i zdjęcia wykonane tutaj zostają. Możesz odzyskać tylko jeden profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Odzyskaj ten profil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Twój wniosek dla {0} (złożony {1}) czeka na operatora.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Twój stary profil {0} został przywrócony ({1}).</value></data>
