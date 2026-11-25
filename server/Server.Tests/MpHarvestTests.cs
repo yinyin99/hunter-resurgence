@@ -191,7 +191,7 @@ public class MpHarvestTests : StateTestBase
         var dry = past.MoveMpHarvests(apply: false).ToList();
         Assert.Equal(2, dry.Count);
         Assert.StartsWith($"would move kill 1, species 1, from account {HOST} to account {GUEST}, gm$ 66 stay with {HOST}", dry[0]);
-        Assert.StartsWith("would move 1 harvests (gm$ 66 stay with the harvesters, no wallet changes); kept 0 second harvests", dry[1]);
+        Assert.StartsWith("would move 1 harvests (gm$ 66 stay with the harvesters, no wallet changes), would reopen 0 mission objectives; kept 0 second harvests", dry[1]);
         Assert.Equal((3L, 0L, 4L, 0L), (Count(HOST, "kills"), Count(GUEST, "kills"), hs(HOST), hs(GUEST)));  // a dry run writes nothing
 
         var applied = past.MoveMpHarvests(apply: true).ToList();
@@ -222,10 +222,10 @@ public class MpHarvestTests : StateTestBase
         // two players in one game shot the same flock: the guest three birds, the host one; each skinned the other's
         Beat(GUEST, [.. Shot(460), .. Shot(461), .. Shot(462)]);
         Beat(HOST, Shot(463));
-        Beat(HOST, Skinned(460, 1, spawn: false));
-        Beat(HOST, Skinned(461, 2, spawn: false));
-        Beat(HOST, Skinned(462, 3, spawn: false));
-        Beat(GUEST, Skinned(463, 4, spawn: false));
+        Beat(HOST, Skinned(460, 1));
+        Beat(HOST, Skinned(461, 2));
+        Beat(HOST, Skinned(462, 3));
+        Beat(GUEST, Skinned(463, 4));
         // an animal the host shot, skinned in a hunt that was no game
         Beat(HOST, Shot(470));
         Beat(THIRD, Skinned(470, 5));
@@ -240,5 +240,102 @@ public class MpHarvestTests : StateTestBase
 
         past.MoveMpHarvests(apply: true).ToList();
         Assert.Equal((1L, 3L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(THIRD, "kills")));  // each has the birds he shot; the hunt that was no game is untouched
+    }
+
+    [Fact]
+    public void TestAHarvestOfAnotherAnimalThatReusesTheNumberIsNotMoved()
+    {
+        var (past, _) = Past();
+        Beat(GUEST, Shot(460));
+        var other = Skinned(460);  // the host's animal 460 is a heavier one: the number was reused
+        other[0]["weight_grams"] = 51000;
+        Beat(HOST, other);
+        var lines = past.MoveMpHarvests(apply: false).ToList();
+        Assert.StartsWith("would move 0 harvests", Assert.Single(lines));
+        Assert.Equal((1L, 0L), (Count(HOST, "kills"), Count(GUEST, "kills")));
+    }
+
+    [Fact]
+    public void TestAMovedHarvestsKillIdIsNotGivenAgainWhileItsGmPaymentNamesIt()
+    {
+        var (past, _) = Past();
+        Beat(GUEST, Shot(460));
+        Beat(HOST, Skinned(460));  // the host's kill 1, paid
+        Assert.StartsWith("moved kill 1,", past.MoveMpHarvests(apply: true).First());
+        Assert.Equal(0L, Count(HOST, "kills"));
+        Beat(HOST, Skinned(461, 2));  // a new harvest of the host's
+        var update = Assert.Single(Beat(HOST), u => Py.Eq(u!["update"], 6))!;
+        Assert.Equal(2L, (long)update["kill_id"]!);  // not 1: the payment `CSS Reward (Animal Id: 1)` still names it
+        Assert.Equal(2L, (long)Assert.Single(KillsOf(HOST))!["id"]!);
+        Assert.Null(past.HarvestReply(HOST, 1));
+    }
+
+    [Fact]
+    public void TestAMoveThatFailsHalfWayIsUndoneWholeAndTheOthersGoOn()
+    {
+        var (past, hs) = Past();
+        Beat(GUEST, [.. Shot(460), .. Shot(461)]);
+        Beat(HOST, Skinned(460));
+        Beat(HOST, Skinned(461, 2));
+        var before = (Count(HOST, "kills"), Count(GUEST, "kills"), Count(HOST, "events", "event = 3"), hs(HOST), hs(GUEST));
+        using (var shared = state.Store.Open())  // the guest's record fails after everything else of the move is written
+            shared.Exec($"CREATE TRIGGER boom BEFORE INSERT ON mission_rollbacks WHEN NEW.account_id = {GUEST} AND NEW.record LIKE '%\"kill\": 1,%' BEGIN SELECT RAISE(ABORT, 'boom'); END");
+        var lines = past.MoveMpHarvests(apply: true).ToList();
+        Assert.Contains(lines, l => l.StartsWith("failed to move kill 1,") && l.Contains("boom"));
+        Assert.Contains(lines, l => l.StartsWith("moved kill 2,"));
+        Assert.EndsWith("; 1 failed and undone", lines[^1]);
+        Assert.Equal((before.Item1 - 1, before.Item2 + 1, before.Item3 - 1), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(HOST, "events", "event = 3")));  // only kill 2 moved
+        Assert.NotNull(past.HarvestReply(HOST, 1));  // kill 1 is whole where it was
+        Assert.Equal(1L, Count(GUEST, "wallet_log", "summary LIKE 'CSS Reward%'"));  // the one of the kill that moved; the failed one left no row
+    }
+
+    [Fact]
+    public void TestAHarvestTheShooterCannotBeWrittenToStaysWithItsHarvesterAndNothingIsLost()
+    {
+        Game(GUEST);
+        Beat(GUEST, Shot(460));
+        using (var shared = state.Store.Open())
+            shared.Exec($"CREATE TRIGGER boom BEFORE INSERT ON harvests WHEN NEW.account_id = {GUEST} BEGIN SELECT RAISE(ABORT, 'boom'); END");
+        var updates = Beat(HOST, Skinned(460));
+        Assert.True(Paid(updates, 99));  // the harvester has it, with its gold
+        Assert.Equal((1L, 99.0, 0L, 33.0), (Count(HOST, "kills"), Gm(HOST), Count(GUEST, "kills"), Gm(GUEST)));
+        Assert.Equal((1L, 0L), (Count(HOST, "events", "event = 3"), Count(GUEST, "events", "event = 3")));
+        Assert.Single(Beat(HOST), u => Py.Eq(u!["update"], 6));
+        Assert.Empty(Beat(GUEST));
+    }
+}
+
+/// <summary>The mission rollback of a moved harvest reopens only what that harvest finished.</summary>
+public class MpHarvestMissionTests : MissionTestBase
+{
+    const long HOST = 11, GUEST = 12;
+
+    [Fact]
+    public void TestOnlyTheObjectivesTheMovedHarvestFinishedAreReopened()
+    {
+        state = New("mp.db", Catalogue(["Harvest a Test Deer", "Harvest a Test Mallard", "Harvest a Test Fox"]));
+        foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest") })
+        {
+            state.CreateAccount(id, handle);
+            state.NoteLaunch(id, System.Text.Encoding.ASCII.GetBytes("start=101&reserve=2"));
+            state.HeartbeatReply(id, Events(O("""{"event": 29, "port": 32303, "guid": "9007199254740993", "color": "c73378"}""")));
+            state.MissionCall(id, "activate_all_available", []);
+        }
+        JsonArray Beat(long who, params JsonNode[] events) => Reply(state.HeartbeatReply(who, Events(events)))["updates"]!.AsArray();
+        Beat(GUEST, Shot(1)[..2]);  // the guest shoots the deer, the host skins it
+        Beat(HOST, Shot(1, hits: 0));
+        Beat(HOST, Shot(2, species: 7));  // the host's own mallard
+        using (var con = state.Store.Open(HOST))  // a fox finished earlier by rules that did not read its title: no event meets it, and it is no business of this move
+            con.Exec("UPDATE missions SET state = 3, objectives = '[]' WHERE account_id = $a AND mission_id = 3");
+        Assert.Equal("1,2,3", Completed(HOST));
+
+        var dry = state.MoveMpHarvests(apply: false).ToList();
+        Assert.Equal(3, dry.Count);
+        Assert.Contains("would reopen account 11: mission 1 (completed, active again) objectives 0", dry[1]);
+        Assert.StartsWith("would move 1 harvests", dry[2]);
+        Assert.Equal("1,2,3", Completed(HOST));  // a dry run writes nothing
+
+        Assert.Contains("reopened 1 mission objectives", state.MoveMpHarvests(apply: true).Last());
+        Assert.Equal("2,3", Completed(HOST));  // the deer is reopened; the mallard stays, and so does the fox
     }
 }

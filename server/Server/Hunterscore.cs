@@ -174,6 +174,13 @@ public sealed partial class State
     public void UpdateHunterscore(Db con, long account, bool closing = true)
     {
         con.Begin();
+        HunterscoreIn(con, account, closing);
+        con.Commit();
+    }
+
+    /// <summary><see cref="UpdateHunterscore"/> inside the caller's transaction (a view of another account's, <see cref="Db.Sharing"/>, works too).</summary>
+    void HunterscoreIn(Db con, long account, bool closing)
+    {
         // the hunts closed since the last time carry their close as the earn time, so a hunt's page lists what it earned (several closed at once share the latest)
         var closedAt = closing ? con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND " + ClosedUnstored) : null;
         StoreHuntStats(con, account);
@@ -189,7 +196,6 @@ public sealed partial class State
                 AwardAchievements(con, closed, closedAt is null or DBNull ? (long)Clock() : (long)Convert.ToDouble(closedAt));
             }
         }
-        con.Commit();
     }
 
     /// <summary>The game's category ids of the rank rows, and the names the website's tabs give them (index = category id - 1).</summary>

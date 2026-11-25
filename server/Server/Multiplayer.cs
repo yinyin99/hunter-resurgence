@@ -327,25 +327,48 @@ public sealed partial class State
         }
     }
 
-    /// <summary>A harvest another member made of an animal this account shot last (<see cref="CreditOf"/>) is stored as this account's own: its events (the harvester's trophy measurement and the harvest) join this
-    /// account's, and the kill, page, score, gm$, missions, challenges and hunterscore follow from them as for a harvest of its own hunt. Its updates (6 and 15) come with the account's next heartbeat.
-    /// ponytail: written after the harvester's heartbeat commits, so a crash between the two loses the harvest; the harvester's spawn event stands in for the account's own only when it has none.</summary>
-    void CreditHarvest(CreditedHarvest h)
+    /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
+    /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit). When writing it for the shooter fails, that write is undone (a savepoint), the failure is logged
+    /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone.</summary>
+    bool TryCredit(Db con, JsonObject e3, long eventId, List<long> shooters)
     {
-        using var con = Con(h.To);
-        con.Begin();
+        if (CreditOf(con, e3, eventId) is not { } credit)
+            return false;
+        if (credit.Ignore)
+            return true;
+        var (e7, e22) = KillEvents(con, e3["individual"], Py.Dumps(e3));
+        con.Exec("SAVEPOINT credit");
+        try
+        {
+            CreditHarvest(con.Sharing(credit.Account), e3, e7, e22);
+            con.Exec("RELEASE credit");
+            shooters.Add(credit.Account);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            con.Exec("ROLLBACK TO credit");
+            con.Exec("RELEASE credit");
+            Console.WriteLine($"a harvest of account {con.Account} could not be written to account {credit.Account} and stays with its harvester: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>A harvest another member made of an animal this account shot last (<see cref="CreditOf"/>) is stored as this account's own: its events (the harvester's trophy measurement and the harvest) join this
+    /// account's, and the kill, page, score, gm$, missions and challenges follow from them as for a harvest of its own hunt. Its updates (6 and 15) come with the account's next heartbeat. `theirs` is the shooter's
+    /// view (<see cref="Db.Sharing"/>) of the harvester's connection, so the harvest and its credit are one transaction. `e7` stands in for the animal's spawn event when the shooter's own events have none.</summary>
+    void CreditHarvest(Db theirs, JsonObject e3, JsonObject e7, JsonObject e22)
+    {
         var now = Clock();
-        if (h.E22.Count > 0)
-            con.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 22, ?, ?)", Py.Dumps(h.E22), now);
-        con.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(h.E3), now);
-        void Pending(JsonNode update) => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
-        StoreHarvest(con, h.E3, Trophy, AmmoCheck, HarvestPage, GmMultiplier(now), gold => Pending(gold), h.E7);
+        if (e22.Count > 0)
+            theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 22, ?, ?)", Py.Dumps(e22), now);
+        theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(e3), now);
+        void Pending(JsonNode update) => theirs.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
+        StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, GmMultiplier(now), GmEvent(now), gold => Pending(gold), e7);
         var updates = new JsonArray();
-        MissionEvent(con, h.E3, updates);
-        ChallengeEvent(con, h.E3);
+        MissionEvent(theirs, e3, updates);
+        ChallengeEvent(theirs, e3);
         foreach (var update in updates)
             Pending(update!);
-        con.Commit();
-        UpdateHunterscore(con, h.To, closing: con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null);
     }
 }
