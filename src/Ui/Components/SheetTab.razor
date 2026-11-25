@@ -8,7 +8,7 @@
         <div class="logo"><AssetSlot Name="sheet-logo" Width="460" Height="64" />@if (typical) { <AssetSlot Name="sheet-medal" Width="84" Height="84" Class="medal" /> }</div>
         <div class="guide @(typical ? "" : "big")">
             <span class="species">@L.Term(sheet.Species)</span>
-            <AssetSlot Name="@($"{(typical ? "antler-diagram" : "antler-guide")}-{sheet.Species.Split(" (")[0]}")" Width="@(typical ? 380 : 560)" Height="@(typical ? 220 : 460)" />
+            <AssetSlot Name="@(typical ? $"antler-diagram-{sheet.Species.Split(" (")[0]}" : $"antler-guide-{GuideName(sheet)}")" Width="@(typical ? 380 : 560)" Height="@(typical ? 220 : 460)" />
             @if (typical)
             {
                 <table class="abn">
@@ -99,6 +99,14 @@
     [Parameter] public long Id { get; set; }
 
     protected override async Task OnParametersSetAsync() { sheet = await Service.SheetAsync(Handle, Kind, Id); map = false; }
+
+    /// <summary>The species part of the antler guide's slot: the three deer have a guide per antler type (the full name), the wendigo one per gender, every other species one.</summary>
+    internal static string GuideName(ScoreSheet s)
+    {
+        var name = s.Species.Split(" (")[0];
+        if (name is "Whitetail Deer" or "Mule Deer" or "Blacktail Deer") return s.Species;
+        return name == "Wendigo" && s.Gender is "male" or "female" ? "wendigo-" + s.Gender : name;
+    }
 
     static string Cell(double? v) => v is { } x ? Fmt.Score(x) : "";
 }

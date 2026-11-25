@@ -80,7 +80,7 @@ public sealed record SheetFact(string Label, double Value);
 /// </summary>
 public sealed record ScoreSheet(string Kind, string Species, IReadOnlyList<SheetFact> Facts, IReadOnlyList<SheetRow> Rows, IReadOnlyList<(double Right, double Left)> Abnormal,
     IReadOnlyList<SheetFact> Sums, string Weapon, bool Scope, string Ammo, double DistanceM, string State, string BodyPart, string Stance, string Platform,
-    double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, DateTime When, long ExpeditionId, double Score, double? HarvestValue);
+    double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, DateTime When, long ExpeditionId, double Score, double? HarvestValue, string Gender = "");
 
 public interface IProfileService
 {

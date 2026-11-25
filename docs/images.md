@@ -122,6 +122,6 @@ With the values the mock services give, the slots have 736 distinct keys, and th
 | `sheet-logo` | 460×64 | SheetTab | yes |
 | `sheet-medal` | 84×84 | SheetTab | no: none of the 1,241 saved score pages shows a medal |
 | `sheet-sponsor` | 116×82 | SheetTab | yes |
-| `antler-diagram-<species>`, `antler-guide-<species>` | 380×220, 560×460 | SheetTab | 1 of 1, 1 of 1 |
+| `antler-diagram-<species>`, `antler-guide-<species>` | 380×220, 560×460 | SheetTab (the guide of a whitetail, mule or blacktail deer is `antler-guide-<name>-typical` or `-non-typical`, the wendigo's `antler-guide-wendigo-male` or `-female`) | 1 of 1, 1 of 1 |
 
 A player's own picture, imported from their backup, is no slot: the page draws the link the server gives (`https://<site>/photos/<account id>/avatar.jpg`) as an image, so it is never in this folder ([server.md](server.md#avatars)).

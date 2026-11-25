@@ -531,6 +531,7 @@ public class HunterscoreTests : StateTestBase
         var sheet = state.PublicSheet(B, (long)kill["id"]!)!;
         Eq("""["antler", "Test Deer (Typical)", "Test Rifle", "Test Bullet", false, 1, "None"]""", T(sheet["kind"], sheet["species"], sheet["weapon"], sheet["ammo"], sheet["scope"], sheet["shots"], sheet["platform"]));
         Assert.Empty(sheet["rows"]!.AsArray());
+        Eq("""["male"]""", T(sheet["gender"]));
         Assert.Null(state.PublicSheet(B, 999));
     }
 
