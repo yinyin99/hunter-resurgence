@@ -1202,7 +1202,7 @@ The posts of the website's feed (`/` and `/feed`) and of the launcher's feed are
 **Commands** (`state.db` in the data folder; a running server shows the change within a minute; the file options also take `-` for the standard input where it says so):
 
 ```
-admin news add --title "…" --body-file post.md [--link URL --link-text "…"] [--picture file.jpg] [--at ISO] [--until ISO] [--pin] [--discord]
+admin news add --title "…" --body-file post.md [--link URL --link-text "…"] [--picture file.jpg | --picture-slot name] [--at ISO] [--until ISO] [--pin] [--discord]
 admin news list
 admin news edit <id> [--title "…"] [--body-file post.md] [--link URL|none] [--link-text "…"|none] [--picture file|none | --picture-slot name] [--at ISO] [--until ISO|none] [--pin | --unpin] [--show]
 admin news hide <id>
