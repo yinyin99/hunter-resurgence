@@ -356,7 +356,7 @@ void Review(string[] a)
             foreach (var z in refusedZips)
                 Console.WriteLine($"{z.Id}\trefused\taccount {z.Account}\thandle {z.Handle ?? "(deleted)"}\t{DateTimeOffset.FromUnixTimeSeconds(z.Ts):u}\t{z.Size} bytes\t{z.Reason}");
             foreach (var c in waiting)
-                Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{c.Note}");
+                Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{(c.BackupRestored ? "backup restored\t" : "")}{c.Note}");
             if (kept.Count + waiting.Count + refusedZips.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":

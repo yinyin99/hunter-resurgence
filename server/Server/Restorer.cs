@@ -127,9 +127,11 @@ public static class Restorer
     /// <summary>Write the model into the account `current` (created when it does not exist) and keep the zip. finalId: the id
     /// the account has afterwards (a restore that adopts the zip's user id; every row, token and session moves with it).
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
-    /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.</summary>
+    /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.
+    /// fill: not null = replace nothing: no row, picture file or name of the account is replaced, only the tables and keys the account has no row for are filled (an archive claim over a restore of the account's own backup);
+    /// it receives the paths of the saved replies (extras) that were added.</summary>
     internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
-                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null)
+                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null, HashSet<string>? fill = null)
     {
         var model = read.Model;
         var store = state.Store;
@@ -149,7 +151,7 @@ public static class Restorer
             FetchMissing(state, read, pictureLinks, target);
             if (File.Exists(target)) linked = target;
         }
-        var hashes = state.HashPictures(read, current, zipPath, linked, replace: true);  // before the transaction: it holds the database for writing
+        var hashes = state.HashPictures(read, current, zipPath, linked, replace: fill is null);  // before the transaction: it holds the database for writing
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
         var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), model.Profile.Gender);  // a 3D face of the body's gender, whatever the archive's face and gender were
         model = model with { Profile = model.Profile with { Gender = (int)gender }, Account = model.Account with { Face = (int)face } };
@@ -158,12 +160,12 @@ public static class Restorer
         State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            pictures = state.PreparePictures(con, read, hashes, replace: true);
+            pictures = state.PreparePictures(con, read, hashes, replace: fill is null, keepFiles: fill is not null);
             report = Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
-                          finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems());  // the importer warns of an address that is no stock avatar; a stored picture is no default
+                          finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill);  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
-            Friends(con, finalId, model.Extras);
+            Friends(con, finalId, fill is null ? model.Extras : model.Extras.Where(e => fill.Contains(e.Key)).ToDictionary());
             if (long.TryParse(model.Identity.Uid, out var oldId)) Store.ReconnectFriends(con, oldId);  // the edges other restores saved to this profile's old user id now name the account that holds it
         }
         try
@@ -174,7 +176,7 @@ public static class Restorer
             {
                 using var con = store.Open(current);
                 con.Begin();
-                con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
+                if (fill is null) con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
                 Write(con);
                 con.Commit();
             }
@@ -296,15 +298,18 @@ public static class Restorer
 
     static JsonObject Vec(Vec3I v) => new() { ["x"] = v.X, ["y"] = v.Y, ["z"] = v.Z };
 
-    /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row;
+    /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row; `filled` not null: replace nothing, fill what the account lacks (see <see cref="Apply"/>).
     /// returns the report.</summary>
-    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit)
+    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit, HashSet<string>? filled)
     {
         // the start em$ the account has not spent yet, until a zip's wallet replaced them once (a claim keeps the account's wallet)
         var unspentStartEm = con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%'") is null
             ? Math.Min(Convert.ToDouble(con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = 'em'") ?? 0.0, System.Globalization.CultureInfo.InvariantCulture), StartEm)
             : 0;
-        PlayerRows.ClearModel(con);
+        // a fill (an archive claim over a restore of the account's own backup) replaces nothing: only a table with no row of the account is written, and an extra only under a path it lacks
+        var empty = new[] { "profile", "wallet", "items", "skills", "statistics", "achievements", "trophies", "lodges", "loadouts" }
+            .Where(t => filled is null || con.Scalar($"SELECT 1 FROM {t} WHERE account_id = $a") is null).ToHashSet();
+        if (filled is null) PlayerRows.ClearModel(con);
         var lines = new List<string>();
         var dropped = new List<string>();
         var personal = 0;
@@ -329,38 +334,45 @@ public static class Restorer
         Put(me, "rank", p.Rank);
         me["user_group"] ??= p.UserGroup;
         personal += Strip(me);
-        PlayerRows.SetProfile(con, me);
+        if (empty.Contains("profile")) PlayerRows.SetProfile(con, me);
 
-        var wallet = m.Wallet ?? new Wallet(0, 0);
-        var (em, gm) = (Math.Max(wallet.Em, unspentStartEm), Math.Max(wallet.Gm, GmFloor));  // every restore leaves the player enough gm$ to start again, and the start em$ not spent yet
-        PlayerRows.SetWallet(con, "em", em);
-        PlayerRows.SetWallet(con, "gm", gm);
-        if (m.Wallet is null) dropped.Add($"not in the zip: wallet ({em} em, {gm} gm stored)");
-        else
+        if (empty.Contains("wallet"))
         {
-            if (em > wallet.Em) lines.Add($"wallet: em raised from {wallet.Em} to {em}");
-            if (gm > wallet.Gm) lines.Add($"wallet: gm raised from {wallet.Gm} to {gm}");
+            var wallet = m.Wallet ?? new Wallet(0, 0);
+            var (em, gm) = (Math.Max(wallet.Em, unspentStartEm), Math.Max(wallet.Gm, GmFloor));  // every restore leaves the player enough gm$ to start again, and the start em$ not spent yet
+            PlayerRows.SetWallet(con, "em", em);
+            PlayerRows.SetWallet(con, "gm", gm);
+            if (m.Wallet is null) dropped.Add($"not in the zip: wallet ({em} em, {gm} gm stored)");
+            else
+            {
+                if (em > wallet.Em) lines.Add($"wallet: em raised from {wallet.Em} to {em}");
+                if (gm > wallet.Gm) lines.Add($"wallet: gm raised from {wallet.Gm} to {gm}");
+            }
         }
 
-        foreach (var i in m.Items)
+        if (empty.Contains("items"))
         {
-            var metadata = (JsonObject)i.Metadata.DeepClone();
-            metadata.Remove(State.POSITION);  // the zip's own metadata cannot claim a placement
-            metadata.Remove(State.DIRECTION);
-            if (i.Position is { } pos) metadata[State.POSITION] = Vec(pos);
-            if (i.Direction is { } dir) metadata[State.DIRECTION] = Vec(dir);
-            metadata.Remove(State.RESERVE);
-            if (i.WebReserve is { } reserve) metadata[State.RESERVE] = reserve;
-            PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
-        }
+            foreach (var i in m.Items)
+            {
+                var metadata = (JsonObject)i.Metadata.DeepClone();
+                metadata.Remove(State.POSITION);  // the zip's own metadata cannot claim a placement
+                metadata.Remove(State.DIRECTION);
+                if (i.Position is { } pos) metadata[State.POSITION] = Vec(pos);
+                if (i.Direction is { } dir) metadata[State.DIRECTION] = Vec(dir);
+                metadata.Remove(State.RESERVE);
+                if (i.WebReserve is { } reserve) metadata[State.RESERVE] = reserve;
+                PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
+            }
 
-        // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
-        var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max());
-        if (added > 0) lines.Add($"start items added: {added}");
+            // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
+            var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max());
+            if (added > 0) lines.Add($"start items added: {added}");
+        }
 
         var skills = 0;
         void Skill(string kind, long key, double number)
         {
+            if (!empty.Contains("skills")) return;
             PlayerRows.SetSkill(con, kind, key, Skills.Xp(number));
             skills++;
         }
@@ -370,7 +382,7 @@ public static class Restorer
             for (var k = 0; k < s.Tracking.Length; k++) Skill("tracking", k, s.Tracking[k]);
             for (var k = 0; k < s.Spotting.Length; k++) Skill("spotting", k, s.Spotting[k]);
         }
-        else
+        else if (empty.Contains("skills"))
         {
             for (var k = 0; k < 59; k++)
             {
@@ -380,16 +392,17 @@ public static class Restorer
             dropped.Add("not in the zip: skills (a new player's levels stored)");
         }
 
-        if (m.Stats is { } st)
+        if (m.Stats is { } st && empty.Contains("statistics"))
             PlayerRows.SetStatistics(con, st.UserStats, st.Distance, st.Duration, st.BustThroughScore, st.LaneBanditScore);
-        foreach (var a in m.Achievements)
-            PlayerRows.AddAchievement(con, a.Id, a.CategoryId, a.GroupId, a.Value, a.Triggers);
-        foreach (var t in m.Trophies)
+        if (empty.Contains("achievements"))
+            foreach (var a in m.Achievements)
+                PlayerRows.AddAchievement(con, a.Id, a.CategoryId, a.GroupId, a.Value, a.Triggers);
+        foreach (var t in m.Trophies.Where(_ => empty.Contains("trophies")))
         {
             personal += Strip(t.Node);
             PlayerRows.AddTrophy(con, t.Source, t.Id, t.Node);
         }
-        foreach (var l in m.Lodges)
+        foreach (var l in m.Lodges.Where(_ => empty.Contains("lodges")))
         {
             personal += Strip(l.Node);
             PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
@@ -397,13 +410,14 @@ public static class Restorer
         foreach (var (path, body) in m.Extras)
         {
             personal += Strip(body);
-            PlayerRows.SetExtra(con, path, body);
+            if (filled is null) PlayerRows.SetExtra(con, path, body);
+            else if (PlayerRows.AddExtra(con, path, body)) filled.Add(path);
         }
-        State.EnsureMissions(con);  // the saved mission states become the account's rows
-        con.Exec(Store.RestoredChallenges);  // the saved completed challenges too
-        var loadouts = con.Exec(Store.RestoredLoadouts);  // the saved loadouts, now under this server's ids
+        State.EnsureMissions(con);  // the saved mission states become the account's rows (the account's own, when it has them)
+        con.Exec(Store.RestoredChallenges);  // the saved completed challenges too (a challenge the account has stays)
+        var loadouts = filled is null || (filled.Contains("game_user_loadout.json") && empty.Contains("loadouts")) ? con.Exec(Store.RestoredLoadouts) : 0;  // the saved loadouts, now under this server's ids
 
-        lines.Add($"stored: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "
+        lines.Add($"{(filled is null ? "stored" : "offered, stored only where the account had no row")}: items {m.Items.Count}, wallet 2, skills {skills}, profile 1, statistics {(m.Stats is null ? 0 : 1)}, achievements {m.Achievements.Count}, "
                   + $"trophies {m.Trophies.Count}, lodges {m.Lodges.Count}, extras {m.Extras.Count}, loadouts {loadouts}");
         lines.Add(pictures);
         if (personal > 0) dropped.Add($"{personal} personal field(s) (e-mail, real name, address, phone) in the saved replies");
@@ -412,7 +426,7 @@ public static class Restorer
         dropped.Add("the zip's claim hash: a per-PC key, not proof of the account");
 
         var text = new StringBuilder(layerA.ToText());
-        text.AppendLine($"account: {(replaced ? "profile replaced" : "created")}");
+        text.AppendLine($"account: {(filled is not null ? "profile kept, only what it had no row for was added" : replaced ? "profile replaced" : "created")}");
         if (backup is not null) text.AppendLine($"old database copied to {Path.GetFileName(backup)}");
         foreach (var line in lines) text.AppendLine(line);
         text.AppendLine($"dropped: {dropped.Count}");
