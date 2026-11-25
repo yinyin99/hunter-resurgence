@@ -109,7 +109,7 @@ public class UploadTests : StateTestBase, IAsyncLifetime
             PlayerRows.SetExtra(con, "Gallery_list__user_id=1001__offset=0__limit=24.json", new JsonObject { ["kept"] = true });
             PlayerRows.AddAudit(con, "archive:1001", "public", "claim");
         }
-        var uploads = Operator;
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var id = uploads.Start(player)!;
         await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(PublicSave())));
         Assert.Equal("review", (await uploads.Finish(player, id)).Kind);
