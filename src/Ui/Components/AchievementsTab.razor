@@ -10,10 +10,15 @@
     {
         @foreach (var b in summary.Categories)
         {
+            var f = (double)b.Done / b.Total;
+            var tip = $"tip-{b.Name}";
             <div class="ov">
                 @if (b.Name is "Animals" or "Weapons" or "Exploration") { <AssetSlot Name="@("ach-" + b.Name.ToLowerInvariant())" Width="40" Height="40" /> }
                 else { <Icon Name="location-dot" /> }
-                <div class="bar"><i style="width:@(100 * b.Done / b.Total)%"></i></div>
+                <div class="bar" style="--c:@F(f)" tabindex="0" aria-describedby="@tip">
+                    <span class="track"><i style="width:@F(100 * f)%"></i></span>
+                    <small id="@tip" role="tooltip" class="tip">@L.Term(b.Name) @L["Prof.Unlocked"]: @b.Done.ToString("N0") / @b.Total.ToString("N0") (@((100 * f).ToString("0.0"))%)</small>
+                </div>
             </div>
         }
         <h4 class="gap">@L["Prof.Statistics"]</h4>
@@ -33,13 +38,12 @@ else
             <div class="what">
                 <h4>@L.Term(m.Title) (@m.Done/@m.Steps.Count)</h4>
                 <div class="steps">
-                    <i style="width:@Fill(m).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></i>
                     @foreach (var (s, i) in m.Steps.Select((s, i) => (s, i)))
                     {
                         var p = m.Progress(i);
                         var tip = $"tip-{mi}-{i}";
-                        // the tooltip opens on hover and on focus; the first half of the steps lines it up with the step's start, the second half with its end, so it stays inside the row
-                        <span class="@(i < m.Done ? "got" : "") @(2 * i < m.Steps.Count ? "lo" : "hi")" tabindex="0" aria-describedby="@tip">
+                        // the tooltip opens on hover and on focus, centred above the step and moved inward at the row's ends; --c is the step's centre as a share of the row
+                        <span class="@(i < m.Done ? "got" : i == m.Done ? "next" : "")" style="--c:@F((i + 0.5) / m.Steps.Count)" tabindex="0" aria-describedby="@tip">
                             @s
                             <small id="@tip" role="tooltip" class="tip">
                                 @if (m.StepTitle != "") { <b>@Text(m.StepTitle, s)</b> }
@@ -47,8 +51,7 @@ else
                                 @if (p.Reached) { <span>@L["Prof.AchDone"]</span> }
                                 else
                                 {
-                                    <span>@L["Prof.Progress"]: @p.Have.ToString("N0")/@p.Need.ToString("N0") (@p.Percent%)</span>
-                                    <span class="meter"><i style="width:@p.Percent%"></i></span>
+                                    <span class="meter"><i style="width:@p.Percent%"></i><em>@L["Prof.Progress"]: @p.Have.ToString("N0")/@p.Need.ToString("N0") (@p.Percent%)</em></span>
                                 }
                             </small>
                         </span>
@@ -85,14 +88,7 @@ else
     // the catalogue's format string with "%d" as the step's threshold
     static string Text(string format, int step) => format.Replace("%d", step.ToString("N0"));
 
-    // the blue fill reaches the steps done and a part of the next one
-    static double Fill(Milestone m)
-    {
-        if (m.Steps.Count == 0) return 0;
-        var prev = m.Done == 0 ? 0 : m.Steps[m.Done - 1];
-        var part = m.Done >= m.Steps.Count ? 0 : (double)(m.Value - prev) / (m.Steps[m.Done] - prev);
-        return 100 * (m.Done + Math.Clamp(part, 0, 1)) / m.Steps.Count;
-    }
+    static string F(double v) => v.ToString("0.####", System.Globalization.CultureInfo.InvariantCulture);
 
     RenderFragment Item(string title, string text, DateOnly? date) => @<div class="item">
         <AssetSlot Name="@($"ach-badge-{title}")" Width="90" Height="90" Class="badge" />

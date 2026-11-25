@@ -6,29 +6,34 @@ h5 { margin: 0 0 20px; font-size: 14px; line-height: 20px; font-weight: 400; col
 .ov { display: flex; align-items: center; gap: 24px; width: 700px; margin: 0 0 13px; }
 .ov ::deep .asset-slot { flex: none; margin-left: 12px; object-fit: contain; }
 .ov ::deep .icon { flex: none; width: 36px; height: 36px; margin-left: 12px; color: #fff; }
-.bar { position: relative; flex: 1; height: 26px; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .6); }
-.bar i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; }
+.bar { position: relative; flex: 1; height: 26px; }
+.track { position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .6); }
+.track i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; }
 .row { display: flex; gap: 18px; padding: 15px 0; border-top: 1px solid var(--line); }
 .row ::deep .badge { flex: none; margin-left: 10px; }
 .what { flex: 1; }
 .what h4 { margin: 0 0 12px; font-size: 17.5px; line-height: 24px; }
 .steps { position: relative; display: flex; height: 40px; background: var(--surface-5); }
-.steps > i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; opacity: .9; }
-.steps > span { position: relative; flex: 1; font-size: 14px; line-height: 40px; text-align: center; color: var(--text-2); }
+.steps > span { flex: 1; font-size: 14px; line-height: 40px; text-align: center; color: var(--text-2); }
+.steps > span + span { border-inline-start: 1px solid rgba(0, 0, 0, .45); }
+.steps > span.got { background: #9cc3ea; color: #234; }
+.steps > span.next { background: #6f7f90; }
 .item { display: grid; grid-template-columns: 110px 370px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); min-height: 106px; box-sizing: border-box; }
 .item ::deep .badge { margin-left: 10px; }
 .text b, .text span { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
 .text b { font-weight: 700; color: var(--text-2); }
 time { font-size: 14px; line-height: 20px; color: var(--text-2); }
-.steps > span.got { color: #234; }
-/* a step's tooltip opens above it on hover and on keyboard focus; the .steps box does not clip it, and it lines up with the step's start (first half of the steps) or end (second half), inside the row */
-.tip { display: none; position: absolute; z-index: 5; bottom: 100%; width: 260px; max-width: 90vw; box-sizing: border-box; margin-bottom: 6px; padding: 8px 10px; border-radius: var(--r-2); background: var(--bg-tooltip); box-shadow: 0 2px 10px rgba(0, 0, 0, .7); color: #fff; font-size: var(--fs-tooltip); font-weight: 400; line-height: 18px; text-align: start; }
+/* a tooltip opens above its step or bar on hover and on keyboard focus, centred on the step (--c: its centre as a share of the row), moved inward at the row's ends, with a pointer at the step; the tooltip and the pointer sit in the .steps or .bar box, which does not clip them */
+.tip { --w: 260px; display: none; position: absolute; z-index: 5; bottom: 100%; inset-inline-start: clamp(0px, calc(var(--c) * 100% - var(--w) / 2), calc(100% - var(--w))); width: var(--w); box-sizing: border-box; margin-bottom: 6px; padding: 8px 10px; border-radius: var(--r-2); background: var(--bg-tooltip); box-shadow: 0 2px 10px rgba(0, 0, 0, .7); color: #fff; font-size: var(--fs-tooltip); font-weight: 400; line-height: 18px; text-align: center; }
+.bar .tip { --w: 220px; }
 .tip::before { content: ""; position: absolute; inset-inline: 0; top: 100%; height: 6px; }  /* bridges the gap to the step, so the pointer can move onto the tooltip */
-.steps > span:hover .tip, .steps > span:focus-visible .tip { display: block; }
-.steps:hover > span:not(:hover) .tip { display: none; }
-.lo .tip { inset-inline-start: 0; }
-.hi .tip { inset-inline-end: 0; }
+.steps > span::after, .bar::after { content: ""; display: none; position: absolute; bottom: 100%; inset-inline-start: calc(var(--c) * 100%); margin-inline-start: -6px; border: solid transparent; border-width: 6px 6px 0; border-top-color: var(--bg-tooltip); }
+.steps > span:is(:hover, :focus-visible) .tip, .bar:is(:hover, :focus-visible) .tip { display: block; }
+.steps > span:is(:hover, :focus-visible)::after, .bar:is(:hover, :focus-visible)::after { display: block; }
+.steps:hover > span:not(:hover) .tip, .steps:hover > span:not(:hover)::after { display: none; }
 .tip > b, .tip > span { display: block; }
 .tip > b { font-weight: 700; }
-.meter { position: relative; height: 6px; margin-top: 6px; background: var(--surface-5); }
-.meter i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; }
+.tip > span { color: var(--text-3); }
+.tip > .meter { position: relative; height: 16px; margin-top: 6px; overflow: hidden; border-radius: 2px; background: var(--surface-5); line-height: 16px; color: #fff; text-shadow: 0 0 3px #000; }
+.meter i { position: absolute; inset: 0 auto 0 0; background: #6b9bd1; }
+.meter em { position: relative; font-style: normal; }
