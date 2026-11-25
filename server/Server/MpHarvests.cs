@@ -13,12 +13,13 @@ public sealed partial class State
 
     sealed record MpHit(long Account, long Id, double Ts, double Individual, long? Species);
 
-    sealed record MpHunt(long Id, long? Reserve, double Start, double End);
+    /// <summary>`Net`: the hunt's events hold a network event (29, the game's port and network id), which only a game of several players sends.</summary>
+    sealed record MpHunt(long Id, long? Reserve, double Start, double End, bool Net);
 
     static double? Dbl(object o) => o is long l ? (double?)l : o is double d ? d : null;
 
     /// <summary>Admin: move the stored harvests of multiplayer games to the player who shot the animal last. A harvest of an account is moved when another account's event 1 on the same `individual`
-    /// (of the same species, when the hit names it) came in the ten minutes before it, in a hunt of the same reserve that overlapped the harvester's and was still running at the harvest, after the
+    /// (of the same species, when the hit names it) came in the ten minutes before it, in a hunt of the same reserve that overlapped the harvester's and was still running at the harvest (both hunts sent a network event, 29, so were games of several players), after the
     /// harvester's own last hit on it. The first harvest of such an animal moves; a later one, or one of an animal its shooter harvested himself, stays (counted in the total).
     /// A moved harvest takes its page (taxidermy or skull bought with it too), its kill row and its events to the shooter, under a new kill id of the shooter's, and the trophy mounted in the harvester's lodge is taken down.
     /// Its score is judged again on the shooter's hits. **The gm$ are not moved**: what the harvester was paid stays his and the shooter gets none (a wallet row of 0 keeps `admin rescore` from paying it).
@@ -34,8 +35,10 @@ public sealed partial class State
         foreach (var account in accounts)
         {
             using var con = Con(account);
-            var mine = hunts[account] = [.. con.Rows("SELECT id, reserve, start_ts, COALESCE(end_ts, COALESCE(last_seen, start_ts) + ?) FROM expeditions WHERE account_id = $a", HEARTBEAT_TIMEOUT)
-                .Select(r => new MpHunt((long)r[0], r[1] as long?, Convert.ToDouble(r[2]), Convert.ToDouble(r[3])))];
+            var network = con.Rows("SELECT id FROM events WHERE account_id = $a AND event = 29").Select(r => (long)r[0]).ToList();
+            var rows = con.Rows("SELECT id, reserve, start_ts, COALESCE(end_ts, COALESCE(last_seen, start_ts) + ?), COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id", HEARTBEAT_TIMEOUT);
+            var mine = hunts[account] = [.. rows.Select((r, i) => new MpHunt((long)r[0], r[1] as long?, Convert.ToDouble(r[2]), Convert.ToDouble(r[3]),  // a hunt's events lie between its first event and the next hunt's
+                network.Any(n => n > (long)r[4] && (i + 1 == rows.Count || n < (long)rows[i + 1][4]))))];
             hits.AddRange(con.Rows("SELECT id, ts, individual, json_extract(body, '$.species') FROM events WHERE account_id = $a AND event = 1 AND ts IS NOT NULL AND individual IS NOT NULL")
                 .Where(r => Dbl(r[2]) is not null).Select(r => new MpHit(account, (long)r[0], Convert.ToDouble(r[1]), Dbl(r[2])!.Value, Dbl(r[3]) is { } s ? (long?)s : null)));
             e3s.AddRange(con.Rows("SELECT id, individual FROM events WHERE account_id = $a AND event = 3 AND individual IS NOT NULL")
@@ -60,8 +63,10 @@ public sealed partial class State
         foreach (var h in harvests.OrderBy(h => h.EventId))
         {
             // the newest hit of another account that was in a running hunt of the reserve, after the harvester's own last hit
-            var found = byAnimal[h.Individual].Where(x => x.Account != h.Account && x.Id > h.OwnLast && x.Id < h.EventId && x.Ts >= h.Ts - MpHitWindow && x.Ts <= h.Ts && (x.Species is null || h.Species is null || x.Species == h.Species))
-                .Select(x => (Hit: x, Hunt: hunts[x.Account].FirstOrDefault(u => u.Reserve == h.Reserve && u.Start <= x.Ts && u.End >= h.Ts - HEARTBEAT_TIMEOUT && u.Start <= h.End && u.End >= h.Start)))
+            if (!hunts[h.Account].Any(u => u.Id == h.Hunt && u.Net))
+                continue;  // not a game of several players
+            var found = byAnimal[h.Individual].Where(x => x.Account != h.Account && x.Id > h.OwnLast && x.Id < h.EventId && x.Ts >= h.Ts - MpHitWindow && x.Ts <= h.Ts && (x.Species is null || h.Species is null || x.Species == h.Species % 100 + 1))
+                .Select(x => (Hit: x, Hunt: hunts[x.Account].FirstOrDefault(u => u.Net && u.Reserve == h.Reserve && u.Start <= x.Ts && u.End >= h.Ts - HEARTBEAT_TIMEOUT && u.Start <= h.End && u.End >= h.Start)))
                 .Where(x => x.Hunt is not null).OrderByDescending(x => x.Hit.Id).FirstOrDefault();
             if (found.Hunt is not { } shooterHunt)
                 continue;

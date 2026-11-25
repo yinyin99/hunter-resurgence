@@ -36,7 +36,7 @@ public class MpHarvestTests : StateTestBase
     static JsonNode Spawn(int individual) =>
         O($$"""{"event": 7, "individual": {{individual}}, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 1}""");
 
-    static JsonNode Hit(int individual, int distance = 8250, int species = 1) =>
+    static JsonNode Hit(int individual, int distance = 8250, int species = 2) =>
         O($$"""{"event": 1, "individual": {{individual}}, "species": {{species}}, "distance_cms": {{distance}}, "organ1": 17, "organ2": 8388610, "weapon_id": 5, "ammunition_id": 10, "animal_state": 3}""");
 
     static JsonObject MuleAntler(int beam, int[] h, int[] g)
@@ -171,6 +171,8 @@ public class MpHarvestTests : StateTestBase
         state = past;
         past.NoteLaunch(HOST, Encoding.UTF8.GetBytes(Start));
         past.NoteLaunch(GUEST, Encoding.UTF8.GetBytes(Start));
+        foreach (var who in new[] { HOST, GUEST })  // a game's players send their port and network id (event 29)
+            Beat(who, O("""{"event": 29, "port": 32303, "guid": "9007199254740993", "color": "c73378"}"""));
         return (past, account => past.Store.AccountJson(account)["hunterscore"] is { } h ? Py.L(h) : 0);
     }
 
@@ -210,5 +212,33 @@ public class MpHarvestTests : StateTestBase
         Assert.Equal((1L, 1L), (Count(HOST, "mission_rollbacks"), Count(GUEST, "mission_rollbacks")));
         Assert.StartsWith("moved 0 harvests", past.MoveMpHarvests(apply: true).Single());
         Assert.Equal((2L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills")));
+    }
+
+    [Fact]
+    public void TestTheCleanupFindsASwappedFlockAndLeavesAHuntThatWasNoGame()
+    {
+        var (past, _) = Past();
+        past.NoteLaunch(THIRD, Encoding.UTF8.GetBytes(Start));  // a hunt of its own: it sends no network event
+        // two players in one game shot the same flock: the guest three birds, the host one; each skinned the other's
+        Beat(GUEST, [.. Shot(460), .. Shot(461), .. Shot(462)]);
+        Beat(HOST, Shot(463));
+        Beat(HOST, Skinned(460, 1, spawn: false));
+        Beat(HOST, Skinned(461, 2, spawn: false));
+        Beat(HOST, Skinned(462, 3, spawn: false));
+        Beat(GUEST, Skinned(463, 4, spawn: false));
+        // an animal the host shot, skinned in a hunt that was no game
+        Beat(HOST, Shot(470));
+        Beat(THIRD, Skinned(470, 5));
+        Assert.Equal((3L, 1L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(THIRD, "kills")));
+
+        var lines = past.MoveMpHarvests(apply: false).ToList();
+        Assert.Equal(5, lines.Count);
+        Assert.Equal(3, lines.Count(l => l.Contains($"from account {HOST} to account {GUEST}")));
+        Assert.Equal(1, lines.Count(l => l.Contains($"from account {GUEST} to account {HOST}")));
+        Assert.DoesNotContain(lines, l => l.Contains($"account {THIRD}"));
+        Assert.StartsWith("would move 4 harvests", lines[^1]);
+
+        past.MoveMpHarvests(apply: true).ToList();
+        Assert.Equal((1L, 3L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(THIRD, "kills")));  // each has the birds he shot; the hunt that was no game is untouched
     }
 }
