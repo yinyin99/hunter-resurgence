@@ -132,9 +132,10 @@ public static class Restorer
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
     /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.
     /// fill: not null = replace nothing: no row, picture file or name of the account is replaced, only the tables and keys the account has no row for are filled (an archive claim over a restore of the account's own backup);
-    /// it receives the paths of the saved replies (extras) that were added. checkFill: inside the transaction, throw <see cref="FillChangedException"/> when the account's own backup is restored differently from what `fill` assumed.</summary>
+    /// it receives the paths of the saved replies (extras) that were added. checkFill: inside the transaction, throw <see cref="FillChangedException"/> when the account's own backup is restored differently from what `fill` assumed.
+    /// merge: the account already has this profile from an archive claim (`exists`, finalId == current): only what it lacks is added (<see cref="Merge"/>), nothing it has is replaced; separate from fill (an own-backup restore).</summary>
     internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
-                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null, HashSet<string>? fill = null, bool checkFill = false)
+                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null, HashSet<string>? fill = null, bool checkFill = false, bool merge = false)
     {
         var model = read.Model;
         var store = state.Store;
@@ -154,7 +155,7 @@ public static class Restorer
             FetchMissing(state, read, pictureLinks, target);
             if (File.Exists(target)) linked = target;
         }
-        var hashes = state.HashPictures(read, current, zipPath, linked, replace: fill is null);  // before the transaction: it holds the database for writing
+        var hashes = state.HashPictures(read, current, zipPath, linked, replace: fill is null && !merge);  // before the transaction: it holds the database for writing
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
         var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), model.Profile.Gender);  // a 3D face of the body's gender, whatever the archive's face and gender were
         model = model with { Profile = model.Profile with { Gender = (int)gender }, Account = model.Account with { Face = (int)face } };
@@ -163,10 +164,11 @@ public static class Restorer
         State.Unpacking? pictures = null;
         void Write(Db con)
         {
-            pictures = state.PreparePictures(con, read, hashes, replace: fill is null, keepFiles: fill is not null);
-            report = Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
+            pictures = state.PreparePictures(con, read, hashes, replace: fill is null && !merge, keepFiles: fill is not null);
+            report = merge ? Merge(con, model, read.Report, sha, pictures.Report) : Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
                           finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill);  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
+            if (merge) return;
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, fill is null ? model.Extras : model.Extras.Where(e => fill.Contains(e.Key)).ToDictionary());
             if (long.TryParse(model.Identity.Uid, out var oldId)) Store.ReconnectFriends(con, oldId);  // the edges other restores saved to this profile's old user id now name the account that holds it
@@ -181,7 +183,7 @@ public static class Restorer
                 con.Begin();
                 if (checkFill && (con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND mode = 'my-account'") is not null) != (fill is not null))
                     throw new FillChangedException();  // the account's own backup was restored since the caller looked: nothing is written, the caller decides again
-                if (fill is null) con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
+                if (fill is null && !merge) con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
                 Write(con);
                 con.Commit();
             }
@@ -214,6 +216,32 @@ public static class Restorer
         }
         state.Unpack(finalId, zipPath is null ? null : kept, zipPath is null ? linksZip : PicturesZip(kept), pictures!);  // last: the files follow the committed rows, and a failure here (the disk) leaves the account restored, its hunterscore updated and its zips under its id; a restore again replaces them
         return new(finalId, !exists, sha, report);
+    }
+
+    /// <summary>What a save adds to an account that has its profile from an archive claim: the saved replies (hunts and their details, gallery lists, competitions) and the lodge contents it lacks; one it has stays, and so do its
+    /// items, wallet, skills, statistics, achievements, trophies, profile and the play since. The gallery pictures come from <see cref="State.PreparePictures"/> (no replace). Adds the audit row; returns the report.</summary>
+    static string Merge(Db con, PlayerModel m, Report layerA, string sha, string pictures)
+    {
+        int extras = 0, lodges = 0;
+        foreach (var (path, body) in m.Extras)
+        {
+            Strip(body);
+            extras += PlayerRows.AddExtraIfAbsent(con, path, body);
+        }
+        foreach (var l in m.Lodges)
+        {
+            if (con.Scalar("SELECT 1 FROM lodges WHERE account_id = $a AND source = ? AND id = ?", l.Source, l.Id) is not null) continue;
+            Strip(l.Node);
+            PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
+            lodges++;
+        }
+        var text = new StringBuilder(layerA.ToText());
+        text.AppendLine("account: archive claim kept, missing parts added");
+        text.AppendLine($"added: saved replies {extras} of {m.Extras.Count}, lodge rows {lodges} of {m.Lodges.Count}");
+        text.AppendLine(pictures);
+        var report = text.ToString();
+        PlayerRows.AddAudit(con, sha, layerA.Mode, report);
+        return report;
     }
 
     /// <summary>Give the account (and its rows, tokens, sessions and claimed user ids) another user id, inside the caller's

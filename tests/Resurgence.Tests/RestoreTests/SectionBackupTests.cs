@@ -26,6 +26,9 @@ sealed class SectionZip
     /// <summary>The index.json text as it is, when a test needs one no JsonObject can hold.</summary>
     public string? IndexText;
 
+    /// <summary>A public profile's folder: no index.json.</summary>
+    public bool NoIndex;
+
     public byte[] Build()
     {
         Index["files"] ??= new JsonArray([.. sections.Select(s => (JsonNode?)s.Name)]);
@@ -33,7 +36,7 @@ sealed class SectionZip
         using (var z = new ZipArchive(ms, ZipArchiveMode.Create, true))
         {
             void Put(string name, byte[] body) { using var s = z.CreateEntry(name).Open(); s.Write(body); }
-            Put(Prefix + "index.json", Encoding.UTF8.GetBytes(IndexText ?? Index.ToJsonString()));
+            if (!NoIndex) Put(Prefix + "index.json", Encoding.UTF8.GetBytes(IndexText ?? Index.ToJsonString()));
             foreach (var (name, body) in sections) Put(Prefix + name, body);
             foreach (var (name, body) in Raw) Put(name, body);
         }
@@ -104,6 +107,39 @@ public class SectionBackupTests
             .Reply($"/game/user/{Uid}/lodges", """[{"id":61,"name":"Lodge"}]""").Reply("/game/user/backgrounds", """[{"id":1,"active":true}]""");
         return z;
     }
+
+    /// <summary>A public save: a folder `tool_public_<handle>` with no index.json and no `me` section.</summary>
+    static SectionZip PublicSave(string folder = "tool_public_sample/", string profile = """{"id":1001,"handle":"Sample","hostname":"sample","hunterscore":1234}""") =>
+        new SectionZip { Prefix = folder, NoIndex = true }.Section("profile", profile).Section("trophies", Trophies).Section("expeditions", Expeditions)
+            .Section("hunt_details", $$"""{"9100":{{Hunt}}}""").Section("gallery", Gallery);
+
+    [Fact]
+    public void APublicSaveWithoutAnIndexReadsWithTheIdOfItsProfile()
+    {
+        var read = PublicSave().Read();
+        Assert.Equal(Uid, read.Model.Identity.Uid);
+        Assert.Equal("sample", read.Model.Identity.Handle);
+        Assert.Equal("public", read.Model.Identity.Mode);
+        Assert.Null(read.Model.Identity.SteamId64);
+        Assert.Null(read.Model.Wallet);
+        Assert.Single(read.Model.Trophies);
+        Assert.Contains(read.Model.Extras.Keys, k => k.StartsWith("Public_user_expedition", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void APublicSaveOneLevelDownAndTheV2ProfileIdRead()
+    {
+        var z = PublicSave("saves/tool_public_sample/", """{"hostname":"sample"}""").Section("v2_profile", """{"id":1001,"hunterscore":1}""");
+        Assert.Equal(Uid, z.Read().Model.Identity.Uid);
+    }
+
+    [Fact]
+    public void APublicSaveWhoseHandleIsNotItsProfilesIsRefused() =>
+        Assert.Contains("hostname", PublicSave("tool_public_other/").Refused());
+
+    [Fact]
+    public void APublicSaveWithNoReadableIdIsRefused() =>
+        Assert.Contains("no readable user id", PublicSave(profile: """{"hostname":"sample"}""").Refused());
 
     static string Json(object o) => JsonSerializer.Serialize(o, Importer.Json);
 

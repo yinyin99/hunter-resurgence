@@ -417,13 +417,20 @@ public sealed class Uploads(State state, string dataDir)
     /// (Approve keeps its own user id then). Null: allowed.</summary>
     UploadOutcome? Refusal(long account, long uid)
     {
-        if (Store.RestoredBy(uid) is not null)
+        if (Store.RestoredBy(uid) is { } by && !(by == account && FromClaim(account, uid)))
             return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed.");
         if (uid < 1 || uid >= Store.FirstServerId)
             return new(409, "refused", "This backup has a user id this server does not accept.");
         if (uid != account && Store.AccountExists(uid))
             return new(409, "taken", "Another account on this server already has this backup's user id. Nothing was changed. Ask the operator.");
         return null;
+    }
+
+    /// <summary>Does the account hold this user id's profile from an archive claim (`restore_audit` `archive:<uid>`)? A public save of it adds what the claim lacked.</summary>
+    bool FromClaim(long account, long uid)
+    {
+        using var con = Store.Open(account);
+        return con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 = ?", $"archive:{uid}") is not null;
     }
 
     /// <summary>Keep the zip for the operator and write nothing of it into the account.</summary>
@@ -516,22 +523,24 @@ public sealed class Uploads(State state, string dataDir)
             var account = row.Account;
             if (Refusal(account, uid) is { } refused) return Refused(row, refused);
             var zipHandle = model.Profile.Handle ?? model.Identity.Handle;
-            var finalId = Store.Played(account) ? account : uid;  // an account that has played keeps its id: what it played stays under it and no restored id can clash with the ids handed out here
+            var merge = model.Identity.Mode == "public" && FromClaim(account, uid);  // the claim's profile stays: the save only adds what it lacked
+            var finalId = merge || Store.Played(account) ? account : uid;  // an account that has played keeps its id: what it played stays under it and no restored id can clash with the ids handed out here
             var current = (string)Store.AccountJson(account)["handle"]!;
             var adopt = !keepHandle && zipHandle is not null && AdoptableHandle.IsMatch(zipHandle) && (Store.AccountByHandle(zipHandle) is not { } holder || holder == account);
             var handle = adopt ? zipHandle! : current;
-            var summary = Summary(model, handle != current, zipHandle is not null && !adopt, keepHandle);
+            if (merge) (handle, adopt) = (current, false);
+            var summary = merge ? MergeSummary : Summary(model, handle != current, zipHandle is not null && !adopt, keepHandle);
             try
             {
                 var result = Restorer.Apply(state, path, row.Sha, read, account, finalId, handle, exists: true, backupDatabase: false, dataDir,
                     con =>
                     {
-                        con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
+                        if (!merge) con.Exec("INSERT INTO restored_ids (user_id, account_id, ts) VALUES (?, ?, ?)", uid, account, Store.Now());
                         con.Exec("DELETE FROM uploads WHERE account_id = $a AND id = ?", id);
                         con.Exec("INSERT INTO upload_results (account_id, ts, kind, user_id, handle, handle_kept, reason) VALUES ($a, ?, 'restored', ?, ?, ?, '')",
                                  Store.Now(), finalId, handle, adopt ? 0 : 1);
-                        Notify(con, $"{summary} Your user id is {finalId} and your name is {handle}.");
-                    }, pictureLinks: Pictures);
+                        Notify(con, merge ? summary : $"{summary} Your user id is {finalId} and your name is {handle}.");
+                    }, pictureLinks: Pictures, merge: merge);
                 return new(200, "restored", summary, result.Report);
             }
             catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the user id or the handle was taken between the check and the write
@@ -580,6 +589,8 @@ public sealed class Uploads(State state, string dataDir)
             return true;
         }
     }
+
+    const string MergeSummary = "The backup was added to your restored profile: your hunts and their details, gallery, competitions and lodge contents it had and your profile lacked. Nothing you already have was replaced.";
 
     static string Summary(PlayerModel m, bool handleChanged, bool handleKept, bool keptByOperator)
     {
