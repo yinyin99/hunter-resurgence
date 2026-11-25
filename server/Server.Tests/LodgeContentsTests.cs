@@ -65,7 +65,7 @@ public class LodgeContentsTests : StateTestBase
     [Fact]
     public void TheBackfillFillsAListedLodgeFromTheSavedExtraOnceAndAFirstRunWritesNothing()
     {
-        const long account = 7;
+        var account = state.Store.NextServerId();
         state.CreateAccount(account, "backfill");
         using (var con = state.Store.Open(account))
         {
@@ -79,11 +79,11 @@ public class LodgeContentsTests : StateTestBase
         Assert.Null(state.LodgeReply(account, 61));
 
         var dry = state.BackfillLodgeContents(apply: false);
-        Assert.Equal(["account 7 lodge 61: would add, 3 slots, 1 trophy rows", "account 7 lodge 62: would add, 1 slots, 0 trophy rows"], dry);
+        Assert.Equal([$"account {account} lodge 61: would add, 3 slots, 1 trophy rows", $"account {account} lodge 62: would add, 1 slots, 0 trophy rows"], dry);
         Assert.Equal([1L, 0L], [Rows(account, "lodges", "/game/user/lodge"), Rows(account, "trophies", "/game/user/trophies")]);  // nothing written
         Assert.Null(state.LodgeReply(account, 61));
 
-        Assert.Equal(["account 7 lodge 61: added, 3 slots, 1 trophy rows", "account 7 lodge 62: added, 1 slots, 0 trophy rows"], state.BackfillLodgeContents(apply: true));
+        Assert.Equal([$"account {account} lodge 61: added, 3 slots, 1 trophy rows", $"account {account} lodge 62: added, 1 slots, 0 trophy rows"], state.BackfillLodgeContents(apply: true));
         Assert.Equal([3L, 1L], [Rows(account, "lodges", "/game/user/lodge"), Rows(account, "trophies", "/game/user/trophies")]);
         Assert.Equal(9L, (long)Reply(state.LodgeReply(account, 61)!)["animal_slots"]![0]!["trophy_id"]!);
         Assert.Equal("kept", (string)Reply(state.LodgeReply(account, 64)!)["name"]!);
