@@ -28,14 +28,17 @@ public static class GameLanguages
 
     public static bool Has(string? code) => All.Any(l => l.Code == code);
 
-    /// <summary>The game's language for a language tag of the launcher or the PC ("fr", "pt-BR", "de-AT"): the code of that tag, else the first code of its language ("pt" is Brazilian, "no" and "nn" Norwegian bokmål), else English.</summary>
-    public static string For(string? tag)
+    /// <summary>The game's language for a language tag of the launcher or the PC ("fr", "pt-BR", "de-AT"): the code of that tag, else the first code of its language ("pt" is Brazilian, "no" and "nn" Norwegian bokmål), else null (the game lacks it).</summary>
+    public static string? Match(string? tag)
     {
         var code = (tag ?? "").Replace('-', '_');
         var language = code.Split('_')[0] is "no" or "nn" ? "nb" : code.Split('_')[0];
         return All.Select(l => l.Code).FirstOrDefault(c => c.Equals(code, StringComparison.OrdinalIgnoreCase))
-            ?? All.Select(l => l.Code).FirstOrDefault(c => c.StartsWith(language + "_", StringComparison.OrdinalIgnoreCase)) ?? Default;
+            ?? All.Select(l => l.Code).FirstOrDefault(c => c.StartsWith(language + "_", StringComparison.OrdinalIgnoreCase));
     }
+
+    /// <summary><see cref="Match"/>, else English.</summary>
+    public static string For(string? tag) => Match(tag) ?? Default;
 }
 
 public interface IGameSettingsService
