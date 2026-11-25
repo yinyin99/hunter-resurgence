@@ -87,6 +87,16 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name IN ('banned_steam', 'steam_deletions')"));
     }
 
+    [Fact]
+    public void TestADatabaseAtTheCurrentVersionWithoutTheAdminMessageLogGetsIt()
+    {
+        var file = Path.Combine(tmp, "current.db");
+        using (var con = new Store(file).Open())
+            con.Exec("DROP TABLE admin_messages");  // user_version stays at Store.Version
+        using var check = new Store(file).Open();
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'admin_messages'"));
+    }
+
     public async ValueTask DisposeAsync() => await server.DisposeAsync();
 
     void MakeArchive()

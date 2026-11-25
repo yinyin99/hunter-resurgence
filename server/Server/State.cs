@@ -1212,7 +1212,7 @@ public sealed partial class State
         List<JsonNode?> restored;
         using (var con = Con(account))
         {
-            newest = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
+            newest = con.Rows("SELECT content, ts FROM messages WHERE account_id = $a AND sender = ? ORDER BY id DESC LIMIT 1", SYSTEM_SENDER).FirstOrDefault();
             unread = (long)con.Scalar("SELECT COUNT(*) FROM messages WHERE account_id = $a AND read = 0")!;
             restored = PlayerRows.RestoredConversations(con);
         }

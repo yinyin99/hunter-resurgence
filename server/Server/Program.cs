@@ -38,6 +38,9 @@ const string AdminUsage = """
     admin missions-stuck [--days N] [--account <id or handle>] [--discord] [--min-candidates N] [--min-sample N] [--min-share P] lists the open harvest, spot and clue objectives the server understands that players of the last N days (default 14)
     attempted and never completed: one line per objective with its candidate events, the accounts that have it open, how many accounts completed it here, how many candidates each condition refused and what the most refusing one saw.
     Listed: at least --min-candidates (5) candidates and no completion, or one condition refusing at least --min-share (90) percent of at least --min-sample (10) candidates. It writes nothing. --discord as for missions-audit.
+    admin message --account <id or handle> "<text>" | admin message --all [--yes] "<text>" puts one unread inbox message from the server's notice sender (the one the review decisions write) in one account's inbox or in every account's: plain text, kept as written, at most 2000 characters.
+    --all asks for confirmation with the number of accounts; --yes answers it (needed when the input is not a terminal). The game, the launcher and the website show the message as unread.
+    admin messages [--account <id or handle>] lists the replies players left to the server, newest first; admin messages --sent lists what was sent (time, recipient, text), newest first; --account narrows either to one account (--sent: its messages and the ones to everyone).
     """;
 
 const string ImportUsage = """
@@ -247,6 +250,50 @@ void Admin(string[] a)
         long? only = null;
         if (whom != null && (only = AdminApi.ResolveAccount(loaded, whom)) is null) Die($"no account {whom}");
         foreach (var line in loaded.StuckMissions(numbers["--days"], only, discord, (int)numbers["--min-candidates"], (int)numbers["--min-sample"], numbers["--min-share"])) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "message")
+    {
+        if (AdminMessages.ParseSend(a[1..]) is not var (whom, all, yes, text)) { Die(AdminUsage); return; }
+        if (AdminMessages.Refuse(text) is { } why) { Die(why); return; }
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (!all && (only = AdminApi.ResolveAccount(loaded, whom)) is null) { Die($"no account {whom}"); return; }
+        if (all && !yes)
+        {
+            if (Console.IsInputRedirected) { Die("--all asks for confirmation: add --yes to send without it"); return; }
+            Console.Write($"Send this message to all {loaded.Store.AccountIds().Count} accounts? [y/N] ");
+            if (!string.Equals(Console.ReadLine()?.Trim(), "y", StringComparison.OrdinalIgnoreCase)) { Die("nothing sent"); return; }
+        }
+        var sent = AdminMessages.Send(loaded.Store, only, text);
+        Console.WriteLine(all ? $"sent to {sent} accounts" : $"sent to account {only}");
+        return;
+    }
+    if (a.Length > 0 && a[0] == "messages")
+    {
+        if (AdminMessages.ParseList(a[1..]) is not var (whom, sentLog)) { Die(AdminUsage); return; }
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (whom is not null && (only = AdminApi.ResolveAccount(loaded, whom)) is null) { Die($"no account {whom}"); return; }
+        static string Flat(string s) => s.ReplaceLineEndings(" ");
+        if (sentLog)
+        {
+            var log = AdminMessages.SentLog(loaded.Store, only);
+            foreach (var m in log)
+                Console.WriteLine($"{DateTimeOffset.FromUnixTimeSeconds(m.Ts):u}\t{(m.Account is { } to ? $"account {to} {m.Handle}" : $"all ({m.Recipients} accounts)")}\t{Flat(m.Text)}");
+            if (log.Count == 0) Console.WriteLine("no message sent");
+        }
+        else
+        {
+            var replies = AdminMessages.Replies(loaded.Store, only);
+            foreach (var r in replies)
+                Console.WriteLine($"{DateTimeOffset.FromUnixTimeSeconds(r.Ts):u}\taccount {r.Account} {r.Handle}\t{Flat(r.Text)}");
+            if (replies.Count == 0) Console.WriteLine("no reply");
+        }
         return;
     }
     if (a.Length > 0 && a[0] == "spawn")

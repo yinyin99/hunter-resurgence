@@ -225,6 +225,18 @@ public static class AdminApi
              .WithName("UnbanSteamId").WithSummary("Lift the ban of a Steam id and of its current account")
              .WithDescription("`{steam, account}`; 400 for a value that is not 17 digits, 404 for a Steam id that is not banned. The ban stays on record with its lift time: the review list says the id was banned before.")
              .ProducesProblem(400).ProducesProblem(404).ProducesProblem(503);
+
+        admin.MapPost("/accounts/{account}/message", Results<Ok<MessageSent>, ProblemHttpResult> ([Description("User id or handle of the account")] string account, MessageText body) =>
+                Message(state, account, body.Text))
+             .WithName("MessageAccount").WithSummary("Write one player an inbox message from the server")
+             .WithDescription("Body `{text}`: plain text, at most 2000 characters, kept as written. The player finds it as an unread message of the server's notice thread, the one a review decision writes (the game's inbox, the launcher's and the website's messages); "
+                              + "it is logged for `admin messages --sent`. `{sent: 1}`; 400 for an empty or too long text, 404 for an account that does not exist.")
+             .ProducesProblem(400).ProducesProblem(404).ProducesProblem(503);
+
+        admin.MapPost("/message", Results<Ok<MessageSent>, ProblemHttpResult> (MessageText body) => Message(state, null, body.Text))
+             .WithName("MessageAll").WithSummary("Write every player an inbox message from the server")
+             .WithDescription("As `POST /admin/accounts/{account}/message`, to every account: an announcement. `{sent}` is the number of accounts that got it. There is no confirmation here: the command line asks for one.")
+             .ProducesProblem(400).ProducesProblem(503);
     }
 
     public const int MaxStacks = 1000;  // one transaction per grant
@@ -298,6 +310,19 @@ public static class AdminApi
     static ProblemHttpResult NoState() =>
         TypedResults.Problem("no recorded connect to seed the player state from", statusCode: 503, title: "Player state off");
 
+    /// <summary>`POST /admin/accounts/{account}/message` (account given) and `POST /admin/message` (null: every account).</summary>
+    static Results<Ok<MessageSent>, ProblemHttpResult> Message(State? state, string? account, string? text)
+    {
+        if (state is null)
+            return NoState();
+        if (AdminMessages.Refuse(text) is { } why)
+            return TypedResults.Problem(why, statusCode: 400, title: "Bad message");
+        long? only = null;
+        if (account is not null && (string.IsNullOrWhiteSpace(account) || (only = ResolveAccount(state, account)) is null))
+            return NoAccount(account);
+        return TypedResults.Ok(new MessageSent(AdminMessages.Send(state.Store, only, text!)));
+    }
+
     static ProblemHttpResult NoReports() =>
         TypedResults.Problem("problem reports are kept by a community server (offline_mode false)", statusCode: 503, title: "Reports off");
 
@@ -320,6 +345,8 @@ public static class AdminApi
 
     public sealed record Balance(string Currency, double Amount);
     public sealed record BanResult([property: Description("The Steam id (17 digits)")] string Steam, [property: Description("The account of that Steam id that was banned or unbanned; null: it has none")] long? Account);
+    public sealed record MessageText([property: Description("Plain text, 1 to 2000 characters")] string? Text);
+    public sealed record MessageSent([property: Description("How many accounts got the message")] int Sent);
 
     public sealed record SpawnList(List<Spawner.Entry> Entries, List<Spawner.Applied> Applied);
     public sealed record SpawnRemoved(int Removed);
