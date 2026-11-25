@@ -15,6 +15,10 @@ const string AdminUsage = """
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
     --account names another account (user id or handle); without it the local account gets it.
     admin faces [--apply] makes every account's face a 3D face of its body's gender (dry run without --apply: prints the counts).
+    admin event list | admin event add <name> <start> <end> [--kind seasonal] writes the events log (the periods that changed what a hunt paid or how it was played): a gm$ or mission bonus is written by the server when its setting starts, add a period without a money bonus (a seasonal event) with add;
+    <start> and <end> are ISO times, no zone means UTC; list prints one line per event.
+    admin backfill-rewards --events <file> [--apply] gives every payment made before the events log existed its base: the file is a JSON array of {"name", "start", "end", "multiplier", "applies_to": "harvest_gm"} bonuses (and name/start/end periods, no multiplier, for events with no bonus);
+    a harvest payment inside a bonus's period gets base = paid / multiplier and that event, every other payment base = amount, and the events are written. Without --apply nothing is written (a line per event and the counts); a second run changes nothing. Run it with the server stopped, after `backup`.
     admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
     it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any.
@@ -173,6 +177,34 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.SweepAvatars(PictureLinks.FromCfg(settings.Cfg), only, dry).GetAwaiter().GetResult()) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "event")
+    {
+        Directory.CreateDirectory(settings.DataDir);
+        var store = new Store(Path.Combine(settings.DataDir, "state.db"));
+        if (a[1..] is ["list"])
+            foreach (var line in RewardEvents.List(store)) Console.WriteLine(line);
+        else if (a[1..] is ["add", var name, var fromText, var toText, .. var more] && (more.Length == 0 || more is ["--kind", _]))
+        {
+            var (start, end) = (RewardEvents.ParseTime(fromText), RewardEvents.ParseTime(toText));
+            var kind = more.Length == 2 ? more[1].Trim() : RewardEvents.Seasonal;
+            if (start is null || end is null || end <= start || name.Trim().Length == 0 || kind.Length == 0) { Die(AdminUsage); return; }
+            Console.WriteLine($"event {RewardEvents.Add(store, name.Trim(), kind, start.Value, end.Value)}: {name.Trim()} ({kind}), {RewardEvents.Iso(start.Value)} .. {RewardEvents.Iso(end.Value)}");
+        }
+        else Die(AdminUsage);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "backfill-rewards")
+    {
+        var apply = a.Contains("--apply");
+        if (a[1..].Where(x => x != "--apply").ToArray() is not ["--events", var file]) { Die(AdminUsage); return; }
+        List<RewardEvents.EventSpec> specs;
+        try { specs = RewardEvents.ParseSpecs(File.ReadAllText(file)); }
+        catch (Exception e) when (e is InvalidDataException or IOException or UnauthorizedAccessException) { Die($"events file {file}: {e.Message}"); return; }
+        Directory.CreateDirectory(settings.DataDir);
+        foreach (var line in RewardEvents.Backfill(new Store(Path.Combine(settings.DataDir, "state.db")), specs, apply)) Console.WriteLine(line);
+        Console.WriteLine(apply ? "applied" : "dry run: nothing written; add --apply to write");
         return;
     }
     if (a.Length > 0 && a[0] == "faces")

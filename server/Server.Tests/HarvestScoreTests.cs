@@ -112,6 +112,34 @@ public class HarvestScoreTests : StateTestBase
         Assert.Equal(Py.RoundInt(normal), gm - start);
     }
 
+    (double Amount, double? Base, long? Event) LastReward()
+    {
+        using var con = state.Store.Open(ME);
+        var r = con.Rows("SELECT amount, base, bonus_event FROM wallet_log WHERE account_id = $a AND summary LIKE 'CSS Reward%' ORDER BY n DESC LIMIT 1")[0];
+        return (Convert.ToDouble(r[0]), r[1] is double b ? b : null, r[2] is long e ? e : null);
+    }
+
+    // docs/server.md#reward-bases-and-events: a payment keeps what it would have been without the bonus and the event that changed it
+    [Fact]
+    public void AHarvestPaidUnderABonusRecordsItsBaseAndItsEventAndOutsideOneTheBaseIsTheAmount()
+    {
+        Harvest(0, 0);
+        var (plain, plainBase, plainEvent) = LastReward();
+        Assert.Equal(plain, plainBase);
+        Assert.Null(plainEvent);
+        state.HarvestGmBonus = (2, state.Clock() + 3600);
+        Harvest(0, 0);
+        var (doubled, doubledBase, doubledEvent) = LastReward();
+        Assert.Equal(plain, doubledBase);
+        Assert.InRange(doubled, 2 * plain - 1, 2 * plain + 1);  // the shown css is rounded to a decimal first, so a small amount can be off by one
+        using (var con = state.Store.Open())
+            Assert.Equal(doubledEvent, con.Scalar("SELECT id FROM events_log WHERE kind = 'gm_bonus' AND applies_to = 'harvest_gm' AND multiplier = 2") as long?);
+        state.HarvestGmBonus = (2, state.Clock() - 1);
+        Harvest(0, 0);
+        var (after, afterBase, afterEvent) = LastReward();
+        Assert.Equal((plain, (double?)plain, (long?)null), (after, afterBase, afterEvent));
+    }
+
     [Theory]
     [InlineData(22), InlineData(31), InlineData(32), InlineData(48), InlineData(56)]  // the three dogs, the sasquatch, the t-rex: the game scores none of them
     public void ASpeciesWithoutScoreRulesGetsNoScore(int species)

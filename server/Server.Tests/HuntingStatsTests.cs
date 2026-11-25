@@ -35,21 +35,21 @@ public class HuntingStatsTests : StateTestBase
 
     long kills;
 
-    /// <summary>A harvest of `species` in `hunt`, paid `gm` (null: no reward row).</summary>
-    void Harvest(long account, long hunt, long species, double? gm)
+    /// <summary>A harvest of `species` in `hunt`, paid `gm` (null: no reward row), whose base was `baseGm` (null: the row has none, as one from before the bases did).</summary>
+    void Harvest(long account, long hunt, long species, double? gm, double? baseGm = null)
     {
         var kill = ++kills;
         using var con = state.Store.Open(account);
         con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, '{}')", kill, kill, species);
         con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", kill, $$"""{"expedition_id": {{hunt}}}""");
         if (gm is { } paid)
-            Wallet(account, paid, $"CSS Reward (Animal Id: {kill})");
+            Wallet(account, paid, $"CSS Reward (Animal Id: {kill})", baseAmount: baseGm);
     }
 
-    void Wallet(long account, double amount, string summary, double? ts = null)
+    void Wallet(long account, double amount, string summary, double? ts = null, double? baseAmount = null)
     {
         using var con = state.Store.Open(account);
-        con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids) VALUES ($a, ?, 'gm', ?, 0, ?, '[]')", (long)(ts ?? now), amount, summary);
+        con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids, base) VALUES ($a, ?, 'gm', ?, 0, ?, '[]', ?)", (long)(ts ?? now), amount, summary, baseAmount);
     }
 
     static string Names(JsonNode rows, string key) => string.Join(",", rows.AsArray().Select(r => (string)r![key]!));
@@ -134,6 +134,25 @@ public class HuntingStatsTests : StateTestBase
         Assert.Equal(("Test Deer (Typical)", 5, 10.5, 54.76, 82.14, "Test Reserve"), ((string)deer["species"]!, (int)deer["players"]!, (double)deer["hours"]!, (double)deer["gmPerHour"]!,
                                                                            (double)deer["gmPerHarvest"]!, (string)deer["bestReserve"]!));
         Assert.Equal("2026-11-12T00:00:00Z", (string)stats["since"]!);
+    }
+
+    [Fact]
+    public void ComparableFiguresUseTheBaseAndAPeriodThatOverlapsAnEventSaysSo()
+    {
+        state = Online();
+        Players(5);
+        for (var i = 0; i < 5; i++)
+            Harvest(First + i, Hunt(First + i, 2, 3 * Hour, 2 * Hour), 1, 200, baseGm: 100);  // paid double a base of 100
+        Assert.Empty(state.HuntingStatistics()["events"]!.AsArray());
+        using (var con = state.Store.Open())
+            RewardEvents.Record(con, "Test weekend", RewardEvents.GmBonus, (long)now - 10 * Hour, (long)now - 5 * Hour, 2, RewardEvents.HarvestGm);
+        var stats = state.HuntingStatistics();
+        var reserve = Assert.Single(stats["reserves"]!.AsArray())!;
+        // 5 x 2 h = 10 h; 1000 gm$ paid, 500 at the base, in 5 harvests
+        Assert.Equal((100.0, 50.0, 200.0, 100.0), ((double)reserve["gmPerHour"]!, (double)reserve["comparableGmPerHour"]!, (double)reserve["gmPerHarvest"]!, (double)reserve["comparableGmPerHarvest"]!));
+        var ev = Assert.Single(stats["events"]!.AsArray())!;
+        Assert.Equal(("Test weekend", "gm_bonus", 2.0), ((string)ev["name"]!, (string)ev["kind"]!, (double)ev["multiplier"]!));
+        Assert.Equal(100.0, (double)state.HuntingAdmin()["players"]![0]!["reserves"]![0]!["baseGm"]!);  // one player's own
     }
 
     [Fact]

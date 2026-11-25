@@ -83,14 +83,18 @@ public sealed partial class State
 
     /// <summary>Add amount (negative: spend) to a wallet currency (call inside a transaction); return the new balance, or
     /// null when the currency is missing or the balance would drop below 0. A change is logged (`wallet_log`, the wallet history) with its
-    /// summary and the item ids it bought.</summary>
-    public static JsonNode? AddCurrency(Db con, string currency, object amount, string summary, IReadOnlyCollection<long>? itemIds = null)
+    /// summary and the item ids it bought, its `base` (baseAmount: what it would have been without a bonus; default amount) and the bonus event
+    /// (an events_log id; default none). A reward under a bonus passes both: the harvest gm$ does; the mission, daily and community rewards will
+    /// when #830's mission bonus exists (its event comes from <see cref="RewardEvents"/>), until then they are paid as they are, base = amount.</summary>
+    public static JsonNode? AddCurrency(Db con, string currency, object amount, string summary, IReadOnlyCollection<long>? itemIds = null,
+                                        double? baseAmount = null, long? bonusEvent = null)
     {
         if (con.Exec("UPDATE wallet SET amount = amount + ?1 WHERE account_id = $a AND currency = ?2 AND amount + ?1 >= 0", amount, currency) == 0)
             return null;
         var balance = Py.FromSql(con.Rows("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency)[0][0]);
-        con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids) VALUES ($a, ?, ?, ?, ?, ?, ?)",
-                 (long)Py.Now(), currency, Convert.ToDouble(amount), Py.D(balance), summary, Py.Dumps(new JsonArray([.. (itemIds ?? []).Select(i => (JsonNode?)i)])));
+        con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids, base, bonus_event) VALUES ($a, ?, ?, ?, ?, ?, ?, ?, ?)",
+                 (long)Py.Now(), currency, Convert.ToDouble(amount), Py.D(balance), summary, Py.Dumps(new JsonArray([.. (itemIds ?? []).Select(i => (JsonNode?)i)])),
+                 baseAmount ?? Convert.ToDouble(amount), bonusEvent);
         return balance;
     }
 
@@ -172,7 +176,7 @@ public sealed partial class State
                                       Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
-                                      double gmMultiplier = 1, (double X, double Z)? standingAt = null)
+                                      double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -261,6 +265,7 @@ public sealed partial class State
                 con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, ?, ?)",
                          killId, e["individual"], e["extended_species"], harvest);
                 var (e7, disqualified, score, scoreType, css) = ScoreKill(con, e, harvest, trophy, ammoCheck);
+                var baseCss = css;  // what the harvest pays without the bonus
                 css = Py.Round(css * gmMultiplier, 1);  // the confirm-kill screen's "Reward" is round(css): the bonus shows there as it is paid
                 var expedition = con.Rows("SELECT id, reserve FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1").FirstOrDefault();
                 con.Exec("INSERT INTO harvests (account_id, kill_id, body) VALUES ($a, ?, ?)", killId, Py.Dumps(harvestPage(
@@ -280,7 +285,12 @@ public sealed partial class State
                 };
                 con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
                 if (Py.RoundInt(css) > 0)
-                    updates.Add(new JsonObject { ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})"), ["type"] = "gm", ["update"] = 15 });
+                    updates.Add(new JsonObject
+                    {
+                        ["amount"] = AddCurrency(con, "gm", Py.RoundInt(css), $"CSS Reward (Animal Id: {killId})", null,
+                                                 gmMultiplier == 1 ? null : Py.RoundInt(Py.Round(baseCss, 1)), gmMultiplier == 1 ? null : gmEvent),
+                        ["type"] = "gm", ["update"] = 15,
+                    });
             }
             else if (Is(e["event"], 4))
             {
@@ -685,11 +695,32 @@ public sealed partial class State
     /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
     /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
     public bool UnlimitedAmmo { get; init; }
-    /// <summary>settings.json `harvest_gm_bonus`: harvests pay `Multiplier` times their gm$ until `Until` (Unix seconds); null: no bonus.</summary>
-    public (double Multiplier, double Until)? HarvestGmBonus { get; set; }
+    /// <summary>settings.json `harvest_gm_bonus`: harvests pay `Multiplier` times their gm$ until `Until` (Unix seconds); null: no bonus. Setting one that has not ended
+    /// records it in the events log (<see cref="RewardEvents"/>), once per distinct bonus, so the payments made under it name it.</summary>
+    public (double Multiplier, double Until)? HarvestGmBonus
+    {
+        get => harvestGmBonus;
+        set
+        {
+            harvestGmBonus = value;
+            harvestGmEvent = null;
+            if (value is { } b && b.Until > Clock() && b.Multiplier != 1)
+            {
+                using var con = Store.Open();
+                harvestGmEvent = RewardEvents.Record(con, $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
+                                                     (long)Clock(), (long)b.Until, b.Multiplier, RewardEvents.HarvestGm);
+            }
+        }
+    }
+
+    (double Multiplier, double Until)? harvestGmBonus;
+    long? harvestGmEvent;
 
     /// <summary>The harvest gm$ multiplier at `now`: the bonus's while it runs, else 1.</summary>
     public double GmMultiplier(double now) => HarvestGmBonus is { } b && now < b.Until ? b.Multiplier : 1;
+
+    /// <summary>The events_log id of the harvest bonus running at `now`; null when none (or one that multiplies by 1).</summary>
+    public long? GmEvent(double now) => GmMultiplier(now) != 1 ? harvestGmEvent : null;
 
     /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
     public const long DefaultInventoryCapacity = 20000;
@@ -2096,7 +2127,7 @@ public sealed partial class State
         using var con = Con(account);
         var updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position);
+                               (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()));
         CommunityPay(con, updates);
         if (con.Scalar("SELECT 1 FROM expeditions WHERE account_id = $a AND " + ClosedUnstored + " LIMIT 1") is not null)
             UpdateHunterscore(con, account);

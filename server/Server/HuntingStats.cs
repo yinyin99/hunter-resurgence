@@ -41,7 +41,7 @@ public sealed partial class State
     /// <summary>The seconds the account hunted on this server since <see cref="PlaytimeSince"/> (`huntSecondsHere`); the open hunt up to its last heartbeat.</summary>
     public long HuntSecondsHere(Db con) => (long)ServerHunts(con).Sum(h => h.Seconds);
 
-    sealed class Cell { public double Seconds, Gm; public long Harvests; }
+    sealed class Cell { public double Seconds, Gm, Base; public long Harvests; }
 
     /// <summary>One account's hunting figures: its server playtime, per reserve the playtime, harvest gm$ and harvests of the hunts there, per species and reserve the harvests and their gm$, and the other gm$ rewards by kind.</summary>
     sealed record AccountHunting(long Account, string Handle, double Seconds, Dictionary<long, Cell> Reserves, Dictionary<(long Species, long Reserve), Cell> Species, Dictionary<string, double> OtherGm);
@@ -86,13 +86,16 @@ public sealed partial class State
             if (h.NoHeartbeat) noHeartbeat++;
             if (h.Reserve is { } r) (onReserve.TryGetValue(r, out var c) ? c : onReserve[r] = new Cell()).Seconds += h.Seconds;
         }
-        var paid = new Dictionary<long, double>();  // gm$ paid by kill
+        var paid = new Dictionary<long, (double Paid, double Base)>();  // gm$ paid by kill, and what it would have been without a bonus
         var other = new Dictionary<string, double>();
-        foreach (var w in con.Rows("SELECT summary, amount, ts FROM wallet_log WHERE account_id = $a AND currency = 'gm' AND amount > 0"))
+        foreach (var w in con.Rows("SELECT summary, amount, ts, COALESCE(base, amount) FROM wallet_log WHERE account_id = $a AND currency = 'gm' AND amount > 0"))
         {
             var (summary, amount) = ((string)w[0], Convert.ToDouble(w[1]));
             if (summary.StartsWith(RewardPrefix, StringComparison.Ordinal) && summary.EndsWith(')') && long.TryParse(summary.AsSpan(RewardPrefix.Length, summary.Length - RewardPrefix.Length - 1), out var kill))
-                paid[kill] = paid.GetValueOrDefault(kill) + amount;
+            {
+                var (was, baseWas) = paid.GetValueOrDefault(kill);
+                paid[kill] = (was + amount, baseWas + Convert.ToDouble(w[3]));
+            }
             else if (Convert.ToDouble(w[2]) >= PlaytimeSince && OtherRewards.FirstOrDefault(o => o.Summary == summary).Kind is { } kind)
                 other[kind] = other.GetValueOrDefault(kind) + amount;
         }
@@ -100,12 +103,14 @@ public sealed partial class State
         foreach (var k in con.Rows("SELECT k.kill_id, k.species, json_extract(h.body, '$.expedition_id') FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id WHERE k.account_id = $a"))
         {
             if (k[2] is not long hunt || !hunts.TryGetValue(hunt, out var found) || found.Reserve is not { } reserve || k[1] is not long sp) continue;
-            var gm = paid.GetValueOrDefault((long)k[0]);
+            var (gm, baseGm) = paid.GetValueOrDefault((long)k[0]);
             var byReserve = onReserve[reserve];
             byReserve.Gm += gm;
+            byReserve.Base += baseGm;
             byReserve.Harvests++;
             var cell = harvested.TryGetValue((sp, reserve), out var c) ? c : harvested[(sp, reserve)] = new Cell();
             cell.Gm += gm;
+            cell.Base += baseGm;
             cell.Harvests++;
         }
         return new AccountHunting(account, handle, seconds, onReserve, harvested, other);
@@ -113,13 +118,26 @@ public sealed partial class State
 
     static double Per(double amount, double by) => by > 0 ? Math.Round(amount / by, 2) : 0;
 
-    static JsonObject Rates(JsonObject row, double seconds, double gm, long harvests)
+    static JsonObject Rates(JsonObject row, double seconds, double gm, long harvests, double baseGm)
     {
         row["hours"] = Math.Round(seconds / 3600, 1);
         row["gmPerHour"] = Per(gm * 3600, seconds);
         row["gmPerHarvest"] = Per(gm, harvests);
         row["harvestsPerHour"] = Per(harvests * 3600.0, seconds);
+        row["comparableGmPerHour"] = Per(baseGm * 3600, seconds);  // the same figures at the rewards' base, with no bonus: comparable from one period to another
+        row["comparableGmPerHarvest"] = Per(baseGm, harvests);
         return row;
+    }
+
+    /// <summary>The events (`events_log`) that overlap the period the statistics cover, `since` until now: the paid figures of such a period include their bonuses, the comparable ones do not.</summary>
+    JsonArray EventsInPeriod()
+    {
+        using var con = Store.Open();
+        return new JsonArray([.. con.Rows("SELECT name, kind, start_ts, end_ts, multiplier FROM events_log WHERE end_ts > ? AND start_ts < ? ORDER BY start_ts, id", PlaytimeSince, Clock()).Select(r =>
+            (JsonNode?)new JsonObject
+            {
+                ["name"] = (string)r[0], ["kind"] = (string)r[1], ["start"] = RewardEvents.Iso((long)r[2]), ["end"] = RewardEvents.Iso((long)r[3]), ["multiplier"] = r[4] is double m ? JsonValue.Create(m) : null,
+            })]);
     }
 
     /// <summary>`GET /stats/hunting`: server-wide figures per reserve (playtime, gm$ per hour, gm$ per harvest, harvests per hour) and per species (the same, `hours` the playtime on the reserves where the
@@ -131,21 +149,25 @@ public sealed partial class State
         var reserveRows = players.SelectMany(p => p.Reserves.Where(r => r.Value.Seconds > 0).Select(r => (Reserve: r.Key, r.Value)))
             .GroupBy(x => x.Reserve).Where(g => g.Count() >= HuntingMinPlayers)
             .Select(g => (Name: ReserveName(JsonValue.Create(g.Key)), Row: Rates(new JsonObject { ["reserve"] = ReserveName(JsonValue.Create(g.Key)), ["players"] = g.Count() },
-                g.Sum(x => x.Value.Seconds), g.Sum(x => x.Value.Gm), g.Sum(x => x.Value.Harvests))))
+                g.Sum(x => x.Value.Seconds), g.Sum(x => x.Value.Gm), g.Sum(x => x.Value.Harvests), g.Sum(x => x.Value.Base))))
             .OrderBy(x => x.Name, StringComparer.Ordinal).Select(x => (JsonNode?)x.Row);
         // a name is one id (the typical and the non-typical deer are listed apart): one cell per player and reserve, the reserve's playtime counted once
         var cells = players.SelectMany(p => p.Species.Select(s => (p.Account, Name: BoardName(s.Key.Species), s.Key.Reserve, s.Value, Seconds: p.Reserves[s.Key.Reserve].Seconds)))
-            .GroupBy(c => (c.Name, c.Account, c.Reserve)).Select(g => (g.Key.Name, g.Key.Account, g.Key.Reserve, Harvests: g.Sum(c => c.Value.Harvests), Gm: g.Sum(c => c.Value.Gm), g.First().Seconds));
+            .GroupBy(c => (c.Name, c.Account, c.Reserve)).Select(g => (g.Key.Name, g.Key.Account, g.Key.Reserve, Harvests: g.Sum(c => c.Value.Harvests), Gm: g.Sum(c => c.Value.Gm), Base: g.Sum(c => c.Value.Base), g.First().Seconds));
         var speciesRows = cells.GroupBy(c => c.Name).Where(g => g.Select(c => c.Account).Distinct().Count() >= HuntingMinPlayers)
             .Select(g =>
             {
                 var best = g.GroupBy(c => c.Reserve).Where(r => r.Count() >= HuntingMinPlayers && r.Sum(c => c.Seconds) > 0).MaxBy(r => r.Sum(c => c.Gm) / r.Sum(c => c.Seconds));
-                var row = Rates(new JsonObject { ["species"] = g.Key, ["players"] = g.Select(c => c.Account).Distinct().Count() }, g.Sum(c => c.Seconds), g.Sum(c => c.Gm), g.Sum(c => c.Harvests));
+                var row = Rates(new JsonObject { ["species"] = g.Key, ["players"] = g.Select(c => c.Account).Distinct().Count() }, g.Sum(c => c.Seconds), g.Sum(c => c.Gm), g.Sum(c => c.Harvests), g.Sum(c => c.Base));
                 row["bestReserve"] = best is null ? null : ReserveName(JsonValue.Create(best.Key));
                 return (g.Key, Row: row);
             })
             .OrderBy(x => x.Key, StringComparer.Ordinal).Select(x => (JsonNode?)x.Row);
-        return new JsonObject { ["reserves"] = new JsonArray([.. reserveRows]), ["species"] = new JsonArray([.. speciesRows]), ["since"] = DateTimeOffset.FromUnixTimeSeconds((long)PlaytimeSince).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'") };
+        return new JsonObject
+        {
+            ["reserves"] = new JsonArray([.. reserveRows]), ["species"] = new JsonArray([.. speciesRows]), ["since"] = DateTimeOffset.FromUnixTimeSeconds((long)PlaytimeSince).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+            ["events"] = EventsInPeriod(),  // the events inside this period: a paid figure includes their bonuses, a comparable one does not
+        };
     }
 
     /// <summary>The operator's view, `GET /admin/hunting`: every player's figures with the name, most playtime first: `huntSecondsHere`, `reserves` (the hunts' playtime, harvest gm$ and harvests, gm$ per hour), `species` (harvests and their gm$ by species and reserve),
@@ -153,13 +175,14 @@ public sealed partial class State
     public JsonObject HuntingAdmin() => new()
     {
         ["since"] = DateTimeOffset.FromUnixTimeSeconds((long)PlaytimeSince).ToString("yyyy-MM-dd'T'HH:mm:ss'Z'"),
+        ["events"] = EventsInPeriod(),
         ["players"] = new JsonArray([.. KeptHunting().Players.OrderByDescending(p => p.Seconds).ThenBy(p => p.Account).Select(p => (JsonNode?)new JsonObject
         {
             ["account"] = p.Account, ["handle"] = p.Handle, ["huntSecondsHere"] = (long)p.Seconds,
-            ["reserves"] = new JsonArray([.. p.Reserves.OrderBy(r => r.Key).Select(r => (JsonNode?)Rates(new JsonObject { ["reserve"] = ReserveName(JsonValue.Create(r.Key)), ["gm"] = r.Value.Gm, ["harvests"] = r.Value.Harvests }, r.Value.Seconds, r.Value.Gm, r.Value.Harvests))]),
+            ["reserves"] = new JsonArray([.. p.Reserves.OrderBy(r => r.Key).Select(r => (JsonNode?)Rates(new JsonObject { ["reserve"] = ReserveName(JsonValue.Create(r.Key)), ["gm"] = r.Value.Gm, ["baseGm"] = r.Value.Base, ["harvests"] = r.Value.Harvests }, r.Value.Seconds, r.Value.Gm, r.Value.Harvests, r.Value.Base))]),
             ["species"] = new JsonArray([.. p.Species.OrderBy(s => s.Key.Species).ThenBy(s => s.Key.Reserve).Select(s => (JsonNode?)new JsonObject
             {
-                ["species"] = BoardName(s.Key.Species), ["reserve"] = ReserveName(JsonValue.Create(s.Key.Reserve)), ["harvests"] = s.Value.Harvests, ["gm"] = s.Value.Gm,
+                ["species"] = BoardName(s.Key.Species), ["reserve"] = ReserveName(JsonValue.Create(s.Key.Reserve)), ["harvests"] = s.Value.Harvests, ["gm"] = s.Value.Gm, ["baseGm"] = s.Value.Base,
             })]),
             ["otherGm"] = new JsonObject([.. p.OtherGm.OrderBy(o => o.Key).Select(o => KeyValuePair.Create(o.Key, (JsonNode?)o.Value))]),
         })]),
