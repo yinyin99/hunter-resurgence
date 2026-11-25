@@ -31,6 +31,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 - When a plan is approved, copy it into the issue's Plan section as checkboxes before the first edit, and tick each step when it is done. If planning shows the Goal or an Acceptance criterion is wrong (for example, something it asks for already exists), correct that section; note the change under Decisions.
 - A task is finished when the build and tests pass, every Acceptance criterion is met and ticked in the issue, a PR with `Closes #<n>` in its body and a Conventional Commits title (CONTRIBUTING.md, "Commits": it becomes the squash commit's subject) is open, and the `pr-reviewer` subagent says "ready to merge" (fix and run it again, at most 2 rounds). Then stop and wait: merge with `gh pr merge <n> --squash --delete-branch` ([ADR 0002](docs/adr/0002-squash-merge-pull-requests.md)) only when the maintainer says so.
 - PR conversation and review summaries: `gh pr view <n> --comments`. Inline review comments: `gh api repos/{owner}/{repo}/pulls/<n>/comments`.
+- Optimizing or research work proves its result with a benchmark: the same measurement before and after (same machine and input, several runs, the median), with the method and the numbers in the issue (a comment), the PR body and, where it helps, the commit body. An issue asking for a speed-up states its measured baseline and a numeric target in its Acceptance criteria. No "faster" or "smaller" without numbers.
 
 ## Gotchas
 
