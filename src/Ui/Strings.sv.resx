@@ -1633,4 +1633,5 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Spelmappen har inga komponenter att installera: verifiera spelet i Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Klart</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Starta spelet via Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Ändra…</value></data>
 </root>

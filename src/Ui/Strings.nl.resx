@@ -1633,4 +1633,5 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>De spelmap bevat geen onderdelen om te installeren: controleer het spel in Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Voltooid</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start het spel via Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Wijzigen…</value></data>
 </root>

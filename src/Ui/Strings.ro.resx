@@ -1633,4 +1633,5 @@ Numele:</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folderul jocului nu are componente de instalat: verificați jocul în Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Terminat</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Pornește jocul folosind Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Schimbă…</value></data>
 </root>

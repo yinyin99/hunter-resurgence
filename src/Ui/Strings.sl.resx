@@ -1633,4 +1633,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Mapa igre nima komponent za namestitev: preverite igro v Steamu.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Končano</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Zaženi igro prek Steama</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Spremeni…</value></data>
 </root>

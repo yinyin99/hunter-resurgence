@@ -1633,4 +1633,5 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>A játék mappájában nincs telepíthető összetevő: ellenőrizze a játékot a Steamben.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Kész</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>A játék indítása Steamen keresztül</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Módosítás…</value></data>
 </root>

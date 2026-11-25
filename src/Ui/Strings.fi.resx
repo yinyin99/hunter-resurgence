@@ -1633,4 +1633,5 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Pelin kansiossa ei ole asennettavia osia: tarkista pelin tiedostot Steamissä.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Valmis</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Käynnistä peli Steamin kautta</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Vaihda…</value></data>
 </root>

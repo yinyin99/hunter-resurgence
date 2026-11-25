@@ -1633,4 +1633,5 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>La cartella del gioco non contiene componenti da installare: verifica il gioco in Steam.</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Completato</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Avvia il gioco con Steam</value></data>
+  <data name="GameFolder.Change" xml:space="preserve"><value>Cambia…</value></data>
 </root>

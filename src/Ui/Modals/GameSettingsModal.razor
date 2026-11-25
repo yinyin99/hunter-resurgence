@@ -7,8 +7,8 @@
     @if (settings is not null)
     {
         <div class="rows">
-            @* the folder in use; the button opens the Game folder window *@
-            <div class="row"><span>@L["Settings.GameFolder"]</span><button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Choose"]</button><span id="game-folder-path" class="path" title="@path">@path</span></div>
+            @* the folder in use; the button opens the Game folder window (not in the first-start dialog: closing that one cancels the pending start) *@
+            <div class="row"><span>@L["Settings.GameFolder"]</span>@if (!FirstStart) { <button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Change"]</button> }<span id="game-folder-path" class="path" title="@path">@path</span></div>
             <label class="row"><span>@L["GameSettings.StartWithSteam"]</span><input class="tick" type="checkbox" id="start_with_steam" @bind="startWithSteam" /></label>
             <label class="row"><span>@L["GameSettings.Display"]</span>
                 <select class="field-sel" id="window_mode" @bind="display">
