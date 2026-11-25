@@ -417,7 +417,7 @@ public sealed class Uploads(State state, string dataDir)
     /// (Approve keeps its own user id then). Null: allowed.</summary>
     UploadOutcome? Refusal(long account, long uid)
     {
-        if (Store.RestoredBy(uid) is { } by && !(by == account && FromClaim(account, uid)))
+        if (Store.RestoredBy(uid) is not null)
             return new(409, "already", "A backup of this hunter was already restored on this server, and a backup can be restored once. Nothing was changed.");
         if (uid < 1 || uid >= Store.FirstServerId)
             return new(409, "refused", "This backup has a user id this server does not accept.");

@@ -104,7 +104,7 @@ static partial class SectionBackup
         JsonObject index;
         string uid;
         HashSet<string>? listed = null;  // null: a public-profile folder, which lists nothing
-        if (indexEntry is null) (index, uid) = (new JsonObject { ["handle"] = PublicFolder().Match(prefix).Groups[1].Value }, PublicUid(zip, prefix, lim, ref total, ref jsonTotal));
+        if (indexEntry is null) (index, uid) = (new JsonObject { ["handle"] = PublicFolder().Match(prefix).Groups[1].Value }, PublicUid(zip, prefix, lim));
         else
         {
             var bytes = BackupReader.Bytes(indexEntry, lim.ManifestBytes, lim, ref total, null) ?? throw new RestoreException($"index.json is over {lim.ManifestBytes} bytes");
@@ -133,8 +133,8 @@ static partial class SectionBackup
             if (!BackupReader.TryParse(body, lim, out var json)) { rejected.Add(BackupReader.NotJson(name, lim)); continue; }
             if (section == "hunt_details") Hunts(uid, name, json, files, rejected);
             // one object keyed by id: each value is the reply of one competition page (`Page_content/competitions_new`, param `competition_id`) or of one lodge (`/game/user/<uid>/lodges/<id>`, a lodge row)
-            else if (section == "competition_pages") ById(uid, name, json, "/v1/Page_content/competitions_new", "competition_id", "a competition id", files, rejected);
-            else if (section == "lodge_contents") ById(uid, name, json, "/game/user/@/lodges/{0}", null, "a lodge id", files, rejected);
+            else if (section == "competition_pages") ById(uid, name, json, "/v1/Page_content/competitions_new", ["competition_id={0}"], "competition id", files, rejected);
+            else if (section == "lodge_contents") ById(uid, name, json, "/game/user/@/lodges/{0}", [], "lodge id", files, rejected);
             // `trophies` is Trophy/list ({total, trophies}) in one tool and the own trophies and harvests (an array) in the other
             else if (section == "trophies" && json is JsonArray) files.Add(Reply("/game/user/trophies", [], uid, json));
             // `profile` is the public profile (`hostname`: Public_user/getByHostname) in one tool and the API v2 profile in the other; a `v2_profile` section, when there is one, wins
@@ -156,9 +156,10 @@ static partial class SectionBackup
     }
 
     /// <summary>The user id of a public-profile folder: `id` of its json_profile.json (the public profile) or of json_v2_profile.json; the folder's handle must be the profile's `hostname`.</summary>
-    static string PublicUid(ZipArchive zip, string prefix, Limits lim, ref long total, ref long jsonTotal)
+    static string PublicUid(ZipArchive zip, string prefix, Limits lim)
     {
-        JsonObject? Own(string file, ref long t, ref long j)
+        long t = 0, j = 0;  // its own counts: the main loop reads and counts the two profile files again
+        JsonObject? Own(string file)
         {
             if (zip.Entries.FirstOrDefault(e => e.FullName == prefix + file) is not { } e) return null;
             var cap = Math.Min(lim.EntryBytes, lim.JsonEntryBytes);
@@ -167,41 +168,31 @@ static partial class SectionBackup
             return BackupReader.TryParse(body, lim, out var json) ? json as JsonObject : null;
         }
         var handle = PublicFolder().Match(prefix).Groups[1].Value;
-        var profile = Own("json_profile.json", ref total, ref jsonTotal);
+        var profile = Own("json_profile.json");
         if (profile is not null && BackupReader.Text(profile["hostname"]) is { } host && !host.Equals(handle, StringComparison.OrdinalIgnoreCase))
             throw new RestoreException($"the folder's handle {handle} is not the profile's hostname {host}");
-        var ids = new[] { profile, Own("json_v2_profile.json", ref total, ref jsonTotal) }.Select(p => BackupReader.Text(p?["id"])).OfType<string>().Distinct().ToList();
+        var ids = new[] { profile, Own("json_v2_profile.json") }.Select(p => BackupReader.Text(p?["id"])).OfType<string>().Distinct().ToList();
         if (ids.Count == 0) throw new RestoreException("a public profile folder with no readable user id (json_profile.json has no id)");
         if (ids.Count > 1) throw new RestoreException("the profile and the v2 profile hold different user ids");
         return BackupReader.CheckUid(ids[0], "json_profile.json");
     }
 
     /// <summary>`hunt_details` is one object keyed by hunt id: each value is the reply of `Public_user/expedition` for that hunt, saved as its own file.</summary>
-    static void Hunts(string uid, string name, JsonNode? json, List<SavedFile> files, List<string> rejected)
-    {
-        if (json is not JsonObject hunts)
-        {
-            if (json is not (null or JsonArray { Count: 0 })) rejected.Add($"{name}: not an object keyed by hunt id");
-            return;
-        }
-        foreach (var (key, hunt) in hunts)
-            if (long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var id) && key == id.ToString(CultureInfo.InvariantCulture))
-                files.Add(Reply("/v1/Public_user/expedition", ["user_id=@", $"expedition_id={key}"], uid, hunt));
-            else rejected.Add($"{name}: a key that is not a hunt id");
-    }
+    static void Hunts(string uid, string name, JsonNode? json, List<SavedFile> files, List<string> rejected) =>
+        ById(uid, name, json, "/v1/Public_user/expedition", ["user_id=@", "expedition_id={0}"], "hunt id", files, rejected);
 
-    /// <summary>A section that is one object keyed by id, each value the reply of its own endpoint: `endpoint` (`{0}` is the id, else the id is the value of param `param`), saved as its own file.</summary>
-    static void ById(string uid, string name, JsonNode? json, string endpoint, string? param, string what, List<SavedFile> files, List<string> rejected)
+    /// <summary>A section that is one object keyed by id, each value the reply of its own endpoint, saved as its own file; `{0}` in the endpoint or a param is the id.</summary>
+    static void ById(string uid, string name, JsonNode? json, string endpoint, string[] ps, string what, List<SavedFile> files, List<string> rejected)
     {
         if (json is not JsonObject byId)
         {
-            if (json is not (null or JsonArray { Count: 0 })) rejected.Add($"{name}: not an object keyed by id");
+            if (json is not (null or JsonArray { Count: 0 })) rejected.Add($"{name}: not an object keyed by {what}");
             return;
         }
         foreach (var (key, value) in byId)
             if (long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var id) && key == id.ToString(CultureInfo.InvariantCulture))
-                files.Add(Reply(endpoint.Replace("{0}", key), param is null ? [] : [$"{param}={key}"], uid, value));
-            else rejected.Add($"{name}: a key that is not {what}");
+                files.Add(Reply(endpoint.Replace("{0}", key), [.. ps.Select(p => p.Replace("{0}", key))], uid, value));
+            else rejected.Add($"{name}: a key that is not a {what}");
     }
 
     /// <summary>The saved reply of an endpoint, named the way the backup tool names it: the path without its `/v1` and `/`, then `__key=value` per param, as <see cref="Importer.CleanName"/>.</summary>

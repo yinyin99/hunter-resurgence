@@ -114,7 +114,7 @@ public class SectionBackupTests
             .Section("hunt_details", $$"""{"9100":{{Hunt}}}""").Section("gallery", Gallery);
 
     [Fact]
-    public void APublicSaveWithoutAnIndexReadsWithTheIdOfItsProfile()
+    public void PublicSaveWithoutAnIndexReadsWithTheIdOfItsProfile()
     {
         var read = PublicSave().Read();
         Assert.Equal(Uid, read.Model.Identity.Uid);
@@ -127,7 +127,7 @@ public class SectionBackupTests
     }
 
     [Fact]
-    public void ACompetitionsAndLodgeContentsOfAPublicSaveReadToTheirEndpoints()
+    public void CompetitionsAndLodgeContentsOfAPublicSaveReadToTheirEndpoints()
     {
         var read = PublicSave().Section("competitions_previous", """{"competitions":[{"id":5}],"total":1}""")
             .Section("competition_pages", """{"5":{"info":[{"id":5}],"entrants":[],"entrants_total":0},"6":{"info":[{"id":6}],"entrants":[],"entrants_total":0}}""")
@@ -143,7 +143,7 @@ public class SectionBackupTests
     }
 
     [Fact]
-    public void ALodgeListAndItsContentsAreTheTwoRowsOfOneLodge()
+    public void LodgeListAndItsContentsAreTheTwoRowsOfOneLodge()
     {
         var read = PublicSave().Section("v2_lodges", """[{"id":61,"name":"Lodge"}]""").Section("lodge_contents", """{"61":{"id":61,"name":"Lodge","animal_slots":[{"slot_id":1}]}}""").Read();
         // the server keeps a lodge as two rows, as a new lodge gets them: the list's entry and the single lodge with its slots
@@ -154,18 +154,18 @@ public class SectionBackupTests
     }
 
     [Fact]
-    public void APublicSaveOneLevelDownAndTheV2ProfileIdRead()
+    public void PublicSaveOneLevelDownAndTheV2ProfileIdRead()
     {
         var z = PublicSave("saves/tool_public_sample/", """{"hostname":"sample"}""").Section("v2_profile", """{"id":1001,"hunterscore":1}""");
         Assert.Equal(Uid, z.Read().Model.Identity.Uid);
     }
 
     [Fact]
-    public void APublicSaveWhoseHandleIsNotItsProfilesIsRefused() =>
+    public void PublicSaveWhoseHandleIsNotItsProfilesIsRefused() =>
         Assert.Contains("hostname", PublicSave("tool_public_other/").Refused());
 
     [Fact]
-    public void APublicSaveWithNoReadableIdIsRefused() =>
+    public void PublicSaveWithNoReadableIdIsRefused() =>
         Assert.Contains("no readable user id", PublicSave(profile: """{"hostname":"sample"}""").Refused());
 
     static string Json(object o) => JsonSerializer.Serialize(o, Importer.Json);

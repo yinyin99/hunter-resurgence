@@ -218,12 +218,17 @@ public static class Restorer
         return new(finalId, !exists, sha, report);
     }
 
-    /// <summary>What a save adds to an account that has its profile from an archive claim: the saved replies (hunts and their details, gallery lists, competitions) and the lodge contents it lacks; one it has stays, and so do its
-    /// items, wallet, skills, statistics, achievements, trophies, profile and the play since. The gallery pictures come from <see cref="State.PreparePictures"/> (no replace). Adds the audit row; returns the report.</summary>
+    /// <summary>The saved replies a merge adds: the hunt list and details, the gallery lists and the competition replies (by their names in `extras`). Every other reply (the profiles, friends, missions, ...) is the claim's or the account's own.</summary>
+    static readonly string[] Merged = ["Expedition_list", "Public_user_expedition", "Gallery_list", "Page_content_"];
+
+    /// <summary>What a save adds to an account that has its profile from an archive claim: the saved replies <see cref="Merged"/> (hunts and their details, gallery lists, competitions) and the lodge rows it lacks; one it has stays, and so do its
+    /// items, wallet, skills, statistics, achievements, trophies, profile and the play since. The gallery pictures come from <see cref="State.PreparePictures"/> (no replace). Adds the audit row (mode `merge`, which the start em$ rule
+    /// does not count as a restored wallet); returns the report.</summary>
     static string Merge(Db con, PlayerModel m, Report layerA, string sha, string pictures)
     {
         int extras = 0, lodges = 0;
-        foreach (var (path, body) in m.Extras)
+        var wanted = m.Extras.Where(e => Merged.Any(p => e.Key.StartsWith(p, StringComparison.Ordinal))).ToList();
+        foreach (var (path, body) in wanted)
         {
             Strip(body);
             extras += PlayerRows.AddExtraIfAbsent(con, path, body);
@@ -237,10 +242,10 @@ public static class Restorer
         }
         var text = new StringBuilder(layerA.ToText());
         text.AppendLine("account: archive claim kept, missing parts added");
-        text.AppendLine($"added: saved replies {extras} of {m.Extras.Count}, lodge rows {lodges} of {m.Lodges.Count}");
+        text.AppendLine($"added: saved replies {extras} of {wanted.Count}, lodge rows {lodges} of {m.Lodges.Count}");
         text.AppendLine(pictures);
         var report = text.ToString();
-        PlayerRows.AddAudit(con, sha, layerA.Mode, report);
+        PlayerRows.AddAudit(con, sha, "merge", report);
         return report;
     }
 
@@ -336,7 +341,7 @@ public static class Restorer
     static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit, HashSet<string>? filled)
     {
         // the start em$ the account has not spent yet, until a zip's wallet replaced them once (a claim keeps the account's wallet)
-        var unspentStartEm = con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%'") is null
+        var unspentStartEm = con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%' AND mode <> 'merge'") is null
             ? Math.Min(Convert.ToDouble(con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = 'em'") ?? 0.0, System.Globalization.CultureInfo.InvariantCulture), StartEm)
             : 0;
         // a fill (an archive claim over a restore of the account's own backup) replaces nothing: only a table with no row of the account is written, and an extra only under a path it lacks
