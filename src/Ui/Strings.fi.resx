@@ -1631,4 +1631,5 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Exit.Report" xml:space="preserve"><value>Lähetä ongelmaraportti</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Avaa Windows-suojaus</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Pelin kansiossa ei ole asennettavia osia: tarkista pelin tiedostot Steamissä.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Valmis</value></data>
 </root>

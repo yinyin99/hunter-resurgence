@@ -36,17 +36,18 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
          new("1 Rifle A (Standard)", "1 Rifle A (Standard) harvests in the reserve.", new(2026, 10, 20)), new("1 Sitka Deer", "1 Sitka Deer harvested in the reserve.", new(2026, 10, 19)),
          new("1 Wild Boar", "1 Wild Boar harvested in the reserve.", new(2026, 10, 19)), new("1 Red Fox", "1 Red Fox harvested in the reserve.", new(2026, 10, 18))]));
 
-    static Milestone M(string title, int value, params int[] steps) => new(title, steps.Count(s => value >= s), steps, value);
+    // the texts are the catalogue's format strings, "%d" for a step's threshold
+    static Milestone M(string title, int value, string stepTitle, string stepText, params int[] steps) => new(title, steps.Count(s => value >= s), steps, value, null, stepTitle, stepText);
 
     public Task<IReadOnlyList<Milestone>> MilestonesAsync(string handle, string kind)
     {
         int[] six = [1, 25, 100, 250, 500, 1000];
         IReadOnlyList<Milestone> rows = kind switch
         {
-            "animals" => [M("Total", 0, 50, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000), .. Names.Species.Select(s => M(s.Name, 0, six))],
-            "weapons" => [M("Total", 0, 50, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000), .. Enumerable.Range(0, 40).Select(i => M($"{WeaponTypes[i % WeaponTypes.Length]} {(char)('A' + i / WeaponTypes.Length)}", 0, six))],
-            "exploration" => [M("Distance", 80, 10, 42, 233, 522, 1185, 1987, 5851, 40076), M("Duration", 30, 1, 24, 48, 72, 168, 336, 720, 8760)],
-            _ => [M("Easy missions", 0, 1, 25, 50, 100, 250), M("Medium missions", 0, 1, 10, 25, 50, 100), M("Hard missions", 0, 1, 5, 10, 25, 50)],
+            "animals" => [M("Total", 0, "%d animals", "%d animals harvested in the reserve.", 50, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000), .. Names.Species.Select(s => M(s.Name, 0, $"%d {s.Name}", $"%d {s.Name} harvested in the reserve.", six))],
+            "weapons" => [M("Total", 0, "%d harvests", "%d harvests in the reserve.", 50, 250, 500, 1000, 2000, 4000, 8000, 16000, 32000), .. Enumerable.Range(0, 40).Select(i => WeaponTypes[i % WeaponTypes.Length] + " " + (char)('A' + i / WeaponTypes.Length)).Select(w => M(w, 0, $"%d {w}", $"%d {w} harvests in the reserve.", six))],
+            "exploration" => [M("Distance", 80, "%d km", "%d km travelled in total.", 10, 42, 233, 522, 1185, 1987, 5851, 40076), M("Duration", 30, "%d hours", "%d total hours spent hunting.", 1, 24, 48, 72, 168, 336, 720, 8760)],
+            _ => [M("Easy missions", 0, "%d easy missions", "%d easy missions completed.", 1, 25, 50, 100, 250), M("Medium missions", 0, "%d medium missions", "%d medium missions completed.", 1, 10, 25, 50, 100), M("Hard missions", 0, "%d hard missions", "%d hard missions completed.", 1, 5, 10, 25, 50)],
         };
         return Task.FromResult(rows);
     }

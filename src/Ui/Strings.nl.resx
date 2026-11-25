@@ -1631,4 +1631,5 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Exit.Report" xml:space="preserve"><value>Een probleemrapport versturen</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Windows-beveiliging openen</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>De spelmap bevat geen onderdelen om te installeren: controleer het spel in Steam.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Voltooid</value></data>
 </root>

@@ -1631,4 +1631,5 @@ Numele:</value></data>
   <data name="Exit.Report" xml:space="preserve"><value>Trimite un raport despre problemă</value></data>
   <data name="Exit.OpenSecurity" xml:space="preserve"><value>Deschide Securitate Windows</value></data>
   <data name="Launch.NoRuntimes" xml:space="preserve"><value>Folderul jocului nu are componente de instalat: verificați jocul în Steam.</value></data>
+  <data name="Prof.AchDone" xml:space="preserve"><value>Terminat</value></data>
 </root>

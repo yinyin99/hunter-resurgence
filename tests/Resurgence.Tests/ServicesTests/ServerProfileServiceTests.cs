@@ -276,7 +276,7 @@ public class ServerProfileServiceTests
         {"cap":1000,"ranks":[{"id":1,"category":"animals","name":"Red Fox","value":1500},{"id":2,"category":"animals","name":"Alpine Ibex","value":25},
                              {"id":41,"category":"weapons","name":"Rifles","value":3},{"id":38,"category":"collectables","name":"Mushrooms","value":0}],
          "milestones":[{"category":"animals","title":"Total","steps":[50,250],"value":60},{"category":"animals","title":"Red Fox","steps":[1,25,100],"value":25},
-                       {"category":"exploration","title":"Distance","steps":[10,42],"value":12}]}
+                       {"category":"exploration","title":"Distance","stepTitle":"%d km","stepText":"%d km travelled in total.","steps":[10,42],"value":12}]}
         """;
 
     [Fact]
@@ -309,8 +309,21 @@ public class ServerProfileServiceTests
         var animals = await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "animals");
         Assert.Equal([("Total", 1, 60), ("Red Fox", 2, 25)], animals.Select(m => (m.Title, m.Done, m.Value)));
         Assert.Equal([1, 25, 100], animals[1].Steps);
+        Assert.Equal([("", ""), ("", "")], animals.Select(m => (m.StepTitle, m.StepText)));  // an old server sends no texts
+        var distance = Assert.Single(await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "exploration"));
+        Assert.Equal(("%d km", "%d km travelled in total."), (distance.StepTitle, distance.StepText));
         Assert.Equal([("Distance", 1)], (await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "exploration")).Select(m => (m.Title, m.Done)));
         Assert.Empty(await Make(new Fake(_ => Json(HttpStatusCode.OK, Ranks))).MilestonesAsync("fox", "day-mission"));
+    }
+
+    [Fact]
+    public void AStepsProgressIsFullWhenReachedTheShareOfTheStepWhenNextAndTheShareOfTheThresholdWhenLater()
+    {
+        var duration = new Milestone("Duration", 7, [1, 24, 48, 72, 168, 336, 720, 8760, 20000], 1424);
+        Assert.Equal((true, 720, 720, 100), duration.Progress(6));
+        Assert.Equal((false, 704, 8040, 9), duration.Progress(7));  // 1424 h after 720, towards 8760
+        Assert.Equal((false, 1424, 20000, 7), duration.Progress(8));
+        Assert.Equal((false, 0, 1, 0), new Milestone("Easy", 0, [1, 25], 0).Progress(0));  // the first step counts from 0
     }
 
     [Theory]

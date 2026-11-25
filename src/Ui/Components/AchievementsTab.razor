@@ -25,7 +25,7 @@
 else if (sub == "challenges") { @foreach (var a in challenges) { @Item(a.Title, a.Description, null) } }
 else
 {
-    @foreach (var m in milestones)
+    @foreach (var (m, mi) in milestones.Select((m, mi) => (m, mi)))
     {
         <div class="row">
             @if (m.Icon is { } icon) { <AssetSlot Name="@("ach-icon-" + icon)" Width="150" Height="150" Class="badge" /> }
@@ -34,7 +34,25 @@ else
                 <h4>@L.Term(m.Title) (@m.Done/@m.Steps.Count)</h4>
                 <div class="steps">
                     <i style="width:@Fill(m).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%"></i>
-                    @foreach (var (s, i) in m.Steps.Select((s, i) => (s, i))) { <span class="@(i < m.Done ? "got" : "")">@s</span> }
+                    @foreach (var (s, i) in m.Steps.Select((s, i) => (s, i)))
+                    {
+                        var p = m.Progress(i);
+                        var tip = $"tip-{mi}-{i}";
+                        // the tooltip opens on hover and on focus; the first half of the steps lines it up with the step's start, the second half with its end, so it stays inside the row
+                        <span class="@(i < m.Done ? "got" : "") @(2 * i < m.Steps.Count ? "lo" : "hi")" tabindex="0" aria-describedby="@tip">
+                            @s
+                            <small id="@tip" role="tooltip" class="tip">
+                                @if (m.StepTitle != "") { <b>@Text(m.StepTitle, s)</b> }
+                                @if (m.StepText != "") { <span>@Text(m.StepText, s)</span> }
+                                @if (p.Reached) { <span>@L["Prof.AchDone"]</span> }
+                                else
+                                {
+                                    <span>@L["Prof.Progress"]: @p.Have.ToString("N0")/@p.Need.ToString("N0") (@p.Percent%)</span>
+                                    <span class="meter"><i style="width:@p.Percent%"></i></span>
+                                }
+                            </small>
+                        </span>
+                    }
                 </div>
             </div>
         </div>
@@ -63,6 +81,9 @@ else
         else if (sub == "challenges") challenges = await Service.ChallengesAsync(Handle);
         else milestones = await Service.MilestonesAsync(Handle, sub);
     }
+
+    // the catalogue's format string with "%d" as the step's threshold
+    static string Text(string format, int step) => format.Replace("%d", step.ToString("N0"));
 
     // the blue fill reaches the steps done and a part of the next one
     static double Fill(Milestone m)
