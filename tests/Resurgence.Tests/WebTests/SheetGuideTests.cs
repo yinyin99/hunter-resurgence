@@ -18,5 +18,5 @@ public sealed class SheetGuideTests
     [InlineData("Wendigo", "", "antler-guide-wendigo")]
     [InlineData("Moose (Typical)", "male", "antler-guide-moose")]
     public void TheGuideSlotFollowsTheSpeciesAndGender(string species, string gender, string key) =>
-        Assert.Equal(key, AssetImages.Key(SheetTab.GuideSlot(Sheet(species, gender))));
+        Assert.Equal(key, AssetImages.Key("antler-guide-" + SheetTab.GuideName(Sheet(species, gender))));
 }
