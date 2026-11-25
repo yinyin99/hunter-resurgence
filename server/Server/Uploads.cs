@@ -630,7 +630,7 @@ public sealed class Uploads(State state, string dataDir)
     {
         lock (decide)
         {
-            Store.DeleteAccount(account);
+            Store.DeleteAccount(account, (long)state.Clock());
             state.DropBoards();
             foreach (var dir in new[] { "restores", "photos", "refused", "reports" })
             {

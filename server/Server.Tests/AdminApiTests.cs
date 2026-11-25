@@ -74,6 +74,26 @@ public class AdminApiTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task BanAndUnbanTakeAnAccountOrASteamIdAndMapToStatusCodes()
+    {
+        const string steam = "76561190000000009";
+        state.CreateAccount(9, "third", steam);
+        state.CreateAccount(10, "nosteam");
+        Assert.Equal(HttpStatusCode.NotFound, (await server.Http.PostAsync("http://localhost/admin/ban?who=nobody", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await server.Http.PostAsync("http://localhost/admin/ban", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await server.Http.PostAsync("http://localhost/admin/ban?who=nosteam", null)).StatusCode);  // nothing to keep out of a sign-in
+        var banned = await server.Http.PostAsync("http://localhost/admin/ban?who=third&reason=cheating", null);
+        Assert.Equal($$"""{"steam":"{{steam}}","account":9}""", await banned.Content.ReadAsStringAsync());
+        Assert.True(state.Store.IsBanned(steam));
+        Assert.Equal(HttpStatusCode.BadRequest, (await server.Http.PostAsync("http://localhost/admin/unban?steam=third", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await server.Http.PostAsync("http://localhost/admin/unban?steam=76561190000000010", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await server.Http.PostAsync($"http://localhost/admin/unban?steam={steam}", null)).StatusCode);
+        Assert.False(state.Store.IsBanned(steam));
+        Assert.Equal(HttpStatusCode.OK, (await server.Http.PostAsync($"http://localhost/admin/ban?who={steam}", null)).StatusCode);  // by Steam id
+        Assert.True(state.Store.IsBanned(steam));
+    }
+
+    [Fact]
     public async Task TelemetrySinkRequestsAreKeptInTelemetryJsonl()
     {
         var body = new StringContent("death_type=25&player_x=1", System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");

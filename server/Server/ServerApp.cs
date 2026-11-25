@@ -206,7 +206,7 @@ public static class ServerApp
                 }
                 catch (OperationCanceledException) { }
             }));
-        // crash reports and problem reports are kept 30 days: purged before the server serves and once a day
+        // crash reports and problem reports are kept 30 days, a Steam id's deletion record 24 h: purged before the server serves and once a day
         if (o.Game.State is { } kept)
         {
             void Purge()
@@ -215,8 +215,9 @@ public static class ServerApp
                 {
                     CrashReports.Purge(kept.Store, Store.Now());
                     app.Services.GetService<ProblemReports>()?.Purge(Store.Now());
+                    kept.Store.PurgeDeletions(Store.Now());
                 }
-                catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("purge of reports: " + e.Message); }  // retried the next day
+                catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("purge of reports and deletion records: " + e.Message); }  // retried the next day
             }
             Purge();
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(async () =>

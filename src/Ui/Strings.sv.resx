@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Du kan bara hämta en profil. Har du en säkerhetskopia som zip, ladda upp den i stället.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Välj din zip med säkerhetskopian och ladda upp den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Radera mina uppgifter</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Detta raderar ditt konto på den här servern och allt som lagrats med det: ditt Steam-id, ditt namn, dina speldata, de sparade zip-filerna med säkerhetskopior och dina foton. Du loggas ut och inloggningen i launchern slutar fungera. Det går inte att ångra.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Detta raderar ditt konto på den här servern och allt som lagrats med det: ditt namn, dina speldata, de sparade zip-filerna med säkerhetskopior och dina foton. Bara ditt Steam-id och tidpunkten för raderingen finns kvar i 24 timmar, så att ett nytt konto inte direkt kan ta över en gammal profil; om operatören har stängt av ditt Steam-id finns även avstängningsposten kvar. Du loggas ut och inloggningen i launchern slutar fungera. Det går inte att ångra.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jag förstår, radera allt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Radera mina uppgifter</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Uppgifterna kunde inte raderas. Försök igen.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Vad konton inte innehåller</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-postadress, ditt riktiga namn, din postadress eller ditt telefonnummer: de efterfrågas inte och sparas inte i ditt konto. Om en säkerhetskopia innehåller ett sådant fält återställs det inte.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort; att logga in igen skapar ett nytt konto.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Logga in, öppna Återställ din säkerhetskopia och använd Radera mina uppgifter. Det raderar kontot, dess speldata, de sparade zip-filerna och fotona, och loggar ut dig. Ditt Steam-id glöms sedan bort, med två undantag: det finns kvar i 24 timmar tillsammans med tidpunkten för raderingen och inget annat (tas bort vid nästa dagliga rensning), så att ett nytt konto inte direkt kan ta över en gammal profil; och om operatören har stängt av det finns avstängningsposten kvar (se nedan). Att logga in igen skapar ett nytt konto.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatören för den här servern kan se allt ovan.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Problemrapporter</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>När en spelstart misslyckas (spelet kördes under en minut, avslutades med ett fel eller visade inget fönster) sammanställer launchern en rapport: spelets loggar och inställningar, launcherns egen logg, Windows kraschhändelser för spelet, launchern och dess webbläsare (WebView2), namnen på antivirus-, booster- och overlayprogram, din Windows-version och ditt språk, grafikkort och skärmar samt dina senaste starter. Dess textfiler innehåller inga lösenord eller tokens. Den skickas bara om du valde ”Skicka automatiskt” (du tillfrågas en gång och kan ändra i Inställningar), annars bara när du trycker på Skicka. Den sparas med ditt konto i 30 dagar och operatörerna kan läsa den. En avisering med ditt handle, ditt kontonummer och rapportens referens går till operatörernas privata Discord-kanal. Radera mina uppgifter tar bort dina rapporter.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>Hur länge det sparas</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ditt konto och dess uppgifter finns kvar tills du använder Radera mina uppgifter.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- och proxyloggar kan innehålla IP-adresser och handles. De sparas i högst 30 dagar.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>När ett konto raderas sparas dess Steam-id och tidpunkten för raderingen i 24 timmar och tas bort vid nästa dagliga rensning. En avstängning från operatören sparas som en post med Steam-id, tidpunkt, orsak och, när den hävts, tidpunkten för hävningen; posten finns kvar efter en hävning, så att en senare begäran om en profil kan visa att Steam-id:t varit avstängt tidigare, och den finns kvar när kontot raderas.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din webbläsare är öppen. Logga in med Steam där.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Logga in med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>
@@ -1569,7 +1570,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Den här inloggningslänken har gått ut. Börja om från launchern eller säkerhetskopieringsverktyget.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Den här inloggningslänken är ogiltig. Börja om från launchern eller säkerhetskopieringsverktyget.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekräftade inte inloggningen. Börja om.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Det här kontot får inte logga in.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Det här Steam-kontot är avstängt och kan inte logga in.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>

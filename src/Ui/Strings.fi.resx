@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Voit lunastaa vain yhden profiilin. Jos sinulla on varmuuskopio-zip, lähetä se sen sijaan.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Valitse varmuuskopio-zip ja lähetä se.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Poista tietoni</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tämä poistaa tilisi tältä palvelimelta ja kaiken siihen tallennetun: Steam-tunnuksesi, nimesi, pelitietosi, säilytetyt varmuuskopio-zipit ja valokuvasi. Sinut kirjataan ulos, eikä käynnistäjän sisäänkirjautuminen enää toimi. Tätä ei voi perua.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Tämä poistaa tilisi tältä palvelimelta ja kaiken siihen tallennetun: nimesi, pelitietosi, säilytetyt varmuuskopio-zipit ja valokuvasi. Vain Steam-tunnuksesi ja poistamisen ajankohta säilyvät 24 tuntia, jotta uusi tili ei voi heti lunastaa vanhaa profiilia; jos ylläpitäjä on estänyt Steam-tunnuksesi, myös eston tallenne säilyy. Sinut kirjataan ulos, eikä käynnistäjän sisäänkirjautuminen enää toimi. Tätä ei voi perua.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ymmärrän, poista kaikki</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Poista tietoni</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Tietoja ei voitu poistaa. Yritä uudelleen.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Mitä tilit eivät sisällä</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Sähköpostiosoitteesi, oikea nimesi, postiosoitteesi tai puhelinnumerosi: niitä ei kysytä eikä tallenneta tilillesi. Jos varmuuskopio sisältää tällaisen kentän, sitä ei palauteta.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan; uudelleen kirjautuminen luo uuden tilin.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Kirjaudu sisään, avaa Palauta varmuuskopiosi ja käytä Poista tietoni. Se poistaa tilin, sen pelitiedot, säilytetyt zipit ja valokuvat sekä kirjaa sinut ulos. Steam-tunnuksesi unohdetaan, kahta poikkeusta lukuun ottamatta: se säilyy 24 tuntia yhdessä poistamisen ajankohdan kanssa eikä muuta (poistetaan seuraavassa päivittäisessä siivouksessa), jotta uusi tili ei voi heti lunastaa vanhaa profiilia; ja jos ylläpitäjä on estänyt sen, eston tallenne säilyy (katso alla). Uudelleen kirjautuminen luo uuden tilin.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Tämän palvelimen operaattori näkee kaiken edellä mainitun.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Ongelmaraportit</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Kun pelin käynnistys epäonnistuu (se oli käynnissä alle minuutin, päättyi virheeseen tai ei näyttänyt ikkunaa), käynnistäjä kokoaa raportin: pelin lokit ja asetukset, käynnistäjän oma loki, pelin, käynnistäjän ja sen selaimen (WebView2) Windows-kaatumistapahtumat, virustorjunta-, tehostin- ja peittokuvaohjelmien nimet sekä Windows-versiosi ja -kielesi, näytönohjaimesi ja näyttösi sekä viimeisimmät käynnistyksesi. Sen tekstitiedostot eivät sisällä salasanoja tai tunnisteita. Se lähetetään vain, jos valitsit "Lähetä automaattisesti" (kysytään kerran, muutettavissa kohdassa Asetukset), muuten vain kun painat Lähetä. Se säilytetään tilisi yhteydessä 30 päivää, ja ylläpitäjät voivat lukea sen. Ilmoitus käyttäjänimestäsi, tilinumerostasi ja raportin viitteestä lähetetään ylläpitäjien yksityiselle Discord-kanavalle. Poista tietoni poistaa raporttisi.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>Kuinka kauan tiedot säilytetään</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Tilisi ja sen tiedot säilyvät, kunnes käytät Poista tietoni.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Palvelimen ja välityspalvelimen lokit voivat sisältää IP-osoitteita ja käyttäjänimiä. Niitä säilytetään enintään 30 päivää.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>Kun tili poistetaan, sen Steam-tunnus ja poistamisen ajankohta säilyvät 24 tuntia ja poistetaan seuraavassa päivittäisessä siivouksessa. Ylläpitäjän antama esto tallennetaan merkintänä, jossa on Steam-tunnus, ajankohta, syy ja kumottuna kumoamisen ajankohta; merkintä säilyy eston kumoamisen jälkeen, jotta myöhempi profiilin lunastus voi näyttää Steam-tunnuksen olleen aiemmin estetty, ja se säilyy tilin poistamisen jälkeen.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Selaimesi on auki. Kirjaudu siellä Steamilla.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Kirjaudu Steamilla</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>
@@ -1569,7 +1570,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Tämä kirjautumislinkki vanheni. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Tämä kirjautumislinkki ei kelpaa. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam ei vahvistanut kirjautumista. Aloita alusta.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä tili ei saa kirjautua sisään.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä Steam-tili on estetty, eikä sillä voi kirjautua sisään.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>

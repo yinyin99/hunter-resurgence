@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Puteți revendica un singur profil. Dacă aveți un zip de backup, încărcați-l în loc.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Alegeți zip-ul de backup și încărcați-l.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Ștergeți datele mele</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Aceasta șterge contul dvs. de pe acest server și tot ce este stocat împreună cu el: ID-ul dvs. Steam, numele, datele de joc, zip-urile de backup păstrate și fotografiile. Veți fi deconectat, iar autentificarea din launcher nu va mai funcționa. Acțiunea nu poate fi anulată.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Aceasta șterge contul dvs. de pe acest server și tot ce este stocat împreună cu el: numele, datele de joc, zip-urile de backup păstrate și fotografiile. Doar ID-ul dvs. Steam și ora ștergerii rămân 24 de ore, pentru ca un cont nou să nu poată revendica imediat un profil vechi; dacă operatorul v-a banat ID-ul Steam, rămâne și înregistrarea banului. Veți fi deconectat, iar autentificarea din launcher nu va mai funcționa. Acțiunea nu poate fi anulată.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Am înțeles, ștergeți totul</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Ștergeți datele mele</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Datele nu au putut fi șterse. Încercați din nou.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce nu conțin conturile</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Adresa dvs. de e-mail, numele real, adresa poștală sau numărul de telefon: nu sunt solicitate și nu sunt păstrate în contul dvs. Dacă un backup conține un astfel de câmp, acesta nu este restaurat.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat; o nouă conectare creează un cont nou.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Conectați-vă, deschideți „Restaurați backup-ul” și folosiți „Ștergeți datele mele”. Se șterg contul, datele sale de joc, zip-urile păstrate și fotografiile, iar dvs. veți fi deconectat. ID-ul dvs. Steam este apoi uitat, cu două excepții: rămâne 24 de ore împreună cu ora ștergerii și nimic altceva (eliminat la următoarea curățare zilnică), pentru ca un cont nou să nu poată revendica imediat un profil vechi; și dacă operatorul l-a banat, rămâne înregistrarea banului (vezi mai jos). O nouă conectare creează un cont nou.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operatorul acestui server poate vedea tot ce este menționat mai sus.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Rapoarte de probleme</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>După ce pornirea jocului eșuează (a rulat sub un minut, s-a încheiat cu o eroare sau nu a afișat nicio fereastră), launcherul pregătește un raport: jurnalele și setările jocului, jurnalul propriu al launcherului, evenimentele de blocare Windows pentru joc, pentru launcher și pentru browserul său (WebView2), numele programelor antivirus, booster și overlay, versiunea și limba Windows, placa video și ecranele și pornirile tale recente. Fișierele lui text nu conțin parole sau token-uri. Este trimis doar dacă ai ales „Trimite automat” (întrebat o singură dată, poate fi schimbat în Setări), altfel doar când apeși Trimite. Este păstrat împreună cu contul tău 30 de zile, iar operatorii îl pot citi. O notificare cu pseudonimul tău, numărul contului tău și referința raportului ajunge pe canalul Discord privat al operatorilor. Ștergeți datele mele elimină rapoartele dvs.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>Cât timp sunt păstrate</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Contul dvs. și datele sale rămân până când folosiți „Ștergeți datele mele”.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Jurnalele serverului și ale proxy-ului pot conține adrese IP și pseudonime. Sunt păstrate cel mult 30 de zile.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>Când un cont este șters, ID-ul său Steam și ora ștergerii sunt păstrate 24 de ore și eliminate la următoarea curățare zilnică. Un ban dat de operator este păstrat ca o înregistrare cu ID-ul Steam, ora, motivul și, după ridicare, ora ridicării; înregistrarea rămâne după ridicarea banului, pentru ca o revendicare ulterioară să arate că ID-ul Steam a fost banat înainte, și rămâne și după ștergerea contului.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Browserul este deschis. Conectează-te acolo cu Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Conectare cu Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Autentificarea nu a fost confirmată la timp. Încearcă din nou.</value></data>
@@ -1569,7 +1570,7 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Acest link de conectare a expirat. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Acest link de conectare nu este valid. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam nu a confirmat conectarea. Începeți din nou.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont nu se poate conecta.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont Steam este banat și nu se poate conecta.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>

@@ -304,6 +304,11 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             logins.TryRemove(id, out _);
             return Problem(r, "steam");
         }
+        if (Store.IsBanned(steamId))  // a banned Steam id signs nothing in and makes no account, whether or not an account of it exists
+        {
+            logins.TryRemove(id, out _);
+            return Problem(r, "banned");
+        }
         login.Steam = steamId;
         login.Expires = now() + Lifetimes.Login;
         return Store.AccountBySteam(steamId) is { } account ? Finish(r, login, account) : Redirect(Page(r, "handle"));
@@ -354,6 +359,11 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     {
         if (Current(r) is not { Steam: { } steamId, Account: null } login)
             return Problem(r, "expired");
+        if (Store.IsBanned(steamId))  // banned between the Steam round trip and the form
+        {
+            logins.TryRemove(login.Id, out _);
+            return Problem(r, "banned");
+        }
         if (Store.AccountBySteam(steamId) is { } existing)  // another tab of this sign-in was faster
             return Finish(r, login, existing);
         var offer = claims is { Enabled: true };
@@ -405,6 +415,11 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             var o = claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);
             claimed = $"{Alerts.Handle(player.Handle)}, hunterscore {player.Hunterscore}";
             outcome = o.Kind == "restored" ? "claim restored" : o.Kind == "review" ? "claim waiting for review" : $"claim refused ({o.Kind})";
+            if (o.Kind == "refused")  // any refused claim (the cooldown after a delete, an empty archive, an unreadable profile): the player's inbox says why
+            {
+                using var con = Store.Open(account);
+                Uploads.Notify(con, o.Message);
+            }
         }
         signupAlert?.Invoke(Alerts.Text("\U0001F195", "New account", null, ("handle", Alerts.Handle(handle)), ("account", account), ("steam", Alerts.Steam(steamId)),
             ("archived", claimed), ("outcome", outcome)));

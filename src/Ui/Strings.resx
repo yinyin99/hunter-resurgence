@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>You can claim only one profile. If you have a backup zip, upload it instead.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Choose your backup zip and upload it.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your Steam id, your name, your game data, the backup zips kept, and your photos. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your name, your game data, the backup zips kept, and your photos. Only your Steam id and the time of the deletion stay, for 24 hours, so that a new account cannot claim an old profile at once; if the operator banned your Steam id, its ban record stays too. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten; signing in again makes a new account.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Sign in, open Restore your backup and use Delete my data. It deletes the account, its game data, the kept zips and the photos, and signs you out. Your Steam id is then forgotten, with two exceptions: it stays with the time of the deletion and nothing else for 24 hours (removed by the next daily cleanup), so that a new account cannot claim an old profile at once; and if the operator banned it, its ban record stays (see below). Signing in again makes a new account.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>The operator of this server can see all of the above.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Problem reports</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>After a game start fails (it ran under a minute, ended with an error, or showed no window), the launcher puts together a report: the game's logs and settings, the launcher's own log, Windows crash events for the game, the launcher and its browser (WebView2), the names of antivirus, booster and overlay programs, your Windows version and language, graphics card and screens, and your recent starts. Its text files hold no passwords or tokens. It is sent only if you chose "Send automatically" (asked once, changeable in Settings), otherwise only when you press Send. It is kept with your account for 30 days and the operators can read it. A notice with your handle, account number and the report's reference goes to the operators' private Discord channel. Delete my data removes your reports.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>How long it is kept</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Your account and its data stay until you use Delete my data.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server and proxy logs can contain IP addresses and handles. They are kept for at most 30 days.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>When an account is deleted, its Steam id and the time of the deletion are kept for 24 hours and then removed by the next daily cleanup. A ban by the operator is kept as a record of the Steam id, the time, the reason and, once lifted, the time it was lifted; the record stays after a lift, so that a later claim can show the Steam id was banned before, and it stays when the account is deleted.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Your browser is open. Sign in with Steam there.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Sign in with Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>The sign-in was not confirmed in time. Please try again.</value></data>
@@ -1569,7 +1570,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>This sign-in link ran out of time. Start again from the launcher or the backup tool.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>This sign-in link is not valid. Start again from the launcher or the backup tool.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam did not confirm the sign-in. Start again.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This account may not sign in.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This Steam account is banned and cannot sign in.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Are you sure you want to close the launcher and the game?</value></data>

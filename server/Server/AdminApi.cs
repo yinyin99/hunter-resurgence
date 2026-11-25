@@ -204,6 +204,27 @@ public static class AdminApi
              .WithDescription("`{since, players: [{account, handle, huntSecondsHere, reserves: [{reserve, gm, harvests, hours, gmPerHour, gmPerHarvest, harvestsPerHour}], species: [{species, reserve, harvests, gm}], otherGm: {mission, community, daily, dog}}]}`, "
                               + "most playtime first: the hunts since `playtime_since`, the gm$ of the harvests (`CSS Reward` wallet rows) on the hunts' reserves and, apart, the mission, community, daily and dog rewards since then. No 5-player floor. "
                               + "Computed on demand and kept an hour, like `GET /stats/hunting`.").ProducesProblem(503);
+
+        admin.MapPost("/ban", Results<Ok<BanResult>, ProblemHttpResult> ([Description("User id or handle of the account, or a Steam id (17 digits)")] string? who, [Description("Why; kept with the ban, at most 200 characters")] string? reason) =>
+            {
+                if (state is null) return NoState();
+                var (done, status, error) = Ban(state, who ?? "", reason);
+                return done is { } ban ? TypedResults.Ok(ban) : TypedResults.Problem(error, statusCode: status, title: status == 404 ? "Unknown account" : "No Steam id");
+            })
+             .WithName("BanSteamId").WithSummary("Ban a Steam id and its current account")
+             .WithDescription("The Steam id can sign in no more, deleting the account does not lift the ban, and `banned` is set on its current account (its tokens stop working, public reads skip it). "
+                              + "`who` is an account (user id or handle) or a Steam id itself, 17 digits. Repeating replaces the reason. `{steam, account}`; 404 for an account that does not exist, 409 for one without a Steam id.")
+             .ProducesProblem(404).ProducesProblem(409).ProducesProblem(503);
+
+        admin.MapPost("/unban", Results<Ok<BanResult>, ProblemHttpResult> ([Description("The Steam id, 17 digits")] string? steam) =>
+            {
+                if (state is null) return NoState();
+                var (done, status, error) = Unban(state, steam ?? "");
+                return done is { } lifted ? TypedResults.Ok(lifted) : TypedResults.Problem(error, statusCode: status, title: status == 400 ? "Not a Steam id" : "Not banned");
+            })
+             .WithName("UnbanSteamId").WithSummary("Lift the ban of a Steam id and of its current account")
+             .WithDescription("`{steam, account}`; 400 for a value that is not 17 digits, 404 for a Steam id that is not banned. The ban stays on record with its lift time: the review list says the id was banned before.")
+             .ProducesProblem(400).ProducesProblem(404).ProducesProblem(503);
     }
 
     public const int MaxStacks = 1000;  // one transaction per grant
@@ -218,6 +239,39 @@ public static class AdminApi
         string.IsNullOrWhiteSpace(who) ? state.LocalAccount
         : long.TryParse(who, out var id) && state.Store.AccountExists(id) ? id
         : state.Store.AccountByHandle(who);
+
+    /// <summary>A Steam id is 17 digits.</summary>
+    public static bool IsSteamId(string s) => s.Length == 17 && s.All(char.IsAsciiDigit);
+
+    /// <summary>`admin ban`: the Steam id of the account an operator names (user id or handle), or the Steam id itself (17 digits; an account of it may not exist), banned with a reason (at most 200 characters)
+    /// and `banned` set on its current account. A ban of an account that has no Steam id is refused: there is nothing to keep out of a new sign-in.
+    /// Status and Error say why Done is null: 404 unknown, 409 no Steam id.</summary>
+    public static (BanResult? Done, int Status, string? Error) Ban(State state, string who, string? reason)
+    {
+        who = who.Trim();
+        string? steam;
+        if (IsSteamId(who)) steam = who;
+        else if (who != "" && ResolveAccount(state, who) is { } id)
+        {
+            if (state.Store.SteamId64(id) is not { } own) return (null, 409, $"account {who} has no Steam id: nothing to ban");
+            steam = own;
+        }
+        else return (null, 404, $"no account {who}");
+        var why = (reason ?? "").Trim();
+        var account = state.Store.Ban(steam, why.Length > 200 ? why[..200] : why, (long)state.Clock());
+        state.DropBoards();
+        return (new BanResult(steam, account), 200, null);
+    }
+
+    /// <summary>`admin unban`: lifts the ban of a Steam id (17 digits) and of its current account. Status 400: not a Steam id, 404: it was not banned.</summary>
+    public static (BanResult? Done, int Status, string? Error) Unban(State state, string steam)
+    {
+        steam = steam.Trim();
+        if (!IsSteamId(steam)) return (null, 400, "a Steam id is 17 digits");
+        if (!state.Store.Unban(steam, (long)state.Clock())) return (null, 404, $"{steam} is not banned");
+        state.DropBoards();
+        return (new BanResult(steam, state.Store.AccountBySteam(steam)), 200, null);
+    }
 
     /// <summary>The arguments after `admin rescore`: `[--account <id or handle>] [--kill <id>] [--apply]` in any order; null when they are not that
     /// (an unknown or repeated option, a missing or non-numeric value, `--kill` without `--account`: kill ids are per account).</summary>
@@ -265,6 +319,7 @@ public static class AdminApi
         [property: Description("Amount to add; negative takes (at most 2^53 either way)")] double? Amount);
 
     public sealed record Balance(string Currency, double Amount);
+    public sealed record BanResult([property: Description("The Steam id (17 digits)")] string Steam, [property: Description("The account of that Steam id that was banned or unbanned; null: it has none")] long? Account);
 
     public sealed record SpawnList(List<Spawner.Entry> Entries, List<Spawner.Applied> Applied);
     public sealed record SpawnRemoved(int Removed);

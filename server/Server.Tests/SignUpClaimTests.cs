@@ -109,6 +109,21 @@ public class SignUpClaimTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestASteamIdThatDeletedItsAccountAndSignsUpAgainGetsNoArchivedProfileWithin24HoursAndTheInboxSaysWhy()
+    {
+        const string steam = "99999999999999996";
+        var first = state.Store.NextServerId();
+        state.CreateAccount(first, "Earlier", steam);
+        new Uploads(state, tmp).Delete(first);
+        var login = await NewLogin(steam);
+        Assert.Equal(302, (await Post(login, "kind=old&old=ALPHA&handle=")).Status);
+        var account = state.Store.AccountBySteam(steam)!.Value;
+        Assert.DoesNotContain(state.Inventory(account), i => (string)i!["guid"]! == "9001");  // nothing was restored
+        using var con = state.Store.Open(account);
+        Assert.Contains("deleted less than 24 hours ago", (string)con.Scalar("SELECT group_concat(content, ' ') FROM messages WHERE account_id = $a AND sender = ?", State.SYSTEM_SENDER)!);
+    }
+
+    [Fact]
     public async Task TestAnArchivedNameLongerThanANewNameIsFoundAtTheFirstSignIn()
     {
         var login = await NewLogin("99999999999999995");

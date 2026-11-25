@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Можно подать заявку только на один профиль. Если у вас есть zip с резервной копией, загрузите его.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Выберите zip с резервной копией и загрузите его.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Удалить мои данные</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>Это удалит ваш аккаунт на этом сервере и всё, что с ним хранится: ваш Steam ID, ваше имя, игровые данные, сохранённые zip-архивы резервных копий и ваши фотографии. Вы выйдете из аккаунта, а вход через лаунчер перестанет работать. Это нельзя отменить.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>Это удалит ваш аккаунт на этом сервере и всё, что с ним хранится: ваше имя, игровые данные, сохранённые zip-архивы резервных копий и ваши фотографии. Только ваш Steam ID и время удаления хранятся 24 часа, чтобы новый аккаунт не мог сразу заявить права на старый профиль; если оператор заблокировал ваш Steam ID, запись о блокировке тоже остаётся. Вы выйдете из аккаунта, а вход через лаунчер перестанет работать. Это нельзя отменить.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Я понимаю, удалить всё</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Удалить мои данные</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Не удалось удалить данные. Попробуйте ещё раз.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Чего нет в аккаунтах</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ваш адрес электронной почты, настоящее имя, почтовый адрес или номер телефона: их не запрашивают и не хранят в вашем аккаунте. Если резервная копия содержит такое поле, оно не восстанавливается.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Удаление ваших данных</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Войдите, откройте «Восстановить резервную копию» и нажмите «Удалить мои данные». Это удалит аккаунт, его игровые данные, сохранённые zip-архивы и фотографии, а вы выйдете из аккаунта. После этого ваш Steam ID забывается; повторный вход создаст новый аккаунт.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Войдите, откройте «Восстановить резервную копию» и нажмите «Удалить мои данные». Это удалит аккаунт, его игровые данные, сохранённые zip-архивы и фотографии, а вы выйдете из аккаунта. После этого ваш Steam ID забывается, с двумя исключениями: 24 часа он хранится вместе со временем удаления и больше ни с чем (удаляется при следующей ежедневной очистке), чтобы новый аккаунт не мог сразу заявить права на старый профиль; и если оператор его заблокировал, запись о блокировке остаётся (см. ниже). Повторный вход создаст новый аккаунт.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Оператор этого сервера видит всё перечисленное выше.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Отчёты о проблемах</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Если запуск игры не удался (она работала меньше минуты, завершилась с ошибкой или не показала окно), лаунчер собирает отчёт: журналы и настройки игры, собственный журнал лаунчера, события сбоев Windows для игры, лаунчера и его браузера (WebView2), названия антивирусов, бустеров и оверлеев, версию и язык Windows, видеокарту и экраны, а также ваши последние запуски. Паролей и токенов в его текстовых файлах нет. Он отправляется, только если вы выбрали «Отправлять автоматически» (спрашивается один раз, можно изменить в Настройках), иначе — только когда вы нажмёте «Отправить». Он хранится вместе с вашей учётной записью 30 дней, и операторы могут его прочитать. Уведомление с вашим ником, номером вашей учётной записи и номером отчёта отправляется в закрытый Discord-канал операторов. «Удалить мои данные» удаляет ваши отчёты.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>Как долго это хранится</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ваш аккаунт и его данные хранятся, пока вы не нажмёте «Удалить мои данные».</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Журналы сервера и прокси могут содержать IP-адреса и ники. Они хранятся не дольше 30 дней.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>Когда аккаунт удаляется, его Steam ID и время удаления хранятся 24 часа и удаляются при следующей ежедневной очистке. Блокировка оператором хранится как запись со Steam ID, временем, причиной и, после снятия, временем снятия; запись остаётся и после снятия блокировки, чтобы при более поздней заявке на профиль было видно, что Steam ID уже блокировали, и остаётся после удаления аккаунта.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Браузер открыт. Войдите там через Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Войти через Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Вход не был подтверждён вовремя. Попробуйте ещё раз.</value></data>
@@ -1569,7 +1570,7 @@
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ссылка для входа устарела. Начните заново из лаунчера или инструмента резервного копирования.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ссылка для входа недействительна. Начните заново из лаунчера или инструмента резервного копирования.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam не подтвердил вход. Начните заново.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Этой учётной записи вход запрещён.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Этот аккаунт Steam заблокирован, вход невозможен.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>

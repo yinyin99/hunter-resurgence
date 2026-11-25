@@ -1067,6 +1067,45 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Null(Cookie(back, "hr_session"));
     }
 
+    [Fact]
+    public async Task TestABannedSteamIdSignsInNoMoreAfterItsAccountIsDeletedAndMakesNoAccount()
+    {
+        await SignIn();
+        var account = state.Store.AccountBySteam("99999999999999991")!.Value;
+        var banned = AdminApi.Ban(state, "Hunter_One", "test reason");  // by handle: the Steam id is banned and the account carries the flag
+        Assert.Equal((200, "99999999999999991", (long?)account), (banned.Status, banned.Done!.Steam, banned.Done.Account));
+        Assert.True(state.Store.IsBanned("99999999999999991"));
+        new Uploads(state, tmp).Delete(account);  // POST /account/delete: the account and its flag go, the ban does not
+        Assert.Null(state.Store.AccountBySteam("99999999999999991"));
+
+        var back = await Return("web.test", await Begin("web.test"));
+        Problem(back, "banned");
+        Assert.Null(Cookie(back, "hr_session"));
+        Assert.Null(state.Store.AccountBySteam("99999999999999991"));  // no account was made
+
+        Assert.Equal(200, AdminApi.Unban(state, "99999999999999991").Status);
+        Assert.Equal(404, AdminApi.Unban(state, "99999999999999991").Status);
+        Assert.Equal("/signin/handle", Location(await Return("web.test", await Begin("web.test"))));  // allowed again: a new account, as for any new Steam id
+    }
+
+    [Fact]
+    public async Task TestABanByAnAccountIdOrByASteamIdNamesTheSameSteamIdAndBansItsAccountAndUnbanLiftsBoth()
+    {
+        await SignIn();
+        var account = state.Store.AccountBySteam("99999999999999991")!.Value;
+        Assert.Equal(404, AdminApi.Ban(state, "nobody", null).Status);
+        Assert.Equal(account, AdminApi.Ban(state, account.ToString(), null).Done!.Account);
+        using (var con = state.Store.Open())
+            Assert.Equal(1L, con.Scalar("SELECT banned FROM accounts WHERE id = ?", account));
+        Assert.Null(state.Store.ResolveToken(state.Store.CreateToken(account)));  // a banned account's tokens do not resolve
+        Assert.Null(AdminApi.Ban(state, "88888888888888889", "no account yet").Done!.Account);  // a Steam id nobody has signed in with yet
+        Assert.Equal(account, AdminApi.Unban(state, "99999999999999991").Done!.Account);
+        using (var con = state.Store.Open())
+            Assert.Equal(0L, con.Scalar("SELECT banned FROM accounts WHERE id = ?", account));
+        Problem(await Return("web.test", await Begin("web.test"), "88888888888888889"), "banned");
+        Assert.Equal(302, (await Return("web.test", await Begin("web.test"))).Status);  // the first one signs in again
+    }
+
     // ---- the launcher's start page
 
     [Fact]

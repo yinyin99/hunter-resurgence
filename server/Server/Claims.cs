@@ -19,6 +19,8 @@ public sealed class Claims(State state, Archive archive, string dataDir)
     public const int LookupsPerDay = 5;
     /// <summary>An archived player with this hunterscore or more is restored only by the operator.</summary>
     public const long ReviewScore = 10000;
+    /// <summary>After the account of a Steam id is deleted, its next account cannot claim for this long (docs/server.md#archive-claims).</summary>
+    public const int CooldownHours = 24;
 
     /// <summary>Called with the text for the operator when a claim waits for review (the server sets it to the review webhook).</summary>
     public Action<string> Alert { get; init; } = _ => { };
@@ -73,6 +75,14 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         return con.Rows("SELECT state, handle, ts FROM claims WHERE account_id = ?", account).Select(r => new OwnClaim((string)r[0], (string)r[1], (long)r[2])).SingleOrDefault();
     }
 
+    /// <summary>When the account's Steam id was banned before and the ban was lifted, as text for the operator ("2026-01-02, lifted 2026-01-05"); null when it never was, or is banned now (it could not have signed in).</summary>
+    string? EarlierBan(long account)
+    {
+        if (Store.SteamId64(account) is not { } steam || Store.BanOf(steam) is not var (ts, lifted) || lifted is not { } l) return null;
+        static string Day(long t) => DateTimeOffset.FromUnixTimeSeconds(t).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return $"{Day(ts)}, lifted {Day(l)}";
+    }
+
     /// <summary>The account claims the archived player named `name` (the operator may give a user id too). One claim per account, ever. `useOldName`: take the archived handle when it is allowed and free.
     /// `byOperator`: no limit, no review, no confirmation; the account's earlier claim row, if any, is replaced.</summary>
     public ClaimOutcome Claim(long account, string name, bool useOldName, bool confirmOverwrite, bool byOperator = false, bool announce = false)
@@ -81,6 +91,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         lock (decide)
         {
             if (!byOperator && Of(account) is not null) return new(409, "refused", "This account has made its one claim already.");
+            if (!byOperator && Store.SteamId64(account) is { } steam && Store.DeletedAt(steam) is { } gone && gone + CooldownHours * 3600L > (long)state.Clock())
+                return new(409, "refused", $"The account this Steam id had before was deleted less than {CooldownHours} hours ago. A claim is possible from "
+                                           + DateTimeOffset.FromUnixTimeSeconds(gone + CooldownHours * 3600L).ToString("yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture) + ".");
             var player = archive.Find(name)
                          ?? (byOperator && long.TryParse(name, NumberStyles.None, CultureInfo.InvariantCulture, out var uid) ? archive.Find(uid) : null);
             if (player is null)  // an unknown name costs a lookup: a claim is not a way to list the archive
@@ -97,7 +110,7 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             var done = Restore(account, player, useOldName);
             if (announce && done.Kind == "restored")
                 Signup(Alerts.Text("\u2705", "Claim restored", null, ("handle", Alerts.Handle((string)Store.AccountJson(account)["handle"]!)), ("account", account),
-                    ("archived handle", Alerts.Handle(player.Handle)), ("hunterscore", player.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account)))));
+                    ("archived handle", Alerts.Handle(player.Handle)), ("hunterscore", player.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account))), ("earlier ban", EarlierBan(account))));
             return done;
         }
     }
@@ -116,7 +129,7 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         }
         // the archive's own text: Alerts.Handle keeps only plain name characters
         Alert(Alerts.Text("\U0001F4DC", "Claim waiting for review", "review list", ("claim", $"c{id}"), ("handle", Alerts.Handle(p.Handle)), ("account", account),
-            ("archived id", p.Uid), ("hunterscore", p.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account))), ("backup restored", BackupRestored(account) ? "yes, the claim adds only what the backup lacks" : null)));
+            ("archived id", p.Uid), ("hunterscore", p.Hunterscore), ("steam", Alerts.Steam(Store.SteamId64(account))), ("backup restored", BackupRestored(account) ? "yes, the claim adds only what the backup lacks" : null), ("earlier ban", EarlierBan(account))));
         return new(200, "review", "Received. An operator will check it. Nothing was restored yet.");
     }
 
@@ -205,15 +218,15 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         return new(200, "restored", text);
     }
 
-    /// <summary>A claim waiting for the operator.</summary>
-    public sealed record Pending(long Id, long Account, long Uid, string Handle, long Hunterscore, long Ts, string Note, bool KeepHandle, bool BackupRestored);
+    /// <summary>A claim waiting for the operator. BackupRestored: the account has a restore of its own backup. EarlierBan: when the claiming Steam id was banned before and the ban was lifted (null: never).</summary>
+    public sealed record Pending(long Id, long Account, long Uid, string Handle, long Hunterscore, long Ts, string Note, bool KeepHandle, bool BackupRestored, string? EarlierBan = null);
 
     /// <summary>The waiting claims, oldest first (one when `id` is given). BackupRestored: the account has a restore of its own backup, which the claim will not replace.</summary>
     public List<Pending> Waiting(long? id = null)
     {
         using var con = Store.Open();
         var rows = con.Rows("SELECT id, account_id, archived_uid, handle, hunterscore, ts, note, keep_handle FROM claims WHERE state = 'waiting' AND (?1 IS NULL OR id = ?1) ORDER BY id", id);
-        return rows.Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0, BackupRestored((long)r[1]))).ToList();
+        return rows.Select(r => new Pending((long)r[0], (long)r[1], (long)r[2], (string)r[3], (long)r[4], (long)r[5], (string)r[6], (long)r[7] != 0, BackupRestored((long)r[1]), EarlierBan((long)r[1]))).ToList();
     }
 
     /// <summary>The operator's approve of a waiting claim: the same restore as an automatic one. `keepHandle`: the account keeps its own name whatever the player chose. Status 404: no such waiting claim.</summary>
