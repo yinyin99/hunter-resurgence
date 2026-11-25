@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 34;
+    public const int Version = 36;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -56,7 +56,7 @@ public sealed class Store
     const string Missions = $"""
         CREATE TABLE missions (
             {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
-            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]', earlier TEXT NOT NULL DEFAULT '[]',
+            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]', earlier TEXT NOT NULL DEFAULT '[]', rules TEXT NOT NULL DEFAULT '{}',
             PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
         CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
         {MissionRollbacks}
@@ -498,6 +498,9 @@ public sealed class Store
             con.Script(EventsLog);
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
                 con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
+            // the rule of each finished objective, as it read when the objective was finished (a JSON object: objective id to fingerprint); the objectives finished before have none
+            if (version < 36 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'")! == 0)
+                con.Script("ALTER TABLE missions ADD COLUMN rules TEXT NOT NULL DEFAULT '{}'");
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
