@@ -564,7 +564,7 @@ public sealed class Store
     {
         using var con = Open(id);
         return con.Exec("UPDATE accounts SET restore_offered = 1 WHERE id = ? AND restore_offered = 0", id) > 0
-            && con.Scalar("SELECT 1 WHERE EXISTS (SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%') OR EXISTS (SELECT 1 FROM uploads WHERE account_id = $a)") is null;
+            && con.Scalar("SELECT 1 WHERE EXISTS (SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%' AND mode <> 'merge') OR EXISTS (SELECT 1 FROM uploads WHERE account_id = $a)") is null;
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
