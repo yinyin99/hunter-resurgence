@@ -73,10 +73,22 @@ public static class RewardEvents
         })];
     }
 
+    /// <summary>The seconds after a harvest's event that its payment still counts as the heartbeat's own: the payment is written in the heartbeat that carries the event.</summary>
+    const long OwnPayment = 600;
+
+    /// <summary>True when the payment `summary` made at `paidAt` came more than <see cref="OwnPayment"/> after the server received the kill's harvest event (a rescore pays a missed harvest later);
+    /// false when it came with it, or when the harvest's event has no time (a row from before schema 14), which cannot tell.</summary>
+    static bool PaidLong(Db con, string summary, long paidAt)
+    {
+        if (!long.TryParse(summary.AsSpan("CSS Reward (Animal Id: ".Length).TrimEnd(')'), out var kill)) return false;
+        var times = con.Rows("SELECT e.ts FROM kills k JOIN events e ON e.account_id = $a AND e.event = 3 AND e.individual = k.individual WHERE k.account_id = $a AND k.kill_id = ? AND e.ts IS NOT NULL", kill);
+        return times.Count > 0 && !times.Any(t => paidAt - Convert.ToDouble(t[0]) <= OwnPayment && paidAt - Convert.ToDouble(t[0]) >= -OwnPayment);
+    }
+
     /// <summary>`admin backfill-rewards`: writes the events, then gives every payment that has no base (a row from before the log: base NULL) one. A harvest payment
     /// inside a bonus event's period has base = paid / multiplier (rounded as the payment was) and that event; every other payment has base = amount, no event. A payment made since
-    /// the log exists already has its base, so it is never touched, and a second run changes nothing. Without `apply` it writes nothing; one line per event and a total.
-    /// ponytail: a harvest paid by a rescore inside a period was paid without the bonus but is counted as bonus-paid; none was run during the two events this was written for.</summary>
+    /// the log exists already has its base, so it is never touched, and a second run changes nothing. A harvest payment inside a period that came long after its harvest (<see cref="PaidLong"/>:
+    /// a rescore pays a missed harvest without the bonus) is reported and not divided. Without `apply` it writes nothing; one line per event, per such payment, and a total.</summary>
     public static List<string> Backfill(Store store, IReadOnlyList<EventSpec> specs, bool apply)
     {
         var lines = new List<string>();
@@ -103,11 +115,18 @@ public static class RewardEvents
             var open = (long)con.Scalar("SELECT COUNT(*) FROM wallet_log WHERE account_id = $a AND base IS NULL")!;  // before the events take theirs
             var claimed = new HashSet<long>();
             foreach (var s in specs.Where(x => x.Multiplier is not null))
-                foreach (var r in con.Rows("SELECT n, amount FROM wallet_log WHERE account_id = $a AND currency = 'gm' AND amount > 0 AND base IS NULL AND summary LIKE ? AND ts >= ? AND ts < ?",
+                foreach (var r in con.Rows("SELECT n, amount, ts, summary FROM wallet_log WHERE account_id = $a AND currency = 'gm' AND amount > 0 AND base IS NULL AND summary LIKE ? AND ts >= ? AND ts < ?",
                                            HarvestPayment, s.Start, s.End))
                 {
                     var (n, paid) = ((long)r[0], Convert.ToDouble(r[1]));
-                    if (!claimed.Add(n)) continue;
+                    if (claimed.Contains(n)) continue;
+                    if (PaidLong(con, (string)r[3], (long)r[2]))
+                    {
+                        // not the heartbeat's own payment: a rescore paid it later, without the bonus. It is not divided; it stays a payment with base = amount
+                        lines.Add($"account {account}: {(string)r[3]} paid {paid.ToString(CultureInfo.InvariantCulture)} at {Iso((long)r[2])} long after its harvest (a rescore?): not divided, base = amount");
+                        continue;
+                    }
+                    claimed.Add(n);
                     var baseAmount = (double)Py.RoundInt(paid / s.Multiplier!.Value);
                     tally[s] = (tally[s].Payments + 1, tally[s].Paid + paid, tally[s].Base + baseAmount);
                     if (apply) con.Exec("UPDATE wallet_log SET base = ?, bonus_event = ? WHERE account_id = $a AND n = ?", baseAmount, ids[s], n);

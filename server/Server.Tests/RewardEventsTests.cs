@@ -158,20 +158,45 @@ public class RewardEventsTests : StateTestBase
     [InlineData("""{"name": "a"}""")]
     public void ABadEventsFileIsRefused(string json) => Assert.Throws<InvalidDataException>(() => RewardEvents.ParseSpecs(json));
 
-    [Fact]
-    public void ASchemaOfVersion33GetsTheBaseColumnsAndTheEventsLog()
+    [Theory]
+    [InlineData(33), InlineData(34)]  // below and at this schema's number: a database already at the current version must get them too
+    public void ADatabaseWithoutTheBaseColumnsAndTheEventsLogGetsThemWhateverItsVersion(int version)
     {
-        var file = Path.Combine(tmp, "v33.db");
+        var file = Path.Combine(tmp, $"v{version}.db");
         using (var con = new Store(file).Open())
         {
             con.Exec("DROP TABLE events_log");
             con.Exec("ALTER TABLE wallet_log DROP COLUMN base");
             con.Exec("ALTER TABLE wallet_log DROP COLUMN bonus_event");
-            con.Exec("PRAGMA user_version = 33");
+            con.Exec($"PRAGMA user_version = {version}");
         }
         using var check = new Store(file).Open();
-        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
         Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name IN ('base', 'bonus_event')"));
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM events_log"));
+    }
+
+    [Fact]
+    public void ABackfillReportsAHarvestPaidLongAfterItsEventAndDoesNotDivideIt()
+    {
+        state = Start(T("2026-11-24T20:00:00Z"));
+        state.CreateAccount(First, "hunter0");
+        using (var con = state.Store.Open(First))
+        {
+            // kill 1 was paid with its heartbeat; kill 2 was paid a day later, by a rescore, without the bonus
+            foreach (var (kill, at) in new[] { (1, "2026-11-22T10:00:00Z"), (2, "2026-11-22T11:00:00Z") })
+            {
+                con.Exec("INSERT INTO kills (account_id, kill_id, individual, species, harvest) VALUES ($a, ?, ?, 1, '{}')", kill, 500 + kill);
+                con.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", $$"""{"event": 3, "individual": {{500 + kill}}}""", T(at));
+            }
+        }
+        Pay(First, "2026-11-22T10:00:01Z", 100, "CSS Reward (Animal Id: 1)");
+        Pay(First, "2026-11-23T04:00:00Z", 60, "CSS Reward (Animal Id: 2)");
+        var lines = RewardEvents.Backfill(state.Store, RewardEvents.ParseSpecs(EventsFile), apply: true);
+        Assert.Contains(lines, l => l.Contains("CSS Reward (Animal Id: 2)") && l.Contains("not divided"));
+        Assert.Contains("Harvest gm$ x2 weekend: 1 harvest payments, paid 100, base 50", lines);
+        long? weekend;
+        using (var con = state.Store.Open())
+            weekend = con.Scalar("SELECT id FROM events_log WHERE multiplier = 2") as long?;
+        Assert.Equal([(100.0, (double?)50, weekend), (60.0, (double?)60, (long?)null)], Rows(First, "CSS Reward%"));
     }
 }

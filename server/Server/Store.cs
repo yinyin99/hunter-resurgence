@@ -494,12 +494,10 @@ public sealed class Store
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
             if (version < 32) con.Script(SteamTables);
-            if (version < 34)  // guarded, so the step is right whatever other steps came before or after it
-            {
-                con.Script(EventsLog);
-                if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
-                    con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
-            }
+            // every start, guarded by its own checks and not by the version: a database made by another branch's schema number (merge or deploy in any order) gets the table and the columns too
+            con.Script(EventsLog);
+            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
+                con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
