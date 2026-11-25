@@ -405,7 +405,7 @@ public class NewsCommandTests : IDisposable
         Assert.Equal(0, code);
         Assert.Contains("fr text is set", output);
         Assert.Equal(new("Titre", "Corps", "Suivre"), news.Get(id)!.Texts["fr"]);
-        Assert.Equal(["fr", "en"].Order(), news.Get(id)!.Texts.Keys.Order());
+        Assert.Equal(new[] { "fr", "en" }.Order(), news.Get(id)!.Texts.Keys.Order());
     }
 
     [Theory]
