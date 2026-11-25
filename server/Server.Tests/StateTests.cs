@@ -17,8 +17,8 @@ public abstract class StateTestBase : IDisposable, IAsyncDisposable
     /// <summary>xunit.v3 calls only this on a class that has it, never Dispose: stop the test's servers, then delete the folder.</summary>
     public async ValueTask DisposeAsync()
     {
-        await StopServersAsync();
-        Dispose();
+        try { await StopServersAsync(); }
+        finally { Dispose(); }
     }
 
     /// <summary>Stop what the test started (its test servers) before its folder goes.</summary>
