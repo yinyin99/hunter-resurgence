@@ -119,7 +119,7 @@ public class MissionAuditTests : MissionTestBase
         ActivateAll();
         Hb(Shot(1, distance: 2000));
         using (var con = state.Store.Open(ME))
-            con.Exec("UPDATE missions SET rules = '{}' WHERE account_id = $a");  // as a row finished before schema 36
+            con.Exec("UPDATE missions SET rules = '{}' WHERE account_id = $a");  // as a row finished before schema 35
         var strict = New("before.db", Catalogue(["Harvest a Test Deer"]), rules: Stricter("1/0"));
         strict.Clock = () => now;
         var report = Audit(of: strict);
@@ -143,14 +143,17 @@ public class MissionAuditTests : MissionTestBase
         Assert.EndsWith("**borderline 0, unmet 0, rule changed 2, fast 0, shared 0, spike 0**", messages);
     }
 
-    [Fact]
-    public void TestSchemaOfVersion36GetsTheRulesOfTheFinishedObjectives()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TestSchemaOfVersion35GetsTheRulesOfTheFinishedObjectives(bool columnExists)
     {
-        var file = Path.Combine(tmp, "v36.db");
+        var file = Path.Combine(tmp, $"v35-{columnExists}.db");
         using (var con = new Store(file).Open())
         {
-            con.Exec("ALTER TABLE missions DROP COLUMN rules");
-            con.Exec("PRAGMA user_version = 35");
+            if (!columnExists)
+                con.Exec("ALTER TABLE missions DROP COLUMN rules");
+            con.Exec("PRAGMA user_version = 34");
         }
         using var check = new Store(file).Open();
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));

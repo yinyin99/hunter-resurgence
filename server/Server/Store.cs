@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 36;
+    public const int Version = 35;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -52,8 +52,9 @@ public sealed class Store
     // mission_prefs is the page's switches and favourite mission packs (JSON), one row per account once it has used missions.
     // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
     // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore; earlier: the
-    // objectives finished before `seen` (JSON): no harvest after it finished them.
-    const string NoRules = "{}";  // the `rules` of a mission row that has finished no objective since schema 36 (a raw interpolated string has no literal braces)
+    // objectives finished before `seen` (JSON): no harvest after it finished them; rules (schema 35): the fingerprint of the rule each finished objective was finished under
+    // (JSON object: objective id to fingerprint, `{}` for none; State.Fingerprint), which the audit compares with today's rule.
+    const string NoRules = "{}";  // the `rules` of a mission row that has finished no objective since schema 35 (a raw interpolated string has no literal braces)
 
     const string Missions = $"""
         CREATE TABLE missions (
@@ -501,8 +502,8 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
                 con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
             // the rule of each finished objective, as it read when the objective was finished (a JSON object: objective id to fingerprint); the objectives finished before have none
-            if (version < 36 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'")! == 0)
-                con.Script("ALTER TABLE missions ADD COLUMN rules TEXT NOT NULL DEFAULT '{}'");
+            if (version < 35 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'")! == 0)
+                con.Script($"ALTER TABLE missions ADD COLUMN rules TEXT NOT NULL DEFAULT '{NoRules}'");
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);

@@ -239,7 +239,7 @@ public sealed partial class State
     /// look suspicious are listed, one line per objective, grouped by flag: `borderline` (the kill's harvest value, distance, weight, score or typical points is within 5% of a
     /// bound of the title; 100% harvest value has nothing above it and is never borderline), `unmet` (no stored event meets it, and its rule is the one it was finished under: a bug; not dated,
     /// so listed when a harvest or clue of the account since the mission's activation is in the window, the only events that finish one), `rule changed` (the same, but the rule it was finished under
-    /// is not today's, or was not kept: finished before schema 36; <see cref="Fingerprint"/>), `fast` (less than 2 minutes after the mission's activation, which
+    /// is not today's, or was not kept: finished before schema 35; <see cref="Fingerprint"/>), `fast` (less than 2 minutes after the mission's activation, which
     /// is not stored: the first event the server received after it), `shared` (the event met objectives of 3 or more missions), `spike` (one line per mission completed in the
     /// window at least 5 times and more than 3 times its average over the 14 days before; a mission is dated by its latest objective, one with no harvest or clue objective is not).
     /// Then the counts. `discord`: the same as Markdown, cut into messages of at most 2000 characters separated by a line `---8<---`.</summary>
