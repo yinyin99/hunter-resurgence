@@ -87,7 +87,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                 return byOperator || Spend(account) ? new(404, "unknown", "There is no archived player with this name.") : new(429, "limit", "You used your lookups for today. Try again tomorrow.");
             if (byOperator) return Restore(account, player, useOldName);
             if (!confirmOverwrite && Store.Played(account))
-                return new(409, "confirm", "This account has played. A claim replaces its items, skills, achievements, trophies and lodges; hunts, kills and photos made here stay. Confirm to go on.");
+                return new(409, "confirm", BackupRestored(account)
+                    ? "This account has played and restored its own backup. A claim replaces nothing of that backup: it only adds what the backup lacks; hunts, kills and photos made here stay. Confirm to go on."
+                    : "This account has played. A claim replaces its items, skills, achievements, trophies and lodges; hunts, kills and photos made here stay. Confirm to go on.");
             if (player.Hunterscore >= ReviewScore) return Review(account, player, useOldName, $"waiting for the operator: hunterscore {ReviewScore} or more");
             using (var con = Store.Open())
                 if (con.Scalar("SELECT 1 FROM claims WHERE archived_uid = ? AND account_id <> ?", player.Uid, account) is not null)
@@ -131,6 +133,9 @@ public sealed class Claims(State state, Archive archive, string dataDir)
         return con.Scalar("SELECT amount FROM wallet WHERE account_id = $a AND currency = ?", currency) is double d ? d : 0;
     }
 
+    /// <summary>Called after a claim has decided whether the account's own backup is restored and before it writes (a seam for the test of a backup approved in that gap).</summary>
+    public Action? BeforeWrite { get; init; }
+
     /// <summary>The restore itself: the archived replies replace the account's profile rows, the account keeps its user id and its hunts, kills and photos, and the claim row is written in the same transaction.</summary>
     ClaimOutcome Restore(long account, ArchivedPlayer p, bool useOldName)
     {
@@ -146,8 +151,21 @@ public sealed class Claims(State state, Archive archive, string dataDir)
             Console.Error.WriteLine($"claim of account {account}: archived {p.Uid}: {e.Message}");
             return new(409, "refused", "This profile cannot be restored.");
         }
+        while (true)
+            try
+            {
+                return Write(account, p, useOldName, read);
+            }
+            catch (Restorer.FillChangedException)  // a backup was approved since Write looked (another process may approve): decide again
+            {
+            }
+    }
+
+    ClaimOutcome Write(long account, ArchivedPlayer p, bool useOldName, Restored read)
+    {
         var current = (string)Store.AccountJson(account)["handle"]!;
-        var fill = BackupRestored(account) ? new HashSet<string>() : null;  // the account's own backup was restored: the claim only adds what that left empty
+        var fill = BackupRestored(account) ? new HashSet<string>() : null;  // the account's own backup was restored: the claim only adds what that left empty (checked again inside the write transaction)
+        BeforeWrite?.Invoke();
         var adopt = fill is null && useOldName && NameFree(account, p.Handle);
         var handle = adopt ? p.Handle : current;
         var (em, gm) = (Balance(account, "em"), Math.Max(Balance(account, "gm"), Restorer.GmFloor));  // an archived profile has no wallet: the account keeps its own (gm$ at least the floor)
@@ -174,7 +192,7 @@ public sealed class Claims(State state, Archive archive, string dataDir)
                     PlayerRows.SetWallet(con, "gm", gm);
                 }
                 Uploads.Notify(con, text);
-            }, links, fill: fill);
+            }, links, fill: fill, checkFill: true);
         }
         catch (SqliteException e) when (e.SqliteErrorCode == 19)  // the name was taken between the check and the write
         {

@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>sim</value></data>
   <data name="Claim.No" xml:space="preserve"><value>não</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Usar o meu nome antigo</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Isto substitui os seus itens, competências, conquistas, troféus e cabanas neste servidor pelo perfil antigo. As caçadas, abates e fotografias feitos aqui permanecem. Só pode reclamar um perfil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Isto substitui os seus itens, competências, conquistas, troféus e cabanas neste servidor pelo perfil antigo. Se já restaurou a sua própria cópia de segurança, nada dela é substituído: a reclamação só acrescenta o que a cópia não tem. As caçadas, abates e fotografias feitos aqui permanecem. Só pode reclamar um perfil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Reclamar este perfil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>O seu pedido para {0} (feito em {1}) aguarda um operador.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>O seu perfil antigo {0} foi restaurado ({1}).</value></data>

@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>oui</value></data>
   <data name="Claim.No" xml:space="preserve"><value>non</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Utiliser mon ancien nom</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Ceci remplace vos objets, compétences, succès, trophées et pavillons sur ce serveur par l’ancien profil. Les chasses, les tirs et les photos faits ici restent. Vous ne pouvez récupérer qu’un seul profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Ceci remplace vos objets, compétences, succès, trophées et pavillons sur ce serveur par l’ancien profil. Si vous avez déjà restauré votre propre sauvegarde, rien n’en est remplacé : la récupération n’ajoute que ce qui manque à la sauvegarde. Les chasses, les tirs et les photos faits ici restent. Vous ne pouvez récupérer qu’un seul profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Récupérer ce profil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Votre demande pour {0} (faite le {1}) attend un opérateur.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Votre ancien profil {0} a été restauré ({1}).</value></data>

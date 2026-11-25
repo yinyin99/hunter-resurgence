@@ -12,6 +12,9 @@ public static class Restorer
     /// <summary>Report: what layer A read, what was stored per table, what was dropped and why (also kept in the audit row).</summary>
     public sealed record Result(long Account, bool Created, string Sha256, string Report);
 
+    /// <summary>The account's own-backup restore changed between the caller's check and the write transaction (<see cref="Apply"/>, `checkFill`): nothing was written.</summary>
+    internal sealed class FillChangedException : Exception;
+
     /// <summary>The gm$ an account has at least after a restore: a new account starts with the same (`start.wallet` of the facts file).</summary>
     public const double GmFloor = 15000;
 
@@ -129,9 +132,9 @@ public static class Restorer
     /// within runs inside the transaction after the rows are written. backupDatabase: copy the whole database first
     /// (the local rule; a community server keeps the zip as the way back instead). zipPath null: the model came from the operator's archive and no zip is kept.
     /// fill: not null = replace nothing: no row, picture file or name of the account is replaced, only the tables and keys the account has no row for are filled (an archive claim over a restore of the account's own backup);
-    /// it receives the paths of the saved replies (extras) that were added.</summary>
+    /// it receives the paths of the saved replies (extras) that were added. checkFill: inside the transaction, throw <see cref="FillChangedException"/> when the account's own backup is restored differently from what `fill` assumed.</summary>
     internal static Result Apply(State state, string? zipPath, string sha, Restored read, long current, long finalId, string handle, bool exists,
-                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null, HashSet<string>? fill = null)
+                                 bool backupDatabase, string dataDir, Action<Db>? within, string? linksZip = null, PictureLinks? pictureLinks = null, HashSet<string>? fill = null, bool checkFill = false)
     {
         var model = read.Model;
         var store = state.Store;
@@ -176,6 +179,8 @@ public static class Restorer
             {
                 using var con = store.Open(current);
                 con.Begin();
+                if (checkFill && (con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND mode = 'my-account'") is not null) != (fill is not null))
+                    throw new FillChangedException();  // the account's own backup was restored since the caller looked: nothing is written, the caller decides again
                 if (fill is null) con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
                 Write(con);
                 con.Commit();

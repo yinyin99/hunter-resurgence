@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>igen</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nem</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Régi nevem használata</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Ez a régi profilra cseréli a tárgyaidat, képességeidet, teljesítményeidet, trófeáidat és vadászházaidat ezen a szerveren. Az itt végzett vadászatok, lövések és fotók megmaradnak. Csak egy profilt igényelhetsz.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Ez a régi profilra cseréli a tárgyaidat, képességeidet, teljesítményeidet, trófeáidat és vadászházaidat ezen a szerveren. Ha már visszaállítottad a saját mentésedet, abból semmi nem cserélődik le: az igénylés csak azt adja hozzá, ami a mentésből hiányzik. Az itt végzett vadászatok, lövések és fotók megmaradnak. Csak egy profilt igényelhetsz.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Profil igénylése</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>A(z) {0} profilra (igényelve: {1}) vonatkozó kérésed operátorra vár.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>A régi profilod ({0}) vissza lett állítva ({1}).</value></data>

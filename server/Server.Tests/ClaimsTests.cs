@@ -228,6 +228,27 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public void TestABackupApprovedAfterTheClaimLookedIsNotReplaced()
+    {
+        var (player, _) = SignedIn("player");
+        var hits = 0;
+        var claims = new Claims(state, new Archive(ArchivePath), tmp) { BeforeWrite = () => { if (hits++ == 0) RestoreOwnBackup(player); } };  // the backup lands between the check and the write
+        var done = claims.Claim(player, "alpha", useOldName: true, confirmOverwrite: false);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        Assert.Contains("nothing of the backup was replaced", done.Message);
+        Assert.Equal(2, hits);  // decided again after the write found the backup
+        Assert.True(Owns(player, 7001));
+        Assert.False(Owns(player, 9001));
+        Assert.Equal(2L, Count(player, "trophies"));
+        Assert.Equal(1L, Count(player, "loadouts"));
+        Eq("""{"em": 50, "gm": 20000}""", state.Wallet(player));
+        Assert.Equal("player", state.Store.HandleOf(player));
+        Assert.Equal(1L, Count(player, "photos"));
+        Assert.Equal(2L, Count(player, "lodges"));  // what the backup lacked is filled
+        Assert.Equal("restored", claims.Of(player)!.State);
+    }
+
+    [Fact]
     public void TestTheReviewOfAClaimShowsAnEarlierBackupAndApprovingItReplacesNothing()
     {
         var (player, _) = SignedIn("player");

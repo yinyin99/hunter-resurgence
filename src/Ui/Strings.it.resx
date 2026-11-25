@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>sì</value></data>
   <data name="Claim.No" xml:space="preserve"><value>no</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Usa il mio vecchio nome</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Questo sostituisce oggetti, abilità, obiettivi, trofei e riserve su questo server con il vecchio profilo. Le cacce, gli abbattimenti e le foto fatti qui restano. Puoi rivendicare un solo profilo.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Questo sostituisce oggetti, abilità, obiettivi, trofei e riserve su questo server con il vecchio profilo. Se hai già ripristinato il tuo backup, nulla di esso viene sostituito: la rivendicazione aggiunge solo ciò che al backup manca. Le cacce, gli abbattimenti e le foto fatti qui restano. Puoi rivendicare un solo profilo.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Rivendica questo profilo</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>La tua richiesta per {0} (fatta il {1}) attende un operatore.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Il tuo vecchio profilo {0} è stato ripristinato ({1}).</value></data>

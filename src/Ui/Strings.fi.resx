@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>kyllä</value></data>
   <data name="Claim.No" xml:space="preserve"><value>ei</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Käytä vanhaa nimeäni</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Tämä korvaa esineesi, taitosi, saavutuksesi, trofeesi ja majasi tällä palvelimella vanhalla profiililla. Täällä tekemäsi metsästykset, kaadot ja kuvat säilyvät. Voit lunastaa vain yhden profiilin.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Tämä korvaa esineesi, taitosi, saavutuksesi, trofeesi ja majasi tällä palvelimella vanhalla profiililla. Jos olet jo palauttanut oman varmuuskopiosi, mitään siitä ei korvata: lunastus vain lisää sen, mikä varmuuskopiosta puuttuu. Täällä tekemäsi metsästykset, kaadot ja kuvat säilyvät. Voit lunastaa vain yhden profiilin.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Lunasta tämä profiili</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Pyyntösi ({0}, tehty {1}) odottaa operaattoria.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Vanha profiilisi {0} palautettiin ({1}).</value></data>

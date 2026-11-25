@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nu</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Folosiți vechiul meu nume</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Aceasta înlocuiește obiectele, abilitățile, realizările, trofeele și cabanele de pe acest server cu vechiul profil. Vânătorile, doborârile și pozele făcute aici rămân. Puteți revendica un singur profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Aceasta înlocuiește obiectele, abilitățile, realizările, trofeele și cabanele de pe acest server cu vechiul profil. Dacă ați restaurat deja propria copie de rezervă, nimic din ea nu este înlocuit: revendicarea adaugă doar ce lipsește din copie. Vânătorile, doborârile și pozele făcute aici rămân. Puteți revendica un singur profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Revendicați acest profil</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Cererea dvs. pentru {0} (făcută {1}) așteaptă un operator.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Vechiul profil {0} a fost restaurat ({1}).</value></data>

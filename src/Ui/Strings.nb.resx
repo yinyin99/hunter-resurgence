@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
   <data name="Claim.No" xml:space="preserve"><value>nei</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Bruk mitt gamle navn</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Dette erstatter gjenstandene, ferdighetene, prestasjonene, trofeene og hyttene dine på denne serveren med den gamle profilen. Jakter, fellinger og bilder du har tatt her blir. Du kan bare kreve én profil.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Dette erstatter gjenstandene, ferdighetene, prestasjonene, trofeene og hyttene dine på denne serveren med den gamle profilen. Hvis du allerede har gjenopprettet din egen sikkerhetskopi, erstattes ingenting av den: kravet legger bare til det sikkerhetskopien mangler. Jakter, fellinger og bilder du har tatt her blir. Du kan bare kreve én profil.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Krev denne profilen</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Kravet ditt for {0} (sendt {1}) venter på en operatør.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Din gamle profil {0} ble gjenopprettet ({1}).</value></data>

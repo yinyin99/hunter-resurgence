@@ -1426,7 +1426,7 @@
   <data name="Claim.Yes" xml:space="preserve"><value>да</value></data>
   <data name="Claim.No" xml:space="preserve"><value>нет</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Использовать моё старое имя</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и домики на этом сервере старым профилем. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и домики на этом сервере старым профилем. Если вы уже восстановили собственную резервную копию, ничего из неё не заменяется: заявка лишь добавляет то, чего в копии нет. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Вернуть этот профиль</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Ваша заявка на {0} (подана {1}) ждёт оператора.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Ваш старый профиль {0} восстановлен ({1}).</value></data>
