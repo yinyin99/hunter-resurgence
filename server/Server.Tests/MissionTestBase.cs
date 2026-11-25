@@ -16,7 +16,7 @@ public abstract class MissionTestBase : StateTestBase
     static readonly string[] ExtraSpecies =
     [
         """{"id": 3, "name": "Plains Elk"}""", """{"id": 4, "name": "Hill Elk"}""", """{"id": 5, "name": "Test Fox"}""", """{"id": 6, "name": "Spring Pintail"}""", """{"id": 7, "name": "Test Mallard"}""",
-        """{"id": 9, "name": "Snow Ptarmigan"}""", """{"id": 10, "name": "Rock Ptarmigan"}""", """{"id": 36, "name": "Forest Wolf"}""",
+        """{"id": 40, "name": "Water Buffalo"}""", """{"id": 41, "name": "Sambar Deer"}""", """{"id": 42, "name": "Rusa Deer"}""", """{"id": 9, "name": "Snow Ptarmigan"}""", """{"id": 10, "name": "Rock Ptarmigan"}""", """{"id": 36, "name": "Forest Wolf"}""",
     ];
 
     static readonly string[] ExtraItems =
