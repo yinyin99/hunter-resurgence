@@ -58,7 +58,7 @@
             <thead><tr><th>#</th><th>Hunter:</th><th>Weapon</th><th>Scope</th><th>Ammunition</th><th>Shot Distance</th><th>Animal State</th><th>Body Part</th><th>Stance</th><th>Platform</th></tr></thead>
             <tbody><tr>
                 <td>1</td><td><a href="/profile/@Handle">@Handle</a></td><td>@(sheet.Weapon.Length > 0 ? sheet.Weapon : "")</td><td>@(sheet.Scope ? "✓" : "")</td><td>@sheet.Ammo</td>
-                <td>@(sheet.DistanceM > 0 ? (Imperial ? $"{Fmt.Num(sheet.DistanceM * Fmt.Yards, "0.000")} yd ({Fmt.Num(sheet.DistanceM, "0.000")} m)" : $"{Fmt.Num(sheet.DistanceM, "0.000")} m ({Fmt.Num(sheet.DistanceM * 3.28084, "0.0")} ft)") : "")</td><td>@sheet.State</td><td>@sheet.BodyPart</td><td>@sheet.Stance</td><td>@sheet.Platform</td>
+                <td>@(sheet.DistanceM > 0 ? Fmt.ShotDistance(sheet.DistanceM, Imperial) : "")</td><td>@sheet.State</td><td>@sheet.BodyPart</td><td>@sheet.Stance</td><td>@sheet.Platform</td>
             </tr></tbody>
         </table>
         <div class="info">

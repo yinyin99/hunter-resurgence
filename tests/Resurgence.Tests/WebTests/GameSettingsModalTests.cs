@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
 using Bunit;
-using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Ui.Modals;
 using Resurgence.Ui;
 
@@ -52,6 +51,30 @@ public sealed class GameSettingsModalTests : UiContext
         cut.Find("#game_language").Change("fr_FR");
         cut.Find(".btn-primary").Click();
         Assert.Equal("fr_FR", await Services.GetRequiredService<IGameSettingsService>().LanguageAsync());
+    }
+
+    // the language the player did not touch is not saved: it keeps following the launcher's language
+    [Fact]
+    public void AnUntouchedGameLanguageIsNotSaved()
+    {
+        var spy = new LanguageSpy(new Resurgence.Services.Mocks.MockGameSettingsService(Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.Mocks.MockGameSettingsService>.Instance));
+        Services.AddSingleton<IGameSettingsService>(spy);
+        var cut = Render<GameSettingsModal>();
+        cut.Find(".btn-primary").Click();
+        Assert.Empty(spy.Saved);
+        cut.Find("#game_language").Change("fr_FR");
+        cut.Find(".btn-primary").Click();
+        Assert.Equal(["fr_FR"], spy.Saved);
+    }
+
+    sealed class LanguageSpy(IGameSettingsService inner) : IGameSettingsService
+    {
+        public List<string> Saved { get; } = [];
+        public Task<GameSettings> ReadAsync() => inner.ReadAsync();
+        public Task<Result> SaveAsync(GameOptions options) => inner.SaveAsync(options);
+        public Task<bool> FirstStartAsync() => inner.FirstStartAsync();
+        public Task<string> LanguageAsync() => inner.LanguageAsync();
+        public Task SetLanguageAsync(string code) { Saved.Add(code); return inner.SetLanguageAsync(code); }
     }
 
     [Fact]

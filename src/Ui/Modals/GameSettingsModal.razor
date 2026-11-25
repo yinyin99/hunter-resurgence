@@ -73,7 +73,7 @@
     bool vsync, startWithSteam;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
-    string language = GameLanguages.Default;
+    string language = GameLanguages.Default, savedLanguage = GameLanguages.Default;
     bool signedIn, imperial, savedImperial;
     string? error;
 
@@ -91,7 +91,7 @@
         (display, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
             (o.Display, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
         startWithSteam = o.StartWithSteam;
-        language = await Service.LanguageAsync();
+        language = savedLanguage = await Service.LanguageAsync();
         if (await Sessions.CurrentAsync() is { } session) (signedIn, imperial, savedImperial) = (true, session.Imperial, session.Imperial);
     }
 
@@ -108,7 +108,7 @@
     {
         var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio, startWithSteam));
         if (!result.Ok) { error = result.Error; return; }
-        await Service.SetLanguageAsync(language);
+        if (language != savedLanguage) await Service.SetLanguageAsync(language);  // untouched, it keeps following the launcher's language
         if (signedIn && imperial != savedImperial && await Account.SetImperialAsync(imperial) is { Ok: false } refused) { error = refused.Error; return; }
         Done?.SetResult(true);
         Modal.Close();

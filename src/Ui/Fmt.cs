@@ -74,6 +74,10 @@ public static class Fmt
     /// <summary>124.53m (408.56ft); imperial, as the game shows it when the player chose it: 136.19yd (124.53m).</summary>
     public static string Metres(double m, bool imperial = false) => Distance(m, "0.00", imperial);
 
+    /// <summary>The score sheet's shot distance: 123.456 m (405.0 ft); imperial: 135.012 yd (123.456 m).</summary>
+    public static string ShotDistance(double m, bool imperial = false) =>
+        imperial ? $"{Num(m * Yards, "0.000")} yd ({Num(m, "0.000")} m)" : $"{Num(m, "0.000")} m ({Num(m * 3.28084, "0.0")} ft)";
+
     /// <summary>The game's own factors for the imperial units (<c>account.use_imperial</c>): metres to yards, kilograms to pounds.</summary>
     public const double Yards = 1.09361, Pounds = 2.20462;
 
