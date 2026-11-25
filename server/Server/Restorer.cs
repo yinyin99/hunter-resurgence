@@ -195,11 +195,7 @@ public static class Restorer
         }
         using (var con = store.Open(finalId))  // a community server's value is computed from the restored statistics
             state.UpdateHunterscore(con, finalId);
-        if (state.Online)  // a community server: the restore brings lodge items, not the lodges, and the animals its lodges hold keep a trophy row
-        {
-            state.BackfillLodges(finalId);
-            state.KeepMounted(finalId);
-        }
+        if (state.Online) state.BackfillLodges(finalId);  // a community server: the restore brings lodge items, not the lodges
         var before = Path.Combine(dataDir, "restores", current.ToString());
         if (finalId != current && Directory.Exists(before))  // zips kept for review under the old id follow the account
         {

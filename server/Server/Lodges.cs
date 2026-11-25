@@ -75,7 +75,7 @@ public sealed partial class State
     const string LodgeContentsExtra = "json_lodge_contents.json";
 
     /// <summary>`admin backfill-lodges`: for every account (or `only`) with <see cref="LodgeContentsExtra"/> in its extras, each listed lodge (a `/game/user/lodges` row) that has no `/game/user/lodge` row gets the
-    /// saved contents as that row, and a trophy row for each mounted animal that has none (<see cref="AddMounted"/>). A lodge that has contents is never touched, so a second run adds nothing. One line per
+    /// saved contents as that row (the animals it mounts are shown as trophies at read time, <see cref="MountedRows"/>). A lodge that has contents is never touched, so a second run adds nothing. One line per
     /// account and lodge. Without `apply` the same rows are made and dropped: nothing is written.</summary>
     public List<string> BackfillLodgeContents(bool apply, long? only = null)
     {
@@ -95,7 +95,7 @@ public sealed partial class State
                     if (!held.Add(number) || contents[number].FirstOrDefault() is not { } lodge) continue;
                     PlayerRows.AddLodge(con, LodgeOne, id, lodge.DeepClone());
                     var slots = ((lodge["animal_slots"] as JsonArray)?.Count ?? 0) + ((lodge["weapon_slots"] as JsonArray)?.Count ?? 0);
-                    lines.Add($"account {account} lodge {number}: {(apply ? "added" : "would add")}, {slots} slots, {AddMounted(con, MountedOf([lodge]))} trophy rows");
+                    lines.Add($"account {account} lodge {number}: {(apply ? "added" : "would add")}, {slots} slots");
                 }
                 if (apply) con.Commit();
             }
@@ -105,15 +105,6 @@ public sealed partial class State
             }
         }
         return lines;
-    }
-
-    /// <summary>After a restore: each animal mounted in the account's lodges keeps a trophy row (<see cref="StoreMounted"/>), as the game's own lodge edit would.</summary>
-    internal void KeepMounted(long account)
-    {
-        using var con = Con(account);
-        con.Begin();
-        StoreMounted(con);
-        con.Commit();
     }
 
     /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
@@ -234,7 +225,7 @@ public sealed partial class State
         }
         using var con = Con(account);
         con.Begin();
-        StoreMounted(con);  // before the slots are rewritten
+        StoreMounted(con, account);  // before the slots are rewritten
         var rows = con.Rows("SELECT n, node FROM lodges WHERE account_id = $a AND source IN (?, ?) AND id = ?", LodgeList, LodgeOne, id.ToString());
         foreach (var r in rows)
             if (JsonNode.Parse((string)r[1]) is JsonObject node)
@@ -268,7 +259,7 @@ public sealed partial class State
         if (sent is not JsonObject o || o["hidden"] is not JsonValue v || !v.TryGetValue<bool>(out var hidden)) return 400;
         using var con = Con(account);
         con.Begin();
-        StoreMounted(con);
+        StoreMounted(con, account);
         var found = con.Exec("UPDATE harvests SET hidden = ? WHERE account_id = $a AND kill_id = ?", hidden ? 1 : 0, id);
         foreach (var r in con.Rows("SELECT n, node FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/v1/Trophy/list') AND id = ?", id.ToString()))
             if (JsonNode.Parse((string)r[1]) is JsonObject row)

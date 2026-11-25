@@ -58,12 +58,10 @@ public class LodgeContentsTests : StateTestBase
         Assert.Equal(3L, (long)lodge["weapon_slots"]![0]!["weapon_id"]!);
         Assert.NotNull(state.LodgeReply(account, 62));
         Assert.Null(state.LodgeReply(account, 63));
-        using var after = state.Store.Open(account);
-        Assert.Contains("9", after.Rows("SELECT id FROM trophies WHERE account_id = $a AND source = '/game/user/trophies'").Select(r => (string)r[0]));  // the animal the lodge mounts has a trophy row of its own
     }
 
     [Fact]
-    public void TheBackfillFillsAListedLodgeFromTheSavedExtraOnceAndAFirstRunWritesNothing()
+    public void TheBackfillFillsAListedLodgeFromTheSavedExtraWritesNothingOnADryRunAndAddsNothingTheSecondTime()
     {
         var account = state.Store.NextServerId();
         state.CreateAccount(account, "backfill");
@@ -79,17 +77,17 @@ public class LodgeContentsTests : StateTestBase
         Assert.Null(state.LodgeReply(account, 61));
 
         var dry = state.BackfillLodgeContents(apply: false);
-        Assert.Equal([$"account {account} lodge 61: would add, 3 slots, 1 trophy rows", $"account {account} lodge 62: would add, 1 slots, 0 trophy rows"], dry);
-        Assert.Equal([1L, 0L], [Rows(account, "lodges", "/game/user/lodge"), Rows(account, "trophies", "/game/user/trophies")]);  // nothing written
+        Assert.Equal([$"account {account} lodge 61: would add, 3 slots", $"account {account} lodge 62: would add, 1 slots"], dry);
+        Assert.Equal(1L, Rows(account, "lodges", "/game/user/lodge"));  // nothing written
         Assert.Null(state.LodgeReply(account, 61));
 
-        Assert.Equal([$"account {account} lodge 61: added, 3 slots, 1 trophy rows", $"account {account} lodge 62: added, 1 slots, 0 trophy rows"], state.BackfillLodgeContents(apply: true));
-        Assert.Equal([3L, 1L], [Rows(account, "lodges", "/game/user/lodge"), Rows(account, "trophies", "/game/user/trophies")]);
+        Assert.Equal([$"account {account} lodge 61: added, 3 slots", $"account {account} lodge 62: added, 1 slots"], state.BackfillLodgeContents(apply: true));
+        Assert.Equal(3L, Rows(account, "lodges", "/game/user/lodge"));
         Assert.Equal(9L, (long)Reply(state.LodgeReply(account, 61)!)["animal_slots"]![0]!["trophy_id"]!);
         Assert.Equal("kept", (string)Reply(state.LodgeReply(account, 64)!)["name"]!);
         Assert.Null(state.LodgeReply(account, 63));  // listed, but the save holds no contents for it
 
         Assert.Empty(state.BackfillLodgeContents(apply: true));  // idempotent
-        Assert.Equal([3L, 1L], [Rows(account, "lodges", "/game/user/lodge"), Rows(account, "trophies", "/game/user/trophies")]);
+        Assert.Equal(3L, Rows(account, "lodges", "/game/user/lodge"));
     }
 }

@@ -15,8 +15,8 @@ const string AdminUsage = """
                        dotnet run --project server/Server -- admin spawn <reserve> <animal> <males> [females] [x z radius]
     --account names another account (user id or handle); without it the local account gets it.
     admin faces [--apply] makes every account's face a 3D face of its body's gender (dry run without --apply: prints the counts).
-    admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds (and a trophy row for each mounted animal that has none):
-    it prints one line per account and lodge (would add / added, N slots, M trophy rows); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
+    admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
+    it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
