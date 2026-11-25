@@ -4,17 +4,17 @@ namespace Resurgence.Tests.LauncherApp;
 
 public class LogLockTests
 {
-    const uint Image = 4194304, Page = 67108864;
+    internal const uint Image = 4194304, Page = 67108864;
     // a synthetic exe: the writer's table at 64 holds its three entries, the rest is zero
-    static readonly LogLock Synthetic = new("synthetic", Table: 64, Cleanup: 1000, Write: 2000, Flush: 3000, Lock: 4000, Enter: 5000, Leave: 5004);
+    internal static readonly LogLock Synthetic = new("synthetic", Table: 64, Cleanup: 1000, Write: 2000, Flush: 3000, Lock: 4000, Enter: 5000, Leave: 5004);
 
-    static byte[] Le(params uint[] values) => [.. values.SelectMany(BitConverter.GetBytes)];
+    internal static byte[] Le(params uint[] values) => [.. values.SelectMany(BitConverter.GetBytes)];
 
-    static FakeGame Game()
+    internal static FakeGame Game(uint image = Image)
     {
         var memory = new byte[8192];
-        Le(Image + 1000, Image + 2000, Image + 3000).CopyTo(memory, 64);
-        return new(Image, memory);
+        Le(image + 1000, image + 2000, image + 3000).CopyTo(memory, 64);
+        return new(image, memory);
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class LogLockTests
         Assert.Matches("^[0-9a-f]{64}$", LogLock.Known.ExeSha256);
     }
 
-    sealed class FakeGame(uint image, byte[] memory) : ISuspendedGame
+    internal sealed class FakeGame(uint image, byte[] memory) : ISuspendedGame
     {
         public byte[] Memory => memory;
         public List<(uint Address, byte[] Bytes)> Writes { get; } = [];
