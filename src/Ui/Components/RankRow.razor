@@ -3,8 +3,8 @@
     <td class="avatar"><AssetSlot Name="@R.Avatar" Width="@(Small ? 52 : 60)" Height="@(Small ? 52 : 60)" /></td>
     <td class="handle"><a href="/profile/@R.Handle">@R.Handle</a></td>
     <td class="value @(Kind == "hunterscore" ? "mid" : Detail ? "d" : "")">
-        @if (R.Sheet > 0) { <a href="/profile/@R.Handle/score/@R.Sheet">@Fmt.Board(Kind, R.Value)</a> }
-        else { @Fmt.Board(Kind, R.Value) }
+        @if (R.Sheet > 0) { <a href="/profile/@R.Handle/score/@R.Sheet">@Fmt.Board(Kind, R.Value, Imperial)</a> }
+        else { @Fmt.Board(Kind, R.Value, Imperial) }
         @if (!Small && Kind is not "hunterscore") { <span class="sp">@L["Board.SP"]</span> }
     </td>
     @if (Detail)
@@ -15,6 +15,8 @@
 </tr>
 
 @code {
+    /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
+    [CascadingParameter(Name = "Imperial")] bool Imperial { get; set; }
     [Parameter, EditorRequired] public Ranked R { get; set; } = null!;
     /// <summary>score, range, hunterscore, lanebandit, bustthrough or antlers-single/double; decides the value format.</summary>
     [Parameter, EditorRequired] public string Kind { get; set; } = "";

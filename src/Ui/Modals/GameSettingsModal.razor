@@ -1,6 +1,8 @@
 @inject ModalService Modal
 @inject IGameSettingsService Service
 @inject ILauncherBridge Bridge
+@inject ISessionService Sessions
+@inject IAccountService Account
 
 <div class="gs" role="dialog" aria-modal="true" aria-labelledby="gs-title">
     <h1 id="gs-title">@L[FirstStart ? "GameSettings.Initial" : "GameSettings.Title"]</h1>
@@ -40,6 +42,21 @@
             <label class="row"><span>@L["GameSettings.Aniso"]</span><select class="field-sel" id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
             @if (contextual is not null) { <label class="row"><span>@L["GameSettings.ContextHelp"]</span><input class="tick" type="checkbox" id="contextual_help" @bind="contextual" /></label> }
             @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input class="tick" type="checkbox" id="extended_audio" @bind="audio" /></label> }
+            <label class="row"><span>@L["GameSettings.Language"]</span>
+                <select class="field-sel" id="game_language" @bind="language">
+                    @foreach (var l in GameLanguages.All) { <option value="@l.Code">@l.Name</option> }
+                </select>
+                <small>@L["GameSettings.LanguageHelp"]</small></label>
+            @* the units are the account's, kept on the server: only a signed-in player has them *@
+            @if (signedIn)
+            {
+                <label class="row"><span>@L["GameSettings.Units"]</span>
+                    <select class="field-sel" id="units" @bind="imperial">
+                        <option value="@false">@L["GameSettings.Metric"]</option>
+                        <option value="@true">@L["GameSettings.Imperial"]</option>
+                    </select>
+                </label>
+            }
         </div>
         @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
         <div class="buttons">
@@ -56,6 +73,8 @@
     bool vsync, startWithSteam;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
+    string language = GameLanguages.Default;
+    bool signedIn, imperial, savedImperial;
     string? error;
 
     /// <summary>The "Initial setup" variant: only a Start game button, the pending game start goes on when it is pressed.</summary>
@@ -72,6 +91,8 @@
         (display, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
             (o.Display, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
         startWithSteam = o.StartWithSteam;
+        language = await Service.LanguageAsync();
+        if (await Sessions.CurrentAsync() is { } session) (signedIn, imperial, savedImperial) = (true, session.Imperial, session.Imperial);
     }
 
     RenderFragment Levels(int count) => b =>
@@ -87,6 +108,8 @@
     {
         var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio, startWithSteam));
         if (!result.Ok) { error = result.Error; return; }
+        await Service.SetLanguageAsync(language);
+        if (signedIn && imperial != savedImperial && await Account.SetImperialAsync(imperial) is { Ok: false } refused) { error = refused.Error; return; }
         Done?.SetResult(true);
         Modal.Close();
     }

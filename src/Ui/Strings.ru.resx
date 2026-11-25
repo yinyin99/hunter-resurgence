@@ -1634,4 +1634,9 @@
   <data name="Prof.AchDone" xml:space="preserve"><value>Готово</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Запускать игру через Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Изменить…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Язык игры</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Меню и страницы игры. Вступает в силу при следующем запуске игры.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Единицы измерения</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Метрические (м, кг)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Имперские (ярды, фунты)</value></data>
 </root>

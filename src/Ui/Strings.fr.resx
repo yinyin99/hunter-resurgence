@@ -1634,4 +1634,9 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Prof.AchDone" xml:space="preserve"><value>Terminé</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Lancer le jeu avec Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Modifier…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Langue du jeu</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Les menus et les pages du jeu. Pris en compte au prochain lancement du jeu.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Unités</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Métriques (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Impériales (yd, lbs)</value></data>
 </root>

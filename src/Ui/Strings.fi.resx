@@ -1634,4 +1634,9 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Prof.AchDone" xml:space="preserve"><value>Valmis</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Käynnistä peli Steamin kautta</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Vaihda…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Pelin kieli</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Pelin valikot ja sivut. Tulee voimaan pelin seuraavalla käynnistyskerralla.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Yksiköt</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrinen (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaalinen (yd, lbs)</value></data>
 </root>

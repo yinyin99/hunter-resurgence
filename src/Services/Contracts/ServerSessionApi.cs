@@ -46,8 +46,8 @@ public static class ServerSessionApi
     public const string HuntingStatistics = "/stats/hunting";
 }
 
-/// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet.</summary>
-public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0, string? Avatar = null);
+/// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet, <c>imperial</c> whether the player chose imperial units.</summary>
+public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0, string? Avatar = null, bool Imperial = false);
 
 /// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
 public sealed record ServerHunter(int Rank, string Handle, int Hunterscore, string? Avatar = null);

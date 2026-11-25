@@ -1634,4 +1634,9 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Prof.AchDone" xml:space="preserve"><value>Klart</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Starta spelet via Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Ändra…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Spelets språk</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Spelets menyer och sidor. Gäller vid nästa spelstart.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Enheter</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metriska (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiska (yd, lbs)</value></data>
 </root>

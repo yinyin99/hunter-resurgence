@@ -68,5 +68,7 @@ public class ModalServiceTests
         public Task<GameSettings> ReadAsync() => Task.FromResult(new GameSettings(new(DisplayMode.Borderless, false, new(1, 1, 1), 0, 0, 0, 0, 0, null, null), [], 0, error));
         public Task<Result> SaveAsync(GameOptions options) => throw new NotSupportedException();
         public Task<bool> FirstStartAsync() => Task.FromResult(first);
+        public Task<string> LanguageAsync() => Task.FromResult(GameLanguages.Default);
+        public Task SetLanguageAsync(string code) => Task.CompletedTask;
     }
 }

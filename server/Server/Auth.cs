@@ -47,10 +47,16 @@ public sealed class GameTokens(Store store, string webHost)
 {
     /// <summary>The launch URL the launcher hands to the game: a fresh session, access and refresh JWT. The scheme
     /// carries the game's name (the client's environment check looks for it anywhere in the URL); the host must not
-    /// contain dev or beta.</summary>
-    public string LaunchUrl(long account, string? session = null) =>
-        $"{ProtocolLiterals.LaunchScheme}://{webHost}/{session ?? store.CreateToken(account, Lifetimes.Session)}/lang/en_US"
+    /// contain dev or beta. `lang` is the game's language code (<see cref="GameLanguages"/>); none or an unknown one is en_US.</summary>
+    public string LaunchUrl(long account, string? session = null, string? lang = null) =>
+        $"{ProtocolLiterals.LaunchScheme}://{webHost}/{session ?? store.CreateToken(account, Lifetimes.Session)}/lang/{(lang is not null && GameLanguages.Contains(lang) ? lang : "en_US")}"
         + $"/access_token/{Access(account, GameScope)}/refresh_token/{Refresh(account, GameScope)}";
+
+    /// <summary>The 22 languages the game ships (its localization file); the launch URL's `lang` segment is one of them.</summary>
+    public static readonly string[] GameLanguages =
+    [
+        "en_US", "de_DE", "es_ES", "et_EE", "fr_FR", "hr_HR", "hu_HU", "nl_NL", "pl_PL", "pt_BR", "pt_PT", "ru_RU", "sv_SE", "da_DK", "cs_CZ", "nb_NO", "it_IT", "fi_FI", "tr_TR", "sl_SI", "ka_KA", "ro_RO",
+    ];
 
     /// <summary>The `scp` claim: 4 for the game client, 1 for the launcher page and the website.</summary>
     public const int GameScope = 4, WebScope = 1;
@@ -513,6 +519,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
             ["rank"] = Store.Rank(account, state.LocalAccount), ["avatar"] = state.AvatarUrl(account, siteHost is not null ? "https://" + siteHost : Origin(r)),
             ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
+            ["imperial"] = Store.UsesImperial(account),
         });
     }
 
@@ -528,14 +535,15 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; with `mp=host` it also
     /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
     /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "gone"}`;
-    /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve.</summary>
+    /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve. Any of them may carry `lang`, one of
+    /// <see cref="GameTokens.GameLanguages"/>, the language the game starts in (the launch URL's `lang` segment; en_US when missing or unknown).</summary>
     public Reply Launch(Req r, GameTokens tokens)
     {
         if (!OwnPost(r)) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
         if (Account(r) is not { } account) return Json(401, new JsonObject { ["error"] = "signed out" });
         var form = Py.ParseQs(Encoding.UTF8.GetString(r.Body));
         string F(string key) => form.TryGetValue(key, out var v) ? v[0] : "";
-        Reply Url(string? session = null) => Json(200, new JsonObject { ["url"] = tokens.LaunchUrl(account, session) });
+        Reply Url(string? session = null) => Json(200, new JsonObject { ["url"] = tokens.LaunchUrl(account, session, F("lang")) });
         if (F("tutorial") is { Length: > 0 } tutorial)
         {
             var id = Py.IsDigit(tutorial) && long.TryParse(tutorial, out var n) ? (n == 0 ? 1 : n) : 0;  // 0 is the first tutorial, as at start_tutorial

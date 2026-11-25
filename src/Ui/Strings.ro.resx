@@ -1634,4 +1634,9 @@ Numele:</value></data>
   <data name="Prof.AchDone" xml:space="preserve"><value>Terminat</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Pornește jocul folosind Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Schimbă…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Limba jocului</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Meniurile și paginile jocului. Se aplică la următoarea pornire a jocului.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Unități de măsură</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrice (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiale (yd, lbs)</value></data>
 </root>

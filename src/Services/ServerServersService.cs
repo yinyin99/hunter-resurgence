@@ -9,7 +9,8 @@ namespace Resurgence.Services;
 /// refused join fails with the message of its reason. A server that does not answer is an empty map and no games, never the mock's.</summary>
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 /// <param name="cookie">The catalogue is the same for everyone and is asked without the session cookie; the loadouts and a start carry it.</param>
-public sealed class ServerServersService(HttpClient http, ServerCookie cookie, ServerCache<ServerLaunchCatalogue> cache, ILauncherBridge bridge, ILogger<ServerServersService> log) : IServersService
+/// <param name="settings">The game's language (<see cref="IGameSettingsService.LanguageAsync"/>) goes with every start, as the form's <c>lang</c>.</param>
+public sealed class ServerServersService(HttpClient http, ServerCookie cookie, ServerCache<ServerLaunchCatalogue> cache, ILauncherBridge bridge, IGameSettingsService settings, ILogger<ServerServersService> log) : IServersService
 {
     const string Failed = "Launch.Failed";
 
@@ -142,7 +143,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         {
             using var request = cookie.Request(HttpMethod.Post, ServerLaunchApi.Launch);
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
-            request.Content = new FormUrlEncodedContent(form.Select(f => KeyValuePair.Create(f.Item1, f.Item2)));
+            request.Content = new FormUrlEncodedContent(form.Append(("lang", await settings.LanguageAsync())).Select(f => KeyValuePair.Create(f.Item1, f.Item2)));  // the game's language rides on every start
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerLaunch>() is { Url.Length: > 0 } launch)
                 // off the UI thread: the launcher may wait for Steam to sign in

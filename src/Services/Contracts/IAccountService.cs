@@ -13,10 +13,12 @@ public sealed record Recruiting(string Link, IReadOnlyList<RewardRow> Rewards, I
 
 public interface IAccountService
 {
-    /// <summary>Raised when the avatar changes (the bar shows it).</summary>
+    /// <summary>Raised when the avatar or the units change (the bar shows the avatar, the pages the units).</summary>
     event Action? Changed;
     Task<Account> AccountAsync();
     Task<IReadOnlyList<AvatarChoice>> AvatarsAsync();
     Task<Result> SetAvatarAsync(string id);
+    /// <summary>Saves the player's units on the account (the game's and the pages'): imperial (yards, pounds) or metric; raises <see cref="Changed"/> so the pages read them again (<see cref="Session.Imperial"/>).</summary>
+    Task<Result> SetImperialAsync(bool imperial);
     Task<Recruiting> RecruitingAsync();
 }

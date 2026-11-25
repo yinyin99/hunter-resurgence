@@ -10,6 +10,7 @@
 @inject IDiscordInviteService Invite
 @inject IRestoreOfferService RestoreOffer
 @inject Branding Brand
+@inject IAccountService Account
 
 @* the website's page picture (slot page-bg), as the original's body:not(.client): top centre, once, black below; the launcher shows it too *@
 <div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
@@ -27,7 +28,7 @@
         @if (!eula) { <MenuBar Hidden="quick && Mode.Launcher" /> }
         <div class="body">
             @* a page for signed-in players only shows the sign-in prompt instead while signed out (nothing until the session is known): the page is not built, so it asks the server nothing *@
-            <main @key="isPublic">@if (!signInFirst) { @Body } else if (loaded) { <SignInRequired /> }</main>
+            <main @key="isPublic">@if (!signInFirst) { <CascadingValue Name="Imperial" Value="@(session?.Imperial == true)">@Body</CascadingValue> } else if (loaded) { <SignInRequired /> }</main>
             @if (!eula) { <aside class="sidebar"></aside> }
         </div>
         @if (!eula) { <Footer /> }
@@ -63,6 +64,7 @@
             session = await Sessions.CurrentAsync();
             StateHasChanged();
         });
+        Account.Changed += changed;  // the avatar and the units are the account's
     }
 
     protected override async Task OnParametersSetAsync()
@@ -117,6 +119,7 @@
     public async ValueTask DisposeAsync()
     {
         Sessions.Changed -= changed;
+        Account.Changed -= changed;
         self?.Dispose();
         if (module is null) return;
         try

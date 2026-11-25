@@ -24,25 +24,30 @@ public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, M
         return choices;
     }
 
-    public async Task<Result> SetAvatarAsync(string id)
+    public Task<Result> SetAvatarAsync(string id) => PostAsync(ServerAccountApi.SetAvatar, "id", Avatars.IdOf(id) ?? "imported");
+
+    public Task<Result> SetImperialAsync(bool imperial) => PostAsync(ServerAccountApi.Settings, "use_imperial", imperial ? "1" : "0");
+
+    /// <summary>A one-field form to the server as the signed-in player; <see cref="Changed"/> after it was accepted (the bar and the pages take the new avatar or units).</summary>
+    async Task<Result> PostAsync(string path, string field, string value)
     {
         if (cookie.Value is null) return Result.Fail("Store.Oops");
         try
         {
-            using var request = cookie.Request(HttpMethod.Post, ServerAccountApi.SetAvatar);
+            using var request = cookie.Request(HttpMethod.Post, path);
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
-            request.Content = new FormUrlEncodedContent([KeyValuePair.Create("id", Avatars.IdOf(id) ?? "imported")]);
+            request.Content = new FormUrlEncodedContent([KeyValuePair.Create(field, value)]);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
                 Changed?.Invoke();
                 return Result.Success;
             }
-            log.LogWarning("The server refused {Path} ({Status})", ServerAccountApi.SetAvatar, (int)response.StatusCode);
+            log.LogWarning("The server refused {Path} ({Status})", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
         {
-            log.LogWarning("The server did not answer {Path} ({Reason})", ServerAccountApi.SetAvatar, e.Message);
+            log.LogWarning("The server did not answer {Path} ({Reason})", path, e.Message);
         }
         return Result.Fail("Store.Oops");
     }

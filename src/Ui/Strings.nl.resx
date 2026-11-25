@@ -1634,4 +1634,9 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Prof.AchDone" xml:space="preserve"><value>Voltooid</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start het spel via Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Wijzigen…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Taal van het spel</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>De menu's en pagina's van het spel. Geldt vanaf de volgende start van het spel.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Eenheden</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisch (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaal (yd, lbs)</value></data>
 </root>

@@ -1634,4 +1634,9 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Prof.AchDone" xml:space="preserve"><value>Gotowe</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Uruchamiaj grę przez Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Zmień…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Język gry</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Menu i strony gry. Zmiana zadziała przy następnym uruchomieniu gry.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Jednostki</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metryczne (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
 </root>

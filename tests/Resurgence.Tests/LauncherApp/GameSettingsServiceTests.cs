@@ -222,4 +222,34 @@ public class GameSettingsServiceTests
         var (borderless, error) = new GameSettingsService(Config(), new Prefs { DisplayMode = DisplayMode.Borderless }, temp.Path, () => { }, monitor: Monitor).PrepareStart(true);
         Assert.True(!borderless && error is not null);
     }
+
+    // #825: the game's language is the player's choice; before one, the launcher's language when the game has it, else English
+    [Theory]
+    [InlineData("fr", "fr_FR")]
+    [InlineData("pt-BR", "pt_BR")]
+    [InlineData("pt-PT", "pt_PT")]
+    [InlineData("nb", "nb_NO")]
+    public async Task TheGamesLanguageDefaultsToTheLaunchersAndTheChoiceIsSaved(string launcher, string expected)
+    {
+        var prefs = new Prefs { Language = launcher };
+        var saves = 0;
+        var svc = new GameSettingsService(Config(), prefs, Path.GetTempPath(), () => saves++);
+        Assert.Equal(expected, await svc.LanguageAsync());
+        await svc.SetLanguageAsync("ru_RU");
+        Assert.Equal(("ru_RU", "ru_RU", 1), (await svc.LanguageAsync(), prefs.GameLanguage, saves));  // the choice wins over the launcher's language
+        await svc.SetLanguageAsync("xx_XX");                                                            // not the game's: no choice again
+        Assert.Null(prefs.GameLanguage);
+        Assert.Equal(2, saves);
+    }
+
+    [Fact]
+    public void TheGamesLanguageIsInLauncherJson()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "launcher.json");
+        new Prefs { GameLanguage = "de_DE" }.Save(path);
+        Assert.Contains("\"game_language\": \"de_DE\"", File.ReadAllText(path));
+        Assert.Equal("de_DE", Prefs.Load(path).GameLanguage);
+        Assert.Null(new Prefs().GameLanguage);
+    }
 }

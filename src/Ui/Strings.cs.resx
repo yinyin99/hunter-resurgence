@@ -1634,4 +1634,9 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Prof.AchDone" xml:space="preserve"><value>Hotovo</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Spouštět hru přes Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Změnit…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Jazyk hry</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Nabídky a stránky hry. Projeví se při příštím spuštění hry.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Jednotky</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrické (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiální (yd, lbs)</value></data>
 </root>

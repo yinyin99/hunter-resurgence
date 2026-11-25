@@ -2,7 +2,8 @@ namespace Resurgence.Services;
 
 /// <param name="Membership">The player has a membership: the single player page then leaves out its introduction.</param>
 /// <param name="Avatar">The slot or link of the player's picture (<see cref="Avatars.Slot"/>).</param>
-public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default);
+/// <param name="Imperial">The player chose imperial units (yards, pounds): the pages show them as the game does (<see cref="IAccountService.SetImperialAsync"/>).</param>
+public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default, bool Imperial = false);
 
 /// <summary>Where the launcher goes at start: on to the game, to the username step of a new account, or to the sign-in.</summary>
 public enum StartOutcome { LoggedIn, NeedsSignup, LoggedOut }

@@ -72,8 +72,9 @@ public class ServerServersServiceTests
         _ => Json(HttpStatusCode.NotFound, "{}"),
     };
 
-    static ServerServersService Make(Fake fake, Bridge bridge, string? session = "secret") =>
-        new(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" }, new ServerCache<ServerLaunchCatalogue>(), bridge, NullLogger<ServerServersService>.Instance);
+    static ServerServersService Make(Fake fake, Bridge bridge, string? session = "secret", IGameSettingsService? settings = null) =>
+        new(new HttpClient(fake) { BaseAddress = new Uri("http://server.test:8080") }, new ServerCookie { Value = session, Host = "site.test" }, new ServerCache<ServerLaunchCatalogue>(), bridge,
+            settings ?? new Resurgence.Services.Mocks.MockGameSettingsService(NullLogger<Resurgence.Services.Mocks.MockGameSettingsService>.Instance), NullLogger<ServerServersService>.Instance);
 
     [Fact]
     public async Task TheReservesAndTheirStartsAreTheServers()
@@ -150,7 +151,7 @@ public class ServerServersServiceTests
         Assert.True((await Make(fake, bridge).StartSingleAsync(2, 101, 480, 4)).Ok);
         Assert.Equal(["game://play.test/session"], bridge.Started);
         var post = Assert.Single(fake.Seen);
-        Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret", "reserve=2&lodge=101&time=480&loadout=4"), (post.Method, post.Path, post.Cookie, post.Body));
+        Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret", "reserve=2&lodge=101&time=480&loadout=4&lang=en_US"), (post.Method, post.Path, post.Cookie, post.Body));
     }
 
     [Fact]
@@ -158,7 +159,7 @@ public class ServerServersServiceTests
     {
         var fake = new Fake(Answer);
         Assert.True((await Make(fake, new Bridge()).StartSingleAsync(2, -501, 480, 4)).Ok);  // the marker id of a placed item is its negated guid
-        Assert.Equal("reserve=2&tent=501&time=480&loadout=4", Assert.Single(fake.Seen).Body);
+        Assert.Equal("reserve=2&tent=501&time=480&loadout=4&lang=en_US", Assert.Single(fake.Seen).Body);
     }
 
     [Fact]
@@ -175,8 +176,20 @@ public class ServerServersServiceTests
         var fake = new Fake(Answer);
         var bridge = new Bridge();
         Assert.True((await Make(fake, bridge).StartTutorialAsync(3)).Ok);
-        Assert.Equal("tutorial=3", Assert.Single(fake.Seen).Body);
+        Assert.Equal("tutorial=3&lang=en_US", Assert.Single(fake.Seen).Body);
         Assert.Single(bridge.Started);
+    }
+
+    [Fact]
+    public async Task TheGamesLanguageGoesWithEveryStart()
+    {
+        var settings = new Resurgence.Services.Mocks.MockGameSettingsService(NullLogger<Resurgence.Services.Mocks.MockGameSettingsService>.Instance);
+        await settings.SetLanguageAsync("fr_FR");
+        var fake = new Fake(Answer);
+        var servers = Make(fake, new Bridge(), settings: settings);
+        Assert.True((await servers.StartSingleAsync(2, 101, 480, 4)).Ok);
+        Assert.True((await servers.StartTutorialAsync(3)).Ok);
+        Assert.Equal(["reserve=2&lodge=101&time=480&loadout=4&lang=fr_FR", "tutorial=3&lang=fr_FR"], fake.Seen.Select(s => s.Body));
     }
 
     [Theory]
@@ -264,7 +277,7 @@ public class ServerServersServiceTests
         Assert.Equal(["game://play.test/session"], bridge.Started);
         var post = Assert.Single(fake.Seen);
         Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret",
-            "mp=host&reserve=2&lodge=101&time=480&loadout=4&name=Test+game&description=Come+%26+hunt&public_game=0&free_players=1&max_players=4&hs_min=100&hs_max=2000&password=letmein"),
+            "mp=host&reserve=2&lodge=101&time=480&loadout=4&name=Test+game&description=Come+%26+hunt&public_game=0&free_players=1&max_players=4&hs_min=100&hs_max=2000&password=letmein&lang=en_US"),
             (post.Method, post.Path, post.Cookie, post.Body));
     }
 
@@ -273,7 +286,7 @@ public class ServerServersServiceTests
     {
         var fake = new Fake(Answer);
         Assert.True((await Make(fake, new Bridge()).CreateAsync(new("Test game", "", false, null, 8, null, null), 2, -501, 480, 0)).Ok);
-        Assert.Equal("mp=host&reserve=2&tent=501&time=480&loadout=0&name=Test+game&description=&public_game=1&free_players=1&max_players=8", Assert.Single(fake.Seen).Body);
+        Assert.Equal("mp=host&reserve=2&tent=501&time=480&loadout=0&name=Test+game&description=&public_game=1&free_players=1&max_players=8&lang=en_US", Assert.Single(fake.Seen).Body);
     }
 
     [Fact]
@@ -284,7 +297,7 @@ public class ServerServersServiceTests
         var service = Make(fake, bridge);
         Assert.True((await service.JoinAsync(4000000002, 101, "letmein", 4)).Ok);
         Assert.True((await service.JoinAsync(4000000001, -501, null, 0)).Ok);
-        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein", "mp=join&network_id=4000000001&tent=501&loadout=0"], fake.Seen.Select(s => s.Body));
+        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein&lang=en_US", "mp=join&network_id=4000000001&tent=501&loadout=0&lang=en_US"], fake.Seen.Select(s => s.Body));
         Assert.Equal(2, bridge.Started.Count);
     }
 

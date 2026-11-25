@@ -58,12 +58,12 @@
             <thead><tr><th>#</th><th>Hunter:</th><th>Weapon</th><th>Scope</th><th>Ammunition</th><th>Shot Distance</th><th>Animal State</th><th>Body Part</th><th>Stance</th><th>Platform</th></tr></thead>
             <tbody><tr>
                 <td>1</td><td><a href="/profile/@Handle">@Handle</a></td><td>@(sheet.Weapon.Length > 0 ? sheet.Weapon : "")</td><td>@(sheet.Scope ? "✓" : "")</td><td>@sheet.Ammo</td>
-                <td>@(sheet.DistanceM > 0 ? $"{Fmt.Num(sheet.DistanceM, "0.000")} m ({Fmt.Num(sheet.DistanceM * 3.28084, "0.0")} ft)" : "")</td><td>@sheet.State</td><td>@sheet.BodyPart</td><td>@sheet.Stance</td><td>@sheet.Platform</td>
+                <td>@(sheet.DistanceM > 0 ? (Imperial ? $"{Fmt.Num(sheet.DistanceM * Fmt.Yards, "0.000")} yd ({Fmt.Num(sheet.DistanceM, "0.000")} m)" : $"{Fmt.Num(sheet.DistanceM, "0.000")} m ({Fmt.Num(sheet.DistanceM * 3.28084, "0.0")} ft)") : "")</td><td>@sheet.State</td><td>@sheet.BodyPart</td><td>@sheet.Stance</td><td>@sheet.Platform</td>
             </tr></tbody>
         </table>
         <div class="info">
             <dl>
-                <div><dt>Weight:</dt><dd>@Fmt.Num(sheet.WeightKg, "0.000") kg (@(Fmt.Num(sheet.WeightKg * 2.20462, "0.0")) lbs)</dd></div>
+                <div><dt>Weight:</dt><dd>@Fmt.Weight(sheet.WeightKg, Imperial)</dd></div>
                 <div><dt>Type:</dt><dd>@sheet.Type</dd></div>
                 <div><dt>Wound time:</dt><dd>@(sheet.WoundTime > 0 ? Fmt.Num(sheet.WoundTime, "0.000") : "N/A")</dd></div>
                 <div><dt>Trophy integrity:</dt><dd>@sheet.Integrity%</dd></div>
@@ -90,6 +90,8 @@
 }
 
 @code {
+    /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
+    [CascadingParameter(Name = "Imperial")] bool Imperial { get; set; }
     static readonly MapMarker[] markers = [new(1, MarkerKind.Interest, "Player", 42, 58), new(2, MarkerKind.Interest, "Animal", 55, 40)];
     ScoreSheet? sheet;
     bool map;
