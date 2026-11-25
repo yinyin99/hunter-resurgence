@@ -146,6 +146,8 @@ else
 </div>
 
 @code {
+    /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
+    [CascadingParameter(Name = "Imperial")] bool Imperial { get; set; }
     IReadOnlyList<(string Label, string Href)> tabs = [];
     IReadOnlyList<Board> boards = [];
     IReadOnlyList<Ranked> rows = [], around = [];
@@ -261,8 +263,8 @@ else
         {
             <AssetSlot Name="@r.Avatar" Width="160" Height="160" />
             <a href="/profile/@r.Handle">@r.Handle</a>
-            @if (r.Sheet > 0) { <a href="/profile/@r.Handle/score/@r.Sheet" class="v">@Fmt.Board(board, r.Value)</a> }
-            else { <span class="v">@Fmt.Board(board, r.Value)</span> }
+            @if (r.Sheet > 0) { <a href="/profile/@r.Handle/score/@r.Sheet" class="v">@Fmt.Board(board, r.Value, Imperial)</a> }
+            else { <span class="v">@Fmt.Board(board, r.Value, Imperial)</span> }
         }
     </text>;
 

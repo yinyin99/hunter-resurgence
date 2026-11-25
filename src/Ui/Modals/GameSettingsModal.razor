@@ -1,6 +1,8 @@
 @inject ModalService Modal
 @inject IGameSettingsService Service
 @inject ILauncherBridge Bridge
+@inject ISessionService Sessions
+@inject IAccountService Account
 
 <div class="gs" role="dialog" aria-modal="true" aria-labelledby="gs-title">
     <h1 id="gs-title">@L[FirstStart ? "GameSettings.Initial" : "GameSettings.Title"]</h1>
@@ -10,6 +12,21 @@
             @* the folder in use; the button opens the Game folder window (not in the first-start dialog: closing that one cancels the pending start) *@
             <div class="row"><span>@L["Settings.GameFolder"]</span>@if (!FirstStart) { <button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Change"]</button> }<span id="game-folder-path" class="path" title="@path">@path</span></div>
             <label class="row"><span>@L["GameSettings.StartWithSteam"]</span><input class="tick" type="checkbox" id="start_with_steam" @bind="startWithSteam" /></label>
+            <label class="row"><span>@L["GameSettings.Language"]</span>
+                <select class="field-sel" id="game_language" @bind="language">
+                    @foreach (var l in GameLanguages.All) { <option value="@l.Code">@l.Name</option> }
+                </select>
+                <small>@L["GameSettings.LanguageHelp"]</small></label>
+            @* the units are the account's, kept on the server: only a signed-in player has them *@
+            @if (signedIn)
+            {
+                <label class="row"><span>@L["GameSettings.Units"]</span>
+                    <select class="field-sel" id="units" @bind="imperial">
+                        <option value="False">@L["GameSettings.Metric"]</option>
+                        <option value="True">@L["GameSettings.Imperial"]</option>
+                    </select>
+                </label>
+            }
             <label class="row"><span>@L["GameSettings.Display"]</span>
                 <select class="field-sel" id="window_mode" @bind="display">
                     <option value="@DisplayMode.Borderless">@L["GameSettings.Borderless"]</option>
@@ -56,6 +73,8 @@
     bool vsync, startWithSteam;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
+    string language = GameLanguages.Default, savedLanguage = GameLanguages.Default;
+    bool signedIn, imperial, savedImperial;
     string? error;
 
     /// <summary>The "Initial setup" variant: only a Start game button, the pending game start goes on when it is pressed.</summary>
@@ -72,6 +91,8 @@
         (display, vsync, resolution, scene, texture, shadow, msaa, aniso, contextual, audio) =
             (o.Display, o.Vsync, Math.Max(0, settings.Resolutions.ToList().IndexOf(o.Resolution)), o.Scene, o.Texture, o.Shadow, o.Msaa, o.Aniso, o.ContextualHelp, o.ExtendedAudio);
         startWithSteam = o.StartWithSteam;
+        language = savedLanguage = await Service.LanguageAsync();
+        if (await Sessions.CurrentAsync() is { } session) (signedIn, imperial, savedImperial) = (true, session.Imperial, session.Imperial);
     }
 
     RenderFragment Levels(int count) => b =>
@@ -87,6 +108,8 @@
     {
         var result = await Service.SaveAsync(new(display, vsync, settings!.Resolutions[resolution], scene, texture, shadow, msaa, aniso, contextual, audio, startWithSteam));
         if (!result.Ok) { error = result.Error; return; }
+        if (language != savedLanguage) await Service.SetLanguageAsync(language);  // untouched, it keeps following the launcher's language
+        if (signedIn && imperial != savedImperial && await Account.SetImperialAsync(imperial) is { Ok: false } refused) { error = refused.Error; return; }
         Done?.SetResult(true);
         Modal.Close();
     }

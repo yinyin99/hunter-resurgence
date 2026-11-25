@@ -1634,4 +1634,9 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Prof.AchDone" xml:space="preserve"><value>Kész</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>A játék indítása Steamen keresztül</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Módosítás…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>A játék nyelve</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>A játék menüi és oldalai. A játék következő indításakor lép érvénybe.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Mértékegységek</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrikus (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Angolszász (yd, lbs)</value></data>
 </root>

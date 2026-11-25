@@ -153,6 +153,64 @@ public class LaunchCatalogueTests : StateTestBase
     }
 
     [Theory]
+    [InlineData("lang=fr_FR", "fr_FR")]
+    [InlineData("reserve=1&lodge=11&lang=pt_BR", "pt_BR")]  // a hunt carries it too
+    [InlineData("tutorial=2&lang=ru_RU", "ru_RU")]
+    [InlineData("lang=ka_KA", "ka_KA")]
+    [InlineData("", "en_US")]                              // none
+    [InlineData("lang=", "en_US")]
+    [InlineData("lang=xx_XX", "en_US")]                    // unknown
+    [InlineData("lang=fr_fr", "en_US")]                    // the game's codes only, as written
+    [InlineData("lang=en_US/../x", "en_US")]               // never part of the URL as it came
+    public async Task TheLaunchUrlCarriesTheChosenGameLanguageAndEnUsWhenNoneOrUnknown(string form, string code)
+    {
+        var reply = await Launch(form);
+        Assert.Equal(200, reply.Status);
+        Assert.Matches($@"\A{ProtocolLiterals.LaunchScheme}://game_web\.test/[0-9a-f]{{40}}/lang/{code}/access_token/[\w.-]+/refresh_token/[\w.-]+\z", (string)JsonNode.Parse(reply.Body)!["url"]!);
+    }
+
+    [Fact]
+    public async Task TheSettingsRouteStoresTheUnitsOfTheAccountOnlyForASignedInPageOfTheServer()
+    {
+        await using var server = await Start();
+        var cookie = ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(ME, TimeSpan.FromHours(1))}");
+        var own = ("X-Requested-With", "XMLHttpRequest");
+        Task<Reply> Post(string form, params (string, string)[] headers) => server.SendAsync("POST", "web.test", "/account/settings", headers, Encoding.ASCII.GetBytes(form));
+
+        Assert.Equal(401, (await Post("use_imperial=1", own)).Status);
+        Assert.Equal(400, (await Post("use_imperial=1", cookie)).Status);  // not from our page
+        Assert.Equal(400, (await Post("use_imperial=yes", cookie, own)).Status);
+        Assert.Equal(400, (await Post("", cookie, own)).Status);
+        Assert.False(state.Store.UsesImperial(ME));
+        Assert.True((bool)JsonNode.Parse((await Post("use_imperial=1", cookie, own)).Body)!["use_imperial"]!);
+        Assert.True(state.Store.UsesImperial(ME));
+        Assert.Equal(1L, (long)JsonNode.Parse(state.ConnectReply(ME))!["account"]!["use_imperial"]!);  // what the game reads
+        Assert.Equal(200, (await Post("use_imperial=0", cookie, own)).Status);
+        Assert.Equal(0L, (long)JsonNode.Parse(state.ConnectReply(ME))!["account"]!["use_imperial"]!);
+        var me = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/auth/me", [cookie])).Body)!;
+        Assert.False((bool)me["imperial"]!);
+    }
+
+    [Fact]
+    public void ADatabaseAtVersion37WithoutTheUnitsColumnGetsIt()
+    {
+        var file = Path.Combine(tmp, "units.db");
+        var store = new Store(file);
+        store.CreateAccount(5, "old", new JsonObject());
+        using (var con = store.Open())
+        {
+            con.Exec("ALTER TABLE accounts DROP COLUMN use_imperial");
+            con.Exec("PRAGMA user_version = 37");  // the version stays: the step is guarded by the column
+        }
+        var migrated = new Store(file);
+        Assert.False(migrated.UsesImperial(5));  // metric for every account before
+        migrated.SetUsesImperial(5, true);
+        Assert.True(migrated.UsesImperial(5));
+        using var check = migrated.Open();
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'"));
+    }
+
+    [Theory]
     [InlineData("reserve=1")]                          // no lodge
     [InlineData("lodge=11")]                           // no reserve
     [InlineData("reserve=1&lodge=11&time=soon")]

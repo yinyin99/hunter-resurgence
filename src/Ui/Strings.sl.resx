@@ -1634,4 +1634,9 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Prof.AchDone" xml:space="preserve"><value>Končano</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Zaženi igro prek Steama</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Spremeni…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Jezik igre</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Meniji in strani igre. Velja ob naslednjem zagonu igre.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Merske enote</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrične (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
 </root>

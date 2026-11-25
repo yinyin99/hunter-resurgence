@@ -1634,4 +1634,9 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Prof.AchDone" xml:space="preserve"><value>Done</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start the game using Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Change…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Game language</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>The game's menus and pages. Takes effect at the next game start.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Units</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metric (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
 </root>

@@ -358,6 +358,19 @@ public static class AccountApi
             .WithDescription("Stored for the account; the game's next connect carries no event for a player who turned it off (a running hunt keeps the event it started with). Answers like `GET /account/events`.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/settings", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                if (!form.TryGetValue("use_imperial", out var imperial) || imperial[0] is not ("1" or "0")) return Refuse(400, "invalid", "This needs use_imperial=1 or use_imperial=0.");
+                state.Store.SetUsesImperial(account, imperial[0] == "1");
+                return Json(200, new JsonObject { ["use_imperial"] = imperial[0] == "1" });
+            })
+            .WithName("AccountSettings").WithSummary("Imperial units or metric (form `use_imperial=1` or `use_imperial=0`)")
+            .WithDescription("Stored with the account, so it follows the player to another PC. The game's next connect carries `account.use_imperial` (1 or 0: it shows yards and pounds when non-zero), and `GET /auth/me` says it as `imperial`. Answers `{use_imperial}`.")
+            .Produces(200, contentType: "application/json");
+
         group.MapPost("/discord", (HttpContext ctx) =>
             {
                 if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");

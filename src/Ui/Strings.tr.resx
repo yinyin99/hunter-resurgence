@@ -1634,4 +1634,9 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Prof.AchDone" xml:space="preserve"><value>Tamamlandı</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Oyunu Steam ile başlat</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Değiştir…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Oyun dili</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Oyunun menüleri ve sayfaları. Oyun bir sonraki başlatıldığında geçerli olur.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Birimler</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrik (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>İngiliz sistemi (yd, lbs)</value></data>
 </root>

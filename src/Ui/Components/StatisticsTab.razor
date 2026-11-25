@@ -45,6 +45,8 @@
 }
 
 @code {
+    /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
+    [CascadingParameter(Name = "Imperial")] bool Imperial { get; set; }
     static readonly (string Key, string Label)[] subs = [("", "Stat.Last"), ("lifetime", "Stat.Lifetime"), ("history", "Stat.History"), ("best", "Stat.Best")];
     Expedition? last;
     Totals? totals;
@@ -103,7 +105,7 @@
             default:
                 <table class="hist tbl">
                     <thead><tr><th>@L["Stat.Species"]</th><th>@L["Stat.Weapon"]</th><th>@L["Stat.TimeOfHarvest"]</th><th>@L["Stat.Score"]</th><th>@L["Stat.Range"]</th></tr></thead>
-                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@r.Weapon</td><td>@r.When.ToString("yyyy-MM-dd HH:mm")</td><td>@if (Mode.Live) { @Fmt.Score(r.Score) } else { <a href="/profile/@Handle/score/@r.Kill">@Fmt.Score(r.Score)</a> }</td><td>@Fmt.Metres(r.Range)</td></tr> }</tbody>
+                    <tbody>@foreach (var r in best.Rows) { <tr><td>@L.Term(r.Species)</td><td>@r.Weapon</td><td>@r.When.ToString("yyyy-MM-dd HH:mm")</td><td>@if (Mode.Live) { @Fmt.Score(r.Score) } else { <a href="/profile/@Handle/score/@r.Kill">@Fmt.Score(r.Score)</a> }</td><td>@Fmt.Metres(r.Range, Imperial)</td></tr> }</tbody>
                 </table>
                 break;
         }

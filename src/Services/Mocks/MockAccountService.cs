@@ -13,6 +13,9 @@ public sealed class MockAccountService : IAccountService
 
     public Task<Result> SetAvatarAsync(string id) { avatar = id; Changed?.Invoke(); return Task.FromResult(Result.Success); }
 
+    // the mock session (MockSessionService) is metric: only the call and the change event are the real ones
+    public Task<Result> SetImperialAsync(bool imperial) { Changed?.Invoke(); return Task.FromResult(Result.Success); }
+
     static RewardItem I(string text, int id) => new(text, id);
     static RewardItem Em(int n) => new($"{n} Em$", null);
 

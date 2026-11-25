@@ -1634,4 +1634,9 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Prof.AchDone" xml:space="preserve"><value>Færdig</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Start spillet via Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Skift…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Spillets sprog</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Spillets menuer og sider. Træder i kraft ved næste spilstart.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Enheder</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisk (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
 </root>

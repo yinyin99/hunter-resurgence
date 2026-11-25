@@ -48,6 +48,8 @@ public static class ServerAccountApi
     public const string Loadouts = "/account/loadouts";
     /// <summary>GET with the cookie: 200 <see cref="ServerEvents"/>, whether the player plays seasonal events and the event that runs now; POST with <c>X-Requested-With</c> and the form <c>play=1</c> or <c>play=0</c>: stores the setting, 200 like the GET.</summary>
     public const string Events = "/account/events";
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>use_imperial=1</c> or <c>use_imperial=0</c>: stores the player's units on the account (the game's <c>account.use_imperial</c>, <see cref="ServerAccount.Imperial"/>), 200.</summary>
+    public const string Settings = "/account/settings";
     /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerDiscordInvite"/>, <c>First</c> true only the first time for the account.</summary>
     public const string Discord = "/account/discord";
     /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerRestoreOffer"/>, <c>First</c> true only the first time for the account, and never for one that restored a backup zip or has an upload (an archive claim does not count).</summary>

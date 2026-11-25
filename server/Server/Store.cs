@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 36;
+    public const int Version = 37;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -527,6 +527,9 @@ public sealed class Store
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
         CreateNews(con);  // schema 36, and not a `version <` step: see CreateNews
+        // schema 37, guarded by the column and not by the version (every start): 1 when the player chose imperial units (yards, pounds) in the game's settings
+        if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'")! == 0)
+            con.Script("ALTER TABLE accounts ADD COLUMN use_imperial INTEGER NOT NULL DEFAULT 0");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
@@ -605,6 +608,19 @@ public sealed class Store
     {
         using var con = Open();
         con.Exec("UPDATE accounts SET seasonal_events = ? WHERE id = ?", plays ? 1 : 0, id);
+    }
+
+    /// <summary>Whether the account chose imperial units (yards, pounds) for the game and the pages; metric unless it did (<see cref="SetUsesImperial"/>).</summary>
+    public bool UsesImperial(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT use_imperial FROM accounts WHERE id = ?", id) is 1L;
+    }
+
+    public void SetUsesImperial(long id, bool imperial)
+    {
+        using var con = Open();
+        con.Exec("UPDATE accounts SET use_imperial = ? WHERE id = ?", imperial ? 1 : 0, id);
     }
 
     /// <summary>True the first time it is asked for the account, false after: the one-time Discord invite of the website and the launcher.</summary>

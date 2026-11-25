@@ -1634,4 +1634,9 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Prof.AchDone" xml:space="preserve"><value>Hecho</value></data>
   <data name="GameSettings.StartWithSteam" xml:space="preserve"><value>Iniciar el juego con Steam</value></data>
   <data name="GameFolder.Change" xml:space="preserve"><value>Cambiar…</value></data>
+  <data name="GameSettings.Language" xml:space="preserve"><value>Idioma del juego</value></data>
+  <data name="GameSettings.LanguageHelp" xml:space="preserve"><value>Los menús y las páginas del juego. Se aplica en el próximo inicio del juego.</value></data>
+  <data name="GameSettings.Units" xml:space="preserve"><value>Unidades</value></data>
+  <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
+  <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
 </root>

@@ -38,10 +38,10 @@ public static class Fmt
     /// <summary>Oct 21st 2026, 07:00 UTC</summary>
     public static string UtcLong(DateTime d) => $"{MonthDay(d)} {d.Year}, {d:HH:mm} UTC";
 
-    /// <summary>A leaderboard value: scores with 4 decimals, ranges as 508.8m (1669.3ft), the other boards whole numbers.</summary>
-    public static string Board(string kind, double v) => kind switch
+    /// <summary>A leaderboard value: scores with 4 decimals, ranges as 508.8m (1669.3ft), the other boards whole numbers; <paramref name="imperial"/> puts the yards first: 556.4yd (508.8m).</summary>
+    public static string Board(string kind, double v, bool imperial = false) => kind switch
     {
-        "range" => $"{v.ToString("0.0", English)}m ({(v * 3.28084).ToString("0.0", English)}ft)",
+        "range" => Distance(v, "0.0", imperial),
         "hunterscore" or "lanebandit" or "bustthrough" => v.ToString("0", English),
         _ => v.ToString("0.0000", English),
     };
@@ -71,8 +71,22 @@ public static class Fmt
     public static string Duration(this IStringLocalizer l, int seconds) =>
         Units(l, seconds / 86400, seconds / 3600 % 24, (seconds / 60 % 60).ToString(), (seconds % 60).ToString("00"));
 
-    /// <summary>124.53m (408.56ft)</summary>
-    public static string Metres(double m) => $"{m.ToString("0.00", English)}m ({(m * 3.28084).ToString("0.00", English)}ft)";
+    /// <summary>124.53m (408.56ft); imperial, as the game shows it when the player chose it: 136.19yd (124.53m).</summary>
+    public static string Metres(double m, bool imperial = false) => Distance(m, "0.00", imperial);
+
+    /// <summary>The score sheet's shot distance: 123.456 m (405.0 ft); imperial: 135.012 yd (123.456 m).</summary>
+    public static string ShotDistance(double m, bool imperial = false) =>
+        imperial ? $"{Num(m * Yards, "0.000")} yd ({Num(m, "0.000")} m)" : $"{Num(m, "0.000")} m ({Num(m * 3.28084, "0.0")} ft)";
+
+    /// <summary>The game's own factors for the imperial units (<c>account.use_imperial</c>): metres to yards, kilograms to pounds.</summary>
+    public const double Yards = 1.09361, Pounds = 2.20462;
+
+    static string Distance(double m, string format, bool imperial) =>
+        imperial ? $"{(m * Yards).ToString(format, English)}yd ({m.ToString(format, English)}m)" : $"{m.ToString(format, English)}m ({(m * 3.28084).ToString(format, English)}ft)";
+
+    /// <summary>4.123 kg (9.1 lbs); imperial: 9.1 lbs (4.123 kg).</summary>
+    public static string Weight(double kg, bool imperial = false) =>
+        imperial ? $"{(kg * Pounds).ToString("0.0", English)} lbs ({kg.ToString("0.000", English)} kg)" : $"{kg.ToString("0.000", English)} kg ({(kg * Pounds).ToString("0.0", English)} lbs)";
 
     /// <summary>102.89 km (63.93 miles)</summary>
     public static string Kilometres(this IStringLocalizer l, double km) => l["Fmt.Kilometres", km.ToString("0.00", English), (km * 0.621371192).ToString("0.00", English)];

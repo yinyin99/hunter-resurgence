@@ -107,6 +107,16 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
 
     public Task<bool> FirstStartAsync() => Task.FromResult(!prefs.GameSettingsSaved);
 
+    public Task<string> LanguageAsync() =>
+        Task.FromResult(GameLanguages.Has(prefs.GameLanguage) ? prefs.GameLanguage! : GameLanguages.For(prefs.Language.Length > 0 ? prefs.Language : System.Globalization.CultureInfo.CurrentUICulture.Name));
+
+    public Task SetLanguageAsync(string code)
+    {
+        prefs.GameLanguage = GameLanguages.Has(code) ? code : null;
+        savePrefs();
+        return Task.CompletedTask;
+    }
+
     // the file's anisotropic filtering has Default before Off: the dialog has no Default, it shows Off
     public static GameOptions ToOptions(GraphicsSettings g, OptionsSettings? o, DisplayMode display) =>
         new(display, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, null);

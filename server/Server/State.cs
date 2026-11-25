@@ -1474,7 +1474,9 @@ public sealed partial class State
                 reply[k] = C(v);
         reply["inventory"] = inventory;
         reply["expedition"] = expedition;
-        reply["account"] = Store.AccountJson(account);
+        var own = Store.AccountJson(account);
+        own["use_imperial"] = Store.UsesImperial(account) ? 1 : 0;  // the game converts yards and pounds when it is non-zero
+        reply["account"] = own;
         reply["wallet"] = Wallet(account);
         // a boost is on when the account owns its item (any slot) or its hunterscore reaches the item's level
         var owned = inventory["items"]!.AsArray().Select(r => Py.L(r!["item_id"])).ToHashSet();
