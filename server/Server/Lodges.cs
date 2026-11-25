@@ -71,6 +71,42 @@ public sealed partial class State
         }
     }
 
+    /// <summary>The saved `lodge_contents` of a section save that was restored before it was read as lodges: kept whole in `extras` under this name.</summary>
+    const string LodgeContentsExtra = "json_lodge_contents.json";
+
+    /// <summary>`admin backfill-lodges`: for every account (or `only`) with <see cref="LodgeContentsExtra"/> in its extras, each listed lodge (a `/game/user/lodges` row) that has no `/game/user/lodge` row gets the
+    /// saved contents as that row (the animals it mounts are shown as trophies at read time, <see cref="MountedRows"/>). A lodge that has contents is never touched, so a second run adds nothing. One line per
+    /// account and lodge. Without `apply` the same rows are made and dropped: nothing is written.</summary>
+    public List<string> BackfillLodgeContents(bool apply, long? only = null)
+    {
+        var lines = new List<string>();
+        foreach (var account in only is { } one ? [one] : Store.AccountIds())
+        {
+            try
+            {
+                using var con = Con(account);
+                con.Begin();
+                if (con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", LodgeContentsExtra) is not string body || JsonNode.Parse(body) is not JsonObject saved) continue;
+                var contents = saved.Where(kv => long.TryParse(kv.Key, out _) && kv.Value is JsonObject).ToLookup(kv => long.Parse(kv.Key), kv => (JsonObject)kv.Value!);
+                var held = con.Rows("SELECT CAST(id AS INTEGER) FROM lodges WHERE account_id = $a AND source = ?", LodgeOne).Select(r => (long)r[0]).ToHashSet();
+                foreach (var r in con.Rows("SELECT id, CAST(id AS INTEGER) FROM lodges WHERE account_id = $a AND source = ? ORDER BY 2, n", LodgeList))
+                {
+                    var (id, number) = ((string)r[0], (long)r[1]);
+                    if (!held.Add(number) || contents[number].FirstOrDefault() is not { } lodge) continue;
+                    PlayerRows.AddLodge(con, LodgeOne, id, lodge.DeepClone());
+                    var slots = ((lodge["animal_slots"] as JsonArray)?.Count ?? 0) + ((lodge["weapon_slots"] as JsonArray)?.Count ?? 0);
+                    lines.Add($"account {account} lodge {number}: {(apply ? "added" : "would add")}, {slots} slots");
+                }
+                if (apply) con.Commit();
+            }
+            catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
+            {
+                lines.Add($"account {account}: left as it was ({e.Message})");
+            }
+        }
+        return lines;
+    }
+
     /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
     public byte[]? LodgeCatalogueReply(string key) => facts.LodgeCatalogue(key) is { } node ? Py.DumpBytes(node) : null;
 

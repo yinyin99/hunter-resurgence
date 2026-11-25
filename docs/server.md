@@ -57,6 +57,8 @@ dotnet run --project server/Server -c Release -- [--settings <file>] serve | adm
 
 `admin ban <user id, handle or Steam id> [reason]` bans a Steam id for good (no sign-in with it, whether or not the account was deleted since; the account it has now gets `banned`) and `admin unban <Steam id>` lifts it; the admin API has the same (`POST /admin/ban`, `POST /admin/unban`), see [Archive claims](#archive-claims).
 
+`admin backfill-lodges [--apply] [--account <user id or handle>]` fills the lodges of the accounts that a section save restored before `lodge_contents` was read as lodges ([Restore](restore.md)): that save's contents sit whole in the account's `extras` (`json_lodge_contents.json`) and the lodge list names the lodges, but no `/game/user/lodge` row exists, so `GET /game/user/<uid>/lodges/<id>` has no answer of its own and the game does not open the lodge. For each listed lodge without contents it writes the saved contents as that row (the animals it mounts are shown as trophies when read, as for any restored lodge). It prints one line per account and lodge, `account <id> lodge <id>: would add|added, N slots`; a lodge that has contents is never touched, so a second run adds nothing, and without `--apply` nothing is written (take a `backup` before `--apply`).
+
 A reserve takes at most 20 new animal kinds from `admin spawn`; further entries of that reserve are not applied.
 
 `backup <folder> [keep]` copies every `*.db` of `data_dir` to `<folder>/<name>-<yyyymmdd>.db` with SQLite's `VACUUM INTO` (consistent while the server runs) and keeps the newest `keep` (default 7) copies of each; the community server's daily backup is this command ([deploy.md](deploy.md#backups)).
