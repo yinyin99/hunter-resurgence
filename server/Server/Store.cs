@@ -501,8 +501,9 @@ public sealed class Store
             con.Script(EventsLog);
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('wallet_log') WHERE name = 'base'")! == 0)
                 con.Script("ALTER TABLE wallet_log ADD COLUMN base REAL; ALTER TABLE wallet_log ADD COLUMN bonus_event INTEGER");
-            // the rule of each finished objective, as it read when the objective was finished (a JSON object: objective id to fingerprint); the objectives finished before have none
-            if (version < 35 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'")! == 0)
+            // the rule of each finished objective, as it read when the objective was finished (a JSON object: objective id to fingerprint); the objectives finished before have none.
+            // Guarded by the column alone, not by the version, so it is right whatever order the schema steps are merged and deployed in.
+            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'")! == 0)
                 con.Script($"ALTER TABLE missions ADD COLUMN rules TEXT NOT NULL DEFAULT '{NoRules}'");
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)

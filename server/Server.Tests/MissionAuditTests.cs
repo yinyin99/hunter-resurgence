@@ -144,17 +144,27 @@ public class MissionAuditTests : MissionTestBase
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void TestSchemaOfVersion35GetsTheRulesOfTheFinishedObjectives(bool columnExists)
+    [InlineData(34)]
+    [InlineData(35)]
+    public void TestAMissionsTableWithoutTheRulesColumnGetsItWhateverTheVersion(int version)
     {
-        var file = Path.Combine(tmp, $"v35-{columnExists}.db");
+        var file = Path.Combine(tmp, $"rules-{version}.db");
         using (var con = new Store(file).Open())
         {
-            if (!columnExists)
-                con.Exec("ALTER TABLE missions DROP COLUMN rules");
-            con.Exec("PRAGMA user_version = 34");
+            con.Exec("ALTER TABLE missions DROP COLUMN rules");
+            con.Exec($"PRAGMA user_version = {version}");
         }
+        using var check = new Store(file).Open();
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'"));
+    }
+
+    [Fact]
+    public void TestAnExistingRulesColumnBelowVersion35IsLeftAlone()
+    {
+        var file = Path.Combine(tmp, "rules-kept.db");
+        using (var con = new Store(file).Open())
+            con.Exec("PRAGMA user_version = 34");
         using var check = new Store(file).Open();
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
         Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'"));
