@@ -59,7 +59,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
 
     async Task<Result> PostAsync(string call, params (string Key, string Value)[] form)
     {
-        if (cookie.Value is null) return Result.Fail("Mis.Failed");
+        if (cookie.Value is not { } sent) return Result.Fail("Mis.Failed");
         try
         {
             using var request = cookie.Request(HttpMethod.Post, $"{ServerAccountApi.Missions}/{call}");
@@ -68,6 +68,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode) return Result.Success;
             log.LogWarning("The server refused {Call} of the missions ({Status})", call, (int)response.StatusCode);
+            cookie.Refused(response, sent);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
         {
@@ -80,13 +81,14 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
 
     async Task<T?> GetAsync<T>(string path) where T : class
     {
-        if (cookie.Value is null) return null;
+        if (cookie.Value is not { } sent) return null;
         try
         {
             using var request = cookie.Request(HttpMethod.Get, path);
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<T>() is { } s) return s;
             log.LogWarning("The server answered {Path} with {Status}: no missions", path, (int)response.StatusCode);
+            cookie.Refused(response, sent);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
