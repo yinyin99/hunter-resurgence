@@ -403,7 +403,7 @@ public static class Replay
 
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
-    /// (the record's `time`). It also removes what the old site's page sent to third-party services and loaded without need (issue #829): the page's tag manager and analytics ids are emptied, the script's error-reporting init never runs and its 2 s preload of 61 pictures is dropped. Each rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// (the record's `time`). It also removes what the old site's page sent to third-party services and loaded without need (issue #829): the page's tag manager and analytics ids are emptied, the script's error-reporting init never runs and its 2 s preload of 61 pictures is dropped. Each script rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The page's ids are matched by key instead (a page without them is served unchanged, with no warning). The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
