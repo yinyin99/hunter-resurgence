@@ -172,11 +172,17 @@ public sealed class News(Store store, string dataDir)
         foreach (var e in Extensions) File.Delete(PictureFile(id, e));
     }
 
+    /// <summary>Refuses a name that is no picture slot name.</summary>
+    public static void CheckSlot(string slot)
+    {
+        if (!SlotName.IsMatch(slot)) throw Bad("the slot is a name such as competition-hero-170039");
+    }
+
     /// <summary>The post's picture is an asset slot of the website and the launcher (docs/images.md), by its name: the operator's own file for that slot. A stored picture is taken away.</summary>
     public void SetPictureSlot(long id, string slot)
     {
         var post = Get(id) ?? throw Bad($"no post {id}", 404);
-        if (!SlotName.IsMatch(slot)) throw Bad("the slot is a name such as competition-hero-170039");
+        CheckSlot(slot);
         using var con = store.Open();
         con.Exec("UPDATE news SET picture = ?, updated = ? WHERE id = ?", SlotPrefix + slot, Math.Max(Store.Now(), post.Updated + 1), id);
         foreach (var e in Extensions) File.Delete(PictureFile(id, e));

@@ -392,8 +392,28 @@ public class NewsCommandTests : IDisposable
         Assert.Equal("slot:competition-hero-170031", news.Get(id)!.Picture);
         Assert.Contains("slot:competition-hero-170031", Run(["list"]).Out);
         Assert.Equal(1, Edit(id, "--picture-slot", "x", "--picture", Write("p.png", NewsFixtures.Png)).Code);
-        Assert.Equal(1, Edit(id, "--picture-slot", "../x").Code);
-        Assert.Equal("slot:competition-hero-170031", news.Get(id)!.Picture);
+        Assert.Equal(1, Edit(id, "--picture-slot", "../x", "--title", "Half done").Code);
+        Assert.Equal(("slot:competition-hero-170031", "Title"), (news.Get(id)!.Picture, news.Get(id)!.Texts["en"].Title));  // nothing was written
+    }
+
+    [Fact]
+    public void AddAppliesAPictureSlotAndRefusesABadOneBeforeWritingAndDiscordLeavesItOut()
+    {
+        var http = new Fake();
+        var (code, _, _) = Run(["add", "--title", "Slotted", "--body-file", Write("s.md", "x"), "--picture-slot", "competition-hero-170039", "--link", "link:discord", "--link-text", "Join", "--discord"], http: new HttpClient(http));
+        Assert.Equal(0, code);
+        Assert.Equal("slot:competition-hero-170039", news.List().Single(p => p.Texts["en"].Title == "Slotted").Picture);
+        var embed = JsonNode.Parse(Assert.Single(http.Posted).Body)!["embeds"]![0]!;
+        Assert.Null(embed["image"]);
+        Assert.Null(embed["url"]);  // link_discord is not set here
+        cfg["link_discord"] = "https://discord.test/invite";
+        Run(["add", "--title", "Linked", "--body-file", Write("l.md", "x"), "--link", "link:discord", "--link-text", "Join", "--discord"], http: new HttpClient(http));
+        Assert.Equal("https://discord.test/invite", (string)JsonNode.Parse(http.Posted[1].Body)!["embeds"]![0]!["url"]!);
+
+        var before = news.List().Count;
+        Assert.Equal(1, Run(["add", "--title", "Bad", "--body-file", Write("b.md", "x"), "--picture-slot", "../x"]).Code);
+        Assert.Equal(1, Run(["add", "--title", "Both", "--body-file", Write("b.md", "x"), "--picture-slot", "x", "--picture", Write("p.png", NewsFixtures.Png)]).Code);
+        Assert.Equal(before, news.List().Count);
     }
 
     [Fact]

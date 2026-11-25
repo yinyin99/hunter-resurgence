@@ -7,7 +7,7 @@ namespace Resurgence.Server;
 public static class NewsCommand
 {
     public const string Usage = """
-        Usage: admin news add --title "…" --body-file post.md [--link URL --link-text "…"] [--picture file.jpg] [--at ISO] [--until ISO] [--pin] [--discord]
+        Usage: admin news add --title "…" --body-file post.md [--link URL --link-text "…"] [--picture file.jpg | --picture-slot name] [--at ISO] [--until ISO] [--pin] [--discord]
                admin news list
                admin news edit <id> [--title "…"] [--body-file post.md] [--link URL|none] [--link-text "…"|none] [--picture file|none | --picture-slot name] [--at ISO] [--until ISO|none] [--pin | --unpin] [--show]
                admin news hide <id>
@@ -55,8 +55,11 @@ public static class NewsCommand
                 if (Get("--title") is not { } title || Body() is not { } body) return Fail(error, Usage);
                 var discord = flags.Contains("--discord");
                 if (discord && (string?)cfg["news_webhook"] is not { Length: > 0 }) return Fail(error, "--discord needs the setting news_webhook (the announcements channel's webhook)");
+                if (Get("--picture") is not null && Get("--picture-slot") is not null) return Fail(error, Usage);
+                if (Get("--picture-slot") is { } addSlot) News.CheckSlot(addSlot);  // refused before anything is written
                 var picture = Get("--picture") is { } pictureFile ? Picture(pictureFile) : null;
                 var id = news.Add(new NewsPatch(title, body, Get("--link"), Get("--link-text"), Get("--at"), Get("--until"), flags.Contains("--pin")), picture, now);
+                if (Get("--picture-slot") is { } slotOfNew) news.SetPictureSlot(id, slotOfNew);
                 var post = news.Get(id)!;
                 output.WriteLine($"post {id} added: {post.State(now)}, from {At(post.Published)}");
                 if (!discord) return 0;
@@ -69,10 +72,11 @@ public static class NewsCommand
                 var newPicture = Get("--picture") is { } pic and not "none" ? Picture(pic) : null;
                 if (newPicture is not null) News.PictureType(newPicture);  // refused before anything changes
                 if (Get("--picture") is not null && Get("--picture-slot") is not null || changed == new NewsPatch() && newPicture is null && Get("--picture") is null && Get("--picture-slot") is null) return Fail(error, Usage);
+                if (Get("--picture-slot") is { } slot) News.CheckSlot(slot);  // refused before anything changes, as a picture is
                 news.Edit(edited, changed);
                 if (newPicture is not null) news.SetPicture(edited, newPicture);
                 else if (Get("--picture") == "none") news.ClearPicture(edited);
-                if (Get("--picture-slot") is { } slot) news.SetPictureSlot(edited, slot);
+                if (Get("--picture-slot") is not null) news.SetPictureSlot(edited, Get("--picture-slot")!);
                 output.WriteLine($"post {edited} changed");
                 return 0;
             case ("hide", [var text]) when long.TryParse(text, out var hidden) && values.Count == 0 && flags.Count == 0:
@@ -109,13 +113,15 @@ public static class NewsCommand
     public static async Task<string?> Announce(NewsPost post, JsonObject cfg, long now, HttpClient? http = null) =>
         post.Published > now ? $"the post shows from {At(post.Published)}, and --discord posts at once" : await Alerts.Post(cfg, "news_webhook", Embed(post, cfg), http);
 
-    /// <summary>The Discord message of a post: an embed with its English title, body (Markdown, which Discord shows), link and picture. The picture is the one the website serves, so it needs the post to show.</summary>
+    /// <summary>The Discord message of a post: an embed with its English title, body (Markdown, which Discord shows), link and picture. The picture is the one the website serves, so it needs the post to show; a picture slot has no public address the server knows, so it is left out.</summary>
     public static object Embed(NewsPost post, JsonObject cfg)
     {
         static string Cut(string s, int max) => s.Length <= max ? s : s[..(max - 1)] + "…";
         var en = post.Texts["en"];
         var embed = new Dictionary<string, object> { ["title"] = Cut(en.Title, 256), ["description"] = Cut(en.Body, 4000) };
-        if (post.Link is { } link && link.StartsWith("https://", StringComparison.Ordinal)) embed["url"] = link;
+        // `link:<key>` is resolved from the server's own `link_<key>` setting (link_discord); the keys only the website and the launcher hold (link_source, link_backup) are left out
+        var link = post.Link is { } l && l.StartsWith("link:", StringComparison.Ordinal) ? (string?)cfg["link_" + l["link:".Length..]] : post.Link;
+        if (link is not null && link.StartsWith("https://", StringComparison.Ordinal)) embed["url"] = link;
         if (post.Picture is not null && !post.Picture.StartsWith(News.SlotPrefix, StringComparison.Ordinal) && (string?)cfg["web_host"] is { Length: > 0 } host) embed["image"] = new { url = $"https://{host}/news/{post.Id}/picture?v={post.Updated}" };
         return new { embeds = new[] { embed } };
     }
