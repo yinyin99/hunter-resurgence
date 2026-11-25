@@ -148,7 +148,7 @@ public sealed partial class State
 
     /// <summary>What a profile page's score sheet shows, `GET /hunters/&lt;handle&gt;/score/&lt;kill&gt;`: the worked sheet of <see cref="Scoring.SheetData"/> (`kind`, `facts`, `rows`, `abnormal`, `sums`) and the facts
     /// the score page prints (species, the last hit's weapon, scope, ammo, distance in metres, animal state, body part and stance, the platform, weight in kilograms, type, wound time, trophy integrity,
-    /// the shot location, the number of shots, the harvest time in Unix seconds, the expedition, the score and the harvest value). A restored kill whose backup saved its page has the facts of the saved hunt and no
+    /// the shot location, the number of shots, the harvest time in Unix seconds, the expedition, the score and the harvest value, and `gender`, "male" or "female"). A restored kill whose backup saved its page has the facts of the saved hunt and no
     /// worked sheet (`kind` "antler" without rows: the saved page, which the game shows, holds it as markup); null for any other kill that was not made here.</summary>
     public JsonObject? PublicSheet(long account, long killId)
     {
@@ -184,6 +184,7 @@ public sealed partial class State
         sheet["platform"] = "None";
         sheet["weightKg"] = Real(kill["weight"]) / 1000;
         sheet["type"] = $"{ScorePage.Loc(locale, "animal_texture_" + texture, texture)} ({(Real(kill["gender"]) == 0 ? "M" : "F")})";
+        sheet["gender"] = Real(kill["gender"]) == 0 ? "male" : "female";
         sheet["woundTime"] = Real(info["wound_time"]);
         sheet["integrity"] = (int)Math.Round(Real(info["trophy_integrity"]));
         sheet["shotLocation"] = $"{reserve} ({At("x")}, {At("z")})";

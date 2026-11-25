@@ -189,6 +189,6 @@ public sealed record ServerTaxidermized(string Done, int Ems, int Gms);
 
 /// <summary>A kill's score sheet of <see cref="ServerSessionApi.ScoreSuffix"/>, <see cref="ScoreSheet"/> on the wire; <c>When</c> is Unix seconds.</summary>
 public sealed record ServerSheet(string Kind, string Species, SheetFact[] Facts, SheetRow[] Rows, ServerAbnormal[] Abnormal, SheetFact[] Sums, string Weapon, bool Scope, string Ammo, double DistanceM,
-    string State, string BodyPart, string Stance, string Platform, double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, long When, long ExpeditionId, double Score, double HarvestValue);
+    string State, string BodyPart, string Stance, string Platform, double WeightKg, string Type, double WoundTime, int Integrity, string ShotLocation, int Shots, long When, long ExpeditionId, double Score, double HarvestValue, string? Gender = null);
 
 public sealed record ServerAbnormal(double Right, double Left);
