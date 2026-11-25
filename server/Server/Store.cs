@@ -155,7 +155,8 @@ public sealed class Store
         """;
 
     // what the operator sent to players (AdminMessages): one row per `admin message`, with the account it went to (NULL: every account, `recipients` of them) and the text;
-    // it goes with its account when that is deleted. Not in PlayerTables: a broadcast has no account.
+    // it goes with its account when that is deleted (and moves with it when a restore gives the account another user id: Restorer.Adopt). Not in PlayerTables: a broadcast has no account.
+    // A player's reply to the notice sender is not here: it would be a `messages` row of that player with a `sender` other than State.SYSTEM_SENDER (`admin messages` lists those); no client writes one yet.
     const string AdminMessagesTable = """
         CREATE TABLE IF NOT EXISTS admin_messages (
             id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, account_id INTEGER REFERENCES accounts (id) ON DELETE CASCADE, recipients INTEGER NOT NULL, text TEXT NOT NULL);

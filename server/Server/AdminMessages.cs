@@ -60,15 +60,26 @@ public static class AdminMessages
             con.Commit();
             return 1;
         }
+        // the log row first, so a crash half way still shows in `--sent`; its count is corrected at the end
+        var ids = store.AccountIds();
+        long logId;
+        using (var log = store.Open())
+        {
+            Log(log, null, ids.Count, text, now);
+            logId = (long)log.Scalar("SELECT last_insert_rowid()")!;
+        }
         var sent = 0;
-        foreach (var id in store.AccountIds())
+        foreach (var id in ids)
         {
             using var con = store.Open(id);
             try { Uploads.Notify(con, text); sent++; }
             catch (SqliteException e) when (e.SqliteErrorCode == 19) { }  // the account was deleted since the list was read
         }
-        using var log = store.Open();
-        Log(log, null, sent, text, now);
+        if (sent != ids.Count)
+        {
+            using var log = store.Open();
+            log.Exec("UPDATE admin_messages SET recipients = ? WHERE id = ?", sent, logId);
+        }
         return sent;
     }
 

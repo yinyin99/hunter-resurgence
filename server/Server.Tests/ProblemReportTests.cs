@@ -236,4 +236,20 @@ public class ProblemReportTests : StateTestBase, IAsyncLifetime
         using var check = state.Store.Open();
         Assert.Equal(1L, (long)check.Scalar("SELECT COUNT(*) FROM crash_reports WHERE account_id = 1001")!);
     }
+
+    [Fact]
+    public async Task TestARestoreThatGivesTheAccountAnotherUserIdTakesTheAdminMessageLogAlong()
+    {
+        Assert.Equal(1, AdminMessages.Send(state.Store, player, "hello"));
+        var up = await server.SendAsync("POST", "web.test", "/account/restore",
+            [("Content-Type", "application/zip"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], File.ReadAllBytes(TestZip.Own().Write(tmp, "mine.zip")));
+        Assert.Equal(200, up.Status);
+        long id;
+        using (var con = state.Store.Open(player))
+            id = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+        Assert.Equal("restored", new Uploads(state, tmp).Approve(id).Kind);
+        Assert.False(state.Store.AccountExists(player));
+        var log = AdminMessages.SentLog(state.Store, 1001).Single();
+        Assert.Equal((1001L, "hello"), (log.Account, log.Text));
+    }
 }
