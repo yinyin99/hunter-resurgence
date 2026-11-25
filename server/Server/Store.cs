@@ -197,7 +197,7 @@ public sealed class Store
 
     static readonly string SeasonsSeed = SeasonsTable + $"INSERT OR IGNORE INTO seasons VALUES (1, 0, {SecondSeasonStart - 1}), (2, {SecondSeasonStart}, NULL);";
 
-    // the news posts the feed shows (docs/server.md#news), shared by all players: times are Unix seconds, `picture` the extension of the stored file (data_dir/news/<id>.<ext>), NULL for none, `updated` the version of its link.
+    // the news posts the feed shows (docs/server.md#news), shared by all players: times are Unix seconds, `picture` the extension of the stored file (data_dir/news/<id>.<ext>), `slot:<name>` for an asset slot of the website and the launcher (docs/images.md), NULL for none, `updated` the version of its link.
     // An id is never reused (it names the picture file and the link). `news_texts` has a row per language, English always.
     const string NewsTables = """
         CREATE TABLE IF NOT EXISTS news (

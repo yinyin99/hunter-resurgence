@@ -18,7 +18,7 @@ public static class NewsApi
         group.MapGet("", (string? lang) => Json(200, news.Feed(lang, (long)state.Clock()), "public, max-age=60"))
             .WithName("NewsFeed").WithSummary("The news posts that show now, in the reader's language")
             .WithDescription("`{posts: [{id, published, pinned, title, body, link, linkText, picture}]}`, pinned posts first, then newest first. `published` is Unix seconds; `title`, `body` (Markdown: paragraphs, bold, italic, links, lists) and `linkText` are in the language `lang` names (`fr`, `pt-BR`), "
-                             + "each in English when the post has no text in that language; `link` is an https address or `link:<key>` (a link of the project's own, which the website and the launcher have in settings.json), null for none; `picture` is the path of the post's picture, null for the default slide picture. "
+                             + "each in English when the post has no text in that language; `link` is an https address or `link:<key>` (a link of the project's own, which the website and the launcher have in settings.json), null for none; `picture` is the path of the post's picture, `slot:<name>` for an asset slot of the website and the launcher, null for the default slide picture. "
                              + "A post shows from its start time and until its end time, if it has one; a hidden post is not listed. Sent with `Cache-Control: public, max-age=60`, so a new post shows within a minute.")
             .Produces(200, contentType: "application/json");
         group.MapGet("/{id:long}/picture", (long id) => news.Picture(id, (long)state.Clock()) is { } picture
@@ -91,6 +91,15 @@ public static class NewsApi
             .WithName("SetNewsPicture").WithSummary("Store a post's picture")
             .WithDescription($"The request body is the picture: a JPEG, PNG or WebP file of at most {News.MaxPictureBytes >> 20} MB, checked by its first bytes and stored as it is, never resized. Returns the post.")
             .Accepts<byte[]>("application/octet-stream").ProducesProblem(400).ProducesProblem(404);
+
+        admin.MapPut("/news/{id:long}/picture-slot/{slot}", (long id, string slot) => Run(() =>
+            {
+                news.SetPictureSlot(id, slot);
+                return TypedResults.Ok(news.Get(id));
+            }))
+            .WithName("SetNewsPictureSlot").WithSummary("Give a post the picture of an asset slot of the website and the launcher (`competition-hero-170039`)")
+            .WithDescription("The operator's file for that slot (docs/images.md), drawn as the feed drew its pictures before; a stored picture is taken away. Returns the post.")
+            .ProducesProblem(400).ProducesProblem(404);
 
         admin.MapDelete("/news/{id:long}/picture", (long id) => Run(() =>
             {

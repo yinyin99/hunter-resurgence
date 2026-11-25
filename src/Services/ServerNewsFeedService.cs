@@ -25,7 +25,7 @@ public sealed class ServerNewsFeedService(HttpClient http, ServerCookie cookie, 
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<Feed>() is { Posts: { } posts })
                 return [.. posts.Where(p => p is { Id: > 0, Title.Length: > 0, Body.Length: > 0 }).Select(p => new NewsPost(p.Id, DateTimeOffset.FromUnixTimeSeconds(p.Published), p.Pinned, p.Title!, p.Body!,
-                    p.Link is { Length: > 0 } && p.LinkText is { Length: > 0 } ? p.Link : null, p.LinkText, p.Picture is { } picture && picture.StartsWith("/news/", StringComparison.Ordinal) ? origin + picture : null))];
+                    p.Link is { Length: > 0 } && p.LinkText is { Length: > 0 } ? p.Link : null, p.LinkText, p.Picture is { } picture ? picture.StartsWith("/news/", StringComparison.Ordinal) ? origin + picture : picture.StartsWith(NewsPost.SlotPrefix, StringComparison.Ordinal) && picture.Length > NewsPost.SlotPrefix.Length ? picture : null : null))];
             log.LogWarning("The server answered {Path} with {Status} or an unusable reply: no posts", Path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or ArgumentOutOfRangeException)

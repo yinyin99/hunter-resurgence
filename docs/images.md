@@ -81,7 +81,8 @@ With the values the mock services give, the slots have 736 distinct keys, and th
 | `photo-<id>` | 210×118, 900×506 | GalleryTab, VideoModal | 0 of 30: player content |
 | `video-<id>` | 900×506, 185×138 | VideoModal, Help (tutorial rows) | 16 of 19: `v1`, `v2`–`v8` and `v12`–`v19` are matched to the original help page's videos by section and position (`v1` and `v12`–`v19` also by title; the mock names another author for `v12`–`v19`; for `v2`–`v8` the original lists the author only, and the section sizes and the repeated author match the mock's) and show the video site's `0.jpg` thumbnail, as the original page did. `v9`–`v11` (the deployables section's last three) stay empty: those videos are deleted, so their thumbnails are gone |
 | `video` | 900×506 | VideoModal (Feed) | no: the original played the trailer in a video-site embed; no picture |
-| `news-default` | 805×380, 175×95 | FeedCarousel (`NewsPicture`) | no: the slide picture of a news post that has none of its own; the post's own picture is stored by the server (`admin news add --picture`, [server.md](server.md#news)), not a slot |
+| `news-default` | 805×380, 175×95 | FeedCarousel (`NewsPicture`) | no: the slide picture of a news post that has none of its own |
+| `competition-hero-170039`, `competition-hero-170031`, `competition-hero-170026` | 805×380, 175×95 | FeedCarousel (`NewsPicture`) | yes: the pictures of the project's first three posts, which the server's `news` rows name as `slot:<name>` (`NewsSeed.cs`), cropped to fill the slide. A post may name any slot (`admin news edit <id> --picture-slot <name>`), or have a file of its own (`--picture`, [server.md](server.md#news)) |
 | `help-banner`, `help-hero` | 940×250 | Help | yes: the visible crop of the original's tutorial cover |
 | `help-dm-<interface, levels, cycle, achievements, rewards, resume-buy, resume-use>` | 484 to 940 wide | DayMissionHelp | 7 of 7 |
 | `reward-<day>` | 60×60 | DayMissionHelp | 11 of 11 |

@@ -52,6 +52,7 @@ public class ServerNewsFeedServiceTests
         Assert.Equal("https://play.example.test/news/4/picture?v=9", (await Make(new Fake(HttpStatusCode.OK, Feed), "https://play.example.test").PostsAsync("en"))[0].Picture);
         Assert.Equal("/news/4/picture?v=9", (await Make(new Fake(HttpStatusCode.OK, Feed)).PostsAsync("en"))[0].Picture);
         Assert.Null((await Make(new Fake(HttpStatusCode.OK, Feed)).PostsAsync("en"))[1].Picture);
+        Assert.Equal("slot:competition-hero-170039", (await Make(new Fake(HttpStatusCode.OK, """{"posts": [{"id": 1, "published": 1, "title": "t", "body": "b", "picture": "slot:competition-hero-170039"}]}"""), "https://play.example.test").PostsAsync("en"))[0].Picture);  // a slot is no address: the origin is not added
         Assert.Null((await Make(new Fake(HttpStatusCode.OK, """{"posts": [{"id": 1, "published": 1, "title": "t", "body": "b", "picture": "https://elsewhere.test/x.png"}]}""")).PostsAsync("en"))[0].Picture);
     }
 

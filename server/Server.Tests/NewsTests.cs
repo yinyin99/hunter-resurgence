@@ -192,6 +192,27 @@ public class NewsTests : IDisposable
     }
 
     [Fact]
+    public void APostMayNameAPictureSlotInsteadOfAFileAndEachReplacesTheOther()
+    {
+        NewsFixtures.HideSeeded(news);
+        var id = Add("Slotted", "2026-12-01T00:00:00Z");
+        news.SetPicture(id, NewsFixtures.Png);
+        news.SetPictureSlot(id, "competition-hero-170039");
+        var now = NewsFixtures.T("2026-12-02T00:00:00Z");
+        Assert.Equal("slot:competition-hero-170039", (string)news.Feed("en", now)["posts"]![0]!["picture"]!);
+        Assert.Empty(Directory.GetFiles(Path.Combine(tmp, "news")));  // the file is gone
+        Assert.Null(news.Picture(id, now));
+        foreach (var bad in new[] { "", "../x", "a/b", "-x", "x;y", new string('a', 81) })
+            Assert.Throws<NewsException>(() => news.SetPictureSlot(id, bad));
+        Assert.Equal(404, Assert.Throws<NewsException>(() => news.SetPictureSlot(id + 99, "x")).Status);
+        news.SetPicture(id, NewsFixtures.Jpeg);
+        Assert.StartsWith($"/news/{id}/picture?v=", (string)news.Feed("en", now)["posts"]![0]!["picture"]!);
+        news.SetPictureSlot(id, "a-slot");
+        news.ClearPicture(id);
+        Assert.Null(news.Get(id)!.Picture);
+    }
+
+    [Fact]
     public void AnAddWithABadPictureLeavesNoPost()
     {
         var before = news.List().Count;
@@ -211,10 +232,13 @@ public class NewsTests : IDisposable
         {
             Assert.Equal(19, p.Texts.Count);
             Assert.All(p.Texts.Values, t => Assert.False(string.IsNullOrWhiteSpace(t.Title) || string.IsNullOrWhiteSpace(t.Body) || string.IsNullOrWhiteSpace(t.LinkText)));
-            Assert.Null(p.Picture);
             Assert.False(p.Hidden || p.Pinned);
         });
         Assert.Equal(["link:source", "link:backup", "link:source"], posts.Select(p => p.Link));
+        // each keeps the picture slot the feed showed it with, which the feed gives as slot:<name>, and the server has no file for
+        Assert.Equal(["slot:competition-hero-170039", "slot:competition-hero-170031", "slot:competition-hero-170026"], posts.Select(p => p.Picture));
+        Assert.Equal(["slot:competition-hero-170039", "slot:competition-hero-170031", "slot:competition-hero-170026"], news.Feed("en", NewsFixtures.T("2027-01-01T00:00:00Z"))["posts"]!.AsArray().Select(p => (string)p!["picture"]!));
+        Assert.Null(news.Picture(3, NewsFixtures.T("2027-01-01T00:00:00Z")));
         Assert.Equal(new[] { "cs", "da", "de", "en", "es", "fi", "fr", "hu", "it", "nb", "nl", "pl", "pt-BR", "pt-PT", "ro", "ru", "sl", "sv", "tr" }.Order(StringComparer.Ordinal), posts[0].Texts.Keys.Order(StringComparer.Ordinal));
         Assert.Equal(NewsFixtures.T("2026-11-17T20:00:00Z"), posts[0].Published);
         Assert.Equal("Les serveurs officiels sont fermés", news.Get(2)!.Texts["fr"].Title);
@@ -358,6 +382,18 @@ public class NewsCommandTests : IDisposable
         Assert.True(news.Get(id)!.Hidden);
         Assert.Equal(0, Edit(id, "--show").Code);
         Assert.False(news.Get(id)!.Hidden);
+    }
+
+    [Fact]
+    public void EditNamesAPictureSlotAndRefusesASlotWithAFile()
+    {
+        var id = news.Add(new("Title", "Body"), NewsFixtures.Jpeg);
+        Assert.Equal(0, Edit(id, "--picture-slot", "competition-hero-170031").Code);
+        Assert.Equal("slot:competition-hero-170031", news.Get(id)!.Picture);
+        Assert.Contains("slot:competition-hero-170031", Run(["list"]).Out);
+        Assert.Equal(1, Edit(id, "--picture-slot", "x", "--picture", Write("p.png", NewsFixtures.Png)).Code);
+        Assert.Equal(1, Edit(id, "--picture-slot", "../x").Code);
+        Assert.Equal("slot:competition-hero-170031", news.Get(id)!.Picture);
     }
 
     [Fact]
@@ -584,6 +620,9 @@ public class NewsApiTests : IAsyncLifetime
         Assert.Equal(HttpStatusCode.OK, (await http.PutAsync($"http://localhost/admin/news/{id}/picture", new ByteArrayContent([.. NewsFixtures.Png, .. new byte[1 << 20]]))).StatusCode);
         Assert.Equal(HttpStatusCode.RequestEntityTooLarge, (await http.PutAsync($"http://localhost/admin/news/{id}/picture", new ByteArrayContent([.. NewsFixtures.Png, .. new byte[(int)News.MaxPictureBytes]]))).StatusCode);
         Assert.Equal(HttpStatusCode.RequestEntityTooLarge, (await http.PostAsync("http://localhost/admin/news", new ByteArrayContent(new byte[100_000]) { Headers = { ContentType = new("application/json") } })).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await http.PutAsync($"http://localhost/admin/news/{id}/picture-slot/competition-hero-170039", null)).StatusCode);
+        Assert.Equal("slot:competition-hero-170039", (string)(await Feed())["posts"]![0]!["picture"]!);
+        Assert.Equal(404, (await server.SendAsync("GET", "web.test", $"/news/{id}/picture")).Status);
         Assert.Equal(HttpStatusCode.OK, (await http.DeleteAsync($"http://localhost/admin/news/{id}/picture")).StatusCode);
         Assert.Equal(404, (await server.SendAsync("GET", "web.test", $"/news/{id}/picture")).Status);
 

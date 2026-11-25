@@ -35,6 +35,11 @@ public sealed class News(Store store, string dataDir)
     static readonly string[] Extensions = ["jpg", "png", "webp"];
     static readonly byte[] Jpeg = [0xFF, 0xD8, 0xFF], Png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
+    /// <summary>A post's `picture` that is not a file the server stored but an asset slot: `slot:&lt;name&gt;`.</summary>
+    public const string SlotPrefix = "slot:";
+
+    static readonly Regex SlotName = new(@"\A[A-Za-z0-9][A-Za-z0-9 _.-]{0,79}\z", RegexOptions.ECMAScript);
+
     // a post shows from `published`, hides at `until`; the second parameter is now
     const string Visible = "n.hidden = 0 AND n.published <= ?2 AND (n.until IS NULL OR n.until > ?2)";
 
@@ -167,6 +172,16 @@ public sealed class News(Store store, string dataDir)
         foreach (var e in Extensions) File.Delete(PictureFile(id, e));
     }
 
+    /// <summary>The post's picture is an asset slot of the website and the launcher (docs/images.md), by its name: the operator's own file for that slot. A stored picture is taken away.</summary>
+    public void SetPictureSlot(long id, string slot)
+    {
+        var post = Get(id) ?? throw Bad($"no post {id}", 404);
+        if (!SlotName.IsMatch(slot)) throw Bad("the slot is a name such as competition-hero-170039");
+        using var con = store.Open();
+        con.Exec("UPDATE news SET picture = ?, updated = ? WHERE id = ?", SlotPrefix + slot, Math.Max(Store.Now(), post.Updated + 1), id);
+        foreach (var e in Extensions) File.Delete(PictureFile(id, e));
+    }
+
     void WritePicture(long id, string extension, byte[] bytes)
     {
         Directory.CreateDirectory(PictureDir);
@@ -215,7 +230,8 @@ public sealed class News(Store store, string dataDir)
             posts.Add(new JsonObject
             {
                 ["id"] = (long)r[0], ["published"] = (long)r[1], ["pinned"] = (long)r[2] != 0, ["title"] = (string)r[3], ["body"] = (string)r[4],
-                ["link"] = r[5] as string, ["linkText"] = r[6] as string, ["picture"] = r[7] is string ? $"/news/{(long)r[0]}/picture?v={(long)r[8]}" : null,
+                ["link"] = r[5] as string, ["linkText"] = r[6] as string,
+                ["picture"] = r[7] is string picture ? picture.StartsWith(SlotPrefix, StringComparison.Ordinal) ? picture : $"/news/{(long)r[0]}/picture?v={(long)r[8]}" : null,
             });
         return new JsonObject { ["posts"] = posts };
     }
@@ -224,7 +240,7 @@ public sealed class News(Store store, string dataDir)
     public (byte[] Bytes, string Type)? Picture(long id, long now)
     {
         using var con = store.Open();
-        if (con.Rows($"SELECT n.picture FROM news n WHERE n.id = ?1 AND {Visible}", id, now) is not [{ } row] || row[0] is not string extension) return null;
+        if (con.Rows($"SELECT n.picture FROM news n WHERE n.id = ?1 AND {Visible}", id, now) is not [{ } row] || row[0] is not string extension || extension.StartsWith(SlotPrefix, StringComparison.Ordinal)) return null;
         var file = PictureFile(id, extension);
         return File.Exists(file) ? (File.ReadAllBytes(file), ContentType(extension)) : null;
     }

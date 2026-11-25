@@ -90,6 +90,18 @@ public sealed class NewsFeedTests : UiContext
     }
 
     [Fact]
+    public async Task TheFirstThreePostsKeepThePictureSlotsTheyHadAndNotTheDefaultOne()
+    {
+        var posts = await Services.GetRequiredService<INewsFeedService>().PostsAsync("en");
+        var cut = Render<FeedCarousel>(p => p.Add(c => c.Posts, posts));
+
+        Assert.Equal(["competition-hero-170039", "competition-hero-170031", "competition-hero-170026"], posts.Select(p => p.Picture!["slot:".Length..]));
+        Assert.Equal("competition-hero-170039", cut.Find(".slide .asset-slot").GetAttribute("aria-label"));
+        Assert.Equal(["competition-hero-170039", "competition-hero-170031", "competition-hero-170026"], cut.FindAll(".thumb .asset-slot").Select(s => s.GetAttribute("aria-label")));
+        Assert.DoesNotContain("news-default", cut.Markup);
+    }
+
+    [Fact]
     public void ASlideShowsItsPictureAndAPostWithoutOneTheDefaultSlidePicture()
     {
         var cut = Render<FeedCarousel>(p => p.Add(c => c.Posts, new[] { Post(1, "A", "One. Two.", picture: "/news/1/picture?v=5"), Post(2, "B", "b") }));

@@ -9,16 +9,16 @@ public static class NewsCommand
     public const string Usage = """
         Usage: admin news add --title "…" --body-file post.md [--link URL --link-text "…"] [--picture file.jpg] [--at ISO] [--until ISO] [--pin] [--discord]
                admin news list
-               admin news edit <id> [--title "…"] [--body-file post.md] [--link URL|none] [--link-text "…"|none] [--picture file|none] [--at ISO] [--until ISO|none] [--pin | --unpin] [--show]
+               admin news edit <id> [--title "…"] [--body-file post.md] [--link URL|none] [--link-text "…"|none] [--picture file|none | --picture-slot name] [--at ISO] [--until ISO|none] [--pin | --unpin] [--show]
                admin news hide <id>
                admin news lang <id> <code> --title "…" --body-file post.md [--link-text "…"]
         The title and body are the English text. A body is Markdown (paragraphs, **bold**, *italic*, [links](https://…), - lists); --body-file - reads it from the standard input.
-        A link is an https address, or link:<key>, a link of the project's own (settings.json of the website and the launcher). A picture is a JPEG, PNG or WebP file up to 5 MB, stored as it is.
+        A link is an https address, or link:<key>, a link of the project's own (settings.json of the website and the launcher). A picture is a JPEG, PNG or WebP file up to 5 MB, stored as it is; --picture-slot names instead a picture slot of the website and the launcher (docs/images.md), such as competition-hero-170039.
         --at is when the post starts to show (default: now), --until when it stops; ISO times such as 2026-12-24T18:00:00Z, no zone means UTC. --pin shows it above the newer posts.
         --discord also posts it to the announcements channel (setting news_webhook); not with a later --at. hide takes a post off (edit --show brings it back). lang adds or replaces a translation, any time later.
         """;
 
-    static readonly string[] Values = ["--title", "--body-file", "--link", "--link-text", "--picture", "--at", "--until"];
+    static readonly string[] Values = ["--title", "--body-file", "--link", "--link-text", "--picture", "--picture-slot", "--at", "--until"];
     static readonly string[] Flags = ["--pin", "--unpin", "--show", "--discord"];
 
     /// <summary>Runs the command (the words after `admin news`); 0 when it did what was asked. <paramref name="http"/> is for tests (the Discord post).</summary>
@@ -48,7 +48,7 @@ public static class NewsCommand
             case ("list", []) when values.Count == 0 && flags.Count == 0:
                 var all = news.List();
                 foreach (var p in all)
-                    output.WriteLine($"{p.Id}\t{p.State(now)}{(p.Pinned ? ", pinned" : "")}\tfrom {At(p.Published)}\t{(p.Until is { } until ? "until " + At(until) : "no end")}\t{(p.Picture is null ? "no picture" : "picture")}\t{string.Join(',', p.Texts.Keys)}\t{p.Texts["en"].Title}");
+                    output.WriteLine($"{p.Id}\t{p.State(now)}{(p.Pinned ? ", pinned" : "")}\tfrom {At(p.Published)}\t{(p.Until is { } until ? "until " + At(until) : "no end")}\t{(p.Picture is null ? "no picture" : p.Picture.StartsWith(News.SlotPrefix, StringComparison.Ordinal) ? p.Picture : "picture")}\t{string.Join(',', p.Texts.Keys)}\t{p.Texts["en"].Title}");
                 if (all.Count == 0) output.WriteLine("no news posts");
                 return 0;
             case ("add", []) when !flags.Overlaps(["--unpin", "--show"]):
@@ -68,10 +68,11 @@ public static class NewsCommand
                     flags.Contains("--pin") ? true : flags.Contains("--unpin") ? false : null, flags.Contains("--show") ? false : null);
                 var newPicture = Get("--picture") is { } pic and not "none" ? Picture(pic) : null;
                 if (newPicture is not null) News.PictureType(newPicture);  // refused before anything changes
-                if (changed == new NewsPatch() && newPicture is null && Get("--picture") is null) return Fail(error, Usage);
+                if (Get("--picture") is not null && Get("--picture-slot") is not null || changed == new NewsPatch() && newPicture is null && Get("--picture") is null && Get("--picture-slot") is null) return Fail(error, Usage);
                 news.Edit(edited, changed);
                 if (newPicture is not null) news.SetPicture(edited, newPicture);
                 else if (Get("--picture") == "none") news.ClearPicture(edited);
+                if (Get("--picture-slot") is { } slot) news.SetPictureSlot(edited, slot);
                 output.WriteLine($"post {edited} changed");
                 return 0;
             case ("hide", [var text]) when long.TryParse(text, out var hidden) && values.Count == 0 && flags.Count == 0:
@@ -115,7 +116,7 @@ public static class NewsCommand
         var en = post.Texts["en"];
         var embed = new Dictionary<string, object> { ["title"] = Cut(en.Title, 256), ["description"] = Cut(en.Body, 4000) };
         if (post.Link is { } link && link.StartsWith("https://", StringComparison.Ordinal)) embed["url"] = link;
-        if (post.Picture is not null && (string?)cfg["web_host"] is { Length: > 0 } host) embed["image"] = new { url = $"https://{host}/news/{post.Id}/picture?v={post.Updated}" };
+        if (post.Picture is not null && !post.Picture.StartsWith(News.SlotPrefix, StringComparison.Ordinal) && (string?)cfg["web_host"] is { Length: > 0 } host) embed["image"] = new { url = $"https://{host}/news/{post.Id}/picture?v={post.Updated}" };
         return new { embeds = new[] { embed } };
     }
 }

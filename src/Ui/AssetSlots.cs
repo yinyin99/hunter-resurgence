@@ -32,7 +32,9 @@ public static class AssetSlots
     [
         L("logo-large", "decoration", "654x164", "BrowserNotice, SignupCard, PublicBar, Eula, SignInLayout"), L("logo-bar", "decoration", "173x44", "StatusBar"),
         L("logo-hero", "decoration", "485x120", "Feed"), L("logo-landing", "decoration", "1000x250", "AutoLogin"), L("logo-splash", "decoration", "483x65", "Splash"),
-        L("bg-hero", "decoration", "980x550", "Feed"), L("news-default", "news", "805x380", "Feed, FeedCarousel"), L("browser-bg", "decoration", "1280x760", "BrowserNotice"), L("page-bg", "decoration", "", "ShellLayout"),
+        L("bg-hero", "decoration", "980x550", "Feed"), L("news-default", "news", "805x380", "Feed, FeedCarousel"),
+        // the pictures of the project's first three posts (NewsSeed.cs); a post names any slot as `slot:<name>`, and one that is not here is listed when drawn
+        L("competition-hero-170039", "news", "805x380", "Feed, FeedCarousel"), L("competition-hero-170031", "news", "805x380", "Feed, FeedCarousel"), L("competition-hero-170026", "news", "805x380", "Feed, FeedCarousel"), L("browser-bg", "decoration", "1280x760", "BrowserNotice"), L("page-bg", "decoration", "", "ShellLayout"),
         L("frame-leather", "decoration", "1280x760", "SignupLayout"), L("gift-frame", "decoration", "561x288", "Signup Page2 to Page5"),
         L("gift-shotgun", "decoration", "467x99", "Signup Page2"), L("gift-licenses", "decoration", "476x193", "Signup Page3"), L("gift-membership", "decoration", "441x149", "Signup Page4"),
         L("paper-notice", "decoration", "", "Paper"), L("icon-store", "decoration", "46x46", "MenuBar"), L("recruit-hero", "decoration", "940x310", "InviteFriends", mockOnly: true),

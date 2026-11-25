@@ -7,13 +7,14 @@ static class NewsSeed
     /// <summary>One language of a seeded post: title, body (Markdown) and the text of its link.</summary>
     public sealed record Text(string Lang, string Title, string Body, string LinkText);
 
-    public sealed record Post(int Id, long Published, string Link, Text[] Texts);
+    /// <summary><paramref name="Slot"/> is the asset slot of the post's picture, the one the feed showed it with before the posts were rows.</summary>
+    public sealed record Post(int Id, long Published, string Link, string Slot, Text[] Texts);
 
     static long At(int y, int mo, int d, int h) => new DateTimeOffset(y, mo, d, h, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
 
     public static readonly Post[] Posts =
     [
-        new(1, At(2026, 11, 9, 11), "link:source",
+        new(1, At(2026, 11, 9, 11), "link:source", "competition-hero-170026",
         [
             new("en", "Hunter Resurgence is in development",
                 "The community server is being built in the open. Accounts, restoring your backup and this website are taking shape, and the server opens to the public soon.",
@@ -73,7 +74,7 @@ static class NewsSeed
                 "Topluluk sunucusu herkesin gözü önünde geliştiriliyor. Hesaplar, yedeğinizi geri yükleme ve bu web sitesi şekilleniyor; sunucu yakında herkese açılacak.",
                 "Projeyi GitHub'da takip edin"),
         ]),
-        new(2, At(2026, 11, 9, 12), "link:backup",
+        new(2, At(2026, 11, 9, 12), "link:backup", "competition-hero-170031",
         [
             new("en", "The official servers have closed",
                 "The official servers closed on 11 November 2026. The backup tool saved your profile: inventory, trophies, statistics and more. The community server is open now.",
@@ -133,7 +134,7 @@ static class NewsSeed
                 "Resmi sunucular 11 Kasım 2026'da kapandı. Yedekleme aracı profilinizi kaydetti: envanter, ödüller, istatistikler ve daha fazlası. Topluluk sunucusu şimdi açık.",
                 "Yedekleme aracını indir"),
         ]),
-        new(3, At(2026, 11, 17, 20), "link:source",
+        new(3, At(2026, 11, 17, 20), "link:source", "competition-hero-170039",
         [
             new("en", "Launcher 0.31: Game check and \"Report a problem\" feature added",
                 "The launcher now checks your game before every hunt: version, files, folder, Steam and setup. If something is wrong, it tells you how to fix it. If the game is not found, choose its folder in Settings, Game Folder. If the game won't start, Settings, Report a problem sends us your logs.",
@@ -195,12 +196,12 @@ static class NewsSeed
         ]),
     ];
 
-    /// <summary>The posts and their texts, shown from the day they were written, with no picture (the default slide picture) and not pinned.</summary>
+    /// <summary>The posts and their texts, shown from the day they were written, each with the asset slot of the picture it had, and not pinned.</summary>
     public static void Insert(Db con)
     {
         foreach (var p in Posts)
         {
-            con.Exec("INSERT INTO news (id, published, until, link, picture, pinned, hidden, updated) VALUES (?, ?, NULL, ?, NULL, 0, 0, ?)", p.Id, p.Published, p.Link, p.Published);
+            con.Exec("INSERT INTO news (id, published, until, link, picture, pinned, hidden, updated) VALUES (?, ?, NULL, ?, ?, 0, 0, ?)", p.Id, p.Published, p.Link, News.SlotPrefix + p.Slot, p.Published);
             foreach (var t in p.Texts)
                 con.Exec("INSERT INTO news_texts (news_id, lang, title, body, link_text) VALUES (?, ?, ?, ?, ?)", p.Id, t.Lang, t.Title, t.Body, t.LinkText);
         }
