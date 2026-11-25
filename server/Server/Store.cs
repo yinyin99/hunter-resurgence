@@ -464,8 +464,9 @@ public sealed class Store
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
         }
-        // every start: an edge that names an old user id no account has is tried again (a claim or restore made before the edges were resolved left them so); no schema step, it is idempotent
-        foreach (var row in con.Rows("SELECT account_id FROM friends WHERE account_id NOT IN (SELECT id FROM accounts) UNION SELECT other_id FROM friends WHERE other_id NOT IN (SELECT id FROM accounts)"))
+        // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
+        // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
+        foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
             ReconnectFriends(con, (long)row[0]);
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
