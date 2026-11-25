@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Wpisz poprawny adres e-mail.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Nieprawidłowy kod. Spróbuj ponownie.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>GRAJ ZA DARMO</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Śledź projekt na GitHubie</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence jest w trakcie tworzenia</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Serwer społeczności powstaje otwarcie. Konta, przywracanie kopii zapasowej i ta strona nabierają kształtu, a serwer wkrótce zostanie otwarty dla wszystkich.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Gra publiczna wkrótce.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Oficjalne serwery zostały zamknięte</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026. Narzędzie do kopii zapasowej zapisało Twój profil: ekwipunek, trofea, statystyki i więcej. Serwer społeczności jest już otwarty.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Oficjalne serwery zamknięto 11 listopada 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: dodano sprawdzanie gry i funkcję „Zgłoś problem”</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Launcher sprawdza teraz Twoją grę przed każdym polowaniem: wersję, pliki, folder, Steam i konfigurację. Jeśli coś jest nie tak, podpowie, jak to naprawić. Jeśli gry nie znaleziono, wybierz jej folder w Ustawieniach, Folder gry. Jeśli gra się nie uruchamia, Ustawienia, Zgłoś problem wysyła nam Twoje logi.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Launcher sprawdza teraz Twoją grę przed każdym polowaniem.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Przeczytaj tutaj</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Poluj</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>GRA JEDNOOSOBOWA</value></data>

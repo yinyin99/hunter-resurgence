@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Introduce una dirección de correo válida.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Código incorrecto. Inténtalo de nuevo.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>JUEGA GRATIS</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Sigue el proyecto en GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence está en desarrollo</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>El servidor comunitario se está construyendo a la vista de todos. Las cuentas, la restauración de tu copia de seguridad y esta web van tomando forma, y el servidor abrirá al público pronto.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>El juego público abre pronto.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Los servidores oficiales han cerrado</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Los servidores oficiales cerraron el 11 de noviembre de 2026. La herramienta de copia de seguridad guardó tu perfil: inventario, trofeos, estadísticas y más. El servidor de la comunidad ya está abierto.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Los servidores oficiales cerraron el 11 de noviembre de 2026.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Launcher 0.31: comprobación del juego y función «Informar de un problema»</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>El launcher ahora comprueba tu juego antes de cada caza: versión, archivos, carpeta, Steam y configuración. Si algo falla, te dice cómo solucionarlo. Si no encuentra el juego, elige su carpeta en Configuración, Carpeta del juego. Si el juego no se inicia, Configuración, Informar de un problema nos envía tus registros.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>El launcher ahora comprueba tu juego antes de cada caza.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Léelo aquí</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Ir de caza</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>UN JUGADOR</value></data>

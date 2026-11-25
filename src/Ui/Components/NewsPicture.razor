@@ -1,0 +1,21 @@
+@if (Picture is not null && SlotName is null)
+{
+    <img class="asset-slot has-image @Class" src="@Picture" style="width:@(Width)px;height:@(Height)px" width="@Width" height="@Height" alt="" />
+}
+else
+{
+    @* the picture slot the post names (the operator's file for it), else the default slide picture *@
+    <AssetSlot Name="@(SlotName ?? DefaultSlot)" Width="Width" Height="Height" Class="@Class" />
+}
+
+@code {
+    const string DefaultSlot = "news-default";
+
+    /// <summary>The post's picture: an address, <c>slot:&lt;name&gt;</c> for a picture slot (docs/images.md), or null for the default slide picture.</summary>
+    [Parameter] public string? Picture { get; set; }
+    [Parameter] public int Width { get; set; } = 805;
+    [Parameter] public int Height { get; set; } = 380;
+    [Parameter] public string? Class { get; set; }
+
+    string? SlotName => Picture is { } p && p.StartsWith(NewsPost.SlotPrefix, StringComparison.Ordinal) ? p[NewsPost.SlotPrefix.Length..] : null;
+}

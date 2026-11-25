@@ -24,8 +24,8 @@
 	header -Server
 
 	# the server's own paths on the website's domain: sign-in and what goes with it, the account's own data (the backup tool's upload too), the profiles and
-	# boards, the store's catalogue, the gallery photos, the online counts. The launcher on a player's PC calls them here, the website's server over SERVER_URL. The one place to change them.
-	@server_paths path /auth/* /account/* /hunters /hunters/* /catalog/* /photos/* /stats/*
+	# boards, the store's catalogue, the gallery photos, the online counts, the news. The launcher on a player's PC calls them here, the website's server over SERVER_URL. The one place to change them.
+	@server_paths path /auth/* /account/* /hunters /hunters/* /catalog/* /photos/* /stats/* /news /news/*
 	# the minigames' boards share their paths with the website's leaderboard pages: a page load asks for HTML and stays the website's
 	@server_boards {
 		path /leaderboards/*

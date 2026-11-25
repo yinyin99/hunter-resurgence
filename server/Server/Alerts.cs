@@ -16,6 +16,24 @@ public static class Alerts
     /// <summary>The same for the sign-up webhook (setting signup_webhook): new accounts and claims restored at once.</summary>
     public static void Signup(JsonObject cfg, string text, HttpClient? http = null) => Send(cfg, "signup_webhook", text, http);
 
+    /// <summary>Post the JSON <paramref name="body"/> to the webhook of setting <paramref name="key"/> and wait for the answer, for a command that tells the operator how it went (the alerts above are sent on a background task nobody waits for).
+    /// Null when it was posted, else why not: no setting, not an https URL, a failed post. `http` is for tests.</summary>
+    public static async Task<string?> Post(JsonObject cfg, string key, object body, HttpClient? http = null)
+    {
+        if ((string?)cfg[key] is not { Length: > 0 } url) return $"{key}: not set";
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps) return $"{key}: not an https URL";
+        try
+        {
+            using var reply = await (http ?? Shared).PostAsJsonAsync(uri, body);
+            reply.EnsureSuccessStatusCode();
+            return null;
+        }
+        catch (Exception e)
+        {
+            return $"{key}: not sent: {e.GetType().Name}: {e.Message}";
+        }
+    }
+
     /// <summary>A handle for an alert: only plain name characters, at most 32 (it may be the archive's own text).</summary>
     public static string Name(string handle)
     {

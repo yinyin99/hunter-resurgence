@@ -110,6 +110,7 @@ public sealed class Settings
         cfg["link_discord"] = (Environment.GetEnvironmentVariable("LINK_DISCORD")?.Trim() is { Length: > 0 } env ? env : Text(root, "link_discord")) is { } discord && discord.StartsWith("https://", StringComparison.Ordinal) ? discord : null;  // an https invite shown on the launcher's start page (AuthPages.cs), LINK_DISCORD (set by the deploy) winning over the file; anything else: none
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
+        cfg["news_webhook"] = Text(root, "news_webhook");  // an https URL of the announcements channel's webhook, for `admin news add --discord` (NewsCommand.cs); unset: --discord is refused
         // what the server stores for the operator (Uploads.cs): zips and bytes an account may have waiting or refused, bytes on the whole server, and the data disk's free bytes below which uploads stop
         cfg["upload_account_files"] = Whole(root, "upload_account_files", Uploads.AccountFilesDefault, 1);
         cfg["upload_account_bytes"] = Whole(root, "upload_account_bytes", Uploads.AccountBytesDefault, 1);

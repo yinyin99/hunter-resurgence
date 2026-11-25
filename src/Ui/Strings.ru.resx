@@ -170,16 +170,6 @@
   <data name="Validation.Email.Invalid" xml:space="preserve"><value>Введите действительный адрес электронной почты.</value></data>
   <data name="Validation.Code.Invalid" xml:space="preserve"><value>Неверный код. Попробуйте ещё раз.</value></data>
   <data name="Landing.Play" xml:space="preserve"><value>ИГРАЙТЕ БЕСПЛАТНО</value></data>
-  <data name="Feed.DevLink" xml:space="preserve"><value>Следите за проектом на GitHub</value></data>
-  <data name="News.Dev.Title" xml:space="preserve"><value>Hunter Resurgence в разработке</value></data>
-  <data name="News.Dev.Text" xml:space="preserve"><value>Сервер сообщества создаётся открыто. Аккаунты, восстановление вашей резервной копии и этот сайт обретают форму, а сервер скоро откроется для всех.</value></data>
-  <data name="News.Dev.Lead" xml:space="preserve"><value>Скоро откроется для всех.</value></data>
-  <data name="News.Backup.Title" xml:space="preserve"><value>Официальные серверы закрыты</value></data>
-  <data name="News.Backup.Text" xml:space="preserve"><value>Официальные серверы закрылись 11 ноября 2026 года. Инструмент резервного копирования сохранил ваш профиль: инвентарь, трофеи, статистику и многое другое. Сервер сообщества теперь открыт.</value></data>
-  <data name="News.Backup.Lead" xml:space="preserve"><value>Официальные серверы закрылись 11 ноября 2026 года.</value></data>
-  <data name="News.Launcher031.Title" xml:space="preserve"><value>Лаунчер 0.31: добавлены проверка игры и функция «Сообщить о проблеме»</value></data>
-  <data name="News.Launcher031.Text" xml:space="preserve"><value>Лаунчер теперь проверяет вашу игру перед каждой охотой: версию, файлы, папку, Steam и настройку. Если что-то не так, он подскажет, как это исправить. Если игра не найдена, выберите её папку в Настройках, Папка с игрой. Если игра не запускается, Настройки, Сообщить о проблеме отправит нам ваши журналы.</value></data>
-  <data name="News.Launcher031.Lead" xml:space="preserve"><value>Лаунчер теперь проверяет вашу игру перед каждой охотой.</value></data>
   <data name="News.ReadIt" xml:space="preserve"><value>Читать</value></data>
   <data name="Hunt.Go" xml:space="preserve"><value>Пойти на охоту</value></data>
   <data name="Hunt.Single" xml:space="preserve"><value>ОДИНОЧНАЯ ИГРА</value></data>

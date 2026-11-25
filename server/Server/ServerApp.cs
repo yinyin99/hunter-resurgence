@@ -29,6 +29,7 @@ public static class ServerApp
     static bool IsLocal(HttpContext ctx) => LocalHosts.Contains(ctx.Request.Host.Host, StringComparer.OrdinalIgnoreCase);
 
     const long AdminMaxBodyBytes = 64 * 1024;
+    static readonly Regex NewsPicturePath = new(@"\A/admin/news/\d+/picture\z", RegexOptions.ECMAScript);
     /// <summary>How often the server closes the hunts nobody has sent a heartbeat for.</summary>
     static readonly TimeSpan StaleSweep = TimeSpan.FromSeconds(30);
     static readonly string[] ForwardingHeaders = ["X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "Forwarded", "Via", "X-Real-IP"];
@@ -85,6 +86,7 @@ public static class ServerApp
             CrashReports.TrimTelemetry(telemetryFile, crashHost, o.Game.State!.Store, Store.Now());
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"), telemetryFile, crashHost));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
+        if (o.Game.State is { } news && o.WorkDir is not null) builder.Services.AddSingleton(new News(news.Store, o.WorkDir));  // the posts of the feed (docs/server.md#news)
         // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
         if (o.Game.State is { Online: true } state && o.WorkDir is not null)
         {
@@ -166,12 +168,14 @@ public static class ServerApp
                 }
                 if (ctx.Request.Path.StartsWithSegments("/admin"))
                 {
-                    if (ctx.Request.ContentLength > AdminMaxBodyBytes)
+                    // a picture of a news post is the one body of the admin API that is more than a form
+                    var limit = HttpMethods.IsPut(ctx.Request.Method) && NewsPicturePath.IsMatch(ctx.Request.Path.Value!) ? News.MaxPictureBytes : AdminMaxBodyBytes;
+                    if (ctx.Request.ContentLength > limit)
                     {
                         ctx.Response.StatusCode = StatusCodes.Status413PayloadTooLarge;
                         return;
                     }
-                    ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = AdminMaxBodyBytes;  // a chunked body has no length to check
+                    ctx.Features.Get<IHttpMaxRequestBodySizeFeature>()!.MaxRequestBodySize = limit;  // a chunked body has no length to check
                 }
             }
             await next();

@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 35;
+    public const int Version = 36;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -196,6 +196,24 @@ public sealed class Store
     public static readonly long SecondSeasonStart = new DateTimeOffset(2026, 11, 12, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
 
     static readonly string SeasonsSeed = SeasonsTable + $"INSERT OR IGNORE INTO seasons VALUES (1, 0, {SecondSeasonStart - 1}), (2, {SecondSeasonStart}, NULL);";
+
+    // the news posts the feed shows (docs/server.md#news), shared by all players: times are Unix seconds, `picture` the extension of the stored file (data_dir/news/<id>.<ext>), `slot:<name>` for an asset slot of the website and the launcher (docs/images.md), NULL for none, `updated` the version of its link.
+    // An id is never reused (it names the picture file and the link). `news_texts` has a row per language, English always.
+    const string NewsTables = """
+        CREATE TABLE IF NOT EXISTS news (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, published INTEGER NOT NULL, until INTEGER, link TEXT, picture TEXT,
+            pinned INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0, updated INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS news_texts (
+            news_id INTEGER NOT NULL REFERENCES news (id) ON DELETE CASCADE, lang TEXT NOT NULL, title TEXT NOT NULL, body TEXT NOT NULL, link_text TEXT,
+            PRIMARY KEY (news_id, lang)) WITHOUT ROWID;
+        """;
+
+    // the news tables, and the three posts the feed had compiled in while the table has no row. Run at every start and guarded by its own checks only, so it is right whatever other schema steps ran before it, or came later
+    static void CreateNews(Db con)
+    {
+        con.Script(NewsTables);
+        if ((long)con.Scalar("SELECT COUNT(*) FROM news")! == 0) NewsSeed.Insert(con);
+    }
 
     // a player's count toward each community mission of an event, and whether the reward was paid; shared by all players, so not in PlayerTables
     const string CommunityProgress = $"""
@@ -508,6 +526,7 @@ public sealed class Store
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
+        CreateNews(con);  // schema 36, and not a `version <` step: see CreateNews
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
