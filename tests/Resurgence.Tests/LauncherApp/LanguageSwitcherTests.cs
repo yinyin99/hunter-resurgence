@@ -55,7 +55,7 @@ public class LanguageSwitcherTests
             var prefs = Prefs.Load(path);
             prefs.GameLanguage = "ru_RU";
             prefs.Save(path);
-            new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav()).Set("ja"); // the game lacks Japanese
+            new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav()).Set("ja"); // stands for a language the game lacks (all 19 launcher languages exist in the game today): GameLanguage stays
             Assert.Equal(("ja", "ru_RU"), (Prefs.Load(path).Language, Prefs.Load(path).GameLanguage));
             new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav()).Set("pt-BR");
             Assert.Equal("pt_BR", Prefs.Load(path).GameLanguage);
