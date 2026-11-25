@@ -111,6 +111,7 @@ public sealed partial class State
                     continue;
                 (confirmed, again) = (confirmed + met.Count, true);
                 var finished = done.Concat(met.Select(x => x.Objective.Id)).ToList();
+                Stamp(con, m, met.Select(x => x.Objective));
                 void Pending(JsonObject u) => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u));
                 if (m.Objectives.Any(o => !finished.Contains(o.Id)))
                 {
@@ -231,13 +232,14 @@ public sealed partial class State
 
     // ---- audited
 
-    static readonly string[] AuditFlags = ["borderline", "unmet", "fast", "shared", "spike"];
+    static readonly string[] AuditFlags = ["borderline", "unmet", "rule changed", "fast", "shared", "spike"];
 
     /// <summary>The operator's daily audit, read only: the harvest and clue objectives that every account (or `only`) holds and that the stored events meet under today's rules
     /// (<see cref="JudgeMission"/>, as the rollback judges them) were completed when the server received the event that meets them (`events.ts`); those of the last `hours` that
     /// look suspicious are listed, one line per objective, grouped by flag: `borderline` (the kill's harvest value, distance, weight, score or typical points is within 5% of a
-    /// bound of the title; 100% harvest value has nothing above it and is never borderline), `unmet` (no stored event meets it: a bug; not dated, so listed when a harvest or
-    /// clue of the account since the mission's activation is in the window, the only events that finish one), `fast` (less than 2 minutes after the mission's activation, which
+    /// bound of the title; 100% harvest value has nothing above it and is never borderline), `unmet` (no stored event meets it, and its rule is the one it was finished under: a bug; not dated,
+    /// so listed when a harvest or clue of the account since the mission's activation is in the window, the only events that finish one), `rule changed` (the same, but the rule it was finished under
+    /// is not today's, or was not kept: finished before schema 35; <see cref="Fingerprint"/>), `fast` (less than 2 minutes after the mission's activation, which
     /// is not stored: the first event the server received after it), `shared` (the event met objectives of 3 or more missions), `spike` (one line per mission completed in the
     /// window at least 5 times and more than 3 times its average over the 14 days before; a mission is dated by its latest objective, one with no harvest or clue objective is not).
     /// Then the counts. `discord`: the same as Markdown, cut into messages of at most 2000 characters separated by a line `---8<---`.</summary>
@@ -266,6 +268,7 @@ public sealed partial class State
             string Line(MissionDef m, Objective o, string what) => $"mission {m.Id} {m.Title} | {o.Title} | {handle} | {what}";
             static string What(Recorded e) => $"{(e.Kind == Kind.Track ? "clue" : "harvest")} event {e.Id}";
             var (rows, marks) = (MissionRows(con), Marks(con));
+            var stamped = con.Rows("SELECT mission_id, rules FROM missions WHERE account_id = $a").ToDictionary(r => (long)r[0], r => Parse(r[1]));
             var events = new Lazy<List<Recorded>>(() => RecordedOf(con, 0));
             var byId = new Lazy<Dictionary<long, Recorded>>(() => events.Value.ToDictionary(e => e.Id));
             var hunts = new Lazy<List<long>>(() => [.. con.Rows("SELECT COALESCE(first_event, 0) FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => (long)r[0])]);
@@ -282,7 +285,7 @@ public sealed partial class State
                     completions.Add((m, account, mine.Max(x => x.E.Ts ?? 0)));
                 if (mine.Count < checkable.Count && events.Value.Any(e => e.Id > (mark.Since ?? 0) && e.Ts >= from))
                     foreach (var o in m.Objectives.Where(o => checkable.Contains(o.Id) && !mine.Any(x => x.O == o)))
-                        flagged.Add(("unmet", Line(m, o, "no harvest or clue since its activation meets it")));
+                        flagged.Add(((string?)stamped[id][o.Id.ToString()] == Fingerprint(m, o) ? "unmet" : "rule changed", Line(m, o, "no harvest or clue since its activation meets it")));
                 if (mark.Since is { } since && con.Scalar("SELECT ts FROM events WHERE account_id = $a AND id > ? ORDER BY id LIMIT 1", since) is double activated)
                     foreach (var (_, o, e) in mine.Where(x => x.E.Ts >= from && x.E.Ts - activated < 120))
                         flagged.Add(("fast", Line(m, o, $"{What(e)}, {e.Ts - activated:0} s after the activation")));
@@ -310,7 +313,15 @@ public sealed partial class State
                     + $" | {now} completions in {hours:0.##} h vs {earlier / 14.0:0.##} a day over the 14 days before"));
         }
         var header = $"missions audit, the last {hours:0.##} h: {finished} objectives completed by {finishers} accounts";
-        var lines = AuditFlags.SelectMany(f => flagged.Where(x => x.Flag == f).Select(x => $"{f} | {x.Line}"));
+        // the objectives of earlier rules are many: with --discord, one line with their count
+        IEnumerable<string> Lines(string f)
+        {
+            var of = flagged.Where(x => x.Flag == f).ToList();
+            if (discord && f == "rule changed")
+                return of.Count > 0 ? new[] { $"{f} | {of.Count} objectives finished under another rule" } : [];
+            return of.Select(x => $"{f} | {x.Line}");
+        }
+        var lines = AuditFlags.SelectMany(Lines);
         var counts = string.Join(", ", AuditFlags.Select(f => $"{f} {flagged.Count(x => x.Flag == f)}"));
         foreach (var line in discord ? DiscordChunks([$"**{Escaped(header)}**", .. lines.Select(l => "- " + Escaped(l)), $"**{Escaped(counts)}**"]) : [header, .. lines, counts])
             yield return line;

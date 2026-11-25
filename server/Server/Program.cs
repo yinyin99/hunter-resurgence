@@ -37,8 +37,8 @@ const string AdminUsage = """
     missions completed before a restore are never touched. Without --apply it only prints one line per account with a change and a total, and writes nothing; --apply changes the rows and keeps a record per account (table mission_rollbacks).
     Run it once, with the server stopped, after `backup`.
     admin missions-audit [--hours N] [--account <id or handle>] [--discord] lists the mission objectives completed in the last N hours (default 24) that look suspicious, one line per objective
-    (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
-    2000 characters, separated by a line ---8<---, for a webhook.
+    (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, rule changed, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
+    2000 characters, separated by a line ---8<---, for a webhook, with one line for the count of `rule changed` instead of one per objective.
     admin missions-stuck [--days N] [--account <id or handle>] [--discord] [--min-candidates N] [--min-sample N] [--min-share P] lists the open harvest, spot and clue objectives the server understands that players of the last N days (default 14)
     attempted and never completed: one line per objective with its candidate events, the accounts that have it open, how many accounts completed it here, how many candidates each condition refused and what the most refusing one saw.
     Listed: at least --min-candidates (5) candidates and no completion, or one condition refusing at least --min-share (90) percent of at least --min-sample (10) candidates. It writes nothing. --discord as for missions-audit.

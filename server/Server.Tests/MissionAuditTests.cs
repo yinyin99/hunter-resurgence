@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Nodes;
 using Resurgence.Server;
 using static Resurgence.Server.Tests.Fixtures;
 
@@ -39,9 +40,9 @@ public class MissionAuditTests : MissionTestBase
         Assert.Equal(2, lines.Count);
         Assert.Matches($@"^borderline \| mission 1 Harvest a Test Deer from over 100 meters \| Harvest a Test Deer from over 100 meters \| {Me} \| harvest event \d+: distance 103 vs min 100$", lines[0]);
         Assert.Matches(@"^borderline \| mission 4 .* \| harvest event \d+: (distance 103 vs min 100; weight 90 vs min 88|weight 90 vs min 88; distance 103 vs min 100)$", lines[1]);  // one line per objective
-        Assert.Equal("borderline 2, unmet 0, fast 0, shared 4, spike 0", report[^1]);
+        Assert.Equal("borderline 2, unmet 0, rule changed 0, fast 0, shared 4, spike 0", report[^1]);
         now += 25 * 3600;
-        Assert.Equal("borderline 0, unmet 0, fast 0, shared 0, spike 0", Audit()[^1]);  // out of the window
+        Assert.Equal("borderline 0, unmet 0, rule changed 0, fast 0, shared 0, spike 0", Audit()[^1]);  // out of the window
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class MissionAuditTests : MissionTestBase
         var report = Audit();
         Assert.Matches($@"^fast \| mission 2 Harvest a Test Deer weighing at least 80 kg \| Harvest a Test Deer weighing at least 80 kg \| {Me} \| harvest event \d+, 60 s after the activation$",
                        Assert.Single(Flagged(report, "fast")));
-        Assert.Equal("borderline 0, unmet 0, fast 1, shared 0, spike 0", report[^1]);  // one kill met two missions: not shared
+        Assert.Equal("borderline 0, unmet 0, rule changed 0, fast 1, shared 0, spike 0", report[^1]);  // one kill met two missions: not shared
     }
 
     [Fact]
@@ -79,15 +80,94 @@ public class MissionAuditTests : MissionTestBase
     {
         state = Audited("unmet.db", Catalogue(["Harvest a Test Deer"]));
         ActivateAll();
-        Hb(Shot(1, distance: 2000));  // 20 m: the earlier rules finish it
+        Hb(Shot(1));
         Assert.Equal("1", Completed());
-        var strict = Audited("unmet.db", Catalogue(["Harvest a Test Deer from over 100 meters"]));
-        var report = Audit(of: strict);
-        Assert.Equal($"unmet | mission 1 Harvest a Test Deer from over 100 meters | Harvest a Test Deer from over 100 meters | {state.Store.HandleOf(ME)} | no harvest or clue since its activation meets it",
-                     Assert.Single(Flagged(report, "unmet")));
-        Assert.Equal("missions audit, the last 24 h: 0 objectives completed by 0 accounts", report[0]);
+        Hb(Shot(2, species: 5));  // a fox: no harvest of the account in the window would date nothing
+        using (var con = state.Store.Open(ME))
+            con.Exec("DELETE FROM events WHERE account_id = $a AND id = (SELECT MIN(id) FROM events WHERE account_id = $a AND event = 3)");  // the harvest that finished it is gone: the rule is the same, nothing meets it
+        var report = Audit();
+        Assert.Equal($"unmet | mission 1 Harvest a Test Deer | Harvest a Test Deer | {state.Store.HandleOf(ME)} | no harvest or clue since its activation meets it", Assert.Single(Flagged(report, "unmet")));
+        Assert.Empty(Flagged(report, "rule changed"));
+        Assert.Equal("borderline 0, unmet 1, rule changed 0, fast 0, shared 0, spike 0", report[^1]);
         now += 25 * 3600;
-        Assert.Empty(Flagged(Audit(of: strict), "unmet"));  // no harvest or clue of the account in the window: it was not completed then
+        Assert.Empty(Flagged(Audit(), "unmet"));  // no harvest or clue of the account in the window: it was not completed then
+    }
+
+    static JsonObject Stricter(params string[] keys) =>
+        new(keys.Select(k => KeyValuePair.Create(k, (JsonNode?)"harvest; species: Test Deer; distance: >100 m")));
+
+    [Fact]
+    public void TestAnObjectiveFinishedUnderARuleAnOverrideMadeStricterIsRuleChangedNotUnmet()
+    {
+        state = Audited("changed.db", Catalogue(["Harvest a Test Deer"]));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));  // 20 m: the rule of the time finishes it
+        Assert.Equal("1", Completed());
+        var strict = New("changed.db", Catalogue(["Harvest a Test Deer"]), rules: Stricter("1/0"));
+        strict.Clock = () => now;
+        var report = Audit(of: strict);
+        Assert.Empty(Flagged(report, "unmet"));
+        Assert.Equal($"rule changed | mission 1 Harvest a Test Deer | Harvest a Test Deer | {state.Store.HandleOf(ME)} | no harvest or clue since its activation meets it", Assert.Single(Flagged(report, "rule changed")));
+        Assert.Equal("borderline 0, unmet 0, rule changed 1, fast 0, shared 0, spike 0", report[^1]);
+        Assert.Empty(Flagged(Audit(of: state), "rule changed"));  // today's rule is the one it was finished under
+    }
+
+    [Fact]
+    public void TestAnObjectiveFinishedBeforeRulesWereKeptIsRuleChangedWhenTodaysRuleDoesNotMeetIt()
+    {
+        state = Audited("before.db", Catalogue(["Harvest a Test Deer"]));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));
+        using (var con = state.Store.Open(ME))
+            con.Exec("UPDATE missions SET rules = '{}' WHERE account_id = $a");  // as a row finished before schema 35
+        var strict = New("before.db", Catalogue(["Harvest a Test Deer"]), rules: Stricter("1/0"));
+        strict.Clock = () => now;
+        var report = Audit(of: strict);
+        Assert.Empty(Flagged(report, "unmet"));
+        Assert.Single(Flagged(report, "rule changed"));
+        Assert.Empty(Flagged(Audit(of: state), "rule changed"));  // today's rule meets it: nothing to say
+    }
+
+    [Fact]
+    public void TestTheDiscordReportCountsTheRuleChangedObjectivesOnOneLine()
+    {
+        state = Audited("changed-discord.db", Catalogue(["Harvest a Test Deer", "Harvest a Test Deer"]));
+        ActivateAll();
+        Hb(Shot(1, distance: 2000));  // meets both missions
+        Assert.Equal("1,2", Completed());
+        var strict = New("changed-discord.db", Catalogue(["Harvest a Test Deer", "Harvest a Test Deer"]), rules: Stricter("1/0", "2/0"));
+        strict.Clock = () => now;
+        Assert.Equal(2, Flagged(Audit(of: strict), "rule changed").Count);
+        var messages = string.Join("\n", Audit(of: strict, discord: true));
+        Assert.Single(messages.Split("\n").Where(l => l.StartsWith("- rule changed | ")), "- rule changed | 2 objectives finished under another rule");
+        Assert.EndsWith("**borderline 0, unmet 0, rule changed 2, fast 0, shared 0, spike 0**", messages);
+    }
+
+    [Theory]
+    [InlineData(34)]
+    [InlineData(35)]
+    public void TestAMissionsTableWithoutTheRulesColumnGetsItWhateverTheVersion(int version)
+    {
+        var file = Path.Combine(tmp, $"rules-{version}.db");
+        using (var con = new Store(file).Open())
+        {
+            con.Exec("ALTER TABLE missions DROP COLUMN rules");
+            con.Exec($"PRAGMA user_version = {version}");
+        }
+        using var check = new Store(file).Open();
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'"));
+    }
+
+    [Fact]
+    public void TestAnExistingRulesColumnBelowVersion35IsLeftAlone()
+    {
+        var file = Path.Combine(tmp, "rules-kept.db");
+        using (var con = new Store(file).Open())
+            con.Exec("PRAGMA user_version = 34");
+        using var check = new Store(file).Open();
+        Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+        Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('missions') WHERE name = 'rules'"));
     }
 
     [Fact]
@@ -129,6 +209,6 @@ public class MissionAuditTests : MissionTestBase
         Assert.True(messages.Length > 1);
         Assert.All(messages, m => Assert.InRange(m.Length, 1, 2000));
         Assert.StartsWith("**missions audit, the last 24 h: 40 objectives completed by 1 accounts**\n- shared | mission 1 Mission \\*1\\* | Harvest a Test Deer |", messages[0]);
-        Assert.EndsWith("\n**borderline 0, unmet 0, fast 0, shared 40, spike 0**", messages[^1]);
+        Assert.EndsWith("\n**borderline 0, unmet 0, rule changed 0, fast 0, shared 40, spike 0**", messages[^1]);
     }
 }

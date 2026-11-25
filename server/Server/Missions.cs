@@ -479,6 +479,7 @@ public sealed partial class State
         {
             if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets, marks[id].Seen) is not { } o)
                 continue;
+            Stamp(con, m, [o]);
             if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
                 con.Exec("UPDATE missions SET objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(done)), m.Id);
@@ -489,6 +490,15 @@ public sealed partial class State
         }
         DailyAdvance(con, kind, meets, now);
         CommunityCount(con, kind, rule => meets(rule, 0));
+    }
+
+    /// <summary>The rule the objectives are finished under is kept with the row (`missions.rules`: objective id to <see cref="Fingerprint"/>), for the audit.</summary>
+    void Stamp(Db con, MissionDef m, IEnumerable<Objective> finished)
+    {
+        var rules = Parse(con.Scalar("SELECT rules FROM missions WHERE account_id = $a AND mission_id = ?", m.Id)!);
+        foreach (var o in finished)
+            rules[o.Id.ToString()] = Fingerprint(m, o);
+        con.Exec("UPDATE missions SET rules = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(rules), m.Id);
     }
 
     /// <summary>The last objective is finished: the mission is completed, its gm$ and em$ are paid (update 15 with the new balance, a wallet row each),

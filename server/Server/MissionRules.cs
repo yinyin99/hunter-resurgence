@@ -110,23 +110,24 @@ public sealed partial class State
     /// <summary>The rule of every objective in words, one line each, sorted by mission and objective: `mission 1 objective 0: <title> => <kind>; <species>; <gender>; ordered; <conditions>`, the
     /// conditions sorted; an objective not understood has `not understood, left over: <words>` before the conditions it did read; an overridden one (`mission_rules.json`, whose entries are
     /// written in these words) has `(override)` after its id.</summary>
-    public IEnumerable<string> RuleLines()
+    public IEnumerable<string> RuleLines() => missions.Values.OrderBy(m => m.Id).SelectMany(m => m.Objectives.OrderBy(o => o.Id).Select(o => RuleLine(m, o)));
+
+    string RuleLine(MissionDef m, Objective o)
     {
-        foreach (var m in missions.Values.OrderBy(m => m.Id))
-            foreach (var o in m.Objectives.OrderBy(o => o.Id))
-            {
-                var r = o.Rule;
-                var parts = new List<string> { r.Kind.ToString().ToLowerInvariant() };
-                if (r.Unknown || r.Kind == Kind.Other)
-                    parts.Add("not understood, left over: " + (r.Kind == Kind.Other ? r.Text : r.Left));
-                if (r.Species is { } s && r.Kind is Kind.Harvest or Kind.Spot or Kind.Track) parts.Add("species: " + SpeciesName(s));
-                if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
-                if (r.Ordered) parts.Add("ordered");
-                parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
-                if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");
-                yield return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
-            }
+        var r = o.Rule;
+        var parts = new List<string> { r.Kind.ToString().ToLowerInvariant() };
+        if (r.Unknown || r.Kind == Kind.Other)
+            parts.Add("not understood, left over: " + (r.Kind == Kind.Other ? r.Text : r.Left));
+        if (r.Species is { } s && r.Kind is Kind.Harvest or Kind.Spot or Kind.Track) parts.Add("species: " + SpeciesName(s));
+        if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
+        if (r.Ordered) parts.Add("ordered");
+        parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
+        if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");
+        return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
     }
+
+    /// <summary>What a finished objective keeps of its rule (`missions.rules`): a hash of its line of `coverage --rules`, so an audit can tell a rule that changed since from one that did not.</summary>
+    string Fingerprint(MissionDef m, Objective o) => Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(RuleLine(m, o))))[..16];
 
     /// <summary>Warnings, one line each, where a rule disagrees with the data its mission carries beside the titles; a lead to look at, not an error. In order: `weapons` (the mission's `weapons`
     /// list has a weapon of the family of one the objectives accept, which none accepts), `description` (the `desc` names a weapon or an ammunition no objective accepts while the
