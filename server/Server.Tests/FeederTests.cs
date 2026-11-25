@@ -17,6 +17,17 @@ public class FeederTests : StateTestBase
         app["items"]!.AsArray().Add(O("""{"id": 137, "name": "Test Bait", "define": "TEST_BAIT", "type": 4, "units": {"count": 50, "name": "uses"}}"""));
         app["items"]!.AsArray().Add(O("""{"id": 787, "name": "Test Refill Pack", "define": "TEST_PACK", "type": 38, "units": {"count": 25, "name": "units"}, "price": 105, "silver_price": 1785, "notbuyable": 0}"""));
         app["items"]!.AsArray().Add(O("""{"id": 791, "name": "Test Refill", "define": "TEST_REFILL", "type": 37, "units": {"count": 1, "name": "uses"}, "price": 5, "silver_price": 85, "notbuyable": 0}"""));
+        foreach (var item in app["items"]!.AsArray().OfType<JsonObject>().Where(i => (long)i["id"]! is 136 or 137 or 787 or 791))  // what a built item definition reads
+        {
+            item["fit"] = new JsonObject();
+            item["inventory"] = O("""{"slots": [0, 1], "capacity": 0, "weight": 1}""");
+            item["group"] = 1;
+            item["cat"] = 4;
+            item["client_type"] = 4;
+            item["image"] = "test_image";
+            item["description"] = "Test.";
+            item["variationname"] = null;
+        }
         return app;
     }
 
