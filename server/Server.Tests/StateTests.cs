@@ -6,13 +6,23 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-public abstract class StateTestBase : IDisposable
+public abstract class StateTestBase : IDisposable, IAsyncDisposable
 {
     protected readonly string tmp = Directory.CreateTempSubdirectory("state").FullName;
     protected string Db => Path.Combine(tmp, "state.db");
     protected State state = null!;
 
     public virtual void Dispose() => DeleteDir(tmp);
+
+    /// <summary>xunit.v3 calls only this on a class that has it, never Dispose: stop the test's servers, then delete the folder.</summary>
+    public async ValueTask DisposeAsync()
+    {
+        await StopServersAsync();
+        Dispose();
+    }
+
+    /// <summary>Stop what the test started (its test servers) before its folder goes.</summary>
+    protected virtual ValueTask StopServersAsync() => default;
 
     protected static JsonNode Reply(byte[] body) => JsonNode.Parse(body)!;
 

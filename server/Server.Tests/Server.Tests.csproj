@@ -11,6 +11,8 @@
     <!-- the test host runs many short tests on all cores: server GC and no PGO instrumentation (nothing runs long enough to profit) cut a run by about a sixth -->
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <TieredPGO>false</TieredPGO>
+    <!-- a test class that declares its own DisposeAsync hides StateTestBase's, which deletes the test's folder (#921) -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS0108</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

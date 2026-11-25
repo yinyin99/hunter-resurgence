@@ -47,7 +47,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
         local = await Loopback.StartAsync(new Replay.Game(Recordings(), Cfg, NewState("local.db", offline: true), tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync()
+    protected override async ValueTask StopServersAsync()
     {
         await community.DisposeAsync();
         await local.DisposeAsync();

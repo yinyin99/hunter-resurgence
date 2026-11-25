@@ -24,7 +24,7 @@ public class ProblemReportTests : StateTestBase, IAsyncLifetime
         (player, cookie) = SignedIn("player");
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     (long Id, string Cookie) SignedIn(string handle)
     {

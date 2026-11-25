@@ -662,7 +662,7 @@ public class RestoredRequestTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     Task<Reply> Post(string path, string token, string extra = "") =>
         server.SendAsync("POST", "api.test", path, FormHeader, Encoding.ASCII.GetBytes($"oauth_access_token={token}{extra}"));

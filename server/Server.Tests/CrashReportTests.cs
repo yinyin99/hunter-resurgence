@@ -20,7 +20,7 @@ public class CrashReportTests : StateTestBase, IAsyncLifetime
         player = Account("player");
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     long Account(string handle)
     {

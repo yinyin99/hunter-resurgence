@@ -497,7 +497,7 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     static (string, string)[] Bearer(string? token) => token is null ? [] : [("Authorization", "Bearer " + token)];
 

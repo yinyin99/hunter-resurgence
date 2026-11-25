@@ -50,7 +50,7 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
         server = await Loopback.StartAsync(new Game(new HarTable(), Cfg, state, tmp), tmp);
     }
 
-    public async ValueTask DisposeAsync() => await server.DisposeAsync();
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     static (string, string) Bearer(string token) => ("Authorization", "Bearer " + token);
 
