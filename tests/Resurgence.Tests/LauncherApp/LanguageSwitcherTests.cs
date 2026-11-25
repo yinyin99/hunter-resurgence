@@ -39,4 +39,27 @@ public class LanguageSwitcherTests
         }
         finally { (CultureInfo.DefaultThreadCurrentCulture, CultureInfo.DefaultThreadCurrentUICulture) = (culture, ui); }
     }
+
+    // #947: the game's language follows the launcher's when the game has it; a pick in Game settings stays until the next switch
+    [Fact]
+    public void SetMakesTheGamesLanguageFollowWhenTheGameHasItAndLeavesItOtherwise()
+    {
+        var (culture, ui) = (CultureInfo.DefaultThreadCurrentCulture, CultureInfo.DefaultThreadCurrentUICulture);
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "launcher.json");
+        try
+        {
+            var switcher = new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav());
+            switcher.Set("de");
+            Assert.Equal("de_DE", Prefs.Load(path).GameLanguage);
+            var prefs = Prefs.Load(path);
+            prefs.GameLanguage = "ru_RU";
+            prefs.Save(path);
+            new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav()).Set("ja"); // stands for a language the game lacks (all 19 launcher languages exist in the game today): GameLanguage stays
+            Assert.Equal(("ja", "ru_RU"), (Prefs.Load(path).Language, Prefs.Load(path).GameLanguage));
+            new LauncherLanguageSwitcher(new LauncherEnv(path), new FakeNav()).Set("pt-BR");
+            Assert.Equal("pt_BR", Prefs.Load(path).GameLanguage);
+        }
+        finally { (CultureInfo.DefaultThreadCurrentCulture, CultureInfo.DefaultThreadCurrentUICulture) = (culture, ui); }
+    }
 }
