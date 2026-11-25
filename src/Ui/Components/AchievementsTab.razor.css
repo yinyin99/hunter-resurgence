@@ -23,7 +23,8 @@ time { font-size: 14px; line-height: 20px; color: var(--text-2); }
 .steps > span.got { color: #234; }
 /* a step's tooltip opens above it on hover and on keyboard focus; the .steps box does not clip it, and it lines up with the step's start (first half of the steps) or end (second half), inside the row */
 .tip { display: none; position: absolute; z-index: 5; bottom: 100%; width: 260px; max-width: 90vw; box-sizing: border-box; margin-bottom: 6px; padding: 8px 10px; border-radius: var(--r-2); background: var(--surface-3); box-shadow: 0 2px 10px rgba(0, 0, 0, .7); color: #fff; font-size: 13px; font-weight: 400; line-height: 18px; text-align: start; }
-.steps > span:hover .tip, .steps > span:focus .tip { display: block; }
+.steps > span:hover .tip, .steps > span:focus-visible .tip { display: block; }
+.steps:hover > span:not(:hover) .tip { display: none; }
 .lo .tip { inset-inline-start: 0; }
 .hi .tip { inset-inline-end: 0; }
 .tip > b, .tip > span { display: block; }
