@@ -164,6 +164,7 @@ public static class Restorer
             within?.Invoke(con);
             if (finalId != current) Adopt(con, current, finalId);
             Friends(con, finalId, model.Extras);
+            if (long.TryParse(model.Identity.Uid, out var oldId)) Store.ReconnectFriends(con, oldId);  // the edges other restores saved to this profile's old user id now name the account that holds it
         }
         try
         {
@@ -224,7 +225,7 @@ public static class Restorer
     }
 
     /// <summary>The friend edges of the restored `User_friendslist` and `Me_friends` replies: a friend, an incoming request (`requests`),
-    /// an outgoing one (`pending`). Each counts once the other player has an account here (<see cref="Store.FriendsOf"/>).</summary>
+    /// an outgoing one (`pending`). A player's old user id is the account that holds that profile here (<see cref="Store.Holder"/>); each edge counts once the other player has an account here (<see cref="Store.FriendsOf"/>).</summary>
     static void Friends(Db con, long id, IReadOnlyDictionary<string, JsonNode?> extras)
     {
         static IEnumerable<JsonNode?> List(JsonNode? body, string key) => (body as JsonObject)?[key] as JsonArray ?? [];

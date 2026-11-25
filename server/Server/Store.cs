@@ -464,6 +464,10 @@ public sealed class Store
             if (version < 31 && (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'walked'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN last_x REAL; ALTER TABLE expeditions ADD COLUMN last_z REAL; ALTER TABLE expeditions ADD COLUMN walked REAL");
         }
+        // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
+        // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
+        foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
+            ReconnectFriends(con, (long)row[0]);
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
         con.Commit();
@@ -602,13 +606,34 @@ public sealed class Store
         con.Exec("DELETE FROM friends WHERE (account_id = ?1 AND other_id = ?2) OR (account_id = ?2 AND other_id = ?1)", id, other);
     }
 
-    /// <summary>A restore's edge (inside its transaction): a `friend` edge replaces a request of the same direction; any other
-    /// edge the pair has already stays.</summary>
+    /// <summary>The account that now holds the profile of the old user id `uid` (inside the caller's transaction): the account with that id (it kept its own, or took the
+    /// zip's), else the account a zip of that user id was restored onto (`restored_ids`; it proves more than the archive), else the account of the first restored claim
+    /// of that archived user id. Null while none does.</summary>
+    public static long? Holder(Db con, long uid) =>
+        (con.Scalar("SELECT id FROM accounts WHERE id = ?", uid) as long?)
+        ?? (con.Scalar("SELECT account_id FROM restored_ids WHERE user_id = ?", uid) as long?)
+        ?? (con.Scalar("SELECT account_id FROM claims WHERE archived_uid = ? AND state = 'restored' ORDER BY id LIMIT 1", uid) as long?);
+
+    /// <summary>A restore's edge (inside its transaction), each end as the account that holds that user id now (<see cref="Holder"/>; an id nobody holds yet stays as it is, and
+    /// <see cref="ReconnectFriends"/> moves it later): a `friend` edge replaces a request of the same direction; any other edge the pair has already stays.</summary>
     public static void RestoreFriendEdge(Db con, long id, long other, string state)
     {
+        (id, other) = (Holder(con, id) ?? id, Holder(con, other) ?? other);
         if (id > 0 && other > 0 && id != other)
             con.Exec("INSERT INTO friends (account_id, other_id, state) VALUES (?, ?, ?)"
                      + " ON CONFLICT (account_id, other_id) DO UPDATE SET state = excluded.state WHERE excluded.state = 'friend'", id, other, state);
+    }
+
+    /// <summary>The edges that still name the old user id `uid`, which no account has, name the account that holds its profile now, if one does (inside the caller's transaction):
+    /// an edge saved before that profile was claimed or restored here connects once it is. Idempotent.</summary>
+    public static void ReconnectFriends(Db con, long uid)
+    {
+        if (Holder(con, uid) is not { } holder || holder == uid) return;
+        foreach (var e in con.Rows("SELECT account_id, other_id, state FROM friends WHERE account_id = ?1 OR other_id = ?1", uid))
+        {
+            con.Exec("DELETE FROM friends WHERE account_id = ? AND other_id = ?", e[0], e[1]);  // the old edge goes, so a friendship removed here is not made again by the next start
+            RestoreFriendEdge(con, (long)e[0], (long)e[1], (string)e[2]);
+        }
     }
 
     /// <summary>The Steam id the account signed in with; null when it has none.</summary>
