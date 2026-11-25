@@ -134,7 +134,7 @@
             Fill(async () =>
             {
                 reserves = (await Servers.ReservesAsync()).ToDictionary(r => r.Id, r => r.Name);
-                games = (await Servers.ServersAsync()).ToList();
+                games = (await Servers.ServersAsync()).Where(g => !g.Refused).ToList();  // Quick Join offers only games the player may join (a password game asks for it)
             }));
     }
 
