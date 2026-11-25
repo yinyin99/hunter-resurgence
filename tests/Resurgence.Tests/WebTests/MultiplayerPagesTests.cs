@@ -88,6 +88,38 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     [Fact]
+    public void ThePreviewDrawsTheGamesPlayersOnAMapAboveTheirListAndAGameWithoutPositionsHasNoMap()
+    {
+        var placed = Open with { Roster = [new("HostOne", 1500, 25.5, 75), new("Guest", 300, null, null)] };
+        Services.AddSingleton<IServersService>(new Fake { Games = [placed, Locked with { Roster = [new("HostTwo", 900, null, null)] }] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("table.tbl tbody tr").Count));
+        Assert.Equal(["left:25.5%;top:75%"], cut.FindAll("aside.preview .preview-map span.hunter").Select(h => h.GetAttribute("style")));  // the player without a position is listed, not drawn
+        Assert.Equal(2, cut.FindAll("aside.preview .player").Count);
+        Assert.Empty(cut.FindAll("aside.preview .preview-map span.hunter-label"));
+        cut.FindAll("aside.preview .player")[0].MouseEnter();  // hovering a player labels its marker
+        Assert.Contains("HostOne", cut.Find("aside.preview .preview-map span.hunter-label").TextContent);
+
+        cut.FindAll("table.tbl tbody tr")[1].Click();
+        Assert.Empty(cut.FindAll("aside.preview .preview-map"));
+    }
+
+    [Fact]
+    public void ThePlayersWithAPositionAreDrawnOnTheJoinMapAndTheOthersAreOnlyListed()
+    {
+        Services.AddSingleton<IServersService>(new Fake());
+        var game = Open with { Roster = [new("HostOne", 1500, 25.5, 75), new("Guest", 300, null, null)] };
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, game));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
+        Assert.Equal(["left:25.5%;top:75%"], cut.FindAll("span.hunter").Select(h => h.GetAttribute("style")));
+        Assert.Equal(2, cut.FindAll("aside .player").Count);
+        cut.FindAll("aside .player")[0].MouseEnter();
+        Assert.Contains("HostOne", cut.Find("span.hunter-label").TextContent);
+    }
+
+    [Fact]
     public void WithoutGamesTheListOffersToHostOne()
     {
         Services.AddSingleton<IServersService>(new Fake());

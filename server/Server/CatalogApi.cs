@@ -41,8 +41,9 @@ public static class CatalogApi
             .WithName("GamesList").WithSummary("The open multiplayer sessions, for the website and the launcher")
             .WithDescription("What `GET /v1/Network/list` answers (docs/server.md, Multiplayer), on the website's host so that the reverse proxy reaches it: `[{id, name, handle, host, description, password, public, singleplayer, freeplayers, hs_min, hs_max, max_players, start_ts, clients_len, clients, reserve, joinable, why}]`, `[]` without a game. "
                              + "`joinable` is whether the signed-in caller may join the game now and `why` the reason it may not (`own`: the caller hosts it, `friends`: friends only and the host is not the caller's friend, `hunterscore`: the caller's hunterscore is outside the game's range, `starting`: the host's game has not finished starting, `password`: it has one, `full`), null when it may; "
-                             + "they come from the same function as the join's refusal, so the two agree. "
-                             + "For a signed-in player (the `hr_session` cookie): 401 `signed_out` without a session; the game's own `/v1/Network/list` is unchanged.")
+                             + "they come from the same function as the join's refusal, so the two agree. Each client also has `mapX` and `mapY`, its position as percent (two decimals, kept within 0 to 100) of the reserve's map picture from the left and the top, as `GET /catalog/reserves` gives a start's, null until the host's heartbeat gave one; "
+                             + "a friends-only or password game the caller may not join (`joinable` false) shows no position: `mapX`, `mapY`, `x`, `y` and `z` are null; a caller who may join it (a friend of the host) sees them. "
+                             + "For a signed-in player (the `hr_session` cookie): 401 `signed_out` without a session. The game's own `/v1/Network/list` cannot name its caller (no token, no cookie) and sends `x`, `y` and `z` of 0 for the players of a friends-only or password game.")
             .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json").AddEndpointFilter(SignedIn);
     }
 }

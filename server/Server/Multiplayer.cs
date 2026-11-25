@@ -20,6 +20,7 @@ public sealed class Games
         public int Port;  // event 29
         public string Guid = "", Color = "";  // event 29: the network id as decimal text, the colour as rrggbb
         public double X, Y, Z, Joined = now;
+        public bool Positioned;  // the host's heartbeat has given X, Y and Z
         public double? Seen;  // the last heartbeat
         public Member Copy() => (Member)MemberwiseClone();
     }
@@ -234,39 +235,54 @@ public sealed partial class State
             if (me == g.Members[0] && positions is JsonArray rows)
                 foreach (var row in rows.OfType<JsonObject>())
                     if (Py.IsNum(row["user_id"]) && g.Members.Find(m => m.Account == Py.L(row["user_id"])) is { } at && Py.IsNum(row["x"]) && Py.IsNum(row["y"]) && Py.IsNum(row["z"]))
-                        (at.X, at.Y, at.Z) = (Py.D(row["x"]), Py.D(row["y"]), Py.D(row["z"]));
+                        (at.X, at.Y, at.Z, at.Positioned) = (Py.D(row["x"]), Py.D(row["y"]), Py.D(row["z"]), true);
         });
     }
 
     long HunterScore(long account) => Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
 
     /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `joinable` and `why`, the refusal
-    /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`).</summary>
+    /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`), and each client `mapX` and `mapY`: its position as percent of the
+    /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
+    /// session of a caller who may not join shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
+    /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet.</summary>
     public byte[] NetworkListReply(long? caller = null)
     {
         var score = caller is { } me ? HunterScore(me) : 0;
         var friends = caller is { } you ? Store.FriendsOf(you, LocalAccount).Friends : [];
+        var starts = new Lazy<Dictionary<long, List<JsonObject>>>(StartLocations);
         return Py.DumpBytes(new JsonArray([.. games.Open(Clock()).Select(g =>
         {
             var reserve = Arr(G(application, "reserves", null)).OfType<JsonObject>().FirstOrDefault(r => TryKey(r["id"], out var k) && k == g.Reserve);
+            var why = caller is { } who ? Games.Why(g, who, score, friends.Contains) : null;
+            var shown = g is { Public: true, Password: "" } || (caller is not null && (why is null || g.Members.Any(m => m.Account == caller)));  // a session that is not open to all shows its positions to those who may join
+            var box = caller is not null && shown && g.Members.Any(m => m.Positioned) ? MapBox(g.Reserve, starts.Value.GetValueOrDefault(g.Reserve) ?? []) : default;
             var list = new JsonObject
             {
                 ["id"] = g.Id, ["name"] = g.Name, ["handle"] = Store.HandleOf(g.Host), ["host"] = g.Host, ["description"] = g.Description == "" ? null : g.Description,
                 ["password"] = g.Password != "", ["public"] = g.Public, ["singleplayer"] = false, ["freeplayers"] = g.Free, ["hs_min"] = g.HsMin, ["hs_max"] = g.HsMax,
                 ["max_players"] = g.Max, ["start_ts"] = (long)g.Start, ["clients_len"] = g.Members.Count,
-                ["clients"] = new JsonArray([.. g.Members.Select(m => (JsonNode?)new JsonObject
+                ["clients"] = new JsonArray([.. g.Members.Select(m =>
                 {
-                    ["user_id"] = m.Account, ["handle"] = Store.HandleOf(m.Account), ["guid"] = m.Guid, ["color"] = m.Color, ["avatar"] = Avatar(m.Account),
-                    ["x"] = Coord(m.X), ["y"] = Coord(m.Y), ["z"] = Coord(m.Z), ["hunterscore"] = HunterScore(m.Account),
+                    var client = new JsonObject
+                    {
+                        ["user_id"] = m.Account, ["handle"] = Store.HandleOf(m.Account), ["guid"] = m.Guid, ["color"] = m.Color, ["avatar"] = Avatar(m.Account),
+                        ["x"] = shown ? Coord(m.X) : 0, ["y"] = shown ? Coord(m.Y) : 0, ["z"] = shown ? Coord(m.Z) : 0, ["hunterscore"] = HunterScore(m.Account),
+                    };
+                    if (caller is null) return (JsonNode?)client;
+                    var at = shown && m.Positioned;
+                    client["mapX"] = at ? (double?)Math.Clamp(Percent(m.X, box.Left, box.Right), 0, 100) : null;
+                    client["mapY"] = at ? (double?)Math.Clamp(Percent(m.Z, box.Top, box.Bottom), 0, 100) : null;
+                    if (!shown) client["x"] = client["y"] = client["z"] = null;
+                    return (JsonNode?)client;
                 })]),
                 ["reserve"] = new JsonObject
                 {
                     ["id"] = g.Reserve, ["define"] = C(reserve?["define"]) ?? "", ["name"] = C(reserve?["name"]) ?? "", ["species"] = new JsonArray(), ["border"] = new JsonArray(),
                 },
             };
-            if (caller is { } who)
+            if (caller is not null)
             {
-                var why = Games.Why(g, who, score, friends.Contains);
                 list["joinable"] = why is null;
                 list["why"] = why;
             }

@@ -40,7 +40,8 @@ public sealed record ServerGame(
     [property: System.Text.Json.Serialization.JsonPropertyName("country_code")] string? Country,
     ServerGamePlayer[]? Clients, ServerGameReserve? Reserve, string? Why = null);
 
-public sealed record ServerGamePlayer(string? Handle, long Hunterscore, string? Avatar);
+/// <param name="MapX">The player's place as percent of the reserve's map picture from the left (<c>mapX</c>), <paramref name="MapY"/> from the top; null before the host's heartbeat gave a position, and for a game the player may not join.</param>
+public sealed record ServerGamePlayer(string? Handle, long Hunterscore, string? Avatar, double? MapX = null, double? MapY = null);
 
 public sealed record ServerGameReserve(long Id);
 

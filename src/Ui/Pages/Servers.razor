@@ -79,10 +79,14 @@
             }
             @if (s.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="preview-loadout" Width="282" />
+            @if (s.Roster.Any(p => p.X is not null && p.Y is not null))
+            {
+                <div class="preview-map"><MapPlaceholder Markers="noMarkers" Reserve="s.Reserve" Height="200" Zoom="false" Players="s.Roster" HoverPlayer="@hoverPlayer" /></div>
+            }
             <h5 class="players-title">@L["Servers.PlayerList", s.Players, s.Max]</h5>
             @foreach (var p in s.Roster)
             {
-                <div class="player"><AssetSlot Name="@p.Avatar" Width="50" Height="50" /><a href="/profile/@p.Handle">@p.Handle</a><span class="score"><Icon Name="paw" /> @p.HunterScore</span></div>
+                <div class="player" @onmouseenter="() => hoverPlayer = p.Handle" @onmouseleave="() => hoverPlayer = null"><AssetSlot Name="@p.Avatar" Width="50" Height="50" /><a href="/profile/@p.Handle">@p.Handle</a><span class="score"><Icon Name="paw" /> @p.HunterScore</span></div>
             }
         </aside>
     }
@@ -105,6 +109,8 @@
     GameServer? active => shown.FirstOrDefault(g => g == selected) ?? shown.FirstOrDefault();
     string query = "";
     bool allowedOnly;
+    string? hoverPlayer;
+    static readonly IReadOnlyList<MapMarker> noMarkers = [];
 
     /// <summary>Why the server says the player cannot join a game (a game with a password asks for it instead: its lock says so).</summary>
     string? Reason(GameServer g) => g.Why switch

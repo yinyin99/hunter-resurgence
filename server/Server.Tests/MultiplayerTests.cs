@@ -22,7 +22,7 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     {
         var connect = CONNECT;
         connect["network"] = O("""{"singleplayer": true, "host": 7, "user_id": 7, "handle": "x", "ip": "203.0.113.9", "max_players": 8, "clients": null}""");
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false) { Clock = () => now };
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: MapFacts()) { Clock = () => now };
         foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest"), (THIRD, "third") })
         {
             state.CreateAccount(id, handle);
@@ -277,9 +277,13 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         var listed = Json(reply);
         var game = listed[0]!.AsObject();
         Assert.Equal((false, "starting"), ((bool)game["joinable"]!, (string?)game["why"]));  // the host's game has not reported its port yet
-        game.Remove("joinable");
-        game.Remove("why");
-        Eq(await List(), listed);  // the game's own list has neither
+        Assert.Null(game["clients"]![0]!["mapX"]);  // no position yet
+        foreach (var name in new[] { "joinable", "why" })
+            game.Remove(name);
+        foreach (var client in game["clients"]!.AsArray())
+            foreach (var name in new[] { "mapX", "mapY" })
+                client!.AsObject().Remove(name);
+        Eq(await List(), listed);  // the game's own list has none of them
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
     }
 
@@ -332,6 +336,72 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         await ReadyHost("&password=s3cret");
         await Agrees(GUEST, "password");  // a password game is never joinable, whatever the player
         await Agrees(HOST, "own");
+    }
+
+    /// <summary>The shipped facts with a map of our own for reserve 2: x from -1000 to 1000 and z from 500 to 1500 (the box the positions are percent of).</summary>
+    static Facts MapFacts()
+    {
+        var json = JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "facts", "facts.json")))!.AsObject();
+        json["reserves"]!.AsArray().Single(r => (int)r!["id"]! == 2)!["map"] = new JsonArray(-1000, 500, 1000, 1500);
+        return Facts.Parse(json.ToJsonString());
+    }
+
+    /// <summary>The host's heartbeat tells where each player is (game metres).</summary>
+    Task Positions(string session, params (long Who, double X, double Z)[] at) =>
+        Send("POST", Gs, Replay.HEARTBEAT, HOST, "{\"events\": [], \"player_positions\": [" + string.Join(", ", at.Select(p =>
+            string.Create(System.Globalization.CultureInfo.InvariantCulture, $$"""{"user_id": {{p.Who}}, "x": {{p.X}}, "y": 80, "z": {{p.Z}} }"""))) + "]}", session);
+
+    /// <summary>`mapX,mapY` of each client of the first game as `who` sees it ("-" for none).</summary>
+    async Task<string[]> Places(long who) =>
+        [.. (await Listed(who))["clients"]!.AsArray().Select(c => c!["mapX"] is null ? "-" : $"{Num(c["mapX"])},{Num(c["mapY"])}")];
+
+    static string Num(JsonNode? n) => ((double)n!).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    [Fact]
+    public async Task TestEachClientHasItsPositionAsPercentOfTheReservesMapAndNullWithoutOne()
+    {
+        var session = await ReadyHost();
+        Joined(await Join(GUEST));
+        Assert.Equal(["-", "-"], await Places(THIRD));  // joined, no heartbeat with positions yet: listed, not placed
+        await Positions(session, (HOST, -1000, 500), (GUEST, 0, 1000));  // the top left corner and the centre
+        Assert.Equal(["0,0", "50,50"], await Places(THIRD));
+        await Positions(session, (HOST, 1000, 1500), (GUEST, 123.456, 1000.1));  // the bottom right corner; two decimals
+        Assert.Equal(["100,100", "56.17,50.01"], await Places(THIRD));
+        Joined(await Join(THIRD));
+        Assert.Equal(["100,100", "56.17,50.01", "-"], await Places(THIRD));
+        var host = (await Listed(THIRD))["clients"]![0]!;
+        Assert.Equal((1000L, 80L, 1500L), ((long)host["x"]!, (long)host["y"]!, (long)host["z"]!));  // the game's own coordinates stay
+        Assert.All((await List())[0]!["clients"]!.AsArray(), c => Assert.False(c!.AsObject().ContainsKey("mapX")));  // the game's own list has none
+    }
+
+    [Fact]
+    public async Task TestAGameThatIsNotOpenToAllShowsItsPositionsOnlyToThoseWhoMayJoinIt()
+    {
+        var session = await ReadyHost("&public_game=0");
+        await Positions(session, (HOST, 0, 1000));
+        state.Store.AddFriend(GUEST, HOST);
+        state.Store.AddFriend(HOST, GUEST);
+        Assert.Equal(["50,50"], await Places(GUEST));  // a friend may join
+        Assert.Equal(["50,50"], await Places(HOST));  // the host is in it
+        Assert.Equal(["-"], await Places(THIRD));  // a stranger may not
+        var hidden = (await Listed(THIRD))["clients"]![0]!;
+        Assert.Equal((true, true, true), (hidden["x"] is null, hidden["y"] is null, hidden["z"] is null));  // not through the raw coordinates either
+
+        session = await ReadyHost("&password=s3cret");
+        await Positions(session, (HOST, 0, 1000));
+        Assert.Equal(["-"], await Places(GUEST));  // a password game is not joinable without it
+        Assert.Equal(["50,50"], await Places(HOST));
+
+        // the game's own list cannot name its caller: a game not open to all sends neutral coordinates, any other the real ones
+        await Positions(session, (HOST, 400, 700));
+        var own = (await List())[0]!["clients"]![0]!;
+        Assert.Equal((0L, 0L, 0L), ((long)own["x"]!, (long)own["y"]!, (long)own["z"]!));
+        session = await ReadyHost();
+        await Positions(session, (HOST, 400, 700));
+        own = (await List())[0]!["clients"]![0]!;
+        Assert.Equal((400L, 80L, 700L), ((long)own["x"]!, (long)own["y"]!, (long)own["z"]!));
+        await Positions(session, (HOST, 5000, -300));  // off the map: on its edge
+        Assert.Equal(["100,0"], await Places(GUEST));
     }
 
     [Fact]
