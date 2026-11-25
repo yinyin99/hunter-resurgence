@@ -403,13 +403,18 @@ public static class Replay
 
     /// <summary>The in-game page's Teams tab reads the round timer as a number, but the game answers a record
     /// `{time, running}`; the page then recurses until it fails. Served here, the page's script accepts both forms
-    /// (the record's `time`). Each rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
+    /// (the record's `time`). It also removes what the old site's page sent to third-party services and loaded without need (issue #829): the page's tag manager and analytics ids are emptied, the script's error-reporting init never runs and its 2 s preload of 61 pictures is dropped. Each script rewrite is an exact text replacement; when a text is not found exactly once that rewrite is skipped and one warning is logged. The page's ids are matched by key instead (a page without them is served unchanged, with no warning). The same class adds the lodge page's hide label to a locale script that lacks it (<see cref="AddHide"/>). The script is also served with `Cache-Control: no-cache`, and the page of `/client`
     /// asks for it under a new `?t=` token, so a copy the game cached before is not used.</summary>
     static class TimerFix
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
         static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
-        public const string Version = "timer4";
+        public const string Version = "timer5";
+        static readonly Regex TrackerIds = new(@"(""google_(?:tag_manager|analytics)_id""\s*:\s*)""[^""]*""", RegexOptions.ECMAScript);
+        // the script's 2 s picture preload and its error-reporting init (skipped on localhost only)
+        public static readonly (string From, string To)[] Trackers =
+            [("setTimeout(function(){a.load(\"/content/client-preload-images.json\")},2e3),", ""),
+             ("\"localhost\"!==window.location.hostname&&e.init({dsn:", "false&&e.init({dsn:")];
         // the two places the script fills the Teams model's timer: the first read of the page and the refresh
         public static readonly (string From, string To)[] Reads =
             [("timer:e[4]", "timer:function(t){return t&&typeof t==\"object\"?t.time:t}(e[4])"),
@@ -418,7 +423,7 @@ public static class Replay
         /// server answers token expired (the list call passes `oauth_access_token`, so it loaded). Each of the six calls (empty options, no token of its own) is given the helper's own `authMode:"required"` option: the helper then waits
         /// for the game's token and sends it as `Authorization: Bearer`, which the server already accepts.</summary>
         static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_favourite|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite)"",(\{(?:(?!oauth_access_token)[^{}])*\}),\{\}\)", RegexOptions.ECMAScript);
-        static int warned, warnedApp, warnedFrame, warnedPage;
+        static int warnedTrackers, warned, warnedApp, warnedFrame, warnedPage;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
@@ -489,7 +494,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             if (r.Path == "/client")
             {
                 var was = Encoding.Latin1.GetString(reply.Body);
-                var page = Token.Replace(was, "$1?t=" + Version);
+                var page = TrackerIds.Replace(Token.Replace(was, "$1?t=" + Version), "$1\"\"");
                 if (ReplaceOnce(page, ClientPageSrc, ref warnedPage, "the in-game page's head") is { } styled) page = styled;
                 return page == was ? reply : NoCache(reply, Encoding.Latin1.GetBytes(page));
             }
@@ -501,7 +506,8 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
                 return NoCache(reply, Encoding.Latin1.GetBytes(frame));
             if (!Script.IsMatch(r.Path)) return reply;
             var src = Encoding.Latin1.GetString(reply.Body);
-            var script = MissionWrite.Replace(ReplaceOnce(src, Reads, ref warned, "the in-game page's round timer read") ?? src, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
+            var t = ReplaceOnce(src, Trackers, ref warnedTrackers, "the in-game page's picture preload or error reporting") ?? src;
+            var script = MissionWrite.Replace(ReplaceOnce(t, Reads, ref warned, "the in-game page's round timer read") ?? t, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
             return script == src ? reply : NoCache(reply, Encoding.Latin1.GetBytes(script));
         }
 

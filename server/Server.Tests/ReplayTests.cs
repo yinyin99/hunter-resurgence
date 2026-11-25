@@ -222,7 +222,33 @@ public class ReplayTests : IAsyncLifetime
         Same(("a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.7/client.js"));
         Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
         var page = await R("GET", "game_web.test", "/client");
-        Assert.Contains("client.js?t=timer4", Encoding.UTF8.GetString(page.Body));
+        Assert.Contains("client.js?t=timer5", Encoding.UTF8.GetString(page.Body));
+    }
+
+    [Fact]
+    public async Task TestTheInGamePageLoadsNoTrackersOrPreload()
+    {
+        void Put(string path, string text)
+        {
+            var f = Path.Combine(mirror, "game_web.test", path);
+            Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+            File.WriteAllText(f, text);
+        }
+        const string preload = "setTimeout(function(){a.load(\"/content/client-preload-images.json\")},2e3),", sentry = "\"localhost\"!==window.location.hostname&&e.init({dsn:";
+        Put("static/app/9.9.9/client.js", "a({timer:e[4]});b({timer:e[2]});" + preload + sentry + "x});");
+        Put("static/app/9.9.8/client.js", "b();" + preload + sentry + "x});");
+        var both = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.9/client.js")).Body);
+        Assert.DoesNotContain("timer:e[", both);
+        Assert.DoesNotContain("client-preload-images", both);
+        Assert.Contains("false&&e.init({dsn:", both);
+        var only = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
+        Assert.DoesNotContain("client-preload-images", only);
+        Assert.Contains("false&&e.init({dsn:", only);
+        Put("client/index.html", "<script>require({\"google_tag_manager_id\": \"GTM-AB12\", \"google_analytics_id\": \"G-AB12\"})</script><script src=\"/static/app/9.9.9/client.js?t=v1\"></script>");
+        var page = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/client")).Body);
+        Assert.Contains("\"google_tag_manager_id\": \"\"", page);
+        Assert.Contains("\"google_analytics_id\": \"\"", page);
+        Assert.Contains("client.js?t=timer5", page);
     }
 
     [Fact]
