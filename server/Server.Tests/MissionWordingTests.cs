@@ -280,7 +280,7 @@ public class MissionWordingTests : MissionTestBase
     }
 
     [Fact]
-    public void TestAStandingMooseIsTheAnimalsState()
+    public void TestAStandingAnimalIsTheAnimalsState()
     {
         var line = New("moose.db", Catalogue(["Harvest a standing Test Deer"])).MissionCoverage(rules: true).Single(l => l.Contains(" => ", StringComparison.Ordinal));
         Assert.Contains("state: standing", line);
