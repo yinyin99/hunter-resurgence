@@ -230,6 +230,24 @@ public class MissionWordingTests : MissionTestBase
     }
 
     [Fact]
+    public void TestWhileStandingIsThePlayersStanceAndAStandingAnimalIsTheAnimalsState()
+    {
+        state = New("standing.db", Catalogue(
+        [
+            "Harvest a charging Test Deer while standing.",         // 1
+            "Harvest a Test Deer with one shot while standing up",  // 2
+            "Harvest a standing Test Deer",                         // 3
+        ]));
+        ActivateAll();
+        Hb(Shot(1, animalState: 9, pose: 2049));  // charging, crouching
+        Assert.Equal("", Completed());
+        Hb(Shot(2, animalState: 9, pose: 2048));  // charging, upright
+        Assert.Equal("1,2", Completed());
+        Hb(Shot(3, animalState: 3, pose: 2049));  // standing animal, crouching player
+        Assert.Equal("1,2,3", Completed());
+    }
+
+    [Fact]
     public void TestWeightRangeAndScoreWordsAndTheWordsThatOnlyNameTheGender()
     {
         state = New("numbers.db", Catalogue(
