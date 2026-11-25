@@ -233,20 +233,34 @@ public static class Restorer
             Strip(body);
             if (PlayerRows.AddExtra(con, path, body)) extras++;
         }
-        // a saved lodge is added (both of its rows) only when the account has no lodge of that id and none of that type: a claim without lodges leaves the account the empty lodges the server gave it for its lodge items
+        // a saved lodge is added (both of its rows) when the account has no lodge of its id and none of its type. When the account holds a lodge of that type, the saved one replaces it
+        // (rows updated in place: the account's lodge id stays) only if that lodge has nothing placed (the empty lodge the server gave for a lodge item, which a claim without lodges leaves); else the account's stays
         static long? TypeOf(JsonNode? node) =>
             node?["lodge_type_id"] is { } t ? Py.IsNum(t) ? Py.L(t) : Py.IsStr(t) && long.TryParse((string)t!, out var n) ? n : null : null;
-        var have = con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?)", State.LodgeList, State.LodgeOne).Select(r => ((string)r[0], TypeOf(JsonNode.Parse((string)r[1])))).ToList();
-        foreach (var lodge in m.Lodges.GroupBy(l => l.Id))
+        static bool Placed(JsonNode? slots, string key) => slots is JsonArray a && a.OfType<JsonObject>().Any(s => s[key] is { } v && !(Py.IsNum(v) && Py.L(v) == 0));
+        static bool Filled(JsonNode? node) => Placed(node?["animal_slots"], "trophy_id") || Placed(node?["weapon_slots"], "weapon_id");
+        var held = con.Rows("SELECT id, node FROM lodges WHERE account_id = $a AND source IN (?, ?)", State.LodgeList, State.LodgeOne)
+            .Select(r => (Id: (string)r[0], Node: JsonNode.Parse((string)r[1]))).GroupBy(r => r.Id)
+            .Select(g => (Id: g.Key, Type: g.Select(r => TypeOf(r.Node)).FirstOrDefault(t => t is not null), Filled: g.Any(r => Filled(r.Node)), Taken: false)).ToList();
+        foreach (var lodge in m.Lodges.GroupBy(l => l.Id).OrderBy(g => g.Key.Length).ThenBy(g => g.Key, StringComparer.Ordinal))
         {
             var type = lodge.Select(l => TypeOf(l.Node)).FirstOrDefault(t => t is not null);
-            if (have.Any(h => h.Item1 == lodge.Key || type is not null && h.Item2 == type)) continue;
+            if (held.Any(h => h.Id == lodge.Key)) continue;
+            var same = type is null ? -1 : held.FindIndex(h => h.Type == type && !h.Taken && !h.Filled);
+            if (type is not null && same < 0 && held.Any(h => h.Type == type)) continue;  // the account's lodge of that type has something placed, or was just replaced
             foreach (var l in lodge)
             {
                 Strip(l.Node);
-                PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
+                if (same < 0) PlayerRows.AddLodge(con, l.Source, l.Id, l.Node);
+                else
+                {
+                    var id = held[same].Id;
+                    if (l.Node is JsonObject o) o["id"] = long.TryParse(id, out var number) ? number : id;
+                    if (con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND source = ? AND id = ?", Py.Dumps(l.Node), l.Source, id) == 0) PlayerRows.AddLodge(con, l.Source, id, l.Node);
+                }
                 lodges++;
             }
+            if (same >= 0) held[same] = held[same] with { Taken = true };
         }
         var text = new StringBuilder(layerA.ToText());
         text.AppendLine("account: archive claim kept, missing parts added");

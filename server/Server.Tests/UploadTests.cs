@@ -128,24 +128,29 @@ public class UploadTests : StateTestBase, IAsyncLifetime
         Assert.Equal(2L, after.Scalar("SELECT COUNT(*) FROM restore_audit WHERE account_id = $a"));
     }
 
-    [Fact]
-    public async Task TestAMergeAddsASavedLodgeOnlyWhenTheAccountHasNoLodgeOfItsIdOrType()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task TestAMergeReplacesAnEmptyLodgeOfTheSameTypeAndKeepsOneWithATrophy(bool placed)
     {
         using (var con = state.Store.Open(player))
         {
             PlayerRows.AddAudit(con, "archive:1001", "public", "claim");
-            foreach (var source in new[] { "/game/user/lodges", "/game/user/lodge" })
-                PlayerRows.AddLodge(con, source, "1", new JsonObject { ["id"] = 1, ["lodge_type_id"] = 780 });  // the empty lodge the server gave for the lodge item
+            foreach (var source in new[] { "/game/user/lodges", "/game/user/lodge" })  // the lodge the server gave for the lodge item (the single's row holds the slots)
+                PlayerRows.AddLodge(con, source, "1", new JsonObject { ["id"] = 1, ["lodge_type_id"] = 780, ["animal_slots"] = new JsonArray(placed && source.EndsWith("lodge") ? [new JsonObject { ["slot_id"] = 4, ["trophy_id"] = 7 }] : []) });
         }
         var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
         var id = uploads.Start(player)!;
         var save = PublicSave(("json_v2_lodges.json", """[{"id":61,"lodge_type_id":780},{"id":62,"lodge_type_id":790}]"""),
-                              ("json_lodge_contents.json", """{"61":{"id":61,"lodge_type_id":780,"animal_slots":[{"slot_id":1}]},"62":{"id":62,"lodge_type_id":790,"animal_slots":[{"slot_id":2}]}}"""));
+                              ("json_lodge_contents.json", """{"61":{"id":61,"lodge_type_id":780,"animal_slots":[{"slot_id":1,"trophy_id":9}]},"62":{"id":62,"lodge_type_id":790,"animal_slots":[{"slot_id":2,"trophy_id":8}]}}"""));
         await uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(save)));
         Assert.Equal("review", (await uploads.Finish(player, id)).Kind);
         Assert.Equal("restored", uploads.Approve(Waiting(player)).Kind);
         using var after = state.Store.Open(player);
-        Assert.Equal(["1", "1", "62", "62"], after.Rows("SELECT id FROM lodges WHERE account_id = $a ORDER BY CAST(id AS INTEGER), source").Select(r => (string)r[0]));  // 61 has the type of lodge 1: not added; 62 is new
+        Assert.Equal(["1", "1", "62", "62"], after.Rows("SELECT id FROM lodges WHERE account_id = $a ORDER BY CAST(id AS INTEGER), source").Select(r => (string)r[0]));  // 61 never becomes a second lodge of type 780; 62 is new
+        var one = JsonNode.Parse((string)after.Scalar("SELECT node FROM lodges WHERE account_id = $a AND source = '/game/user/lodge' AND id = '1'")!)!;
+        Assert.Equal(1L, (long)one["id"]!);  // the account's lodge id stays
+        Assert.Equal(placed ? 7L : 9L, (long)one["animal_slots"]![0]!["trophy_id"]!);  // an empty lodge got the saved contents, one with a trophy keeps its own
     }
 
     [Fact]
