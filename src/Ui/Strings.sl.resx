@@ -1410,7 +1410,7 @@
   <data name="Restore.Next.claimRejected" xml:space="preserve"><value>Zahtevate lahko samo en profil. Če imate zip z varnostno kopijo, ga raje naložite.</value></data>
   <data name="Restore.Next.empty" xml:space="preserve"><value>Izberite zip z varnostno kopijo in ga naložite.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Izbriši moje podatke</value></data>
-  <data name="Restore.Delete.Text" xml:space="preserve"><value>S tem izbrišete svoj račun na tem strežniku in vse, kar je z njim shranjeno: svoje ime, svoje podatke o igri, shranjene zip datoteke varnostnih kopij in svoje fotografije. Le vaš Steam id in čas izbrisa ostaneta 24 ur, da novi račun ne more takoj prevzeti starega profila. Odjavljeni boste, prijava iz zaganjalnika pa preneha delovati. Tega ni mogoče razveljaviti.</value></data>
+  <data name="Restore.Delete.Text" xml:space="preserve"><value>S tem izbrišete svoj račun na tem strežniku in vse, kar je z njim shranjeno: svoje ime, svoje podatke o igri, shranjene zip datoteke varnostnih kopij in svoje fotografije. Le vaš Steam id in čas izbrisa ostaneta 24 ur, da novi račun ne more takoj prevzeti starega profila; če je upravljavec vaš Steam id blokiral, ostane tudi zapis o blokadi. Odjavljeni boste, prijava iz zaganjalnika pa preneha delovati. Tega ni mogoče razveljaviti.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Razumem, izbriši vse</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Izbriši moje podatke</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Podatkov ni bilo mogoče izbrisati. Poskusite znova.</value></data>
@@ -1444,7 +1444,7 @@
   <data name="Data.Never.Title" xml:space="preserve"><value>Česa računi ne hranijo</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Vašega e-naslova, pravega imena, poštnega naslova ali telefonske številke: ti podatki se ne zahtevajo in se ne hranijo v vašem računu. Če varnostna kopija vsebuje tako polje, se ne obnovi.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Brisanje vaših podatkov</value></data>
-  <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi, le da se 24 ur hrani skupaj s časom izbrisa in ničemer drugem, da novi račun ne more takoj prevzeti starega profila; Steam id, ki ga je upravljavec prepovedal, ostane prepovedan. Ob novi prijavi se ustvari nov račun.</value></data>
+  <data name="Data.Delete.Text" xml:space="preserve"><value>Prijavite se, odprite Obnovitev varnostne kopije in uporabite Izbriši moje podatke. Izbriše račun, njegove podatke o igri, shranjene zip datoteke in fotografije ter vas odjavi. Vaš Steam id se nato pozabi, z dvema izjemama: 24 ur ostane skupaj s časom izbrisa in ničemer drugem (odstranjen ob naslednjem dnevnem čiščenju), da novi račun ne more takoj prevzeti starega profila; in če ga je upravljavec blokiral, ostane zapis o blokadi (glejte spodaj). Ob novi prijavi se ustvari nov račun.</value></data>
   <data name="Data.Operator" xml:space="preserve"><value>Operater tega strežnika vidi vse zgoraj navedeno.</value></data>
   <data name="Data.Reports.Title" xml:space="preserve"><value>Poročila o težavah</value></data>
   <data name="Data.Reports.Launcher" xml:space="preserve"><value>Ko se zagon igre ne posreči (ta je tekla manj kot minuto, se končala z napako ali ni pokazala okna), zaganjalnik sestavi poročilo: dnevnike in nastavitve igre, lasten dnevnik zaganjalnika, dogodke zrušitev sistema Windows za igro, zaganjalnik in njegov brskalnik (WebView2), imena protivirusnih programov, programov za pospeševanje in prekrivnih programov, različico in jezik sistema Windows, grafično kartico in zaslone ter vaše nedavne zagone. Njegove besedilne datoteke ne vsebujejo gesel ali žetonov. Pošlje se le, če ste izbrali »Pošlji samodejno« (vprašamo vas enkrat, spremenite lahko v Nastavitvah), sicer le, ko pritisnete Pošlji. Hrani se z vašim računom 30 dni in ga lahko berejo operaterji. Obvestilo z vašim vzdevkom, številko vašega računa in sklicem poročila gre na zasebni kanal Discord operaterjev. »Izbriši moje podatke« izbriše vaša poročila.</value></data>
@@ -1467,6 +1467,7 @@
   <data name="Data.Keep.Title" xml:space="preserve"><value>Kako dolgo se hranijo</value></data>
   <data name="Data.Keep.Account" xml:space="preserve"><value>Vaš račun in njegovi podatki ostanejo, dokler ne uporabite možnosti »Izbriši moje podatke«.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Dnevniki strežnika in posredniškega strežnika lahko vsebujejo naslove IP in vzdevke. Hranijo se največ 30 dni.</value></data>
+  <data name="Data.Keep.Steam" xml:space="preserve"><value>Ko je račun izbrisan, se njegov Steam id in čas izbrisa hranita 24 ur in se odstranita ob naslednjem dnevnem čiščenju. Blokada upravljavca se hrani kot zapis s Steam id, časom, razlogom in, ko je preklicana, časom preklica; zapis ostane po preklicu, da lahko poznejša zahteva za profil pokaže, da je bil Steam id prej blokiran, in ostane po izbrisu računa.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Brskalnik je odprt. Tam se prijavite s Steamom.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Prijava s Steamom</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>
@@ -1569,7 +1570,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Ta povezava za prijavo je potekla. Začnite znova iz zaganjalnika ali orodja za varnostno kopiranje.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ta povezava za prijavo ni veljavna. Začnite znova iz zaganjalnika ali orodja za varnostno kopiranje.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam prijave ni potrdil. Začnite znova.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun je blokiran in se ne more prijaviti.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun Steam je blokiran in se ne more prijaviti.</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>

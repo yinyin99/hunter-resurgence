@@ -925,13 +925,20 @@ public sealed class Store
         con.Exec("DELETE FROM web_sessions WHERE hash = ?", Hash(cookie));
     }
 
-    /// <summary>Drop the tokens and cookies that have expired, and the deletion times older than the claim cooldown (at startup).</summary>
+    /// <summary>Drop the tokens and cookies that have expired (at startup), and the deletion times older than the claim cooldown (<see cref="PurgeDeletions"/>).</summary>
     public void PurgeExpired()
     {
         using var con = Open();
         var now = Now();
         con.Exec("DELETE FROM tokens WHERE expires_ts <= ?", now);
         con.Exec("DELETE FROM web_sessions WHERE expires_ts <= ?", now);
+        PurgeDeletions(now);
+    }
+
+    /// <summary>Delete the deletion times older than the claim cooldown: at startup and in the daily purge.</summary>
+    public void PurgeDeletions(long now)
+    {
+        using var con = Open();
         con.Exec("DELETE FROM steam_deletions WHERE ts <= ?", now - Claims.CooldownHours * 3600L);
     }
 

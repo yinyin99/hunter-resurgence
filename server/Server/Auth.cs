@@ -415,7 +415,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             var o = claims!.Claim(account, old, useOldName: handle == player.Handle, confirmOverwrite: true);
             claimed = $"{Alerts.Handle(player.Handle)}, hunterscore {player.Hunterscore}";
             outcome = o.Kind == "restored" ? "claim restored" : o.Kind == "review" ? "claim waiting for review" : $"claim refused ({o.Kind})";
-            if (o.Kind == "refused")  // the cooldown after a delete: the player's inbox says when the claim is possible
+            if (o.Kind == "refused")  // any refused claim (the cooldown after a delete, an empty archive, an unreadable profile): the player's inbox says why
             {
                 using var con = Store.Open(account);
                 Uploads.Notify(con, o.Message);

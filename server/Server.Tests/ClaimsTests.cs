@@ -344,9 +344,15 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         using var con = state.Store.Open();
         Assert.Equal([steam], con.Rows("SELECT steam_id64 FROM steam_deletions").Select(r => (string)r[0]));
         Assert.Equal(2L, (long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('steam_deletions')")!);  // Steam id and time, nothing else
-        con.Exec("UPDATE steam_deletions SET ts = ts - ?", (Claims.CooldownHours + 1) * 3600L);
-        state.Store.PurgeExpired();
+        var recorded = (long)con.Scalar("SELECT ts FROM steam_deletions")!;
+        state.Store.PurgeDeletions(recorded + Claims.CooldownHours * 3600L - 1);  // the daily purge: a record younger than 24 h stays
+        Assert.NotNull(state.Store.DeletedAt(steam));
+        state.Store.PurgeDeletions(recorded + Claims.CooldownHours * 3600L + 1);  // older than 24 h: gone, without a restart
         Assert.Null(state.Store.DeletedAt(steam));
+        Assert.NotNull(AdminApi.Ban(state, steam, "kept").Done);
+        Assert.NotNull(AdminApi.Unban(state, steam).Done);
+        state.Store.PurgeDeletions(recorded + 100 * 86400L);
+        Assert.NotNull(state.Store.BanOf(steam));  // a lifted ban record is not purged
     }
 
     [Fact]

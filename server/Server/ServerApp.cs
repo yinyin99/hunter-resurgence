@@ -215,6 +215,7 @@ public static class ServerApp
                 {
                     CrashReports.Purge(kept.Store, Store.Now());
                     app.Services.GetService<ProblemReports>()?.Purge(Store.Now());
+                    kept.Store.PurgeDeletions(Store.Now());
                 }
                 catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("purge of reports: " + e.Message); }  // retried the next day
             }
