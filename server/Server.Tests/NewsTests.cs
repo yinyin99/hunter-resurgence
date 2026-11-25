@@ -400,8 +400,8 @@ public class NewsCommandTests : IDisposable
     public void AddAppliesAPictureSlotAndRefusesABadOneBeforeWritingAndDiscordLeavesItOut()
     {
         var http = new Fake();
-        var (code, _, _) = Run(["add", "--title", "Slotted", "--body-file", Write("s.md", "x"), "--picture-slot", "competition-hero-170039", "--link", "link:discord", "--link-text", "Join", "--discord"], http: new HttpClient(http));
-        Assert.Equal(0, code);
+        var (code, _, err) = Run(["add", "--title", "Slotted", "--body-file", Write("s.md", "x"), "--picture-slot", "competition-hero-170039", "--link", "link:discord", "--link-text", "Join", "--discord"], http: new HttpClient(http));
+        Assert.True(code == 0, err);
         Assert.Equal("slot:competition-hero-170039", news.List().Single(p => p.Texts["en"].Title == "Slotted").Picture);
         var embed = JsonNode.Parse(Assert.Single(http.Posted).Body)!["embeds"]![0]!;
         Assert.Null(embed["image"]);

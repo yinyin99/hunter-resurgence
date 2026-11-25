@@ -169,7 +169,7 @@ public sealed class News(Store store, string dataDir)
         var post = Get(id) ?? throw Bad($"no post {id}", 404);
         using var con = store.Open();
         con.Exec("UPDATE news SET picture = NULL, updated = ? WHERE id = ?", Math.Max(Store.Now(), post.Updated + 1), id);
-        foreach (var e in Extensions) File.Delete(PictureFile(id, e));
+        DeleteFiles(id);
     }
 
     /// <summary>Refuses a name that is no picture slot name.</summary>
@@ -185,6 +185,13 @@ public sealed class News(Store store, string dataDir)
         CheckSlot(slot);
         using var con = store.Open();
         con.Exec("UPDATE news SET picture = ?, updated = ? WHERE id = ?", SlotPrefix + slot, Math.Max(Store.Now(), post.Updated + 1), id);
+        DeleteFiles(id);
+    }
+
+    // File.Delete throws when the folder is missing, as it is until the first stored picture
+    void DeleteFiles(long id)
+    {
+        if (!Directory.Exists(PictureDir)) return;
         foreach (var e in Extensions) File.Delete(PictureFile(id, e));
     }
 
