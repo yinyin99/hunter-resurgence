@@ -356,8 +356,11 @@ public sealed partial class State
     }
 
     static List<JsonObject> MountedRows(Db con) =>
-        [.. Restored(con, "lodges", LodgeOne).Concat(Restored(con, "lodges", LodgeList)).OfType<JsonObject>()
-            .SelectMany(l => (l["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+        MountedOf(Restored(con, "lodges", LodgeOne).Concat(Restored(con, "lodges", LodgeList)).OfType<JsonObject>());
+
+    /// <summary>The trophy rows of the animal slots of these lodges that carry `trophy_details`.</summary>
+    static List<JsonObject> MountedOf(IEnumerable<JsonObject> lodges) =>
+        [.. lodges.SelectMany(l => (l["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
             .Where(s => s["trophy_id"] is not null && s["trophy_details"] is JsonObject)
             .Select(s =>
             {
@@ -368,13 +371,21 @@ public sealed partial class State
             })];
 
     /// <summary>Give each animal of <see cref="MountedRows"/> that has no `/game/user/trophies` row one, in the caller's transaction: a lodge's slots are rewritten without their `trophy_details` when the game
-    /// saves the lodge, so the animal is kept as a row before that.</summary>
-    void StoreMounted(Db con, long account)
+    /// saves the lodge, so the animal is kept as a row before that. Returns the rows added.</summary>
+    static int StoreMounted(Db con) => AddMounted(con, MountedRows(con));
+
+    /// <summary>The same for these rows only (the animals of one lodge), in the caller's transaction. Returns the rows added.</summary>
+    static int AddMounted(Db con, IEnumerable<JsonObject> rows)
     {
         var listed = con.Rows("SELECT id FROM trophies WHERE account_id = $a AND source = '/game/user/trophies'").Select(r => (string)r[0]).ToHashSet();
-        foreach (var row in MountedRows(account))
+        var added = 0;
+        foreach (var row in rows)
             if (listed.Add(Py.Str(row["id"])))
+            {
                 PlayerRows.AddTrophy(con, "/game/user/trophies", Py.Str(row["id"]), row);
+                added++;
+            }
+        return added;
     }
 
     /// <summary>The account's trophies as `/game/user/trophies` sends them, newest first (<see cref="Newest"/>): the restored rows, then the animals mounted in the restored lodges that have no row (<see cref="MountedRows"/>), then one row per harvest made on this

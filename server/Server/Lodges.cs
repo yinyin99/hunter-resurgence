@@ -71,6 +71,51 @@ public sealed partial class State
         }
     }
 
+    /// <summary>The saved `lodge_contents` of a section save that was restored before it was read as lodges: kept whole in `extras` under this name.</summary>
+    const string LodgeContentsExtra = "json_lodge_contents.json";
+
+    /// <summary>`admin backfill-lodges`: for every account (or `only`) with <see cref="LodgeContentsExtra"/> in its extras, each listed lodge (a `/game/user/lodges` row) that has no `/game/user/lodge` row gets the
+    /// saved contents as that row, and a trophy row for each mounted animal that has none (<see cref="AddMounted"/>). A lodge that has contents is never touched, so a second run adds nothing. One line per
+    /// account and lodge. Without `apply` the same rows are made and dropped: nothing is written.</summary>
+    public List<string> BackfillLodgeContents(bool apply, long? only = null)
+    {
+        var lines = new List<string>();
+        foreach (var account in only is { } one ? [one] : Store.AccountIds())
+        {
+            try
+            {
+                using var con = Con(account);
+                con.Begin();
+                if (con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path = ?", LodgeContentsExtra) is not string body || JsonNode.Parse(body) is not JsonObject saved) continue;
+                var contents = saved.Where(kv => long.TryParse(kv.Key, out _) && kv.Value is JsonObject).ToLookup(kv => long.Parse(kv.Key), kv => (JsonObject)kv.Value!);
+                var held = con.Rows("SELECT CAST(id AS INTEGER) FROM lodges WHERE account_id = $a AND source = ?", LodgeOne).Select(r => (long)r[0]).ToHashSet();
+                foreach (var r in con.Rows("SELECT id, CAST(id AS INTEGER) FROM lodges WHERE account_id = $a AND source = ? ORDER BY 2, n", LodgeList))
+                {
+                    var (id, number) = ((string)r[0], (long)r[1]);
+                    if (!held.Add(number) || contents[number].FirstOrDefault() is not { } lodge) continue;
+                    PlayerRows.AddLodge(con, LodgeOne, id, lodge.DeepClone());
+                    var slots = ((lodge["animal_slots"] as JsonArray)?.Count ?? 0) + ((lodge["weapon_slots"] as JsonArray)?.Count ?? 0);
+                    lines.Add($"account {account} lodge {number}: {(apply ? "added" : "would add")}, {slots} slots, {AddMounted(con, MountedOf([lodge]))} trophy rows");
+                }
+                if (apply) con.Commit();
+            }
+            catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
+            {
+                lines.Add($"account {account}: left as it was ({e.Message})");
+            }
+        }
+        return lines;
+    }
+
+    /// <summary>After a restore: each animal mounted in the account's lodges keeps a trophy row (<see cref="StoreMounted"/>), as the game's own lodge edit would.</summary>
+    internal void KeepMounted(long account)
+    {
+        using var con = Con(account);
+        con.Begin();
+        StoreMounted(con);
+        con.Commit();
+    }
+
     /// <summary>A reply of `/gameengine/trophylodge/<key>`; null for a key the facts file lacks.</summary>
     public byte[]? LodgeCatalogueReply(string key) => facts.LodgeCatalogue(key) is { } node ? Py.DumpBytes(node) : null;
 
@@ -189,7 +234,7 @@ public sealed partial class State
         }
         using var con = Con(account);
         con.Begin();
-        StoreMounted(con, account);  // before the slots are rewritten
+        StoreMounted(con);  // before the slots are rewritten
         var rows = con.Rows("SELECT n, node FROM lodges WHERE account_id = $a AND source IN (?, ?) AND id = ?", LodgeList, LodgeOne, id.ToString());
         foreach (var r in rows)
             if (JsonNode.Parse((string)r[1]) is JsonObject node)
@@ -223,7 +268,7 @@ public sealed partial class State
         if (sent is not JsonObject o || o["hidden"] is not JsonValue v || !v.TryGetValue<bool>(out var hidden)) return 400;
         using var con = Con(account);
         con.Begin();
-        StoreMounted(con, account);
+        StoreMounted(con);
         var found = con.Exec("UPDATE harvests SET hidden = ? WHERE account_id = $a AND kill_id = ?", hidden ? 1 : 0, id);
         foreach (var r in con.Rows("SELECT n, node FROM trophies WHERE account_id = $a AND source IN ('/game/user/trophies', '/v1/Trophy/list') AND id = ?", id.ToString()))
             if (JsonNode.Parse((string)r[1]) is JsonObject row)
