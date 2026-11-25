@@ -36,6 +36,10 @@ const string AdminUsage = """
     made since its mission was activated, and one that no harvest or clue meets is reopened (one with words the server does not read stays finished and is counted as `kept: not understood` in the total line) (a completed mission that loses one is active again, and the missions it had made available are activated so nobody is locked out). gm$, em$ and items already paid are not taken back;
     missions completed before a restore are never touched. Without --apply it only prints one line per account with a change and a total, and writes nothing; --apply changes the rows and keeps a record per account (table mission_rollbacks).
     Run it once, with the server stopped, after `backup`.
+    admin mp-harvests [--apply] moves the harvests of multiplayer games that were credited to the player who harvested the animal to the player who shot it last (the rule the server applies now): for each stored harvest it looks for another account's hit on the same animal (same reserve,
+    same individual and species, in the ten minutes before the harvest, in a hunt that overlapped and was still running) newer than the harvester's own last hit. A moved harvest takes its page (a taxidermy or skull bought with it too), kill row and events to the shooter, and a mounted trophy is taken
+    off the harvester's lodge; the gm$ are NOT moved (what the harvester was paid stays his, the shooter gets none, no wallet changes); the missions of both are checked again, the hunterscore of both is made again, and a record per account is kept (table mission_rollbacks).
+    It prints one line per moved harvest (kill, species, from, to, gm$) and a total; the first harvest of an animal moves, a second one stays. Without --apply it only prints and writes nothing. Run it once, with the server stopped, after `backup`.
     admin missions-audit [--hours N] [--account <id or handle>] [--discord] lists the mission objectives completed in the last N hours (default 24) that look suspicious, one line per objective
     (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, rule changed, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
     2000 characters, separated by a line ---8<---, for a webhook, with one line for the count of `rule changed` instead of one per objective.
@@ -241,6 +245,15 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.RollbackMissions(apply, only)) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "mp-harvests")
+    {
+        if (a[1..].Any(x => x != "--apply")) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        foreach (var line in loaded.MoveMpHarvests(a.Contains("--apply"))) Console.WriteLine(line);
         return;
     }
     if (a.Length > 0 && a[0] == "missions-audit")
