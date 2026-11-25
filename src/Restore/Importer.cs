@@ -42,6 +42,19 @@ public static class Importer
         return BackupReader.IsOne(zip) ? "ours" : "other";
     }
 
+    /// <summary>The entry count of a zip and its first `n` entry names, in its directory's order (names only, never content), for a log line of a refused zip.
+    /// The caps of <see cref="Read(Stream, IItemCatalogue?, Limits?)"/> hold first: a file they refuse to open, or no zip, gives (0, []).</summary>
+    public static (int Count, IReadOnlyList<string> First) EntryNames(string zipPath, int n)
+    {
+        try
+        {
+            using var s = File.OpenRead(zipPath);
+            using var zip = BackupReader.Open(s, Limits.Default);
+            return (zip.Entries.Count, zip.Entries.Take(n).Select(e => e.FullName).ToList());
+        }
+        catch (Exception e) when (e is RestoreException or InvalidDataException or IOException) { return (0, []); }
+    }
+
     static BackupContent Content(Stream stream, Limits lim)
     {
         using var zip = BackupReader.Open(stream, lim);

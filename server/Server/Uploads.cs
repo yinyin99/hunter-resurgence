@@ -43,6 +43,9 @@ public sealed class Uploads(State state, string dataDir)
     /// <summary>Called with the text for the operator when a zip is kept (the server sets it to the review webhook).</summary>
     public Action<string> Alert { get; init; } = _ => { };
 
+    /// <summary>Where the operator's console lines go (a test collects them).</summary>
+    public Action<string> Log { get; init; } = Console.WriteLine;
+
     /// <summary>The links of a save's gallery pictures the zip lacks are fetched at upload time and kept with the zip (<see cref="Restorer.PicturesZip"/>); null: none are.</summary>
     public PictureLinks? Pictures { get; init; }
 
@@ -336,6 +339,22 @@ public sealed class Uploads(State state, string dataDir)
 
     static readonly string[] ProgramFiles = [".py", ".exe", ".bat", ".dll"], PictureFiles = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
 
+    /// <summary>Said to the player of a zip that holds no backup: the file to choose.</summary>
+    const string ChooseTheBackup = "Choose the zip your backup tool made, as it is: not a folder, not a zip you made yourself.";
+
+    /// <summary>One console line for a zip refused as no backup, for the operator: whose, its size and its first entry names (names only, never content; the zip may be no zip at all).</summary>
+    static string Describe(long account, string path)
+    {
+        var (count, first) = Importer.EntryNames(path, 5);
+        // a name is the sender's: no control character may break the line, and a long one is cut
+        static string Clean(string n)
+        {
+            var s = new string(n.Select(c => char.IsControl(c) ? '?' : c).ToArray());
+            return s.Length > 80 ? s[..80] + "..." : s;
+        }
+        return $"refused zip of account {account}: {new FileInfo(path).Length} bytes, " + (count is 0 ? "no entries read" : $"{count} entries, first: {string.Join(", ", first.Select(Clean))}");
+    }
+
     /// <summary>Why a readable zip that holds no backup is none, in words the player can act on, from its entry names alone (cheap); null: no better reason than the reader's.
     /// A backup inside a folder or a zip (nested), a program and no backup data, or only pictures.</summary>
     static string? Diagnose(string path, Exception why)
@@ -346,9 +365,9 @@ public sealed class Uploads(State state, string dataDir)
             using var zip = ZipFile.OpenRead(path);
             var names = zip.Entries.Where(e => !e.FullName.EndsWith('/')).Select(e => e.FullName.ToLowerInvariant()).ToList();
             bool Has(string[] ends) => names.Any(n => ends.Any(n.EndsWith));
-            if (Has([".zip", "/manifest.json", "/index.json", "/archive_manifest.json"])) return "Your backup is inside another folder or zip: upload the backup zip itself";
+            if (Has([".zip", "/manifest.json", "/index.json", "/archive_manifest.json"])) return "Your backup is inside another folder or zip. " + ChooseTheBackup;
             if (Has(ProgramFiles)) return "This zip holds a program, not a backup: upload the file the program made (it ends in _PRIVATE.zip)";
-            if (names.Count > 0 && names.All(n => PictureFiles.Any(n.EndsWith))) return "This zip holds only pictures, not a backup";
+            if (names.Count > 0 && names.All(n => PictureFiles.Any(n.EndsWith))) return "This zip holds only pictures, not a backup. " + ChooseTheBackup;
         }
         catch (Exception e) when (e is IOException or InvalidDataException) { }
         return null;
@@ -364,7 +383,8 @@ public sealed class Uploads(State state, string dataDir)
         }
         catch (Exception e) when (e is RestoreException or InvalidDataException)
         {
-            return Refuse(account, path, sha, Diagnose(path, e) ?? $"This file cannot be read as a backup: {e.Message}. Nothing was changed.");
+            Log(Describe(account, path));
+            return Refuse(account, path, sha, Diagnose(path, e) ?? $"This file cannot be read as a backup: {e.Message}. Nothing was changed. {ChooseTheBackup}");
         }
         var uid = long.Parse(read.Model.Identity.Uid);
         // an upload is never restored: only the refusals that are cheap to know now are given at once, the rest waits for the operator
