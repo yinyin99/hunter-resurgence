@@ -53,10 +53,12 @@ public sealed class Store
     // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
     // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore; earlier: the
     // objectives finished before `seen` (JSON): no harvest after it finished them.
+    const string NoRules = "{}";  // the `rules` of a mission row that has finished no objective since schema 36 (a raw interpolated string has no literal braces)
+
     const string Missions = $"""
         CREATE TABLE missions (
             {A}, mission_id INTEGER NOT NULL, state INTEGER NOT NULL, objectives TEXT NOT NULL,
-            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]', earlier TEXT NOT NULL DEFAULT '[]', rules TEXT NOT NULL DEFAULT '{}',
+            since INTEGER, seen INTEGER NOT NULL DEFAULT 0, kept TEXT NOT NULL DEFAULT '[]', earlier TEXT NOT NULL DEFAULT '[]', rules TEXT NOT NULL DEFAULT '{NoRules}',
             PRIMARY KEY (account_id, mission_id)) WITHOUT ROWID;
         CREATE TABLE mission_prefs (account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, body TEXT NOT NULL);
         {MissionRollbacks}
