@@ -17,7 +17,9 @@ h5 { margin: 0 0 20px; font-size: 14px; line-height: 20px; font-weight: 400; col
 .steps > span { flex: 1; font-size: 14px; line-height: 40px; text-align: center; color: var(--text-2); }
 .steps > span + span { border-inline-start: 1px solid rgba(0, 0, 0, .45); }
 .steps > span.got { background: #9cc3ea; color: #234; }
-.steps > span.next { background: #6f7f90; }
+/* the step in progress is filled with the greyed blue from its start up to --p, the rest stays dark */
+.steps > span.next { background: linear-gradient(to right, #6f7f90 var(--p), transparent var(--p)); }
+.steps > span.next:dir(rtl) { background: linear-gradient(to left, #6f7f90 var(--p), transparent var(--p)); }
 .item { display: grid; grid-template-columns: 110px 370px 1fr; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); min-height: 106px; box-sizing: border-box; }
 .item ::deep .badge { margin-left: 10px; }
 .text b, .text span { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }

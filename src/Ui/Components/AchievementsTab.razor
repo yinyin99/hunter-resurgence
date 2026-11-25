@@ -42,8 +42,9 @@ else
                     {
                         var p = m.Progress(i);
                         var tip = $"tip-{mi}-{i}";
-                        // the tooltip opens on hover and on focus, centred above the step and moved inward at the row's ends; --c is the step's centre as a share of the row
-                        <span class="@(i < m.Done ? "got" : i == m.Done ? "next" : "")" style="--c:@F((i + 0.5) / m.Steps.Count)" tabindex="0" aria-describedby="@tip">
+                        var st = $"--c:{F((i + 0.5) / m.Steps.Count)}" + (i == m.Done ? $";--p:{p.Percent}%" : "");
+                        // the tooltip opens on hover and on focus, centred above the step and moved inward at the row's ends; --c is the step's centre as a share of the row, --p the progress inside the step in progress
+                        <span class="@(i < m.Done ? "got" : i == m.Done ? "next" : "")" style="@st" tabindex="0" aria-describedby="@tip">
                             @s
                             <small id="@tip" role="tooltip" class="tip">
                                 @if (m.StepTitle != "") { <b>@Text(m.StepTitle, s)</b> }

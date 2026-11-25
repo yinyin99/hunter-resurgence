@@ -359,7 +359,7 @@ public sealed class LiveSiteTests : UiContext
             Assert.Equal("25 Test Rifle harvests in the reserve.", tips[1].QuerySelectorAll("span")[0].TextContent);
             Assert.Equal("Progress: 2/24 (8%)", tips[1].QuerySelector(".tip .meter")!.TextContent);  // the text is written on the bar
             Assert.Equal(["got", "next"], tips.Select(s => s.ClassName!.Trim()));  // the step in progress is the first one not reached
-            Assert.Equal(["--c:0.25", "--c:0.75"], tips.Select(s => s.GetAttribute("style")));  // each step's centre, for the tooltip and its pointer
+            Assert.Equal(["--c:0.25", "--c:0.75;--p:8%"], tips.Select(s => s.GetAttribute("style")));  // each step's centre, for the tooltip and its pointer; the step in progress also its progress
             Assert.Equal(tips[1].GetAttribute("aria-describedby"), tips[1].QuerySelector(".tip")!.Id);
             Assert.Null(tips[0].QuerySelector(".meter"));
         }
