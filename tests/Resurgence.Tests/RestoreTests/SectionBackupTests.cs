@@ -138,7 +138,19 @@ public class SectionBackupTests
         Assert.Contains("Page_content_competitions_new__competition_id=6.json", extras.Keys);
         var lodge = Assert.Single(read.Model.Lodges.Where(l => l.Source == "/game/user/lodge"));
         Assert.Equal("61", lodge.Id);
+        Assert.Contains("animal_slots", lodge.Node!.ToJsonString());
         Assert.Empty(read.Report.Rejected);
+    }
+
+    [Fact]
+    public void ALodgeListAndItsContentsAreTheTwoRowsOfOneLodge()
+    {
+        var read = PublicSave().Section("v2_lodges", """[{"id":61,"name":"Lodge"}]""").Section("lodge_contents", """{"61":{"id":61,"name":"Lodge","animal_slots":[{"slot_id":1}]}}""").Read();
+        // the server keeps a lodge as two rows, as a new lodge gets them: the list's entry and the single lodge with its slots
+        var rows = read.Model.Lodges.Select(l => (l.Source, l.Id)).ToList();
+        Assert.Equal([("/game/user/lodge", "61"), ("/game/user/lodges", "61")], rows);
+        Assert.Contains("animal_slots", read.Model.Lodges.Single(l => l.Source == "/game/user/lodge").Node!.ToJsonString());
+        Assert.DoesNotContain("animal_slots", read.Model.Lodges.Single(l => l.Source == "/game/user/lodges").Node!.ToJsonString());
     }
 
     [Fact]
@@ -219,7 +231,7 @@ public class SectionBackupTests
     [Fact]
     public void SectionsWithoutAnEndpointAreKeptAndWhatIsOutsideTheFolderIsIgnored()
     {
-        var z = Sections().Section("observed", """{"me/me":{"a":1}}""").Section("competitions_list", "[]")
+        var z = Sections().Section("observed", """{"me/me":{"a":1}}""").Section("results", "[]")
             .Section("gallery_all", """{"photos":["https://photos.example/p/b.jpg"]}""");
         z.Raw.Add(("backup_1001_converted/json_account.json", """{"made":"up"}"""u8.ToArray()));
         z.Raw.Add(("backup_1001_converted/README.txt", "made up"u8.ToArray()));
@@ -227,7 +239,7 @@ public class SectionBackupTests
         Assert.Empty(r.Report.Rejected);
         Assert.Empty(r.Report.Missing.Where(x => x.Contains("index.json")));
         Assert.Equal("""{"me/me":{"a":1}}""", r.Model.Extras["json_observed.json"]!.ToJsonString());
-        Assert.Contains("json_competitions_list.json", r.Model.Extras.Keys);
+        Assert.Contains("json_results.json", r.Model.Extras.Keys);
         Assert.Equal("""{"photos":["https://photos.example/p/b.jpg"]}""", r.Model.Extras["Gallery_list_all.json"]!.ToJsonString());
         Assert.Contains("unknown endpoint: 2 file(s), kept in Extras", r.Report.Unsupported);
         Assert.Contains("/v1/Gallery/list_all: 1 file(s), kept in Extras", r.Report.Unsupported);
