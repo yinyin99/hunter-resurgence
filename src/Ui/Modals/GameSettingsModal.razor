@@ -8,7 +8,7 @@
     {
         <div class="rows">
             @* the folder in use; the button opens the Game folder window *@
-            <div class="row"><span>@L["Settings.GameFolder"]</span><input id="game-folder-path" class="field line" readonly aria-label="@L["Settings.GameFolder"]" value="@(Bridge.GameInstall.Folder ?? L["GameFolder.None"].Value)" /><button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Choose"]</button></div>
+            <div class="row"><span>@L["Settings.GameFolder"]</span><span id="game-folder-path" class="path" title="@path">@path</span><button type="button" class="btn btn-inverse" id="game-folder" @onclick="() => Modal.Show<GameFolderModal>()">@L["GameFolder.Choose"]</button></div>
             <label class="row"><span>@L["GameSettings.StartWithSteam"]</span><input class="tick" type="checkbox" id="start_with_steam" @bind="startWithSteam" /></label>
             <label class="row"><span>@L["GameSettings.Display"]</span>
                 <select class="field-sel" id="window_mode" @bind="display">
@@ -52,6 +52,7 @@
 @code {
     GameSettings? settings;
     DisplayMode display;
+    string path => Bridge.GameInstall.Folder ?? L["GameFolder.None"].Value;
     bool vsync, startWithSteam;
     bool? contextual, audio;
     int resolution, scene, texture, shadow, msaa, aniso;
