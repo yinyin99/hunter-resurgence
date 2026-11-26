@@ -501,6 +501,10 @@ public sealed partial class State
         foreach (var sp in reply["species"]!.AsArray().OfType<JsonObject>())
             if (sp["ethicalAmmo"] is null && Py.L(sp["id"]) is >= 0 and var id && id < ethicalAmmo.Count)
                 sp["ethicalAmmo"] = C(ethicalAmmo[(int)id]);
+        foreach (var dependencies in (reply["missions"] as JsonArray ?? []).OfType<JsonObject>().Select(m => m["dependencies"]).OfType<JsonArray>())  // the in-game page lists a locked mission's prerequisites from these: the ones the server ignores must not show (#1012)
+            for (var i = dependencies.Count - 1; i >= 0; i--)
+                if (TryKey(dependencies[i], out _) && Beginner.Contains(Py.L(dependencies[i])))
+                    dependencies.RemoveAt(i);
         return Py.DumpBytes(reply);
     }
 
