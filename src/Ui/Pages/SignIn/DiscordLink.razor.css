@@ -1,0 +1,12 @@
+.score { margin: 18px 0 2px; color: #fff; font-size: 34px; font-weight: 500; line-height: 40px; overflow-wrap: anywhere; }
+.score .unit { color: var(--fg-muted); font-size: 18px; font-weight: 400; }
+.role { margin: 0 0 14px; }
+.role ::deep .verified { color: var(--discord-role-verified); }
+.role ::deep .veteran { color: var(--discord-role-veteran); }
+.bar { height: 10px; margin: 0 0 8px; overflow: hidden; border-radius: 5px; background: rgba(255, 255, 255, .16); }
+.fill { height: 100%; min-width: 2px; border-radius: 5px; background: var(--accent); }
+.more { margin: 0 0 4px; color: var(--fg-muted); }
+.more ::deep .veteran { color: var(--discord-role-veteran); }
+.back { margin: 22px 0 0; }
+.back ::deep .btn { display: block; box-sizing: border-box; width: 100%; background-color: var(--discord); text-align: center; }
+.back ::deep .btn:hover { background-color: var(--discord-hover); }

@@ -39,6 +39,9 @@ public sealed class LauncherSessionService : ISessionService
         catch (Exception e) when (e is IOException or CryptographicException or UnauthorizedAccessException) { } // none, another Windows user's or damaged: signed out
     }
 
+    /// <summary>The whole address: the launcher opens it in the player's browser.</summary>
+    public string? DiscordLinkUrl => http.BaseAddress is { } site ? new Uri(site, "/discord/link").AbsoluteUri : null;
+
     public bool BrowserSignIn => true;
 
     public Task<Session?> CurrentAsync() => inner.CurrentAsync();

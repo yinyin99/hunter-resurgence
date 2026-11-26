@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Liity seuraamme Discordissa</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Yhteisö kokoontuu Discordissa: uutisia, apua ja muita metsästäjiä. Tule moikkaamaan!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Liity Discordiin</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Yhdistä Discordisi</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Saat 5000 gm$ ja 250 em$ kerran. HunterScoresi näkyy Discord-profiilissasi.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Yhdistä Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Yhdistä Discord · saat 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Myöhemmin</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Onko sinulla profiilisi varmuuskopio?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Varmuuskopio on varmuuskopiotyökalun tallentama zip-tiedosto tai toisella yhteisön työkalulla tehty tallennus. Palauta se nyt, niin saat takaisin metsästyksesi, esineesi ja pokaalisi.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Valitse varmuuskopio-zip ja lähetä se.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Poista tietoni</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Tämä poistaa tilisi tältä palvelimelta ja kaiken siihen tallennetun: nimesi, pelitietosi, säilytetyt varmuuskopio-zipit ja valokuvasi. Vain Steam-tunnuksesi ja poistamisen ajankohta säilyvät 24 tuntia, jotta uusi tili ei voi heti lunastaa vanhaa profiilia; jos ylläpitäjä on estänyt Steam-tunnuksesi, myös eston tallenne säilyy. Sinut kirjataan ulos, eikä käynnistäjän sisäänkirjautuminen enää toimi. Tätä ei voi perua.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Jos yhdistit Discordin, yksi asia vielä jää: Discord-tunnuksesi avaimellinen tiiviste ilman tiliä, nimeä tai päivämäärää, jotta yhdistämisen palkintoa ei makseta koskaan kahdesti. Discord-tunnuksesi ja tokenit poistetaan.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ymmärrän, poista kaikki</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Poista tietoni</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Tietoja ei voitu poistaa. Yritä uudelleen.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Tilisi pelitiedot: varusteet, lompakko, taidot, tilastot, saavutukset, palkinnot, metsästykset, kaadot ja pelissä ottamasi valokuvat.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Jokainen lähettämäsi varmuuskopio-zip muuttumattomana: säilytetään, jotta operaattori voi tarkistaa sen, ja palauttamisen jälkeen, jotta operaattori voi nollata tilisi ja palauttaa sen uudelleen. Zip sisältää sen, minkä varmuuskopiotyökalu tallensi tilistäsi.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sisäänkirjautumisevästeet ja pelitunnisteet tiivisteinä, joita ei voi palauttaa luettavaan muotoon.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Vain jos yhdistät Discordin: Discord-tunnuksesi ja tokenit, jotka Discord antoi palvelimelle roolisi päivittämistä varten, salattuina. Muuta Discord-profiilistasi ei tallenneta. Palvelin lähettää käyttäjänimesi ja HunterScoresi Discordille rooliasi varten.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Vain jos yhdistät Discordin: merkintä siitä, että 5000 gm$ ja 250 em$ palkinto on maksettu Discord-tunnuksellesi, tallennettuna avaimellisena tiivisteenä, jota ei voi muuttaa takaisin tunnukseksi.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Mitä tilit eivät sisällä</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Sähköpostiosoitteesi, oikea nimesi, postiosoitteesi tai puhelinnumerosi: niitä ei kysytä eikä tallenneta tilillesi. Jos varmuuskopio sisältää tällaisen kentän, sitä ei palauteta.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Tilisi ja sen tiedot säilyvät, kunnes käytät Poista tietoni.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Palvelimen ja välityspalvelimen lokit voivat sisältää IP-osoitteita ja käyttäjänimiä. Niitä säilytetään enintään 30 päivää.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Kun tili poistetaan, sen Steam-tunnus ja poistamisen ajankohta säilyvät 24 tuntia ja poistetaan seuraavassa päivittäisessä siivouksessa. Ylläpitäjän antama esto tallennetaan merkintänä, jossa on Steam-tunnus, ajankohta, syy ja kumottuna kumoamisen ajankohta; merkintä säilyy eston kumoamisen jälkeen, jotta myöhempi profiilin lunastus voi näyttää Steam-tunnuksen olleen aiemmin estetty, ja se säilyy tilin poistamisen jälkeen.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Poista tietoni poistaa Discord-tunnuksesi ja tokenit. Vain Discord-tunnuksesi avaimellinen tiiviste jää, ilman tiliä, nimeä tai päivämäärää, jotta yhdistämisen palkintoa ei makseta koskaan kahdesti. Sen yhdistäminen Discord-tunnukseen vaatii palvelimen salaisen avaimen.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Selaimesi on auki. Kirjaudu siellä Steamilla.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Kirjaudu Steamilla</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Kirjautumista ei vahvistettu ajoissa. Yritä uudelleen.</value></data>
@@ -1574,6 +1582,15 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Syy:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Yhdistetty</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi ja sait 5000 gm$ ja 250 em$. Roolisi Discord-palvelimella määräytyvät HunterScoren mukaan.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi. Olet jo saanut 5000 gm$ ja 250 em$ yhdistämisestä, joten uutta palkintoa ei tule. Roolisi Discord-palvelimella määräytyvät HunterScoren mukaan.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Tämä Discord-tili on yhdistetty toiseen metsästäjään. Discord-tilin voi yhdistää vain yhteen metsästäjään.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Metsästäjäsi on jo yhdistetty toiseen Discord-tiliin. Metsästäjän voi yhdistää vain yhteen Discord-tiliin.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Yhdistäminen epäonnistui. Palaa Discordiin ja yritä uudelleen.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Roolisi Discordissa: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} lisää rooliin {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Takaisin Discordiin</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ilmoita ongelmasta</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Lähettää pelin ja launcherin lokit ja kaatumistapahtumat (WebView2 mukaan lukien) yhteisöpalvelimelle, jotta voimme auttaa. Säilytetään 30 päivää.</value></data>

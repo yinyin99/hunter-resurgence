@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Häng med oss på Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Gemenskapen träffas på Discord: nyheter, hjälp och andra jägare. Kom och säg hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Gå med i Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Länka ditt Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Få 5000 gm$ och 250 em$, en gång. Din HunterScore visas på din Discord-profil.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Länka Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Länka Discord · få 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senare</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en säkerhetskopia av din profil?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>En säkerhetskopia är zip-filen som säkerhetskopieringsverktyget sparade, eller en sparning gjord med ett annat gemenskapsverktyg. Återställ den nu och få tillbaka dina jakter, föremål och troféer.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Välj din zip med säkerhetskopian och ladda upp den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Radera mina uppgifter</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Detta raderar ditt konto på den här servern och allt som lagrats med det: ditt namn, dina speldata, de sparade zip-filerna med säkerhetskopior och dina foton. Bara ditt Steam-id och tidpunkten för raderingen finns kvar i 24 timmar, så att ett nytt konto inte direkt kan ta över en gammal profil; om operatören har stängt av ditt Steam-id finns även avstängningsposten kvar. Du loggas ut och inloggningen i launchern slutar fungera. Det går inte att ångra.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Om du har länkat Discord finns en sak till kvar: en nyckelhash av ditt Discord-id, utan konto, namn eller datum, så att belöningen för länkningen aldrig betalas ut två gånger. Ditt Discord-id och dina token raderas.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jag förstår, radera allt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Radera mina uppgifter</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Uppgifterna kunde inte raderas. Försök igen.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Speldata för ditt konto: inventarie, plånbok, färdigheter, statistik, prestationer, troféer, jakter, fällningar och de foton du tar i spelet.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Varje zip-fil med säkerhetskopia du laddar upp, oförändrad: sparas för att en operatör ska granska den, och efter att den återställts, så att operatören kan återställa ditt konto och återställa det igen. En zip-fil innehåller det som säkerhetskopieringsverktyget sparade från ditt konto.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inloggningscookies och speltokens, som hashvärden som inte kan läsas tillbaka.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Bara om du länkar Discord: ditt Discord-id och de token som Discord gav servern för att uppdatera dina roller, lagrade krypterade. Inget annat från din Discord-profil lagras. Servern skickar ditt handle och din HunterScore till Discord för dina roller.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bara om du länkar Discord: en post om att belöningen på 5000 gm$ och 250 em$ har betalats ut för ditt Discord-id, lagrad som en nyckelhash som inte kan göras om till id:t.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Vad konton inte innehåller</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-postadress, ditt riktiga namn, din postadress eller ditt telefonnummer: de efterfrågas inte och sparas inte i ditt konto. Om en säkerhetskopia innehåller ett sådant fält återställs det inte.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ditt konto och dess uppgifter finns kvar tills du använder Radera mina uppgifter.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- och proxyloggar kan innehålla IP-adresser och handles. De sparas i högst 30 dagar.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>När ett konto raderas sparas dess Steam-id och tidpunkten för raderingen i 24 timmar och tas bort vid nästa dagliga rensning. En avstängning från operatören sparas som en post med Steam-id, tidpunkt, orsak och, när den hävts, tidpunkten för hävningen; posten finns kvar efter en hävning, så att en senare begäran om en profil kan visa att Steam-id:t varit avstängt tidigare, och den finns kvar när kontot raderas.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Radera mina uppgifter tar bort ditt Discord-id och dina token. Bara nyckelhashen av ditt Discord-id finns kvar, utan konto, namn eller datum, så att belöningen för länkningen aldrig betalas ut två gånger. Serverns hemliga nyckel behövs för att koppla den till ett Discord-id.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din webbläsare är öppen. Logga in med Steam där.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Logga in med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Inloggningen bekräftades inte i tid. Försök igen.</value></data>
@@ -1574,6 +1582,15 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Anledning:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Länkad</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare och du fick 5000 gm$ och 250 em$. Dina roller på Discord-servern följer din HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare. Du har redan fått de 5000 gm$ och 250 em$ för länkningen, så det blir ingen ny belöning. Dina roller på Discord-servern följer din HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Det här Discord-kontot är länkat till en annan jägare. Ett Discord-konto kan bara länkas till en jägare.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Din jägare är redan länkad till ett annat Discord-konto. En jägare kan bara länkas till ett Discord-konto.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Länkningen misslyckades. Gå tillbaka till Discord och försök igen.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Din roll på Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} kvar till {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Tillbaka till Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Skickar loggar och kraschhändelser för spelet och launchern (inklusive WebView2) till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>

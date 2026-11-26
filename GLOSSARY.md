@@ -148,6 +148,12 @@ _Avoid_: ladder, leaderboard (the website's boards of the other kinds)
 **Rank row**:
 One line of a profile's ranks tab: a species, a weapon or a kind of collectable, with the player's ethical kills or pickups of it. Not the player's rank on the hunterscore board.
 
+**Linked Roles**:
+Discord's feature that lets a Discord server give roles from data an application holds about a member. Here a player links their Discord account to their account on the community server once, the server tells Discord their hunterscore, and the roles "Verified hunter" (linked) and "Veteran" (hunterscore of 20000 or more) follow it. The first link of an account and of a Discord account also pays 5000 gm$ and 250 em$, once ever. Not the Discord invite (`link_discord`), which only shows the community's Discord server.
+
+**Reward ledger**:
+The server's record of the Discord accounts paid the Linked Roles reward: one keyed hash of the Discord id each, tied to no account once that is deleted. The one part of a Discord link that outlives a deleted account.
+
 ## Hunting
 
 **Reserve**:

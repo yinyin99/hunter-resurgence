@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Kom med på Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Fællesskabet mødes på Discord: nyheder, hjælp og andre jægere. Kom og sig hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Deltag på Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Forbind din Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Få 5000 gm$ og 250 em$, én gang. Din HunterScore vises på din Discord-profil.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Forbind Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Forbind Discord · få 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senere</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en sikkerhedskopi af din profil?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>En sikkerhedskopi er den zip-fil, som backup-værktøjet gemte, eller en fil gemt med et andet fællesskabsværktøj. Gendan den nu og få dine jagter, genstande og trofæer tilbage.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Vælg din backup-zip, og upload den.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Slet mine data</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dette sletter din konto på denne server og alt, der er gemt med den: dit navn, dine spildata, de gemte backup-zips og dine fotos. Kun dit Steam-id og tidspunktet for sletningen bliver i 24 timer, så en ny konto ikke straks kan overtage en gammel profil; hvis operatøren har udelukket dit Steam-id, bliver udelukkelsesposten også. Du bliver logget ud, og launcherens login holder op med at virke. Det kan ikke fortrydes.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Hvis du har forbundet Discord, bliver der én ting mere: en nøglet hash af dit Discord-id, uden konto, navn eller dato, så belønningen for at forbinde aldrig udbetales to gange. Dit Discord-id og dine tokens slettes.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Jeg forstår det, slet alt</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Slet mine data</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Dataene kunne ikke slettes. Prøv igen.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Spildataene på din konto: inventar, tegnebog, færdigheder, statistik, milepæle, trofæer, jagter, nedlagte dyr og de fotos, du tager i spillet.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Hver backup-zip, du uploader, uændret: gemt, så en operatør kan tjekke den, og efter gendannelsen, så operatøren kan nulstille din konto og gendanne den igen. En zip indeholder det, backupværktøjet har gemt fra din konto.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Login-cookies og spiltokens, som hashes, der ikke kan læses tilbage.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Kun hvis du forbinder Discord: dit Discord-id og de tokens, Discord gav serveren til at opdatere dine roller, gemt krypteret. Intet andet fra din Discord-profil gemmes. Serveren sender dit handle og din HunterScore til Discord til dine roller.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Kun hvis du forbinder Discord: en registrering af, at belønningen på 5000 gm$ og 250 em$ er udbetalt for dit Discord-id, gemt som en nøglet hash, der ikke kan omdannes tilbage til id'et.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hvad konti ikke indeholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-mailadresse, dit rigtige navn, din postadresse eller dit telefonnummer: der spørges ikke efter dem, og de gemmes ikke på din konto. Hvis en backup indeholder et sådant felt, gendannes det ikke.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletning af dine data</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Din konto og dens data bliver, indtil du bruger Slet mine data.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- og proxy-logs kan indeholde IP-adresser og handles. De gemmes højst 30 dage.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Når en konto slettes, gemmes dens Steam-id og tidspunktet for sletningen i 24 timer og fjernes derefter ved næste daglige oprydning. En udelukkelse fra operatøren gemmes som en post med Steam-id, tidspunkt, begrundelse og, når den er ophævet, tidspunktet for ophævelsen; posten bliver efter en ophævelse, så en senere overtagelse af en profil kan vise, at Steam-id'et var udelukket før, og den bliver, når kontoen slettes.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Slet mine data fjerner dit Discord-id og dine tokens. Kun den nøglede hash af dit Discord-id bliver tilbage, uden konto, navn eller dato, så belønningen for at forbinde aldrig udbetales to gange. Serverens hemmelige nøgle skal bruges for at koble den til et Discord-id.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Din browser er åben. Log ind med Steam der.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Log ind med Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Login blev ikke bekræftet i tide. Prøv igen.</value></data>
@@ -1574,6 +1582,15 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Årsag:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Forbundet</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger, og du har modtaget 5000 gm$ og 250 em$. Dine roller på Discord-serveren følger din HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger. Du har allerede modtaget de 5000 gm$ og 250 em$ for at forbinde, så der er ingen ny belønning. Dine roller på Discord-serveren følger din HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Denne Discord-konto er forbundet med en anden jæger. En Discord-konto kan kun forbindes med én jæger.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Din jæger er allerede forbundet med en anden Discord-konto. En jæger kan kun forbindes med én Discord-konto.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Forbindelsen mislykkedes. Gå tilbage til Discord og prøv igen.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Din rolle på Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} mere til {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Tilbage til Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportér et problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sender logfiler og nedbrudshændelser for spillet og launcheren (inklusive WebView2) til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>

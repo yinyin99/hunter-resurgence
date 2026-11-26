@@ -43,6 +43,25 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheDiscordApplicationIsItsIdAndItsSecretTogetherAndTheIdIsDigits()
+    {
+        Assert.Null(Load(Minimal()).Cfg["discord_client_id"]);
+        Assert.Null(Load(Minimal()).Cfg["discord_client_secret"]);
+        var ok = Minimal();
+        ok["discord_client_id"] = "123456789012345678";
+        ok["discord_client_secret"] = "a-secret";
+        var cfg = Load(ok).Cfg;
+        Assert.Equal(("123456789012345678", "a-secret"), ((string?)cfg["discord_client_id"], (string?)cfg["discord_client_secret"]));
+        foreach (var (id, secret) in new (string? Id, string? Secret)[] { ("123456789012345678", null), (null, "a-secret"), ("not-digits", "a-secret"), ("12345", "a-secret"), ("1234567890123456a", "a-secret") })
+        {
+            var o = Minimal();
+            if (id is not null) o["discord_client_id"] = id;
+            if (secret is not null) o["discord_client_secret"] = secret;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void TheGameBuildIsOptionalAndAPositiveWholeNumber()
     {
         Assert.Null(Load(Minimal()).Cfg["game_build"]);

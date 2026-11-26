@@ -900,6 +900,19 @@ public class UploadTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestADiscordLinkAndItsRewardMoveWithTheAccountToTheAdoptedUserId()
+    {
+        using (var con = state.Store.Open(player))
+        {
+            con.Exec("INSERT INTO discord_links (account_id, discord_id, linked_ts) VALUES ($a, '111111111111111111', 1)");
+            con.Exec("INSERT INTO discord_rewards (hash, account_id) VALUES ('hash', $a)");
+        }
+        Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own(), "mine.zip", player, cookie)).Kind);
+        using var check = state.Store.Open();
+        Assert.Equal((1001L, 1001L), ((long)check.Scalar("SELECT account_id FROM discord_links")!, (long)check.Scalar("SELECT account_id FROM discord_rewards")!));
+    }
+
+    [Fact]
     public async Task TestARestoredPageAndFileAreServedWithNoScriptAndNoSniffing()
     {
         Assert.Equal("restored", Operator.Approve(await Keep(TestZip.Own().Pictures(), "mine.zip", player, cookie)).Kind);

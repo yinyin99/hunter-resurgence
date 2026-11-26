@@ -739,7 +739,7 @@ public sealed partial class State
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
-    readonly JsonNode[] silverBeforeSchema40;  // the event's silver ammunition: permitted on every species in a hunt from before schema 40 (HuntRule)
+    readonly JsonNode[] silverBeforeSchema41;  // the event's silver ammunition: permitted on every species in a hunt from before schema 41 (HuntRule)
     /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
     public SeasonalEvent? Seasonal { get; }
     /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
@@ -859,7 +859,7 @@ public sealed partial class State
             while (ethicalAmmo.Count <= id) ethicalAmmo.Add(new JsonArray());
             if (!Py.Truthy(ethicalAmmo[id])) ethicalAmmo[id] = new JsonArray([.. ammo.Select(a => (JsonNode?)a)]);
         }
-        silverBeforeSchema40 = [.. this.facts.SpeciesAmmo.Values.SelectMany(a => a).Distinct().Select(a => (JsonNode)a)];
+        silverBeforeSchema41 = [.. this.facts.SpeciesAmmo.Values.SelectMany(a => a).Distinct().Select(a => (JsonNode)a)];
         var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
         // the recorded account's picture is `<base>/256/<id>.png`: where an uploaded avatar is fetched from when `avatar_uploads` is unset (AvatarFetchUrl); every picture this server hands out is on its own host (MediaUrl)
@@ -1014,15 +1014,15 @@ public sealed partial class State
         : rule.Event is { } huntEvent && facts.EventEthical(huntEvent) is { } ev && ev.Species.Contains(Mod100(sp)) ? ev.Ammo
         : Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
 
-    /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>, the list that applies to the species in that hunt; in a hunt from before schema 40 (<see cref="HuntRule.BeforeSchema40"/>) also when it is
+    /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>, the list that applies to the species in that hunt; in a hunt from before schema 41 (<see cref="HuntRule.BeforeSchema41"/>) also when it is
     /// one of the event's silver ammunitions, which every species permitted then. The one rule the kills are judged by and the store shows (it knows no hunt: the new rule).</summary>
-    bool Permits(JsonArray allowed, JsonNode? ammo, bool beforeSchema40 = false) => allowed.Concat(beforeSchema40 ? silverBeforeSchema40 : []).Any(a => Py.Eq(a, ammo));
+    bool Permits(JsonArray allowed, JsonNode? ammo, bool beforeSchema41 = false) => allowed.Concat(beforeSchema41 ? silverBeforeSchema41 : []).Any(a => Py.Eq(a, ammo));
 
     /// <summary>(toast update, notice message) for a hit with ammo outside the species' permitted list (<see cref="Allowed"/>, in a hunt judged by <paramref name="rule"/>); null if
     /// permitted or the species has no list.</summary>
     public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp, HuntRule rule)
     {
-        if (Allowed(sp, rule) is not { } allowed || Permits(allowed, hit["ammunition_id"], rule.BeforeSchema40))
+        if (Allowed(sp, rule) is not { } allowed || Permits(allowed, hit["ammunition_id"], rule.BeforeSchema41))
             return null;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
@@ -1039,19 +1039,19 @@ public sealed partial class State
 
     public bool Ethical(JsonNode? sp, List<JsonObject> hits, HuntRule rule) => !hits.Any(h => AmmoCheck(h, sp, rule) is not null);
 
-    /// <summary>How a hunt's kills are judged: its seasonal event (null: none) and whether the hunt is from before schema 40 (`expeditions.silver_before_40`), which keeps the earlier rule that the event's silver ammunition
-    /// is permitted on every species; a hunt started after it is judged by the species' own list alone. A kill with no hunt row keeps the earlier rule too.</summary>
-    public readonly record struct HuntRule(string? Event, bool BeforeSchema40);
+    /// <summary>How a hunt's kills are judged: its seasonal event (null: none) and whether the hunt is from before schema 41 (`expeditions.silver_before_41`), which keeps the earlier rule that the event's silver ammunition
+    /// is permitted on every species; a hunt started after it is judged by the species' own list alone, and so is play with no hunt of its own: a tutorial (the rows after the hunt's `event_until` carry no mark) and a kill with no hunt row.</summary>
+    public readonly record struct HuntRule(string? Event, bool BeforeSchema41);
 
     /// <summary>The seasonal event a hunt's kills are judged by (`expeditions.event`, decided by the hunt's first connect, <see cref="ConnectReply"/>): of the hunt the event row <paramref name="eventId"/> belongs to,
     /// else of the latest hunt; null for none (also '' and every hunt from before the column), and for an event row after a tutorial started (`event_until`, <see cref="NoteTutorial"/>): a tutorial has the normal lists.</summary>
     public static HuntRule HuntEvent(Db con, long eventId = long.MaxValue) =>
-        con.Rows("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN NULLIF(event, '') END, silver_before_40 FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId)
-            is [var hunt] ? new(hunt[0] as string, hunt[1] is 1L) : new(null, true);
+        con.Rows("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN NULLIF(event, '') END, CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN silver_before_41 END FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId)
+            is [var hunt] ? new(hunt[0] as string, hunt[1] is 1L) : new(null, false);
 
-    /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); the earlier rule, no event, when it has none.</summary>
+    /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); the new rule, no event, when it has none.</summary>
     public static HuntRule HarvestEvent(Db con, string harvest) =>
-        con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : new(null, true);
+        con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : new(null, false);
 
     /// <summary>Skill XP of a spot (event 11), a track clue (event 12) or a permitted hit (event 1), applied inside the
     /// heartbeat's transaction; the level-up toast if the species or the fired weapon gained a level (sent with the next

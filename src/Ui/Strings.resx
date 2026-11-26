@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Join us on Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>The community meets on Discord: news, help and other hunters. Come and say hello!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Join the Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Link your Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Get 5000 gm$ and 250 em$, once. Your HunterScore shows on your Discord profile.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Link Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Link Discord · get 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Later</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Do you have a backup of your profile?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>A backup is the backup zip the backup tool made, or a save made with another community tool. Restore it now to get your hunts, items and trophies back.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Choose your backup zip and upload it.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Delete my data</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>This deletes your account on this server and everything stored with it: your name, your game data, the backup zips kept, and your photos. Only your Steam id and the time of the deletion stay, for 24 hours, so that a new account cannot claim an old profile at once; if the operator banned your Steam id, its ban record stays too. You are signed out, and the launcher's sign-in stops working. It cannot be undone.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>If you linked Discord, one more thing stays: a keyed hash of your Discord id, with no account, name or date, so that the reward for linking is never paid twice. Your Discord id and tokens are deleted.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>I understand, delete everything</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Delete my data</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>The data could not be deleted. Try again.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>The game data of your account: inventory, wallet, skills, statistics, achievements, trophies, hunts, kills and the photos you take in the game.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Only if you link Discord: your Discord id and the tokens Discord gave the server to update your roles, kept encrypted. Nothing else of your Discord profile is kept. The server sends your handle and HunterScore to Discord for your roles.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Only if you link Discord: a record that the 5000 gm$ and 250 em$ reward was paid for your Discord id, kept as a keyed hash that cannot be turned back into the id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Your account and its data stay until you use Delete my data.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server and proxy logs can contain IP addresses and handles. They are kept for at most 30 days.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>When an account is deleted, its Steam id and the time of the deletion are kept for 24 hours and then removed by the next daily cleanup. A ban by the operator is kept as a record of the Steam id, the time, the reason and, once lifted, the time it was lifted; the record stays after a lift, so that a later claim can show the Steam id was banned before, and it stays when the account is deleted.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Delete my data removes your Discord id and tokens. Only the keyed hash of your Discord id stays, with no account, name or date, so that the reward for linking is never paid twice. The server's secret key is needed to match it to a Discord id.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Your browser is open. Sign in with Steam there.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Sign in with Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>The sign-in was not confirmed in time. Please try again.</value></data>
@@ -1574,6 +1582,15 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Reason:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Linked</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Your Discord account is linked to your hunter and you received 5000 gm$ and 250 em$. Your roles on the Discord server follow your HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Your Discord account is linked to your hunter. You already received the 5000 gm$ and 250 em$ for linking, so there is no new reward. Your roles on the Discord server follow your HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>This Discord account is linked to another hunter. A Discord account can be linked to one hunter only.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Your hunter is already linked to another Discord account. A hunter can be linked to one Discord account only.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Linking did not work. Go back to Discord and try again.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Your role on Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} more for {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Back to Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Are you sure you want to close the launcher and the game?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Report a problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sends the game's and the launcher's logs and crash events (WebView2's included) to the community server so we can help. Kept 30 days.</value></data>

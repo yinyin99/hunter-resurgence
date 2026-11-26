@@ -418,7 +418,7 @@ public class SeasonalEventTests : StateTestBase
     }
 
     [Fact]
-    public void TestHuntsFromBeforeSchema40KeepTheEarlierRuleOnEveryPathAndLaterHuntsGetTheNewOne()
+    public void TestHuntsFromBeforeSchema41KeepTheEarlierRuleOnEveryPathAndLaterHuntsGetTheNewOne()
     {
         var db = Path.Combine(tmp, "before40.db");
         var s = Hunt(1, db: db);
@@ -428,7 +428,7 @@ public class SeasonalEventTests : StateTestBase
             s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
             Connect(s);
         }
-        void Earlier() { using var con = s.Store.Open(ME); con.Exec("UPDATE expeditions SET silver_before_40 = 1 WHERE account_id = $a"); }
+        void Earlier() { using var con = s.Store.Open(ME); con.Exec("UPDATE expeditions SET silver_before_41 = 1 WHERE account_id = $a"); }
         Launch(false);  // a hunt decided none, the dominant kind on a live server: its silver kill of an ordinary species was ethical
         Earlier();
         Assert.False(Disqualified(HarvestOf(s, 17, 401, 962)));
@@ -442,14 +442,14 @@ public class SeasonalEventTests : StateTestBase
             if (restart == 0)
                 using (var con = s.Store.Open())
                 {
-                    con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_40");
+                    con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_41");
                     con.Exec("PRAGMA user_version = 39");
                 }
             s = Hunt(1, db: db);
             s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
             using (var con = s.Store.Open(ME))
             {
-                Assert.Equal(2L, con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_40 = 1"));
+                Assert.Equal(2L, con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_41 = 1"));
             }
             using (var con = s.Store.Open())
                 Assert.Equal((long)Store.Version, con.Scalar("PRAGMA user_version"));
@@ -460,8 +460,89 @@ public class SeasonalEventTests : StateTestBase
         Assert.False(Disqualified(HarvestOf(s, 17, 404, 14)));
         s = Hunt(1, db: db);  // and a start after it marks nothing more
         using var check = s.Store.Open(ME);
-        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_40 = 1"));
-        Assert.Equal(DBNull.Value, check.Scalar("SELECT silver_before_40 FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1"));
+        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_41 = 1"));
+        Assert.Equal(DBNull.Value, check.Scalar("SELECT silver_before_41 FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1"));
+    }
+
+    [Fact]
+    public void TestTheMigrationMarksOnlyHuntsThatWerePlayedOrEnded()
+    {
+        // a hunt that ended, one in progress with a heartbeat, and one open that never got a heartbeat (a failed load, which a game started without the launcher reuses)
+        var file = Path.Combine(tmp, "played.db");
+        var store = new Store(file);
+        store.CreateAccount(5, "old", new JsonObject());
+        using (var con = store.Open(5))
+        {
+            con.Exec("INSERT INTO expeditions (account_id, start_ts, end_ts, last_seen) VALUES ($a, 1, 2, 2)");
+            con.Exec("INSERT INTO expeditions (account_id, start_ts, last_seen) VALUES ($a, 3, 4)");
+            con.Exec("INSERT INTO expeditions (account_id, start_ts) VALUES ($a, 5)");
+        }
+        using (var con = store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_41");
+            con.Exec("PRAGMA user_version = 39");
+        }
+        using var migrated = new Store(file).Open(5);
+        Assert.Equal("1,1,", string.Join(",", migrated.Rows("SELECT silver_before_41 FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => r[0] is DBNull ? "" : r[0]!.ToString())));
+    }
+
+    [Fact]
+    public void TestAnOpenHuntWithNoHeartbeatBeforeTheStepIsJudgedByTheNewRuleWhenPlayedAfterIt()
+    {
+        var db = Path.Combine(tmp, "unplayed.db");
+        var s = Hunt(1, playsEvents: false, db: db);
+        s.Store.SetPlaysEvents(ME, false);
+        s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Connect(s);  // opened, never a heartbeat
+        using (var con = s.Store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_41");
+            con.Exec("PRAGMA user_version = 39");
+        }
+        s = Hunt(1, db: db);
+        using (var con = s.Store.Open(ME))
+            Assert.Equal(DBNull.Value, con.Scalar("SELECT silver_before_41 FROM expeditions WHERE account_id = $a"));
+        Assert.True(Disqualified(Harvest(s, 401, 962)));  // the game started again reuses that hunt: a hunt played after the step
+    }
+
+    [Fact]
+    public void TestAHuntInProgressAtTheUpgradeKeepsTheEarlierRuleToItsEnd()
+    {
+        var db = Path.Combine(tmp, "progress.db");
+        var s = Hunt(1, playsEvents: false, db: db);
+        s.Store.SetPlaysEvents(ME, false);
+        s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        Connect(s);
+        s.HeartbeatReply(ME, Events());  // a heartbeat: the hunt was played
+        using (var con = s.Store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_41");
+            con.Exec("PRAGMA user_version = 39");
+        }
+        s = Hunt(1, db: db);
+        Assert.False(Disqualified(Harvest(s, 401, 962)));  // silver on a rabbit: permitted by the earlier rule
+    }
+
+    [Fact]
+    public void TestATutorialAfterAMarkedHuntIsJudgedByTheNewRuleAndKillsBeforeItKeepTheEarlierOne()
+    {
+        var s = Hunt(1, playsEvents: false);
+        Connect(s);
+        using (var con = s.Store.Open(ME))
+            con.Exec("UPDATE expeditions SET silver_before_41 = 1 WHERE account_id = $a");
+        Assert.False(Disqualified(Harvest(s, 401, 962)));  // the marked hunt's own kill
+        s.NoteTutorial(ME, "tutorial-session", 1);
+        Assert.True(Disqualified(Harvest(s, 402, 962)));  // the tutorial has no hunt of its own: the new rule
+        Assert.Equal("False,True", KillsEthical(s));  // the earlier kill still reads ethical
+    }
+
+    [Fact]
+    public void TestPlayWithNoHuntRowIsJudgedByTheNewRule()
+    {
+        var s = Hunt(1, db: Path.Combine(tmp, "nohunt.db"));  // started again on a database that holds no hunt
+        using var con = s.Store.Open(ME);
+        Assert.Equal(new State.HuntRule(null, false), State.HuntEvent(con));
+        Assert.Equal(new State.HuntRule(null, false), State.HarvestEvent(con, """{"event": 3, "individual": 9}"""));  // a harvest with no stored event 3
     }
 
     static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];
