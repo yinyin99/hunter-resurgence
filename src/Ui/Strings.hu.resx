@@ -1592,6 +1592,10 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="DiscordLink.More" xml:space="preserve"><value>Még {0} a {1} szerepkörig ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Vissza a Discordra</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>A launchernek szüksége van a Microsoft Edge WebView2-re, amely hiányzik vagy nem működik ezen a gépen. Telepíted most? Az Igen megnyitja a Microsoft letöltőoldalát és bezárja a launchert: a WebView2 telepítése után indítsd újra. A Nem bezárja a launchert.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>A launcher böngészője (Microsoft Edge WebView2) nem indult el. Újraindítod a launchert hardveres gyorsítás nélkül? A launcher megjegyzi a választást. Az Igen újraindítja, a Nem bezárja.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>A launcher ablaka 20 másodperc után sem jelent meg. Újraindítod a launchert hardveres gyorsítás nélkül? A launcher megjegyzi a választást. Az Igen újraindítja, a Nem tovább vár.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>A launcher ablaka hardveres gyorsítás nélkül sem jelent meg. Frissítsd a videokártya-illesztőprogramot és a Microsoft Edge WebView2-t, majd indítsd újra a launchert. A történtek a launcher.log fájlban vannak a %APPDATA%\hunter-resurgence mappában.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék és az indító naplóit és összeomlási eseményeit (a WebView2-ét is) a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>A fájlok összegyűjtése…</value></data>

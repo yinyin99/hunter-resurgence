@@ -1592,6 +1592,10 @@ Numele:</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Înapoi la Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>Launcherul are nevoie de Microsoft Edge WebView2, care lipsește sau nu funcționează pe acest PC. Îl instalați acum? Da deschide pagina de descărcare Microsoft și închide launcherul: porniți-l din nou după ce WebView2 este instalat. Nu închide launcherul.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>Browserul launcherului (Microsoft Edge WebView2) nu a putut porni. Reporniți launcherul fără accelerare hardware? Launcherul reține această alegere. Da îl repornește, Nu îl închide.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>Fereastra launcherului nu a apărut după 20 de secunde. Reporniți launcherul fără accelerare hardware? Launcherul reține această alegere. Da îl repornește, Nu continuă să aștepte.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>Fereastra launcherului nu a apărut nici fără accelerare hardware. Actualizați driverul plăcii video și Microsoft Edge WebView2, apoi porniți din nou launcherul. Ce s-a întâmplat este scris în launcher.log, în folderul %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele și evenimentele de blocare ale jocului și ale launcherului (inclusiv WebView2) serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Se adună fișierele…</value></data>

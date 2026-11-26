@@ -1592,6 +1592,10 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="DiscordLink.More" xml:space="preserve"><value>{0} mere til {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Tilbage til Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>Launcheren har brug for Microsoft Edge WebView2, som mangler eller ikke virker på denne pc. Vil du installere det nu? Ja åbner Microsofts downloadside og lukker launcheren: start den igen, når WebView2 er installeret. Nej lukker launcheren.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>Launcherens browser (Microsoft Edge WebView2) kunne ikke starte. Vil du genstarte launcheren uden hardwareacceleration? Launcheren husker dit valg. Ja genstarter den, Nej lukker den.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>Launcherens vindue er ikke dukket op efter 20 sekunder. Vil du genstarte launcheren uden hardwareacceleration? Launcheren husker dit valg. Ja genstarter den, Nej bliver ved med at vente.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>Launcherens vindue dukkede ikke op, heller ikke uden hardwareacceleration. Opdater grafikdriveren og Microsoft Edge WebView2, og start derefter launcheren igen. Hvad der skete, står i launcher.log i mappen %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportér et problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sender logfiler og nedbrudshændelser for spillet og launcheren (inklusive WebView2) til fællesskabsserveren, så vi kan hjælpe. Gemmes i 30 dage.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Samler filerne…</value></data>

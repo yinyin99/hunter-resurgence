@@ -1592,6 +1592,10 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="DiscordLink.More" xml:space="preserve"><value>{0} más para {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Volver a Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>¿Seguro que quieres cerrar el launcher y el juego?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>El launcher necesita Microsoft Edge WebView2, que falta o no funciona en este PC. ¿Quieres instalarlo ahora? Sí abre la página de descarga de Microsoft y cierra el launcher: vuelve a iniciarlo cuando WebView2 esté instalado. No cierra el launcher.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>El navegador del launcher (Microsoft Edge WebView2) no pudo iniciarse. ¿Reiniciar el launcher sin aceleración por hardware? El launcher recuerda esta elección. Sí lo reinicia, No lo cierra.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>La ventana del launcher no ha aparecido tras 20 segundos. ¿Reiniciar el launcher sin aceleración por hardware? El launcher recuerda esta elección. Sí lo reinicia, No sigue esperando.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>La ventana del launcher no apareció, ni siquiera sin aceleración por hardware. Actualiza el controlador de la tarjeta gráfica y Microsoft Edge WebView2, y vuelve a iniciar el launcher. Lo ocurrido está escrito en launcher.log, en la carpeta %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Informar de un problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envía los registros y eventos de fallo del juego y del launcher (incluido WebView2) al servidor comunitario para que podamos ayudarte. Se conservan 30 días.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Recopilando los archivos…</value></data>

@@ -1592,6 +1592,10 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="DiscordLink.More" xml:space="preserve"><value>Nog {0} tot {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Terug naar Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>De launcher heeft Microsoft Edge WebView2 nodig, dat op deze pc ontbreekt of niet werkt. Nu installeren? Ja opent de downloadpagina van Microsoft en sluit de launcher: start hem opnieuw zodra WebView2 is geïnstalleerd. Nee sluit de launcher.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>De browser van de launcher (Microsoft Edge WebView2) kon niet starten. De launcher opnieuw starten zonder hardwareversnelling? De launcher onthoudt deze keuze. Ja start hem opnieuw, Nee sluit hem.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>Het venster van de launcher is na 20 seconden niet verschenen. De launcher opnieuw starten zonder hardwareversnelling? De launcher onthoudt deze keuze. Ja start hem opnieuw, Nee blijft wachten.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>Het venster van de launcher is ook zonder hardwareversnelling niet verschenen. Werk het grafische stuurprogramma en Microsoft Edge WebView2 bij en start de launcher opnieuw. Wat er gebeurd is, staat in launcher.log in de map %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs en crashgebeurtenissen van het spel en de launcher (inclusief WebView2) naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>De bestanden worden verzameld…</value></data>

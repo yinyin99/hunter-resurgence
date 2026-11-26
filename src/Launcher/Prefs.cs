@@ -43,6 +43,8 @@ public sealed class Prefs
     public string ReportConsent { get; set; } = "unset";
     /// <summary>Where the launcher window was when it last closed (its normal size, and whether it was maximized); null: centred at the default size.</summary>
     public WindowPlace? Window { get; set; }
+    /// <summary>The launcher's browser starts without hardware acceleration (<see cref="WebViewStart.NoGpuArgument"/>): set when the player accepts the restart that is offered after a start that failed or a page that did not load (<see cref="WebViewStart"/>). Nothing clears it but the player editing launcher.json.</summary>
+    public bool DisableGpu { get; set; }
 
     public static Prefs Load(string path)
     {

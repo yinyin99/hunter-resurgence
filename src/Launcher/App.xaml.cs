@@ -21,6 +21,13 @@ public partial class App : System.Windows.Application
         started = true;
         LauncherLog.Default.WatchUi(Dispatcher);
         LauncherLog.Default.Write(LogLevel.Information, $"Launcher {LauncherEnv.AppVersion} started");
+        // no WebView2 Runtime: a plain message instead of a window that stays black
+        if (WebViewStart.RuntimeMissing(() => Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString()))
+        {
+            WebViewStart.Report(WebViewStart.Problem.RuntimeMissing, false, null, null);
+            Shutdown(1);
+            return;
+        }
         (MainWindow = new MainWindow()).Show();
         // the window of an update's restart is not the foreground one (the old process held it): ask for it, else blink in the taskbar
         if (Program.Restarted && LauncherUpdater.ShouldActivate(true, GameFiles.ClientRunning(Settings.Load().ClientExe)) && !MainWindow.Activate())
