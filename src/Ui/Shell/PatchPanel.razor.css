@@ -12,7 +12,7 @@
 .box ::deep a, .box ::deep span:not(.btn) { color: var(--accent); }
 .box ::deep a.btn { color: #fff; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100000; height: 115px; box-sizing: border-box; border-top: 1px solid var(--line-2); background: var(--bg-patch); }
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100000; height: var(--h-patchbar); box-sizing: border-box; border-top: 1px solid var(--line-2); background: var(--bg-patch); }
 .inner { position: relative; width: 800px; margin: 0 auto; padding-top: 14px; }
 .state { font-size: 28px; line-height: 40px; font-weight: 700; text-transform: uppercase; color: var(--primary); }
 .info { margin-top: 0; font-size: 14px; line-height: 20px; color: var(--text-2); }

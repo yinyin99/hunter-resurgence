@@ -22,6 +22,9 @@ public partial class App : System.Windows.Application
         LauncherLog.Default.WatchUi(Dispatcher);
         LauncherLog.Default.Write(LogLevel.Information, $"Launcher {LauncherEnv.AppVersion} started");
         (MainWindow = new MainWindow()).Show();
+        // the window of an update's restart is not the foreground one (the old process held it): ask for it, else blink in the taskbar
+        if (LauncherUpdater.ShouldActivate(Program.Restarted, GameFiles.ClientRunning(Settings.Load().ClientExe)) && !MainWindow.Activate())
+            Program.Flash(new System.Windows.Interop.WindowInteropHelper(MainWindow).Handle);
     }
 
     bool started;
