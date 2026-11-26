@@ -288,6 +288,8 @@ A harvest (heartbeat event 3) is scored from the kill's spawn (event 7), its tro
 
 A kill whose family needs a measurement the heartbeat lacks (a skull with no `feature`, a deer without its event 22 or without a main-beam point) has no score.
 
+**Checked against the original.** `server/Server.Tests/score-vectors.json` holds 1,233 score sheets recorded from the original, one per line: `{species, gender, features, weight, state, score, type}` (the measurements as `Scoring.Score` takes them, the weight in grams, the last hit's animal state, the original's score and score type; the non-typical deer as 100, 101 and 106). A male of every scored species (4 to 39 sheets each) and a female of 35; none of the pheasant, wild boar, Dall sheep, water buffalo or roebit female. `ScoreVectorTests` scores every row and compares at four decimals, with the precision the sheets drop allowed for: 0.001 for `weight_mg`, `weight_kg`, `caribou`, `cic_horn`, `cic_roe`, `moose` and `sheep`, 1.0 for `weight_g`. A change to a formula must keep it green.
+
 ## Seasonal events
 
 The game build learns of an event from the connect reply's `ingame_event`: `{name, define, reserves}`, or `null` for none. It reads it once per start of the game, so an event never changes a hunt that is running. `reserves` are the game's own reserve numbers (the lodge id / 100, the launch map's reserve id minus 1); an empty list is every reserve.

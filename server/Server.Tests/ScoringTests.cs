@@ -37,3 +37,35 @@ public class ScoringTests : IDisposable
         }
     }
 }
+
+/// <summary>Recorded score sheets (score-vectors.json: measurements, weight, last hit's animal state, the original's score and score type; numbers only): every one scores as the original scored it.</summary>
+public class ScoreVectorTests
+{
+    // the sheets drop precision the server keeps
+    static readonly Dictionary<string, double> Tolerance = new()
+    {
+        ["weight_mg"] = 0.001, ["weight_kg"] = 0.001, ["weight_g"] = 1.0,
+        ["caribou"] = 0.001, ["cic_horn"] = 0.001, ["cic_roe"] = 0.001, ["moose"] = 0.001, ["sheep"] = 0.001,
+    };
+
+    [Fact]
+    public void EveryRecordedSheetScoresAsTheOriginalDid()
+    {
+        var rows = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "score-vectors.json")))!.AsArray();
+        var families = Facts.Default.Families;
+        List<string> bad = [];
+        HashSet<int> males = [], females = [];
+        foreach (var r in rows)
+        {
+            var (species, gender) = ((int)r!["species"]!, (int)r["gender"]!);
+            (gender == 0 ? males : females).Add(species);
+            var (score, type) = Scoring.Score(species, r["features"], r["weight"], r["state"]);
+            var want = Math.Round((double)r["score"]!, 4);
+            if (score is null || Math.Abs(Math.Round(Py.D(score), 4) - want) > Tolerance.GetValueOrDefault(families[species]) + 1e-9 || type != (string?)r["type"])
+                bad.Add($"species {species} ({families[species]}), gender {gender}: want {want} {r["type"]}, got {score} {type}");
+        }
+        Assert.True(bad.Count == 0, $"{bad.Count} of {rows.Count}:\n" + string.Join("\n", bad));
+        Assert.Equal(families.Keys.Order(), males.Order());  // a male sheet of every scored species
+        Assert.Equal(35, females.Count);  // no sheet: the 17 females without a score, and the pheasant, wild boar, Dall sheep, water buffalo and roebit
+    }
+}
