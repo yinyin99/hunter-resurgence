@@ -97,7 +97,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Butikkvarer for arrangementet</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belønning til hver bidragsyter: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål fullført</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>I begivenhetens reservater er dyrene besatt: de angriper deg, og vanlig ammunisjon bare skraper dem. Bruk begivenhetens sølvammunisjon. Der gjør ett eneste treff med annen ammunisjon fellingen uetisk (diskvalifisert), selv om sølv gjør det av med dyret, og det gjelder alle dyr, også småvilt. Slå av «Spill sesongbegivenheter» for å jakte på de vanlige dyrene.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>I begivenhetens reservater er dyrene besatt: de angriper deg, og vanlig ammunisjon bare skraper dem. Bruk begivenhetens sølvammunisjon. Der gjør ett eneste treff med annen ammunisjon fellingen uetisk (diskvalifisert), selv om sølv gjør det av med dyret, og det gjelder alle dyr, også småvilt. Slå av «Spill sesongbegivenheter» for å jakte på de vanlige dyrene fra neste jakt.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Hendelse pågår: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sesonghendelse</value></data>

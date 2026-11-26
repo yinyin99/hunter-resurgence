@@ -64,14 +64,13 @@ public sealed partial class State
     JsonObject HuntStatsOf(Db con, long account, object[] e)
     {
         var kills = new List<(JsonNode?, List<JsonObject>, bool)>();
-        var huntEvent = con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ?", e[0]) as string;  // its kills are judged as it was (State.HuntEvent)
         foreach (var k in con.Rows("SELECT k.individual, k.harvest FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                                    + " WHERE k.account_id = $a AND json_extract(h.body, '$.expedition_id') = ? ORDER BY k.kill_id DESC", e[0]))
             try
             {
                 var sp = Parse(k[1])["extended_species"];
                 var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
-                kills.Add((sp, hits, Ethical(sp, hits, huntEvent)));
+                kills.Add((sp, hits, Ethical(sp, hits, HarvestEvent(con, (string)k[1]))));  // judged as in its hunt (State.HuntEvent)
             }
             catch (Exception ex) when (ex is not SqliteException)  // a value a player sent, of any kind; a database error stays an error
             {

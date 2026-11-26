@@ -418,7 +418,7 @@ public sealed partial class State
         if (e7.Count == 0 && spawn is not null)
             e7 = spawn;  // a harvest moved to its shooter, whose own events have no spawn of the animal: the harvester's (<see cref="CreditHarvest"/>)
         var hits = KillHits(con, e3["individual"], harvest);
-        var huntEvent = con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : null;
+        var huntEvent = HarvestEvent(con, harvest);
         var disqualified = hits.Any(h => ammoCheck(h, e7["species"], huntEvent) is not null);
         var (score, type, css) = disqualified ? (null, null, 0.0) : trophy(e3, e7, e22, hits.Count > 0 ? hits[^1] : null);
         return (e7, disqualified, score, type, css);
@@ -1035,10 +1035,14 @@ public sealed partial class State
 
     public bool Ethical(JsonNode? sp, List<JsonObject> hits, string? huntEvent) => !hits.Any(h => AmmoCheck(h, sp, huntEvent) is not null);
 
-    /// <summary>The seasonal event a hunt's kills are judged by (`expeditions.event`, set by the hunt's connect, <see cref="ConnectReply"/>): of the hunt the event row <paramref name="eventId"/> belongs to,
-    /// else of the latest hunt; null for none. A hunt from before the column has none.</summary>
+    /// <summary>The seasonal event a hunt's kills are judged by (`expeditions.event`, decided by the hunt's first connect, <see cref="ConnectReply"/>): of the hunt the event row <paramref name="eventId"/> belongs to,
+    /// else of the latest hunt; null for none (also '' and every hunt from before the column), and for an event row after a tutorial started (`event_until`, <see cref="NoteTutorial"/>): a tutorial has the normal lists.</summary>
     public static string? HuntEvent(Db con, long eventId = long.MaxValue) =>
-        con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) as string;
+        con.Scalar("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN NULLIF(event, '') END FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId) as string;
+
+    /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); null when it has none.</summary>
+    public static string? HarvestEvent(Db con, string harvest) =>
+        con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : null;
 
     /// <summary>Skill XP of a spot (event 11), a track clue (event 12) or a permitted hit (event 1), applied inside the
     /// heartbeat's transaction; the level-up toast if the species or the fired weapon gained a level (sent with the next
@@ -1533,13 +1537,13 @@ public sealed partial class State
                     if (present[i] is JsonObject row && Py.L(row["index"]) == index && Py.Str(row["animal"]) == animal)
                         present.RemoveAt(i);
         var eventHere = tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
-        // the hunt's event, by whose list its kills are judged (HuntEvent): set by its first connect that has the event's content on its reserve, kept to the hunt's end
-        // whatever the event's window or the player's setting do meanwhile; this reply's `ethical` carries that list
+        // the hunt's event, by whose list its kills are judged (HuntEvent): decided once, by its first connect ('' for none), and kept to the hunt's end whatever the event's
+        // window or the player's setting do meanwhile; a later connect of the hunt changes nothing. This reply's `ethical` carries that list until a tutorial ends the hunt's judging by it
         if (tutorial is null)
         {
             using var con = Con(account);
-            con.Exec("UPDATE expeditions SET event = COALESCE(event, ?) WHERE account_id = $a AND id = ?", eventHere, expeditionId);
-            if (con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ?", expeditionId) is string huntEvent && facts.EventEthical(huntEvent) is { } list
+            con.Exec("UPDATE expeditions SET event = ? WHERE account_id = $a AND id = ? AND event IS NULL", eventHere ?? "", expeditionId);
+            if (con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ? AND event_until IS NULL", expeditionId) is string huntEvent && facts.EventEthical(huntEvent) is { } list
                 && reply["ethical"] is JsonArray ethical)
                 foreach (var sp in list.Species)
                 {
@@ -2177,6 +2181,9 @@ public sealed partial class State
     {
         games.Leave(account);
         latestTutorial[account] = (session, tutorialId);
+        // a tutorial opens no hunt, so its events follow the latest hunt's: that hunt's event judges none of them (HuntEvent)
+        using var con = Con(account);
+        con.Exec("UPDATE expeditions SET event_until = COALESCE(event_until, ?) WHERE account_id = $a AND id = (SELECT MAX(id) FROM expeditions WHERE account_id = $a)", LastEvent(con));
     }
 
     public byte[] MoveMultiple2Reply(long account, byte[] formBody)
@@ -2404,7 +2411,7 @@ public sealed partial class State
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
-            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats, event FROM expeditions"
+            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
                                  + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
                                  wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
@@ -2418,7 +2425,7 @@ public sealed partial class State
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, row[8] as string, KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, HarvestEvent(con, (string)r[2]), KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
             // an open hunt's are those of its events so far; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[5] is not DBNull)
                 stats = row[4] is DBNull ? HuntStatsOf(con, account, [row[0], row[3], row[4], row[5], row[6], long.MaxValue]) : row[7] is string s ? Parse(s) : null;
@@ -2464,7 +2471,7 @@ public sealed partial class State
         List<JsonObject> hits;
         JsonObject page, e7, e22;
         object[]? expedition;
-        string? photo;
+        string? photo, huntEvent;
         using (var con = Con(account))
         {
             var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
@@ -2477,14 +2484,15 @@ public sealed partial class State
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
             photo = KillPhoto(con, account, row[0], harvest);
             (e7, e22) = KillEvents(con, individual, harvest);
-            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, event FROM expeditions WHERE account_id = $a AND id = ?",
+            huntEvent = HarvestEvent(con, harvest);
+            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
                                   page["expedition_id"]).FirstOrDefault();
         }
         var e3 = Parse(row[1]);
         var sp = G(e3, "extended_species", -1);
         var f = Features(e3, e7, e22);
         var owner = Account(account);
-        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"], expedition?[5] as string, photo);
+        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"], huntEvent, photo);
         var handle = Py.Str(G(owner, "handle", ""));
         var last = hits.Count > 0 ? hits[^1] : e3;
         var (x, y, z) = StartPosition(expedition is null ? null : Py.FromSql(expedition[2]));

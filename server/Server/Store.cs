@@ -290,7 +290,8 @@ public sealed class Store
             tent INTEGER,         -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
             walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
-            event TEXT);          -- the seasonal event whose permitted ammo the hunt's kills are judged by (State.HuntEvent; NULL: none, and every hunt before schema 38)
+            event TEXT,           -- the seasonal event whose permitted ammo the hunt's kills are judged by, decided by its first connect (State.HuntEvent; '': none; NULL: not decided yet)
+            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -531,9 +532,10 @@ public sealed class Store
         // schema 37, guarded by the column and not by the version (every start): 1 when the player chose imperial units (yards, pounds) in the game's settings
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'")! == 0)
             con.Script("ALTER TABLE accounts ADD COLUMN use_imperial INTEGER NOT NULL DEFAULT 0");
-        // schema 38, guarded by the column and not by the version (every start): the seasonal event a hunt's kills are judged by; the hunts before it have none, so their kills keep their judgement
+        // schema 38, guarded by the column and not by the version (every start): the seasonal event a hunt's kills are judged by; the hunts before it are decided with none ('')
+        // so their kills keep their judgement
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event'")! == 0)
-            con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT");
+            con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT; ALTER TABLE expeditions ADD COLUMN event_until INTEGER; UPDATE expeditions SET event = ''");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

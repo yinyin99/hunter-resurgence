@@ -238,17 +238,24 @@ public class SeasonalEventTests : StateTestBase
         return s;
     }
 
-    /// <summary>A rabbit (17) hit with each ammunition in turn, then harvested: the harvest's update 6.</summary>
-    static JsonNode Harvest(State s, int individual, params int[] ammo)
+    /// <summary>A rabbit (17) hit with each ammunition in turn, then harvested: the updates of the heartbeat after it (the harvest's update 6, the hits' warnings).</summary>
+    static JsonArray Harvest(State s, int individual, params int[] ammo)
     {
         JsonNode[] events = [O($$"""{"event": 7, "individual": {{individual}}, "species": 17, "gender": 0, "weight_grams": 1100, "feature": 1100250}"""),
             .. ammo.Select(a => (JsonNode)O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{a}}, "weapon_id": 391}""")),
             O($$"""{"event": 3, "individual": {{individual}}, "extended_species": 17}""")];
         s.HeartbeatReply(ME, Events(events));
-        return Reply(s.HeartbeatReply(ME, Events()))["updates"]!.AsArray().Single(u => Py.Eq(u!["update"], 6))!;
+        return Reply(s.HeartbeatReply(ME, Events()))["updates"]!.AsArray();
     }
 
-    static bool Disqualified(JsonNode harvest) => (string)harvest["score_text"]! == "Disqualified ";
+    static string ScoreText(JsonArray updates) => (string)updates.Single(u => Py.Eq(u!["update"], 6))!["score_text"]!;
+
+    static bool Disqualified(JsonArray updates) => ScoreText(updates) == "Disqualified ";
+
+    static bool Warned(JsonArray updates) => updates.Any(u => ((string?)u!["text"])?.StartsWith("Not permitted", StringComparison.Ordinal) == true);
+
+    /// <summary>The `ethical` flag of each kill of the latest hunt's page, newest first.</summary>
+    static string KillsEthical(State s) => string.Join(",", Reply(s.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]!.AsArray().Select(k => (bool)k!["kill"]!["ethical"]!));
 
     [Fact]
     public void TestInAnEventHuntOneNormalRoundDisqualifiesAKillThatSilverFinishes()
@@ -258,9 +265,8 @@ public class SeasonalEventTests : StateTestBase
         Eq("[962, 963, 1142]", reply["ethical"]![17]);  // a species of the event's reserves: the event's list, which the kills are judged by
         Eq("[241, 14]", reply["ethical"]![11]);  // a species of no event reserve keeps its own
         Assert.True(Disqualified(Harvest(s, 401, 14, 962)));
-        Assert.StartsWith("Score: ", (string)Harvest(s, 402, 962, 1142)["score_text"]!);
-        var kills = Reply(s.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]!.AsArray();
-        Eq("[true, false]", T(kills[0]!["kill"]!["ethical"], kills[1]!["kill"]!["ethical"]));  // the hunt's page judges them so too
+        Assert.StartsWith("Score: ", ScoreText(Harvest(s, 402, 962, 1142)));
+        Assert.Equal("True,False", KillsEthical(s));  // the hunt's page judges them so too
         // the rescore judges a kill by its hunt's list: the disqualified one stays so, and nothing is paid again
         var (_, rescored, paid, _, _) = Assert.Single(s.Rescore(ME, dryRun: false));
         Assert.Equal((0, 0), (rescored, paid));
@@ -274,6 +280,59 @@ public class SeasonalEventTests : StateTestBase
         var s = Hunt(reserve, playsEvents);
         Eq("[241, 14]", Connect(s)["ethical"]![17]);
         Assert.False(Disqualified(Harvest(s, 401, 14, 962)));
+    }
+
+    [Fact]
+    public void TestATutorialAfterAnEventHuntIsJudgedByTheNormalList()
+    {
+        var s = Hunt(1);
+        Connect(s);
+        Assert.True(Disqualified(Harvest(s, 401, 14, 962)));
+        s.NoteTutorial(ME, "tutorial-session", 1);
+        Eq("[241, 14]", Reply(s.ConnectReply(ME, "tutorial-session"))["ethical"]![17]);
+        var tutorial = Harvest(s, 402, 14, 962);
+        Assert.False(Warned(tutorial));
+        Assert.False(Disqualified(tutorial));
+        Assert.Equal("True,False", KillsEthical(s));  // the tutorial's kill (on the latest hunt's page) by the normal list, the hunt's own by the event's
+        var (_, rescored, _, _, _) = Assert.Single(s.Rescore(ME, dryRun: true));
+        Assert.Equal(0, rescored);  // the rescore judges both as they were stored
+        s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // the next hunt decides again
+        Eq("[962, 963, 1142]", Connect(s)["ethical"]![17]);
+        Assert.True(Disqualified(Harvest(s, 403, 14, 962)));
+    }
+
+    [Fact]
+    public void TestOnlyTheHuntsFirstConnectDecidesItsEvent()
+    {
+        var s = Hunt(1, playsEvents: false);
+        Eq("[241, 14]", Connect(s)["ethical"]![17]);
+        Assert.False(Disqualified(Harvest(s, 401, 14, 962)));
+        s.Store.SetPlaysEvents(ME, true);
+        var again = Connect(s);  // the game started again inside the same hunt
+        Assert.NotNull(again["ingame_event"]);
+        Eq("[241, 14]", again["ethical"]![17]);  // still the normal list for the whole hunt
+        Assert.False(Disqualified(Harvest(s, 402, 14, 962)));
+        Assert.Equal("True,True", KillsEthical(s));  // the earlier kill keeps its verdict
+    }
+
+    [Fact]
+    public void TestTheSchemaOfVersion37GetsTheHuntsEventDecidedAsNone()
+    {
+        var file = Path.Combine(tmp, "v37.db");
+        var store = new Store(file);
+        store.CreateAccount(5, "old", new JsonObject());
+        using (var con = store.Open(5))
+            con.Exec("INSERT INTO expeditions (account_id, start_ts) VALUES ($a, 1)");  // an open hunt at the upgrade
+        using (var con = store.Open())
+        {
+            con.Exec("ALTER TABLE expeditions DROP COLUMN event");
+            con.Exec("ALTER TABLE expeditions DROP COLUMN event_until");
+            con.Exec("PRAGMA user_version = 37");
+        }
+        using var migrated = new Store(file).Open(5);
+        Assert.Equal("", migrated.Scalar("SELECT event FROM expeditions WHERE account_id = $a"));  // decided: no event, so its kills keep their judgement
+        Assert.Equal(DBNull.Value, migrated.Scalar("SELECT event_until FROM expeditions WHERE account_id = $a"));
+        Assert.Equal((long)Store.Version, migrated.Scalar("PRAGMA user_version"));
     }
 
     [Fact]
