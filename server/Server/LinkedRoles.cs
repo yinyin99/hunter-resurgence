@@ -287,7 +287,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             con.Exec("UPDATE discord_links SET access_token = ?1, refresh_token = ?2, expires_ts = ?3 WHERE account_id = ?4 AND refresh_token = ?5",
                      Seal(fresh.Access, discordId), Seal(fresh.Refresh, discordId), Store.Now() + fresh.Life, account, (string)row[2]!);
         }
-        var put = new JsonObject { ["platform_name"] = PlatformName, ["platform_username"] = Username(handle, score), ["metadata"] = new JsonObject { ["hunterscore"] = score } };
+        var put = new JsonObject { ["platform_name"] = PlatformName, ["platform_username"] = Username(handle), ["metadata"] = new JsonObject { ["hunterscore"] = score } };
         var (code, _) = await Send(HttpMethod.Put, $"/users/@me/applications/{clientId}/role-connection", new StringContent(put.ToJsonString(), Encoding.UTF8, "application/json"), access);
         using var after = store.Open();
         if (code is < 200 or >= 300)
@@ -339,13 +339,9 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
     /// <summary>Discord's limit for `platform_username`, in characters.</summary>
     const int MaxUsername = 100;
 
-    /// <summary>What Discord's profile box shows: `&lt;handle&gt; · &lt;score&gt; HunterScore`, the score in plain digits with no thousands separator. A handle that would not fit the 100 characters is cut, never
-    /// the score (a handle has at most 30, so this only guards the limit).</summary>
-    public static string Username(string handle, long score)
-    {
-        var tail = $" · {score.ToString(CultureInfo.InvariantCulture)} HunterScore";
-        return (handle.Length > MaxUsername - tail.Length ? handle[..(MaxUsername - tail.Length)] : handle) + tail;
-    }
+    /// <summary>What Discord's profile box shows as the name: the handle only (Discord shows the hunterscore from the metadata under it), cut to the 100 characters
+    /// (a handle has at most 30, so this only guards the limit).</summary>
+    public static string Username(string handle) => handle.Length > MaxUsername ? handle[..MaxUsername] : handle;
 
     // ---- Discord's API
 
