@@ -213,10 +213,12 @@ public class SeasonalEventTests : StateTestBase
     };
 
     /// <summary>A hunt on the game's <paramref name="reserve"/> with the shipped facts and the shipped event; the recorded connect it starts from already carries
-    /// an event creature of that reserve (and a row that is no object), as a connect recorded during an event does.</summary>
-    State Hunt(int reserve, bool playsEvents = true)
+    /// an event creature of that reserve (and a row that is no object), as a connect recorded during an event does. Its `ethical` permits 241 and 14 on the rabbit 17
+    /// (an event species) and on the roe deer 11 (on no reserve of the event). With <paramref name="db"/> the server starts again on that database and launches nothing.</summary>
+    State Hunt(int reserve, bool playsEvents = true, string? db = null)
     {
         var connect = CONNECT;
+        ((JsonArray)connect["ethical"]!)[11] = new JsonArray(241, 14);
         connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""), JsonValue.Create("r3"));
         if (reserve == 0)  // the normal row whose index the event's feral hog shares
             connect["populations"]!.AsArray().Add(O("""{"index": 3, "animal": "roosevelt_elk", "density_map": "roosevelt_elk", "reserve": 1}"""));
@@ -226,12 +228,72 @@ public class SeasonalEventTests : StateTestBase
         var app = APP;
         app["locations"] = new JsonArray([.. new[] { 0, 100, 200, 500, 800, 900 }.Select(l => (JsonNode?)O(
             $$"""{"id": {{l}}, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": {{l / 100 + 1}}}"""))]);
-        var s = new State(Path.Combine(tmp, Guid.NewGuid().ToString("N") + ".db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,
+        var s = new State(db ?? Path.Combine(tmp, Guid.NewGuid().ToString("N") + ".db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,
                           offline: false, facts: Facts.Default, seasonal: Halloween);
         s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
+        if (db is not null)
+            return s;
         s.Store.SetPlaysEvents(ME, playsEvents);
         s.NoteLaunch(ME, Encoding.ASCII.GetBytes($"start={reserve * 100}&reserve={reserve + 1}"));
         return s;
+    }
+
+    /// <summary>A rabbit (17) hit with each ammunition in turn, then harvested: the harvest's update 6.</summary>
+    static JsonNode Harvest(State s, int individual, params int[] ammo)
+    {
+        JsonNode[] events = [O($$"""{"event": 7, "individual": {{individual}}, "species": 17, "gender": 0, "weight_grams": 1100, "feature": 1100250}"""),
+            .. ammo.Select(a => (JsonNode)O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{a}}, "weapon_id": 391}""")),
+            O($$"""{"event": 3, "individual": {{individual}}, "extended_species": 17}""")];
+        s.HeartbeatReply(ME, Events(events));
+        return Reply(s.HeartbeatReply(ME, Events()))["updates"]!.AsArray().Single(u => Py.Eq(u!["update"], 6))!;
+    }
+
+    static bool Disqualified(JsonNode harvest) => (string)harvest["score_text"]! == "Disqualified ";
+
+    [Fact]
+    public void TestInAnEventHuntOneNormalRoundDisqualifiesAKillThatSilverFinishes()
+    {
+        var s = Hunt(1);
+        var reply = Connect(s);
+        Eq("[962, 963, 1142]", reply["ethical"]![17]);  // a species of the event's reserves: the event's list, which the kills are judged by
+        Eq("[241, 14]", reply["ethical"]![11]);  // a species of no event reserve keeps its own
+        Assert.True(Disqualified(Harvest(s, 401, 14, 962)));
+        Assert.StartsWith("Score: ", (string)Harvest(s, 402, 962, 1142)["score_text"]!);
+        var kills = Reply(s.ExpeditionReply(ME, "{}"u8.ToArray()))["kills"]!.AsArray();
+        Eq("[true, false]", T(kills[0]!["kill"]!["ethical"], kills[1]!["kill"]!["ethical"]));  // the hunt's page judges them so too
+        // the rescore judges a kill by its hunt's list: the disqualified one stays so, and nothing is paid again
+        var (_, rescored, paid, _, _) = Assert.Single(s.Rescore(ME, dryRun: false));
+        Assert.Equal((0, 0), (rescored, paid));
+    }
+
+    [Theory]
+    [InlineData(1, false)]  // the player opted out: the normal animals and lists
+    [InlineData(5, true)]  // a reserve the event has no content on
+    public void TestWithoutTheEventOnItsReserveTheSameKillIsNotDisqualified(int reserve, bool playsEvents)
+    {
+        var s = Hunt(reserve, playsEvents);
+        Eq("[241, 14]", Connect(s)["ethical"]![17]);
+        Assert.False(Disqualified(Harvest(s, 401, 14, 962)));
+    }
+
+    [Fact]
+    public void TestAnEventHuntKeepsItsListAfterTheEventEndsTheSettingChangesAndARestart()
+    {
+        var db = Path.Combine(tmp, "hunt.db");
+        var s = Hunt(1, db: db);
+        s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        s.Clock = () => End.ToUnixTimeSeconds() - 30;
+        Connect(s);  // the hunt starts with the event
+        s.Clock = () => End.ToUnixTimeSeconds() + 30;
+        s.Store.SetPlaysEvents(ME, false);
+        Assert.True(Disqualified(Harvest(s, 401, 14, 962)));
+        Eq("[962, 963, 1142]", Connect(s)["ethical"]![17]);  // the game of that hunt, started again, gets the same list
+        var restarted = Hunt(1, db: db);
+        restarted.Clock = () => End.ToUnixTimeSeconds() + 60;
+        Assert.True(Disqualified(Harvest(restarted, 402, 14, 962)));
+        restarted.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // the next hunt, after the event
+        Eq("[241, 14]", Connect(restarted)["ethical"]![17]);
+        Assert.False(Disqualified(Harvest(restarted, 403, 14, 962)));
     }
 
     static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];

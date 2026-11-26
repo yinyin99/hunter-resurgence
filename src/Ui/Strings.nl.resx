@@ -97,6 +97,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Winkelitems van het evenement</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Beloning voor elke bijdrager: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} van {1} doelen voltooid</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In de reservaten van het evenement zijn de dieren bezeten: ze vallen je aan en gewone munitie schampt ze alleen. Gebruik de zilveren munitie van het evenement. Daar maakt één treffer met andere munitie het afschot onethisch (gediskwalificeerd), ook als zilver het dier afmaakt, en dat geldt voor elk dier, ook klein wild. Zet "Seizoensevenementen spelen" uit om op de gewone dieren te jagen.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evenement bezig: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservaten</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Seizoensevenement</value></data>

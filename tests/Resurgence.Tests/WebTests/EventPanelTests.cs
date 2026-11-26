@@ -39,6 +39,7 @@ public sealed class EventPanelTests : UiContext
 
         cut.WaitForAssertion(() => Assert.Equal("Halloween 2026", cut.Find("#event-title").TextContent));
         Assert.Contains("2026-10-22", cut.Find(".dates").TextContent);
+        Assert.Contains("silver ammunition", cut.Find(".note").TextContent);  // the event's rule for the kills
         Assert.Equal(["12/40", "100/100"], cut.FindAll(".community .numbers").Select(n => n.TextContent));
         Assert.Equal("30", cut.FindAll(".community .bar")[0].Children[0].GetAttribute("style")!.Replace("width:", "").Replace("%", "").Replace(";", ""));
         Assert.Contains("500 gm$, 10 em$", cut.FindAll(".community .pay")[0].TextContent);

@@ -162,8 +162,8 @@ public sealed partial class State
     /// uploadUrl(photo_id, part) builds the local upload URL. harvestPage(event3, spawn_event7, expedition_id,
     /// reserve_id, score, score_type) builds the /game/user/harvest/&lt;kill_id&gt; reply stored for the kill, in the
     /// latest expedition. trophy(event3, spawn_event7, event22, last_hit) returns (score, score_type, css).
-    /// ammoCheck(hit, species) returns (toast update, notice message) for a non-permitted hit, else null: the toast comes
-    /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
+    /// ammoCheck(hit, species, hunt event) returns (toast update, notice message) for a non-permitted hit, else null: the toast comes
+    /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified. The hunt event is the hunt's (<see cref="HuntEvent"/>).
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
     /// stamina; a feeder's `bait_amount` is a refill, <see cref="Feeders.Refill"/>; `bear_baited` on a placed feeder of the account starts its penalty, <see cref="Feeders"/>, and saves nothing) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
@@ -177,7 +177,7 @@ public sealed partial class State
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-                                      Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
+                                      Func<JsonObject, JsonNode?, string?, (JsonObject Toast, string Message)?> ammoCheck,
                                       Func<Db, JsonObject, JsonNode?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
                                       double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
@@ -193,6 +193,7 @@ public sealed partial class State
         con.Exec("UPDATE expeditions SET last_seen = ? WHERE account_id = $a AND end_ts IS NULL", now);
         var updates = new JsonArray(con.Rows("SELECT id, body FROM pending WHERE account_id = $a ORDER BY id").Select(r => JsonNode.Parse((string)r[1])).ToArray());
         con.Exec("DELETE FROM pending WHERE account_id = $a");
+        var huntEvent = HuntEvent(con);  // the heartbeat's events are the latest hunt's
         foreach (var node in events)
         {
             if (node is not JsonObject e) continue;
@@ -213,7 +214,7 @@ public sealed partial class State
             }
             if (Is(e["event"], 1))
             {
-                if (ammoCheck(e, species) is { } warning)
+                if (ammoCheck(e, species, huntEvent) is { } warning)
                 {
                     con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(warning.Toast));
                     con.Exec("INSERT INTO messages (account_id, sender, content, ts) VALUES ($a, ?, ?, ?)", SYSTEM_SENDER, warning.Message, (long)Py.Now());
@@ -332,7 +333,7 @@ public sealed partial class State
     /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
     /// `spawn` stands in for the animal's spawn event when the account's own events have none.</summary>
     static void StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-                             Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck,
+                             Func<JsonObject, JsonNode?, string?, (JsonObject Toast, string Message)?> ammoCheck,
                              Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null)
     {
         var harvest = Py.Dumps(e);
@@ -407,17 +408,18 @@ public sealed partial class State
         + " AND individual = ?1 AND id < k.id), 0) ORDER BY events.id", individual, harvest)
         .Select(r => Parse(r[0])).ToList();
 
-    /// <summary>The harvest scoring step: the kill's spawn (event 7), whether a hit disqualifies it, and (score, score_type, css) from its events and hits.
+    /// <summary>The harvest scoring step: the kill's spawn (event 7), whether a hit disqualifies it (judged as in the hunt of its harvest, <see cref="HuntEvent"/>), and (score, score_type, css) from its events and hits.
     /// The heartbeat and <see cref="Rescore"/> both use it.</summary>
     public static (JsonObject E7, bool Disqualified, JsonNode? Score, string? Type, double Css) ScoreKill(
         Db con, JsonObject e3, string harvest, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-        Func<JsonObject, JsonNode?, (JsonObject Toast, string Message)?> ammoCheck, JsonObject? spawn = null)
+        Func<JsonObject, JsonNode?, string?, (JsonObject Toast, string Message)?> ammoCheck, JsonObject? spawn = null)
     {
         var (e7, e22) = KillEvents(con, e3["individual"], harvest);
         if (e7.Count == 0 && spawn is not null)
             e7 = spawn;  // a harvest moved to its shooter, whose own events have no spawn of the animal: the harvester's (<see cref="CreditHarvest"/>)
         var hits = KillHits(con, e3["individual"], harvest);
-        var disqualified = hits.Any(h => ammoCheck(h, e7["species"]) is not null);
+        var huntEvent = con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : null;
+        var disqualified = hits.Any(h => ammoCheck(h, e7["species"], huntEvent) is not null);
         var (score, type, css) = disqualified ? (null, null, 0.0) : trophy(e3, e7, e22, hits.Count > 0 ? hits[^1] : null);
         return (e7, disqualified, score, type, css);
     }
@@ -1002,17 +1004,21 @@ public sealed partial class State
         return s == "" ? null : s;
     }
 
-    /// <summary>The permitted ammo of a species by its id (a non-typical id uses the typical one's list): its connect `ethical` list; null if it has none (the dogs): no rule.</summary>
-    JsonArray? Allowed(JsonNode? sp) => sp is not null && Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
+    /// <summary>The permitted ammo of a species by its id (a non-typical id uses the typical one's list): in a hunt of the seasonal event <paramref name="huntEvent"/> (<see cref="HuntEvent"/>) the event's list
+    /// for a species it lists (<see cref="Facts.EventEthical"/>), else its connect `ethical` list; null if it has none (the dogs): no rule.</summary>
+    JsonArray? Allowed(JsonNode? sp, string? huntEvent = null) =>
+        sp is null ? null
+        : huntEvent is not null && facts.EventEthical(huntEvent) is { } ev && ev.Species.Contains(Mod100(sp)) ? ev.Ammo
+        : Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
 
     /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>; the event's silver ammunition is permitted on every species. The one rule the kills are judged by and the store shows.</summary>
     bool Permits(JsonArray allowed, JsonNode? ammo) => allowed.Concat(eventAmmo).Any(a => Py.Eq(a, ammo));
 
-    /// <summary>(toast update, notice message) for a hit with ammo outside the species' connect `ethical` list; null if
+    /// <summary>(toast update, notice message) for a hit with ammo outside the species' permitted list (<see cref="Allowed"/>, in a hunt of <paramref name="huntEvent"/>); null if
     /// permitted or the species has no list.</summary>
-    public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp)
+    public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp, string? huntEvent)
     {
-        if (Allowed(sp) is not { } allowed || Permits(allowed, hit["ammunition_id"]))
+        if (Allowed(sp, huntEvent) is not { } allowed || Permits(allowed, hit["ammunition_id"]))
             return null;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
@@ -1027,7 +1033,12 @@ public sealed partial class State
         return (toast, message);
     }
 
-    public bool Ethical(JsonNode? sp, List<JsonObject> hits) => !hits.Any(h => AmmoCheck(h, sp) is not null);
+    public bool Ethical(JsonNode? sp, List<JsonObject> hits, string? huntEvent) => !hits.Any(h => AmmoCheck(h, sp, huntEvent) is not null);
+
+    /// <summary>The seasonal event a hunt's kills are judged by (`expeditions.event`, set by the hunt's connect, <see cref="ConnectReply"/>): of the hunt the event row <paramref name="eventId"/> belongs to,
+    /// else of the latest hunt; null for none. A hunt from before the column has none.</summary>
+    public static string? HuntEvent(Db con, long eventId = long.MaxValue) =>
+        con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) as string;
 
     /// <summary>Skill XP of a spot (event 11), a track clue (event 12) or a permitted hit (event 1), applied inside the
     /// heartbeat's transaction; the level-up toast if the species or the fired weapon gained a level (sent with the next
@@ -1048,7 +1059,7 @@ public sealed partial class State
                                      e["individual"])!;
             (kind, keys, gain, name) = ("tracking", [sp], Skills.TrackXp(n), SpeciesName(sp));
         }
-        else if (Is(e["event"], 1) && AmmoCheck(e, sp) is null)
+        else if (Is(e["event"], 1) && AmmoCheck(e, sp, HuntEvent(con)) is null)
         {
             var weapon = e["weapon_id"];
             var fam = TryKey(weapon, out var w) && family.TryGetValue(w, out var root) ? JsonValue.Create(root) : weapon;
@@ -1509,7 +1520,7 @@ public sealed partial class State
         // a player of a multiplayer session: who the host is and how to reach it
         if (Online && session is not null && games.Connect(Clock(), session, ip) is { } mp)
             reply["network"] = Network(mp.Game, mp.Me, Store.HandleOf(mp.Me.Account), Store.HandleOf(mp.Game.Host));
-        // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the permitted ammo is the ethical list's, never an event's
+        // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the reserve's ammo is the ethical list's, an event's only below
         reply["ingame_event"] = null;
         if (reply["species_ammo"] is JsonArray ammo)
             foreach (var row in ammo.OfType<JsonObject>())
@@ -1521,8 +1532,21 @@ public sealed partial class State
                 for (var i = present.Count - 1; i >= 0; i--)
                     if (present[i] is JsonObject row && Py.L(row["index"]) == index && Py.Str(row["animal"]) == animal)
                         present.RemoveAt(i);
-        if (tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account))
-            AddSeasonal(reply, seasonal, clientReserve);
+        var eventHere = tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
+        // the hunt's event, by whose list its kills are judged (HuntEvent): set by its first connect that has the event's content on its reserve, kept to the hunt's end
+        // whatever the event's window or the player's setting do meanwhile; this reply's `ethical` carries that list
+        if (tutorial is null)
+        {
+            using var con = Con(account);
+            con.Exec("UPDATE expeditions SET event = COALESCE(event, ?) WHERE account_id = $a AND id = ?", eventHere, expeditionId);
+            if (con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ?", expeditionId) is string huntEvent && facts.EventEthical(huntEvent) is { } list
+                && reply["ethical"] is JsonArray ethical)
+                foreach (var sp in list.Species)
+                {
+                    while (ethical.Count <= sp) ethical.Add(new JsonArray());
+                    ethical[(int)sp] = list.Ammo.DeepClone();
+                }
+        }
         if (AllLicenses && reply["spawn_licenses"] is JsonArray licensed)  // 2 (not available) stays; 0 and 1 are licensed
             for (var i = 0; i < licensed.Count; i++)
                 if (Py.L(licensed[i]) != 2)
@@ -1534,12 +1558,12 @@ public sealed partial class State
     }
 
     /// <summary>The event's `ingame_event` and, on the reserves it covers, what the facts file has for it there: its populations (their window the event's) and, as the ammo
-    /// every species of the reserve lists, the event's. The game reads the event once per start, so nothing of it changes a hunt that is running.</summary>
-    void AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
+    /// every species of the reserve lists, the event's; true when the reserve has that content. The game reads the event once per start, so nothing of it changes a hunt that is running.</summary>
+    bool AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
     {
         reply["ingame_event"] = seasonal.Json();
         if (!seasonal.Covers(reserve) || facts.Event(seasonal.Name, reserve) is not { } content)
-            return;
+            return false;
         static string At(DateTimeOffset t) => t.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
         if (reply["populations"] is JsonArray populations)
             foreach (var row in content.Populations)
@@ -1550,6 +1574,7 @@ public sealed partial class State
         if (content.Ammo.Length > 0 && reply["species_ammo"] is JsonArray species)
             foreach (var row in species.OfType<JsonObject>())
                 row["ammo"] = new JsonArray([.. content.Ammo.Select(a => (JsonNode?)a)]);
+        return true;
     }
 
     /// <summary>The player's seasonal events setting and the event that runs now: `{play, event}` (event: `ingame_event`'s object, or null outside the window or with no event set).</summary>
@@ -2379,7 +2404,7 @@ public sealed partial class State
             con.Commit();
             if (stale)
                 UpdateHunterscore(con, account);
-            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats FROM expeditions"
+            var found = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, first_event, distance, stats, event FROM expeditions"
                                  + " WHERE account_id = $a" + (wanted == "" ? "" : " AND id = ?") + " ORDER BY id DESC LIMIT 1",
                                  wanted == "" ? [] : [wantedId]).FirstOrDefault();
             if (found is null)
@@ -2393,7 +2418,7 @@ public sealed partial class State
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, row[8] as string, KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
             // an open hunt's are those of its events so far; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[5] is not DBNull)
                 stats = row[4] is DBNull ? HuntStatsOf(con, account, [row[0], row[3], row[4], row[5], row[6], long.MaxValue]) : row[7] is string s ? Parse(s) : null;
@@ -2452,14 +2477,14 @@ public sealed partial class State
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
             photo = KillPhoto(con, account, row[0], harvest);
             (e7, e22) = KillEvents(con, individual, harvest);
-            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
+            expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts, event FROM expeditions WHERE account_id = $a AND id = ?",
                                   page["expedition_id"]).FirstOrDefault();
         }
         var e3 = Parse(row[1]);
         var sp = G(e3, "extended_species", -1);
         var f = Features(e3, e7, e22);
         var owner = Account(account);
-        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"], photo);
+        var entry = KillEntry(owner["user_id"], killId, e3, page, hits, page["expedition_id"], expedition?[5] as string, photo);
         var handle = Py.Str(G(owner, "handle", ""));
         var last = hits.Count > 0 ? hits[^1] : e3;
         var (x, y, z) = StartPosition(expedition is null ? null : Py.FromSql(expedition[2]));
@@ -2564,8 +2589,8 @@ public sealed partial class State
         return Py.DumpBytes(reply);
     }
 
-    /// <summary>One Public_user/expedition kill.</summary>
-    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId, string? photo)
+    /// <summary>One Public_user/expedition kill; <paramref name="huntEvent"/> is its hunt's (<see cref="HuntEvent"/>).</summary>
+    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId, string? huntEvent, string? photo)
     {
         var confirm = DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
                                           DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
@@ -2581,7 +2606,7 @@ public sealed partial class State
             ["weight"] = C(page["weight"]), ["gender"] = C(page["gender"]),
             ["kill"] = new JsonObject
             {
-                ["ethical"] = Ethical(page["species"], hits),
+                ["ethical"] = Ethical(page["species"], hits, huntEvent),
                 ["trophy_integrity"] = Py.D(G(e3, "trophy_integrity", 0)) / 1000,
                 ["score"] = Py.Truthy(page["score"]) ? C(page["score"]) : null,
                 ["wound_time"] = Py.D(G(e3, "wound_time", 0)) / 1000,
