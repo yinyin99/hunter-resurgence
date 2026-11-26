@@ -19,17 +19,18 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
 
     /// <summary>
     /// Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.
-    /// The known exe is started suspended and gets the log lock first (<see cref="LogLock"/>); any other exe starts as it is.
+    /// The known exe is started suspended and gets the goose call patch (<see cref="GooseCall"/>) and the log lock (<see cref="LogLock"/>) first, each on its own; any other exe starts as it is.
     /// </summary>
     public static GameProcess? Start(ProcessStartInfo info, ILogger? log)
     {
         var sha = LogLock.Sha256(info.FileName);
         if (sha != LogLock.Known.ExeSha256)
         {
-            log?.LogInformation("The game's log lock is not applied, the game starts without it: not the known exe ({Sha256})", sha ?? "unreadable");
+            log?.LogInformation("The game's log lock and goose call patch are not applied, the game starts without them: not the known exe ({Sha256})", sha ?? "unreadable");
             return Start(info);
         }
         if (SuspendedProcess.Create(info) is not { } game) return null;
+        GooseCall.Known.ApplyAndLog(game, log);
         if (LogLock.Known.ApplyAndResume(game, log)) return game.Started();
         game.Kill();
         return null;
