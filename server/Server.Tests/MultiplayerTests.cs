@@ -293,7 +293,8 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         // the caller may not join this game yet (`starting`), so the website's list hides the raw coordinates too (null); the game's own list cannot tell who asks and sends 0
         Assert.All(game["clients"]!.AsArray(), c => Assert.Equal((true, true, true), (c!["x"] is null, c["y"] is null, c["z"] is null)));
         foreach (var client in game["clients"]!.AsArray())
-            client!["x"] = client["y"] = client["z"] = 0;
+            foreach (var name in new[] { "x", "y", "z" })
+                client![name] = 0;
         Eq(await List(), listed);  // the game's own list has none of them
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
     }
