@@ -661,10 +661,13 @@ public sealed class Store
     // ---- bans by Steam id
 
     /// <summary>Is this Steam id banned now: no sign-in with it makes or opens an account.</summary>
-    public bool IsBanned(string steamId64)
+    public bool IsBanned(string steamId64) => BanReason(steamId64) is not null;
+
+    /// <summary>The operator's reason for the Steam id's ban ("" when he gave none), null when it is not banned now. The banned player reads it on the sign-in problem page.</summary>
+    public string? BanReason(string steamId64)
     {
         using var con = Open();
-        return con.Scalar("SELECT 1 FROM banned_steam WHERE steam_id64 = ? AND lifted_ts IS NULL", steamId64) is not null;
+        return con.Scalar("SELECT COALESCE(reason, '') FROM banned_steam WHERE steam_id64 = ? AND lifted_ts IS NULL", steamId64) as string;
     }
 
     /// <summary>Ban the Steam id (a ban again replaces the time and the reason) and set `banned` on its current account, if any; returns that account.</summary>

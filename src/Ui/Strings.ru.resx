@@ -1566,6 +1566,7 @@
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ссылка для входа недействительна. Начните заново из лаунчера или инструмента резервного копирования.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam не подтвердил вход. Начните заново.</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Этот аккаунт Steam заблокирован, вход невозможен.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Причина:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>

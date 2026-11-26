@@ -21,7 +21,7 @@ const string AdminUsage = """
     a harvest payment inside a bonus's period gets base = paid / multiplier and that event, every other payment base = amount, and the events are written. Without --apply nothing is written (a line per event and the counts); a second run changes nothing. Run it with the server stopped, after `backup`.
     admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
     it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
-    admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any.
+    admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any. The player reads the reason on the sign-in page: write it for him.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.

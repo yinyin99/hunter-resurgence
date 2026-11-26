@@ -1566,6 +1566,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Questo link di accesso non è valido. Ricomincia dal launcher o dallo strumento di backup.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam non ha confermato l’accesso. Ricomincia.</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Questo account Steam è bannato e non può accedere.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Questo modulo non proviene da questo server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Vuoi davvero chiudere il launcher e il gioco?</value></data>

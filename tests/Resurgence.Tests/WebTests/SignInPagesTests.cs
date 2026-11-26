@@ -99,5 +99,27 @@ public sealed class SignInPagesTests : UiContext
         Assert.Equal(Invite, invited.Render<Done>().Find("a").GetAttribute("href"));
         Assert.Contains(plain.Text("SignInPage.Problem.Banned"), plain.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned")).Markup);
         Assert.Contains(plain.Text("SignInPage.Problem.Expired"), plain.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "<x>")).Markup);
+        // a banned player gets the invite to come and talk; the other problems send him back to sign in
+        Assert.Equal(Invite, invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned")).Find("a").GetAttribute("href"));
+        Assert.Empty(invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "expired")).FindAll("a"));
+        // the operator's reason is shown as text (a link is no link) and only on the banned page
+        var why = invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned").Add(x => x.Why, "<a href=x>Claimed</a> someone's profile"));
+        Assert.Equal(plain.Text("SignInPage.Problem.BanReason") + " <a href=x>Claimed</a> someone's profile", why.Find(".ban-reason").TextContent);
+        Assert.Single(why.FindAll("a"));  // the invite only
+        Assert.Empty(invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "expired").Add(x => x.Why, "x")).FindAll(".ban-reason"));
+    }
+
+    [Fact]
+    public void TheBannedPageShowsTheReasonOfThisBrowsersSignInOnly()
+    {
+        using var banned = With(new("banned", "", Reason: "You claimed a profile."));
+        banned.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=banned");
+        Assert.EndsWith("You claimed a profile.", banned.Render<Problem>().Find(".ban-reason").TextContent);
+        using var other = With(null);  // the same link in another browser: no sign-in, no reason
+        other.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=banned");
+        Assert.Empty(other.Render<Problem>().FindAll(".ban-reason"));
+        using var expired = With(new("banned", "", Reason: "x"));  // only the banned page asks for it
+        expired.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=expired");
+        Assert.Empty(expired.Render<Problem>().FindAll(".ban-reason"));
     }
 }
