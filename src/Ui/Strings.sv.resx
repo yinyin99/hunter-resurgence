@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Häng med oss på Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Gemenskapen träffas på Discord: nyheter, hjälp och andra jägare. Kom och säg hej!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Gå med i Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Länka ditt Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Få 5000 gm$ och 250 em$, en gång. Din HunterScore visas på din Discord-profil.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Länka Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Länka Discord · få 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senare</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en säkerhetskopia av din profil?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>En säkerhetskopia är zip-filen som säkerhetskopieringsverktyget sparade, eller en sparning gjord med ett annat gemenskapsverktyg. Återställ den nu och få tillbaka dina jakter, föremål och troféer.</value></data>
@@ -1584,6 +1588,9 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Det här Discord-kontot är länkat till en annan jägare. Ett Discord-konto kan bara länkas till en jägare.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Din jägare är redan länkad till ett annat Discord-konto. En jägare kan bara länkas till ett Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Länkningen misslyckades. Gå tillbaka till Discord och försök igen.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Din roll på Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} kvar till {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Tillbaka till Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Skickar loggar och kraschhändelser för spelet och launchern (inklusive WebView2) till gemenskapsservern så att vi kan hjälpa till. Sparas i 30 dagar.</value></data>

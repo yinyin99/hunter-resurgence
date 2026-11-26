@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Přidejte se k nám na Discordu</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Komunita se schází na Discordu: novinky, pomoc a další lovci. Přijďte se pozdravit!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Připojit se k Discordu</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Propojte svůj Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Získejte 5000 gm$ a 250 em$, jednou. Váš HunterScore se zobrazí na vašem profilu Discordu.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Propojit Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Propojit Discord · získejte 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Později</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Máte zálohu svého profilu?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Záloha je soubor zip, který uložil nástroj pro zálohování, nebo uložení pořízené jiným komunitním nástrojem. Obnovte ji hned a získejte zpět své lovy, předměty a trofeje.</value></data>
@@ -1584,6 +1588,9 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Tento účet Discord je propojen s jiným lovcem. Účet Discord lze propojit pouze s jedním lovcem.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Váš lovec je již propojen s jiným účtem Discord. Lovce lze propojit pouze s jedním účtem Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Propojení se nezdařilo. Vraťte se do Discordu a zkuste to znovu.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Vaše role na Discordu: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ještě {0} do role {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Zpět na Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Nahlásit problém</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Odešle protokoly a události pádu hry a launcheru (včetně WebView2) komunitnímu serveru, abychom mohli pomoci. Uchovány 30 dní.</value></data>

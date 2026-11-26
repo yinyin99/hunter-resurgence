@@ -1,0 +1,22 @@
+@using System.Net
+@using System.Text.RegularExpressions
+@inject ISessionService Sessions
+
+@* the feed's card above the Discord widget (website and launcher): for a signed-in hunter who has not linked Discord; it does not wait for the widget's frame *@
+@if (offered)
+{
+    <section class="card panel box" aria-labelledby="discord-card-title">
+        <h3 id="discord-card-title"><Icon Name="discord" /> @L["Discord.LinkTitle"]</h3>
+        <p>@Amounts(L["Discord.LinkText"].Value)</p>
+        <DiscordLinkButton Class="btn btn-primary link">@L["Discord.LinkButton"]</DiscordLinkButton>
+    </section>
+}
+
+@code {
+    bool offered;
+
+    /// <summary>The text with its gm$ and em$ amounts in white (the translations keep the amounts as "5000 gm$").</summary>
+    static MarkupString Amounts(string text) => new(Regex.Replace(WebUtility.HtmlEncode(text), @"\d+ [ge]m\$", "<strong>$0</strong>"));
+
+    protected override async Task OnInitializedAsync() => offered = DiscordOffer.Shown(await Sessions.CurrentAsync(), Sessions);
+}

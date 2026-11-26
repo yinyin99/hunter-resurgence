@@ -317,6 +317,16 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, Count("discord_rewards"));
     }
 
+    [Fact]
+    public async Task TestTheSessionAnswerSaysWhetherThisAccountHasLinkedDiscordSoTheSiteOffersTheLinkOnlyUntilThen()
+    {
+        var cookie = SessionOf(8);
+        async Task<bool> Linked() => (bool)System.Text.Json.Nodes.JsonNode.Parse((await Get("/auth/me", cookie)).Body)!["discordLinked"]!;
+        Assert.False(await Linked());
+        Assert.Equal(Redirect + "linked", await Callback(cookie));
+        Assert.True(await Linked());
+    }
+
     // ---- the refresh token and the hunterscore
 
     [Fact]

@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Besuche uns auf Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Die Community trifft sich auf Discord: Neuigkeiten, Hilfe und andere Jäger. Schau vorbei und sag Hallo!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Dem Discord beitreten</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Verknüpfen Sie Ihr Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Erhalten Sie einmalig 5000 gm$ und 250 em$. Ihr HunterScore erscheint auf Ihrem Discord-Profil.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Discord verknüpfen</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Discord verknüpfen · 5000 gm$ + 250 em$ erhalten</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Später</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Hast du eine Sicherung deines Profils?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Eine Sicherung ist die Zip-Datei des Backup-Tools oder ein Stand, der mit einem anderen Community-Tool gespeichert wurde. Stelle sie jetzt wieder her und erhalte deine Jagden, Gegenstände und Trophäen zurück.</value></data>
@@ -1584,6 +1588,9 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Dieses Discord-Konto ist mit einem anderen Jäger verknüpft. Ein Discord-Konto kann nur mit einem Jäger verknüpft werden.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Ihr Jäger ist bereits mit einem anderen Discord-Konto verknüpft. Ein Jäger kann nur mit einem Discord-Konto verknüpft werden.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Die Verknüpfung hat nicht geklappt. Gehen Sie zurück zu Discord und versuchen Sie es erneut.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Ihre Rolle auf Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Noch {0} bis {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Zurück zu Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs und Absturzereignisse des Spiels und des Launchers (einschließlich WebView2) an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>

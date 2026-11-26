@@ -49,6 +49,12 @@
     /* the one orange: text and lines on dark surfaces, and the hover fill (settings menu, hunt now list, .pop menus, backup button) under white text.
        White on it is 3.3:1, below 4.5:1: the maintainer's decision (one orange, bright) */
     --accent: #F9560D;
+    /* Discord's own colours: the Linked Roles entry points (card, pill, result page); the role colours are those of the Discord server's roles */
+    --discord: #5865f2;
+    --discord-hover: #4752c4;
+    --discord-bg: #2b2d31;
+    --discord-role-verified: #c77dff;
+    --discord-role-veteran: #d4a017;
     --accent-hover: #fb8a58;
     --primary: #f9370d;
     --primary-hover: #e72d06;

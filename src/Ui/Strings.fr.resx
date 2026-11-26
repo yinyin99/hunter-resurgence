@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Rejoignez-nous sur Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>La communauté se retrouve sur Discord : actualités, aide et autres chasseurs. Venez dire bonjour !</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Rejoindre le Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Liez votre Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Recevez 5000 gm$ et 250 em$, une seule fois. Votre HunterScore s'affiche sur votre profil Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Lier Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Lier Discord · recevez 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Plus tard</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Avez-vous une sauvegarde de votre profil ?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Une sauvegarde est le zip créé par l’outil de sauvegarde, ou un enregistrement fait avec un autre outil de la communauté. Restaurez-la maintenant pour retrouver vos chasses, objets et trophées.</value></data>
@@ -1584,6 +1588,9 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Ce compte Discord est lié à un autre chasseur. Un compte Discord ne peut être lié qu'à un seul chasseur.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Votre chasseur est déjà lié à un autre compte Discord. Un chasseur ne peut être lié qu'à un seul compte Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>La liaison a échoué. Retournez sur Discord et réessayez.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Votre rôle sur Discord : {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Encore {0} pour {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Retour sur Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux et événements de plantage du jeu et du launcher (WebView2 compris) au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>

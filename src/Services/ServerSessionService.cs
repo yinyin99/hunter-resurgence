@@ -40,6 +40,8 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
 {
     public event Action? Changed;
 
+    public string? DiscordLinkUrl => "/discord/link";
+
     public string? SignInUrl(string next) => $"{ServerSessionApi.SteamLogin}?next={Uri.EscapeDataString(next)}";
 
     public async Task<Session?> CurrentAsync()
@@ -51,7 +53,7 @@ public sealed class ServerSessionService(HttpClient http, ServerCookie cookie, I
             using var response = await http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return null;
             var me = await response.Content.ReadFromJsonAsync<ServerAccount>();
-            return me is { Handle.Length: > 0 } ? new Session(me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar), Imperial: me.Imperial) : null;
+            return me is { Handle.Length: > 0 } ? new Session(me.Handle, me.Hunterscore, Avatar: Avatars.Slot(me.Avatar), Imperial: me.Imperial, DiscordLinked: me.DiscordLinked) : null;
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {

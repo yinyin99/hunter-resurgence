@@ -252,7 +252,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         con.Exec("UPDATE discord_links SET access_token = NULL, refresh_token = NULL, expires_ts = 0 WHERE account_id = ?1 AND refresh_token = ?2", account, held);  // not the tokens of a link made meanwhile
     }
 
-    /// <summary>Push every linked account whose hunterscore is not the one last pushed (every account just linked is one); the number of pushes Discord took. Run every <see cref="SweepEvery"/>.
+    /// <summary>Push every linked account whose hunterscore, or handle, is not the one last pushed (every account just linked is one); the number of pushes Discord took. Run every <see cref="SweepEvery"/>.
     /// ponytail: the hunterscore is recomputed on every heartbeat with hunt events, so a push from there would be one call per few seconds per player; this one asks every few minutes. A push that keeps failing is tried at every sweep.</summary>
     public async Task<int> SweepAsync()
     {

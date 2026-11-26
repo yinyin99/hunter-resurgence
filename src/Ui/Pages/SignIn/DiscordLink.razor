@@ -1,16 +1,43 @@
 @page "/signin/discord"
 @layout SignInLayout
+@using System.Net
+@inject ISessionService Sessions
+@inject Branding Brand
 
-@* where the server's /discord/callback sends the browser (docs/server.md#discord-linked-roles): the result is one fixed key of the redirect; any other reads as an error *@
+@* where the server's /discord/callback sends the browser (docs/server.md#discord-linked-roles): the result is one fixed key of the redirect; any other reads as an error.
+   A linked result adds the hunter's current score and role, from the session, and the way back to Discord *@
 <PageTitle>@L[Good ? "DiscordLink.Linked" : "SignInPage.Problem.Title"]</PageTitle>
 
 <h1>@L[Good ? "DiscordLink.Linked" : "SignInPage.Problem.Title"]</h1>
 <p>@L[Key]</p>
-@if (Good) { <SignInDiscord /> }
+@if (Good && score is { } s)
+{
+    <p class="score">@s <span class="unit">HunterScore</span></p>
+    <p class="role">@(s >= Veteran ? Frame("DiscordLink.Role", Role(VeteranRole, "veteran")) : Frame("DiscordLink.Role", Role(VerifiedRole, "verified")))</p>
+    @if (s < Veteran)
+    {
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="@Veteran" aria-valuenow="@s" aria-label="@L["DiscordLink.More", Veteran - s, VeteranRole]"><div class="fill" style="width: @(s * 100 / Veteran)%"></div></div>
+        <p class="more">@Frame("DiscordLink.More", (Veteran - s).ToString(), Role(VeteranRole, "veteran"))</p>
+    }
+}
+@if (Good && Brand.Link("discord") is not null) { <p class="back"><ExternalLink Key="discord" Class="btn btn-primary btn-large">@L["DiscordLink.Back"]</ExternalLink></p> }
 
 @code {
+    /// <summary>The hunterscore that earns the "Veteran" role.</summary>
+    public const int Veteran = 20000;
+
     /// <summary>`linked` (the reward was paid now), `rewarded` (linked, paid before), `taken` (that Discord account is another hunter's), `other` (this hunter has another Discord account), `error`.</summary>
     [SupplyParameterFromQuery] public string? Result { get; set; }
+
+    int? score;
+
+    /// <summary>The names of the Discord server's roles: the same in every language, like the roles themselves (docs/deploy.md#discord-linked-roles).</summary>
+    const string VerifiedRole = "Verified hunter", VeteranRole = "Veteran";
+
+    /// <summary>A translated frame with its arguments in place: the text is encoded, the arguments are markup (a role name in the colour of the Discord server's role).</summary>
+    MarkupString Frame(string key, params string[] html) => new(string.Format(WebUtility.HtmlEncode(L[key].Value), html));
+
+    static string Role(string name, string css) => $"<span class=\"{css}\">{name}</span>";
 
     bool Good => Result is "linked" or "rewarded";
 
@@ -22,4 +49,9 @@
         "other" => "DiscordLink.Other",
         _ => "DiscordLink.Error",
     };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Good && await Sessions.CurrentAsync() is { Handle.Length: > 0 } session) score = session.HunterScore;
+    }
 }

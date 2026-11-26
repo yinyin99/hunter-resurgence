@@ -2,8 +2,9 @@ namespace Resurgence.Services;
 
 /// <param name="Membership">The player has a membership: the single player page then leaves out its introduction.</param>
 /// <param name="Avatar">The slot or link of the player's picture (<see cref="Avatars.Slot"/>).</param>
+/// <param name="DiscordLinked">The hunter has linked a Discord account (Linked Roles): the pages stop offering the link.</param>
 /// <param name="Imperial">The player chose imperial units (yards, pounds): the pages show them as the game does (<see cref="IAccountService.SetImperialAsync"/>).</param>
-public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default, bool Imperial = false);
+public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default, bool Imperial = false, bool DiscordLinked = false);
 
 /// <summary>Where the launcher goes at start: on to the game, to the username step of a new account, or to the sign-in.</summary>
 public enum StartOutcome { LoggedIn, NeedsSignup, LoggedOut }
@@ -16,6 +17,8 @@ public interface ISessionService
     event Action? Changed;
     /// <summary>Set when signing in is a page load of the community server (the website with SERVER_URL): where to go, to come back to the local path <paramref name="next"/>. Null: sign in with the e-mail methods below.</summary>
     string? SignInUrl(string next) => null;
+    /// <summary>Where a player links Discord (the community server's <c>/discord/link</c>): a path of the website, or the whole address when the launcher opens it in the browser. Null: nothing to offer.</summary>
+    string? DiscordLinkUrl => null;
     /// <summary>True when signing in is the server's, through the player's browser (<see cref="SignInWithBrowserAsync"/>), and not the e-mail methods below.</summary>
     bool BrowserSignIn => false;
     /// <summary>Signs in through the player's browser and ends when the player has signed in there (a session now exists), cancelled, or ran out of time. A cancel is <c>new Result(false)</c>: no message.</summary>

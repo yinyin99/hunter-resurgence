@@ -16,6 +16,7 @@
 <div class="shell @(Mode.Launcher ? "launcher" : "web")" style="@(pageBg is null ? null : $"background:url('{pageBg}') no-repeat center 0 #000")">
     <WipBanner />
     <BackupButton />
+    <DiscordPill Session="session" />
     @if (isPublic)
     {
         <PublicBar />

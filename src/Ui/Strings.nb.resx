@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Bli med oss på Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Fellesskapet møtes på Discord: nyheter, hjelp og andre jegere. Kom og si hei!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Bli med på Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Koble til Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Få 5000 gm$ og 250 em$, én gang. HunterScore vises på Discord-profilen din.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Koble til Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Koble til Discord · få 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Senere</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Har du en sikkerhetskopi av profilen din?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>En sikkerhetskopi er zip-filen som sikkerhetskopiverktøyet lagret, eller en lagring gjort med et annet fellesskapsverktøy. Gjenopprett den nå og få tilbake jaktene, gjenstandene og trofeene dine.</value></data>
@@ -1584,6 +1588,9 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Denne Discord-kontoen er koblet til en annen jeger. En Discord-konto kan bare kobles til én jeger.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Jegeren din er allerede koblet til en annen Discord-konto. En jeger kan bare kobles til én Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Koblingen mislyktes. Gå tilbake til Discord og prøv igjen.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Rollen din på Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} igjen til {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Tilbake til Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på at du vil lukke launcheren og spillet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapporter et problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sender logger og krasjhendelser for spillet og launcheren (inkludert WebView2) til fellesskapsserveren slik at vi kan hjelpe. Lagres i 30 dager.</value></data>

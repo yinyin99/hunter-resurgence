@@ -650,6 +650,13 @@ public sealed class Store
         return con.Scalar("SELECT use_imperial FROM accounts WHERE id = ?", id) is 1L;
     }
 
+    /// <summary>Whether the account has linked a Discord account (<see cref="LinkedRoles"/>): the website and the launcher stop offering the link then.</summary>
+    public bool DiscordLinked(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT 1 FROM discord_links WHERE account_id = ?", id) is not null;
+    }
+
     public void SetUsesImperial(long id, bool imperial)
     {
         using var con = Open();

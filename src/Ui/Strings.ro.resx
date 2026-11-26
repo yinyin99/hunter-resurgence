@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Alătură-te nouă pe Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Comunitatea se întâlnește pe Discord: noutăți, ajutor și alți vânători. Vino să saluți!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Intră pe Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Conectați-vă Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Primiți 5000 gm$ și 250 em$, o singură dată. HunterScore-ul dvs. apare pe profilul dvs. Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Conectați Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Conectați Discord · primiți 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Mai târziu</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Ai o copie de siguranță a profilului tău?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>O copie de siguranță este zip-ul salvat de instrumentul de backup sau o salvare făcută cu alt instrument al comunității. Restaureaz-o acum și îți recapeți vânătorile, obiectele și trofeele.</value></data>
@@ -1584,6 +1588,9 @@ Numele:</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Acest cont Discord este conectat la alt vânător. Un cont Discord poate fi conectat la un singur vânător.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Vânătorul dvs. este deja conectat la alt cont Discord. Un vânător poate fi conectat la un singur cont Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Conectarea nu a reușit. Reveniți la Discord și încercați din nou.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Rolul dvs. pe Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Înapoi la Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele și evenimentele de blocare ale jocului și ale launcherului (inclusiv WebView2) serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>

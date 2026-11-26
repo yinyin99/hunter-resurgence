@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Присоединяйтесь к нам в Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Сообщество собирается в Discord: новости, помощь и другие охотники. Заходите поздороваться!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Свяжите свой Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Получите 5000 gm$ и 250 em$ один раз. Ваш HunterScore показывается в вашем профиле Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Связать Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Связать Discord · получите 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Позже</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Есть ли у вас резервная копия профиля?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Резервная копия — это zip-файл, сохранённый инструментом резервного копирования, или сохранение, сделанное другим инструментом сообщества. Восстановите её сейчас и верните охоты, предметы и трофеи.</value></data>
@@ -1584,6 +1588,9 @@
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Этот аккаунт Discord связан с другим охотником. Аккаунт Discord можно связать только с одним охотником.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Ваш охотник уже связан с другим аккаунтом Discord. Охотника можно связать только с одним аккаунтом Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Связать не удалось. Вернитесь в Discord и попробуйте ещё раз.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Ваша роль в Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ещё {0} до роли {1} (20000)</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Назад в Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы и события сбоев игры и лаунчера (включая WebView2) на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>
