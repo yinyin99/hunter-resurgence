@@ -392,7 +392,7 @@ Without it (a fork) the run ends with a notice. To scan a release that is alread
 | Microsoft Defender | https://www.microsoft.com/en-us/wdsi/filesubmission |
 | Kaspersky | https://opentip.kaspersky.com/ |
 | Bitdefender | https://www.bitdefender.com/consumer/support/answer/29358/ |
-| ESET | https://support.eset.com/en/kb141-submit-a-sample-to-the-eset-virus-lab |
+| ESET | https://support.eset.com/en/kb141-submit-a-virus-website-or-potential-false-positive-sample-to-the-eset-lab |
 | Sophos | https://support.sophos.com/support/s/filesubmission |
 | Malwarebytes | https://forums.malwarebytes.com/forum/122-file-detections/ |
 | Symantec, Norton | https://symsubmit.symantec.com/ |
