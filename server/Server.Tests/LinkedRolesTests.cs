@@ -214,7 +214,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.Equal(("authorization_code", "code-1", AppId, "test-secret", "https://web.test/discord/callback"),
                      (token["grant_type"], token["code"], token["client_id"], token["client_secret"], token["redirect_uri"]));
         Assert.Equal(["access-1", "access-1"], discord.Asked.Skip(1).Select(c => c.Bearer));
-        Eq("""{"platform_name": "Hunter Resurgence", "platform_username": "second · 20500 HunterScore", "metadata": {"hunterscore": 20500}}""", discord.Asked[2].Json);
+        Eq("""{"platform_name": "Hunter Resurgence", "platform_username": "second", "metadata": {"hunterscore": 20500}}""", discord.Asked[2].Json);
 
         // 5000 gm$ and 250 em$ through the wallet: a wallet_log row of each with the reason, base = amount, no bonus event; one message in the notice thread
         Assert.Equal((33.0 + 5000, 182.0 + 250), (Gm(8), Em(8)));
@@ -482,7 +482,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         SetHunterscore(8, 20000);  // passes the Veteran threshold later, with no new link
         Assert.Equal(1, await Roles.SweepAsync());
         var put = Assert.Single(discord.Asked);
-        Eq("""{"platform_name": "Hunter Resurgence", "platform_username": "second · 20000 HunterScore", "metadata": {"hunterscore": 20000}}""", put.Json);
+        Eq("""{"platform_name": "Hunter Resurgence", "platform_username": "second", "metadata": {"hunterscore": 20000}}""", put.Json);
         Assert.Equal("access-1", put.Bearer);  // the user's own token of account 8
         Assert.Equal(0, await Roles.SweepAsync());  // pushed: not again until it changes
         SetHunterscore(8, 19000);  // and a lower value is pushed too
@@ -553,35 +553,32 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
-    public void TestTheProfileBoxShowsTheScoreInPlainDigitsAndNeverCutsIt()
+    public void TestTheProfileBoxNameIsTheHandleCutToDiscordsLimit()
     {
-        Assert.Equal("Mikado · 12345 HunterScore", LinkedRoles.Username("Mikado", 12345));  // no thousands separator
-        Assert.Equal("Mikado · 1234567 HunterScore", LinkedRoles.Username("Mikado", 1234567));
-        Assert.Equal("Mikado · 0 HunterScore", LinkedRoles.Username("Mikado", 0));
-        var cut = LinkedRoles.Username(new string('h', 200), 1234567);  // Discord's limit is 100 characters: the handle is cut
-        Assert.Equal(100, cut.Length);
-        Assert.EndsWith("hhh · 1234567 HunterScore", cut);
+        Assert.Equal("Mikado", LinkedRoles.Username("Mikado"));
+        Assert.Equal(new string('h', 100), LinkedRoles.Username(new string('h', 200)));  // Discord's limit is 100 characters
     }
 
     [Fact]
     public async Task TestTheLinkTheRelinkAndTheSweepAllSendTheCurrentScoreAndAChangedHandleIsPushed()
     {
         string Name(int push) => (string)discord.Puts.ElementAt(push).Json!["platform_username"]!;
+        long Score(int push) => (long)discord.Puts.ElementAt(push).Json!["metadata"]!["hunterscore"]!;
         SetHunterscore(8, 12345);
         var cookie = SessionOf(8);
         Assert.Equal(Redirect + "linked", await Callback(cookie));  // the first link
-        Assert.Equal("second · 12345 HunterScore", Name(0));
+        Assert.Equal(("second", 12345L), (Name(0), Score(0)));
         SetHunterscore(8, 1234567);
         Assert.Equal(Redirect + "rewarded", await Callback(cookie, code: "code-2"));  // a link again
-        Assert.Equal("second · 1234567 HunterScore", Name(1));
+        Assert.Equal(("second", 1234567L), (Name(1), Score(1)));
         SetHunterscore(8, 1234568);  // the sweep, for a changed hunterscore
         Assert.Equal(1, await Roles.SweepAsync());
-        Assert.Equal("second · 1234568 HunterScore", Name(2));
+        Assert.Equal(("second", 1234568L), (Name(2), Score(2)));
         Assert.Equal(0, await Roles.SweepAsync());
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET handle = 'renamed' WHERE id = 8");  // a changed handle alone is pushed too
         Assert.Equal(1, await Roles.SweepAsync());
-        Assert.Equal("renamed · 1234568 HunterScore", Name(3));
+        Assert.Equal(("renamed", 1234568L), (Name(3), Score(3)));
         Assert.Equal(0, await Roles.SweepAsync());
         Assert.Equal(4, discord.Puts.Count());
     }
