@@ -214,13 +214,13 @@ public class SeasonalEventTests : StateTestBase
 
     /// <summary>A hunt on the game's <paramref name="reserve"/> with the shipped facts and the shipped event; the recorded connect it starts from already carries
     /// an event creature of that reserve (and a row that is no object), as a connect recorded during an event does. Its `ethical` permits 241 and 14 on the rabbit 17
-    /// (an event species) and on the roe deer 11 (on no reserve of the event); the coyote 4 permits 241 and 14, the blacktail 6 241 and 962 (a silver round already in its normal list). With <paramref name="db"/> the server starts again on that database and launches nothing.</summary>
+    /// (an event species) and on the roe deer 11 (on no reserve of the event); the coyote 4 permits 241 and 14, the blacktail 6 241. With <paramref name="db"/> the server starts again on that database and launches nothing.</summary>
     State Hunt(int reserve, bool playsEvents = true, string? db = null)
     {
         var connect = CONNECT;
         ((JsonArray)connect["ethical"]!)[11] = new JsonArray(241, 14);
         ((JsonArray)connect["ethical"]!)[4] = new JsonArray(241, 14);
-        ((JsonArray)connect["ethical"]!)[6] = new JsonArray(241, 962);
+        ((JsonArray)connect["ethical"]!)[6] = new JsonArray(241);
         connect["populations"] = new JsonArray(O("""{"index": 996, "animal": "dog_german_pointer", "reserve": -1}"""), JsonValue.Create("r3"));
         if (reserve == 0)  // the normal row whose index the event's feral hog shares
             connect["populations"]!.AsArray().Add(O("""{"index": 3, "animal": "roosevelt_elk", "density_map": "roosevelt_elk", "reserve": 1}"""));
@@ -278,32 +278,31 @@ public class SeasonalEventTests : StateTestBase
     }
 
     [Theory]
-    [InlineData(4, "[241, 14, 962, 963, 1142]")]  // the coyote: its normal list, then the event's silver rounds
-    [InlineData(6, "[241, 962, 963, 1142]")]  // the blacktail deer: a silver round its normal list holds is not doubled
-    public void TestInAnEventHuntASpeciesWithNoPossessedVersionTakesItsNormalAmmunitionAndSilver(int species, string permitted)
+    [InlineData(4, "[241, 14]", 14)]  // the coyote and the blacktail deer have no possessed version: in an event hunt they keep their normal list
+    [InlineData(6, "[241]", 241)]
+    public void TestInAnEventHuntASpeciesWithNoPossessedVersionIsJudgedByItsNormalListAndSilverIsNotPermitted(int species, string permitted, int normal)
     {
         var s = Hunt(1);
         var reply = Connect(s);
         Eq(permitted, reply["ethical"]![species]);
         Eq("[962, 963, 1142]", reply["ethical"]![17]);  // a possessed species: silver only
-        var next = 400;
-        foreach (var round in new[] { 241, 14, 962, 963, 1142 }.Where(r => reply["ethical"]![species]!.AsArray().Any(a => (int)a! == r)))
-            Assert.False(Disqualified(HarvestOf(s, species, ++next, round)));  // a normal round, silver: neither disqualifies
-        Assert.True(Disqualified(HarvestOf(s, species, ++next, 241, 15)));  // an ammunition in neither list does
-        Assert.True(Warned(HarvestOf(s, species, ++next, 15)));
-        var flags = KillsEthical(s).Split(',');  // newest first: the two disqualified kills, then every permitted one
-        Assert.Equal(["False", "False"], flags[..2]);
-        Assert.All(flags[2..], f => Assert.Equal("True", f));
+        Assert.False(Disqualified(HarvestOf(s, species, 401, normal)));
+        var silver = HarvestOf(s, species, 402, 962);  // silver on a normal animal makes the kill unethical
+        Assert.True(Disqualified(silver));
+        Assert.True(Warned(silver));
+        Assert.True(Disqualified(HarvestOf(s, species, 403, normal, 963)));  // also when it is not the last hit
+        Assert.Equal("False,False,True", KillsEthical(s));  // the page judges them so too, newest first
     }
 
     [Theory]
-    [InlineData(4)]
-    [InlineData(6)]
-    public void TestWithoutTheEventASpeciesWithNoPossessedVersionKeepsItsNormalList(int species)
+    [InlineData(4, "[241, 14]")]
+    [InlineData(6, "[241]")]
+    public void TestWithoutTheEventASpeciesWithNoPossessedVersionKeepsItsNormalList(int species, string permitted)
     {
         var s = Hunt(1, playsEvents: false);
-        Eq(species == 4 ? "[241, 14]" : "[241, 962]", Connect(s)["ethical"]![species]);
-        Assert.True(Disqualified(HarvestOf(s, species, 401, 15)));  // silver is permitted everywhere; another round is not
+        Eq(permitted, Connect(s)["ethical"]![species]);
+        Assert.True(Disqualified(HarvestOf(s, species, 401, 15)));
+        Assert.False(Disqualified(HarvestOf(s, species, 402, 962)));  // outside the event the silver rounds are permitted on every species, as before
     }
 
     [Theory]

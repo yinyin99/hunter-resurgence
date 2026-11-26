@@ -175,8 +175,8 @@ public sealed class Facts
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
-    /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists (`species`), and which of them
-    /// have no possessed version (`no_possessed`, a subset of them: <see cref="State"/> adds their normal list); null for an event without one.</summary>
+    /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists (`species`), and `no_possessed`: the species of its reserves
+    /// with no possessed version, which are not in `species` (they keep their normal list) and on which its silver ammo is not permitted; null for an event without one.</summary>
     public (JsonArray Ammo, long[] Species, long[] NoPossessed)? EventEthical(string name) =>
         Obj("events")[name]?["ethical"] is JsonObject e ? ((JsonArray)(e["ammo"] ?? new JsonArray()).DeepClone(), [.. (e["species"] as JsonArray ?? []).Select(Py.L)], [.. (e["no_possessed"] as JsonArray ?? []).Select(Py.L)]) : null;
 
