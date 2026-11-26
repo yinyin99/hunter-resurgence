@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reserva:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Tiempo de juego:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>HunterScore mínima:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>HunterScore máxima:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>HunterScore mínimo:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>HunterScore máximo:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Jugadores ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Información sobre conexiones multijugador</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Jugar en multijugador con personas que se encuentran a grandes distancias de ti puede causar problemas de conexión o de latencia. Se recomienda unirse a partidas cuyo host esté cerca de ti. Los puntos de colores junto a las banderas de la lista de servidores te indican a qué distancia estás del host de la partida.</value></data>

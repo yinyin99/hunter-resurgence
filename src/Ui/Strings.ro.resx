@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Protejat cu parolă</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Parola jocului</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Nr. maxim de jucători</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitați HunterScore</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitați HunterScore-ul</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
