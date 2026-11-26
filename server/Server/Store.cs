@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 38;
+    public const int Version = 39;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -298,7 +298,9 @@ public sealed class Store
             start_time INTEGER,   -- the time of day the launch picked, in minutes after midnight (NULL: the recorded one)
             tent INTEGER,         -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
-            walked REAL);         -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
+            walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
+            event TEXT,           -- the seasonal event whose permitted ammo the hunt's kills are judged by, decided by its first connect (State.HuntEvent; '': none; NULL: not decided yet)
+            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -541,6 +543,12 @@ public sealed class Store
             con.Script("ALTER TABLE accounts ADD COLUMN use_imperial INTEGER NOT NULL DEFAULT 0");
         // schema 38, every start and guarded by its own IF NOT EXISTS (not by the version): what the pass at start removed, and the mark that it has run
         con.Script(OwnLimitRemovals);
+        // schema 39, guarded by the columns and not by the version (every start): the seasonal event a hunt's kills are judged by; the hunts before it are decided with none ('')
+        // so their kills keep their judgement
+        if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event'")! == 0)
+            con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT; UPDATE expeditions SET event = ''");
+        if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_until'")! == 0)
+            con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

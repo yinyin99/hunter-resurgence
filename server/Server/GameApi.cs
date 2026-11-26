@@ -69,7 +69,8 @@ public static class GameApi
               .WithDescription("The connect template (the recorded reply, else the install's sample) with the saved inventory, wallet, skills and the open expedition "
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
                                + "reserve (from the `ethical` list), and `ingame_event` null, except for a player who plays the seasonal event "
-                               + "that runs now (settings `event`), whose reply carries it with its content on its reserves. Queues the server notice toast.")
+                               + "that runs now (settings `event`), whose reply carries it with its content on its reserves; the `ethical` of a hunt whose first connect had that content "
+                               + "carries the event's permitted ammunition (facts `events.<name>.ethical`) to the hunt's end, also after the event ends, and its kills are judged by it. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
             gs.MapExactPost(game, State.UPLOAD_PATH, r => Own(game, r, a =>
                 {

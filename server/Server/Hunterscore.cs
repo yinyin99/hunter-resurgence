@@ -70,7 +70,7 @@ public sealed partial class State
             {
                 var sp = Parse(k[1])["extended_species"];
                 var hits = KillHits(con, Py.FromSql(k[0]), (string)k[1]);
-                kills.Add((sp, hits, Ethical(sp, hits)));
+                kills.Add((sp, hits, Ethical(sp, hits, HarvestEvent(con, (string)k[1]))));  // judged as in its hunt (State.HuntEvent)
             }
             catch (Exception ex) when (ex is not SqliteException)  // a value a player sent, of any kind; a database error stays an error
             {
