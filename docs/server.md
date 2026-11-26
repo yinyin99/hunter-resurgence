@@ -955,7 +955,7 @@ A player owns at most as many copies of an item as he can use: one of each weapo
 | `client_type` | Most a player owns |
 |---|---|
 | 1, 22 (rifles, shotguns, handguns) | 1 of each |
-| 0, 4 (binoculars, rangefinders, camera, callers, scents, baits, consumables) | the catalogue's: 1 when it marks the item `ownMultiple: false` (an item with `units` is exempt), no limit when it marks it multiple |
+| 0, 4 (binoculars, rangefinders, camera, callers, scents, baits, consumables) | the catalogue's: 1 when it marks the item `ownMultiple: false` (an item with `units` is exempt), no limit when it marks it multiple; a catalogue built from the install alone has no such mark, so there an item that counts uses (a positive `units`: scents, face paint, a water bottle) is multiple and the others (binoculars, callers, the horn) are 1 |
 | 43 (Electronic Caller add-ons) | 1 of each |
 | 7 to 11, 34, 35, 36 (clothing, glasses, scarves, backpacks) | 1 of each |
 | 15, 21, 39 (upgrades, pouches, holster, lanyard) | 1 |

@@ -102,6 +102,9 @@ public sealed class Facts
     /// (`ownMultiple` and `ownLimit`; also an item and a type the table lacks).</summary>
     public long? OwnRule(long item, long clientType) => OwnByItem.TryGetValue(item, out var rule) || OwnByType.TryGetValue(clientType, out rule) ? rule : null;
 
+    /// <summary>Whether `own_limits` leaves the client type to the catalogue (`"catalogue"`: binoculars, callers and the consumables among them).</summary>
+    bool FollowsCatalogue(long clientType) => OwnByType.TryGetValue(clientType, out var rule) && rule is null;
+
     /// <summary>The names of the reserves (in id order, joined by ", ") whose `species` holds the species id.</summary>
     public string ReserveNames(long species) => string.Join(", ", Arr("reserves").Where(r => (r!["species"] as JsonArray ?? []).Any(s => Py.L(s) == species))
         .OrderBy(r => Py.L(r!["id"])).Select(r => (string)r!["name"]!));
@@ -243,6 +246,9 @@ public sealed class Facts
                     ["inbackpack"] = true, ["slotUnlock"] = null,
                 },
             };
+            // an install has no `ownMultiple`: for a client type that follows the catalogue, an item that counts uses (a positive `units`: scents, face paint, a water bottle) is a consumable, several; the others (binoculars, callers) are one
+            if (item["client_type"] is { } clientType && Py.IsNum(clientType) && FollowsCatalogue(Py.L(clientType)))
+                item["ownMultiple"] = units is not null;
             if (d["extra"]?["arm_type"] is { } arm)
                 item["extra"] = new JsonObject { ["arm_type"] = arm.DeepClone() };
             items.Add(item);

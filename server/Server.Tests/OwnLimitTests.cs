@@ -342,4 +342,35 @@ public class OwnLimitTests : StateTestBase
         using var check = new Store(file).Open();
         Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'own_limit_removals'"));
     }
+
+    // a server with no recording has the catalogue built from the install's definitions, which carry no `ownMultiple`: binoculars, callers and the horn have `units` -2, a scent has 50
+    static IEnumerable<JsonObject> InstallItems() => Facts.Default.ApplicationItems((JsonArray)JsonNode.Parse("""
+        [{"id": 1, "define": "BINOCULARS", "name": "8x42mm Binoculars", "type": "GENERAL", "cat": "EQUIPMENT", "group": "ITEM_GROUP_EQUIPMENT", "price": 40, "units": -2},
+         {"id": 20, "define": "DEER_BLEAT_CALL", "name": "Deer Bleat Call", "type": "CALLER", "cat": "CALLERS", "group": "ITEM_GROUP_CALLER", "price": 40, "units": -2},
+         {"id": 117, "define": "SCENT_ELIMINATOR", "name": "Scent Eliminator", "type": "GENERAL", "cat": "EQUIPMENT", "group": "ITEM_GROUP_EQUIPMENT", "price": 10, "units": 50, "unit_name": "uses"},
+         {"id": 688, "define": "ROCKY_MOUNTAIN_ELK_SCENT", "name": "Elk Scent", "type": "CALLER", "cat": "CALLERS", "group": "ITEM_GROUP_CALLER", "price": 10, "units": 50, "unit_name": "uses"},
+         {"id": 619, "define": "HUNTING_HORN_01", "name": "Hunting Horn", "type": "GENERAL", "cat": "EQUIPMENT", "group": "ITEM_GROUP_EQUIPMENT", "price": 40, "units": -2}]
+        """)!).OfType<JsonObject>().Select(i => (JsonObject)i.DeepClone());
+
+    [Fact]
+    public void InAnInstallBuiltCatalogueBinocularsCallersAndTheHornAreOneAndTheConsumablesSeveral()
+    {
+        Make(InstallItems());
+        Assert.Equal(new[] { true, false, true, false, true, false, true, true, true, true }, new long[] { 1, 20, 619 }.SelectMany(id => new[] { Web(id), Web(id) }).Concat(new long[] { 117, 688 }.SelectMany(id => new[] { Web(id), Web(id) })));
+    }
+
+    [Fact]
+    public void ThePassBringsBinocularsAndCallersDownToOneAndLeavesTheConsumables()
+    {
+        Make(InstallItems());
+        Rows(ME, 1, (1001, 0, "{}"), (1002, 0, "{}"), (1003, 0, "{}"));
+        Rows(ME, 20, (1101, 0, "{}"), (1102, 0, "{}"));
+        Rows(ME, 117, (1201, 0, "{}"), (1202, 0, "{}"));
+        Rows(ME, 688, (1301, 0, "{}"), (1302, 0, "{}"));
+        state.EnforceOwnLimits();
+        Assert.Equal(new long[] { 1001 }, Guids(1));
+        Assert.Equal(new long[] { 1101 }, Guids(20));
+        Assert.Equal(new long[] { 1201, 1202 }, Guids(117));
+        Assert.Equal(new long[] { 1301, 1302 }, Guids(688));
+    }
 }
