@@ -893,17 +893,21 @@ public class SeasonalEventTests : StateTestBase
     {
         var db = Path.Combine(tmp, "unscored.db");
         var s = Hunt(1, db: db);
-        void Doe(int individual, int? coat, int ammo)  // a whitetail doe scores nothing
+        void Doe(int individual, int? coat, params int[] ammo) => Female(0, individual, coat, ammo);  // a whitetail doe scores nothing
+        void Female(int species, int individual, int? coat, params int[] ammo)
         {
-            var sighting = O($$"""{"event": 7, "individual": {{individual}}, "species": 0, "gender": 1, "weight_grams": 50000}""");
+            var sighting = O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 1, "weight_grams": 50000}""");
             if (coat is { } c)
                 sighting["texture"] = c;
-            s.HeartbeatReply(ME, Events(sighting, O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{ammo}}, "weapon_id": 391}"""),
-                O($$"""{"event": 3, "individual": {{individual}}, "extended_species": 0}""")));
+            s.HeartbeatReply(ME, Events([sighting, .. ammo.Select(a => (JsonNode)O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{a}}, "weapon_id": 391}""")),
+                O($$"""{"event": 3, "individual": {{individual}}, "extended_species": {{species}}}""")]));
         }
         Launch(s, true);  // the event recorded by the hunt's first connect (since server-1.47.0): its list (silver) on the whitetail then
         Doe(401, null, 14);  // a normal round: unethical then, and now (the hunt's event decides)
         Doe(402, 0, 962);  // silver: ethical then; a normal coat now
+        Female(6, 407, null, 14, 962);  // a blacktail doe, a normal round then silver: unethical then (the list named the blacktail: silver only) and now (silver on a normal animal)
+        s.NoteTutorial(ME, "tutorial-session", 1);  // the hunt's event ends at the tutorial (`event_until`): its species' list and silver after it
+        Doe(408, 57, 14);  // a possessed coat, a normal round: ethical then, unethical now
         Launch(s, false);  // without the event: its species' list and silver then
         Doe(403, 0, 962);
         Launch(s, false);  // without the event; the step gives it the event its possessed whitetail proves
@@ -915,7 +919,7 @@ public class SeasonalEventTests : StateTestBase
         Launch(s, false);
         Doe(406, 0, 962);  // made after the step: judged by this rule at its harvest
         Assert.Equal("halloween_2026/-;/-;halloween_2026/-;/-;/-", Hunts(s));
-        var expected = string.Join(";", new[] { 402, 403, 405 }.Select(i => $"{KillId(s, i)}:unscored"));
+        var expected = string.Join(";", new[] { 402, 408, 403, 405 }.Select(i => $"{KillId(s, i)}:unscored"));
         string Lines(List<State.JudgedKill> judged) => string.Join(";", judged.Select(j => $"{j.Kill}:{j.Change}"));
         var before = Stored(s);
         Assert.Equal(expected, Lines(s.JudgeKills(ME, dryRun: true)));

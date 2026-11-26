@@ -74,6 +74,8 @@ public sealed class Facts
         var named = Ids(ethical["species"], "ethical.species", true).ToHashSet();
         if (named.Count == 0)
             throw new InvalidDataException($"{at}.ethical.species: empty");
+        if (ethical["formerly"] is { } formerly)
+            Ids(formerly, "ethical.formerly", true);
         var creatures = ev["creatures"] is null ? [] : Ids(ev["creatures"], "creatures", true);
         if (creatures.FirstOrDefault(c => !named.Contains(c), -1) is var stray and >= 0)
             throw new InvalidDataException($"{at}.creatures: {stray} is not in ethical.species");
@@ -262,6 +264,11 @@ public sealed class Facts
     /// species is its typical one.</summary>
     public string? Possessing(JsonNode? sp, string? name = null) =>
         Py.IsNum(sp) ? Obj("events").FirstOrDefault(e => (name is null || e.Key == name) && e.Value?["ethical"]?["species"] is JsonArray s && s.Any(x => Py.L(x) == Py.L(sp) % 100)).Key : null;
+
+    /// <summary>Whether the event <paramref name="name"/>'s list named the species before schema 41 (`ethical.species` or `ethical.formerly`): a hunt with that event permitted only its silver on it then.
+    /// Read only by `admin ethics` (the rule a stored kill was made under). A non-typical species is its typical one.</summary>
+    public bool NamedBefore41(JsonNode? sp, string name) =>
+        Possessing(sp, name) is not null || Py.IsNum(sp) && Obj("events")[name]?["ethical"]?["formerly"] is JsonArray f && f.Any(x => Py.L(x) == Py.L(sp) % 100);
 
     /// <summary>Whether <paramref name="ammo"/> is one of the ammunitions an event's `ethical` list permits (the event's silver ones).</summary>
     public bool EventAmmo(JsonNode? ammo) =>

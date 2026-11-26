@@ -157,7 +157,7 @@ public sealed partial class State
 
     /// <summary>Whether an unethical kill with no stored score is one this change turned unethical: harvested before the schema-41 step (its harvest's event row at most <paramref name="ruleStep"/>, `schema_marks`;
     /// a later kill was judged by this rule when it was made), a kill that scores nothing (its features or family give none), and whose hits the rule it was judged by then all permitted: in a hunt whose
-    /// first connect recorded the event (not set by the step, `event_backfilled`), the event's list for a species it names; otherwise its species' list and an event's silver. A kill that would score has
+    /// first connect recorded the event (not set by the step, `event_backfilled`), the event's list for a species it named then (<see cref="Facts.NamedBefore41"/>); otherwise its species' list and an event's silver. A kill that would score has
     /// no score because it was disqualified (or refused) at its harvest already.</summary>
     bool Unscored(Db con, JsonObject e3, string harvest, JsonObject page, object? individual, long ruleStep)
     {
@@ -169,7 +169,7 @@ public sealed partial class State
             return false;
         var recorded = con.Scalar("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) AND event_backfilled IS NULL THEN NULLIF(event, '') END FROM expeditions"
                                   + " WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", harvested) as string;
-        if (recorded is not null && facts.Possessing(page["species"], recorded) is not null && facts.EventEthical(recorded) is { } then)
+        if (recorded is not null && facts.NamedBefore41(page["species"], recorded) && facts.EventEthical(recorded) is { } then)
             return hits.All(h => Permits(then.Ammo, h["ammunition_id"]));
         return Allowed(page["species"], null) is not { } list || hits.All(h => Permits(list, h["ammunition_id"]) || facts.EventAmmo(h["ammunition_id"]));
     }

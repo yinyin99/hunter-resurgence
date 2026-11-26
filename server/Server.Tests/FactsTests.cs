@@ -15,7 +15,7 @@ public class FactsTests
 
     const string Rule = """
         {"format": 1, "animals": ["a", "b", "c", "d"],
-         "events": {"ev": {"ethical": {"ammo": [9], "species": [0, 1, 2]}, "creatures": [2], "coats": {"0": {"possessed": [5], "normal": [1]}, "1": {"normal": [3]}}}}}
+         "events": {"ev": {"ethical": {"ammo": [9], "species": [0, 1, 2], "formerly": [3]}, "creatures": [2], "coats": {"0": {"possessed": [5], "normal": [1]}, "1": {"normal": [3]}}}}}
         """;
 
     [Fact]
@@ -36,6 +36,7 @@ public class FactsTests
     [InlineData("{\"0\": {", "{\"zero\": {", "events.ev.coats.zero: not a species id")]
     [InlineData("{\"0\": {", "{\"00\": {", "events.ev.coats.00: not a species id")]  // read as 0, but no lookup would find it
     [InlineData("\"1\": {\"normal\": [3]}", "\"1\": [3]", "events.ev.coats.1: an object")]
+    [InlineData("\"formerly\": [3]", "\"formerly\": [9]", "events.ev.ethical.formerly: 9 is no species of `animals`")]
     public void ABadRuleEntryIsRefusedAtLoadNamingTheEntry(string from, string to, string message)
     {
         Assert.Contains(from, Rule);
