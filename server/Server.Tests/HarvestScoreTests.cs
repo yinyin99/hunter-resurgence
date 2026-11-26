@@ -221,6 +221,26 @@ public class HarvestScoreTests : StateTestBase
     }
 
     [Fact]
+    public void RescoreReportsTheHarvestsOutsideTheirSpeciesBoundsAndWritesNothingForIt()
+    {
+        var score = Py.D(Harvest(17, 1).Update["score"]);  // a female: the report's gender is the kill's own
+        Assert.True(score > 0);
+        var (lo, hi) = (score + 1, score + 100);  // the harvest sits 1 under the minimum
+        Scoring.Variants[17] = (lo, hi, 0.9);
+        string Pages() { using var con = state.Store.Open(ME); return string.Join("|", con.Rows("SELECT body FROM harvests WHERE account_id = $a ORDER BY kill_id").Select(r => (string)r[0])); }
+        var pages = Pages();
+        List<(long, long, double)> scores = [];
+        state.Rescore(ME, dryRun: true, scores: scores);
+        var row = Assert.Single(State.BoundsReport(scores));
+        Assert.Equal((17L, 1L, 1, 1, lo, hi, score), (row.Species, row.Gender, row.Harvests, row.Outside, row.Min, row.Max, row.Lowest));
+        Assert.Equal(pages, Pages());
+        Scoring.Variants[17] = (score - 1, hi, 0.9);
+        Assert.Empty(State.BoundsReport(scores));  // inside
+        Scoring.Variants.Remove(17);
+        Assert.Empty(State.BoundsReport(scores));  // a species with no row is skipped
+    }
+
+    [Fact]
     public void ADoeWithTheIndividualIdOfAnEarlierBuckHasNoMeasurementsAndRescoreZeroesAHarvestThatTookThem()
     {
         var sp = Facts.Default.Families.First(f => f.Value == "bc_deer").Key;
