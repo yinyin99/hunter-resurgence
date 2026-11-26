@@ -6,6 +6,7 @@
     <section class="event" aria-labelledby="event-title">
         <h3 id="event-title">@panel.Title</h3>
         <p class="dates">@L["Events.Dates", panel.Start.ToString("yyyy-MM-dd"), panel.End.ToString("yyyy-MM-dd")]</p>
+        <p class="note">@L["Events.Ammo"]</p>
         @if (panel.Community.Count > 0)
         {
             <h4>@L["Events.Community"]</h4>

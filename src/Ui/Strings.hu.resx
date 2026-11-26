@@ -97,6 +97,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Az esemény bolti tárgyai</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Jutalom minden közreműködőnek: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} cél teljesítve</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Az esemény vadászterületein az állatok megszállottak: rád rontanak, és a normál lőszer csak megkarcolja őket. Használd az esemény ezüst lőszerét. Ott egyetlen találat más lőszerrel is etikátlanná (kizárttá) teszi az elejtést, még ha az ezüst végez is vele, és ez minden állatra vonatkozik, az apróvadra is. Ha a normál állatokra szeretnél vadászni, kapcsold ki a „Szezonális események játszása” beállítást; a következő vadászatodtól érvényes.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Esemény fut: {0}, itt: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>minden vadászterület</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Szezonális esemény</value></data>
