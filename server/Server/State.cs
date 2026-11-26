@@ -227,6 +227,14 @@ public sealed partial class State
                 con.Exec("UPDATE items SET units = CASE WHEN units - ?1 > units THEN MAX(units, MIN(units - ?1, ?3)) ELSE units - ?1 END, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
                          + $" WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL AND {Shown}", G(e, "quantity", 0), guid, cap);
             }
+            else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject { } hit && hit.ContainsKey("bear_baited"))
+            {
+                // a hit on an animal a feeder is baiting: the game reports it on the feeder and the penalty starts now (the metadata is not saved); on any other item nothing happens
+                var guid = long.Parse(Py.Str(e["item"]));
+                if (con.Scalar($"SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND {Shown}", guid) is long feederId && isFeeder?.Invoke(feederId) == true)
+                    con.Exec($"UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ? AND {Shown}",
+                             Py.Dumps(new JsonObject { ["shot_ts"] = (long)now }), guid);
+            }
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
                 var dog = con.Rows("SELECT item_id, json_extract(metadata, '$.experience') FROM items WHERE account_id = $a AND guid = ?", long.Parse(Py.Str(e["item"]))).FirstOrDefault();

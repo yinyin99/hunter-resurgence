@@ -180,6 +180,46 @@ public class FeederTests : StateTestBase
     }
 
     [Fact]
+    public void AHitOnABaitedAnimalStartsThePenaltyAndSavesNoBearBaited()
+    {
+        Place(Filled(50, Start));
+        state.Clock = () => Start + 5 * Hour;
+        Eq("""["Active", 48, 100, 0]""", Shown(Meta()));
+        Hb(O("""{"event": 23, "item": "300", "metadata": {"bear_baited": 7, "other": 1}}"""));
+        Eq("""["Penalty", 48, 0, 30]""", Shown(Meta()));
+        Assert.Null(Meta()["bear_baited"]);
+        Assert.Null(Meta()["other"]);
+        state.Clock = () => Start + 5 * Hour + 30 * 60;
+        Eq("""["Active", 48, 100, 0]""", Shown(Meta()));
+        Hb(O("""{"event": 23, "item": "300", "metadata": {"bear_baited": 8}}"""));  // a later hit restarts it
+        Eq("""["Penalty", 48, 0, 30]""", Shown(Meta()));
+    }
+
+    [Fact]
+    public void AHitOnAnItemThatIsNotTheAccountsFeederChangesNothing()
+    {
+        Place(Filled(50, Start));
+        state.CreateAccount(8, "second");
+        using (var con = state.Store.Open(8))
+            PlayerRows.AddItem(con, 400, 136, 23, null, Filled(50, Start));
+        Hb(O("""{"event": 23, "item": "100", "metadata": {"bear_baited": 7}}"""));  // not a feeder
+        Assert.Null(Items()["100"]!["metadata"]!["bear_baited"]);
+        Assert.Null(Items()["100"]!["metadata"]!["shot_ts"]);
+        Hb(O("""{"event": 23, "item": "400", "metadata": {"bear_baited": 7}}"""));  // another account's
+        using var other = state.Store.Open(8);
+        Assert.Equal(1L, other.Rows("SELECT COUNT(*) FROM items WHERE account_id = $a AND guid = 400 AND json_extract(metadata, '$.shot_ts') IS NULL AND json_extract(metadata, '$.bear_baited') IS NULL").Single()[0]);
+    }
+
+    [Fact]
+    public void AnEventWithoutBearBaitedStillMergesItsMetadata()
+    {
+        Place(Filled(50, Start));
+        Hb(O("""{"event": 23, "item": "300", "metadata": {"other": 1}}"""));
+        Eq("1", Meta()["other"]);
+        Assert.Null(Meta()["shot_ts"]);
+    }
+
+    [Fact]
     public void ABaitAmountOnAnItemThatIsNotAFeederIsMerged()
     {
         Hb(O("""{"event": 23, "item": "100", "metadata": {"bait_amount": 7}}"""));
