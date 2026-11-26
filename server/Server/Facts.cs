@@ -175,9 +175,45 @@ public sealed class Facts
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
+    /// <summary>The names of the events the file has (`events`).</summary>
+    public IEnumerable<string> EventNames => Obj("events").Select(e => e.Key);
+
     /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists; null for an event without one.</summary>
     public (JsonArray Ammo, long[] Species)? EventEthical(string name) =>
         Obj("events")[name]?["ethical"] is JsonObject e ? ((JsonArray)(e["ammo"] ?? new JsonArray()).DeepClone(), [.. (e["species"] as JsonArray ?? []).Select(Py.L)]) : null;
+
+    /// <summary>What an animal's species and coat (its sighting's `texture`) prove about a seasonal event: the name of the event when the species is one of its `creatures` or the coat is in the
+    /// species' `possessed` list of its `coats`, "" when the coat is in the species' `normal` list there, null when they prove nothing (no entry, a coat in neither list, no coat). A non-typical
+    /// species (100 and up) is its typical one. <paramref name="creature"/> is true when the species decided.</summary>
+    public string? Proves(JsonNode? sp, JsonNode? coat, out bool creature)
+    {
+        creature = false;
+        if (!Py.IsNum(sp)) return null;
+        var id = Py.L(sp) % 100;
+        foreach (var (name, ev) in Obj("events"))
+        {
+            if ((ev?["creatures"] as JsonArray ?? []).Any(c => Py.L(c) == id))
+            {
+                creature = true;
+                return name;
+            }
+            if (Py.IsNum(coat) && ev?["coats"]?[id.ToString(CultureInfo.InvariantCulture)] is JsonObject coats)
+            {
+                if ((coats["possessed"] as JsonArray ?? []).Any(c => Py.Eq(c, coat))) return name;
+                if ((coats["normal"] as JsonArray ?? []).Any(c => Py.Eq(c, coat))) return "";
+            }
+        }
+        return null;
+    }
+
+    /// <summary>The event (of <paramref name="name"/> alone, or of any) whose `ethical` list names the species: one that has a possessed version there, or a creature; null for none. A non-typical
+    /// species is its typical one.</summary>
+    public string? Possessing(JsonNode? sp, string? name = null) =>
+        Py.IsNum(sp) ? Obj("events").FirstOrDefault(e => (name is null || e.Key == name) && e.Value?["ethical"]?["species"] is JsonArray s && s.Any(x => Py.L(x) == Py.L(sp) % 100)).Key : null;
+
+    /// <summary>Whether <paramref name="ammo"/> is one of the ammunitions an event's `ethical` list permits (the event's silver ones).</summary>
+    public bool EventAmmo(JsonNode? ammo) =>
+        Obj("events").Any(e => e.Value?["ethical"]?["ammo"] is JsonArray a && a.Any(x => Py.Eq(x, ammo)));
 
     /// <summary>The `index` and `animal` of every population any event adds on the game's reserve number <paramref name="reserve"/>; the pair, as an event's index
     /// can be a normal creature's (the original's feral hog 3 on reserve 0 is beside the Roosevelt elk 3).</summary>

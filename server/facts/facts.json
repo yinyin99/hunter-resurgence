@@ -527,7 +527,32 @@
  },
  "events": {
   "halloween_2026": {"title": "Halloween 2026", "missions": [1201], "items": [960, 967, 1143, 962, 963, 1142], "community": [],
-   "ethical": {"ammo": [962, 963, 1142], "species": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 17, 20, 21, 23, 24, 25, 26, 30, 40, 41, 43, 50, 51, 54, 58]}, "reserves": {
+   "ethical": {"ammo": [962, 963, 1142], "species": [0, 1, 2, 3, 5, 7, 8, 9, 14, 17, 20, 21, 23, 24, 25, 26, 30, 40, 41, 43, 50, 51, 54, 58]},
+   "creatures": [50, 58],
+   "coats": {
+    "0": {"possessed": [57], "normal": [0, 1, 2, 3, 4, 5]},
+    "1": {"possessed": [77], "normal": [0, 1, 2, 4, 5, 34]},
+    "2": {"possessed": [59], "normal": [0, 2, 4, 12, 16]},
+    "3": {"possessed": [56], "normal": [0, 1, 2, 4, 5]},
+    "5": {"possessed": [45, 79, 80, 81, 82], "normal": []},
+    "7": {"possessed": [78], "normal": [0, 2, 4, 16]},
+    "8": {"possessed": [68], "normal": [0, 1, 2, 4, 5, 33]},
+    "9": {"possessed": [55], "normal": [0, 1, 6, 7, 8, 9]},
+    "14": {"possessed": [47], "normal": [0, 2, 11, 12, 13]},
+    "17": {"possessed": [54], "normal": [0, 1, 4, 16]},
+    "21": {"possessed": [48], "normal": [0, 2]},
+    "23": {"possessed": [72], "normal": [0, 23]},
+    "24": {"possessed": [67], "normal": [0, 2, 4, 16]},
+    "25": {"possessed": [], "normal": [0, 2]},
+    "26": {"possessed": [69], "normal": [0, 2, 4, 16]},
+    "30": {"possessed": [70], "normal": [0]},
+    "40": {"possessed": [46], "normal": [0, 1, 2, 3, 5, 12, 25]},
+    "41": {"possessed": [71], "normal": [0, 1, 2]},
+    "43": {"possessed": [58], "normal": [0, 1, 2, 4, 12]},
+    "51": {"possessed": [74], "normal": [0, 2, 23]},
+    "54": {"possessed": [43], "normal": []}
+   },
+   "reserves": {
    "0": {
     "ammo": [962,963,1142],
     "populations": [

@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Artigos do evento na loja</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Recompensa para cada colaborador: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} de {1} objetivos cumpridos</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Nas reservas do evento os animais estão possuídos: investem contra si e as munições normais apenas os arranham. Use as munições de prata do evento. Aí, um único impacto com outra munição torna o abate não ético (desclassificado), mesmo que a prata o termine, e isto aplica-se a todos os animais, incluindo a caça menor. Desative "Jogar eventos sazonais" para caçar os animais normais a partir da sua próxima caçada.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Nas reservas do evento os animais estão possuídos: investem contra si e as munições normais apenas os arranham. Use as munições de prata do evento. Aí, um único impacto com outra munição torna o abate não ético (desclassificado), mesmo que a prata o termine, e isto aplica-se a todos os animais possuídos, incluindo a caça menor. O coiote e o veado-de-cauda-preta não são possuídos: exigem a munição habitual, e a prata neles não é ética. Desative "Jogar eventos sazonais" para caçar os animais normais a partir da sua próxima caçada.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento a decorrer: {0}, em {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>

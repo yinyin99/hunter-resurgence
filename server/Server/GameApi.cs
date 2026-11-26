@@ -477,7 +477,7 @@ public static class GameApi
             apiv2.MapPost("/game/user/harvest/{id}/taxidermize", harvest)
                  .WithName("Taxidermize").WithSummary("Taxidermize a harvested trophy")
                  .WithDescription("The game's purchase of a taxidermy or, with `is_skull`, a skull mount for a harvest made here (body `{currency: gold|silver, is_skull?}`, JSON or form): takes the price of the facts file in em$ (gold) or gm$ (silver), "
-                                  + "writes the store item's wallet row and sends the new balance with the next heartbeat. 200 with no body; 404 for a harvest that is unknown, restored or another player's, 409 `already`, "
+                                  + "writes the store item's wallet row and sends the new balance with the next heartbeat. 200 with no body; 404 for a harvest that is unknown, restored or another player's, 409 `already`, 403 `disqualified` (the ammunition rule judges the kill unethical), "
                                   + "410 `too_late` (72 hours after the harvest, or after the day the taxidermy went live for an older one), 400 `no_skull` or `invalid`, 402 `not_enough`, each with `{error}`. Also `POST /v1/harvest/<id>/taxidermize` (the current build).")
                  .PathParams(("id", "harvest id (= kill id)"))
                  .Produces(200, contentType: "text/plain");

@@ -171,7 +171,7 @@ public sealed partial class State
             }
         con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a AND id = ?", h.Hunt);
         var e3 = Parse(h.Event3);
-        var (_, disqualified, score, type, _) = ScoreKill(theirs, e3, h.Event3, Trophy, AmmoCheck);
+        var (_, disqualified, score, type, _, _) = ScoreKill(theirs, e3, h.Event3, Trophy, AmmoCheck);
         page = Parse(theirs.Scalar("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", kill)!);
         if (disqualified)
         {
