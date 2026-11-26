@@ -30,4 +30,8 @@
     <ProjectReference Include="..\..\src\Services\Resurgence.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="score-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -8,8 +8,10 @@ namespace Resurgence.Server.Tests;
 [Collection("ProcessState")]  // Scoring.Load replaces the process-wide variant table with the facts file's
 public class HarvestScoreTests : StateTestBase
 {
-    // families whose female has no antlers: a doe scores nothing, as the game does
-    static readonly HashSet<string> MaleOnly = ["bc_deer", "elk", "moose", "cic_roe", "cic_red", "cic_fallow", "tines"];
+    // the species whose female has no score, by id and not derived from the families, so a family rule that changes cannot change the expectation with it
+    static readonly HashSet<int> NoScoreFemale = [0, 1, 2, 3, 6, 8, 11, 12, 26, 38, 44, 45, 54, 55, 100, 101, 106];
+    // families whose female sends no trophy event (a doe has no antlers): only about the events Harvest() sends
+    static readonly HashSet<string> FemaleSendsNoTrophyEvent = ["bc_deer", "elk", "moose", "cic_roe", "cic_red", "cic_fallow", "tines"];
     const int Ammo = 10;
     double gm = 33;  // CONNECT's balance
     int seed;
@@ -51,7 +53,7 @@ public class HarvestScoreTests : StateTestBase
             (bird["beard"], bird["left_spur"], bird["right_spur"]) = (male ? 150000 : 0, male ? 15000 : 0, male ? 20000 : 0);
             events.Add(bird);
         }
-        else if (fam is not null && (gender == 0 || !MaleOnly.Contains(fam)) && fam is not ("weight_lb" or "weight_mg" or "weight_kg" or "weight_g" or "skull" or "tusks"))
+        else if (fam is not null && (gender == 0 || !FemaleSendsNoTrophyEvent.Contains(fam)) && fam is not ("weight_lb" or "weight_mg" or "weight_kg" or "weight_g" or "skull" or "tusks"))
         {
             var e22 = O($$"""{"event": 22, "individual": {{ind}}, "greatest_spread": 900, "tip_to_tip_spread": 800, "inside_spread_of_main_beams": 700, "weight": 9000, "volume": 200000, "color": 2, "pearling": 1, "coronets": 1, "age_rings": 1, "horn_curve": 1 }""");
             (e22["left_antler"], e22["right_antler"]) = (Antler(), Antler());
@@ -77,21 +79,23 @@ public class HarvestScoreTests : StateTestBase
     {
         var species = Facts.Default.Families.Keys.Order().ToList();
         Assert.Equal(Facts.Default.Variants.Keys.Order(), species);  // a family and a row of bounds for each, 100 and up the non-typical deer
+        List<string> bad = [];
         foreach (var sp in species)
             foreach (var gender in new[] { 0, 1 })
             {
                 var (update, paid) = Harvest(sp, gender);
                 double score = Py.D(update["score"]), css = Py.D(update["css"]);
                 var what = $"species {sp} ({Facts.Default.Families[sp]}), gender {gender}";
-                if (gender == 1 && MaleOnly.Contains(Facts.Default.Families[sp]))
+                if (gender == 1 && NoScoreFemale.Contains(sp))
                 {
-                    Assert.True(score == 0 && css == 0 && !paid, what + ": a doe scores nothing");
+                    if (!(Py.Eq(update["score_text"], "No score") && score == 0 && css == 0 && !paid)) bad.Add(what + ": a female with no score");
                     continue;
                 }
-                Assert.True(Py.Eq(update["trophy_shot"], 1) && score > 0, what + ": score");
-                Assert.True(css > 0, what + ": css");
-                Assert.True(paid, what + ": gm$");
+                if (!(Py.Eq(update["trophy_shot"], 1) && score > 0)) bad.Add(what + ": score");
+                if (!(css > 0)) bad.Add(what + ": css");
+                if (!paid) bad.Add(what + ": gm$");
             }
+        Assert.True(bad.Count == 0, string.Join("\n", bad));  // every failing cell of a run, not the first
     }
 
     // the confirm-kill screen shows round(css) of update 6 as the reward: a bonus must show there as it is paid, and stop at its end
@@ -164,9 +168,10 @@ public class HarvestScoreTests : StateTestBase
     [Fact]
     public void PheasantTurkeyAndSowScoreFromTheirTrophyEvent()
     {
-        // pheasant: tail + spurs in inches; turkey: weight in pounds + 10 x spurs + 2 x beard; a sow: her weight, with no trophy event at all
+        // pheasant: tail + spurs in inches; turkey: weight in pounds + 10 x spurs + 2 x beard, a hen has no score; a sow: her weight, with no trophy event at all
         Eq("17.126", Scoring.Score(7, Scoring.Features(7, new JsonObject(), O("""{"event": 22, "tail": 400, "left_spur": 15000, "right_spur": 20000}"""), 1.0), 1618, null).Score);
         Eq("21.8896", Scoring.Score(2, Scoring.Features(2, new JsonObject(), O("""{"event": 22, "beard": 100000, "left_spur": 10000, "right_spur": 20000}"""), 1.0), 1000, null).Score);
+        Assert.Null(Scoring.Features(2, O("""{"gender": 1}"""), O("""{"event": 22, "beard": 0, "left_spur": 0, "right_spur": 0}"""), 1.0));
         Eq("220.4623", Scoring.Score(10, Scoring.Features(10, new JsonObject(), new JsonObject(), 1.0), 100000, null).Score);
     }
 
@@ -213,6 +218,26 @@ public class HarvestScoreTests : StateTestBase
         var second = Assert.Single(state.Rescore(ME, dryRun: false));
         Assert.Equal((0, 0, 0L), (second.Rescored, second.Paid, second.Gms));
         Assert.Equal(again, Pages());
+    }
+
+    [Fact]
+    public void RescoreReportsTheHarvestsOutsideTheirSpeciesBoundsAndWritesNothingForIt()
+    {
+        var score = Py.D(Harvest(17, 1).Update["score"]);  // a female: the report's gender is the kill's own
+        Assert.True(score > 0);
+        var (lo, hi) = (score + 1, score + 100);  // the harvest sits 1 under the minimum
+        Scoring.Variants[17] = (lo, hi, 0.9);
+        string Pages() { using var con = state.Store.Open(ME); return string.Join("|", con.Rows("SELECT body FROM harvests WHERE account_id = $a ORDER BY kill_id").Select(r => (string)r[0])); }
+        var pages = Pages();
+        List<(long, long, double)> scores = [];
+        state.Rescore(ME, dryRun: true, scores: scores);
+        var row = Assert.Single(State.BoundsReport(scores));
+        Assert.Equal((17L, 1L, 1, 1, lo, hi, score), (row.Species, row.Gender, row.Harvests, row.Outside, row.Min, row.Max, row.Lowest));
+        Assert.Equal(pages, Pages());
+        Scoring.Variants[17] = (score - 1, hi, 0.9);
+        Assert.Empty(State.BoundsReport(scores));  // inside
+        Scoring.Variants.Remove(17);
+        Assert.Empty(State.BoundsReport(scores));  // a species with no row is skipped
     }
 
     [Fact]

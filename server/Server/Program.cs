@@ -157,13 +157,16 @@ void Admin(string[] a)
         if (loaded == null) { Die("no recorded connect and no connect sample in the install: nothing to seed the player state from"); return; }
         long? only = null;
         if (name is not null && (only = AdminApi.ResolveAccount(loaded, name)) is null) Die($"no account {name}");
-        foreach (var r in loaded.Rescore(only, !apply, kill))
+        List<(long, long, double)> scores = [];
+        foreach (var r in loaded.Rescore(only, !apply, kill, scores))
         {
             foreach (var h in r.Harvests)
                 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, kill = h.Kill, species = h.Species, oldScore = h.OldScore, newScore = h.NewScore, gmsPaid = h.GmsPaid }));
             if (r.Rescored > 0 || r.Paid > 0)
                 Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { account = r.Account, rescored = r.Rescored, paid = r.Paid, gms = r.Gms, applied = apply }));
         }
+        foreach (var b in State.BoundsReport(scores))
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(new { species = b.Species, gender = b.Gender, harvests = b.Harvests, outside = b.Outside, min = b.Min, max = b.Max, lowest = b.Lowest, highest = b.Highest }));
         Console.WriteLine(apply ? "applied (a running server shows it in its boards within 15 minutes, or at its restart)" : "dry run: nothing written; add --apply to write");
         return;
     }
