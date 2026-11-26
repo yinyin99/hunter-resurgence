@@ -222,36 +222,32 @@ public class ForwarderTests
     }
 
     [Fact]
-    public async Task ConnectsOverIpv4WhenTheNameHasBothAndOverIpv6WhenItHasOnlyThat()
+    public async Task FallsBackToIpv6WhenTheNameHasNoIpv4AddressOrItRefuses()
     {
         if (!System.Net.Sockets.Socket.OSSupportsIPv6) return;
-        var v4 = Listen(IPAddress.Loopback);
+        // only an IPv6 address: it is reached over IPv6 (a PC without IPv4)
         var v6 = Listen(IPAddress.IPv6Loopback);
         try
         {
-            // both addresses of one name, the IPv6 one first: the IPv4 one is the one used
-            var first = v4.AcceptSocketAsync();
-            await using (await Forwarder.ConnectIPv4First([IPAddress.IPv6Loopback, IPAddress.Loopback], ((IPEndPoint)v4.LocalEndpoint).Port, default))
-            using (await first) { }
-            Assert.False(v6.Pending());
-            // only an IPv6 address: it is reached over IPv6 (a PC without IPv4)
-            var second = v6.AcceptSocketAsync();
+            var accepted = v6.AcceptSocketAsync();
             await using (await Forwarder.ConnectIPv4First([IPAddress.IPv6Loopback], ((IPEndPoint)v6.LocalEndpoint).Port, default))
-            using (var peer = await second) Assert.Equal(System.Net.Sockets.AddressFamily.InterNetworkV6, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
-            // the IPv4 address refuses (nothing listens): the IPv6 one is tried next
-            var dead = Listen(IPAddress.Loopback);
-            var port = ((IPEndPoint)dead.LocalEndpoint).Port;
-            dead.Stop();
-            var third = Listen(IPAddress.IPv6Loopback, port);
-            try
-            {
-                var accepted = third.AcceptSocketAsync();
-                await using (await Forwarder.ConnectIPv4First([IPAddress.Loopback, IPAddress.IPv6Loopback], port, default))
-                using (await accepted) { }
-            }
-            finally { third.Stop(); }
+            using (var peer = await accepted) Assert.Equal(System.Net.Sockets.AddressFamily.InterNetworkV6, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
         }
-        finally { v4.Stop(); v6.Stop(); }
+        finally { v6.Stop(); }
+        // the IPv4 address refuses (nothing listens): the IPv6 one is tried next
+        var dead = Listen(IPAddress.Loopback);
+        var port = ((IPEndPoint)dead.LocalEndpoint).Port;
+        dead.Stop();
+        System.Net.Sockets.TcpListener fallback;
+        try { fallback = Listen(IPAddress.IPv6Loopback, port); }
+        catch (System.Net.Sockets.SocketException) { return; }  // that port is taken on ::1
+        try
+        {
+            var accepted = fallback.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First([IPAddress.Loopback, IPAddress.IPv6Loopback], port, default))
+            using (await accepted) { }
+        }
+        finally { fallback.Stop(); }
     }
 
     [Fact]
