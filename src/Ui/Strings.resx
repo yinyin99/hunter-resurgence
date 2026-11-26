@@ -1565,7 +1565,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>This sign-in link ran out of time. Start again from the launcher or the backup tool.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>This sign-in link is not valid. Start again from the launcher or the backup tool.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam did not confirm the sign-in. Start again.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This Steam account is banned and cannot sign in. To talk about it, come to our Discord.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>This Steam account is banned and cannot sign in.</value></data>
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Reason:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>

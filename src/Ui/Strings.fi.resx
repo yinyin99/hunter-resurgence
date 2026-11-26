@@ -1565,7 +1565,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Tämä kirjautumislinkki vanheni. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Tämä kirjautumislinkki ei kelpaa. Aloita alusta launcherista tai varmuuskopiotyökalusta.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam ei vahvistanut kirjautumista. Aloita alusta.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä Steam-tili on estetty, eikä sillä voi kirjautua sisään. Jos haluat keskustella siitä, tule Discordiimme.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tämä Steam-tili on estetty, eikä sillä voi kirjautua sisään.</value></data>
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Syy:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>

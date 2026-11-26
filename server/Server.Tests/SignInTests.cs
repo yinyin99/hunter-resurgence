@@ -1062,9 +1062,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         await SignIn();
         using (var con = state.Store.Open())
             con.Exec("UPDATE accounts SET banned = 1 WHERE steam_id64 = ?", "99999999999999991");
-        var back = await Return("web.test", await Begin("web.test"));
+        var begun = await Begin("web.test");
+        var back = await Return("web.test", begun);
         Problem(back, "banned");
         Assert.Null(Cookie(back, "hr_session"));
+        var shown = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;  // the account's flag without a ban row: the page shows no reason
+        Assert.Equal(("banned", ""), ((string)shown["step"]!, (string)shown["reason"]!));
     }
 
     [Fact]

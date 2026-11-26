@@ -1565,7 +1565,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Dette loginlink er udløbet. Start forfra fra launcheren eller backupværktøjet.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Dette loginlink er ikke gyldigt. Start forfra fra launcheren eller backupværktøjet.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekræftede ikke login. Start forfra.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne Steam-konto er udelukket og kan ikke logge ind. Vil du tale om det, så kom på vores Discord.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne Steam-konto er udelukket og kan ikke logge ind.</value></data>
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Årsag:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>

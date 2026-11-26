@@ -108,4 +108,18 @@ public sealed class SignInPagesTests : UiContext
         Assert.Single(why.FindAll("a"));  // the invite only
         Assert.Empty(invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "expired").Add(x => x.Why, "x")).FindAll(".ban-reason"));
     }
+
+    [Fact]
+    public void TheBannedPageShowsTheReasonOfThisBrowsersSignInOnly()
+    {
+        using var banned = With(new("banned", "", Reason: "You claimed a profile."));
+        banned.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=banned");
+        Assert.EndsWith("You claimed a profile.", banned.Render<Problem>().Find(".ban-reason").TextContent);
+        using var other = With(null);  // the same link in another browser: no sign-in, no reason
+        other.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=banned");
+        Assert.Empty(other.Render<Problem>().FindAll(".ban-reason"));
+        using var expired = With(new("banned", "", Reason: "x"));  // only the banned page asks for it
+        expired.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=expired");
+        Assert.Empty(expired.Render<Problem>().FindAll(".ban-reason"));
+    }
 }

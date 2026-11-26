@@ -1565,7 +1565,7 @@ Numele:</value></data>
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Acest link de conectare a expirat. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Acest link de conectare nu este valid. Începeți din nou din launcher sau din instrumentul de backup.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam nu a confirmat conectarea. Începeți din nou.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont Steam este banat și nu se poate conecta. Ca să discutăm despre asta, alăturați-vă Discordului nostru.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Acest cont Steam este banat și nu se poate conecta.</value></data>
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motiv:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
