@@ -63,12 +63,26 @@ public sealed partial class State
                 if (facts.LodgeOfItem((long)r[0]) is { } type)
                     for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
                         GrantLodge(con, (long)r[0], type);
+            FitStored(con);
             con.Commit();
         }
         catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
         {
             Console.WriteLine($"lodges: account {account} left as it was ({e.Message})");
         }
+    }
+
+    /// <summary>The stored lodges of the account given the slot fields of <see cref="Fit"/> (rows saved before the server set them). A row that already has them is not written.</summary>
+    void FitStored(Db con)
+    {
+        var rows = con.Rows("SELECT n, CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?)", LodgeList, LodgeOne)
+            .Select(r => (N: r[0], Id: (long)r[1], Node: JsonNode.Parse((string)r[2]) as JsonObject)).Where(r => r.Node is not null).ToList();
+        var engines = new Dictionary<long, JsonNode?>();  // the list's row and the single's name the layout alike; either may lack it
+        foreach (var r in rows)
+            if (Py.IsNum(r.Node!["lodge_engine_id"])) engines.TryAdd(r.Id, r.Node["lodge_engine_id"]);
+        foreach (var r in rows)
+            if (Fit(r.Node!, engines.GetValueOrDefault(r.Id)))
+                con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(r.Node!), r.N);
     }
 
     /// <summary>The saved `lodge_contents` of a section save that was restored before it was read as lodges: kept whole in `extras` under this name.</summary>
@@ -145,8 +159,34 @@ public sealed partial class State
         return copy;
     }
 
-    /// <summary>Give each new slot the keys it lacks from the stored slot of the same `slot_id`: all of them when it holds the same trophy or weapon
-    /// (`trophy_details`), `is_full_body` (a property of the platform) always. The game saves a lodge without them whenever the player leaves it.</summary>
+    /// <summary>Slot types (`type` of a `lodge/<layout>` animal slot) that show a trophy as a full body: round displays (4, 8) and platforms (6, 7, 9). The catalogue
+    /// does not carry it; every restored lodge agrees with this table, the other types (wall plaques, bird plaque, skull mounts) hang a head.</summary>
+    static readonly long[] FullBodyTypes = [4, 6, 7, 8, 9];
+
+    /// <summary>The lodge's animal slots as the game needs them, from the slot's type (the layout's `lodge/<engine>` slot of the same id): `is_full_body` on every slot,
+    /// `rotation: 0` on a mounted slot of a type that can rotate (`slot/animal` `can_rotate`) that has none. True when something changed. A layout or slot the
+    /// facts lack is left alone.</summary>
+    bool Fit(JsonObject lodge, JsonNode? engine)
+    {
+        if (!TryKey(engine, out var layoutNumber) || facts.LodgeCatalogue($"lodge/{layoutNumber}")?["animal_slots"] is not JsonArray layout || lodge["animal_slots"] is not JsonArray slots) return false;
+        var types = new Dictionary<long, long>();  // slot id -> type
+        foreach (var place in layout.OfType<JsonObject>())
+            if (TryKey(place["id"], out var id) && TryKey(place["type"], out var type)) types.TryAdd(id, type);
+        var rotates = (facts.LodgeCatalogue("slot/animal") as JsonArray ?? []).OfType<JsonObject>().Where(t => t["can_rotate"] is JsonValue v && v.TryGetValue(out bool can) && can)
+            .Select(t => Py.L(t["id"])).ToHashSet();
+        var changed = false;
+        foreach (var slot in slots.OfType<JsonObject>())
+            if (TryKey(slot["slot_id"], out var slotId) && types.TryGetValue(slotId, out var type))
+            {
+                var full = FullBodyTypes.Contains(type);
+                if (slot["is_full_body"] is not JsonValue flag || !flag.TryGetValue(out bool stored) || stored != full) (slot["is_full_body"], changed) = (full, true);  // a stored 1 or "true" is no flag: rewritten
+                if (slot["trophy_id"] is not null && rotates.Contains(type) && !slot.ContainsKey("rotation")) (slot["rotation"], changed) = (0, true);
+            }
+        return changed;
+    }
+
+    /// <summary>Give each new slot the keys it lacks from the stored slot of the same `slot_id` when it holds the same trophy or weapon (`trophy_details`).
+    /// The game saves a lodge without them whenever the player leaves it.</summary>
     static void Carry(JsonArray slots, JsonArray stored)
     {
         foreach (var slot in slots.OfType<JsonObject>())
@@ -154,7 +194,7 @@ public sealed partial class State
             {
                 var same = Py.Eq(old["trophy_id"], slot["trophy_id"]) && Py.Eq(old["weapon_id"], slot["weapon_id"]);
                 foreach (var (key, value) in old)
-                    if (!slot.ContainsKey(key) && (same || key == "is_full_body"))
+                    if (!slot.ContainsKey(key) && same)
                         slot[key] = value?.DeepClone();
             }
     }
@@ -227,6 +267,7 @@ public sealed partial class State
         con.Begin();
         StoreMounted(con, account);  // before the slots are rewritten
         var rows = con.Rows("SELECT n, node FROM lodges WHERE account_id = $a AND source IN (?, ?) AND id = ?", LodgeList, LodgeOne, id.ToString());
+        var engine = rows.Select(r => (JsonNode.Parse((string)r[1]) as JsonObject)?["lodge_engine_id"]).FirstOrDefault(Py.IsNum);  // either row names the layout
         foreach (var r in rows)
             if (JsonNode.Parse((string)r[1]) is JsonObject node)
             {
@@ -237,6 +278,7 @@ public sealed partial class State
                         Carry(slots, stored);
                     node[key] = fresh;
                 }
+                Fit(node, engine);
                 con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(node), r[0]);
             }
         con.Commit();
