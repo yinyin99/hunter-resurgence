@@ -202,9 +202,14 @@ public class FeederTests : StateTestBase
         state.CreateAccount(8, "second");
         using (var con = state.Store.Open(8))
             PlayerRows.AddItem(con, 400, 136, 23, null, Filled(50, Start));
-        Hb(O("""{"event": 23, "item": "100", "metadata": {"bear_baited": 7}}"""));  // not a feeder
-        Assert.Null(Items()["100"]!["metadata"]!["bear_baited"]);
-        Assert.Null(Items()["100"]!["metadata"]!["shot_ts"]);
+        Hb(O("""{"event": 23, "item": "100", "metadata": {"bear_baited": 7, "other": 1}}"""));  // not a feeder
+        foreach (var key in new[] { "bear_baited", "other", "shot_ts" })
+            Assert.Null(Items()["100"]!["metadata"]![key]);
+        using (var con = state.Store.Open(ME))
+            PlayerRows.AddItem(con, 301, 136, 0, null, Filled(50, Start));  // the sender's feeder, still in the inventory
+        Hb(O("""{"event": 23, "item": "301", "metadata": {"bear_baited": 7}}"""));
+        foreach (var key in new[] { "bear_baited", "shot_ts" })
+            Assert.Null(Items()["301"]!["metadata"]![key]);
         Hb(O("""{"event": 23, "item": "400", "metadata": {"bear_baited": 7}}"""));  // another account's
         using var other = state.Store.Open(8);
         Assert.Equal(1L, other.Rows("SELECT COUNT(*) FROM items WHERE account_id = $a AND guid = 400 AND json_extract(metadata, '$.shot_ts') IS NULL AND json_extract(metadata, '$.bear_baited') IS NULL").Single()[0]);
