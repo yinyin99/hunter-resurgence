@@ -192,7 +192,7 @@ The next deploy sets the tag again.
 
 Only the newest 20 deploy images of each package stay in GHCR (`ghcr-retention`, weekly, plus `latest` and `buildcache`): a rollback past that is rebuilt by tagging the old commit as above.
 
-A deploy that changes the database schema migrates it at the server's first start, and the older server refuses a newer schema: before such a deploy, copy the database (`docker compose exec -T server-backup dotnet server.dll backup /backups 7`, [Backups](#backups)), since rolling back then means restoring that copy. The first start of the server that brings the ownership limits (schema 38) also removes, from the inventories, the copies of an item over its limit and records them (the pass at start, [server.md](server.md#the-pass-at-start)): the server makes no backup at start, so this copy is the one to restore from.
+A deploy that changes the database schema migrates it at the server's first start, and the older server refuses a newer schema: before such a deploy, copy the database (`docker compose exec -T server-backup dotnet server.dll backup /backups 7`, [Backups](#backups)), since rolling back then means restoring that copy. The first start of the server that brings the ownership limits (schema 38) also removes, from the inventories, the copies of an item over its limit and records them (the pass at start, once, [server.md](server.md#the-pass-at-start)): neither the server nor the deploy script takes a backup, so copying the database before that deploy is a manual step of the operator, and that copy is the one to restore from.
 
 ## The community server
 

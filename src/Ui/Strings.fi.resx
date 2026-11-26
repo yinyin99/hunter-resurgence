@@ -751,6 +751,7 @@
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Rajoittamaton ammus</value></data>
   <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Rajoittamaton polttoaine</value></data>
   <data name="Store.BundleOwn" xml:space="preserve"><value>Omistat {0}/{1} tavarasta: {2} em$ hinnan {3} em$ sijaan</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Omistat {0}/{1} tavarasta</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Omistat jo kaikki tämän paketin tavarat</value></data>
   <data name="Store.Or" xml:space="preserve"><value>tai</value></data>
   <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>

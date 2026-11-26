@@ -42,8 +42,8 @@
                 <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
                 <p class="price">@if (b.WasPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.WasPrice em$</s> } else { <b>@b.Price em$</b> }</p>
-                @if (b.OwnedItems > 0 && b.OwnedItems == b.Lines.Count) { <p class="own">@L["Store.BundleAllOwned"]</p> }
-                else if (b.OwnedItems > 0) { <p class="own">@L["Store.BundleOwn", b.OwnedItems, b.Lines.Count, b.Price, b.WasPrice]</p> }
+                @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
+                else if (b.OwnedItems > 0) { <p class="own">@(b.WasPrice > b.Price ? L["Store.BundleOwn", b.OwnedItems, b.OfItems, b.Price, b.WasPrice] : L["Store.BundleOwnCount", b.OwnedItems, b.OfItems])</p> }
                 @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@
                 <button class="btn btn-primary" @onclick='() => Nav.NavigateTo($"/store/bundle/{b.Id}")'>@L["Store.Details"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</button>
             </div>

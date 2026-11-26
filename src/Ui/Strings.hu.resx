@@ -751,6 +751,7 @@
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Korlátlan lőszer</value></data>
   <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Korlátlan üzemanyag</value></data>
   <data name="Store.BundleOwn" xml:space="preserve"><value>Megvan {0}/{1} tárgy: {2} em$ {3} em$ helyett</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Megvan {0}/{1} tárgy</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Már megvan a csomag összes tárgya</value></data>
   <data name="Store.Or" xml:space="preserve"><value>vagy</value></data>
   <data name="Store.Days" xml:space="preserve"><value>nap</value></data>

@@ -136,7 +136,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant, i.Limit)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))];
         return offers.TryGetValue(b.Id, out var o)
-            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned)
+            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of)
             : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines);
     }
 

@@ -56,50 +56,38 @@ public sealed partial class State
     /// <summary>The copies of the account's items over their limit that the pass removed, by (account, guid, item id): the removed row whole, so an operator can put it back.</summary>
     const string Removed = "own_limit_removals";
 
-    /// <summary>The pass at start (community servers; run after the backup the deploy takes, docs/deploy.md): for each account and item over its limit, the copies in use stay, then the oldest; the rest are removed,
-    /// with no refund, and each removed row is recorded in `own_limit_removals`. A loadout that named a removed copy names the copy that stays. An ammunition, a scope or any other kind with no limit is never touched.
-    /// Idempotent: a second run finds nothing over. One line per account that lost copies.</summary>
+    /// <summary>The pass, once (community servers, run at start after the lodge backfill; the operator copies the database before the deploy that brings it, docs/deploy.md): for each account and item over its limit, the
+    /// copies in use stay up to the limit, then the oldest; the rest are removed (also an equipped one when more copies are in use than the limit), with no refund, and each removed row is recorded in `own_limit_removals`.
+    /// An ammunition, a scope or any other kind with no limit is never touched. It runs once: when it has finished it leaves a row in `own_limit_pass`, and a later start (a tighter `own_limits`, another catalogue)
+    /// removes nothing. One line per account that lost copies.</summary>
     public List<string> EnforceOwnLimits()
     {
         var lines = new List<string>();
+        using (var shared = Store.Open())
+            if (shared.Scalar("SELECT 1 FROM own_limit_pass") is not null)
+                return lines;
         foreach (var account in Store.AccountIds())
         {
             using var con = Con(account);
             con.Begin();
             var rows = con.Rows("SELECT guid, item_id, slot, metadata, units FROM items WHERE account_id = $a");
             var removed = Excess(rows, r => (long)r[1], r => (long)r[2] > 0 || ((string)r[3]).Contains(POSITION, StringComparison.Ordinal), r => (long)r[0]).ToList();
-            if (removed.Count > 0)
+            foreach (var r in removed)
             {
-                var gone = removed.Select(r => (long)r[0]).ToHashSet();
-                var kept = rows.Where(r => !gone.Contains((long)r[0])).GroupBy(r => (long)r[1]).ToDictionary(g => g.Key, g => g.Min(r => (long)r[0]));
-                foreach (var r in removed)
-                {
-                    con.Exec("DELETE FROM items WHERE account_id = $a AND guid = ?", r[0]);
-                    con.Exec($"INSERT INTO {Removed} (account_id, ts, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?, ?)", (long)Clock(), r[0], r[1], r[2], r[3], r[4]);
-                }
-                var named = removed.ToDictionary(r => (long)r[0], r => kept[(long)r[1]]);
-                foreach (var l in con.Rows("SELECT id, entries FROM loadouts WHERE account_id = $a"))
-                {
-                    var changed = false;
-                    var entries = JsonNode.Parse((string)l[1]) as JsonArray ?? [];
-                    foreach (var e in entries.OfType<JsonObject>())
-                        if (IntOf(e["item_guid"], out var guid) && named.TryGetValue(guid, out var stays))
-                        {
-                            e["item_guid"] = stays;
-                            changed = true;
-                        }
-                    if (changed)
-                        con.Exec("UPDATE loadouts SET entries = ? WHERE account_id = $a AND id = ?", Py.Dumps(entries), l[0]);
-                }
-                lines.Add($"own limits: account {account} lost {removed.Count} copies ({string.Join(", ", removed.GroupBy(r => (long)r[1]).OrderBy(g => g.Key).Select(g => $"{g.Count()} x item {g.Key}"))})");
+                con.Exec("DELETE FROM items WHERE account_id = $a AND guid = ?", r[0]);
+                con.Exec($"INSERT INTO {Removed} (account_id, ts, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?, ?)", (long)Clock(), r[0], r[1], r[2], r[3], r[4]);
             }
+            if (removed.Count > 0)
+                lines.Add($"own limits: account {account} lost {removed.Count} copies ({string.Join(", ", removed.GroupBy(r => (long)r[1]).OrderBy(g => g.Key).Select(g => $"{g.Count()} x item {g.Key}"))})");
             con.Commit();
         }
+        using (var shared = Store.Open())
+            shared.Exec("INSERT INTO own_limit_pass (done_ts) VALUES (?)", (long)Clock());
         return lines;
     }
 
     /// <summary>What a bundle gives an account and costs it now (<see cref="Offer"/>): the items it gives (each at most up to its limit, an item already owned up to its limit is skipped), the price, and how many of its
-    /// <paramref name="Of"/> items are <paramref name="Owned"/> (skipped).</summary>
+    /// <paramref name="Of"/> items are <paramref name="Owned"/> (skipped). A copy a bundle lists beyond the item's limit is neither: it is not given, not paid for, and not counted in <paramref name="Of"/>.</summary>
     sealed record BundleOffer(long[] Give, long Price, int Owned, int Of);
 
     /// <summary>The bundle for this account, null when the store does not sell it at all (<see cref="BundleSale"/>). The items a bundle lists more often than their limit allows, and those the account owns up to their limit, are not given;
@@ -110,21 +98,36 @@ public sealed partial class State
         if (BundleSale(b) is not { } ids)
             return null;
         var room = new Dictionary<long, long>();
+        var listed = new Dictionary<long, long>();
         var give = new List<long>();
         long total = 0, skipped = 0;
+        int owned = 0, of = 0;
         foreach (var id in ids)
         {
             var value = Whole(items[id]["price"]);
             total += value;
             var left = room.TryGetValue(id, out var r) ? r : Room(con, id);
             room[id] = left - 1;
-            if (left > 0) give.Add(id);
-            else skipped += value;
+            listed[id] = listed.GetValueOrDefault(id) + 1;
+            if (left > 0)
+            {
+                give.Add(id);
+                of++;
+            }
+            else
+            {
+                skipped += value;
+                if (OwnLimit(id) is not { } limit || listed[id] <= limit)  // the first copies up to the limit are the ones the player owns; a listed copy beyond it is only left out
+                {
+                    owned++;
+                    of++;
+                }
+            }
         }
         var price = Whole(b["price"]);
         if (skipped > 0 && total > 0 && give.Count > 0)
             price = Math.Max(1, (price * (total - skipped) + total - 1) / total);
-        return new BundleOffer([.. give], price, ids.Length - give.Count, ids.Length);
+        return new BundleOffer([.. give], price, owned, of);
     }
 
     /// <summary>Whether the store leaves a bundle out instead of showing it as not for sale: one made only of ammunition while `unlimited_ammo` is on, or one that lists a fuel while `unlimited_fuel` is.</summary>

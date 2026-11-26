@@ -751,6 +751,7 @@
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Munizioni illimitate</value></data>
   <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Carburante illimitato</value></data>
   <data name="Store.BundleOwn" xml:space="preserve"><value>Possiedi {0} oggetti su {1}: {2} em$ invece di {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Possiedi {0} oggetti su {1}</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Possiedi già tutti gli oggetti di questo pacchetto</value></data>
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>giorni</value></data>

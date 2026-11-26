@@ -159,6 +159,37 @@ public class OwnLimitTests : StateTestBase
         Assert.Equal(3, Owned(scope, 1001));
     }
 
+    // each kind's limit at restore: 3 copies come in, a limited kind keeps 1 and the others all 3
+    [Theory]
+    [InlineData(1L, true, true)]     // rifle
+    [InlineData(22L, true, true)]    // handgun
+    [InlineData(7L, true, true)]     // clothing
+    [InlineData(4L, false, true)]    // caller
+    [InlineData(31L, true, true)]    // pose
+    [InlineData(42L, true, true)]    // vehicle
+    [InlineData(27L, true, true)]    // dog vest
+    [InlineData(43L, true, true)]    // electronic caller add-on
+    [InlineData(2L, true, false)]    // scope
+    [InlineData(25L, true, false)]   // dog
+    [InlineData(4L, true, false)]    // scent, spray, bait
+    public void ARestoreKeepsAsManyCopiesAsTheKindsLimit(long type, bool multiple, bool limited)
+    {
+        Make(KindItems());
+        var item = 2000 + 2 * Array.FindIndex(Kinds, k => k.Type == type && k.Multiple == multiple);
+        Restorer.Import(state, TestZip.Own().Replace("Inventory_dict.json", Dict(item, (7001, 0), (7002, 0), (7003, 0))).Write(tmp), null, tmp);
+        Assert.Equal(limited ? 1 : 3, Owned(item, 1001));
+    }
+
+    [Fact]
+    public void ARestoreKeepsEveryElectronicCallerAndLimitsTheHuntingHornToOne()
+    {
+        Make(KindItems());
+        Restorer.Import(state, TestZip.Own().Replace("Inventory_dict.json", Dict(ECaller, (7001, 0), (7002, 0), (7003, 0))).Write(tmp), null, tmp);
+        Assert.Equal(3, Owned(ECaller, 1001));
+        Restorer.Import(state, TestZip.Own().Replace("Inventory_dict.json", Dict(Horn, (7001, 0), (7002, 0), (7003, 0))).Write(tmp, "horn.zip"), null, tmp);
+        Assert.Equal(1, Owned(Horn, 1001));
+    }
+
     // a bundle of 5 items at 60 em$ (10, 10, 20, 10, 10 em$): A and B are limited, C, D and E are not
     const long A = 6001, B = 6002, C = 6003, D = 6004, E = 6005, Ammo1 = 6101, Ammo2 = 6102;
 
@@ -208,7 +239,7 @@ public class OwnLimitTests : StateTestBase
     public void ABundleThatListsALimitedItemTwiceGivesItOnceAndTheSecondOneIsNotPaidFor()
     {
         Make(BundleItems(), Bundles(), ammo: true, fuel: true);
-        Eq("""{"id": 24, "price": 32, "owned": 1, "of": 4, "buyable": true}""", Offer(24));  // the items are worth 10, 10, 20 and 10 of 50 em$ and the second A is not given: 4/5 of 40 em$
+        Eq("""{"id": 24, "price": 32, "owned": 0, "of": 3, "buyable": true}""", Offer(24));  // A twice: the second copy is not given, not paid for and not counted; the items are worth 10, 10, 20 and 10 of 50 em$: 4/5 of 40 em$
         Assert.NotNull(state.WebBuy(ME, 24, true, 1));
         Assert.Equal(new long[] { 1, 1, 1 }, new[] { A, C, D }.Select(id => Owned(id)));
     }
@@ -294,9 +325,6 @@ public class OwnLimitTests : StateTestBase
         Rows(ME, Ammo1, (1501, 0, "{}"), (1502, 0, "{}"), (1503, 1, "{}"));                    // ammunition: never touched
         Rows(ME, Fuel25, (1601, 0, "{}"), (1602, 0, "{}"));                                     // fuel rows stay
         Rows(ME, 2002, (1701, 0, "{}"));                                                        // one copy of a limited item: nothing to remove
-        using (var con = state.Store.Open(ME))
-            con.Exec("INSERT INTO loadouts (account_id, name, color, entries) VALUES ($a, 'L', 0, ?)",
-                     """[{"slot_id": 2, "item_id": 2000, "item_guid": 1003}, {"slot_id": 3, "item_id": 2000, "item_guid": 1001}, {"slot_id": 4, "item_id": 2012, "item_guid": 1101}]""");
         state.CreateAccount(8, "other");
         Rows(8, 2000, (2001, 0, "{}"), (2002, 0, "{}"));
 
@@ -314,12 +342,12 @@ public class OwnLimitTests : StateTestBase
         Assert.Equal(new long[] { 2001 }, Guids(2000, 8));
         using var check = state.Store.Open(ME);
         Assert.Equal(new long[] { 1002, 1003, 1101, 1103, 1201, 1203, 1301 }, check.Rows("SELECT guid FROM own_limit_removals WHERE account_id = $a ORDER BY guid").Select(r => (long)r[0]));
-        // a loadout that named a removed copy names the one that stays
-        var entries = JsonNode.Parse((string)check.Scalar("SELECT entries FROM loadouts WHERE account_id = $a AND name = 'L'")!)!.AsArray();
-        Assert.Equal(new long[] { 1001, 1001, 1102 }, entries.Select(e => (long)e!["item_guid"]!));
 
-        // idempotent: a second start finds nothing over, and records nothing
+        // it runs once: a later start (a tighter table, another catalogue) removes nothing, also a row that is over the limit now
         Assert.Empty(state.EnforceOwnLimits());
+        Rows(ME, 2000, (9001, 0, "{}"));
+        Assert.Empty(state.EnforceOwnLimits());
+        Assert.Equal(new long[] { 1001, 9001 }, Guids(2000));
         Assert.Equal(7L, check.Scalar("SELECT COUNT(*) FROM own_limit_removals WHERE account_id = $a"));
     }
 

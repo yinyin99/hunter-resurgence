@@ -751,6 +751,7 @@
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Neomezená munice</value></data>
   <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Neomezené palivo</value></data>
   <data name="Store.BundleOwn" xml:space="preserve"><value>Vlastníte {0} z {1} položek: {2} em$ místo {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Vlastníte {0} z {1} položek</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Vlastníte již všechny položky tohoto balíčku</value></data>
   <data name="Store.Or" xml:space="preserve"><value>nebo</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dní</value></data>

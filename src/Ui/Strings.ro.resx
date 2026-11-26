@@ -751,6 +751,7 @@
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Muniție nelimitată</value></data>
   <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Combustibil nelimitat</value></data>
   <data name="Store.BundleOwn" xml:space="preserve"><value>Deţineţi {0} din {1} obiecte: {2} em$ în loc de {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Deţineţi {0} din {1} obiecte</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Deţineţi deja toate obiectele din acest pachet</value></data>
   <data name="Store.Or" xml:space="preserve"><value>sau</value></data>
   <data name="Store.Days" xml:space="preserve"><value>zile</value></data>

@@ -664,7 +664,7 @@ async Task Serve()
     if (state is not null && (bool?)settings.Cfg["offline_mode"] == false)  // a community server
     {
         state.BackfillLodges();  // the lodges its accounts' lodge items lack
-        foreach (var line in state.EnforceOwnLimits())  // the copies over an item's limit: the server makes no backup at start, the deploy's is the one to restore from (docs/deploy.md)
+        foreach (var line in state.EnforceOwnLimits())  // once: the copies over an item's limit. The server makes no backup at start and the deploy takes none: the operator copies the database before (docs/deploy.md)
             Console.WriteLine(line);
     }
     var certs = new List<X509Certificate2>();
