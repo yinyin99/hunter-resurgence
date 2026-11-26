@@ -317,6 +317,27 @@ public class MpHarvestTests : StateTestBase
         Assert.Single(Beat(HOST), u => Py.Eq(u!["update"], 6));
         Assert.Empty(Beat(GUEST));
     }
+
+    [Theory]
+    [InlineData(null, 77, true)]  // the shooter never saw it: the harvester's sighting, a possessed coat, judges his normal round (#582)
+    [InlineData(null, 1, false)]
+    [InlineData(1, 77, false)]  // the shooter's own sighting wins
+    [InlineData(77, 1, true)]
+    public void TestACreditedHarvestIsJudgedByTheSpawnItWasScoredWith(int? shooterCoat, int harvesterCoat, bool disqualified)
+    {
+        var connect = CONNECT;
+        ((JsonArray)connect["ethical"]!)[1] = new JsonArray(10);  // the mule deer permits the shot's ammunition 10
+        state = new State(Path.Combine(tmp, "rule.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false) { Clock = () => now };
+        foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest") })
+            state.CreateAccount(id, handle);
+        Game(GUEST);
+        static JsonNode Seen(int coat) => O($$"""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": {{coat}}}""");
+        Beat(GUEST, shooterCoat is { } own ? [Seen(own), Hit(460)] : [Hit(460)]);
+        Beat(HOST, [Seen(harvesterCoat), .. Skinned(460, spawn: false)]);
+        var score = Assert.Single(Beat(GUEST), u => Py.Eq(u!["update"], 6))!;
+        Assert.Equal(disqualified, Py.Eq(score["score_text"], "Disqualified "));
+        Assert.Equal(!disqualified, (bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);  // the page judges it the same
+    }
 }
 
 /// <summary>The mission rollback of a moved harvest reopens only what that harvest finished.</summary>
