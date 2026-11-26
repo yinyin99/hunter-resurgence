@@ -1566,6 +1566,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Ta povezava za prijavo ni veljavna. Začnite znova iz zaganjalnika ali orodja za varnostno kopiranje.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam prijave ni potrdil. Začnite znova.</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Ta račun Steam je blokiran in se ne more prijaviti.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Razlog:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>

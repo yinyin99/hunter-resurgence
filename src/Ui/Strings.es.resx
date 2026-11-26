@@ -1566,6 +1566,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Este enlace de inicio de sesión no es válido. Empieza de nuevo desde el launcher o la herramienta de copia de seguridad.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam no confirmó el inicio de sesión. Empieza de nuevo.</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta cuenta de Steam está baneada y no puede iniciar sesión.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulario no procede de este servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este inicio de sesión ya se confirmó.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>¿Seguro que quieres cerrar el launcher y el juego?</value></data>

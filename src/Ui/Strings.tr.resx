@@ -1566,6 +1566,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Bu oturum açma bağlantısı geçerli değil. Launcher’dan veya yedekleme aracından yeniden başlayın.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam oturum açmayı onaylamadı. Yeniden başlayın.</value></data>
   <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Bu Steam hesabı yasaklandı ve oturum açamaz.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Neden:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>

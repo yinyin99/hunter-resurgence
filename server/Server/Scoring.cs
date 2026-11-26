@@ -307,9 +307,9 @@ public static class Scoring
             double Scaled(long v) => R4(v / 100.0 * Py.D(scale));
             return new JsonObject { ["width"] = Scaled(packed >> 16), ["length"] = Scaled(packed & 0xFFFF) };
         }
-        // turkey: beard and spurs as event 22 sends them x1000, mm; pheasant: tail in mm. No scale factor, and a hen carries zeros (a turkey hen scores her weight)
+        // turkey: beard and spurs as event 22 sends them x1000, mm; pheasant: tail in mm. No scale factor. A turkey hen (gender 1) has no trophy and no score, like a doe
         if (fam == "turkey")
-            return new JsonObject { ["beard"] = Get(e22, "beard") / 1000, ["spurs"] = new JsonObject { ["left"] = Get(e22, "left_spur") / 1000, ["right"] = Get(e22, "right_spur") / 1000 } };
+            return e7["gender"] is { } g && Py.Eq(g, 1) ? null : new JsonObject { ["beard"] = Get(e22, "beard") / 1000, ["spurs"] = new JsonObject { ["left"] = Get(e22, "left_spur") / 1000, ["right"] = Get(e22, "right_spur") / 1000 } };
         if (fam == "pheasant")
             return new JsonObject { ["tail"] = Get(e22, "tail"), ["spurs"] = new JsonObject { ["left"] = Get(e22, "left_spur") / 1000, ["right"] = Get(e22, "right_spur") / 1000 } };
         // a sow has no tusks and scores her weight (`features: []`); a female deer has no antlers and no score
