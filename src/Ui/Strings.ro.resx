@@ -1640,4 +1640,6 @@ Numele:</value></data>
   <data name="GameSettings.Units" xml:space="preserve"><value>Unități de măsură</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrice (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiale (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rețeaua gazdei</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Nu te poți alătura acestui joc: rețeaua gazdei nu este acceptată (jocul nu se poate conecta prin IPv6). Gazda poate încerca din nou sau poate dezactiva un VPN.</value></data>
 </root>

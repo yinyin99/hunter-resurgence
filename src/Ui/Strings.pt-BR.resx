@@ -1640,4 +1640,6 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="GameSettings.Units" xml:space="preserve"><value>Unidades</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rede do anfitrião</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Você não pode entrar neste jogo: a rede do anfitrião não é compatível (o jogo não consegue se conectar por IPv6). O anfitrião pode tentar de novo ou desativar uma VPN.</value></data>
 </root>

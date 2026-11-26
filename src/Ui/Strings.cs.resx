@@ -1640,4 +1640,6 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="GameSettings.Units" xml:space="preserve"><value>Jednotky</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrické (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiální (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Síť hostitele</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Do této hry se nemůžeš připojit: síť hostitele není podporována (hra se nedokáže připojit přes IPv6). Hostitel může zkusit hru založit znovu nebo vypnout VPN.</value></data>
 </root>

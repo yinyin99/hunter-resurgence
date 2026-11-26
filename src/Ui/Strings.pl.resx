@@ -1640,4 +1640,6 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="GameSettings.Units" xml:space="preserve"><value>Jednostki</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metryczne (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Sieć gospodarza</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: sieć gospodarza nie jest obsługiwana (gra nie może łączyć się przez IPv6). Gospodarz może spróbować ponownie lub wyłączyć VPN.</value></data>
 </root>

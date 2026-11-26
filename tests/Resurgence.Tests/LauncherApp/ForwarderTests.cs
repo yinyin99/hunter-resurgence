@@ -214,6 +214,33 @@ public class ForwarderTests
     }
 
     [Fact]
+    public async Task ConnectsToTheServerOverIpv4()
+    {
+        var listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
+        listener.Start();
+        try
+        {
+            var accepted = listener.AcceptSocketAsync();
+            await using var stream = await Forwarder.ConnectIPv4("127.0.0.1", ((IPEndPoint)listener.LocalEndpoint).Port, default);
+            using var peer = await accepted;
+            Assert.Equal(System.Net.Sockets.AddressFamily.InterNetwork, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
+        }
+        finally { listener.Stop(); }
+    }
+
+    [Fact]
+    public async Task AServerWithoutAnIpv4AddressFailsAndIsNeverReachedOverIpv6()
+    {
+        // an IPv6 address is the only one this name has: no connection is tried (nothing listens), the error is the unreachable-server one
+        var e = await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4("::1", 443, default));
+        Assert.Equal(System.Net.Sockets.SocketError.HostNotFound, e.SocketErrorCode);
+        await using var fwd = await StartForwarder(new Uri("http://[::1]:9"));
+        using var http = Client();
+        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0]);
+        Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
+    }
+
+    [Fact]
     public async Task AnswersOverTlsWithTheLeafOfTheLocalAuthority() =>
         await OverTls(HttpVersion.Version11, HttpVersionPolicy.RequestVersionExact, (resp, origin) =>
         {

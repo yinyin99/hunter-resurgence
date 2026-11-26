@@ -1640,4 +1640,6 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="GameSettings.Units" xml:space="preserve"><value>Enheder</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisk (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Værtens netværk</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan ikke deltage i dette spil: værtens netværk understøttes ikke (spillet kan ikke forbinde via IPv6). Værten kan prøve igen eller slå en VPN fra.</value></data>
 </root>

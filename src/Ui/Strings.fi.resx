@@ -1640,4 +1640,6 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="GameSettings.Units" xml:space="preserve"><value>Yksiköt</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrinen (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaalinen (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Isännän verkko</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Et voi liittyä tähän peliin: isännän verkkoa ei tueta (peli ei voi yhdistää IPv6:n kautta). Isäntä voi yrittää uudelleen tai poistaa VPN:n käytöstä.</value></data>
 </root>
