@@ -21,6 +21,18 @@ public class WebViewStartTests
         Assert.Equal(Problem.RuntimeMissing, Classify(new WebView2RuntimeNotFoundException()));
         Assert.Equal(Problem.StartFailed, Classify(new InvalidOperationException()));
         Assert.Equal(Problem.StartFailed, Classify(null));
+        Assert.Equal(Problem.StartFailed, Classify(new System.Runtime.InteropServices.COMException("x", -2147467259)));  // E_FAIL
+    }
+
+    [Fact]
+    public void AnOlderBrowserStillHoldingTheUserDataIsBusyNeverMissing()
+    {
+        Assert.Equal(5023, InvalidState & 0xFFFF);  // ERROR_INVALID_STATE
+        Assert.Equal(Problem.Busy, Classify(new System.Runtime.InteropServices.COMException("x", InvalidState)));
+        Assert.Equal(Problem.Busy, Classify(new InvalidOperationException("wrapped", new System.Runtime.InteropServices.COMException("x", InvalidState))));
+        Assert.Equal(Notice.Last, Decide(Problem.Busy, false));
+        Assert.Equal(Notice.Last, Decide(Problem.Busy, true));
+        foreach (var yes in new[] { true, false }) Assert.Equal(Next.Wait, Answer(Notice.Last, yes));
     }
 
     [Theory]
@@ -30,6 +42,8 @@ public class WebViewStartTests
     [InlineData(Problem.StartFailed, true, Notice.Install)] // restarting without hardware acceleration was tried: the Runtime itself is broken
     [InlineData(Problem.NotLoaded, false, Notice.RestartOrWait)]
     [InlineData(Problem.NotLoaded, true, Notice.Last)] // no second restart: no loop
+    [InlineData(Problem.Busy, false, Notice.Last)] // built once more already: the plain final message, never the download page
+    [InlineData(Problem.Busy, true, Notice.Last)]
     public void TheMessageDependsOnTheProblemAndOnWhetherHardwareAccelerationIsAlreadyOff(Problem problem, bool gpuOff, Notice expected) =>
         Assert.Equal(expected, Decide(problem, gpuOff));
 

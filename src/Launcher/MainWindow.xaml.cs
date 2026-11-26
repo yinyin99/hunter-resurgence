@@ -66,7 +66,14 @@ public partial class MainWindow : Window
         {
             if (env.Prefs.DisableGpu) e.EnvironmentOptions = new CoreWebView2EnvironmentOptions { AdditionalBrowserArguments = WebViewStart.NoGpuArgument };
             // before the browser starts, so that a failed start is heard; once the page has loaded, a control that is created again after a crash (OnProcessFailed) is no start problem: the game's question stays with Closing
-            b.WebView.CoreWebView2InitializationCompleted += (_, c) => { if (!c.IsSuccess && !pageLoaded) ShowProblem(WebViewStart.Classify(c.InitializationException), c.InitializationException); };
+            b.WebView.CoreWebView2InitializationCompleted += (_, c) =>
+            {
+                if (c.IsSuccess || pageLoaded) return;
+                var problem = WebViewStart.Classify(c.InitializationException);
+                // an older browser process still holds the user data folder: it ends by itself, so the control is built once more before anything is said
+                if (problem == WebViewStart.Problem.Busy && !busyRetried) { busyRetried = true; RebuildAfterBusy(c.InitializationException); }
+                else ShowProblem(problem, c.InitializationException);
+            };
         };
         b.BlazorWebViewInitialized += (_, e) =>
         {
@@ -80,8 +87,19 @@ public partial class MainWindow : Window
         return b;
     }
 
-    bool pageLoaded, problemShown;
-    Task? browserExited; // null: the browser never started
+    bool pageLoaded, problemShown, busyRetried;
+    Task? browserExited; // null: the browser never started, or failed to start (then its processes are looked for, see RestartWithoutGpu)
+
+    void RebuildAfterBusy(Exception? cause) => Dispatcher.InvokeAsync(async () =>
+    {
+        log.LogWarning(cause, "WebView2 is busy with an earlier start (ERROR_INVALID_STATE): building the page again in {Seconds} seconds", WebViewStart.BusyDelay.TotalSeconds);
+        await Task.Delay(WebViewStart.BusyDelay);
+        var old = Content as BlazorWebView;
+        Content = NewBlazor();
+        if (old is IAsyncDisposable d)
+            try { await d.DisposeAsync(); }
+            catch (Exception e) when (e is not OutOfMemoryException) { log.LogWarning(e, "the WebView2 page that failed to start did not clean up"); }
+    });
 
     /// <summary>The browser did not start or the page did not load: the player is told once (<see cref="WebViewStart"/>) and the answer is carried out.</summary>
     void ShowProblem(WebViewStart.Problem problem, Exception? cause) => Dispatcher.InvokeAsync(async () =>
@@ -93,28 +111,38 @@ public partial class MainWindow : Window
         if (pageLoaded && next != WebViewStart.Next.Close) { log.LogInformation("The page loaded while the message was open: nothing to do"); return; }
         switch (next)
         {
-            case WebViewStart.Next.Restart: await RestartWithoutGpu(); break;
+            case WebViewStart.Next.Restart:
+                try { await RestartWithoutGpu(); }
+                catch (Exception e) when (e is not OutOfMemoryException)
+                {
+                    // no empty window without a word
+                    LauncherLog.Default.Write(LogLevel.Error, "The launcher could not restart without hardware acceleration", e);
+                    MessageBox.Show(this, Kit.S(WebViewStart.Key(WebViewStart.Notice.Last)), Kit.S("App.Name"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                break;
             case WebViewStart.Next.Close: closing = true; Close(); break;
         }
     });
 
-    /// <summary>Remembers "no hardware acceleration", lets this launcher's browser process end (a new one with other browser arguments would fail to start while it runs) and starts the launcher again with the same arguments; the new one waits for this one to end (it holds the single-instance mutex).</summary>
+    /// <summary>Remembers "no hardware acceleration", lets this launcher's browser process end (a new one with other browser arguments would fail to start while it runs) and starts the launcher again with the same arguments; the new one waits for this one to end (it holds the single-instance mutex). After a failed start no environment was handed out to tell when the browser ended, so its processes (children of this launcher) are looked for.</summary>
     async Task RestartWithoutGpu()
     {
         log.LogInformation("Restarting the launcher without hardware acceleration");
         env.Prefs.DisableGpu = true;
         env.Save();
-        if (browserExited is { } exited)
+        var old = Content as BlazorWebView;
+        Content = null;
+        try
         {
-            var old = Blazor;
-            Content = null;
-            try
+            var ended = browserExited ?? Task.Run(async () =>
             {
-                var gone = Task.WhenAll(((IAsyncDisposable)old).DisposeAsync().AsTask(), exited);
-                if (await Task.WhenAny(gone, Task.Delay(WebViewStart.BrowserExitTimeout)) != gone) log.LogWarning("The WebView2 browser process did not end within {Seconds} seconds", WebViewStart.BrowserExitTimeout.TotalSeconds);
-            }
-            catch (Exception e) when (e is not OutOfMemoryException) { log.LogWarning(e, "the WebView2 page did not clean up before the restart"); }
+                var until = DateTime.UtcNow + WebViewStart.BrowserExitTimeout;
+                while (!WebViewStart.BrowserChildrenGone(Environment.ProcessId) && DateTime.UtcNow < until) await Task.Delay(250);
+            });
+            var gone = Task.WhenAll(old is IAsyncDisposable d ? d.DisposeAsync().AsTask() : Task.CompletedTask, ended);
+            if (await Task.WhenAny(gone, Task.Delay(WebViewStart.BrowserExitTimeout)) != gone) log.LogWarning("The WebView2 browser process did not end within {Seconds} seconds", WebViewStart.BrowserExitTimeout.TotalSeconds);
         }
+        catch (Exception e) when (e is not OutOfMemoryException) { log.LogWarning(e, "the WebView2 page did not clean up before the restart"); }
         var start = new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!);
         foreach (var a in WebViewStart.RestartArgs(Environment.GetCommandLineArgs().Skip(1), Environment.ProcessId)) start.ArgumentList.Add(a);
         System.Diagnostics.Process.Start(start)?.Dispose();

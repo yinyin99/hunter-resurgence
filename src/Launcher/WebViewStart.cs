@@ -1,3 +1,5 @@
+using System.Management;
+using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -22,7 +24,8 @@ public static class WebViewStart
     /// <summary>How long the page has to load (its first successful navigation) before the launcher asks about the restart.</summary>
     public static readonly TimeSpan LoadTimeout = TimeSpan.FromSeconds(20);
 
-    public enum Problem { RuntimeMissing, StartFailed, NotLoaded }
+    /// <summary><c>Busy</c>: the start failed with ERROR_INVALID_STATE, an older browser process still holds the user data folder with other arguments; it goes away by itself, so the control is built once more, never the download page.</summary>
+    public enum Problem { RuntimeMissing, StartFailed, NotLoaded, Busy }
 
     /// <summary>What the message offers: <see cref="Install"/> opens the download page (Yes) or closes the launcher (No); <see cref="RestartOrClose"/> and <see cref="RestartOrWait"/> restart without hardware acceleration (Yes) or close the launcher / keep waiting (No); <see cref="Last"/> only says it (OK).</summary>
     public enum Notice { Install, RestartOrClose, RestartOrWait, Last }
@@ -56,12 +59,38 @@ public static class WebViewStart
         catch (WebView2RuntimeNotFoundException) { return true; }
     }
 
-    /// <summary>The Runtime is missing, or the browser failed to start.</summary>
-    public static Problem Classify(Exception? initialization) => initialization is WebView2RuntimeNotFoundException ? Problem.RuntimeMissing : Problem.StartFailed;
+    /// <summary>ERROR_INVALID_STATE (Windows error 5023) as an HResult: what WebView2 answers while a browser process with other arguments runs on the same user data folder.</summary>
+    public const int InvalidState = -2147019873;
+
+    /// <summary>How long the control waits before it is built again after <see cref="Problem.Busy"/>.</summary>
+    public static readonly TimeSpan BusyDelay = TimeSpan.FromSeconds(3);
+
+    /// <summary>The Runtime is missing, the browser is still busy with another start, or it failed to start.</summary>
+    public static Problem Classify(Exception? initialization) => initialization switch
+    {
+        WebView2RuntimeNotFoundException => Problem.RuntimeMissing,
+        not null when HasHResult(initialization, InvalidState) => Problem.Busy,
+        _ => Problem.StartFailed,
+    };
+
+    static bool HasHResult(Exception e, int hResult) => e.HResult == hResult || (e.InnerException is { } inner && HasHResult(inner, hResult));
+
+    /// <summary>No WebView2 browser process started by <paramref name="parent"/> is left. Used after a failed start, when no environment was handed out to tell it (a started browser is a direct child of the launcher); a failed query counts as gone.</summary>
+    public static bool BrowserChildrenGone(int parent)
+    {
+        try
+        {
+            using var s = new ManagementObjectSearcher($"SELECT ProcessId FROM Win32_Process WHERE Name = 'msedgewebview2.exe' AND ParentProcessId = {parent}") { Options = { Timeout = TimeSpan.FromSeconds(5) } };
+            using var found = s.Get();
+            return found.Count == 0;
+        }
+        catch (Exception e) when (e is ManagementException or COMException or UnauthorizedAccessException) { return true; }
+    }
 
     /// <param name="gpuOff">The browser already runs without hardware acceleration: a second restart would not change anything, so there is none.</param>
     public static Notice Decide(Problem problem, bool gpuOff) => (problem, gpuOff) switch
     {
+        (Problem.Busy, _) => Notice.Last,
         (Problem.RuntimeMissing, _) or (Problem.StartFailed, true) => Notice.Install,
         (Problem.StartFailed, false) => Notice.RestartOrClose,
         (_, false) => Notice.RestartOrWait,
@@ -91,6 +120,7 @@ public static class WebViewStart
     {
         LauncherLog.Default.Write(LogLevel.Error, problem switch
         {
+            Problem.Busy => "WebView2 is still busy with an earlier start (ERROR_INVALID_STATE) after the launcher built it again",
             Problem.RuntimeMissing => "The WebView2 Runtime is not installed",
             Problem.StartFailed => $"WebView2 failed to start (hardware acceleration {(gpuOff ? "off" : "on")})",
             _ => $"The launcher's page did not load within {LoadTimeout.TotalSeconds:0} seconds (hardware acceleration {(gpuOff ? "off" : "on")})",
