@@ -320,6 +320,14 @@ public static class AccountApi
             .WithDescription("`{items: [{id, name, variant, category, categoryName, units, slot, equipped, expires}]}`, one row per owned copy, oldest first: name, variant and the store's sub-category are the catalogue's, `units` is null for an item that is not counted, `equipped` is a slot above 0, `expires` is the end of a license or timed item in unix seconds (0 for an unlimited one), null for an item with none.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/bundles", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.BundleOffers(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountBundles").WithSummary("What each store bundle costs the player now")
+            .WithDescription("`{bundles: [{id, price, owned, of, buyable}]}` for the bundles `GET /catalog/store` lists: a bundle gives at most the limit of each item and not again an item the player owns up to its limit, and its price drops by the share of those items "
+                             + "(docs/server.md#ownership-limits). `price` is em$ as `POST /account/buy` charges it, `owned` of `of` items are not given again, `buyable` is false when the store does not sell the bundle or it would give nothing.")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/placed", (HttpContext ctx) => Account(ctx) is { } account
                 ? Json(200, state.PlacedItems(account))
                 : Refuse(401, "signed_out", "Sign in first."))
