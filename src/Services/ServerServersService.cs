@@ -16,8 +16,32 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
 
     public async Task<IReadOnlyList<Reserve>> ReservesAsync() => [.. (await LoadAsync()).Reserves.Select(r => new Reserve(r.Id, r.Name))];
 
-    public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
-        [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
+    public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => [.. await StartsAsync(reserve), .. await PlacedAsync(reserve)];
+
+    async Task<IEnumerable<MapMarker>> StartsAsync(int reserve) =>
+        (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>();
+
+    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>), shown only (<see cref="MapMarker.Only"/>): null when the server does not give them: the player may not join the
+    /// game, a password it has was not given or is wrong (<see cref="ServerCatalogApi.GamePassword"/>, percent-encoded), the game is gone, the player is signed out or the server does not answer.</summary>
+    public async Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password)
+    {
+        if (cookie.Value is null) return null;
+        var path = ServerCatalogApi.GamePlaced(server);
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            if (password is { Length: > 0 }) request.Headers.Add(ServerCatalogApi.GamePassword, Uri.EscapeDataString(password));
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerPlaced>() is { Items: not null } placed)
+                return [.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m with { Only = true })];
+            log.LogWarning("The server answered {Path} with {Status}: no map of the game", path, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no map of the game", path, e.Message);
+        }
+        return null;
+    }
 
     /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, for a signed-in player: the browser's host and the session cookie); none when signed out (the server is not asked) or when it does not answer. A player is placed on the map where the server says (<c>mapX</c>, <c>mapY</c>), and not when it does not.</summary>
     public async Task<IReadOnlyList<GameServer>> ServersAsync()

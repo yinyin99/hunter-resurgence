@@ -1642,4 +1642,5 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiální (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Síť hostitele</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Do této hry se nemůžeš připojit: připojení hostitele není podporováno (hra se nedokáže připojit přes IPv6). Požádej hostitele, aby aktualizoval launcher a hru založil znovu.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Mapu a vybavení hostitele vidí jen hráči, kteří se k této hře mohou připojit.</value></data>
 </root>

@@ -1642,4 +1642,5 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Impériales (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Réseau de l'hôte</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Vous ne pouvez pas rejoindre cette partie : la connexion de l'hôte n'est pas prise en charge (le jeu ne peut pas se connecter en IPv6). Demandez à l'hôte de mettre à jour le launcher et de relancer la partie.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>La carte et l'installation de l'hôte ne sont montrées qu'aux joueurs qui peuvent rejoindre cette partie.</value></data>
 </root>

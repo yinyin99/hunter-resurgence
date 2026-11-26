@@ -2112,8 +2112,8 @@ public sealed partial class State
 
     /// <summary>`GET /account/placed`: the player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes that have a position and a reserve, `{items: [{id, reserve, kind, name, x, y}]}`: `id` the
     /// item's guid, `reserve` the web's number, `kind` one of <see cref="PlacedKinds"/>, `name` the catalogue's (else the kind's word), `x` and `y` percent of the reserve's
-    /// map picture as in <see cref="LaunchCatalogue"/>.</summary>
-    public JsonObject PlacedItems(long account)
+    /// map picture as in <see cref="LaunchCatalogue"/>. With `onlyReserve` (the web's number) the items of that reserve only.</summary>
+    public JsonObject PlacedItems(long account, long? onlyReserve = null)
     {
         List<object[]> rows;
         using (var con = Con(account))
@@ -2124,6 +2124,8 @@ public sealed partial class State
             var metadata = Parse(r[2]);
             if (PlacedKind((long)r[1]) is not { } shown || metadata[POSITION] is not JsonObject at || !TryKey(metadata[RESERVE], out var reserve))
                 continue;  // not shown on a map, or placed with no position or reserve
+            if (onlyReserve is { } only && only != reserve)
+                continue;
             if (!boxes.TryGetValue(reserve, out var box))
                 boxes[reserve] = box = MapBox(reserve, starts.GetValueOrDefault(reserve) ?? []);
             var name = (items.GetValueOrDefault((long)r[1]) ?? installItems.GetValueOrDefault((long)r[1]))?["name"];

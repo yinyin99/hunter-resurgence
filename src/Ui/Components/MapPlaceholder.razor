@@ -5,7 +5,7 @@
     <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
         @foreach (var m in Markers)
         {
-            var pickable = m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
+            var pickable = !m.Only && m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
             var slot = SlotOf(m);
             <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
                 @if (slot is not null) { <AssetSlot Name="@slot" Width="@MarkerSize" Height="@MarkerSize" /> }

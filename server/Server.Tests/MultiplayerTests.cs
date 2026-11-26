@@ -22,7 +22,14 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     {
         var connect = CONNECT;
         connect["network"] = O("""{"singleplayer": true, "host": 7, "user_id": 7, "handle": "x", "ip": "203.0.113.9", "max_players": 8, "clients": null}""");
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: MapFacts()) { Clock = () => now };
+        var app = APP;  // two items that can be placed: a tent and a stand
+        foreach (var (id, define) in new[] { (901, "TENT02"), (902, "TREE_STAND01") })
+            app["items"]!.AsArray().Add(JsonNode.Parse($$"""
+                {"id": {{id}}, "name": "Test {{define}}", "description": "", "define": "{{define}}", "type": 41, "group": 13, "cat": 41, "client_type": 4,
+                 "image": "x", "variationname": null, "units": null, "fit": {}, "inventory": {"slots": [0, 23], "capacity": 0, "weight": 1},
+                 "price": 10, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 0}, "hidden": 0}
+                """));
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: MapFacts()) { Clock = () => now };
         foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest"), (THIRD, "third") })
         {
             state.CreateAccount(id, handle);
@@ -402,6 +409,97 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal((400L, 80L, 700L), ((long)own["x"]!, (long)own["y"]!, (long)own["z"]!));
         await Positions(session, (HOST, 5000, -300));  // off the map: on its edge
         Assert.Equal(["100,0"], await Places(GUEST));
+    }
+
+    /// <summary>An item of the account placed in a reserve, `mmX` and `mmZ` millimetres from the origin.</summary>
+    void Place(long who, long guid, long item, long reserve, long mmX, long mmZ)
+    {
+        using var con = state.Store.Open(who);
+        con.Begin();
+        PlayerRows.AddItem(con, guid, item, 23, null, O($$"""{"__position": {"x": {{mmX}}, "y": 0, "z": {{mmZ}}}, "__reserve": {{reserve}}}"""));
+        con.Commit();
+    }
+
+    /// <summary>`GET /catalog/games/&lt;id&gt;/placed` of the first game as `who` (null: signed out), with the password the player entered.</summary>
+    async Task<Reply> PlacedOf(long? who, string? password = null)
+    {
+        List<(string, string)> headers = [];
+        if (who is { } w) headers.Add(("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(w, TimeSpan.FromHours(1))}"));
+        if (password is not null) headers.Add((CatalogApi.GamePassword, Uri.EscapeDataString(password)));
+        return await server.SendAsync("GET", "web.test", $"/catalog/games/{await NetworkId()}/placed", [.. headers]);
+    }
+
+    /// <summary>The answer is the host's items (ids of the items, in order), or a 403 with this reason.</summary>
+    async Task Placed(long who, string? answer, string? password = null)
+    {
+        var reply = await PlacedOf(who, password);
+        if (answer is null)
+            Assert.Equal((200, "501,502"), (reply.Status, string.Join(",", Json(reply)["items"]!.AsArray().Select(i => (long)i!["id"]!))));
+        else
+        {
+            Assert.Equal((403, "refused", answer), (reply.Status, (string)Json(reply)["status"]!, (string)Json(reply)["why"]!));
+            Assert.Null(Json(reply)["items"]);
+        }
+    }
+
+    [Fact]
+    public async Task TestTheGamesPlacedItemsAreTheHostsInTheGamesReserveAndOnlyForAPlayerWhoMayJoin()
+    {
+        Place(HOST, 501, 901, 2, 0, 1_000_000);  // the host's tent in the middle of the map
+        Place(HOST, 502, 902, 2, -1_000_000, 500_000);  // a stand at the top left corner
+        Place(HOST, 503, 902, 1, 0, 0);  // a stand in another reserve
+        Place(THIRD, 601, 901, 2, 0, 1_000_000);  // the joining player's own tent is not the host's
+
+        await Host();
+        await Placed(THIRD, "starting");  // the host's port and network id are not known yet
+        await ReadyHost();
+        Eq("""{"items": [{"id": 501, "reserve": 2, "kind": "tent", "name": "Test TENT02", "x": 50, "y": 50}, {"id": 502, "reserve": 2, "kind": "treestand", "name": "Test TREE_STAND01", "x": 0, "y": 0}]}""", Json(await PlacedOf(THIRD)));
+        await Placed(GUEST, null);
+        await Placed(HOST, "own");
+        Assert.Equal(401, (await PlacedOf(null)).Status);
+        Assert.Equal(404, (await server.SendAsync("GET", "web.test", "/catalog/games/7000000001/placed", [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(THIRD, TimeSpan.FromHours(1))}")])).Status);
+
+        // full: the host and two players are in (max 3)
+        Joined(await Join(GUEST));
+        Joined(await Join(THIRD));
+        state.CreateAccount(14, "fourth");
+        await Placed(14, "full");
+
+        await ReadyHost("&public_game=0");
+        await Placed(THIRD, "friends");
+        state.Store.AddFriend(GUEST, HOST);
+        state.Store.AddFriend(HOST, GUEST);
+        await Placed(GUEST, null);
+
+        await ReadyHost("&hs_min=100&hs_max=200");
+        await Placed(THIRD, "hunterscore");
+        Score(THIRD, 150);
+        await Placed(THIRD, null);
+
+        await ReadyHost("&password=pä ss");  // a password with a character that is no ASCII travels percent-encoded
+        await Placed(GUEST, "password");
+        await Placed(GUEST, "password", "wrong");
+        await Placed(GUEST, null, "pä ss");
+        await Placed(GUEST, "password", "pä");
+    }
+
+    [Fact]
+    public async Task TestAGameHidesItsPositionsFromAPlayerWhoMayNotJoinItWhateverTheReason()
+    {
+        var session = await ReadyHost("&hs_min=100&hs_max=200");
+        await Positions(session, (HOST, 0, 1000));
+        Assert.Equal(["-"], await Places(THIRD));  // a public game, but the score is out of its range
+        Score(THIRD, 150);
+        Assert.Equal(["50,50"], await Places(THIRD));
+
+        session = await ReadyHost();  // max 3: full for a fourth player
+        await Positions(session, (HOST, 0, 1000));
+        Joined(await Join(GUEST));
+        Joined(await Join(THIRD));
+        state.CreateAccount(14, "fourth");
+        tokens[14] = state.Store.CreateToken(14);
+        Assert.Equal(["-", "-", "-"], await Places(14));
+        Assert.Equal(["50,50", "-", "-"], await Places(GUEST));  // the ones in it see it
     }
 
     [Fact]

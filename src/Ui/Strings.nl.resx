@@ -1642,4 +1642,5 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaal (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Netwerk van de host</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: de verbinding van de host wordt niet ondersteund (het spel kan niet verbinden via IPv6). Vraag de host de launcher bij te werken en het spel opnieuw te starten.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>De kaart en de uitrusting van de host zijn alleen te zien voor spelers die aan dit spel mogen meedoen.</value></data>
 </root>

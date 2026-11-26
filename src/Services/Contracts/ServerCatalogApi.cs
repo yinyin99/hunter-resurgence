@@ -12,6 +12,10 @@ public static class ServerCatalogApi
     public const string Item = "/catalog/item/";
     /// <summary>GET: 200 the open multiplayer games, a JSON array of <see cref="ServerGame"/> (empty without one).</summary>
     public const string Games = "/catalog/games";
+    /// <summary>GET with the cookie: this path is a game's <see cref="ServerGame.Id"/> and <c>/placed</c>: 200 <see cref="ServerPlaced"/>, the host's placed items, only for a player the game would let in (403 otherwise, 404 for a game that is gone).</summary>
+    public static string GamePlaced(long id) => $"{Games}/{id}/placed";
+    /// <summary>The header that carries the entered password of a game with one to <see cref="GamePlaced"/>, percent-encoded.</summary>
+    public const string GamePassword = "X-Game-Password";
 }
 
 /// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)

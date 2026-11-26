@@ -125,6 +125,34 @@ public class ServerServersServiceTests
     }
 
     [Fact]
+    public async Task TheJoinMapIsTheStartsAndTheHostsItemsShownOnlyAndAPasswordTravelsPercentEncodedInAHeader()
+    {
+        const long game = 4000000001;
+        string? sent = null;
+        var fake = new Fake(r =>
+        {
+            if (r.RequestUri!.AbsolutePath != ServerCatalogApi.GamePlaced(game)) return Answer(r);
+            sent = r.Headers.TryGetValues(ServerCatalogApi.GamePassword, out var v) ? v.Single() : null;
+            return sent == "p%C3%A4%20ss" ? Json(HttpStatusCode.OK, PlacedItems) : Json(HttpStatusCode.Forbidden, """{"status": "refused", "why": "password"}""");
+        });
+        var service = Make(fake, new Bridge());
+        Assert.Null(await service.JoinMarkersAsync(game, 2, null));  // refused: no map
+        Assert.Null(sent);
+        Assert.Null(await service.JoinMarkersAsync(game, 2, "wrong"));
+        var map = await service.JoinMarkersAsync(game, 2, "pä ss");
+        Assert.Equal("p%C3%A4%20ss", sent);
+        Assert.Equal(["101:False", "102:False", "103:False", "104:False", "-501:True", "-502:True", "-503:True", "-504:True", "-507:True", "-508:True", "-509:True"],
+            map!.Select(m => $"{m.Id}:{m.Only}"));  // the starts can be picked, the host's items (also its tent) only show; the other reserve's tent is not there
+        Assert.DoesNotContain(fake.Seen, s => s.Path == ServerAccountApi.Placed);  // the player's own items are not the join map's
+        Assert.All(fake.Seen.Where(s => s.Path == ServerCatalogApi.GamePlaced(game)), s => Assert.Equal("hr_session=secret", s.Cookie));
+        // signed out, or a server that does not answer: no map, and signed out asks nothing
+        var signedOut = new Fake(_ => Json(HttpStatusCode.OK, PlacedItems));
+        Assert.Null(await Make(signedOut, new Bridge(), session: null).JoinMarkersAsync(game, 2, null));
+        Assert.Empty(signedOut.Seen);
+        Assert.Null(await Make(new Fake(_ => Json(HttpStatusCode.InternalServerError, "{}")), new Bridge()).JoinMarkersAsync(game, 2, null));
+    }
+
+    [Fact]
     public async Task AServerThatDoesNotAnswerIsAnEmptyMap()
     {
         var service = Make(new Fake(_ => Json(HttpStatusCode.NotFound, "{}")), new Bridge());

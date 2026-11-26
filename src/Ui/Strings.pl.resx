@@ -1642,4 +1642,5 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Sieć gospodarza</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: połączenie gospodarza nie jest obsługiwane (gra nie może łączyć się przez IPv6). Poproś gospodarza o aktualizację launchera i ponowne uruchomienie gry.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Mapa i wyposażenie gospodarza są widoczne tylko dla graczy, którzy mogą dołączyć do tej gry.</value></data>
 </root>

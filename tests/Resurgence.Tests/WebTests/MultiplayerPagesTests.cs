@@ -17,6 +17,11 @@ public sealed class MultiplayerPagesTests : UiContext
         public Func<string?, Result> Join = _ => Result.Success;
         public (NewGame Game, int Reserve, int Marker, int Minutes)? Hosted;
         public (long Server, int Marker, string? Password)? Joined;
+        /// <summary>The server's join map: the starts and the host's items, or null (refused, or a password not given or wrong); <see cref="Asked"/> are the passwords it was asked with.</summary>
+        public Func<string?, IReadOnlyList<MapMarker>?> JoinMap = _ => Map;
+        public static readonly IReadOnlyList<MapMarker> Map = [new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20), new(-501, MarkerKind.Tent, "Host tent", 40, 40, true)];
+        public List<string?> Asked = [];
+        public Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password) { Asked.Add(password); return Task.FromResult(JoinMap(password)); }
         public Task<IReadOnlyList<Reserve>> ReservesAsync() => Task.FromResult<IReadOnlyList<Reserve>>([new(2, "Test Reserve"), new(4, "Other Reserve")]);
         public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => Task.FromResult<IReadOnlyList<MapMarker>>([new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20)]);
         public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult(Games);
@@ -191,24 +196,70 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     [Fact]
-    public void AWrongPasswordIsAskedAgainAndTheRightOneStartsTheGame()
+    public void AGameWithAPasswordShowsNoMapUntilItsPasswordIsEnteredAndThenTheStartJoinsWithIt()
     {
-        var fake = new Fake { Join = password => password == "letmein" ? Result.Success : Result.Fail("Join.WrongPassword") };
+        var fake = new Fake { JoinMap = password => password == "letmein" ? Fake.Map : null };
         Services.AddSingleton<IServersService>(fake);
-        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Locked));
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Locked with { Roster = [new("HostTwo", 900, 20, 30)] }));
 
-        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
-        cut.Find("button.marker").Click();
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("form#mp-password-dialog")));
+        Assert.Empty(fake.Asked);  // the server is not asked for the map before the player has a password to give
+        Assert.Empty(cut.FindAll("div.map"));
+        Assert.Empty(cut.FindAll("button.marker"));
+        Assert.Empty(cut.FindAll("span.hunter"));
         cut.Find("#join-password").Change("guess");
         cut.Find("form#mp-password-dialog").Submit();
 
-        cut.WaitForAssertion(() => Assert.Equal("Wrong password. Please try again.", AlertText));
-        Assert.Equal("guess", fake.Joined!.Value.Password);
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("p.wrong")));
+        Assert.Contains("Wrong password", cut.Find("p.wrong").TextContent);
+        Assert.Empty(cut.FindAll("button.marker"));
         cut.Find("#join-password").Change("letmein");
         cut.Find("form#mp-password-dialog").Submit();
 
-        cut.WaitForAssertion(() => Assert.Equal("letmein", fake.Joined!.Value.Password));
         cut.WaitForAssertion(() => Assert.Empty(cut.FindAll("form#mp-password-dialog")));
+        Assert.Equal(["guess", "letmein"], fake.Asked);
+        Assert.Equal(3, cut.FindAll("button.marker").Count);
+        Assert.Single(cut.FindAll("span.hunter"));
+        cut.Find("button.marker").Click();
+        cut.WaitForAssertion(() => Assert.Equal((4000000002L, 101, "letmein"), fake.Joined));
+    }
+
+    [Fact]
+    public void AGameThePlayerMayNotJoinShowsNoMapNoSetupAndNoPlayersOnIt()
+    {
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Open with { Why = "friends", Roster = [new("HostOne", 1500, 25.5, 75)] }));
+
+        cut.WaitForAssertion(() => Assert.Contains("only shown to players who may join", cut.Find("div.nomap").TextContent));
+        Assert.Empty(fake.Asked);
+        Assert.Empty(cut.FindAll("button.marker"));
+        Assert.Empty(cut.FindAll("span.hunter"));
+        Assert.Empty(cut.FindAll("form#mp-password-dialog"));
+    }
+
+    [Fact]
+    public void TheHostsItemsAreOnTheJoinMapAndTheirTentIsNoStart()
+    {
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Open));
+
+        cut.WaitForAssertion(() => Assert.Equal(3, cut.FindAll("button.marker").Count));
+        Assert.Equal([null], fake.Asked);  // a game without a password: asked once, with none
+        Assert.Equal(["Lodge 1:on", "Lodge 2:on", "Host tent:off"], cut.FindAll("button.marker").Select(m => $"{m.GetAttribute("aria-label")}:{(m.GetAttribute("disabled") is null ? "on" : "off")}"));
+    }
+
+    [Fact]
+    public void ThePreviewOfAGameThePlayerMayNotJoinDrawsNoPlayersOnAMap()
+    {
+        GamePlayer[] placed = [new("HostOne", 1500, 25.5, 75)];
+        Services.AddSingleton<IServersService>(new Fake { Games = [Open with { Why = "hunterscore", Roster = placed }] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("table.tbl tbody tr")));
+        Assert.Empty(cut.FindAll("aside.preview .preview-map"));
+        Assert.Single(cut.FindAll("aside.preview .player"));  // listed, not placed
     }
 
     [Fact]

@@ -247,7 +247,7 @@ public sealed partial class State
     /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `joinable` and `why`, the refusal
     /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`), and each client `mapX` and `mapY`: its position as percent of the
     /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
-    /// session of a caller who may not join shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
+    /// session of a caller who may not join (`why` is not null: friends only, hunterscore, password, full ...) and is not in it shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
     /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet.</summary>
     public byte[] NetworkListReply(long? caller = null)
     {
@@ -258,7 +258,7 @@ public sealed partial class State
         {
             var reserve = Arr(G(application, "reserves", null)).OfType<JsonObject>().FirstOrDefault(r => TryKey(r["id"], out var k) && k == g.Reserve);
             var why = caller is { } who ? Games.Why(g, who, score, friends.Contains) : null;
-            var shown = g is { Public: true, Password: "" } || (caller is not null && (why is null || g.Members.Any(m => m.Account == caller)));  // a session that is not open to all shows its positions to those who may join
+            var shown = caller is null ? g is { Public: true, Password: "" } : why is null || g.Members.Any(m => m.Account == caller);  // the website's list shows positions to those who may join it or are in it
             var box = caller is not null && shown && g.Members.Any(m => m.Positioned) ? MapBox(g.Reserve, starts.Value.GetValueOrDefault(g.Reserve) ?? []) : default;
             var list = new JsonObject
             {
@@ -291,6 +291,15 @@ public sealed partial class State
             }
             return (JsonNode?)list;
         })]));
+    }
+
+    /// <summary>`GET /catalog/games/&lt;id&gt;/placed`: the host's placed items on the session's reserve (<see cref="PlacedItems"/>) for a player the session would let in, by the rule of <see cref="Games.Why"/> with `password` (null: none given);
+    /// else the reason, `gone` (no such session) or the join's own refusal, and no items.</summary>
+    public (string? Why, JsonObject? Items) GamePlaced(long caller, long id, string? password)
+    {
+        if (games.Find(Clock(), id) is not { } g) return ("gone", null);
+        var why = Games.Why(g, caller, HunterScore(caller), Store.FriendsOf(caller, LocalAccount).Friends.Contains, password);
+        return why is null ? (null, PlacedItems(g.Host, g.Reserve)) : (why, null);
     }
 
     /// <summary>Map/locations: the catalogue's locations of the reserve of session `network_id` (else of `reserve`), `[]` for neither.</summary>

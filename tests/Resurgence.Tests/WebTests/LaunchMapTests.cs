@@ -45,6 +45,7 @@ public sealed class LaunchMapTests : UiContext
         public Task<IReadOnlyList<Reserve>> ReservesAsync() => Task.FromResult<IReadOnlyList<Reserve>>([new(2, "Test Reserve")]);
         public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => Task.FromResult(Markers);
         public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>([]);
+        public Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password) => Task.FromResult<IReadOnlyList<MapMarker>?>(null);
         public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>([]);
         public Task<IReadOnlyList<Loadout>> LoadoutsAsync() => Task.FromResult<IReadOnlyList<Loadout>>([]);
         public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) { Started = (reserve, marker); return Task.FromResult(Result.Success); }
