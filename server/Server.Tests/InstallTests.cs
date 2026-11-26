@@ -166,7 +166,7 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
-    public void TheShippedStartKitStoresTheEventShotgunAndItsSilverSlugs()
+    public void TheShippedStartKitStoresTheEventShotgunItsSilverSlugsAndBustThrough()
     {
         Assert.Contains(1143L, Facts.Default.StartStored());
         Assert.Contains(1142L, Facts.Default.StartStored());
