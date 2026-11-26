@@ -1647,4 +1647,6 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Omrežje gostitelja</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: povezava gostitelja ni podprta (igra se ne more povezati prek IPv6). Prosi gostitelja, naj posodobi zaganjalnik in igro zažene znova.</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Zemljevid in opremo gostitelja vidijo samo igralci, ki se smejo pridružiti tej igri.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ po običajni stopnji, brez bonusov.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus dogodki v obdobju:</value></data>
 </root>

@@ -91,11 +91,20 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
+    static void InEnglish(Action check)
+    {
+        var before = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("en-US", useUserOverride: false);  // the dates follow the culture
+        try { check(); }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = before; }
+    }
+
     const string Fixture = """
-        {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.6,"gmPerHarvest":310.4,"harvestsPerHour":5.84,"players":12},
-                     {"reserve":"Reserve B","hours":60.25,"gmPerHour":800,"gmPerHarvest":200,"harvestsPerHour":4,"players":7}],
-         "species":[{"species":"Fox","hours":40,"gmPerHour":900.6,"gmPerHarvest":150,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve B"}],
-         "since":1700000000}
+        {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.6,"gmPerHarvest":310.4,"comparableGmPerHour":617.4,"comparableGmPerHarvest":155.2,"harvestsPerHour":5.84,"players":12},
+                     {"reserve":"Reserve B","hours":60.25,"gmPerHour":800,"gmPerHarvest":200,"comparableGmPerHour":400,"comparableGmPerHarvest":100,"harvestsPerHour":4,"players":7}],
+         "species":[{"species":"Fox","hours":40,"gmPerHour":900.6,"gmPerHarvest":150,"comparableGmPerHour":450.4,"comparableGmPerHarvest":75,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve B"}],
+         "since":1700000000,
+         "events":[{"name":"weekend","kind":"gm_bonus","start":"2026-11-21T00:00:00Z","end":"2026-11-24T00:00:00Z","multiplier":2},{"name":"evening","kind":"gm_bonus","start":"2026-11-24T00:00:00Z","end":"2026-11-28T00:00:00Z","multiplier":1.25}]}
         """;
 
     IRenderedComponent<Leaderboards> Board(HttpStatusCode code, string body, out Server server)
@@ -105,22 +114,46 @@ public sealed class HuntingStatisticsTests : UiContext
         return Render<Leaderboards>(p => p.Add(l => l.Path, "hunting"));
     }
 
+    static string[] Row(AngleSharp.Dom.IElement li) => [li.QuerySelector(".name")!.TextContent, li.QuerySelector(".figure")!.TextContent, .. li.QuerySelectorAll("dl div").Select(d => d.QuerySelector("dt")!.TextContent + " " + d.QuerySelector("dd")!.TextContent)];
+
     [Fact]
-    public void TheHuntingStatisticsAreTwoTablesOfTheServersFiguresWithoutAnyHunter()
+    public void TheHuntingStatisticsAreRankedListsOfTheServersBaseFiguresWithoutAnyHunter() => InEnglish(() =>
     {
         var cut = Board(HttpStatusCode.OK, Fixture, out var server);
 
-        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("table.stats").Count));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".hunting")));
         Assert.Equal("/stats/hunting", server.Path);
-        var tables = cut.FindAll("table.stats");
-        Assert.Equal(["Reserve", "Hours hunted", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hunters"], tables[0].QuerySelectorAll("th").Select(h => h.TextContent));
-        Assert.Equal(["Reserve A", "120.5", "1235", "310", "5.8", "12"], tables[0].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
-        Assert.Equal(2, tables[0].QuerySelectorAll("tbody tr").Length);
-        Assert.Equal(["Species", "Hours hunted", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hunters", "Best reserve"], tables[1].QuerySelectorAll("th").Select(h => h.TextContent));
-        Assert.Equal(["Fox", "40.0", "901", "150", "6.0", "9", "Reserve B"], tables[1].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
+        Assert.Empty(cut.FindAll("table.stats"));
+        Assert.Equal(["Per species", "Per reserve"], cut.FindAll(".hunting h4").Select(h => h.TextContent));
+        var species = cut.FindAll("ol.species > li");
+        Assert.Equal(["Fox", "450 gm$ per hour", "gm$ per harvest 75", "Harvests per hour 6.0", "Hours hunted 40.0", "Hunters 9", "Best reserve Reserve B"], Row(species[0]));  // the comparable figures, not the paid ones
+        var reserves = cut.FindAll("ol.reserves > li");
+        Assert.Equal(["Reserve A", "617 gm$ per hour", "gm$ per harvest 155", "Harvests per hour 5.8", "Hours hunted 120.5", "Hunters 12"], Row(reserves[0]));
+        Assert.Equal(["Reserve B", "400 gm$ per hour", "gm$ per harvest 100", "Harvests per hour 4.0", "Hours hunted 60.3", "Hunters 7"], Row(reserves[1]));  // best first
+        Assert.Equal(["--w:100%", "--w:64.8%"], cut.FindAll("ol.reserves .bar").Select(x => x.GetAttribute("style")!.TrimEnd(';')));
+        Assert.All(cut.FindAll(".bar"), x => Assert.Equal("true", x.GetAttribute("aria-hidden")));  // the number beside a bar says it
         Assert.Empty(cut.FindAll(".norank"));
-        Assert.Empty(cut.FindAll("table.stats a"));  // no hunter's name or profile link
-    }
+        Assert.Empty(cut.FindAll(".hunting a"));  // no hunter's name or profile link
+    });
+
+    [Fact]
+    public void TheBonusEventsOfThePeriodAreListedInTheStripThatSaysTheFiguresAreAtTheBase() => InEnglish(() =>
+    {
+        var cut = Board(HttpStatusCode.OK, Fixture, out _);
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".base")));
+        Assert.Equal("gm$ at the normal rate, bonuses left out.", cut.Find(".base p").TextContent);
+        Assert.Equal(["×2, 21–23 Nov", "×1.25, 24–27 Nov"], cut.FindAll(".base .events li").Select(x => x.TextContent));
+    });
+
+    [Fact]
+    public void WithoutABonusEventTheStripHasNoChips() => InEnglish(() =>
+    {
+        var cut = Board(HttpStatusCode.OK, Fixture[..Fixture.IndexOf("\"events\"")].TrimEnd().TrimEnd(',') + "}", out _);
+
+        cut.WaitForAssertion(() => Assert.Equal("gm$ at the normal rate, bonuses left out.", cut.Find(".base").TextContent.Trim()));
+        Assert.Empty(cut.FindAll(".events"));
+    });
 
     [Fact]
     public void WithoutAnyFigureTheBoardSaysSo()

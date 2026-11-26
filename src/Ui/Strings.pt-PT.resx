@@ -1647,4 +1647,6 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rede do anfitrião</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Não podes entrar neste jogo: a ligação do anfitrião não é suportada (o jogo não consegue ligar-se por IPv6). Pede ao anfitrião para atualizar o launcher e iniciar o jogo novamente.</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só são mostrados a jogadores que podem entrar neste jogo.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ à taxa normal, sem bónus.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bónus no período:</value></data>
 </root>

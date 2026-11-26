@@ -1,5 +1,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Localization;
+using Resurgence.Services;
 
 namespace Resurgence.Ui;
 
@@ -45,6 +46,15 @@ public static class Fmt
         "hunterscore" or "lanebandit" or "bustthrough" => v.ToString("0", English),
         _ => v.ToString("0.0000", English),
     };
+
+    /// <summary>A bonus event of the hunting statistics: "×2, 21–23 Nov" (the end is exclusive, so a Monday midnight shows the Sunday), the dates in `culture`.</summary>
+    public static string EventLine(HuntingEvent e, CultureInfo culture)
+    {
+        var (s, t) = (e.Start.UtcDateTime, e.End.UtcDateTime.AddSeconds(-1));
+        if (t < s) t = s;
+        var days = s.Date == t.Date ? s.ToString("d MMM", culture) : s.Month == t.Month && s.Year == t.Year ? s.Day + "–" + t.ToString("d MMM", culture) : s.ToString("d MMM", culture) + "–" + t.ToString("d MMM", culture);
+        return e.Multiplier is { } m ? "×" + Num(m, "0.##") + ", " + days : days;
+    }
 
     /// <summary>2026-08-19 15:26:35</summary>
     public static string DateTime(DateTime d) => d.ToString("yyyy-MM-dd HH:mm:ss", English);
