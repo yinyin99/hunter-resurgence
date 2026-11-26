@@ -8,8 +8,7 @@
 section + section { margin-block-start: 32px; }
 .part { margin: 0 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
 /* a table wider than its box scrolls inside it, keyboard-reachable (the region has a tab stop) */
-.scroll { container-type: inline-size; overflow-x: auto; }
-.scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scroll { overflow-x: auto; }
 table { table-layout: fixed; width: 100%; min-width: 640px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 th, td { padding: 8px 12px; text-align: end; font-size: 14px; line-height: 20px; font-weight: 400; color: var(--text-1); white-space: nowrap; }
 thead th { white-space: normal; vertical-align: bottom; padding-block: 6px; font-size: 13px; color: var(--text-2); border-block-end: 1px solid var(--line); }

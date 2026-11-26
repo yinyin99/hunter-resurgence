@@ -212,8 +212,8 @@ public class ServerLeaderboardsServiceTests
              "events":[{"name":"weekend","kind":"gm_bonus","start":"2026-11-21T00:00:00Z","end":"2026-11-24T00:00:00Z","multiplier":2},{"name":"x","kind":"gm_bonus","start":"2026-11-24T00:00:00Z","end":"2026-11-28T00:00:00Z","multiplier":null}]}
             """));
         var stats = await Make(fake).HuntingAsync();
-        Assert.Equal([new ReserveHunting("Reserve A", 120.5, 1234.5, 310.25, 5.5, 12, 617.25, 155.5)], stats.Reserves);
-        Assert.Equal([new SpeciesHunting("Fox", 40, 900, 150, 6, 9, 450, 75, "Reserve A"), new SpeciesHunting("Deer", 10, 500, 100, 5, 6, 250, 50, null)], stats.Species);
+        Assert.Equal([new ReserveHunting("Reserve A", 120.5, 5.5, 12, 617.25, 155.5)], stats.Reserves);
+        Assert.Equal([new SpeciesHunting("Fox", 40, 6, 9, 450, 75, "Reserve A"), new SpeciesHunting("Deer", 10, 5, 6, 250, 50, null)], stats.Species);
         Assert.Equal([new HuntingEvent("weekend", new(2026, 11, 21, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), 2), new HuntingEvent("x", new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 28, 0, 0, 0, TimeSpan.Zero), null)], stats.Events);
         var request = Assert.Single(fake.Seen);
         Assert.Equal("/stats/hunting", request.RequestUri!.AbsolutePath);

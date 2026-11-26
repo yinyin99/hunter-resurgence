@@ -147,6 +147,34 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Equal(["×2, 21–23 Nov", "×1.25, 24–27 Nov"], cut.FindAll(".base .events li").Select(x => x.TextContent));
     });
 
+    static string Events(string events) => Fixture[..Fixture.IndexOf("\"events\"")] + "\"events\":[" + events + "]}";
+
+    [Fact]
+    public void ASeasonalEventHasNoMultiplierAndIsNotListedSoOnlyTheFirstLineShows() => InEnglish(() =>
+    {
+        var cut = Board(HttpStatusCode.OK, Events("""{"name":"Winter","kind":"season","start":"2026-11-21T00:00:00Z","end":"2026-11-24T00:00:00Z","multiplier":null}"""), out _);
+
+        cut.WaitForAssertion(() => Assert.Equal("gm$ at the normal rate, bonuses left out.", cut.Find(".base").TextContent.Trim()));
+        Assert.Empty(cut.FindAll(".events"));
+    });
+
+    [Fact]
+    public void ADaySpansAndMonthsAreWrittenWithEnglishMonthNamesInEveryLanguage()
+    {
+        var (c, u) = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("fr-FR", useUserOverride: false);
+        try
+        {
+            var cut = Board(HttpStatusCode.OK, Events("""
+                {"name":"a","kind":"gm_bonus","start":"2026-11-22T00:00:00Z","end":"2026-11-23T00:00:00Z","multiplier":3},
+                {"name":"b","kind":"gm_bonus","start":"2026-11-29T00:00:00Z","end":"2026-12-02T00:00:00Z","multiplier":1.5}
+                """), out _);
+
+            cut.WaitForAssertion(() => Assert.Equal(["×3, 22 Nov", "×1.5, 29 Nov–1 Dec"], cut.FindAll(".events li").Select(x => x.TextContent)));  // one day; across two months
+        }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (c, u); }
+    }
+
     [Fact]
     public void WithoutABonusEventTheStripHasNoChips() => InEnglish(() =>
     {

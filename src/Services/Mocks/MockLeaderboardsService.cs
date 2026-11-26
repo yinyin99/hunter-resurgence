@@ -73,7 +73,7 @@ public sealed class MockLeaderboardsService : ILeaderboardsService
 
     // three reserves and eight species, each built from more than 5 hunters (the server leaves a smaller row out)
     public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats(
-        [.. new[] { "Reserve A", "Reserve B", "Reserve C" }.Select((r, i) => new ReserveHunting(r, 2400.5 - i * 700, 1800 + i * 450.25, 310 + i * 40.5, 5.8 - i * 0.7, 120 - i * 30, 1500 + i * 380.5, 260 + i * 34.25))],
-        [.. Names.Species.Take(8).Select((s, i) => new SpeciesHunting(s.Name, 150.25 + i * 20, 900 + i * 210.5, 150 + i * 35.75, 6.1 - i * 0.4, 20 + i * 9, 760 + i * 180.5, 128 + i * 30.25, "Reserve " + (char)('A' + i % 3)))],
+        [.. new[] { "Reserve A", "Reserve B", "Reserve C" }.Select((r, i) => new ReserveHunting(r, 2400.5 - i * 700, 5.8 - i * 0.7, 120 - i * 30, 1500 + i * 380.5, 260 + i * 34.25))],
+        [.. Names.Species.Take(8).Select((s, i) => new SpeciesHunting(s.Name, 150.25 + i * 20, 6.1 - i * 0.4, 20 + i * 9, 760 + i * 180.5, 128 + i * 30.25, "Reserve " + (char)('A' + i % 3)))],
         [new("weekend", new(2026, 11, 21, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), 2), new("bonus", new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 28, 0, 0, 0, TimeSpan.Zero), 1.25)]));
 }
