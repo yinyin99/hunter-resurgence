@@ -57,7 +57,7 @@ public static class CatalogApi
             })
             .WithName("GamePlaced").WithSummary("The host's placed tents, callers, blinds, stands, tripods, towers and climbing ropes on an open game's reserve, for the join map")
             .WithDescription("`{items: [{id, reserve, kind, name, x, y}]}` as `GET /account/placed` gives the player's own, but the host's items in the game's reserve, only to a signed-in player the game would let in: the rule of `Launch/join` and of `joinable` in `GET /catalog/games`. "
-                             + $"A game with a password needs it in the `{GamePassword}` header (percent-encoded; never in the address, which proxies log). 403 `{{status: refused, why}}` with the join's reason (`own`, `friends`, `hunterscore`, `starting`, `password` for none or a wrong one, `full`) and no items; 404 `{{status: gone}}` for a game that is not open; 401 `signed_out` without a session.")
+                             + $"A game with a password needs it in the `{GamePassword}` header (percent-encoded; never in the address, which proxies log). 403 `{{status: refused, why}}` with the join's reason (`own`, `friends`, `hunterscore`, `starting`, `network`: the host's connection is not supported, `password` for none or a wrong one, `full`) and no items; 404 `{{status: gone}}` for a game that is not open; 401 `signed_out` without a session.")
             .Produces(200, contentType: "application/json").Produces(403, contentType: "application/json").Produces(404, contentType: "application/json").Produces(401, contentType: "application/json").AddEndpointFilter(SignedIn);
     }
 }

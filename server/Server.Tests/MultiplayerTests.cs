@@ -552,6 +552,29 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestAJoinersStartFallsBackToTheReservesFirstLocationWhenTheHostPicksUpTheTent()
+    {
+        Place(HOST, 501, 901, 2, 500_000, 1_200_000);
+        await ReadyHost();
+        var joined = await PageJoin(GUEST, $"mp=join&network_id={await NetworkId()}&tent=501&host_tent=1&loadout=0");
+        Assert.Null(joined.Error);
+        var first = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.Equal((500.0, 1200.0), ((double)first["x"]!, (double)first["z"]!));  // at the host's tent
+
+        using (var con = state.Store.Open(HOST))  // the host picks the tent up: it goes back to the stash
+            con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = 501");
+        var expedition = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.NotEqual((500.0, 1200.0), ((double)expedition["x"]!, (double)expedition["z"]!));  // no longer at the tent
+        using var guest = state.Store.Open(GUEST);
+        Assert.Equal("100:", string.Join(",", guest.Rows("SELECT location_id, tent FROM expeditions WHERE account_id = $a AND end_ts IS NULL").Select(r => $"{r[0]}:{r[1]}")));  // the hunt is at the reserve's first location, with no tent of the joiner's own
+
+        // a refused player sees the refusal of the rule, also with a start that is no tent of the host's
+        await ReadyHost("&public_game=0");
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&lodge=101&host_tent=1&loadout=0")).Error);
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&tent=999&host_tent=1&loadout=0")).Error);
+    }
+
+    [Fact]
     public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
     {
         var host = new Games.Member(HOST, "s", 0);

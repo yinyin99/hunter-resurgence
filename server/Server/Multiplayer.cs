@@ -106,10 +106,10 @@ public sealed class Games
     }
 
     /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `host_network` (`network`), `password`, `full`, `bad_start`
-    /// (`startOk`, asked once the rule lets the player in, is false for the session: the start tent is not the host's). `hostTent` is the host's tent the player starts at, kept with the player for its connect.
+    /// (`startOk` is false: the start tent is not the host's, checked by the caller before the lock and only reported here, once the rule lets the player in). `hostTent` is the host's tent the player starts at, kept with the player for its connect.
     /// `session` makes the player's session token once it is let in.</summary>
     public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session,
-                                                             long? hostTent = null, Func<Game, bool>? startOk = null)
+                                                             long? hostTent = null, bool startOk = true)
     {
         lock (gate)
         {
@@ -117,7 +117,7 @@ public sealed class Games
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
             if (Why(g, account, score, friendOf, password) is { } why)
                 return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", "network" => "host_network", _ => why }, null);
-            if (startOk is not null && !startOk(g)) return (null, "bad_start", null);
+            if (!startOk) return (null, "bad_start", null);
             LeaveLocked(account);
             var token = session();
             g.Members.Add(new(account, token, now) { HostTent = hostTent });
@@ -206,11 +206,15 @@ public sealed partial class State
         // `host_tent` 1: the start is a tent of the game's host (`start`, a guid of the host's items) rather than one of the joiner's own
         var wantsHostTent = Form1(form, "host_tent") == "1";
         long? hostTent = wantsHostTent && TentDefine.IsMatch(Form1(form, "loctype")) ? Num(Form1(form, "start")) : null;
-        if (wantsHostTent && hostTent is null) return ("bad_start", null);
+        // the host's database is read here, before the games lock; a refused player still sees the refusal of `Games.Why` first, `Games.Join` reports `bad_start` only after it
+        var startOk = !wantsHostTent;
+        if (hostTent is { } guid && games.Find(Clock(), id) is { } peek)
+        {
+            using var con = Con(peek.Host);
+            startOk = TentAt(con, guid, peek.Reserve);
+        }
         var (joined, error, session) = games.Join(Clock(), id, account, Form1(form, "password"), score,
-            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session), hostTent,
-            hostTent is { } guid ? g => { using var con = Con(g.Host); return TentAt(con, guid, g.Reserve); }
-        : null);  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
+            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session), hostTent, startOk);  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
         if (joined is null) return (error, null);
         form["reserve"] = [joined.Reserve.ToString()];
         if (Form1(form, "time") == "") form["time"] = [joined.Time];

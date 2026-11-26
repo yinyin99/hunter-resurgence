@@ -17,11 +17,11 @@ public sealed class MultiplayerPagesTests : UiContext
         public Func<string?, Result> Join = _ => Result.Success;
         public (NewGame Game, int Reserve, int Marker, int Minutes)? Hosted;
         public (long Server, int Marker, string? Password)? Joined;
-        /// <summary>The server's join map: the starts and the host's items, or null (refused, or a password not given or wrong); <see cref="Asked"/> are the passwords it was asked with.</summary>
-        public Func<string?, IReadOnlyList<MapMarker>?> JoinMap = _ => Map;
+        /// <summary>The server's join map: the starts and the host's items, or none with the message key of why (<c>Join.WrongPassword</c> for a password not given or wrong); <see cref="Asked"/> are the passwords it was asked with.</summary>
+        public Func<string?, JoinMap> Answer = _ => new(Map);
         public static readonly IReadOnlyList<MapMarker> Map = [new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20), new(-501, MarkerKind.Tent, "Host tent", 40, 40), new(-502, MarkerKind.TreeStand, "Host stand", 30, 30, true)];
         public List<string?> Asked = [];
-        public Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password) { Asked.Add(password); return Task.FromResult(JoinMap(password)); }
+        public Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password) { Asked.Add(password); return Task.FromResult(Answer(password)); }
         public Task<IReadOnlyList<Reserve>> ReservesAsync() => Task.FromResult<IReadOnlyList<Reserve>>([new(2, "Test Reserve"), new(4, "Other Reserve")]);
         public Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => Task.FromResult<IReadOnlyList<MapMarker>>([new(101, MarkerKind.Lodge, "Lodge 1", 10, 80), new(102, MarkerKind.Lodge, "Lodge 2", 90, 20)]);
         public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult(Games);
@@ -198,7 +198,7 @@ public sealed class MultiplayerPagesTests : UiContext
     [Fact]
     public void AGameWithAPasswordShowsNoMapUntilItsPasswordIsEnteredAndThenTheStartJoinsWithIt()
     {
-        var fake = new Fake { JoinMap = password => password == "letmein" ? Fake.Map : null };
+        var fake = new Fake { Answer = password => password == "letmein" ? new(Fake.Map) : new(null, "Join.WrongPassword") };
         Services.AddSingleton<IServersService>(fake);
         var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Locked with { Roster = [new("HostTwo", 900, 20, 30)] }));
 
@@ -222,6 +222,29 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Single(cut.FindAll("span.hunter"));
         cut.Find("button.marker").Click();
         cut.WaitForAssertion(() => Assert.Equal((4000000002L, 101, "letmein"), fake.Joined));
+    }
+
+    [Fact]
+    public void AMapRefusedForAnotherReasonThanThePasswordSaysThatReasonAndNoAnswerIsTheGenericMessage()
+    {
+        var fake = new Fake { Answer = password => password == "full" ? new(null, "Join.Full") : password == "net" ? new(null, "Join.HostNetwork") : new(null, "Launch.Failed") };
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Locked with { Roster = [new("HostTwo", 900, 20, 30)] }));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("form#mp-password-dialog")));
+        Assert.Empty(cut.FindAll("p.wrong"));  // nothing was asked: no message yet
+        string Try(string password)
+        {
+            cut.Find("#join-password").Change(password);
+            cut.Find("form#mp-password-dialog").Submit();
+            cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("p.wrong")));
+            return cut.Find("p.wrong").TextContent;
+        }
+        Assert.Contains("full", Try("full"));
+        Assert.DoesNotContain("Wrong password", cut.Find("p.wrong").TextContent);
+        Assert.Contains("IPv6", Try("net"));
+        Assert.Contains("Something went wrong", Try("any"));
+        Assert.Empty(cut.FindAll("button.marker"));
     }
 
     [Fact]

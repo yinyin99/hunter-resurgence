@@ -21,11 +21,11 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     async Task<IEnumerable<MapMarker>> StartsAsync(int reserve) =>
         (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>();
 
-    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>): the host's tents can be picked as the start (<see cref="JoinAsync"/>), its other items are shown only (<see cref="MapMarker.Only"/>). Null when the server does not give them: the player may not join the
-    /// game, a password it has was not given or is wrong (<see cref="ServerCatalogApi.GamePassword"/>, percent-encoded), the game is gone, the player is signed out or the server does not answer.</summary>
-    public async Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password)
+    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>): the host's tents can be picked as the start (<see cref="JoinAsync"/>), its other items are shown only (<see cref="MapMarker.Only"/>). Without markers when the server does not give them, with the message key of
+    /// the reason: the 403's <c>why</c> (<see cref="ServerPlacedRefusal"/>; a password it has was not given or is wrong, <see cref="ServerCatalogApi.GamePassword"/>, percent-encoded), else the generic <c>Launch.Failed</c> (the game is gone, the player is signed out, the server does not answer).</summary>
+    public async Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password)
     {
-        if (cookie.Value is null) return null;
+        if (cookie.Value is null) return new(null, Failed);
         var path = ServerCatalogApi.GamePlaced(server);
         try
         {
@@ -33,15 +33,23 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
             if (password is { Length: > 0 }) request.Headers.Add(ServerCatalogApi.GamePassword, Uri.EscapeDataString(password));
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerPlaced>() is { Items: not null } placed)
-                return [.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m.Kind == MarkerKind.Tent ? m : m with { Only = true })];
+                return new([.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m.Kind == MarkerKind.Tent ? m : m with { Only = true })]);
             log.LogWarning("The server answered {Path} with {Status}: no map of the game", path, (int)response.StatusCode);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden && await response.Content.ReadFromJsonAsync<ServerPlacedRefusal>() is { Why: { } why } && PlacedRefusals.TryGetValue(why, out var key))
+                return new(null, key);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
         {
             log.LogWarning("The server did not answer {Path} ({Reason}): no map of the game", path, e.Message);
         }
-        return null;
+        return new(null, Failed);
     }
+
+    /// <summary>The 403's reasons (<see cref="ServerPlacedRefusal"/>) and the message each has, the join's own where it has one.</summary>
+    static readonly Dictionary<string, string> PlacedRefusals = new()
+    {
+        ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["friends"] = "Join.NotAllowed", ["hunterscore"] = "Join.NotAllowed", ["starting"] = "Join.HostNotReady", ["network"] = "Join.HostNetwork",
+    };
 
     /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, for a signed-in player: the browser's host and the session cookie); none when signed out (the server is not asked) or when it does not answer. A player is placed on the map where the server says (<c>mapX</c>, <c>mapY</c>), and not when it does not.</summary>
     public async Task<IReadOnlyList<GameServer>> ServersAsync()

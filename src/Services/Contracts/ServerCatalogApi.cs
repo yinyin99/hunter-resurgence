@@ -32,6 +32,9 @@ public sealed record ServerLaunch(string Url);
 
 public sealed record ServerRefusal(string? Error);
 
+/// <summary>The 403 of <see cref="ServerCatalogApi.GamePlaced"/>: <c>Why</c> is the join's reason (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>network</c>, <c>password</c>, <c>full</c>).</summary>
+public sealed record ServerPlacedRefusal(string? Why);
+
 /// <summary>A game of <see cref="ServerCatalogApi.Games"/>, in the shape of the game's own list (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
 /// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one; a host can set any number, so they are wide), <c>Country</c> is missing on a community server, <c>Why</c> the server's reason the signed-in player cannot join
 /// (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player; missing on an older server).</summary>

@@ -15,7 +15,7 @@
     }
     else
     {
-        <div class="nomap">@if (!loading && !AsksPassword) { <p>@L["Join.Hidden"]</p> }</div>
+        <div class="nomap">@if (!loading && !AsksPassword) { <p>@L[error ?? "Join.Hidden"]</p> }</div>
     }
     <aside>
         <button class="close" aria-label="@L["Join.Close"]" @onclick="Modal.Close">&times;</button>
@@ -46,7 +46,7 @@
         <form class="password" @onsubmit="Unlock" id="mp-password-dialog">
             <label for="join-password">@L["Join.Password"]</label>
             <input id="join-password" type="password" maxlength="20" placeholder="@L["Join.PasswordPlaceholder"]" @bind="password" autofocus />
-            @if (wrong) { <p class="wrong" role="alert">@L["Join.WrongPassword"]</p> }
+            @if (error is not null) { <p class="wrong" role="alert">@L[error]</p> }
             <button class="btn btn-primary" disabled="@checking">@L["Join.Go"]</button>
         </form>
     }
@@ -57,7 +57,9 @@
     IReadOnlyList<MapMarker>? markers;
     string reserve = "";
     string? password, hoverPlayer;
-    bool loading = true, wrong, checking;
+    /// <summary>The message key of why the server showed no map: the wrong password only for a password the game has and the player gave wrong, the refusal's own text for any other (full, not allowed, the host's network ...), the generic one for no answer.</summary>
+    string? error;
+    bool loading = true, checking;
     bool AsksPassword => !loading && markers is null && Server.Password && !Server.Refused;
     IReadOnlyList<Loadout> loadouts = [];
     int loadout;
@@ -71,10 +73,16 @@
     protected override async Task OnInitializedAsync()
     {
         loadout = Loadout;
-        if (!Server.Refused && !Server.Password) markers = await Servers.JoinMarkersAsync(Server.Id, Server.Reserve, null);
+        if (!Server.Refused && !Server.Password) await Load(null);
         loadouts = await Servers.LoadoutsAsync();
         reserve = (await Servers.ReservesAsync()).FirstOrDefault(r => r.Id == Server.Reserve)?.Name ?? "";
         loading = false;
+    }
+
+    async Task Load(string? pass)
+    {
+        var map = await Servers.JoinMarkersAsync(Server.Id, Server.Reserve, pass);
+        (markers, error) = (map.Markers, map.Markers is null ? map.Error : null);
     }
 
     /// <summary>The server shows the map of a game with a password only after the right one (it checks it before it sends the host's items).</summary>
@@ -82,11 +90,7 @@
     {
         if (checking) return;
         checking = true;
-        try
-        {
-            markers = await Servers.JoinMarkersAsync(Server.Id, Server.Reserve, password);
-            wrong = markers is null;
-        }
+        try { await Load(password); }
         finally { checking = false; }
     }
 
