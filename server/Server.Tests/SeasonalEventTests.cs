@@ -311,6 +311,7 @@ public class SeasonalEventTests : StateTestBase
         Assert.Equal("True,False", KillsEthical(s));  // the tutorial's kill (on the latest hunt's page) by the normal list, the hunt's own by the event's
         var (_, rescored, _, _, _) = Assert.Single(s.Rescore(ME, dryRun: true));
         Assert.Equal(0, rescored);  // the rescore judges both as they were stored
+        Eq("[241, 14]", Connect(s)["ethical"]![17]);  // the hunt's game started again after the tutorial: the normal lists, as its events after the tutorial are judged
         s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // the next hunt decides again
         Eq("[962, 963, 1142]", Connect(s)["ethical"]![17]);
         Assert.True(Disqualified(Harvest(s, 403, 14, 962)));
@@ -642,19 +643,23 @@ public class SeasonalEventTests : StateTestBase
         Assert.Equal(2, Counted(s));
     }
 
-    /// <summary>A database of schema 40 again: the closed hunts recorded without an event (as every hunt before schema 39), no flag table and no `event_undecided`; the stored statistics of the closed hunts
-    /// with a kill made stale (50 ethical kills each), as the old rule's counts are: the step must clear them.</summary>
-    static void Downgrade(State s)
+    /// <summary>A database of schema 40 again: the closed hunts recorded without an event (as every hunt before schema 39; with <paramref name="keepEvents"/> they keep the event their first connect
+    /// recorded, as the hunts since server-1.47.0), no flag table, no `schema_marks` and no `event_undecided` or `event_backfilled`; the stored statistics of the closed hunts with a kill made stale (50
+    /// ethical kills each), as the old rule's counts are: the step must clear them.</summary>
+    static void Downgrade(State s, bool keepEvents = false)
     {
         using (var con = s.Store.Open(ME))
         {
-            con.Exec("UPDATE expeditions SET event = '' WHERE account_id = $a AND end_ts IS NOT NULL");
+            if (!keepEvents)
+                con.Exec("UPDATE expeditions SET event = '' WHERE account_id = $a AND end_ts IS NOT NULL");
             con.Exec("UPDATE expeditions SET stats = json_set(stats, '$.data.animal', json('{\"0\": {\"ethical_kills\": 50}}')) WHERE account_id = $a AND end_ts IS NOT NULL AND stats IS NOT NULL"
                      + " AND id IN (SELECT json_extract(body, '$.expedition_id') FROM harvests WHERE account_id = $a)");
         }
         using var all = s.Store.Open();
         all.Exec("DROP TABLE unethical_kills");
+        all.Exec("DROP TABLE schema_marks");
         all.Exec("ALTER TABLE expeditions DROP COLUMN event_undecided");
+        all.Exec("ALTER TABLE expeditions DROP COLUMN event_backfilled");
         all.Exec("PRAGMA user_version = 40");
     }
 
@@ -738,9 +743,10 @@ public class SeasonalEventTests : StateTestBase
     [Fact]
     public void TestAdminEthicsDisqualifiesStoredKillsKeepsTheirGmAndMountsAndFlagsWhatIsKept()
     {
-        var s = Hunt(1, playsEvents: false);
+        var db = Path.Combine(tmp, "ethics.db");
+        var s = Hunt(1, db: db);
         s.Clock = () => DateTimeOffset.UtcNow.ToUnixTimeSeconds();  // the taxidermy window of the kills is open
-        Connect(s);
+        Launch(s, false);
         Harvest(s, 401, 14);  // A: scored and paid; it will read as silver on a normal animal, and it is mounted in a lodge
         Harvest(s, 402, 14);  // B: the same, not mounted
         Harvest(s, 403, 962);  // C: disqualified at its harvest and still unethical: nothing to do
@@ -764,6 +770,9 @@ public class SeasonalEventTests : StateTestBase
         Reshoot(s, 404, 14);
         Reshoot(s, 406, 962);
         Reshoot(s, 407, 14);
+        Downgrade(s, keepEvents: true);  // the kills were made before the schema-41 step
+        s = Hunt(1, db: db);
+        s.Clock = () => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var (before, wallet) = (Stored(s), WalletRows(s));
         string Lines(List<State.JudgedKill> judged) => string.Join(";", judged.Select(j => $"{j.Kill}:{j.Change}:{j.Flag}:{j.Reason}:{j.Ammo}:{j.Basis}:{j.Lodge}:{j.Slot}:{j.Gms}"));
         var unscored = $"{g}:unscored::silver_on_normal:962:species:::0";
@@ -877,5 +886,69 @@ public class SeasonalEventTests : StateTestBase
         Downgrade(s);
         s = Hunt(1, db: db);
         Assert.Equal("/-;halloween_2026/-;/-;/halloween_2026;/-", Hunts(s));
+    }
+
+    [Fact]
+    public void TestUnscoredListsOnlyKillsMadeBeforeTheStepThatTheRuleOfTheirTimePermitted()
+    {
+        var db = Path.Combine(tmp, "unscored.db");
+        var s = Hunt(1, db: db);
+        void Doe(int individual, int? coat, int ammo)  // a whitetail doe scores nothing
+        {
+            var sighting = O($$"""{"event": 7, "individual": {{individual}}, "species": 0, "gender": 1, "weight_grams": 50000}""");
+            if (coat is { } c)
+                sighting["texture"] = c;
+            s.HeartbeatReply(ME, Events(sighting, O($$"""{"event": 1, "individual": {{individual}}, "ammunition_id": {{ammo}}, "weapon_id": 391}"""),
+                O($$"""{"event": 3, "individual": {{individual}}, "extended_species": 0}""")));
+        }
+        Launch(s, true);  // the event recorded by the hunt's first connect (since server-1.47.0): its list (silver) on the whitetail then
+        Doe(401, null, 14);  // a normal round: unethical then, and now (the hunt's event decides)
+        Doe(402, 0, 962);  // silver: ethical then; a normal coat now
+        Launch(s, false);  // without the event: its species' list and silver then
+        Doe(403, 0, 962);
+        Launch(s, false);  // without the event; the step gives it the event its possessed whitetail proves
+        s.HeartbeatReply(ME, Events(O("""{"event": 7, "individual": 404, "species": 0, "texture": 57}""")));
+        Doe(405, null, 14);  // a normal round: ethical then (its species' list), possessed now
+        Launch(s, false);
+        Downgrade(s, keepEvents: true);
+        s = Hunt(1, db: db);
+        Launch(s, false);
+        Doe(406, 0, 962);  // made after the step: judged by this rule at its harvest
+        Assert.Equal("halloween_2026/-;/-;halloween_2026/-;/-;/-", Hunts(s));
+        var expected = string.Join(";", new[] { 402, 403, 405 }.Select(i => $"{KillId(s, i)}:unscored"));
+        string Lines(List<State.JudgedKill> judged) => string.Join(";", judged.Select(j => $"{j.Kill}:{j.Change}"));
+        var before = Stored(s);
+        Assert.Equal(expected, Lines(s.JudgeKills(ME, dryRun: true)));
+        Assert.Equal(expected, Lines(s.JudgeKills(ME, dryRun: false)));  // listed on every run, written never
+        Assert.Equal(expected, Lines(s.JudgeKills(ME, dryRun: false)));
+        Assert.Equal(before, Stored(s));
+        Assert.Empty(s.FlaggedKills(ME, null, null, null, null));
+    }
+
+    [Fact]
+    public void TestApplyReadsTheMountAndThePaymentAgainInsideItsWrite()
+    {
+        var s = Hunt(1, playsEvents: false);
+        s.Clock = () => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        Connect(s);
+        Harvest(s, 401, 14);  // will read as silver on a normal animal: mounted at the listing, taken down before its write
+        Harvest(s, 402, 962);  // disqualified at its harvest, will read as ethical: paid by someone else between the listing and its write
+        var (a, d) = (KillId(s, 401), KillId(s, 402));
+        using (var con = s.Store.Open(ME))
+            con.Insert("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, 'test', '1', ?)", $$"""{"animal_slots": [{"slot_id": 5, "trophy_id": {{a}}}]}""");
+        Reshoot(s, 401, 962);
+        Reshoot(s, 402, 14);
+        Assert.Equal("kept", s.JudgeKills(ME, dryRun: true).Single(j => j.Kill == a).Flag);
+        var applied = s.JudgeKills(ME, dryRun: false, beforeWrite: k =>
+        {
+            using var con = s.Store.Open(ME);
+            if (k == a)
+                con.Exec("DELETE FROM lodges WHERE account_id = $a");
+            else
+                con.Exec("INSERT INTO wallet_log (account_id, ts, currency, amount, after, summary, item_ids) VALUES ($a, 0, 'gm', 5, 5, ?, '[]')", $"CSS Reward (Animal Id: {d})");
+        });
+        Assert.Equal($"{a}:disqualify::;{d}:requalify:::0", string.Join(";", applied.Select(j => $"{j.Kill}:{j.Change}:{j.Flag}:{j.Lodge}{(j.Change == "requalify" ? $":{j.Gms}" : "")}")));
+        Assert.Empty(s.FlaggedKills(ME, null, null, null, null));  // no mount is kept any more
+        Assert.Equal(5.0, PaidFor(s, d));  // paid once, by the row written meanwhile
     }
 }

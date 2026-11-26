@@ -326,7 +326,7 @@ public sealed class Store
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
             walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
             event TEXT,           -- the seasonal event of the hunt, decided by its first connect ('': none; NULL: not decided yet): the fallback of its kills whose coat proves nothing (State.HuntEvent, State.KindOf)
-            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt). Schema 41 adds event_undecided (BackfillHuntEvents)
+            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt). Schema 41 adds event_undecided and event_backfilled (BackfillHuntEvents)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -577,15 +577,22 @@ public sealed class Store
             con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
         con.Script(DiscordTables);  // schema 40, every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         // schema 41 (#582), guarded by the table and not by the version (every start; it runs once): the kills are judged per animal from now on. The closed hunts recorded without an event ('', every hunt
-        // from before schema 39 among them) get the event their own sightings prove, or are marked undecided (BackfillHuntEvents); the stored statistics of the closed hunts with a kill are cleared, so the
-        // start-up loop (State, UpdateHunterscore) counts their ethical kills and the hunterscores again by the rule; then the table of the flagged kills. No score, no wallet row and no other table is written
+        // from before schema 39 among them) get the event their own sightings prove (marked `event_backfilled`, so a hunt whose event its first connect recorded can be told apart), or are marked undecided
+        // (BackfillHuntEvents); the stored statistics of the closed hunts with a kill are cleared, so the start-up loop (State, UpdateHunterscore) counts their ethical kills and the hunterscores again by the
+        // rule; `schema_marks` keeps when the step ran and the last event row before it (the kills made before the rule, State.JudgeKills); then the table of the flagged kills. No score, no wallet row and
+        // no other table is written
         if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'unethical_kills'")! == 0)
         {
-            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_undecided'")! == 0)
-                con.Script("ALTER TABLE expeditions ADD COLUMN event_undecided TEXT");
+            foreach (var column in (string[])["event_undecided TEXT", "event_backfilled INTEGER"])
+                if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = ?", column.Split(' ')[0])! == 0)
+                    con.Script($"ALTER TABLE expeditions ADD COLUMN {column}");
             BackfillHuntEvents(con, Facts.Default);
             con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL AND stats IS NOT NULL"
                        + " AND id IN (SELECT json_extract(h.body, '$.expedition_id') FROM harvests h WHERE h.account_id = expeditions.account_id)");
+            con.Script($"""
+                CREATE TABLE IF NOT EXISTS schema_marks (version INTEGER PRIMARY KEY, ts INTEGER NOT NULL, last_event INTEGER NOT NULL);
+                INSERT OR REPLACE INTO schema_marks VALUES (41, {Now()}, (SELECT COALESCE(MAX(id), 0) FROM events));
+                """);
             con.Script(UnethicalKills);
         }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
@@ -626,7 +633,7 @@ public sealed class Store
                         proved ??= p == "" ? null : p;
                     }
                 if (proved is not null && !mixed)
-                    mine.Exec("UPDATE expeditions SET event = ? WHERE account_id = $a AND id = ?", proved, hunt[0]);
+                    mine.Exec("UPDATE expeditions SET event = ?, event_backfilled = 1 WHERE account_id = $a AND id = ?", proved, hunt[0]);
                 else if (!decided)
                     nothing.Add((account, (long)hunt[0], (long)hunt[4], Convert.ToDouble(hunt[5])));
             }

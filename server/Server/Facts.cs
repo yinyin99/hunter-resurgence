@@ -84,12 +84,15 @@ public sealed class Facts
         foreach (var (key, entry) in coats)
         {
             var where = $"coats.{key}";
-            if (!long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var sp) || Animals.Length > 0 && sp >= Animals.Length)
+            if (!long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var sp) || sp.ToString(CultureInfo.InvariantCulture) != key || Animals.Length > 0 && sp >= Animals.Length)
                 throw new InvalidDataException($"{at}.{where}: not a species id of `animals`");
             if (!named.Contains(sp) || creatures.Contains(sp))
                 throw new InvalidDataException($"{at}.{where}: a species with a possessed version (in ethical.species, not a creature)");
-            var possessed = Ids(entry?["possessed"], where + ".possessed", false);
-            var normal = Ids(entry?["normal"], where + ".normal", false);
+            if (entry is not JsonObject lists)
+                throw new InvalidDataException($"{at}.{where}: an object of a `possessed` and a `normal` list");
+            // a missing list is an empty one, as Proves reads it
+            var possessed = Ids(lists["possessed"] ?? new JsonArray(), where + ".possessed", false);
+            var normal = Ids(lists["normal"] ?? new JsonArray(), where + ".normal", false);
             if (possessed.Length == 0 && normal.Length == 0)
                 throw new InvalidDataException($"{at}.{where}: both lists empty: the entry decides nothing");
             if (possessed.Intersect(normal).FirstOrDefault(-1) is var both and >= 0)

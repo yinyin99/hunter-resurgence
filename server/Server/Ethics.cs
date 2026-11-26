@@ -22,12 +22,17 @@ public sealed partial class State
     /// ends as one disqualified at its harvest: its stored score and score type cleared (so it leaves the boards and the personal bests); its gm$, taxidermy, lodge mount and trophy shot stay, and one that
     /// keeps a taxidermy or a mount is flagged "kept". An ethical kill with no score is scored and paid as <see cref="Rescore"/> does. A kill that keeps the verdict it was made under because its hunt is
     /// undecided is flagged "undecided" when the rule could judge it otherwise. A flag whose cause is gone is removed. The judging reads without a lock; with <paramref name="dryRun"/> false each change is
-    /// judged again and written in its own short transaction, so live heartbeats wait for one kill at most. A second run changes nothing (it prints the "unscored" lines again).</summary>
-    public List<JudgedKill> JudgeKills(long? only, bool dryRun)
+    /// judged again and written in its own short transaction (<paramref name="beforeWrite"/>, for the tests, runs with the kill's id just before it), so live heartbeats wait for one kill at most. A second
+    /// run changes nothing (it prints the "unscored" lines again: they write nothing).</summary>
+    public List<JudgedKill> JudgeKills(long? only, bool dryRun, Action<long>? beforeWrite = null)
     {
         List<long> ids;
+        long ruleStep;
         using (var all = Store.Open())
+        {
             ids = only is { } one ? [one] : all.Rows("SELECT id FROM accounts ORDER BY id").Select(r => (long)r[0]).ToList();
+            ruleStep = Convert.ToInt64(all.Scalar("SELECT last_event FROM schema_marks WHERE version = 41") ?? 0L);
+        }
         var places = BoardPlaces();
         var result = new List<JudgedKill>();
         foreach (var id in ids)
@@ -44,13 +49,14 @@ public sealed partial class State
             var cached = new Known(k => mounts.TryGetValue(k, out var m) ? m : null, k => paid.GetValueOrDefault($"CSS Reward (Animal Id: {k})"), k => paid.ContainsKey($"CSS Reward (Animal Id: {k})"));
             foreach (var killId in con.Rows("SELECT kill_id FROM kills WHERE account_id = $a ORDER BY kill_id").Select(r => (long)r[0]).ToList())
             {
-                if (JudgeKill(con, id, killId, places, cached, write: false) is not { } judged)
+                if (JudgeKill(con, id, killId, places, cached, ruleStep, write: false) is not { } judged)
                     continue;
                 if (!dryRun)
                 {
-                    // judged again inside the write: a heartbeat may have changed the kill (a taxidermy, a mount) since the read
+                    beforeWrite?.Invoke(killId);
+                    // judged again inside the write, with the mounts and payments read again: a heartbeat may have changed the kill (a taxidermy, a mount) since the read
                     con.Begin();
-                    judged = JudgeKill(con, id, killId, places, Live(con), write: true);
+                    judged = JudgeKill(con, id, killId, places, Live(con), ruleStep, write: true);
                     con.Commit();
                     if (judged is null)
                         continue;
@@ -72,7 +78,7 @@ public sealed partial class State
         k => con.Scalar("SELECT 1 FROM wallet_log WHERE account_id = $a AND summary = ?", $"CSS Reward (Animal Id: {k})") is not null);
 
     /// <summary>One kill of <see cref="JudgeKills"/>: its line (null when nothing changes and nothing is to report), and with <paramref name="write"/> its change written (the caller's transaction).</summary>
-    JudgedKill? JudgeKill(Db con, long id, long killId, Dictionary<(long, long), (int Rows, int Top10)> places, Known known, bool write)
+    JudgedKill? JudgeKill(Db con, long id, long killId, Dictionary<(long, long), (int Rows, int Top10)> places, Known known, long ruleStep, bool write)
     {
         if (con.Rows("SELECT k.individual, k.harvest, h.body, u.kind, u.taxidermied, u.lodge, u.slot FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                      + " LEFT JOIN unethical_kills u ON u.account_id = $a AND u.kill_id = k.kill_id WHERE k.account_id = $a AND k.kill_id = ?", killId).FirstOrDefault() is not { } k)
@@ -110,7 +116,7 @@ public sealed partial class State
             var keeps = taxidermied || mount is not null;
             var same = flag == "kept" && (k[4] is 1L) == taxidermied && k[5] as long? == mount?.Lodge && k[6] as long? == mount?.Slot;
             var (writeFlag, dropFlag) = (keeps && !same, !keeps && flag is not null);
-            string? change = scored ? "disqualify" : Unscored(con, e3, harvest, page, k[0]) ? "unscored" : writeFlag ? "flag" : dropFlag ? "unflag" : null;
+            string? change = scored ? "disqualify" : Unscored(con, e3, harvest, page, k[0], ruleStep) ? "unscored" : writeFlag ? "flag" : dropFlag ? "unflag" : null;
             if (change is null)
                 return null;
             if (write)
@@ -149,14 +155,22 @@ public sealed partial class State
         return new(id, killId, species, requalify ? "requalify" : "unflag", null, null, null, null, coatId, requalify ? Num(score) : stored, rows, top10, false, null, null, false, amount);
     }
 
-    /// <summary>Whether an unethical kill with no stored score is one the rule before this change judged ethical: a kill that scores nothing (its features or family give none), whose hits were all in its
-    /// species' list or an event's silver. A kill that would score has no score because it was disqualified (or refused) at its harvest already.</summary>
-    bool Unscored(Db con, JsonObject e3, string harvest, JsonObject page, object? individual)
+    /// <summary>Whether an unethical kill with no stored score is one this change turned unethical: harvested before the schema-41 step (its harvest's event row at most <paramref name="ruleStep"/>, `schema_marks`;
+    /// a later kill was judged by this rule when it was made), a kill that scores nothing (its features or family give none), and whose hits the rule it was judged by then all permitted: in a hunt whose
+    /// first connect recorded the event (not set by the step, `event_backfilled`), the event's list for a species it names; otherwise its species' list and an event's silver. A kill that would score has
+    /// no score because it was disqualified (or refused) at its harvest already.</summary>
+    bool Unscored(Db con, JsonObject e3, string harvest, JsonObject page, object? individual, long ruleStep)
     {
+        if (con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is not long harvested || harvested > ruleStep)
+            return false;
         var hits = KillHits(con, Py.FromSql(individual), harvest);
         var (e7, e22) = KillEvents(con, e3["individual"], harvest);
         if (Py.Truthy(Trophy(e3, e7.Count > 0 ? e7 : PageSpawn(page), e22, hits.Count > 0 ? hits[^1] : null).Score))
             return false;
+        var recorded = con.Scalar("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) AND event_backfilled IS NULL THEN NULLIF(event, '') END FROM expeditions"
+                                  + " WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", harvested) as string;
+        if (recorded is not null && facts.Possessing(page["species"], recorded) is not null && facts.EventEthical(recorded) is { } then)
+            return hits.All(h => Permits(then.Ammo, h["ammunition_id"]));
         return Allowed(page["species"], null) is not { } list || hits.All(h => Permits(list, h["ammunition_id"]) || facts.EventAmmo(h["ammunition_id"]));
     }
 
