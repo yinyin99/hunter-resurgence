@@ -138,8 +138,8 @@ The part of the player kit that answers the game on the player's PC and relays e
 This project's website: profiles, trophies, leaderboards and account pages.
 
 **Hunterscore**:
-A player's score over the rank rows of the facts file: per row its ethical kills or pickups, at most 1000, summed.
-_Avoid_: hunter score (in code and docs), trophy score
+A player's score over the rank rows of the facts file: per row its ethical kills or pickups, at most 1000, summed. Its display name, on the website, in the launcher and in player docs, is "HunterScore" (one word, capital H and capital S): a brand name like gm$ and em$, never translated. Code and internals docs write `hunterscore`.
+_Avoid_: Hunter Score, hunter score (in player-facing text), trophy score
 
 **Hunterscore board**:
 The players of the community server in hunterscore order; a player's rank is their place on it.

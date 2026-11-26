@@ -46,7 +46,7 @@ The game's files are never changed; Settings, **Remove the setup** undoes everyt
 | Loadouts, saved and chosen at launch | |
 | Placed items, pick-ups and stack transfers | |
 | Skills, statistics, achievements, ranks, milestones and personal bests | |
-| Hunterscore and minigame boards | |
+| HunterScore and minigame boards | |
 | Lodges you can edit, trophies, gallery, dogs and their level rewards | |
 | Avatars you can choose | |
 | Friends and friend requests, messages (read only), wallet history | |
@@ -62,7 +62,7 @@ Missions, daily missions and challenges are in the server but haven't been teste
 
 Sign in on [the website](https://hunter-resurgence.com/restore) with the Steam account you play with, then:
 
-- **No backup?** Look up your old in-game name. If your profile is found, claim it: it brings back your items, skills, achievements, trophies, lodges, loadouts, missions and statistics, but not your wallet. Players with over 500 hunterscore are the most likely to be found. One claim per account. Very high scores (10,000 or more) are checked by the operator first.
+- **No backup?** Look up your old in-game name. If your profile is found, claim it: it brings back your items, skills, achievements, trophies, lodges, loadouts, missions and statistics, but not your wallet. Players with over 500 HunterScore are the most likely to be found. One claim per account. Very high scores (10,000 or more) are checked by the operator first.
 - **Have a backup zip?** Upload it. The operator (the person who runs the server) checks it by hand; a backup made in "My account" mode also brings back your wallet.
 
 Either way works even if you already hunted on the community server: hunts, kills and photos made here stay. Details: [the player guide](docs/guide.md#3-claim-your-old-profile-or-send-your-backup).

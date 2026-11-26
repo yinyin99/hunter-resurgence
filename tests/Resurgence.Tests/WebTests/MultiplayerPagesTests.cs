@@ -56,15 +56,15 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.DoesNotContain("Country", cut.Find("table.tbl thead").TextContent);
         Assert.Empty(cut.FindAll("i.dot"));
         Assert.Empty(cut.FindAll("p.legend"));
-        // the first game's details: its Hunter Score range and its players
+        // the first game's details: its HunterScore range and its players
         var preview = cut.Find("aside.preview").TextContent;
-        Assert.Contains("Min Hunter Score: 100", preview);
-        Assert.Contains("Max Hunter Score: 2000", preview);
+        Assert.Contains("Min HunterScore: 100", preview);
+        Assert.Contains("Max HunterScore: 2000", preview);
         Assert.Contains("Guest", preview);
         // a game without a range shows none, a locked one says so
         cut.FindAll("table.tbl tbody tr")[1].Click();  // found again: the page redraws with the launcher state
         preview = cut.Find("aside.preview").TextContent;
-        Assert.DoesNotContain("Min Hunter Score", preview);
+        Assert.DoesNotContain("Min HunterScore", preview);
         Assert.Contains("Password required", preview);
     }
 
@@ -78,7 +78,7 @@ public sealed class MultiplayerPagesTests : UiContext
 
         cut.WaitForAssertion(() => Assert.Equal(7, cut.FindAll("table.tbl tbody tr").Count));
         string[] reasons = [.. cut.FindAll("table.tbl tbody tr").Select(r => string.Join("", r.QuerySelectorAll(".why").Select(w => w.TextContent)))];
-        Assert.Equal(["", "", "Friends only", "Hunter Score 100–2000", "Full", "Your game", "Starting…"], reasons);  // a game with a password has its lock, not a reason
+        Assert.Equal(["", "", "Friends only", "HunterScore 100–2000", "Full", "Your game", "Starting…"], reasons);  // a game with a password has its lock, not a reason
 
         string Join(int row)
         {

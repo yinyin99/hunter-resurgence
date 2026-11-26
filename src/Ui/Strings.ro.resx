@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Echipat</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Altele</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Deconectare</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Hunter Score-ul dvs.</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScore-ul dvs.</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profilul dvs.</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Setări cont</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Gestionarea jocului</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Progresul dvs.</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Vânătoare în desfășurare</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Vezi vânătoarea</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Poziție</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Ultima realizare</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Nicio realizare obținută</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Protejat cu parolă</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Parola jocului</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Nr. maxim de jucători</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitați Hunter Score</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Limitați HunterScore</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Gazdă:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezervație:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Timp de joc:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Hunter Score min.:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Hunter Score max.:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>HunterScore min.:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>HunterScore max.:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Jucători ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informații despre conexiunile multiplayer</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Jocul multiplayer cu persoane aflate la distanțe mari de dvs. poate cauza probleme de conexiune sau lag. Vă recomandăm să vă alăturați jocurilor în care gazda se află aproape de dvs. Punctele colorate de lângă steaguri, în lista de servere, vă arată cât de departe vă aflați de gazda jocului.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Acest joc este protejat cu parolă</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parolă necesară</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Doar prieteni</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Plin</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jocul tău</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Se pornește…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Închideți</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Parolă greșită. Încearcă din nou.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Acest joc este plin. Încearcă alt joc.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Nu te poți alătura acestui joc: este doar pentru prietenii gazdei sau Hunter Score-ul tău este în afara limitelor ei.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Nu te poți alătura acestui joc: este doar pentru prietenii gazdei sau HunterScore-ul tău este în afara limitelor ei.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Gazda nu este încă pregătită. Încearcă din nou peste puțin timp.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Ai terminat de vânat pentru moment?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Vezi statisticile vânătorii</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>CLASAMENTE</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Scor</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Distanță</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Top Hunter Score</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Top HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Tabela de Onoare</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Primii 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>În jurul poziției dvs.</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Momentan nu sunteți clasat în această categorie</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Top Hunter Score, din toate timpurile</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Top HunterScore, din toate timpurile</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Poziție</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Vânător</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Tabela de Onoare, sezonul trecut</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezonul {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Din toate timpurile</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Poziția {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Tipul de abonament al lui {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Hunter Score-ul lui {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Poziția lui {0} după Hunter Score</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore-ul lui {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Poziția lui {0} după HunterScore</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} este online</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Trimiteți o cerere de prietenie</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Cerere de prietenie în așteptare</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Arme</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Colectibile</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Progres</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Categorii</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Deblocat</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Explorare</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Nu am păstrat niciun profil sub acest nume.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Prea multe căutări azi, încercați mâine.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Serverul nu a răspuns.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Obiecte: {0}, trofee: {1}, cabane: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Abilități: {0}, statistici: {1}, realizări: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>

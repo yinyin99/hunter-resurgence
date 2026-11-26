@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Felszerelve</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Egyéb</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>A te vadászpontjaid</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>A te HunterScore-od</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Fiókbeállítások</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Játékkezelés</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>A te állásod</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Folyamatban lévő vadászat</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Vadászat megtekintése</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Vadászpont</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Helyezés</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Legújabb eredmény</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Nincsenek eredményeid</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Jelszavas védelem</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Játék jelszava</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max. játékosok</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Vadászpont korlátozása</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>HunterScore korlátozása</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min.:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Kezdés</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Házigazda:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Vadászterület:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Játékidő:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. vadászpont:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. vadászpont:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Játékosok ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Információ a többjátékos kapcsolatokról</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Ha olyan játékosokkal játszol többjátékos módban, akik nagyon messze vannak tőled, kapcsolódási problémák vagy késleltetés léphet fel. Ajánlott olyan játékokhoz csatlakozni, amelyeknek a házigazdája a közeledben van. A szerverlistában a zászlók melletti színes pontok jelzik, milyen messze vagy a játék házigazdájától.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Ez a játék jelszóval védett</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Jelszó szükséges</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Csak barátoknak</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Vadászpont {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Megtelt</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>A te játékod</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Indul…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Bezár</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Hibás jelszó. Kérjük, próbáld újra.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Ez a játék megtelt. Próbálj meg egy másikat.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: csak a házigazda barátainak szól, vagy a vadászpontod a házigazda határain kívül esik.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: csak a házigazda barátainak szól, vagy a HunterScore-od a házigazda határain kívül esik.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>A házigazda még nem áll készen. Próbáld újra egy pillanat múlva.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Egyelőre befejezted a vadászatot?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Vadászati statisztikák megtekintése</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>HELYEZÉSEK</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pontszám</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Távolság</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Legjobb vadászpont</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Legjobb HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Dicsőségek csarnoka</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Legjobb 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>A helyezésed körül</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Jelenleg nincs helyezésed ebben a kategóriában</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Minden idők legjobb vadászpontja</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Minden idők legjobb HunterScore-ja</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Helyezés</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Vadász</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Vadászpont</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Korábbi szezonok – Dicsőségek csarnoka</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>{0}. szezon</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Minden idők</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>{0}. helyezés</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>{0} tagságának típusa</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>{0} vadászpontja</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>{0} vadászpont-helyezése</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>{0} HunterScore-ja</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>{0} HunterScore-helyezése</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} online van</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Barátkérelem küldése</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Barátkérelem függőben</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Fegyverek</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Gyűjtendők</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Előrehaladás</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Vadászpont</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategóriák</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Elért</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Felfedezés</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Ezen a néven nem őriztünk profilt.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Ma túl sok keresés, próbáld újra holnap.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>A szerver nem válaszolt.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Tárgyak: {0}, trófeák: {1}, vadászházak: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Képességek: {0}, statisztikák: {1}, teljesítmények: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>igen</value></data>

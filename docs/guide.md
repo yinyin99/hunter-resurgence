@@ -22,7 +22,7 @@ Open [hunter-resurgence.com](https://hunter-resurgence.com), choose **Already a 
 
 ## 3. Claim your old profile or send your backup
 
-**No backup zip?** Open **Restore your backup** in the **Settings** menu. Choose **I have no backup**, type your old hunter name and press **Find** (5 searches a day). A found profile shows its hunterscore and what a claim brings back: items, trophies, lodges, skills, statistics and achievements, but not your wallet. Players with over 500 hunterscore are the most likely to be found. Tick **Use my old name** to take that name back (shown only when it is free), then press **Claim**. One claim per account. The page then says "restored", or that an operator will check the claim (a very high hunterscore, or a profile someone else claimed too); for those, go to step 4.
+**No backup zip?** Open **Restore your backup** in the **Settings** menu. Choose **I have no backup**, type your old hunter name and press **Find** (5 searches a day). A found profile shows its HunterScore and what a claim brings back: items, trophies, lodges, skills, statistics and achievements, but not your wallet. Players with over 500 HunterScore are the most likely to be found. Tick **Use my old name** to take that name back (shown only when it is free), then press **Claim**. One claim per account. The page then says "restored", or that an operator will check the claim (a very high HunterScore, or a profile someone else claimed too); for those, go to step 4.
 
 **Have a backup zip?** Send it once, on the website: open **Restore your backup** in the **Settings** menu, choose the backup zip, press **Upload**. It says "Received: an operator will check it".
 
@@ -62,8 +62,8 @@ More: [launcher](launcher.md#the-player-kit).
 
 Multiplayer is a beta: it works, but expect rough edges. The game connects the players straight to each other; the community server only lists the games and introduces them.
 
-- **Join**: in the launcher, Hunt now, **Find a multiplayer game** (or the dashboard's Quick Join). The list shows each game's name, host, reserve and players, and a lock for a password. Choose **Join Game**, type the password if asked, and click a starting location on the map. A refusal says why: wrong password, game full, friends only or your Hunter Score outside the host's limits, or the host is not ready yet.
-- **Host**: in the launcher, Hunt now, **Multiplayer game** (the dashboard's **Start a multiplayer game**, or **HOST YOUR OWN GAME** when the list has no games): choose the reserve, the start and the time, then the game's name, a description, friends only or anyone, a password if you want one, and 2 to 8 players (optionally a Hunter Score range). The game ends when you leave it.
+- **Join**: in the launcher, Hunt now, **Find a multiplayer game** (or the dashboard's Quick Join). The list shows each game's name, host, reserve and players, and a lock for a password. Choose **Join Game**, type the password if asked, and click a starting location on the map. A refusal says why: wrong password, game full, friends only or your HunterScore outside the host's limits, or the host is not ready yet.
+- **Host**: in the launcher, Hunt now, **Multiplayer game** (the dashboard's **Start a multiplayer game**, or **HOST YOUR OWN GAME** when the list has no games): choose the reserve, the start and the time, then the game's name, a description, friends only or anyone, a password if you want one, and 2 to 8 players (optionally a HunterScore range). The game ends when you leave it.
 - **Connection**: the other players connect to your PC. The server's punch-through server helps a home router to let them in, with no setting on your side. If nothing answers, the game waits about 30 seconds and then tries a direct connection (UPnP, or a forwarded UDP port). A strict router can still block it. Games with a host close to you run better. Allow the game in Windows Firewall, as in step 5.
 
 More: [launcher](launcher.md#multiplayer).

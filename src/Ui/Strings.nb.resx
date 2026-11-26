@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Utstyrt</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Annet</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logg ut</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Din Jegerscore</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Din HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoinnstillinger</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spilladministrasjon</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Din fremgang</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Jakt pågår</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Se jakten</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Jegerscore</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Plassering</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Siste prestasjon</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Ingen prestasjoner ennå</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Passordbeskytt</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Spillpassord</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Maks spillere</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Begrens Jegerscore</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Begrens HunterScore</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Maks:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Vert:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reservat:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Spilltid:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. Jegerscore:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Maks. Jegerscore:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Maks. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Spillere ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informasjon om flerspillertilkoblinger</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Når du spiller flerspiller med folk som er langt unna, kan det gi tilkoblingsproblemer eller lagg. Det anbefales at du blir med i spill der verten er nær deg. De fargede prikkene ved siden av flaggene i serverlisten viser omtrent hvor langt unna spillets vert du er.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Dette spillet er passordbeskyttet</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Passord kreves</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Bare for venner</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Jegerscore {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Fullt</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ditt spill</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Starter…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Lukk</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Feil passord. Prøv igjen.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Dette spillet er fullt. Prøv et annet spill.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: det er bare for vertens venner, eller Jegerscore din er utenfor vertens grenser.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: det er bare for vertens venner, eller HunterScore din er utenfor vertens grenser.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Verten er ikke klar ennå. Prøv igjen om litt.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Ferdig med jakten for nå?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Se jaktstatistikk</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>POENGTAVLER</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Poeng</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Avstand</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Høyeste Jegerscore</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Høyeste HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Topp 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Rundt plasseringen din</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Du har for øyeblikket ingen plassering i denne kategorien</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Høyeste Jegerscore gjennom tidene</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Høyeste HunterScore gjennom tidene</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Plassering</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Jeger</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Jegerscore</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Tidligere sesongers Hall of Fame</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sesong {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Gjennom tidene</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Plassering {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Pålogget</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Medlemskapstypen til {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Jegerscoren til {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Plasseringen til {0} på Jegerscore</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore til {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Plasseringen til {0} på HunterScore</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} er pålogget</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Send en venneforespørsel</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Venneforespørsel venter</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Våpen</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Samleobjekter</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Fremdrift</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Jegerscore</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorier</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Oppnådd</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Utforsking</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Vi lagret ingen profil under dette navnet.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>For mange søk i dag, prøv igjen i morgen.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Serveren svarte ikke.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Gjenstander: {0}, trofeer: {1}, hytter: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Ferdigheter: {0}, statistikk: {1}, prestasjoner: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
