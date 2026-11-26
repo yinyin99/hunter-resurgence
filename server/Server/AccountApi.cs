@@ -49,6 +49,7 @@ public static class AccountApi
         if (app.Services.GetService<Uploads>() is not { } uploads || app.Services.GetService<Claims>() is not { } claims) return;
         var state = game.State!;
         var reports = app.Services.GetRequiredService<ProblemReports>();
+        var discord = app.Services.GetService<LinkedRoles>();
         var site = $"https://{game.Web}";  // the avatar pictures are on the website's own host, like the gallery's
         var group = app.MapGroup("/account").RequireHost(game.Web).WithGroupName("game").WithTags("Account (web_host, session cookie)");
 
@@ -181,12 +182,13 @@ public static class AccountApi
                 if (!form.TryGetValue("confirm", out var c) || c[0] != "delete")
                     return Refuse(400, "invalid", "Deleting needs confirm=delete.");
                 if (uploads.Busy(account) || reports.Busy(account)) return Refuse(429, "busy", "An upload or report of yours is still being processed. Try again in a minute.");
-                uploads.Delete(account);
+                if (discord is null) uploads.Delete(account);
+                else await discord.UnlinkAsync(account, () => uploads.Delete(account));  // Discord's access is revoked first, with no push in between
                 return Json(200, new JsonObject { ["status"] = "deleted", ["message"] = "Your account and all its data were deleted." },
                             $"{SignIn.SessionCookie}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
             })
             .WithName("AccountDelete").WithSummary("Delete the account and all its data (form `confirm=delete`)")
-            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out. Kept: the Steam id and the time of the delete, for the 24-hour claim cooldown (removed by the next daily cleanup after that), and a ban record of the Steam id, if it was ever banned (Steam id, time, reason, lift time).")
+            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out. A linked Discord account first loses its role connection and Discord's access is revoked (best effort: a failure is logged and the delete goes on). Kept: the Steam id and the time of the delete, for the 24-hour claim cooldown (removed by the next daily cleanup after that), and a ban record of the Steam id, if it was ever banned (Steam id, time, reason, lift time).")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/report", async (HttpContext ctx) =>

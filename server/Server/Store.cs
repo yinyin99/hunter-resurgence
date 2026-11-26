@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 39;
+    public const int Version = 40;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -181,6 +181,19 @@ public sealed class Store
     const string AdminMessagesTable = """
         CREATE TABLE IF NOT EXISTS admin_messages (
             id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, account_id INTEGER REFERENCES accounts (id) ON DELETE CASCADE, recipients INTEGER NOT NULL, text TEXT NOT NULL);
+        """;
+
+    // Discord Linked Roles (LinkedRoles.cs, docs/server.md#discord-linked-roles). discord_links: one row per account and per Discord id (both UNIQUE), the user's two OAuth tokens sealed (AES-GCM, the key
+    // derived from the secret key file; both null once Discord refused the refresh token), when the access token ends, and the hunterscore last pushed (null: none yet). It goes with its account (and moves
+    // with it: Restorer.Adopt). discord_rewards: the reward ledger, one row per Discord id ever paid: `hash` is its keyed hash (never the id), `account_id` the account that was paid (UNIQUE: one reward per
+    // account too). The row stays when the account is deleted, with the account cleared, so a recreated account, or another one with that Discord id, is not paid again.
+    // Neither is in PlayerTables: a Discord id is looked up across accounts.
+    const string DiscordTables = """
+        CREATE TABLE IF NOT EXISTS discord_links (
+            account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, discord_id TEXT NOT NULL UNIQUE,
+            access_token TEXT, refresh_token TEXT, expires_ts INTEGER NOT NULL DEFAULT 0, pushed_score INTEGER, pushed_handle TEXT, linked_ts INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS discord_rewards (
+            hash TEXT PRIMARY KEY, account_id INTEGER UNIQUE REFERENCES accounts (id) ON DELETE SET NULL) WITHOUT ROWID;
         """;
 
     // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge
@@ -549,6 +562,7 @@ public sealed class Store
             con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT; UPDATE expeditions SET event = ''");
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_until'")! == 0)
             con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
+        con.Script(DiscordTables);  // schema 40, every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
@@ -636,6 +650,13 @@ public sealed class Store
         return con.Scalar("SELECT use_imperial FROM accounts WHERE id = ?", id) is 1L;
     }
 
+    /// <summary>Whether the account has linked a Discord account (<see cref="LinkedRoles"/>): the website and the launcher stop offering the link then.</summary>
+    public bool DiscordLinked(long id)
+    {
+        using var con = Open();
+        return con.Scalar("SELECT 1 FROM discord_links WHERE account_id = ?", id) is not null;
+    }
+
     public void SetUsesImperial(long id, bool imperial)
     {
         using var con = Open();
@@ -658,8 +679,8 @@ public sealed class Store
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
-    /// sessions, its Steam id and handle; and its friend edges both ways. Files are the caller's. Its Steam id and the time `at` (default now)
-    /// stay in `steam_deletions` for the claim cooldown; nothing else of the account does.</summary>
+    /// sessions, its Steam id and handle, its Discord link and tokens; and its friend edges both ways. Files are the caller's. Its Steam id and the time `at` (default now)
+    /// stay in `steam_deletions` for the claim cooldown; and its keyed Discord hash stays in the reward ledger (`discord_rewards`), the account cleared. Nothing else of the account does.</summary>
     public void DeleteAccount(long id, long? at = null)
     {
         using var con = Open();

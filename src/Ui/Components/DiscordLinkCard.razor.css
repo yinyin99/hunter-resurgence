@@ -1,0 +1,7 @@
+.card { box-sizing: border-box; width: 350px; max-width: 100%; padding: 16px 19px 19px; background: var(--discord-bg); border: 0; border-radius: 5px; }
+h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; color: #fff; font-size: var(--fs-h3); line-height: 30px; text-transform: none; }
+h3 ::deep .icon { flex: none; width: 22px; height: 22px; }
+p { margin: 0 0 14px; color: #ccc; line-height: 20px; overflow-wrap: anywhere; }
+p ::deep strong { color: #fff; font-weight: 500; }
+.card ::deep .link { display: block; box-sizing: border-box; width: 100%; padding: 10px 19px; background-color: var(--discord); color: #fff; font-size: 17.5px; line-height: 22px; text-align: center; }
+.card ::deep .link:hover { background-color: var(--discord-hover); color: #fff; }

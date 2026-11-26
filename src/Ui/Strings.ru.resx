@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Присоединяйтесь к нам в Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Сообщество собирается в Discord: новости, помощь и другие охотники. Заходите поздороваться!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Присоединиться к Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Свяжите свой Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Получите 5000 gm$ и 250 em$ один раз. Ваш HunterScore показывается в вашем профиле Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Связать Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Связать Discord · получите 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Позже</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Есть ли у вас резервная копия профиля?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Резервная копия — это zip-файл, сохранённый инструментом резервного копирования, или сохранение, сделанное другим инструментом сообщества. Восстановите её сейчас и верните охоты, предметы и трофеи.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Выберите zip с резервной копией и загрузите его.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Удалить мои данные</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Это удалит ваш аккаунт на этом сервере и всё, что с ним хранится: ваше имя, игровые данные, сохранённые zip-архивы резервных копий и ваши фотографии. Только ваш Steam ID и время удаления хранятся 24 часа, чтобы новый аккаунт не мог сразу заявить права на старый профиль; если оператор заблокировал ваш Steam ID, запись о блокировке тоже остаётся. Вы выйдете из аккаунта, а вход через лаунчер перестанет работать. Это нельзя отменить.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Если вы связали Discord, остаётся ещё одно: хеш с ключом от вашего идентификатора Discord, без аккаунта, имени и даты, чтобы награда за привязку никогда не выплачивалась дважды. Ваш идентификатор Discord и токены удаляются.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Я понимаю, удалить всё</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Удалить мои данные</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Не удалось удалить данные. Попробуйте ещё раз.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Игровые данные вашего аккаунта: инвентарь, кошелёк, навыки, статистика, достижения, трофеи, охоты, добыча и фотографии, которые вы делаете в игре.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Каждый загруженный вами zip-архив резервной копии в неизменном виде: хранится, чтобы оператор проверил его, и после восстановления — чтобы оператор мог сбросить ваш аккаунт и восстановить его снова. В zip-архиве то, что инструмент резервного копирования сохранил из вашего аккаунта.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Файлы cookie для входа и игровые токены в виде хэшей, которые невозможно прочитать обратно.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Только если вы свяжете Discord: ваш идентификатор Discord и токены, которые Discord передал серверу для обновления ваших ролей, в зашифрованном виде. Больше ничего из вашего профиля Discord не хранится. Сервер отправляет в Discord ваш ник и HunterScore для ваших ролей.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Только если вы свяжете Discord: запись о том, что награда 5000 gm$ и 250 em$ выплачена за ваш идентификатор Discord, в виде хеша с ключом, который нельзя превратить обратно в идентификатор.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Чего нет в аккаунтах</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ваш адрес электронной почты, настоящее имя, почтовый адрес или номер телефона: их не запрашивают и не хранят в вашем аккаунте. Если резервная копия содержит такое поле, оно не восстанавливается.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Удаление ваших данных</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ваш аккаунт и его данные хранятся, пока вы не нажмёте «Удалить мои данные».</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Журналы сервера и прокси могут содержать IP-адреса и ники. Они хранятся не дольше 30 дней.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Когда аккаунт удаляется, его Steam ID и время удаления хранятся 24 часа и удаляются при следующей ежедневной очистке. Блокировка оператором хранится как запись со Steam ID, временем, причиной и, после снятия, временем снятия; запись остаётся и после снятия блокировки, чтобы при более поздней заявке на профиль было видно, что Steam ID уже блокировали, и остаётся после удаления аккаунта.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>«Удалить мои данные» удаляет ваш идентификатор Discord и токены. Остаётся только хеш с ключом от вашего идентификатора Discord, без аккаунта, имени и даты, чтобы награда за привязку никогда не выплачивалась дважды. Чтобы сопоставить его с идентификатором Discord, нужен секретный ключ сервера.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Браузер открыт. Войдите там через Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Войти через Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Вход не был подтверждён вовремя. Попробуйте ещё раз.</value></data>
@@ -1574,6 +1582,15 @@
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Причина:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Связано</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником, и вы получили 5000 gm$ и 250 em$. Ваши роли на сервере Discord зависят от вашего HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником. Вы уже получили 5000 gm$ и 250 em$ за привязку, поэтому новой награды нет. Ваши роли на сервере Discord зависят от вашего HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Этот аккаунт Discord связан с другим охотником. Аккаунт Discord можно связать только с одним охотником.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Ваш охотник уже связан с другим аккаунтом Discord. Охотника можно связать только с одним аккаунтом Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Связать не удалось. Вернитесь в Discord и попробуйте ещё раз.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Ваша роль в Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ещё {0} до роли {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Назад в Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Отправляет журналы и события сбоев игры и лаунчера (включая WebView2) на сервер сообщества, чтобы мы могли помочь. Хранятся 30 дней.</value></data>

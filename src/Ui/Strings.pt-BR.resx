@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Junte-se a nós no Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>A comunidade se reúne no Discord: novidades, ajuda e outros caçadores. Venha dizer oi!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Entrar no Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Vincule seu Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Ganhe 5000 gm$ e 250 em$, uma única vez. Seu HunterScore aparece no seu perfil do Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Vincular Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Vincular Discord · ganhe 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Depois</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Você tem um backup do seu perfil?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Um backup é o zip salvo pela ferramenta de backup ou um salvamento feito com outra ferramenta da comunidade. Restaure agora para recuperar suas caçadas, itens e troféus.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Escolha seu zip de backup e envie.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Excluir meus dados</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto exclui sua conta neste servidor e tudo o que está guardado com ela: seu nome, seus dados de jogo, os zips de backup guardados e suas fotos. Só seu id da Steam e o horário da exclusão ficam por 24 horas, para que uma conta nova não possa reivindicar logo um perfil antigo; se o operador baniu seu id da Steam, o registro do banimento também fica. Você sai da conta e o login do launcher deixa de funcionar. Não é possível desfazer.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Se você vinculou o Discord, mais uma coisa permanece: um hash com chave do seu id do Discord, sem conta, nome ou data, para que a recompensa pela vinculação nunca seja paga duas vezes. Seu id do Discord e seus tokens são excluídos.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Entendo, excluir tudo</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Excluir meus dados</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Não foi possível excluir os dados. Tente novamente.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Os dados de jogo da sua conta: inventário, carteira, habilidades, estatísticas, conquistas, troféus, caçadas, abates e as fotos que você tira no jogo.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Cada zip de backup que você envia, sem alterações: guardado para um operador conferir e, depois de restaurado, para que o operador possa redefinir sua conta e restaurá-la de novo. Um zip contém o que a ferramenta de backup salvou da sua conta.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de login e tokens de jogo, como hashes que não podem ser lidos de volta.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Somente se você vincular o Discord: seu id do Discord e os tokens que o Discord deu ao servidor para atualizar seus cargos, guardados criptografados. Nada mais do seu perfil do Discord é guardado. O servidor envia seu nome de usuário e seu HunterScore ao Discord para os seus cargos.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Somente se você vincular o Discord: um registro de que a recompensa de 5000 gm$ e 250 em$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não guardam</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Seu e-mail, nome verdadeiro, endereço postal ou telefone: eles não são pedidos nem guardados na sua conta. Se um backup tiver um campo assim, ele não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Excluindo seus dados</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Sua conta e seus dados ficam até você usar Excluir meus dados.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Os logs do servidor e do proxy podem conter endereços IP e nomes de usuário. Ficam guardados por no máximo 30 dias.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Quando uma conta é excluída, seu id da Steam e o horário da exclusão ficam guardados por 24 horas e são removidos na próxima limpeza diária. Um banimento pelo operador fica guardado como um registro com o id da Steam, o horário, o motivo e, depois de levantado, o horário em que foi levantado; o registro permanece após o levantamento, para que uma reivindicação posterior mostre que o id da Steam já foi banido, e permanece quando a conta é excluída.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Excluir meus dados remove seu id do Discord e seus tokens. Só permanece o hash com chave do seu id do Discord, sem conta, nome ou data, para que a recompensa pela vinculação nunca seja paga duas vezes. É preciso a chave secreta do servidor para associá-lo a um id do Discord.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Seu navegador está aberto. Entre lá com a Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Entrar com a Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>O login não foi confirmado a tempo. Tente novamente.</value></data>
@@ -1574,6 +1582,15 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Esta entrada já foi confirmada.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Vinculado</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Sua conta do Discord está vinculada ao seu caçador e você recebeu 5000 gm$ e 250 em$. Seus cargos no servidor do Discord seguem o seu HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Sua conta do Discord está vinculada ao seu caçador. Você já recebeu os 5000 gm$ e 250 em$ pela vinculação, então não há nova recompensa. Seus cargos no servidor do Discord seguem o seu HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Esta conta do Discord está vinculada a outro caçador. Uma conta do Discord só pode ser vinculada a um caçador.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Seu caçador já está vinculado a outra conta do Discord. Um caçador só pode ser vinculado a uma conta do Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>A vinculação não funcionou. Volte ao Discord e tente novamente.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Seu cargo no Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Faltam {0} para {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Voltar ao Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tem certeza de que deseja fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Relatar um problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envia os logs e eventos de falha do jogo e do launcher (incluindo o WebView2) ao servidor da comunidade para que possamos ajudar. Guardados por 30 dias.</value></data>

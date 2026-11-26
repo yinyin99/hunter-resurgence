@@ -1,0 +1,23 @@
+@inject ISessionService Sessions
+@inject HostMode Mode
+@inject ILauncherBridge Bridge
+
+@* the link to the server's /discord/link: a plain link on the website; the launcher's pages are local, so there (HostMode.Launcher, the address is the whole one) it opens the site's address in the player's browser (the bridge's OpenExternal) *@
+@if (Sessions.DiscordLinkUrl is { } url)
+{
+    if (Mode.Launcher)
+    {
+        <a href="@url" class="@Class" title="@Title" @onclick="() => Bridge.OpenExternal(url)" @onclick:preventDefault>@ChildContent</a>
+    }
+    else
+    {
+        <a href="@url" class="@Class" title="@Title">@ChildContent</a>
+    }
+}
+
+@code {
+    [Parameter] public string? Class { get; set; }
+    /// <summary>The whole text for a link that cuts its own (the pill in a narrow window).</summary>
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

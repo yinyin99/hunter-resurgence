@@ -15,12 +15,12 @@ namespace Resurgence.Server;
 /// <summary>Console: request lines and TLS failures on the console. WorkDir: the miss log and the admin status there.
 /// TrustedProxies: peers whose HostHeader names the game host the client asked for (a proxy between client and server).
 /// MaxBodyBytes: the request body limit of every endpoint but the admin API's. AdminListeners: the only listeners that
-/// serve the admin API (null: every listener). SteamHttp: how the sign-in asks Steam to
-/// confirm an assertion (default: a plain client; tests pass a fake one).</summary>
+/// serve the admin API (null: every listener). SteamHttp and DiscordHttp: how the sign-in asks Steam to confirm an assertion and how Linked Roles talk to
+/// Discord (default: a plain client; tests pass a fake one).</summary>
 public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console,
     IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes,
     IReadOnlyList<(IPAddress Address, int Port)>? AdminListeners = null,
-    HttpClient? SteamHttp = null);
+    HttpClient? SteamHttp = null, HttpClient? DiscordHttp = null);
 
 public static class ServerApp
 {
@@ -86,6 +86,9 @@ public static class ServerApp
             CrashReports.TrimTelemetry(telemetryFile, crashHost, o.Game.State!.Store, Store.Now());
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"), telemetryFile, crashHost));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
+        // Linked Roles (docs/server.md#discord-linked-roles): on only with the Discord application's id and secret in the settings
+        if (o.Game.State is { Online: true } linking && (string?)o.Game.Cfg["discord_client_id"] is { } discordId && (string?)o.Game.Cfg["discord_client_secret"] is { } discordSecret)
+            builder.Services.AddSingleton(new LinkedRoles(linking, o.DiscordHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10), MaxResponseContentBufferSize = 1 << 20 }, discordId, discordSecret, o.Game.Web));
         if (o.Game.State is { } news && o.WorkDir is not null) builder.Services.AddSingleton(new News(news.Store, o.WorkDir));  // the posts of the feed (docs/server.md#news)
         // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
         if (o.Game.State is { Online: true } state && o.WorkDir is not null)
@@ -210,6 +213,20 @@ public static class ServerApp
                 }
                 catch (OperationCanceledException) { }
             }));
+        if (app.Services.GetService<LinkedRoles>() is { } linked)
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(async () =>
+            {
+                using var tick = new PeriodicTimer(LinkedRoles.SweepEvery);
+                try
+                {
+                    while (await tick.WaitForNextTickAsync(app.Lifetime.ApplicationStopping))
+                    {
+                        try { await linked.SweepAsync(); }
+                        catch (Exception e) when (e is not OperationCanceledException) { Console.Error.WriteLine("discord sweep: " + e.Message); }  // a failed push is logged and tried again at the next tick
+                    }
+                }
+                catch (OperationCanceledException) { }
+            }));
         // crash reports and problem reports are kept 30 days, a Steam id's deletion record 24 h: purged before the server serves and once a day
         if (o.Game.State is { } kept)
         {
@@ -297,9 +314,9 @@ public sealed class Loopback : IAsyncDisposable
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
     public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes,
-        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null, HttpClient? steamHttp = null)
+        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null, HttpClient? steamHttp = null, HttpClient? discordHttp = null)
     {
-        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners, SteamHttp: steamHttp), k => k.Listen(IPAddress.Loopback, 0));
+        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners, SteamHttp: steamHttp, DiscordHttp: discordHttp), k => k.Listen(IPAddress.Loopback, 0));
         await app.StartAsync();
         var port = new Uri(app.Urls.First()).Port;
         var http = new HttpClient(new SocketsHttpHandler

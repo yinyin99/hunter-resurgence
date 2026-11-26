@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Alătură-te nouă pe Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Comunitatea se întâlnește pe Discord: noutăți, ajutor și alți vânători. Vino să saluți!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Intră pe Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Conectați-vă Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Primiți 5000 gm$ și 250 em$, o singură dată. HunterScore-ul dvs. apare pe profilul dvs. Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Conectați Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Conectați Discord · primiți 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Mai târziu</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Ai o copie de siguranță a profilului tău?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>O copie de siguranță este zip-ul salvat de instrumentul de backup sau o salvare făcută cu alt instrument al comunității. Restaureaz-o acum și îți recapeți vânătorile, obiectele și trofeele.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Alegeți zip-ul de backup și încărcați-l.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Ștergeți datele mele</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Aceasta șterge contul dvs. de pe acest server și tot ce este stocat împreună cu el: numele, datele de joc, zip-urile de backup păstrate și fotografiile. Doar ID-ul dvs. Steam și ora ștergerii rămân 24 de ore, pentru ca un cont nou să nu poată revendica imediat un profil vechi; dacă operatorul v-a banat ID-ul Steam, rămâne și înregistrarea banului. Veți fi deconectat, iar autentificarea din launcher nu va mai funcționa. Acțiunea nu poate fi anulată.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Dacă ați conectat Discord, mai rămâne un lucru: o amprentă cu cheie a ID-ului dvs. Discord, fără cont, nume sau dată, pentru ca recompensa pentru conectare să nu fie plătită niciodată de două ori. ID-ul dvs. Discord și tokenurile sunt șterse.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Am înțeles, ștergeți totul</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Ștergeți datele mele</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Datele nu au putut fi șterse. Încercați din nou.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Datele de joc ale contului dvs.: inventar, portofel, abilități, statistici, realizări, trofee, vânători, doborâri și fotografiile pe care le faceți în joc.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Fiecare zip de backup pe care îl încărcați, nemodificat: păstrat pentru ca un operator să îl verifice, iar după restaurare, pentru ca operatorul să vă poată reseta contul și să îl restaureze din nou. Un zip conține ce a salvat instrumentul de backup din contul dvs.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookie-uri de conectare și token-uri de joc, sub formă de hash-uri care nu pot fi citite înapoi.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Doar dacă conectați Discord: ID-ul dvs. Discord și tokenurile pe care Discord le-a dat serverului pentru a vă actualiza rolurile, păstrate criptat. Nimic altceva din profilul dvs. Discord nu este păstrat. Serverul trimite pseudonimul dvs. și HunterScore-ul dvs. către Discord pentru rolurile dvs.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Doar dacă conectați Discord: o înregistrare că recompensa de 5000 gm$ și 250 em$ a fost plătită pentru ID-ul dvs. Discord, păstrată ca amprentă cu cheie (hash) care nu poate fi transformată înapoi în ID.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce nu conțin conturile</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Adresa dvs. de e-mail, numele real, adresa poștală sau numărul de telefon: nu sunt solicitate și nu sunt păstrate în contul dvs. Dacă un backup conține un astfel de câmp, acesta nu este restaurat.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Contul dvs. și datele sale rămân până când folosiți „Ștergeți datele mele”.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Jurnalele serverului și ale proxy-ului pot conține adrese IP și pseudonime. Sunt păstrate cel mult 30 de zile.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Când un cont este șters, ID-ul său Steam și ora ștergerii sunt păstrate 24 de ore și eliminate la următoarea curățare zilnică. Un ban dat de operator este păstrat ca o înregistrare cu ID-ul Steam, ora, motivul și, după ridicare, ora ridicării; înregistrarea rămâne după ridicarea banului, pentru ca o revendicare ulterioară să arate că ID-ul Steam a fost banat înainte, și rămâne și după ștergerea contului.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Ștergeți datele mele elimină ID-ul dvs. Discord și tokenurile. Rămâne doar amprenta cu cheie a ID-ului dvs. Discord, fără cont, nume sau dată, pentru ca recompensa pentru conectare să nu fie plătită niciodată de două ori. Cheia secretă a serverului este necesară pentru a o asocia cu un ID Discord.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Browserul este deschis. Conectează-te acolo cu Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Conectare cu Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Autentificarea nu a fost confirmată la timp. Încearcă din nou.</value></data>
@@ -1574,6 +1582,15 @@ Numele:</value></data>
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motiv:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Acest formular nu provine de la acest server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Această conectare a fost deja confirmată.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Conectat</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Contul dvs. Discord este conectat la vânătorul dvs. și ați primit 5000 gm$ și 250 em$. Rolurile dvs. de pe serverul Discord urmează HunterScore-ul dvs.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Contul dvs. Discord este conectat la vânătorul dvs. Ați primit deja cei 5000 gm$ și 250 em$ pentru conectare, deci nu există o nouă recompensă. Rolurile dvs. de pe serverul Discord urmează HunterScore-ul dvs.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Acest cont Discord este conectat la alt vânător. Un cont Discord poate fi conectat la un singur vânător.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Vânătorul dvs. este deja conectat la alt cont Discord. Un vânător poate fi conectat la un singur cont Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Conectarea nu a reușit. Reveniți la Discord și încercați din nou.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Rolul dvs. pe Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Înapoi la Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Trimite jurnalele și evenimentele de blocare ale jocului și ale launcherului (inclusiv WebView2) serverului comunității ca să vă putem ajuta. Păstrate 30 de zile.</value></data>

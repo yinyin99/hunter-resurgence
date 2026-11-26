@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Unisciti a noi su Discord</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>La community si ritrova su Discord: novità, aiuto e altri cacciatori. Vieni a salutare!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Unisciti al Discord</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Collega il tuo Discord</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>Ottieni 5000 gm$ e 250 em$, una sola volta. Il tuo HunterScore appare sul tuo profilo Discord.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Collega Discord</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Collega Discord · ottieni 5000 gm$ + 250 em$</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Più tardi</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Hai un backup del tuo profilo?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Un backup è lo zip salvato dallo strumento di backup, oppure un salvataggio fatto con un altro strumento della community. Ripristinalo ora per riavere cacce, oggetti e trofei.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Scegli il tuo zip di backup e caricalo.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Elimina i miei dati</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Questo elimina il tuo account su questo server e tutto ciò che vi è memorizzato: il tuo nome, i dati di gioco, gli zip di backup conservati e le tue foto. Solo il tuo id Steam e l’ora dell’eliminazione restano per 24 ore, perché un nuovo account non possa rivendicare subito un vecchio profilo; se l’operatore ha bannato il tuo id Steam, resta anche la registrazione del ban. Verrai disconnesso e l’accesso del launcher smetterà di funzionare. Non può essere annullato.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Se hai collegato Discord, resta un'altra cosa: un hash con chiave del tuo id Discord, senza account, nome o data, perché la ricompensa per il collegamento non venga mai pagata due volte. Il tuo id Discord e i token vengono eliminati.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ho capito, elimina tutto</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Elimina i miei dati</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Impossibile eliminare i dati. Riprova.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>I dati di gioco del tuo account: inventario, portafoglio, abilità, statistiche, risultati, trofei, cacce, abbattimenti e le foto che scatti nel gioco.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Ogni zip di backup che carichi, senza modifiche: conservato perché un operatore lo controlli, e anche dopo il ripristino, in modo che l’operatore possa reimpostare il tuo account e ripristinarlo di nuovo. Uno zip contiene ciò che lo strumento di backup ha salvato del tuo account.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookie di accesso e token di gioco, come hash che non possono essere riletti.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Solo se colleghi Discord: il tuo id Discord e i token che Discord ha dato al server per aggiornare i tuoi ruoli, conservati cifrati. Nient'altro del tuo profilo Discord viene conservato. Il server invia a Discord il tuo nome utente e il tuo HunterScore per i tuoi ruoli.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Solo se colleghi Discord: una registrazione che la ricompensa di 5000 gm$ e 250 em$ è stata pagata per il tuo id Discord, conservata come hash con chiave che non può essere riconvertito nell'id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Cosa non contengono gli account</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Il tuo indirizzo email, nome reale, indirizzo postale o numero di telefono: non vengono richiesti né conservati nel tuo account. Se un backup contiene un campo del genere, non viene ripristinato.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminare i tuoi dati</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Il tuo account e i suoi dati restano finché non usi Elimina i miei dati.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>I log del server e del proxy possono contenere indirizzi IP e nomi utente. Vengono conservati per al massimo 30 giorni.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Quando un account viene eliminato, il suo id Steam e l’ora dell’eliminazione restano per 24 ore e vengono rimossi alla prossima pulizia giornaliera. Un ban dell’operatore resta come registrazione con id Steam, ora, motivo e, una volta revocato, ora della revoca; la registrazione resta dopo la revoca, perché una rivendicazione successiva possa mostrare che l’id Steam era già stato bannato, e resta anche quando l’account viene eliminato.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Elimina i miei dati rimuove il tuo id Discord e i token. Resta solo l'hash con chiave del tuo id Discord, senza account, nome o data, perché la ricompensa per il collegamento non venga mai pagata due volte. Serve la chiave segreta del server per associarlo a un id Discord.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Il tuo browser è aperto. Accedi lì con Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Accedi con Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>L'accesso non è stato confermato in tempo. Riprova.</value></data>
@@ -1574,6 +1582,15 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Questo modulo non proviene da questo server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Questo accesso è già stato confermato.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Collegato</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Il tuo account Discord è collegato al tuo cacciatore e hai ricevuto 5000 gm$ e 250 em$. I tuoi ruoli sul server Discord seguono il tuo HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Il tuo account Discord è collegato al tuo cacciatore. Hai già ricevuto i 5000 gm$ e 250 em$ per il collegamento, quindi non c'è una nuova ricompensa. I tuoi ruoli sul server Discord seguono il tuo HunterScore.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Questo account Discord è collegato a un altro cacciatore. Un account Discord può essere collegato a un solo cacciatore.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Il tuo cacciatore è già collegato a un altro account Discord. Un cacciatore può essere collegato a un solo account Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Il collegamento non è riuscito. Torna su Discord e riprova.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Il tuo ruolo su Discord: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ancora {0} per {1} ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Torna a Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Vuoi davvero chiudere il launcher e il gioco?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Segnala un problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Invia i log e gli eventi di arresto anomalo del gioco e del launcher (WebView2 incluso) al server della community così possiamo aiutarti. Conservati 30 giorni.</value></data>

@@ -75,6 +75,10 @@
   <data name="Discord.Title" xml:space="preserve"><value>Bize Discord'da katıl</value></data>
   <data name="Discord.Text" xml:space="preserve"><value>Topluluk Discord'da buluşuyor: haberler, yardım ve diğer avcılar. Gel, bir merhaba de!</value></data>
   <data name="Discord.Join" xml:space="preserve"><value>Discord'a katıl</value></data>
+  <data name="Discord.LinkTitle" xml:space="preserve"><value>Discord'unuzu bağlayın</value></data>
+  <data name="Discord.LinkText" xml:space="preserve"><value>5000 gm$ ve 250 em$ kazanın, tek seferlik. HunterScore'unuz Discord profilinizde görünür.</value></data>
+  <data name="Discord.LinkButton" xml:space="preserve"><value>Discord'u bağla</value></data>
+  <data name="Discord.LinkPill" xml:space="preserve"><value>Discord'u bağla · 5000 gm$ + 250 em$ kazan</value></data>
   <data name="Discord.Later" xml:space="preserve"><value>Daha sonra</value></data>
   <data name="RestoreOffer.Title" xml:space="preserve"><value>Profilinizin bir yedeği var mı?</value></data>
   <data name="RestoreOffer.Text" xml:space="preserve"><value>Yedek, yedekleme aracının kaydettiği zip dosyası ya da başka bir topluluk aracıyla yapılmış bir kayıttır. Şimdi geri yükleyin; avlarınızı, eşyalarınızı ve kupalarınızı geri alın.</value></data>
@@ -1411,6 +1415,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Yedek zip'inizi seçin ve yükleyin.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Verilerimi sil</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Bu işlem bu sunucudaki hesabınızı ve onunla saklanan her şeyi siler: adınızı, oyun verilerinizi, saklanan yedek zip dosyalarını ve fotoğraflarınızı. Yalnızca Steam id'niz ve silme zamanı 24 saat kalır; böylece yeni bir hesap eski bir profili hemen sahiplenemez. Operatör Steam id'nizi yasakladıysa yasak kaydı da kalır. Oturumunuz kapatılır ve başlatıcıdaki oturum açma çalışmaz. Geri alınamaz.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Discord'u bağladıysanız bir şey daha kalır: Discord kimliğinizin anahtarlı özeti; hesap, ad veya tarih içermez, böylece bağlama ödülü asla iki kez ödenmez. Discord kimliğiniz ve belirteçleriniz silinir.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Anlıyorum, her şeyi sil</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Verilerimi sil</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Veriler silinemedi. Tekrar deneyin.</value></data>
@@ -1441,6 +1446,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Hesabınızın oyun verileri: envanter, cüzdan, beceriler, istatistikler, başarılar, ödüller, avlar, avlanan hayvanlar ve oyunda çektiğiniz fotoğraflar.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Yüklediğiniz her yedek zip dosyası, değiştirilmeden: bir operatörün kontrol etmesi için ve geri yüklendikten sonra da operatörün hesabınızı sıfırlayıp yeniden geri yükleyebilmesi için saklanır. Zip dosyası, yedekleme aracının hesabınızdan kaydettiklerini içerir.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Oturum açma çerezleri ve oyun belirteçleri; geri okunamayan karma değerler olarak.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: Discord kimliğiniz ve Discord'un rollerinizi güncellemek için sunucuya verdiği belirteçler, şifrelenmiş olarak saklanır. Discord profilinizden başka hiçbir şey saklanmaz. Sunucu, rolleriniz için kullanıcı adınızı ve HunterScore'unuzu Discord'a gönderir.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: 5000 gm$ ve 250 em$ ödülünün Discord kimliğiniz için ödendiğine dair bir kayıt, kimliğe geri çevrilemeyen anahtarlı bir özet (hash) olarak saklanır.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hesapların içermedikleri</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-posta adresiniz, gerçek adınız, posta adresiniz veya telefon numaranız: bunlar istenmez ve hesabınızda saklanmaz. Bir yedek böyle bir alan içeriyorsa geri yüklenmez.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
@@ -1468,6 +1475,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Hesabınız ve verileri, “Verilerimi sil” özelliğini kullanana kadar kalır.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Sunucu ve proxy günlükleri IP adresleri ve kullanıcı adları içerebilir. En fazla 30 gün saklanır.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Bir hesap silindiğinde Steam id'si ve silme zamanı 24 saat saklanır ve bir sonraki günlük temizlikte kaldırılır. Operatörün yasağı; Steam id, zaman, neden ve kaldırıldıysa kaldırılma zamanından oluşan bir kayıt olarak saklanır; kayıt yasak kaldırıldıktan sonra da kalır, böylece sonraki bir sahiplenme isteği Steam id'nin daha önce yasaklandığını gösterebilir, ve hesap silindiğinde de kalır.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Verilerimi sil, Discord kimliğinizi ve belirteçleri kaldırır. Yalnızca Discord kimliğinizin anahtarlı özeti kalır; hesap, ad veya tarih içermez, böylece bağlama ödülü asla iki kez ödenmez. Onu bir Discord kimliğiyle eşleştirmek için sunucunun gizli anahtarı gerekir.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Tarayıcın açık. Orada Steam ile oturum aç.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Steam ile oturum aç</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Giriş zamanında onaylanmadı. Lütfen tekrar dene.</value></data>
@@ -1574,6 +1582,15 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Neden:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Bağlandı</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı ve 5000 gm$ ve 250 em$ aldınız. Discord sunucusundaki rolleriniz HunterScore'unuza göre verilir.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı. Bağlama için 5000 gm$ ve 250 em$ ödülünü zaten aldınız, bu yüzden yeni bir ödül yok. Discord sunucusundaki rolleriniz HunterScore'unuza göre verilir.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Bu Discord hesabı başka bir avcıya bağlı. Bir Discord hesabı yalnızca bir avcıya bağlanabilir.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Avcınız zaten başka bir Discord hesabına bağlı. Bir avcı yalnızca bir Discord hesabına bağlanabilir.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Bağlama işe yaramadı. Discord'a dönün ve tekrar deneyin.</value></data>
+  <data name="DiscordLink.Role" xml:space="preserve"><value>Discord'daki rolünüz: {0}</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{1} için {0} kaldı ({2})</value></data>
+  <data name="DiscordLink.Back" xml:space="preserve"><value>Discord'a dön</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Oyunun ve başlatıcının günlüklerini ve çökme olaylarını (WebView2 dahil) yardım edebilmemiz için topluluk sunucusuna gönderir. 30 gün saklanır.</value></data>
