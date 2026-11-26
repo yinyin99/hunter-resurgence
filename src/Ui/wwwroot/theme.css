@@ -117,7 +117,7 @@
     --h-statusbar: 70px;
     --h-patchbar: 115px; /* the patch bar's whole height, border included; the overlay stops above it */
 
-    /* layers: the page is isolated at 0 (its z-indexes stay inside it), shell menus above it, the status bar drop-downs (--z-dropdown) above the menu bar, the status bar 1001, banners 9000+, modals 100000+ */
+    /* layers: the page is isolated at 0 (its z-indexes stay inside it), shell menus above it, the status bar 1001 (its drop-downs, --z-dropdown, only rank above the menu bar inside its stacking context: not a page-wide layer), banners 9000+, modals 100000+ */
     --z-menu: 10;
     --z-dropdown: 20;
     --w-modal: 980px;

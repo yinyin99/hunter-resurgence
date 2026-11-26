@@ -1,5 +1,5 @@
-.overlay { position: fixed; inset: 0 0 var(--h-patchbar) 0; z-index: 100000; display: flex; align-items: center; justify-content: center; background: var(--bg-patch-modal); text-align: center; }
-.overlay.full { bottom: 0; }
+.overlay { position: fixed; inset: 0; z-index: 100000; display: flex; align-items: center; justify-content: center; background: var(--bg-patch-modal); text-align: center; }
+.overlay.above-bar { bottom: var(--h-patchbar); }
 .box { width: 600px; color: var(--text-2); }
 .overlay.full .box { width: 800px; }
 .box h1 { margin: 0 0 10px; font-size: 38.5px; line-height: 44px; font-weight: 400; color: #fff; }
