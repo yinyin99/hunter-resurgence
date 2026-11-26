@@ -176,39 +176,39 @@ public class MissionConditionTests : MissionTestBase
     [Fact]
     public void TestTheRollbackReopensWhatNoHarvestMeetsKeepsTheWalletAndWhatTheyUnlockedAndNeverTouchesARestoredMission()
     {
-        // the catalogue of the earlier version asks nothing of the kill; the stricter one asks a distance of 1 and 4, and 2 needs 1
-        string Rollback(bool strict) => "{\"missions\": [" + string.Join(",", new[] { (1, "Harvest a Test Deer from over 100 meters", "[]"), (2, "Harvest a Test Deer", "[1]"), (3, "Harvest a Test Deer", "[]"), (4, "Harvest a Test Deer from under 40 meters", "[]") }
+        // the catalogue of the earlier version asks nothing of the kill; the stricter one asks a distance of 5 and 4, and 6 needs 5 (not 1 or 2: no mission needs those)
+        string Rollback(bool strict) => "{\"missions\": [" + string.Join(",", new[] { (5, "Harvest a Test Deer from over 100 meters", "[]"), (6, "Harvest a Test Deer", "[5]"), (3, "Harvest a Test Deer", "[]"), (4, "Harvest a Test Deer from under 40 meters", "[]") }
             .Select(m => $"{{\"id\": {m.Item1}, \"title\": \"x\", \"dependencies\": {(strict ? m.Item3 : "[]")}, \"rewards\": [{{\"text\": \"10 gm$\"}}], \"objectives\": [{{\"id\": 0, \"title\": \"{(strict ? m.Item2 : "Harvest a Test Deer")}\"}}]}}")) + "]}";
         state = New("rollback.db", Rollback(strict: false));
-        state.MissionCall(ME, "activate", Q("mission_id=1"));
+        state.MissionCall(ME, "activate", Q("mission_id=5"));
         state.MissionCall(ME, "activate", Q("mission_id=4"));
-        Hb(Shot(1, distance: 2000));  // 20 m: the lax rules finish 1 and 4
-        Assert.Equal("1,4", Completed());
+        Hb(Shot(1, distance: 2000));  // 20 m: the lax rules finish 5 and 4
+        Assert.Equal("4,5", Completed());
         var wallet = Gm();
-        // a restored account: mission 1 was completed before the restore
+        // a restored account: mission 5 was completed before the restore
         state.CreateAccount(8, "second");
         using (var con = state.Store.Open(8))
         {
             con.Begin();
-            PlayerRows.SetExtra(con, "Mission_missions.json", O("""{"active": [], "completed": [1], "states": {"1": {"state": 3}}}"""));
+            PlayerRows.SetExtra(con, "Mission_missions.json", O("""{"active": [], "completed": [5], "states": {"5": {"state": 3}}}"""));
             con.Commit();
         }
-        Assert.Equal("1", Completed(8));
+        Assert.Equal("5", Completed(8));
 
         var strict = New("rollback.db", Rollback(strict: true));
         var dry = strict.RollbackMissions(apply: false).ToList();
-        Assert.StartsWith($"account {ME}: mission 1 (completed, active again) objectives 0", dry[0]);
+        Assert.StartsWith($"account {ME}: mission 5 (completed, active again) objectives 0", dry[0]);
         Assert.Equal("would reopen 1 objectives in 1 missions; kept: not understood 0 finished objectives (dry run: nothing written, --apply writes)", dry[^1]);
-        Assert.Equal("1,4", Completed(of: strict));  // nothing was written
+        Assert.Equal("4,5", Completed(of: strict));  // nothing was written
         var done = strict.RollbackMissions(apply: true).ToList();
         Assert.Equal("reopened 1 objectives in 1 missions; kept: not understood 0 finished objectives", done[^1]);
         Assert.Equal("4", Completed(of: strict));
-        Assert.Equal("1,2", string.Join(",", Reply(strict.MissionsReply(ME)!)["active"]!.AsArray().Select(i => (long)i!)));  // 2 had become available with 1: it stays open to the player
-        Eq("""{"state": 2, "objectives": []}""", Reply(strict.MissionsReply(ME)!)["states"]!["1"]);
+        Assert.Equal("5,6", string.Join(",", Reply(strict.MissionsReply(ME)!)["active"]!.AsArray().Select(i => (long)i!)));  // 6 had become available with 5: it stays open to the player
+        Eq("""{"state": 2, "objectives": []}""", Reply(strict.MissionsReply(ME)!)["states"]!["5"]);
         Assert.Equal(wallet, Gm(strict));  // nothing is taken back
-        Assert.Equal("1", Completed(8, strict));  // a restored completion has no events to check
+        Assert.Equal("5", Completed(8, strict));  // a restored completion has no events to check
         using (var con = strict.Store.Open(ME))
-            Eq("""{"reopened": [{"mission": 1, "was": "completed", "objectives": [0]}], "activated": [2]}""", JsonNode.Parse((string)con.Scalar("SELECT record FROM mission_rollbacks WHERE account_id = $a")!));
+            Eq("""{"reopened": [{"mission": 5, "was": "completed", "objectives": [0]}], "activated": [6]}""", JsonNode.Parse((string)con.Scalar("SELECT record FROM mission_rollbacks WHERE account_id = $a")!));
         Assert.Equal("reopened 0 objectives in 0 missions; kept: not understood 0 finished objectives", strict.RollbackMissions(apply: true).Last());  // once
     }
 

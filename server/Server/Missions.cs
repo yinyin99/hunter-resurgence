@@ -199,7 +199,7 @@ public sealed partial class State
             }
             var objectives = Arr(d["objectives"]).OfType<JsonObject>().Where(o => TryKey(o["id"], out _))
                 .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), Build(Py.Str(G(o, "title", ""))))).ToArray();
-            missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), Ids(d["dependencies"]), gm, em,
+            missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), [.. Ids(d["dependencies"]).Except(Beginner)], gm, em,
                 [.. objectives.Select((o, i) => o with { Rule = Settle(o.Rule, objectives[..i].Select(p => p.Rule)) })]);
         }
         foreach (var g in Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)))
@@ -211,6 +211,9 @@ public sealed partial class State
     }
 
     static long[] Ids(JsonNode? n) => [.. Arr(n).Where(x => TryKey(x, out _)).Select(Py.L).Distinct()];
+
+    /// <summary>The Whitetail Deer missions 0, 1 and 2 (track, spot, harvest) that open most packs in the original: no mission needs them here, the community's players are not beginners (#1012).</summary>
+    static readonly long[] Beginner = [0, 1, 2];
 
     static JsonArray List(IEnumerable<long> ids) => new([.. ids.Select(i => (JsonNode?)i)]);
 
