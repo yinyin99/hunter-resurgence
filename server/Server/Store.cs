@@ -550,7 +550,6 @@ public sealed class Store
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
-        con.Script(DiscordTables);  // schema 38, the same way
         CreateNews(con);  // schema 36, and not a `version <` step: see CreateNews
         // schema 37, guarded by the column and not by the version (every start): 1 when the player chose imperial units (yards, pounds) in the game's settings
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'")! == 0)
@@ -563,6 +562,7 @@ public sealed class Store
             con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT; UPDATE expeditions SET event = ''");
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_until'")! == 0)
             con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
+        con.Script(DiscordTables);  // schema 40, every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

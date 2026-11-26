@@ -510,16 +510,16 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
     // ---- the schema and the settings
 
     [Fact]
-    public void TestTheSchemaOfVersion37GetsTheDiscordTables()
+    public void TestTheSchemaOfVersion39GetsTheDiscordTables()
     {
-        var file = Path.Combine(tmp, "v37.db");
+        var file = Path.Combine(tmp, "v39.db");
         var store = new Store(file);
         store.CreateAccount(5, "old", new JsonObject());
         using (var con = store.Open())
         {
             con.Exec("DROP TABLE discord_rewards");
             con.Exec("DROP TABLE discord_links");
-            con.Exec("PRAGMA user_version = 37");
+            con.Exec("PRAGMA user_version = 39");
         }
         var migrated = new Store(file);
         using var check = migrated.Open();
