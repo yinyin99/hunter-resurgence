@@ -1849,11 +1849,23 @@ public sealed partial class State
     /// <summary>One harvest <see cref="Rescore"/> changed (or would): its stored score before and after, and the gm$ its kill was paid before (the reward is not taken back).</summary>
     public sealed record RescoredHarvest(long Kill, long Species, double OldScore, double NewScore, long GmsPaid);
 
+    /// <summary>One species and gender of <see cref="BoundsReport"/>: its scored harvests, how many scored outside the species' min_score to max_score, and the lowest and highest score.</summary>
+    public sealed record BoundsRow(long Species, long Gender, int Harvests, int Outside, double Min, double Max, double Lowest, double Highest);
+
+    /// <summary>The species and genders (in that order) with a scored harvest outside their `Scoring.Variants` bounds; a species with no row is skipped.</summary>
+    public static IEnumerable<BoundsRow> BoundsReport(IEnumerable<(long Species, long Gender, double Score)> scores) =>
+        scores.GroupBy(s => (s.Species, s.Gender)).OrderBy(g => g.Key.Species).ThenBy(g => g.Key.Gender)
+              .Where(g => Scoring.Variants.ContainsKey((int)g.Key.Species))
+              .Select(g => (g, b: Scoring.Variants[(int)g.Key.Species]))
+              .Select(x => new BoundsRow(x.g.Key.Species, x.g.Key.Gender, x.g.Count(), x.g.Count(s => s.Score < x.b.Lo || s.Score > x.b.Hi), x.b.Lo, x.b.Hi, x.g.Min(s => s.Score), x.g.Max(s => s.Score)))
+              .Where(r => r.Outside > 0);
+
     /// <summary>Admin: score the stored harvests again with today's rules. A harvest whose score differs gets its stored page updated (a scorable one that
     /// now scores nothing too: its old score goes to 0); its round(css) gm$ is paid when no wallet row for `CSS Reward (Animal Id: kill)` exists, and a
     /// reward already paid stays. Disqualified harvests stay as they are. One transaction per account; dry run writes nothing; a real run that changed a score
-    /// drops the kept boards. onlyKill (with `only`: kill ids are per account) rescores that kill alone. (accountId, rescored, paid, gms, the rescored harvests) per account.</summary>
-    public List<(long Account, int Rescored, int Paid, long Gms, List<RescoredHarvest> Harvests)> Rescore(long? only, bool dryRun, long? onlyKill = null)
+    /// drops the kept boards. onlyKill (with `only`: kill ids are per account) rescores that kill alone. (accountId, rescored, paid, gms, the rescored harvests) per account.
+    /// `scores` collects (species, gender, new score) of every scored harvest walked, for <see cref="BoundsReport"/>.</summary>
+    public List<(long Account, int Rescored, int Paid, long Gms, List<RescoredHarvest> Harvests)> Rescore(long? only, bool dryRun, long? onlyKill = null, List<(long Species, long Gender, double Score)>? scores = null)
     {
         List<long> ids;
         using (var all = Store.Open())
@@ -1870,11 +1882,13 @@ public sealed partial class State
                                        + " WHERE k.account_id = $a AND (?1 IS NULL OR k.kill_id = ?1) ORDER BY k.kill_id", onlyKill))
             {
                 var killId = (long)k[0];
-                var (_, disqualified, score, type, css) = ScoreKill(con, Parse(k[1]), (string)k[1], Trophy, AmmoCheck);
+                var (e7, disqualified, score, type, css) = ScoreKill(con, Parse(k[1]), (string)k[1], Trophy, AmmoCheck);
                 var page = Parse(k[2]);
                 var scored = Py.Truthy(score);
                 if (disqualified || !scored && Num(page["score"]) <= 0)
                     continue;
+                if (scored)
+                    scores?.Add((Py.L(page["species"]), Py.L(G(e7, "gender", 0)), Num(score)));
                 var reward = $"CSS Reward (Animal Id: {killId})";
                 if (!Py.Eq(page["score"], scored ? score : 0) || !Py.Eq(page["score_type"], type ?? ""))
                 {
