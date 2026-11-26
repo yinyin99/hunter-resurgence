@@ -175,10 +175,9 @@ public sealed class Facts
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
-    /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists (`species`), and `no_possessed`: the species of its reserves
-    /// with no possessed version, which are not in `species` (they keep their normal list) and on which its silver ammo is not permitted; null for an event without one.</summary>
-    public (JsonArray Ammo, long[] Species, long[] NoPossessed)? EventEthical(string name) =>
-        Obj("events")[name]?["ethical"] is JsonObject e ? ((JsonArray)(e["ammo"] ?? new JsonArray()).DeepClone(), [.. (e["species"] as JsonArray ?? []).Select(Py.L)], [.. (e["no_possessed"] as JsonArray ?? []).Select(Py.L)]) : null;
+    /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists; null for an event without one.</summary>
+    public (JsonArray Ammo, long[] Species)? EventEthical(string name) =>
+        Obj("events")[name]?["ethical"] is JsonObject e ? ((JsonArray)(e["ammo"] ?? new JsonArray()).DeepClone(), [.. (e["species"] as JsonArray ?? []).Select(Py.L)]) : null;
 
     /// <summary>The `index` and `animal` of every population any event adds on the game's reserve number <paramref name="reserve"/>; the pair, as an event's index
     /// can be a normal creature's (the original's feral hog 3 on reserve 0 is beside the Roosevelt elk 3).</summary>

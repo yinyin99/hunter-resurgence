@@ -295,6 +295,17 @@ public class SeasonalEventTests : StateTestBase
     }
 
     [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestTheWerewolfPermitsSilverWithOrWithoutTheEvent(bool playsEvents)
+    {
+        var s = Hunt(1, playsEvents);
+        Eq("[962, 963, 1142]", Connect(s)["ethical"]![50]);  // `species_rules`, the recorded connect listing none
+        Assert.False(Disqualified(HarvestOf(s, 50, 401, 962)));
+        Assert.True(Disqualified(HarvestOf(s, 50, 402, 14)));
+    }
+
+    [Theory]
     [InlineData(4, "[241, 14]")]
     [InlineData(6, "[241]")]
     public void TestWithoutTheEventASpeciesWithNoPossessedVersionKeepsItsNormalList(int species, string permitted)
@@ -302,17 +313,19 @@ public class SeasonalEventTests : StateTestBase
         var s = Hunt(1, playsEvents: false);
         Eq(permitted, Connect(s)["ethical"]![species]);
         Assert.True(Disqualified(HarvestOf(s, species, 401, 15)));
-        Assert.False(Disqualified(HarvestOf(s, species, 402, 962)));  // outside the event the silver rounds are permitted on every species, as before
+        Assert.False(Disqualified(HarvestOf(s, species, 403, species == 4 ? 14 : 241)));
+        Assert.True(Disqualified(HarvestOf(s, species, 402, 962)));  // silver is in no normal list
     }
 
     [Theory]
     [InlineData(1, false)]  // the player opted out: the normal animals and lists
     [InlineData(5, true)]  // a reserve the event has no content on
-    public void TestWithoutTheEventOnItsReserveTheSameKillIsNotDisqualified(int reserve, bool playsEvents)
+    public void TestWithoutTheEventOnItsReserveANormalRoundIsNotDisqualifiedAndSilverIs(int reserve, bool playsEvents)
     {
         var s = Hunt(reserve, playsEvents);
         Eq("[241, 14]", Connect(s)["ethical"]![17]);
-        Assert.False(Disqualified(Harvest(s, 401, 14, 962)));
+        Assert.False(Disqualified(Harvest(s, 401, 14)));
+        Assert.True(Disqualified(Harvest(s, 402, 962)));  // his animals are normal: silver is in no normal list
     }
 
     [Fact]
@@ -323,7 +336,7 @@ public class SeasonalEventTests : StateTestBase
         Assert.True(Disqualified(Harvest(s, 401, 14, 962)));
         s.NoteTutorial(ME, "tutorial-session", 1);
         Eq("[241, 14]", Reply(s.ConnectReply(ME, "tutorial-session"))["ethical"]![17]);
-        var tutorial = Harvest(s, 402, 14, 962);
+        var tutorial = Harvest(s, 402, 14);
         Assert.False(Warned(tutorial));
         Assert.False(Disqualified(tutorial));
         Assert.Equal("True,False", KillsEthical(s));  // the tutorial's kill (on the latest hunt's page) by the normal list, the hunt's own by the event's
@@ -339,12 +352,12 @@ public class SeasonalEventTests : StateTestBase
     {
         var s = Hunt(1, playsEvents: false);
         Eq("[241, 14]", Connect(s)["ethical"]![17]);
-        Assert.False(Disqualified(Harvest(s, 401, 14, 962)));
+        Assert.False(Disqualified(Harvest(s, 401, 14)));
         s.Store.SetPlaysEvents(ME, true);
         var again = Connect(s);  // the game started again inside the same hunt
         Assert.NotNull(again["ingame_event"]);
         Eq("[241, 14]", again["ethical"]![17]);  // still the normal list for the whole hunt
-        Assert.False(Disqualified(Harvest(s, 402, 14, 962)));
+        Assert.False(Disqualified(Harvest(s, 402, 14)));
         Assert.Equal("True,True", KillsEthical(s));  // the earlier kill keeps its verdict
     }
 
@@ -388,7 +401,7 @@ public class SeasonalEventTests : StateTestBase
         Assert.True(Disqualified(Harvest(restarted, 402, 14, 962)));
         restarted.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());  // the next hunt, after the event
         Eq("[241, 14]", Connect(restarted)["ethical"]![17]);
-        Assert.False(Disqualified(Harvest(restarted, 403, 14, 962)));
+        Assert.False(Disqualified(Harvest(restarted, 403, 14)));
     }
 
     static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];

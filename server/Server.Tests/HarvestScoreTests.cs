@@ -156,13 +156,16 @@ public class HarvestScoreTests : StateTestBase
     }
 
     [Fact]
-    public void TheEventsSilverAmmunitionIsPermittedOnEverySpeciesAndAnyOtherAmmunitionIsNot()
+    public void AnAmmunitionOutsideTheSpeciesListIsDisqualifiedTheEventsSilverToo()
     {
-        var (silver, paid) = Harvest(17, 1, 1142);  // a rabbit: the connect lists 10 only
-        Assert.True(paid && Py.Eq(silver["trophy_shot"], 1));
-        var (other, notPaid) = Harvest(17, 0, 11);
-        Eq("""[0, "Disqualified ", -1]""", T(other["trophy_shot"], other["score_text"], other["score"]));
-        Assert.False(notPaid);
+        var (listed, paid) = Harvest(17, 1);  // a rabbit: the connect lists 10 only
+        Assert.True(paid && Py.Eq(listed["trophy_shot"], 1));
+        foreach (var (gender, ammo) in new[] { (0, 11), (1, 1142) })  // an ordinary species permits no silver: it is in no normal list
+        {
+            var (other, notPaid) = Harvest(17, gender, ammo, 9000 + ammo);
+            Eq("""[0, "Disqualified ", -1]""", T(other["trophy_shot"], other["score_text"], other["score"]));
+            Assert.False(notPaid);
+        }
     }
 
     [Fact]

@@ -739,7 +739,6 @@ public sealed partial class State
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
     readonly JsonArray discounts, ethicalAmmo;
-    readonly JsonNode[] eventAmmo;  // the event's silver ammunition: permitted on every species
     /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
     public SeasonalEvent? Seasonal { get; }
     /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
@@ -859,7 +858,6 @@ public sealed partial class State
             while (ethicalAmmo.Count <= id) ethicalAmmo.Add(new JsonArray());
             if (!Py.Truthy(ethicalAmmo[id])) ethicalAmmo[id] = new JsonArray([.. ammo.Select(a => (JsonNode?)a)]);
         }
-        eventAmmo = [.. this.facts.SpeciesAmmo.Values.SelectMany(a => a).Distinct().Select(a => (JsonNode)a)];
         var avatarUrl = Py.Str(G(AccountTemplate(), "avatar_url", ""));
         var (scheme, netloc) = SchemeNetloc(avatarUrl);
         // the recorded account's picture is `<base>/256/<id>.png`: where an uploaded avatar is fetched from when `avatar_uploads` is unset (AvatarFetchUrl); every picture this server hands out is on its own host (MediaUrl)
@@ -1014,16 +1012,14 @@ public sealed partial class State
         : huntEvent is not null && facts.EventEthical(huntEvent) is { } ev && ev.Species.Contains(Mod100(sp)) ? ev.Ammo
         : Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
 
-    /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>; the event's silver ammunition is permitted on every species. The one rule the kills are judged by and the store shows.</summary>
-    bool Permits(JsonArray allowed, JsonNode? ammo, bool silver = true) => allowed.Concat(silver ? eventAmmo : []).Any(a => Py.Eq(a, ammo));
+    /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>, the list that applies to the species in that hunt. The one rule the kills are judged by and the store shows.</summary>
+    bool Permits(JsonArray allowed, JsonNode? ammo) => allowed.Any(a => Py.Eq(a, ammo));
 
     /// <summary>(toast update, notice message) for a hit with ammo outside the species' permitted list (<see cref="Allowed"/>, in a hunt of <paramref name="huntEvent"/>); null if
     /// permitted or the species has no list.</summary>
     public (JsonObject Toast, string Message)? AmmoCheck(JsonObject hit, JsonNode? sp, string? huntEvent)
     {
-        // a species the event's hunt says has no possessed version (`no_possessed`) is a normal animal there: silver on it is not permitted
-        var silver = !(huntEvent is not null && sp is not null && facts.EventEthical(huntEvent) is { } ev && ev.NoPossessed.Contains(Mod100(sp)));
-        if (Allowed(sp, huntEvent) is not { } allowed || Permits(allowed, hit["ammunition_id"], silver))
+        if (Allowed(sp, huntEvent) is not { } allowed || Permits(allowed, hit["ammunition_id"]))
             return null;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
