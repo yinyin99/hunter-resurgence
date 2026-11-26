@@ -136,6 +136,21 @@ public class MissionTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheGamesApplicationReplyListsNoWhitetailMissionAsAPrerequisite()
+    {
+        state = New("app.db", definitions: """
+            {"missions": [
+              {"id": 0, "title": "Zero", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 20, "title": "Opener", "dependencies": [0, 1, 2], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 21, "title": "After", "dependencies": [20], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 22, "title": "Both", "dependencies": [2, 20, 21], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}]}
+            """);
+        var missions = Reply(state.ClientApplicationReply())["missions"]!.AsArray();
+        string Dependencies(int id) => missions.Single(m => (long)m!["id"]! == id)!["dependencies"]!.ToJsonString();
+        Assert.Equal(("[]", "[]", "[20]", "[20,21]"), (Dependencies(0), Dependencies(20), Dependencies(21), Dependencies(22)));
+    }
+
+    [Fact]
     public void TestAHarvestFinishesAMissionPaysItAndAnnouncesIt()
     {
         Call("activate", "mission_id=11");
