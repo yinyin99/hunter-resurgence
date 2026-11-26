@@ -128,7 +128,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         try
         {
             var (status, body) = await Token(("grant_type", "authorization_code"), ("code", code), ("redirect_uri", RedirectUri));
-            if (ReadTokens(body) is not { } tokens || !(Str(body?["scope"]) ?? "").Split(' ').Contains("role_connections.write"))
+            if (ReadTokens(body) is not { } tokens || !Grants(body))
                 return Fail(account, $"Discord refused the code ({status})");
             var (meStatus, me) = await Send(HttpMethod.Get, "/users/@me", null, tokens.Access);
             if (Str(me?["id"]) is not { } discordId || !IsDiscordId(discordId))
@@ -213,19 +213,21 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         {
             if (Unseal(row[2], discordId) is not { } refresh)
             {
-                Drop(account, "its tokens cannot be read with this server's key");
+                Drop(account, "its tokens cannot be read with this server's key", (string)row[2]!);
                 return false;
             }
             var (status, body) = await Token(("grant_type", "refresh_token"), ("refresh_token", refresh));
             if (ReadTokens(body) is not { } fresh)
             {
-                if (status == 400 && Str(body?["error"]) == "invalid_grant") Drop(account, "Discord no longer accepts its refresh token");
+                if (status == 400 && Str(body?["error"]) == "invalid_grant") Drop(account, "Discord no longer accepts its refresh token", (string)row[2]!);
                 else Console.Error.WriteLine($"discord push of account {account}: the token refresh failed ({status})");
                 return false;
             }
             access = fresh.Access;
+            // only while the row still holds the tokens read above: a player who linked again meanwhile keeps the new ones
             using var con = store.Open();
-            con.Exec("UPDATE discord_links SET access_token = ?1, refresh_token = ?2, expires_ts = ?3 WHERE account_id = ?4", Seal(fresh.Access, discordId), Seal(fresh.Refresh, discordId), Store.Now() + fresh.Life, account);
+            con.Exec("UPDATE discord_links SET access_token = ?1, refresh_token = ?2, expires_ts = ?3 WHERE account_id = ?4 AND refresh_token = ?5",
+                     Seal(fresh.Access, discordId), Seal(fresh.Refresh, discordId), Store.Now() + fresh.Life, account, (string)row[2]!);
         }
         var put = new JsonObject { ["platform_name"] = PlatformName, ["platform_username"] = handle, ["metadata"] = new JsonObject { ["hunterscore"] = score } };
         var (code, _) = await Send(HttpMethod.Put, $"/users/@me/applications/{clientId}/role-connection", new StringContent(put.ToJsonString(), Encoding.UTF8, "application/json"), access);
@@ -240,11 +242,11 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         return true;
     }
 
-    void Drop(long account, string why)
+    void Drop(long account, string why, string held)
     {
         Console.Error.WriteLine($"discord push of account {account}: {why}");
         using var con = store.Open();
-        con.Exec("UPDATE discord_links SET access_token = NULL, refresh_token = NULL, expires_ts = 0 WHERE account_id = ?1", account);
+        con.Exec("UPDATE discord_links SET access_token = NULL, refresh_token = NULL, expires_ts = 0 WHERE account_id = ?1 AND refresh_token = ?2", account, held);  // not the tokens of a link made meanwhile
     }
 
     /// <summary>Push every linked account whose hunterscore is not the one last pushed (every account just linked is one); the number of pushes Discord took. Run every <see cref="SweepEvery"/>.
@@ -265,7 +267,14 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
         var pushed = 0;
         foreach (var account in due)
-            if (await PushAsync(account)) pushed++;
+            try
+            {
+                if (await PushAsync(account)) pushed++;
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                Console.Error.WriteLine($"discord push of account {account}: {e.Message}");  // one account's failure never stops the others
+            }
         return pushed;
     }
 
@@ -279,6 +288,9 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
     static Tokens? ReadTokens(JsonObject? b) =>
         Str(b?["access_token"]) is { Length: > 0 } access && Str(b?["refresh_token"]) is { Length: > 0 } refresh && b?["expires_in"] is JsonValue life && life.TryGetValue<long>(out var seconds) && seconds > 0
             ? new(access, refresh, seconds) : null;
+
+    /// <summary>Did the token reply grant both scopes asked for (`scope` is a space-separated list).</summary>
+    static bool Grants(JsonObject? b) => (Str(b?["scope"]) ?? "").Split(' ') is var granted && granted.Contains("identify") && granted.Contains("role_connections.write");
 
     Task<(int Status, JsonObject? Body)> Token(params (string, string)[] form) =>
         Send(HttpMethod.Post, "/oauth2/token", new FormUrlEncodedContent([.. form.Select(p => KeyValuePair.Create(p.Item1, p.Item2)), KeyValuePair.Create("client_id", clientId), KeyValuePair.Create("client_secret", clientSecret)]), null);

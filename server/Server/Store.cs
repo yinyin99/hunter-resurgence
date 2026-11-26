@@ -672,8 +672,8 @@ public sealed class Store
     }
 
     /// <summary>Delete an account and, by the foreign keys, everything of it: every per-player row, its tokens, its cookie
-    /// sessions, its Steam id and handle; and its friend edges both ways. Files are the caller's. Its Steam id and the time `at` (default now)
-    /// stay in `steam_deletions` for the claim cooldown; nothing else of the account does.</summary>
+    /// sessions, its Steam id and handle, its Discord link and tokens; and its friend edges both ways. Files are the caller's. Its Steam id and the time `at` (default now)
+    /// stay in `steam_deletions` for the claim cooldown; and its keyed Discord hash stays in the reward ledger (`discord_rewards`), the account cleared. Nothing else of the account does.</summary>
     public void DeleteAccount(long id, long? at = null)
     {
         using var con = Open();

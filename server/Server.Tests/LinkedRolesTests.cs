@@ -17,6 +17,7 @@ sealed class FakeDiscord : HttpMessageHandler
     public int RefreshStatus = 200;
     public string RefreshError = "invalid_grant";
     public bool Down;
+    public Action? OnRefresh;  // runs when a refresh token is traded, before Discord answers: what happens meanwhile
     public readonly List<Call> Asked = [];
     int issued;
 
@@ -38,6 +39,7 @@ sealed class FakeDiscord : HttpMessageHandler
         static HttpResponseMessage Json(int status, string json) => new((HttpStatusCode)status) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
         if (path == "/api/v10/oauth2/token")
         {
+            if (form.GetValueOrDefault("grant_type") == "refresh_token") OnRefresh?.Invoke();
             if (form.GetValueOrDefault("grant_type") == "refresh_token" && RefreshStatus != 200)
                 return Json(RefreshStatus, $$"""{"error": "{{RefreshError}}"}""");
             var n = Interlocked.Increment(ref issued);
@@ -179,8 +181,11 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
     public async Task TestADiscordAnswerWithoutBothScopesOrAUserIsAnErrorAndLinksNothing()
     {
         var cookie = SessionOf(8);
-        discord.Scope = "identify";
-        Assert.Equal(Redirect + "error", await Callback(cookie));
+        foreach (var scope in new[] { "identify", "role_connections.write", "" })
+        {
+            discord.Scope = scope;
+            Assert.Equal(Redirect + "error", await Callback(cookie));  // both scopes, or no link
+        }
         discord.Scope = "identify role_connections.write";
         discord.UserId = "not-a-snowflake";
         Assert.Equal(Redirect + "error", await Callback(cookie));
@@ -412,6 +417,42 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         discord.Asked.Clear();
         Assert.True(await Roles.PushAsync(8));
         Assert.Equal("POST", discord.Asked[0].Method);
+    }
+
+    [Fact]
+    public async Task TestAPlayerWhoLinksAgainWhileTheTokensAreRefreshedKeepsTheNewTokens()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
+        string? relinked = null;
+        discord.OnRefresh = () =>
+        {
+            Roles.Link(8, discord.UserId, new("access-new", "refresh-new", 604800));  // the player links again while the sweep refreshes
+            relinked = (string)LinkRow(8)[2];
+        };
+        foreach (var (status, score) in new[] { (200, 40000), (400, 41000) })  // a refreshed pair, then a refused one
+        {
+            Expire(8);
+            SetHunterscore(8, score);
+            discord.RefreshStatus = status;
+            Assert.Equal(status == 200, await Roles.PushAsync(8));
+            Assert.Equal(relinked, LinkRow(8)[2]);  // neither the answer nor the refusal touched the tokens of the new link
+            Assert.NotNull(relinked);
+        }
+    }
+
+    [Fact]
+    public async Task TestOneAccountsUnexpectedFailureDoesNotStopTheSweepForTheOthers()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
+        discord.UserId = "222222222222222222";
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(9)));
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE discord_links SET expires_ts = 'junk' WHERE account_id = 8");  // a row that cannot be read as a number
+        SetHunterscore(8, 500);
+        SetHunterscore(9, 600);
+        discord.Asked.Clear();
+        Assert.Equal(1, await Roles.SweepAsync());
+        Assert.Equal(600, (int)Assert.Single(discord.Puts).Json!["metadata"]!["hunterscore"]!);
     }
 
     // ---- the schema and the settings
