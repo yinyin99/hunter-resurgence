@@ -1,0 +1,25 @@
+@page "/signin/discord"
+@layout SignInLayout
+
+@* where the server's /discord/callback sends the browser (docs/server.md#discord-linked-roles): the result is one fixed key of the redirect; any other reads as an error *@
+<PageTitle>@L[Good ? "DiscordLink.Linked" : "SignInPage.Problem.Title"]</PageTitle>
+
+<h1>@L[Good ? "DiscordLink.Linked" : "SignInPage.Problem.Title"]</h1>
+<p>@L[Key]</p>
+@if (Good) { <SignInDiscord /> }
+
+@code {
+    /// <summary>`linked` (the reward was paid now), `rewarded` (linked, paid before), `taken` (that Discord account is another hunter's), `other` (this hunter has another Discord account), `error`.</summary>
+    [SupplyParameterFromQuery] public string? Result { get; set; }
+
+    bool Good => Result is "linked" or "rewarded";
+
+    string Key => Result switch
+    {
+        "linked" => "DiscordLink.Reward",
+        "rewarded" => "DiscordLink.Rewarded",
+        "taken" => "DiscordLink.Taken",
+        "other" => "DiscordLink.Other",
+        _ => "DiscordLink.Error",
+    };
+}

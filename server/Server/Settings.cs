@@ -118,6 +118,14 @@ public sealed class Settings
         cfg["review_webhook"] = Text(root, "review_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["signup_webhook"] = Text(root, "signup_webhook");  // an https URL; unset: no alert (Alerts.cs)
         cfg["news_webhook"] = Text(root, "news_webhook");  // an https URL of the announcements channel's webhook, for `admin news add --discord` (NewsCommand.cs); unset: --discord is refused
+        // Discord Linked Roles (LinkedRoles.cs): the Discord application's id and client secret, both or neither; the secret is the operator's, never committed. Unset: /discord/link and /discord/callback are off
+        string? discordId = Text(root, "discord_client_id"), discordSecret = Text(root, "discord_client_secret");
+        if ((discordId is null) != (discordSecret is null))
+            throw new InvalidDataException("discord_client_id and discord_client_secret go together");
+        if (discordId is not null && !LinkedRoles.IsDiscordId(discordId))
+            throw new InvalidDataException("discord_client_id: the application id, digits only");
+        cfg["discord_client_id"] = discordId;
+        cfg["discord_client_secret"] = discordSecret;
         // what the server stores for the operator (Uploads.cs): zips and bytes an account may have waiting or refused, bytes on the whole server, and the data disk's free bytes below which uploads stop
         cfg["upload_account_files"] = Whole(root, "upload_account_files", Uploads.AccountFilesDefault, 1);
         cfg["upload_account_bytes"] = Whole(root, "upload_account_bytes", Uploads.AccountBytesDefault, 1);

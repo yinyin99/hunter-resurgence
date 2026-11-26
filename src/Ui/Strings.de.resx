@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Wählen Sie Ihr Backup-Zip aus und laden Sie es hoch.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Meine Daten löschen</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dadurch werden Ihr Konto auf diesem Server und alles, was dazu gespeichert ist, gelöscht: Ihr Name, Ihre Spieldaten, die aufbewahrten Backup-Zips und Ihre Fotos. Nur Ihre Steam-ID und der Zeitpunkt der Löschung bleiben 24 Stunden erhalten, damit ein neues Konto nicht sofort ein altes Profil beanspruchen kann; wenn der Betreiber Ihre Steam-ID gesperrt hat, bleibt auch der Sperreintrag erhalten. Sie werden abgemeldet, und die Anmeldung des Launchers funktioniert nicht mehr. Das lässt sich nicht rückgängig machen.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Wenn Sie Discord verknüpft haben, bleibt noch eines: ein Hash Ihrer Discord-ID mit Schlüssel, ohne Konto, Namen oder Datum, damit die Belohnung für die Verknüpfung nie zweimal ausgezahlt wird. Ihre Discord-ID und die Token werden gelöscht.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ich habe verstanden, alles löschen</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Meine Daten löschen</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Die Daten konnten nicht gelöscht werden. Bitte versuchen Sie es erneut.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Die Spieldaten Ihres Kontos: Inventar, Kontostand, Fertigkeiten, Statistiken, Errungenschaften, Trophäen, Jagden, Abschüsse und die Fotos, die Sie im Spiel aufnehmen.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Jedes Backup-Zip, das Sie hochladen, unverändert: aufbewahrt, damit ein Betreiber es prüfen kann, und nach der Wiederherstellung, damit der Betreiber Ihr Konto zurücksetzen und erneut wiederherstellen kann. Ein Zip enthält, was das Backup-Tool von Ihrem Konto gespeichert hat.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Anmelde-Cookies und Spiel-Tokens, als Hashes, die sich nicht zurücklesen lassen.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Nur wenn Sie Discord verknüpfen: Ihre Discord-ID und die Token, die Discord dem Server zum Aktualisieren Ihrer Rollen gegeben hat, verschlüsselt gespeichert. Sonst wird nichts von Ihrem Discord-Profil gespeichert.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Nur wenn Sie Discord verknüpfen: ein Vermerk, dass die Belohnung von 2500 gm$ für Ihre Discord-ID ausgezahlt wurde, gespeichert als Hash mit Schlüssel, der sich nicht in die ID zurückrechnen lässt.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Was Konten nicht enthalten</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ihre E-Mail-Adresse, Ihr echter Name, Ihre Postanschrift oder Telefonnummer: Diese Angaben werden nicht abgefragt und nicht in Ihrem Konto gespeichert. Enthält ein Backup ein solches Feld, wird es nicht wiederhergestellt.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ihre Daten löschen</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Ihr Konto und seine Daten bleiben bestehen, bis Sie Meine Daten löschen verwenden.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- und Proxy-Logs können IP-Adressen und Handles enthalten. Sie werden höchstens 30 Tage aufbewahrt.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Wird ein Konto gelöscht, werden seine Steam-ID und der Zeitpunkt der Löschung 24 Stunden aufbewahrt und bei der nächsten täglichen Bereinigung entfernt. Eine Sperre durch den Betreiber wird als Eintrag mit Steam-ID, Zeitpunkt, Grund und, nach der Aufhebung, dem Zeitpunkt der Aufhebung gespeichert; der Eintrag bleibt nach einer Aufhebung erhalten, damit ein späterer Antrag auf ein Profil zeigen kann, dass die Steam-ID früher gesperrt war, und er bleibt auch bestehen, wenn das Konto gelöscht wird.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Meine Daten löschen entfernt Ihre Discord-ID und die Token. Nur der Hash Ihrer Discord-ID mit Schlüssel bleibt, ohne Konto, Namen oder Datum, damit die Belohnung für die Verknüpfung nie zweimal ausgezahlt wird. Um ihn einer Discord-ID zuzuordnen, braucht man den geheimen Schlüssel des Servers.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Dein Browser ist geöffnet. Melde dich dort mit Steam an.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Mit Steam anmelden</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Die Anmeldung wurde nicht rechtzeitig bestätigt. Bitte versuche es erneut.</value></data>
@@ -1574,6 +1578,12 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Grund:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dieses Formular stammt nicht von diesem Server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Diese Anmeldung wurde schon bestätigt.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Verknüpft</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ihr Discord-Konto ist mit Ihrem Jäger verknüpft und Sie haben 2500 gm$ erhalten. Ihre Rollen auf dem Discord-Server folgen Ihrem Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ihr Discord-Konto ist mit Ihrem Jäger verknüpft. Die 2500 gm$ für die Verknüpfung haben Sie schon erhalten, es gibt also keine neue Belohnung. Ihre Rollen auf dem Discord-Server folgen Ihrem Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Dieses Discord-Konto ist mit einem anderen Jäger verknüpft. Ein Discord-Konto kann nur mit einem Jäger verknüpft werden.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Ihr Jäger ist bereits mit einem anderen Discord-Konto verknüpft. Ein Jäger kann nur mit einem Discord-Konto verknüpft werden.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Die Verknüpfung hat nicht geklappt. Gehen Sie zurück zu Discord und versuchen Sie es erneut.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Sendet die Logs und Absturzereignisse des Spiels und des Launchers (einschließlich WebView2) an den Community-Server, damit wir helfen können. 30 Tage gespeichert.</value></data>

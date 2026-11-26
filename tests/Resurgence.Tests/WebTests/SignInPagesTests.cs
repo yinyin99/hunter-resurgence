@@ -122,4 +122,20 @@ public sealed class SignInPagesTests : UiContext
         expired.Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/problem?reason=expired");
         Assert.Empty(expired.Render<Problem>().FindAll(".ban-reason"));
     }
+
+    [Theory]
+    [InlineData("linked", "DiscordLink.Reward", true)]
+    [InlineData("rewarded", "DiscordLink.Rewarded", true)]
+    [InlineData("taken", "DiscordLink.Taken", false)]
+    [InlineData("other", "DiscordLink.Other", false)]
+    [InlineData("error", "DiscordLink.Error", false)]
+    [InlineData("<x>", "DiscordLink.Error", false)]  // any other key reads as an error
+    public void TheDiscordLinkPageTellsTheResultTheServerRedirectedWith(string result, string key, bool linked)
+    {
+        Use(null);
+        Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/discord?result=" + Uri.EscapeDataString(result));
+        var cut = Render<DiscordLink>();
+        Assert.Equal(Text(linked ? "DiscordLink.Linked" : "SignInPage.Problem.Title"), cut.Find("h1").TextContent);
+        Assert.Equal(Text(key), cut.Find("p").TextContent);
+    }
 }

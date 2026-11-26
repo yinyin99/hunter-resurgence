@@ -153,6 +153,7 @@
     <section class="panel box">
         <h3>@L["Restore.Delete.Title"]</h3>
         <p>@L["Restore.Delete.Text"]</p>
+        <p>@L["Restore.Delete.Discord"]</p>
         <p><label><input type="checkbox" class="tick" @bind="confirmDelete" /> @L["Restore.Delete.Confirm"]</label></p>
         <button type="button" class="btn btn-danger" disabled="@(!confirmDelete || busy)" @onclick="Delete">@L["Restore.Delete.Button"]</button>
         @if (deleteFailed) { <p class="alert bad" role="alert">@L["Restore.Delete.Failed"]</p> }

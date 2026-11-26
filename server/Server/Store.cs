@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 39;
+    public const int Version = 40;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -181,6 +181,19 @@ public sealed class Store
     const string AdminMessagesTable = """
         CREATE TABLE IF NOT EXISTS admin_messages (
             id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, account_id INTEGER REFERENCES accounts (id) ON DELETE CASCADE, recipients INTEGER NOT NULL, text TEXT NOT NULL);
+        """;
+
+    // Discord Linked Roles (LinkedRoles.cs, docs/server.md#discord-linked-roles). discord_links: one row per account and per Discord id (both UNIQUE), the user's two OAuth tokens sealed (AES-GCM, the key
+    // derived from the secret key file; both null once Discord refused the refresh token), when the access token ends, and the hunterscore last pushed (null: none yet). It goes with its account (and moves
+    // with it: Restorer.Adopt). discord_rewards: the reward ledger, one row per Discord id ever paid: `hash` is its keyed hash (never the id), `account_id` the account that was paid (UNIQUE: one reward per
+    // account too). The row stays when the account is deleted, with the account cleared, so a recreated account, or another one with that Discord id, is not paid again.
+    // Neither is in PlayerTables: a Discord id is looked up across accounts.
+    const string DiscordTables = """
+        CREATE TABLE IF NOT EXISTS discord_links (
+            account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, discord_id TEXT NOT NULL UNIQUE,
+            access_token TEXT, refresh_token TEXT, expires_ts INTEGER NOT NULL DEFAULT 0, pushed_score INTEGER, linked_ts INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS discord_rewards (
+            hash TEXT PRIMARY KEY, account_id INTEGER UNIQUE REFERENCES accounts (id) ON DELETE SET NULL) WITHOUT ROWID;
         """;
 
     // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge
@@ -537,6 +550,7 @@ public sealed class Store
         }
         // every start, whatever the version: schema steps of the batch may be deployed in any order, so this one is not gated on a number (IF NOT EXISTS makes it idempotent)
         con.Script(AdminMessagesTable);
+        con.Script(DiscordTables);  // schema 38, the same way
         CreateNews(con);  // schema 36, and not a `version <` step: see CreateNews
         // schema 37, guarded by the column and not by the version (every start): 1 when the player chose imperial units (yards, pounds) in the game's settings
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'")! == 0)

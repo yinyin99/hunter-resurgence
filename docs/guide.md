@@ -58,6 +58,10 @@ More: [launcher](launcher.md#the-player-kit).
 
 **A seasonal event changes what is ethical.** In a hunt the event runs for (on its reserves, with "Play seasonal events" on), only the event's silver ammunition is permitted on the animals there, small game included: one hit with any other ammunition makes the kill unethical (disqualified, no score and no gm$), even when silver finishes it. A hunt keeps the rule it started with until it ends, even when the event ends or you change the setting; a change applies from your next hunt. Tutorials keep the normal rule.
 
+## Optional: link your Discord account
+
+If the community's Discord server offers Linked Roles, link your Discord account to your hunter once and get **2500 gm$**, one time only. In Discord, open the server's **Linked Roles** page, choose the role that asks for the connection, and press the link button. The website asks you to sign in with Steam if you are not signed in, then Discord asks you to allow the connection. When you come back to the website you see "Linked". Your roles on the Discord server then follow your Hunter Score: "Verified hunter" once you are linked, and "Veteran" from a Hunter Score of 20000, without linking again (it updates within a few minutes of your Hunter Score changing). A Discord account links to one hunter, and a hunter to one Discord account. The reward is paid once per hunter and per Discord account, however often you link again. **Delete my data** on the website's restore page removes your Discord link; the website's Your data page says what is kept.
+
 ## Multiplayer (beta)
 
 Multiplayer is a beta: it works, but expect rough edges. The game connects the players straight to each other; the community server only lists the games and introduces them.

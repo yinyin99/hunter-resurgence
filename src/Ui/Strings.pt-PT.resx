@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Escolha o seu zip de cópia de segurança e envie-o.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Eliminar os meus dados</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Isto elimina a sua conta neste servidor e tudo o que está guardado com ela: o seu nome, os dados do jogo, os zips de cópia de segurança guardados e as suas fotografias. Apenas o seu ID Steam e a hora da eliminação ficam guardados durante 24 horas, para que uma conta nova não possa reivindicar logo um perfil antigo; se o operador baniu o seu ID Steam, o registo do banimento também fica. A sua sessão é terminada e o início de sessão do launcher deixa de funcionar. Não pode ser anulado.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Se associou o Discord, fica mais uma coisa: um hash com chave do seu id do Discord, sem conta, nome ou data, para que a recompensa pela associação nunca seja paga duas vezes. O seu id do Discord e os seus tokens são eliminados.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Compreendo, eliminar tudo</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Eliminar os meus dados</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Não foi possível eliminar os dados. Tente novamente.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Os dados de jogo da sua conta: inventário, carteira, habilidades, estatísticas, conquistas, troféus, caçadas, abates e as fotografias que tira no jogo.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Cada zip de cópia de segurança que envia, sem alterações: guardado para um operador o verificar e, depois de restaurado, para que o operador possa repor a sua conta e restaurá-la novamente. Um zip contém o que a ferramenta de cópia de segurança guardou da sua conta.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de início de sessão e tokens do jogo, como hashes que não podem ser revertidos.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Apenas se associar o Discord: o seu id do Discord e os tokens que o Discord deu ao servidor para atualizar os seus cargos, guardados cifrados. Nada mais do seu perfil do Discord é guardado.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Apenas se associar o Discord: um registo de que a recompensa de 2500 gm$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não contêm</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>O seu endereço de e-mail, nome verdadeiro, morada ou número de telefone: não são pedidos nem guardados na sua conta. Se uma cópia de segurança contiver um campo desse tipo, este não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar os seus dados</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>A sua conta e os respetivos dados mantêm-se até usar Eliminar os meus dados.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Os registos do servidor e do proxy podem conter endereços IP e nomes de caçador. São guardados no máximo 30 dias.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Quando uma conta é eliminada, o seu ID Steam e a hora da eliminação ficam guardados durante 24 horas e são removidos na próxima limpeza diária. Um banimento pelo operador fica guardado como um registo com o ID Steam, a hora, o motivo e, depois de levantado, a hora em que foi levantado; o registo permanece após o levantamento, para que uma reivindicação posterior mostre que o ID Steam já foi banido, e permanece quando a conta é eliminada.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Eliminar os meus dados remove o seu id do Discord e os seus tokens. Fica apenas o hash com chave do seu id do Discord, sem conta, nome ou data, para que a recompensa pela associação nunca seja paga duas vezes. É preciso a chave secreta do servidor para o associar a um id do Discord.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>O seu navegador está aberto. Inicie sessão lá com o Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Iniciar sessão com o Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>O início de sessão não foi confirmado a tempo. Tente novamente.</value></data>
@@ -1574,6 +1578,12 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Associado</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador e recebeu 2500 gm$. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador. Já recebeu os 2500 gm$ pela associação, por isso não há nova recompensa. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Esta conta do Discord está associada a outro caçador. Uma conta do Discord só pode ser associada a um caçador.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>O seu caçador já está associado a outra conta do Discord. Um caçador só pode ser associado a uma conta do Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>A associação não funcionou. Volte ao Discord e tente novamente.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tens a certeza de que queres fechar o launcher e o jogo?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Comunicar um problema</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envia os registos e eventos de falha do jogo e do launcher (incluindo o WebView2) para o servidor da comunidade para podermos ajudar. Guardados durante 30 dias.</value></data>

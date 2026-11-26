@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Choisissez votre zip de sauvegarde et envoyez-le.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Supprimer mes données</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Cela supprime votre compte sur ce serveur et tout ce qui y est conservé : votre nom, vos données de jeu, les zips de sauvegarde conservés et vos photos. Seuls votre id Steam et l’heure de la suppression sont gardés 24 heures, pour qu’un nouveau compte ne puisse pas réclamer aussitôt un ancien profil ; si l’opérateur a banni votre id Steam, l’enregistrement du bannissement est aussi conservé. Vous êtes déconnecté et la connexion du launcher cesse de fonctionner. Cette action est irréversible.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Si vous avez lié Discord, une chose de plus reste : une empreinte à clé de votre identifiant Discord, sans compte, nom ni date, pour que la récompense de liaison ne soit jamais versée deux fois. Votre identifiant Discord et vos jetons sont supprimés.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Je comprends, tout supprimer</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Supprimer mes données</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Les données n’ont pas pu être supprimées. Réessayez.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Les données de jeu de votre compte : inventaire, porte-monnaie, compétences, statistiques, succès, trophées, chasses, prélèvements et les photos que vous prenez dans le jeu.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Chaque zip de sauvegarde que vous envoyez, tel quel : conservé pour qu’un opérateur le vérifie, et après sa restauration, pour que l’opérateur puisse réinitialiser votre compte et le restaurer à nouveau. Un zip contient ce que l’outil de sauvegarde a enregistré de votre compte.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de connexion et jetons de jeu, sous forme de hachages impossibles à relire.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Seulement si vous liez Discord : votre identifiant Discord et les jetons que Discord a donnés au serveur pour mettre à jour vos rôles, conservés chiffrés. Rien d'autre de votre profil Discord n'est conservé.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Seulement si vous liez Discord : une trace que la récompense de 2500 gm$ a été versée pour votre identifiant Discord, conservée sous forme d'empreinte à clé qui ne permet pas de retrouver l'identifiant.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce que les comptes ne contiennent pas</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Votre adresse email, votre vrai nom, votre adresse postale ou votre numéro de téléphone : ils ne sont ni demandés ni conservés dans votre compte. Si une sauvegarde contient un tel champ, il n’est pas restauré.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Supprimer vos données</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Votre compte et ses données restent jusqu’à ce que vous utilisiez Supprimer mes données.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Les journaux du serveur et du proxy peuvent contenir des adresses IP et des pseudos. Ils sont conservés 30 jours au plus.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Quand un compte est supprimé, son id Steam et l’heure de la suppression sont gardés 24 heures puis effacés au prochain nettoyage quotidien. Un bannissement par l’opérateur est conservé sous forme d’enregistrement : id Steam, heure, motif et, une fois levé, heure de la levée ; l’enregistrement reste après la levée, pour qu’une réclamation ultérieure montre que l’id Steam a déjà été banni, et il reste quand le compte est supprimé.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Supprimer mes données efface votre identifiant Discord et vos jetons. Seule reste l'empreinte à clé de votre identifiant Discord, sans compte, nom ni date, pour que la récompense de liaison ne soit jamais versée deux fois. Il faut la clé secrète du serveur pour la rapprocher d'un identifiant Discord.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Votre navigateur est ouvert. Connectez-vous-y avec Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Se connecter avec Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>La connexion n'a pas été confirmée à temps. Veuillez réessayer.</value></data>
@@ -1574,6 +1578,12 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motif :</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ce formulaire ne provient pas de ce serveur.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Cette connexion a déjà été confirmée.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Lié</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Votre compte Discord est lié à votre chasseur et vous avez reçu 2500 gm$. Vos rôles sur le serveur Discord suivent votre Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Votre compte Discord est lié à votre chasseur. Vous avez déjà reçu les 2500 gm$ pour la liaison, il n'y a donc pas de nouvelle récompense. Vos rôles sur le serveur Discord suivent votre Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Ce compte Discord est lié à un autre chasseur. Un compte Discord ne peut être lié qu'à un seul chasseur.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Votre chasseur est déjà lié à un autre compte Discord. Un chasseur ne peut être lié qu'à un seul compte Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>La liaison a échoué. Retournez sur Discord et réessayez.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux et événements de plantage du jeu et du launcher (WebView2 compris) au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>

@@ -193,6 +193,7 @@ public static class GameApi
               .WithDescription("Answered without recordings on a community server; a local server replays them.");
             app.MapAuth(game);
             app.MapAccount(game);
+            app.MapLinkedRoles(game);
             app.MapHunters(game);
             app.MapCatalog(game);
             app.MapStats(game);

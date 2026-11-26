@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Izberite zip z varnostno kopijo in ga naložite.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Izbriši moje podatke</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>S tem izbrišete svoj račun na tem strežniku in vse, kar je z njim shranjeno: svoje ime, svoje podatke o igri, shranjene zip datoteke varnostnih kopij in svoje fotografije. Le vaš Steam id in čas izbrisa ostaneta 24 ur, da novi račun ne more takoj prevzeti starega profila; če je upravljavec vaš Steam id blokiral, ostane tudi zapis o blokadi. Odjavljeni boste, prijava iz zaganjalnika pa preneha delovati. Tega ni mogoče razveljaviti.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Če ste povezali Discord, ostane še ena stvar: zgoščena vrednost s ključem vašega ID-ja Discord, brez računa, imena ali datuma, da se nagrada za povezavo nikoli ne izplača dvakrat. Vaš ID Discord in žetoni se izbrišejo.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Razumem, izbriši vse</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Izbriši moje podatke</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Podatkov ni bilo mogoče izbrisati. Poskusite znova.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Podatki o igri vašega računa: inventar, denarnica, spretnosti, statistika, dosežki, trofeje, lovi, odstreli in fotografije, ki jih posnamete v igri.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Vsak zip varnostne kopije, ki ga naložite, nespremenjen: shranjen, da ga operater preveri, in po obnovitvi, da lahko operater ponastavi vaš račun in ga znova obnovi. Zip vsebuje, kar je orodje za varnostno kopiranje shranilo o vašem računu.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Piškotki za prijavo in žetoni igre, kot zgoščene vrednosti, ki jih ni mogoče prebrati nazaj.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Samo če povežete Discord: vaš ID Discord in žetoni, ki jih je Discord dal strežniku za posodabljanje vaših vlog, shranjeni šifrirano. Nič drugega iz vašega profila Discord se ne shranjuje.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Samo če povežete Discord: zapis, da je bila nagrada 2500 gm$ izplačana za vaš ID Discord, shranjen kot zgoščena vrednost s ključem, ki je ni mogoče pretvoriti nazaj v ID.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Česa računi ne hranijo</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Vašega e-naslova, pravega imena, poštnega naslova ali telefonske številke: ti podatki se ne zahtevajo in se ne hranijo v vašem računu. Če varnostna kopija vsebuje tako polje, se ne obnovi.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Brisanje vaših podatkov</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Vaš račun in njegovi podatki ostanejo, dokler ne uporabite možnosti »Izbriši moje podatke«.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Dnevniki strežnika in posredniškega strežnika lahko vsebujejo naslove IP in vzdevke. Hranijo se največ 30 dni.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Ko je račun izbrisan, se njegov Steam id in čas izbrisa hranita 24 ur in se odstranita ob naslednjem dnevnem čiščenju. Blokada upravljavca se hrani kot zapis s Steam id, časom, razlogom in, ko je preklicana, časom preklica; zapis ostane po preklicu, da lahko poznejša zahteva za profil pokaže, da je bil Steam id prej blokiran, in ostane po izbrisu računa.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Izbriši moje podatke odstrani vaš ID Discord in žetone. Ostane samo zgoščena vrednost s ključem vašega ID-ja Discord, brez računa, imena ali datuma, da se nagrada za povezavo nikoli ne izplača dvakrat. Za povezavo z ID-jem Discord je potreben skrivni ključ strežnika.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Brskalnik je odprt. Tam se prijavite s Steamom.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Prijava s Steamom</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Prijava ni bila pravočasno potrjena. Poskusite znova.</value></data>
@@ -1574,6 +1578,12 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Razlog:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Povezano</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem in prejeli ste 2500 gm$. Vaše vloge na strežniku Discord sledijo vašemu Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem. 2500 gm$ za povezavo ste že prejeli, zato nove nagrade ni. Vaše vloge na strežniku Discord sledijo vašemu Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Ta račun Discord je povezan z drugim lovcem. Račun Discord je mogoče povezati samo z enim lovcem.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Vaš lovec je že povezan z drugim računom Discord. Lovca je mogoče povezati samo z enim računom Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Povezava ni uspela. Vrnite se v Discord in poskusite znova.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike in dogodke zrušitev igre in zaganjalnika (vključno z WebView2) strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>

@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Kies je back-upzip en upload hem.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Dit verwijdert je account op deze server en alles wat daarbij is opgeslagen: je naam, je spelgegevens, de bewaarde back-upzips en je foto's. Alleen je Steam-id en het tijdstip van het verwijderen blijven 24 uur bewaard, zodat een nieuw account niet meteen een oud profiel kan claimen; als de beheerder je Steam-id heeft geblokkeerd, blijft ook het blokkeringsrecord bewaard. Je wordt uitgelogd en inloggen via de launcher werkt niet meer. Dit kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Als je Discord hebt gekoppeld, blijft er nog één ding: een hash met sleutel van je Discord-id, zonder account, naam of datum, zodat de beloning voor het koppelen nooit twee keer wordt uitbetaald. Je Discord-id en tokens worden verwijderd.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Ik begrijp het, verwijder alles</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Mijn gegevens verwijderen</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>De gegevens konden niet worden verwijderd. Probeer het opnieuw.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>De spelgegevens van je account: inventaris, portemonnee, vaardigheden, statistieken, prestaties, trofeeën, jachten, afschot en de foto's die je in het spel maakt.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Elke back-upzip die je uploadt, ongewijzigd: bewaard zodat een operator hem kan controleren, en ook nadat hij is hersteld, zodat de operator je account kan resetten en opnieuw kan herstellen. Een zip bevat wat de back-uptool van je account heeft opgeslagen.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inlogcookies en spelsleutels, als hashes die niet kunnen worden teruggelezen.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Alleen als je Discord koppelt: je Discord-id en de tokens die Discord aan de server gaf om je rollen bij te werken, versleuteld bewaard. Verder wordt niets van je Discord-profiel bewaard.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Alleen als je Discord koppelt: een vermelding dat de beloning van 2500 gm$ is uitbetaald voor je Discord-id, bewaard als hash met sleutel die niet terug te rekenen is naar het id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Wat accounts niet bevatten</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Je e-mailadres, echte naam, postadres of telefoonnummer: daar wordt niet om gevraagd en ze worden niet in je account bewaard. Als een back-up zo'n veld bevat, wordt het niet hersteld.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Je account en de bijbehorende gegevens blijven bestaan totdat je Mijn gegevens verwijderen gebruikt.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Server- en proxylogs kunnen IP-adressen en gebruikersnamen bevatten. Ze worden maximaal 30 dagen bewaard.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Als een account wordt verwijderd, worden het Steam-id en het tijdstip van het verwijderen 24 uur bewaard en bij de volgende dagelijkse opschoning verwijderd. Een blokkering door de beheerder wordt bewaard als record met Steam-id, tijdstip, reden en, na opheffing, het tijdstip van opheffing; het record blijft na een opheffing bewaard, zodat een latere claim kan tonen dat het Steam-id eerder geblokkeerd was, en het blijft bewaard als het account wordt verwijderd.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Mijn gegevens verwijderen verwijdert je Discord-id en tokens. Alleen de hash met sleutel van je Discord-id blijft, zonder account, naam of datum, zodat de beloning voor het koppelen nooit twee keer wordt uitbetaald. Om hem aan een Discord-id te koppelen is de geheime sleutel van de server nodig.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Je browser is geopend. Log daar in met Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Inloggen met Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>De aanmelding is niet op tijd bevestigd. Probeer het opnieuw.</value></data>
@@ -1574,6 +1578,12 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Reden:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dit formulier komt niet van deze server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Gekoppeld</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Je Discord-account is gekoppeld aan je jager en je hebt 2500 gm$ ontvangen. Je rollen op de Discord-server volgen je Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Je Discord-account is gekoppeld aan je jager. Je hebt de 2500 gm$ voor het koppelen al ontvangen, dus er is geen nieuwe beloning. Je rollen op de Discord-server volgen je Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Dit Discord-account is gekoppeld aan een andere jager. Een Discord-account kan maar aan één jager worden gekoppeld.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Je jager is al gekoppeld aan een ander Discord-account. Een jager kan maar aan één Discord-account worden gekoppeld.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Koppelen is niet gelukt. Ga terug naar Discord en probeer het opnieuw.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Stuurt de logs en crashgebeurtenissen van het spel en de launcher (inclusief WebView2) naar de communityserver zodat we kunnen helpen. 30 dagen bewaard.</value></data>

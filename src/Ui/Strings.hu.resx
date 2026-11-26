@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Válaszd ki a mentési zipet, és töltsd fel.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Adataim törlése</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>Ez törli a fiókodat ezen a szerveren és mindent, ami hozzá tartozik: a nevedet, a játékadataidat, a megőrzött mentési zipeket és a fotóidat. Csak a Steam-azonosítód és a törlés ideje marad meg 24 órára, hogy egy új fiók ne igényelhessen azonnal egy régi profilt; ha az üzemeltető kitiltotta a Steam-azonosítódat, a kitiltás nyilvántartása is megmarad. Kijelentkeztetünk, és a launcher bejelentkezése nem fog működni. Ez nem vonható vissza.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Ha összekapcsoltad a Discordot, még egy dolog megmarad: a Discord-azonosítód kulcsos hashe, fiók, név és dátum nélkül, hogy az összekapcsolásért járó jutalmat soha ne fizessék ki kétszer. A Discord-azonosítódat és a tokeneket töröljük.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Megértettem, töröljön mindent</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Adataim törlése</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Az adatok törlése nem sikerült. Próbáld újra.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>A fiókod játékadatai: felszerelés, pénztárca, készségek, statisztikák, eredmények, trófeák, vadászatok, elejtések és a játékban készített fotóid.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Minden feltöltött mentési zip változtatás nélkül: megőrizzük, hogy egy üzemeltető ellenőrizhesse, és a visszaállítás után is, hogy az üzemeltető alaphelyzetbe állíthassa a fiókodat, és újra visszaállíthassa. A zip azt tartalmazza, amit a mentőeszköz elmentett a fiókodról.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Bejelentkezési sütik és játéktokenek, visszafejthetetlen hash-ekként.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Csak ha összekapcsolod a Discordot: a Discord-azonosítód és a tokenek, amelyeket a Discord a szervernek adott a szerepköreid frissítéséhez, titkosítva tárolva. A Discord-profilodból semmi más nem tárolódik.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Csak ha összekapcsolod a Discordot: egy bejegyzés arról, hogy a 2500 gm$ jutalmat a Discord-azonosítódra kifizették, kulcsos hashként tárolva, amelyből az azonosító nem állítható vissza.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Mit nem tárolnak a fiókok</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Az e-mail-címed, valódi neved, postacímed vagy telefonszámod: ezeket nem kérjük, és nem tároljuk a fiókodban. Ha egy mentés ilyen mezőt tartalmaz, az nem áll vissza.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Adataid törlése</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>A fiókod és adatai addig maradnak meg, amíg az Adataim törlése funkciót nem használod.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>A szerver- és proxynaplók IP-címeket és felhasználóneveket tartalmazhatnak. Legfeljebb 30 napig őrizzük őket.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Fiók törlésekor a Steam-azonosítója és a törlés ideje 24 órára megmarad, majd a következő napi takarításkor törlődik. Az üzemeltető kitiltása a Steam-azonosítóval, az idővel, az indokkal és – feloldás után – a feloldás idejével együtt marad meg; a bejegyzés a feloldás után is megmarad, hogy egy későbbi igénylésnél látszódjon, hogy a Steam-azonosító korábban ki volt tiltva, és a fiók törlése után is megmarad.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Az Adataim törlése eltávolítja a Discord-azonosítódat és a tokeneket. Csak a Discord-azonosítód kulcsos hashe marad meg, fiók, név és dátum nélkül, hogy az összekapcsolásért járó jutalmat soha ne fizessék ki kétszer. Egy Discord-azonosítóhoz rendeléséhez a szerver titkos kulcsa kell.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>A böngésződ megnyílt. Jelentkezz be ott a Steammel.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Bejelentkezés Steammel</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>A bejelentkezést nem erősítették meg időben. Próbáld újra.</value></data>
@@ -1574,6 +1578,12 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Indok:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ez az űrlap nem erről a szerverről származik.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ezt a bejelentkezést már megerősítették.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Összekapcsolva</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>A Discord-fiókod össze van kapcsolva a vadászoddal, és megkaptál 2500 gm$-t. A szerepköreid a Discord-szerveren a Hunter Score-odat követik.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>A Discord-fiókod össze van kapcsolva a vadászoddal. Az összekapcsolásért járó 2500 gm$-t már megkaptad, ezért nincs új jutalom. A szerepköreid a Discord-szerveren a Hunter Score-odat követik.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>Ez a Discord-fiók egy másik vadászhoz van kapcsolva. Egy Discord-fiók csak egy vadászhoz kapcsolható.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>A vadászod már egy másik Discord-fiókhoz van kapcsolva. Egy vadász csak egy Discord-fiókhoz kapcsolható.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Az összekapcsolás nem sikerült. Menj vissza a Discordra, és próbáld újra.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Elküldi a játék és az indító naplóit és összeomlási eseményeit (a WebView2-ét is) a közösségi szervernek, hogy segíthessünk. 30 napig őrizzük.</value></data>

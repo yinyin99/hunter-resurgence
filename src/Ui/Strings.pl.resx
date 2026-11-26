@@ -1411,6 +1411,7 @@
   <data name="Restore.Next.empty" xml:space="preserve"><value>Wybierz zip z kopią zapasową i prześlij go.</value></data>
   <data name="Restore.Delete.Title" xml:space="preserve"><value>Usuń moje dane</value></data>
   <data name="Restore.Delete.Text" xml:space="preserve"><value>To usuwa Twoje konto na tym serwerze i wszystko, co z nim zapisano: Twoją nazwę, dane z gry, przechowywane zipy kopii i Twoje zdjęcia. Tylko Twoje id Steam i czas usunięcia zostają na 24 godziny, aby nowe konto nie mogło od razu przejąć starego profilu; jeśli operator zablokował Twoje id Steam, zostaje też zapis o blokadzie. Zostaniesz wylogowany, a logowanie w launcherze przestanie działać. Tego nie można cofnąć.</value></data>
+  <data name="Restore.Delete.Discord" xml:space="preserve"><value>Jeśli połączyłeś Discord, zostaje jeszcze jedna rzecz: skrót z kluczem Twojego identyfikatora Discord, bez konta, nazwy i daty, aby nagroda za połączenie nigdy nie została wypłacona dwa razy. Twój identyfikator Discord i tokeny są usuwane.</value></data>
   <data name="Restore.Delete.Confirm" xml:space="preserve"><value>Rozumiem, usuń wszystko</value></data>
   <data name="Restore.Delete.Button" xml:space="preserve"><value>Usuń moje dane</value></data>
   <data name="Restore.Delete.Failed" xml:space="preserve"><value>Nie udało się usunąć danych. Spróbuj ponownie.</value></data>
@@ -1441,6 +1442,8 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Dane z gry na Twoim koncie: ekwipunek, portfel, umiejętności, statystyki, osiągnięcia, trofea, polowania, zdobycze i zdjęcia robione w grze.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Każdy przesłany plik zip kopii, bez zmian: przechowywany do sprawdzenia przez operatora, a także po przywróceniu, aby operator mógł zresetować Twoje konto i przywrócić je ponownie. Zip zawiera to, co narzędzie do kopii zapasowej zapisało z Twojego konta.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Ciasteczka logowania i tokeny gry, jako skróty, których nie da się odczytać z powrotem.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Tylko jeśli połączysz Discord: Twój identyfikator Discord i tokeny, które Discord przekazał serwerowi do aktualizacji Twoich ról, przechowywane w postaci zaszyfrowanej. Nic więcej z Twojego profilu Discord nie jest przechowywane.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Tylko jeśli połączysz Discord: zapis, że nagroda 2500 gm$ została wypłacona za Twój identyfikator Discord, przechowywany jako skrót z kluczem, którego nie da się zamienić z powrotem na identyfikator.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Czego konta nie zawierają</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Twojego adresu e-mail, prawdziwego imienia i nazwiska, adresu pocztowego ani numeru telefonu: nie są wymagane i nie są przechowywane na koncie. Jeśli kopia zawiera takie pole, nie jest ono przywracane.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Usuwanie Twoich danych</value></data>
@@ -1468,6 +1471,7 @@
   <data name="Data.Keep.Account" xml:space="preserve"><value>Twoje konto i jego dane pozostają, dopóki nie użyjesz opcji Usuń moje dane.</value></data>
   <data name="Data.Keep.Logs" xml:space="preserve"><value>Logi serwera i proxy mogą zawierać adresy IP i nazwy użytkowników. Są przechowywane najwyżej 30 dni.</value></data>
   <data name="Data.Keep.Steam" xml:space="preserve"><value>Po usunięciu konta jego id Steam i czas usunięcia są przechowywane 24 godziny, a potem usuwane przy następnym codziennym czyszczeniu. Blokada nałożona przez operatora jest zapisywana jako rekord z id Steam, czasem, powodem i, po zdjęciu blokady, czasem jej zdjęcia; rekord zostaje po zdjęciu blokady, aby późniejsze przejęcie profilu mogło pokazać, że id Steam było wcześniej zablokowane, i zostaje po usunięciu konta.</value></data>
+  <data name="Data.Keep.Discord" xml:space="preserve"><value>Usuń moje dane usuwa Twój identyfikator Discord i tokeny. Zostaje tylko skrót z kluczem Twojego identyfikatora Discord, bez konta, nazwy i daty, aby nagroda za połączenie nigdy nie została wypłacona dwa razy. Aby przypisać go do identyfikatora Discord, potrzebny jest tajny klucz serwera.</value></data>
   <data name="Signin.Link" xml:space="preserve"><value>Przeglądarka jest otwarta. Zaloguj się tam przez Steam.</value></data>
   <data name="Signin.Steam" xml:space="preserve"><value>Zaloguj się przez Steam</value></data>
   <data name="Signin.LinkExpired" xml:space="preserve"><value>Logowanie nie zostało potwierdzone na czas. Spróbuj ponownie.</value></data>
@@ -1574,6 +1578,12 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Powód:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ten formularz nie pochodzi z tego serwera.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>To logowanie zostało już potwierdzone.</value></data>
+  <data name="DiscordLink.Linked" xml:space="preserve"><value>Połączono</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Twoje konto Discord jest połączone z Twoim myśliwym. Otrzymujesz 2500 gm$. Twoje role na serwerze Discord zależą od Twojego Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Twoje konto Discord jest połączone z Twoim myśliwym. 2500 gm$ za połączenie zostało już wypłacone, więc nie ma nowej nagrody. Twoje role na serwerze Discord zależą od Twojego Hunter Score.</value></data>
+  <data name="DiscordLink.Taken" xml:space="preserve"><value>To konto Discord jest połączone z innym myśliwym. Konto Discord można połączyć tylko z jednym myśliwym.</value></data>
+  <data name="DiscordLink.Other" xml:space="preserve"><value>Twój myśliwy jest już połączony z innym kontem Discord. Myśliwego można połączyć tylko z jednym kontem Discord.</value></data>
+  <data name="DiscordLink.Error" xml:space="preserve"><value>Połączenie się nie udało. Wróć do Discorda i spróbuj ponownie.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Czy na pewno chcesz zamknąć launcher i grę?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Zgłoś problem</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Wysyła dzienniki i zdarzenia awarii gry i launchera (także WebView2) na serwer społeczności, żebyśmy mogli pomóc. Przechowywane 30 dni.</value></data>

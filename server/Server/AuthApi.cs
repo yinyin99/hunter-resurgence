@@ -10,13 +10,13 @@ namespace Resurgence.Server;
 public static class AuthApi
 {
     // offline_mode: none of this is on, the replay answers
-    static Func<HttpContext, Task<Reply>> Do(Game game, Func<Req, Task<Reply>> handle) => async ctx =>
+    internal static Func<HttpContext, Task<Reply>> Do(Game game, Func<Req, Task<Reply>> handle) => async ctx =>
     {
         var r = await Req.ReadAsync(ctx);
         return game.State!.Online ? await handle(r) : game.Fallback(r);
     };
 
-    static Func<HttpContext, Task<Reply>> Do(Game game, Func<Req, Reply> handle) => Do(game, r => Task.FromResult(handle(r)));
+    internal static Func<HttpContext, Task<Reply>> Do(Game game, Func<Req, Reply> handle) => Do(game, r => Task.FromResult(handle(r)));
 
     public static void MapAuth(this WebApplication app, Game game)
     {
