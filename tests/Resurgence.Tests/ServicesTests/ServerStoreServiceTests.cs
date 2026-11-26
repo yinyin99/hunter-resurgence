@@ -162,7 +162,7 @@ public class ServerStoreServiceTests
     [Fact]
     public async Task AnItemAtItsLimitCannotBeBoughtAgainAndAFuelIsMarkedUnlimited()
     {
-        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, LimitedStore)), items: new Items(new(1, "Test Rifle", "", "0", "Rifles", null, false)));
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, LimitedStore)), items: new Items(new InventoryItem(1, "Test Rifle", "", "0", "Rifles", null, false)));
         var rows = (await service.ItemsAsync("all", "", 1)).Rows;
         Assert.Equal([(1, true), (0, false)], rows.Select(r => (r.OwnLimit, r.LimitReached)));
         Assert.Equal([false, true], rows.Select(r => r.Fuel));
