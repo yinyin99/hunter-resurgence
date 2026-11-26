@@ -255,7 +255,7 @@ Players link their Discord account to their hunter from the website or the launc
 
 1. Developer Portal: create a second application ("New Application"), give it a bot (Bot: copy its token; turn every Privileged Gateway Intent off, it needs none), and invite it to the Discord server with only Manage Roles: OAuth2, URL Generator, scope `bot`, permission Manage Roles, which makes `https://discord.com/oauth2/authorize?client_id=<its application id>&scope=bot&permissions=268435456`.
 2. Discord Server Settings, Roles: drag the new bot's role above "Verified hunter" and "Veteran" (a bot can only give roles below its own; otherwise Discord answers 403 and the server logs it once per sweep).
-3. "Verified hunter" and "Veteran" must be normal roles, not Linked Roles: no requirement under Links (remove the application's connection there if an older setup added it).
+3. "Verified hunter" and "Veteran" must be normal roles, not Linked Roles: no requirement under Links. Roles that were set up as Linked Roles are made again as normal roles (same names; the new roles have new ids, which are the ones for the next step), and the old ones deleted.
 4. In the server's `settings.json`: `discord_role_bot_token` (the bot's token), `discord_guild_id` (the Discord server's id), `discord_role_verified` and `discord_role_veteran` (the roles' ids: Developer Mode on in Discord, then right-click, "Copy Server ID" and "Copy Role ID"), and optionally `discord_veteran_at` (default 20000). Then `cd ~/web && docker compose up -d server`.
 
 Linked players get the roles within 10 minutes (the next sweep); a new link gets them at once.

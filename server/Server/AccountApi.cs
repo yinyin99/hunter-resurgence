@@ -188,7 +188,7 @@ public static class AccountApi
                             $"{SignIn.SessionCookie}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax");
             })
             .WithName("AccountDelete").WithSummary("Delete the account and all its data (form `confirm=delete`)")
-            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out. A linked Discord account first loses its role connection and Discord's access is revoked (best effort: a failure is logged and the delete goes on). Kept: the Steam id and the time of the delete, for the 24-hour claim cooldown (removed by the next daily cleanup after that), and a ban record of the Steam id, if it was ever banned (Steam id, time, reason, lift time).")
+            .WithDescription("Deletes the account's rows (crash reports included), tokens, sessions, kept backup zips, problem reports and photos, its Steam id and handle. Signs the browser out. A linked Discord account first loses its two roles on the Discord server (with the role bot) and its role connection, and Discord's access is revoked (best effort: a failure is logged and the delete goes on). Kept: the Steam id and the time of the delete, for the 24-hour claim cooldown (removed by the next daily cleanup after that), and a ban record of the Steam id, if it was ever banned (Steam id, time, reason, lift time).")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/report", async (HttpContext ctx) =>
