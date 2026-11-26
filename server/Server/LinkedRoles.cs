@@ -226,8 +226,8 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
     }
 
-    /// <summary>Remove the role connection with the access token while it holds (Discord's documented DELETE: the profile box and the roles' data go), then revoke the authorization with the refresh token,
-    /// else the access token (Discord revokes every token of the authorization whichever is sent). ponytail: an ended access token is not refreshed just to remove the connection; the revoke still ends the app's access.</summary>
+    /// <summary>Remove the role connection (Discord's documented DELETE: the profile box and the roles' data go) with the access token, refreshed first when it has ended, then revoke the authorization with the newest
+    /// refresh token, else the access token (Discord revokes every token of the authorization whichever is sent). The refreshed tokens are not stored: the row is deleted right after. A refused refresh skips the DELETE.</summary>
     async Task Unlink(long account)
     {
         object[]? row;
@@ -235,20 +235,27 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             row = con.Rows("SELECT discord_id, access_token, refresh_token, expires_ts FROM discord_links WHERE account_id = ?1", account).FirstOrDefault();
         if (row is null) return;
         var discordId = (string)row[0];
-        var access = Unseal(row[1], discordId);
-        if (access is not null && row[3] is long expires && expires > Store.Now() + 60)
+        var access = row[3] is long expires && expires > Store.Now() + 60 ? Unseal(row[1], discordId) : null;
+        var refresh = Unseal(row[2], discordId);
+        if (access is null && refresh is not null)
+        {
+            var (status, body) = await OAuth("/oauth2/token", ("grant_type", "refresh_token"), ("refresh_token", refresh));
+            if (ReadTokens(body) is { } fresh) (access, refresh) = (fresh.Access, fresh.Refresh);
+            else Console.Error.WriteLine($"discord unlink of account {account}: the token refresh failed ({status})");
+        }
+        if (access is not null)
         {
             var (code, _) = await Send(HttpMethod.Delete, $"/users/@me/applications/{clientId}/role-connection", null, access);
             if (code is < 200 or >= 300) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {code} to the role connection delete");
         }
-        var (token, hint) = Unseal(row[2], discordId) is { } refresh ? (refresh, "refresh_token") : (access, "access_token");
+        var (token, hint) = refresh is not null ? (refresh, "refresh_token") : (access ?? Unseal(row[1], discordId), "access_token");
         if (token is null)
         {
             Console.Error.WriteLine($"discord unlink of account {account}: no token left to revoke");
             return;
         }
-        var (status, _) = await OAuth("/oauth2/token/revoke", ("token", token), ("token_type_hint", hint));
-        if (status != 200) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {status} to the revoke");
+        var (revoked, _) = await OAuth("/oauth2/token/revoke", ("token", token), ("token_type_hint", hint));
+        if (revoked != 200) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {revoked} to the revoke");
     }
 
     async Task<bool> Push(long account)

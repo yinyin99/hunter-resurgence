@@ -329,6 +329,33 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], "confirm=delete"u8.ToArray());
 
     [Fact]
+    public async Task TestDeleteMyDataRefreshesAnEndedAccessTokenToRemoveTheRoleConnection()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));  // access-1, refresh-1
+        Expire(8);
+        discord.Asked.Clear();
+        Assert.Equal(200, (await Delete(SessionOf(8))).Status);
+        Assert.Equal(["POST /api/v10/oauth2/token", $"DELETE /api/v10/users/@me/applications/{AppId}/role-connection", "POST /api/v10/oauth2/token/revoke"], discord.Asked.Select(c => c.Line));
+        Assert.Equal(("refresh_token", "refresh-1"), (discord.Asked[0].Form["grant_type"], discord.Asked[0].Form["refresh_token"]));
+        Assert.Equal("access-2", discord.Asked[1].Bearer);  // the fresh access token
+        Assert.Equal(("refresh-2", "refresh_token"), (discord.Asked[2].Form["token"], discord.Asked[2].Form["token_type_hint"]));  // the newest refresh token
+        Assert.Equal((0L, 0L), (Count("accounts", "id = 8"), Count("discord_links")));
+    }
+
+    [Fact]
+    public async Task TestDeleteMyDataRevokesTheOldRefreshTokenWhenTheRefreshFails()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
+        Expire(8);
+        discord.RefreshStatus = 400;
+        discord.Asked.Clear();
+        Assert.Equal(200, (await Delete(SessionOf(8))).Status);
+        Assert.Equal(["POST /api/v10/oauth2/token", "POST /api/v10/oauth2/token/revoke"], discord.Asked.Select(c => c.Line));  // no access token for the DELETE
+        Assert.Equal("refresh-1", discord.Asked[1].Form["token"]);
+        Assert.Equal((0L, 0L), (Count("accounts", "id = 8"), Count("discord_links")));
+    }
+
+    [Fact]
     public async Task TestDeleteMyDataDeletesTheAccountWhenDiscordRefusesOrIsDown()
     {
         Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
