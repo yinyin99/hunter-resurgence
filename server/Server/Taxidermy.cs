@@ -30,15 +30,19 @@ public sealed partial class State
 
     /// <summary>Buy the taxidermy or the skull mount (<paramref name="product"/>) of a harvest made here with `em` or `gm`: the price is taken, the wallet row is written (the store item's) and the
     /// new balance reaches the game with its next heartbeat, all in one transaction. 200; 404 for a harvest that is unknown, a restored one or another player's; 409 `already` (once only);
+    /// 403 `disqualified` (today's ammunition rule judges the kill unethical, <see cref="Disqualified"/>: no mount, as the original's harvest window offered none);
     /// 410 `too_late` (more than <see cref="TaxidermyHours"/> after the harvest); 400 `no_skull` (the species has none); 402 `not_enough`. The caller has checked the product and the currency.</summary>
     public (int Status, string? Error) Taxidermize(long account, long killId, string product, string currency)
     {
         using var con = Con(account);
         con.Begin();
-        if (con.Rows("SELECT body FROM harvests WHERE account_id = $a AND kill_id = ?", killId).FirstOrDefault() is not { } row || JsonNode.Parse((string)row[0]) is not JsonObject page)
+        if (con.Rows("SELECT h.body, k.individual, k.harvest FROM harvests h LEFT JOIN kills k ON k.account_id = $a AND k.kill_id = h.kill_id WHERE h.account_id = $a AND h.kill_id = ?", killId).FirstOrDefault() is not { } row
+            || JsonNode.Parse((string)row[0]) is not JsonObject page)
             return (404, "unknown");
         if (TaxidermyDone(page) is not null)
             return (409, "already");
+        if (row[2] is string harvest && Disqualified(con, row[1], harvest, page))
+            return (403, "disqualified");
         if (TaxidermyEnd(page, Store.TaxidermyGrace()) is not { } end || Clock() > end)
             return (410, "too_late");
         var skull = product == SKULL;
@@ -62,15 +66,16 @@ public sealed partial class State
     }
 
     /// <summary>The player's own page of a hunt: per harvest made here `{end, ems, gms, skull, done}` (<c>end</c> ISO UTC, the window's end; <c>skull</c> whether the species has a skull to mount),
-    /// keyed by kill id. A restored harvest has none.</summary>
+    /// keyed by kill id. A restored harvest has none, nor has a kill today's ammunition rule disqualifies while its window is open and it is not done (<see cref="Taxidermize"/> refuses it).</summary>
     public Dictionary<long, JsonObject> TaxidermyOffers(long account)
     {
         var (ems, gms) = facts.TaxidermyPrice();
         var grace = Store.TaxidermyGrace();
         using var con = Con(account);
         var offers = new Dictionary<long, JsonObject>();
-        foreach (var r in con.Rows("SELECT kill_id, body FROM harvests WHERE account_id = $a"))
-            if (JsonNode.Parse((string)r[1]) is JsonObject page && TaxidermyEnd(page, grace) is { } end)
+        foreach (var r in con.Rows("SELECT h.kill_id, h.body, k.individual, k.harvest FROM harvests h LEFT JOIN kills k ON k.account_id = $a AND k.kill_id = h.kill_id WHERE h.account_id = $a"))
+            if (JsonNode.Parse((string)r[1]) is JsonObject page && TaxidermyEnd(page, grace) is { } end
+                && (TaxidermyDone(page) is not null || Clock() > end || r[3] is not string harvest || !Disqualified(con, r[2], harvest, page)))
                 offers[(long)r[0]] = new JsonObject
                 {
                     ["end"] = DateTimeOffset.FromUnixTimeSeconds(end).UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'", CultureInfo.InvariantCulture), ["ems"] = ems, ["gms"] = gms,

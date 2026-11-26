@@ -317,6 +317,44 @@ public class MpHarvestTests : StateTestBase
         Assert.Single(Beat(HOST), u => Py.Eq(u!["update"], 6));
         Assert.Empty(Beat(GUEST));
     }
+
+    [Theory]
+    [InlineData(null, 77, true)]  // the shooter never saw it: the harvester's sighting, a possessed coat, judges his normal round (#582)
+    [InlineData(null, 1, false)]
+    [InlineData(1, 77, false)]  // the shooter's own sighting wins
+    [InlineData(77, 1, true)]
+    public void TestACreditedHarvestIsJudgedByTheSpawnItWasScoredWith(int? shooterCoat, int harvesterCoat, bool disqualified)
+    {
+        var connect = CONNECT;
+        ((JsonArray)connect["ethical"]!)[1] = new JsonArray(10);  // the mule deer permits the shot's ammunition 10
+        state = new State(Path.Combine(tmp, "rule.db"), Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false) { Clock = () => now };
+        foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest") })
+            state.CreateAccount(id, handle);
+        Game(GUEST);
+        static JsonNode Seen(int coat) => O($$"""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": {{coat}}}""");
+        Beat(GUEST, shooterCoat is { } own ? [Seen(own), Hit(460)] : [Hit(460)]);
+        Beat(HOST, [Seen(harvesterCoat), .. Skinned(460, spawn: false)]);
+        var score = Assert.Single(Beat(GUEST), u => Py.Eq(u!["update"], 6))!;
+        Assert.Equal(disqualified, Py.Eq(score["score_text"], "Disqualified "));
+        Assert.Equal(!disqualified, (bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);  // the page judges it the same
+    }
+
+    [Fact]
+    public void TestACreditedHarvestKeepsItsVerdictInTheAdminCommandsAndItsBoardRowsAreCounted()
+    {
+        Game(GUEST);
+        Beat(GUEST, O("""{"event": 1, "individual": 460, "species": 2, "distance_cms": 8250, "organ1": 17, "organ2": 8388610, "weapon_id": 5, "ammunition_id": 962, "animal_state": 3}"""));
+        Beat(HOST, [O("""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 77}"""), .. Skinned(460, spawn: false)]);  // possessed by the harvester's sighting: silver
+        Assert.True((bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);
+        Assert.Empty(state.JudgeKills(GUEST, dryRun: true));  // the admin command judges it by the same animal as its score
+        using (var con = state.Store.Open(GUEST))
+            con.Exec("UPDATE events SET body = json_set(body, '$.ammunition_id', 10) WHERE account_id = $a AND event = 1 AND individual = 460");  // it now reads as a normal round on the possessed animal
+        Assert.False((bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);
+        var line = Assert.Single(state.JudgeKills(GUEST, dryRun: true));
+        Assert.Equal(("disqualify", (string?)"not_silver_on_possessed", (string?)"coat"), (line.Change, line.Reason, line.Basis));
+        Assert.True(line.Board && line.Top10 == line.BoardRows);  // the shooter's buck holds rows of the boards, each in the top 10
+        Assert.Equal(0, state.Rescore(GUEST, dryRun: true).Single().Rescored);  // the rescore leaves it, as a disqualified harvest
+    }
 }
 
 /// <summary>The mission rollback of a moved harvest reopens only what that harvest finished.</summary>

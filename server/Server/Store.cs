@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
+         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 40;
+    public const int Version = 41;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -151,6 +151,19 @@ public sealed class Store
         CREATE TABLE IF NOT EXISTS events_log (
             id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, kind TEXT NOT NULL, start_ts INTEGER NOT NULL, end_ts INTEGER NOT NULL,
             multiplier REAL, applies_to TEXT NOT NULL DEFAULT '');
+        """;
+
+    // the stored kills `admin ethics --apply` (State.JudgeKills) leaves in a state today's ammunition rule (#582, State.AmmoCheck) would not give them, flagged so they can be found later
+    // (`admin ethics list`); no player sees the flag. kind kept: an unethical kill (disqualified) that keeps a mount, `taxidermied` (1 or 0) and/or the lodge (`lodges.n`) and `slot` (`slot_id`) that
+    // hold it, with its `reason` (silver_on_normal | not_silver_on_possessed | not_permitted), `ammo` (the item id of its first hit outside the list), `basis` (how the animal's kind was decided:
+    // coat | species | hunt, State.KindOf) and `lost_score` (the stored score it had: 0 when it had none). kind undecided (reason and basis undecided): a kill of a hunt the schema-41 step could not decide
+    // (`expeditions.event_undecided`) whose coat proves nothing, which keeps the verdict it was made under and which the rule could judge otherwise: `if_normal` and `if_possessed` (ethical | unethical).
+    // species, coat (its spawn's `texture`) and ts (when it was flagged, Unix seconds) on both
+    const string UnethicalKills = $"""
+        CREATE TABLE IF NOT EXISTS unethical_kills (
+            {A}, kill_id INTEGER NOT NULL, kind TEXT NOT NULL, species INTEGER, coat INTEGER, reason TEXT NOT NULL, ammo INTEGER, basis TEXT, if_normal TEXT, if_possessed TEXT,
+            taxidermied INTEGER NOT NULL DEFAULT 0, lodge INTEGER, slot INTEGER, lost_score REAL NOT NULL DEFAULT 0, ts INTEGER NOT NULL,
+            PRIMARY KEY (account_id, kill_id));
         """;
 
     // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
@@ -312,8 +325,8 @@ public sealed class Store
             tent INTEGER,         -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
             walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
-            event TEXT,           -- the seasonal event whose permitted ammo the hunt's kills are judged by, decided by its first connect (State.HuntEvent; '': none; NULL: not decided yet)
-            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
+            event TEXT,           -- the seasonal event of the hunt, decided by its first connect ('': none; NULL: not decided yet): the fallback of its kills whose coat proves nothing (State.HuntEvent, State.KindOf)
+            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt). Schema 41 adds event_undecided and event_backfilled (BackfillHuntEvents)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -563,6 +576,25 @@ public sealed class Store
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_until'")! == 0)
             con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
         con.Script(DiscordTables);  // schema 40, every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
+        // schema 41 (#582), guarded by the table and not by the version (every start; it runs once): the kills are judged per animal from now on. The closed hunts recorded without an event ('', every hunt
+        // from before schema 39 among them) get the event their own sightings prove (marked `event_backfilled`, so a hunt whose event its first connect recorded can be told apart), or are marked undecided
+        // (BackfillHuntEvents); the stored statistics of the closed hunts with a kill are cleared, so the start-up loop (State, UpdateHunterscore) counts their ethical kills and the hunterscores again by the
+        // rule; `schema_marks` keeps when the step ran and the last event row before it (the kills made before the rule, State.JudgeKills); then the table of the flagged kills. No score, no wallet row and
+        // no other table is written
+        if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'unethical_kills'")! == 0)
+        {
+            foreach (var column in (string[])["event_undecided TEXT", "event_backfilled INTEGER"])
+                if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = ?", column.Split(' ')[0])! == 0)
+                    con.Script($"ALTER TABLE expeditions ADD COLUMN {column}");
+            BackfillHuntEvents(con, Facts.Default);
+            con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL AND stats IS NOT NULL"
+                       + " AND id IN (SELECT json_extract(h.body, '$.expedition_id') FROM harvests h WHERE h.account_id = expeditions.account_id)");
+            con.Script($"""
+                CREATE TABLE IF NOT EXISTS schema_marks (version INTEGER PRIMARY KEY, ts INTEGER NOT NULL, last_event INTEGER NOT NULL);
+                INSERT OR REPLACE INTO schema_marks VALUES (41, {Now()}, (SELECT COALESCE(MAX(id), 0) FROM events));
+                """);
+            con.Script(UnethicalKills);
+        }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
@@ -573,6 +605,45 @@ public sealed class Store
         if (version < Version)
             con.Script($"PRAGMA user_version = {Version}");
         con.Commit();
+    }
+
+    /// <summary>Schema 41 (#582): a closed hunt recorded without an event ('') gets the event of <paramref name="facts"/> its sightings (event 7, from its first event to the next hunt's, a tutorial after
+    /// `event_until` left out) prove (<see cref="Facts.Proves"/>: a creature or a possessed coat), when at least one does and none proves a normal animal or another event; otherwise it stays ''.
+    /// One with no deciding sighting at all, on a reserve the event has content on and not ended before the first hunt that has the event (after this backfill) started, gets `event_undecided`: the
+    /// event it may have had (`admin ethics` flags its kills whose verdict depends on it). One range of event rows per hunt.</summary>
+    static void BackfillHuntEvents(Db con, Facts facts)
+    {
+        var accounts = con.Rows("SELECT id FROM accounts").Select(r => (long)r[0]).ToList();
+        var nothing = new List<(long Account, long Hunt, long Reserve, double End)>();
+        foreach (var account in accounts)
+        {
+            var mine = con.Sharing(account);
+            foreach (var hunt in mine.Rows("SELECT e.id, e.first_event, COALESCE(e.event_until, ?1), COALESCE((SELECT MIN(n.first_event) FROM expeditions n WHERE n.account_id = $a AND n.id > e.id), ?1),"
+                                           + " COALESCE(e.reserve - 1, e.location_id / 100, -1), e.end_ts"
+                                           + " FROM expeditions e WHERE e.account_id = $a AND e.event = '' AND e.end_ts IS NOT NULL AND e.first_event IS NOT NULL", long.MaxValue).ToList())
+            {
+                string? proved = null;
+                bool decided = false, mixed = false;
+                foreach (var s in mine.Rows("SELECT json_extract(body, '$.species'), json_extract(body, '$.texture') FROM events WHERE account_id = $a AND event = 7 AND id > ? AND id <= ? AND id <= ?",
+                                            hunt[1], hunt[2], hunt[3]))
+                    if (facts.Proves(Py.FromSql(s[0]), Py.FromSql(s[1]), out _) is { } p)
+                    {
+                        decided = true;
+                        mixed |= p == "" || proved is not null && proved != p;
+                        proved ??= p == "" ? null : p;
+                    }
+                if (proved is not null && !mixed)
+                    mine.Exec("UPDATE expeditions SET event = ?, event_backfilled = 1 WHERE account_id = $a AND id = ?", proved, hunt[0]);
+                else if (!decided)
+                    nothing.Add((account, (long)hunt[0], (long)hunt[4], Convert.ToDouble(hunt[5])));
+            }
+        }
+        foreach (var name in facts.EventNames)
+        {
+            var first = accounts.Select(a => con.Sharing(a).Scalar("SELECT MIN(start_ts) FROM expeditions WHERE account_id = $a AND event = ?", name)).OfType<double>().DefaultIfEmpty(double.MaxValue).Min();
+            foreach (var (account, hunt, reserve, end) in nothing.Where(h => h.End >= first && facts.Event(name, (int)h.Reserve) is not null))
+                con.Sharing(account).Exec("UPDATE expeditions SET event_undecided = ? WHERE account_id = $a AND id = ? AND event_undecided IS NULL", name, hunt);
+        }
     }
 
     // ---- accounts

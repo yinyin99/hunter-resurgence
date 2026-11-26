@@ -166,6 +166,32 @@ public class ChallengeTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheChallengeJudgesTheAnimalByItsCoat()
+    {
+        // the hare 17 in the event's coat 54 is possessed in any hunt: silver is ethical on it, on one in its normal coat 0 not (#582)
+        Hb(Spawn(33, 17, texture: 0), Hit(33, 1, ammo: 962, cms: 30000), Harvest(33, 17));
+        Assert.DoesNotContain("904", Done());
+        Hb(Spawn(34, 17, texture: 54), Hit(34, 1, ammo: 962, cms: 30000), Harvest(34, 17));
+        Assert.Contains("904", Done());
+    }
+
+    [Fact]
+    public void TestACreditedHarvestIsJudgedByTheHarvestersSighting()
+    {
+        // the player shoots a hare he never saw with silver; the host saw it in the event's coat 54 (possessed) and skins it: the harvest is the player's, judged by the host's sighting (#582)
+        const long HOST = 9;
+        state.CreateAccount(HOST, "host");
+        state.HostGame(HOST, "host-session", "start=101&loctype=LODGE&reserve=2&time=540&loadout_id=0&name=Camp&max_players=3"u8.ToArray());
+        state.HeartbeatReply(HOST, Events(O("""{"event": 29, "port": 32303, "guid": "9007199254740993", "color": "c73378"}""")));
+        var game = (long)Reply(state.NetworkListReply())[0]!["id"]!;
+        Assert.Null(state.JoinGame(P, Encoding.UTF8.GetBytes($"start=101&loctype=LODGE&network_id={game}&loadout_id=0")).Error);
+        Hb(Hit(36, 1, ammo: 962, cms: 30000));
+        state.HeartbeatReply(HOST, Events(Spawn(36, 17, texture: 54), Harvest(36, 17)));
+        Hb();
+        Assert.Contains("904", Done());
+    }
+
+    [Fact]
     public void TestHarvestsOfASpeciesWithinTheWindowAreCounted()
     {
         void Take(int individual) => Hb(Spawn(individual, 2), Harvest(individual, 2));

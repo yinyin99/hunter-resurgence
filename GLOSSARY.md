@@ -190,10 +190,10 @@ A harvest's percentage from how quickly the animal died and how little the troph
 A harvest's score put on one scale for every species, so that species compare; the harvest pays it in gm$, rounded, when it is above 0. Shortened to CSS.
 
 **Permitted ammunition**:
-The ammunition the game allows for a species.
+The ammunition the game allows on an animal: its species' list for a normal animal, the seasonal event's silver ammunition for a possessed animal or an event creature.
 
 **Disqualified**:
-Said of a harvest of which a hit used ammunition not permitted for its species: it has no score and pays nothing.
+Said of a harvest of which a hit used ammunition not permitted on its animal: it has no score, no trophy shot, no leaderboard place and no taxidermy, and pays nothing.
 
 **Ethical kill**:
 A harvest that is not disqualified; only these count in the rank rows.
@@ -255,6 +255,10 @@ A themed event the operator switches on for a window of time on some reserves, w
 
 **Event creature**:
 A creature that lives only on the reserves of a seasonal event while it runs, such as the werewolf or the wendigo.
+
+**Possessed animal**:
+The seasonal event's version of an ordinary species on its reserves: the event's coat, much more health, and only the event's silver ammunition permitted on it. Players who turn the event off get the normal animals. The coyote and the blacktail deer have no possessed version.
+_Avoid_: event animal (that is an event creature)
 
 **Season**:
 A leaderboard period of the community server: 0 is all time, 1 the harvests restored from the original (up to 2026-11-11), 2 and later the server's own, each started by the operator. A harvest belongs to the season its kill time falls in; an ended season has a Hall of Fame.

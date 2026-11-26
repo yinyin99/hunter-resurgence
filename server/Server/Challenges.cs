@@ -180,7 +180,9 @@ public sealed partial class State
                 case "a.texture": return Number(Own.Spawn?["texture"]);
                 case "a.species": return Species;
                 case "a.variant": return Variant;
-                case "a.ethical": return s.Ethical(Variant < 0 ? null : JsonValue.Create(Variant), hits, HuntEvent(con, id));
+                case "a.ethical":  // the animal of a credited harvest whose shooter never saw it is the one its page was made from, as for its score (State.ScoreKill)
+                    var seen = Own.Spawn ?? (Is(e["event"], 3) ? StoredSpawn(con, Py.Dumps(e)) : null);
+                    return s.Ethical(Variant < 0 ? null : JsonValue.Create(Variant), seen?["texture"], hits, HuntEvent(con, id));
                 case "a.range":  // ponytail: "minimum" and "maximum" are the shortest and the longest hit
                     var mm = hits.Where(h => Py.IsNum(h["distance_cms"])).Select(h => (long)Math.Round(Py.D(h["distance_cms"]) * 10)).ToList();
                     return mm.Count == 0 ? 0L : a[0] as string == "minimum" ? mm.Min() : mm.Max();

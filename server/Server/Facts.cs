@@ -46,6 +46,60 @@ public sealed class Facts
             OwnByType[long.Parse(type, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
         foreach (var (id, rule) in Obj("own_limits")["items"] as JsonObject ?? [])
             OwnByItem[long.Parse(id, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
+        foreach (var (name, ev) in Obj("events"))
+            CheckRule(name, ev as JsonObject ?? []);
+    }
+
+    /// <summary>The ammunition rule's data of the event <paramref name="name"/> (#582) is refused at load, naming the entry, rather than misjudging kills: `ethical` with a non-empty `ammo` and `species` of
+    /// whole ids, every species id one of `animals` (when the file has them); `creatures` and the species of `coats` among `ethical.species`, a creature with no coats; each `coats` entry with `possessed` and
+    /// `normal` lists of whole coat ids, not both empty, no coat in both.</summary>
+    void CheckRule(string name, JsonObject ev)
+    {
+        var at = $"facts: events.{name}";
+        bool Id(JsonNode? n) => n is JsonValue v && v.GetValueKind() == System.Text.Json.JsonValueKind.Number && Py.D(v) is var d && d == Math.Floor(d) && d >= 0;
+        long[] Ids(JsonNode? list, string where, bool species)
+        {
+            if (list is not JsonArray a || a.Any(n => !Id(n)))
+                throw new InvalidDataException($"{at}.{where}: a list of whole ids");
+            if (species && Animals.Length > 0 && a.FirstOrDefault(n => Py.L(n) >= Animals.Length) is { } unknown)
+                throw new InvalidDataException($"{at}.{where}: {unknown} is no species of `animals`");
+            return [.. a.Select(Py.L)];
+        }
+        if (ev["ethical"] is null && ev["creatures"] is null && ev["coats"] is null)
+            return;
+        if (ev["ethical"] is not JsonObject ethical)
+            throw new InvalidDataException($"{at}.ethical: missing, and `creatures` or `coats` need it");
+        if (Ids(ethical["ammo"], "ethical.ammo", false).Length == 0)
+            throw new InvalidDataException($"{at}.ethical.ammo: empty");
+        var named = Ids(ethical["species"], "ethical.species", true).ToHashSet();
+        if (named.Count == 0)
+            throw new InvalidDataException($"{at}.ethical.species: empty");
+        if (ethical["formerly"] is { } formerly)
+            Ids(formerly, "ethical.formerly", true);
+        var creatures = ev["creatures"] is null ? [] : Ids(ev["creatures"], "creatures", true);
+        if (creatures.FirstOrDefault(c => !named.Contains(c), -1) is var stray and >= 0)
+            throw new InvalidDataException($"{at}.creatures: {stray} is not in ethical.species");
+        if (ev["coats"] is null)
+            return;
+        if (ev["coats"] is not JsonObject coats)
+            throw new InvalidDataException($"{at}.coats: an object of species ids");
+        foreach (var (key, entry) in coats)
+        {
+            var where = $"coats.{key}";
+            if (!long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var sp) || sp.ToString(CultureInfo.InvariantCulture) != key || Animals.Length > 0 && sp >= Animals.Length)
+                throw new InvalidDataException($"{at}.{where}: not a species id of `animals`");
+            if (!named.Contains(sp) || creatures.Contains(sp))
+                throw new InvalidDataException($"{at}.{where}: a species with a possessed version (in ethical.species, not a creature)");
+            if (entry is not JsonObject lists)
+                throw new InvalidDataException($"{at}.{where}: an object of a `possessed` and a `normal` list");
+            // a missing list is an empty one, as Proves reads it
+            var possessed = Ids(lists["possessed"] ?? new JsonArray(), where + ".possessed", false);
+            var normal = Ids(lists["normal"] ?? new JsonArray(), where + ".normal", false);
+            if (possessed.Length == 0 && normal.Length == 0)
+                throw new InvalidDataException($"{at}.{where}: both lists empty: the entry decides nothing");
+            if (possessed.Intersect(normal).FirstOrDefault(-1) is var both and >= 0)
+                throw new InvalidDataException($"{at}.{where}: coat {both} is in both lists");
+        }
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));
@@ -175,9 +229,50 @@ public sealed class Facts
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
+    /// <summary>The names of the events the file has (`events`).</summary>
+    public IEnumerable<string> EventNames => Obj("events").Select(e => e.Key);
+
     /// <summary>The permitted ammo of the event <paramref name="name"/> in a hunt it runs in (`events.<name>.ethical`: the original's list during the event), for the species it lists; null for an event without one.</summary>
     public (JsonArray Ammo, long[] Species)? EventEthical(string name) =>
         Obj("events")[name]?["ethical"] is JsonObject e ? ((JsonArray)(e["ammo"] ?? new JsonArray()).DeepClone(), [.. (e["species"] as JsonArray ?? []).Select(Py.L)]) : null;
+
+    /// <summary>What an animal's species and coat (its sighting's `texture`) prove about a seasonal event: the name of the event when the species is one of its `creatures` or the coat is in the
+    /// species' `possessed` list of its `coats`, "" when the coat is in the species' `normal` list there, null when they prove nothing (no entry, a coat in neither list, no coat). A non-typical
+    /// species (100 and up) is its typical one. <paramref name="creature"/> is true when the species decided.</summary>
+    public string? Proves(JsonNode? sp, JsonNode? coat, out bool creature)
+    {
+        creature = false;
+        if (!Py.IsNum(sp)) return null;
+        var id = Py.L(sp) % 100;
+        foreach (var (name, ev) in Obj("events"))
+        {
+            if ((ev?["creatures"] as JsonArray ?? []).Any(c => Py.L(c) == id))
+            {
+                creature = true;
+                return name;
+            }
+            if (Py.IsNum(coat) && ev?["coats"]?[id.ToString(CultureInfo.InvariantCulture)] is JsonObject coats)
+            {
+                if ((coats["possessed"] as JsonArray ?? []).Any(c => Py.Eq(c, coat))) return name;
+                if ((coats["normal"] as JsonArray ?? []).Any(c => Py.Eq(c, coat))) return "";
+            }
+        }
+        return null;
+    }
+
+    /// <summary>The event (of <paramref name="name"/> alone, or of any) whose `ethical` list names the species: one that has a possessed version there, or a creature; null for none. A non-typical
+    /// species is its typical one.</summary>
+    public string? Possessing(JsonNode? sp, string? name = null) =>
+        Py.IsNum(sp) ? Obj("events").FirstOrDefault(e => (name is null || e.Key == name) && e.Value?["ethical"]?["species"] is JsonArray s && s.Any(x => Py.L(x) == Py.L(sp) % 100)).Key : null;
+
+    /// <summary>Whether the event <paramref name="name"/>'s list named the species before schema 41 (`ethical.species` or `ethical.formerly`): a hunt with that event permitted only its silver on it then.
+    /// Read only by `admin ethics` (the rule a stored kill was made under). A non-typical species is its typical one.</summary>
+    public bool NamedBefore41(JsonNode? sp, string name) =>
+        Possessing(sp, name) is not null || Py.IsNum(sp) && Obj("events")[name]?["ethical"]?["formerly"] is JsonArray f && f.Any(x => Py.L(x) == Py.L(sp) % 100);
+
+    /// <summary>Whether <paramref name="ammo"/> is one of the ammunitions an event's `ethical` list permits (the event's silver ones).</summary>
+    public bool EventAmmo(JsonNode? ammo) =>
+        Obj("events").Any(e => e.Value?["ethical"]?["ammo"] is JsonArray a && a.Any(x => Py.Eq(x, ammo)));
 
     /// <summary>The `index` and `animal` of every population any event adds on the game's reserve number <paramref name="reserve"/>; the pair, as an event's index
     /// can be a normal creature's (the original's feral hog 3 on reserve 0 is beside the Roosevelt elk 3).</summary>
