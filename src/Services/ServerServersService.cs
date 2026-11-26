@@ -21,7 +21,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     async Task<IEnumerable<MapMarker>> StartsAsync(int reserve) =>
         (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>();
 
-    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>), shown only (<see cref="MapMarker.Only"/>): null when the server does not give them: the player may not join the
+    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>): the host's tents can be picked as the start (<see cref="JoinAsync"/>), its other items are shown only (<see cref="MapMarker.Only"/>). Null when the server does not give them: the player may not join the
     /// game, a password it has was not given or is wrong (<see cref="ServerCatalogApi.GamePassword"/>, percent-encoded), the game is gone, the player is signed out or the server does not answer.</summary>
     public async Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password)
     {
@@ -33,7 +33,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
             if (password is { Length: > 0 }) request.Headers.Add(ServerCatalogApi.GamePassword, Uri.EscapeDataString(password));
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerPlaced>() is { Items: not null } placed)
-                return [.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m with { Only = true })];
+                return [.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m.Kind == MarkerKind.Tent ? m : m with { Only = true })];
             log.LogWarning("The server answered {Path} with {Status}: no map of the game", path, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
@@ -138,10 +138,11 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return LaunchAsync([.. form]);
     }
 
-    /// <summary>The game has its reserve and start time, so a join sends neither.</summary>
+    /// <summary>The game has its reserve and start time, so a join sends neither. A tent marker of a join map (a negative id, the negated guid) is a tent of the game's host: <c>host_tent</c> says so, and the server checks it.</summary>
     public Task<Result> JoinAsync(long server, int marker, string? password, int loadout)
     {
         List<(string, string)> form = [("mp", "join"), ("network_id", $"{server}"), Start(marker), ("loadout", $"{loadout}")];
+        if (marker < 0) form.Add(("host_tent", "1"));
         if (password is { Length: > 0 }) form.Add(("password", password));
         return LaunchAsync([.. form]);
     }

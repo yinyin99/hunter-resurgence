@@ -44,10 +44,10 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
             .. mock == "tents" ? (MapMarker[])[new(11, MarkerKind.Tent, "Tent One", 48, 66), new(16, MarkerKind.Tent, "Tent Two", 80, 44)] : [],
         ]);
 
-    /// <summary>The mock's map of a game: its markers without the player's own tents, and a tent of the host that is shown only; none for a game the player cannot join, or a protected one without <see cref="Secret"/>.</summary>
+    /// <summary>The mock's map of a game: its markers without the player's own tents, a tent of the host (a start) and a stand of it (shown only); none for a game the player cannot join, or a protected one without <see cref="Secret"/>.</summary>
     public async Task<IReadOnlyList<MapMarker>?> JoinMarkersAsync(long server, int reserve, string? password) =>
         Servers.FirstOrDefault(s => s.Id == server) is { Refused: false } game && (!game.Password || password == Secret)
-            ? [.. (await MarkersAsync(reserve)).Where(m => m.Kind != MarkerKind.Tent), new(21, MarkerKind.Tent, "Host's tent", 40, 36, true)]
+            ? [.. (await MarkersAsync(reserve)).Where(m => m.Kind != MarkerKind.Tent), new(-21, MarkerKind.Tent, "Host's tent", 40, 36), new(-22, MarkerKind.TreeStand, "Host's stand", 36, 30, true)]
             : null;
 
     public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>(mock == "servers:none" ? [] : Servers);

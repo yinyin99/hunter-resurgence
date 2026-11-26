@@ -24,6 +24,7 @@ public sealed class Games
         public double X, Y, Z, Joined = now;
         public bool Positioned;  // the host's heartbeat has given X, Y and Z
         public double? Seen;  // the last heartbeat
+        public long? HostTent;  // a joiner who starts at a tent of the host: its guid (in the host's items)
         public Member Copy() => (Member)MemberwiseClone();
     }
 
@@ -104,9 +105,11 @@ public sealed class Games
         return g.Members.Count(m => m.Account != account) >= g.Max ? "full" : null;
     }
 
-    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `host_network` (`network`), `password`, `full`.
+    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `host_network` (`network`), `password`, `full`, `bad_start`
+    /// (`startOk`, asked once the rule lets the player in, is false for the session: the start tent is not the host's). `hostTent` is the host's tent the player starts at, kept with the player for its connect.
     /// `session` makes the player's session token once it is let in.</summary>
-    public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session)
+    public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session,
+                                                             long? hostTent = null, Func<Game, bool>? startOk = null)
     {
         lock (gate)
         {
@@ -114,9 +117,10 @@ public sealed class Games
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
             if (Why(g, account, score, friendOf, password) is { } why)
                 return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", "network" => "host_network", _ => why }, null);
+            if (startOk is not null && !startOk(g)) return (null, "bad_start", null);
             LeaveLocked(account);
             var token = session();
-            g.Members.Add(new(account, token, now));
+            g.Members.Add(new(account, token, now) { HostTent = hostTent });
             return (g.Copy(), null, token);
         }
     }
@@ -199,12 +203,18 @@ public sealed partial class State
         if (Num(Form1(form, "network_id")) is not { } id) return ("gone", null);
         var score = HunterScore(account);
         var friends = Store.FriendsOf(account, LocalAccount).Friends;  // read before the lock: every heartbeat waits on it
+        // `host_tent` 1: the start is a tent of the game's host (`start`, a guid of the host's items) rather than one of the joiner's own
+        var wantsHostTent = Form1(form, "host_tent") == "1";
+        long? hostTent = wantsHostTent && TentDefine.IsMatch(Form1(form, "loctype")) ? Num(Form1(form, "start")) : null;
+        if (wantsHostTent && hostTent is null) return ("bad_start", null);
         var (joined, error, session) = games.Join(Clock(), id, account, Form1(form, "password"), score,
-            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session));  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
+            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session), hostTent,
+            hostTent is { } guid ? g => { using var con = Con(g.Host); return TentAt(con, guid, g.Reserve); }
+        : null);  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
         if (joined is null) return (error, null);
         form["reserve"] = [joined.Reserve.ToString()];
         if (Form1(form, "time") == "") form["time"] = [joined.Time];
-        NoteLaunch(account, form);
+        NoteLaunch(account, form, hostTent is not null);
         return (null, session);
     }
 

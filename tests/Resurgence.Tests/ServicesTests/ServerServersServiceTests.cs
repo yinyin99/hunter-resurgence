@@ -141,8 +141,8 @@ public class ServerServersServiceTests
         Assert.Null(await service.JoinMarkersAsync(game, 2, "wrong"));
         var map = await service.JoinMarkersAsync(game, 2, "pä ss");
         Assert.Equal("p%C3%A4%20ss", sent);
-        Assert.Equal(["101:False", "102:False", "103:False", "104:False", "-501:True", "-502:True", "-503:True", "-504:True", "-507:True", "-508:True", "-509:True"],
-            map!.Select(m => $"{m.Id}:{m.Only}"));  // the starts can be picked, the host's items (also its tent) only show; the other reserve's tent is not there
+        Assert.Equal(["101:False", "102:False", "103:False", "104:False", "-501:False", "-502:True", "-503:True", "-504:True", "-507:True", "-508:True", "-509:True"],
+            map!.Select(m => $"{m.Id}:{m.Only}"));  // the starts can be picked, the host's tent can be picked, its other items only show; the other reserve's tent is not there
         Assert.DoesNotContain(fake.Seen, s => s.Path == ServerAccountApi.Placed);  // the player's own items are not the join map's
         Assert.All(fake.Seen.Where(s => s.Path == ServerCatalogApi.GamePlaced(game)), s => Assert.Equal("hr_session=secret", s.Cookie));
         // signed out, or a server that does not answer: no map, and signed out asks nothing
@@ -325,7 +325,7 @@ public class ServerServersServiceTests
         var service = Make(fake, bridge);
         Assert.True((await service.JoinAsync(4000000002, 101, "letmein", 4)).Ok);
         Assert.True((await service.JoinAsync(4000000001, -501, null, 0)).Ok);
-        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein&lang=en_US", "mp=join&network_id=4000000001&tent=501&loadout=0&lang=en_US"], fake.Seen.Select(s => s.Body));
+        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein&lang=en_US", "mp=join&network_id=4000000001&tent=501&loadout=0&host_tent=1&lang=en_US"], fake.Seen.Select(s => s.Body));
         Assert.Equal(2, bridge.Started.Count);
     }
 

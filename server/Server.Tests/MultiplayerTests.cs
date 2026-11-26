@@ -507,6 +507,50 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal(["50,50", "-", "-"], await Places(GUEST));  // the ones in it see it
     }
 
+    /// <summary>`POST /auth/launch` of the page, as `who`: the status and the `error` (null on success) or the session token.</summary>
+    async Task<(int Status, string? Error, string? Session)> PageJoin(long who, string form)
+    {
+        var reply = await server.SendAsync("POST", "web.test", "/auth/launch",
+            [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "XMLHttpRequest"), ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(who, TimeSpan.FromHours(1))}")], Encoding.UTF8.GetBytes(form));
+        return (reply.Status, (string?)Json(reply)["error"], Regex.Match((string?)Json(reply)["url"] ?? "", "/([0-9a-f]{40})/lang/") is { Success: true } m ? m.Groups[1].Value : null);
+    }
+
+    [Fact]
+    public async Task TestAJoinerMayStartAtTheHostsTentAndAtNoOtherPlayersTent()
+    {
+        Place(HOST, 501, 901, 2, 500_000, 1_200_000);  // the host's tent, 500 m and 1200 m from the origin
+        Place(HOST, 502, 901, 1, 0, 0);  // a tent of the host in another reserve
+        Place(HOST, 503, 902, 2, 0, 0);  // a stand of the host: no start
+        Place(THIRD, 601, 901, 2, 0, 0);  // another player's tent
+        Place(GUEST, 501, 901, 2, -700_000, 600_000);  // the joiner's own tent, with the guid of the host's
+        await ReadyHost();
+        var id = await NetworkId();
+        string Form(string start) => $"mp=join&network_id={id}&{start}&loadout=0";
+
+        // another player's tent, one of the host's in another reserve and a stand are no start; nobody joined
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=601&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=502&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=503&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("lodge=101&host_tent=1"))).Error);  // `host_tent` without a tent
+        Assert.Equal(1L, (long)(await List())[0]!["clients_len"]!);
+
+        // the host's tent is the joiner's start: the hunt is at the host's tent, not at the joiner's tent of the same guid
+        var joined = await PageJoin(GUEST, Form("tent=501&host_tent=1"));
+        Assert.Equal((200, null), (joined.Status, joined.Error));
+        var expedition = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.Equal((500.0, 1200.0), ((double)expedition["x"]!, (double)expedition["z"]!));
+        Assert.Equal(2L, (long)(await List())[0]!["clients_len"]!);
+
+        // without `host_tent` a tent is the joiner's own, as before
+        var own = await PageJoin(THIRD, Form("tent=601"));
+        Assert.Null(own.Error);
+        Assert.Equal(0.0, (double)(await Connect(own.Session!, THIRD))["expedition"]!["x"]!);
+
+        // a player the game refuses cannot start at its tent either: no setup of the host reaches it
+        await ReadyHost("&public_game=0");
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&tent=501&host_tent=1&loadout=0")).Error);
+    }
+
     [Fact]
     public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
     {

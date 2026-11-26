@@ -1450,6 +1450,12 @@ public sealed partial class State
             if (closed)
                 UpdateHunterscore(con, account);
         }
+        // a joiner who started at a tent of the game's host: the tent's place is the host's item (the expedition has no tent of the joiner's own); a tent the host picked up is no start any more
+        if (tutorial is null && tent is null && games.SnapshotOf(account) is { } joined && joined.Host != account && joined.Members.Find(m => m.Account == account)?.HostTent is { } hostGuid)
+        {
+            using var host = Con(joined.Host);
+            tent = host.Rows($"SELECT metadata FROM items WHERE account_id = $a AND guid = ? AND slot = {PLACED_SLOT}", hostGuid).FirstOrDefault() is { } theirs ? Parse(theirs[0]) : null;
+        }
         var (x, y, z) = tent?[POSITION] is JsonObject at
             ? (Py.D(at["x"]) / 1000, Py.D(at["y"]) / 1000, Py.D(at["z"]) / 1000)  // millimetres stored, metres sent
             : StartPosition(locationId);
@@ -2228,7 +2234,8 @@ public sealed partial class State
         NoteLaunch(account, Py.ParseQs(Encoding.UTF8.GetString(formBody)));
     }
 
-    void NoteLaunch(long account, OrderedDictionary<string, List<string>> form)
+    /// <summary>`hostTent`: the start is a tent of the game's host (checked by <see cref="Games.Join"/>), not of this account: the hunt is recorded at the reserve's first location with no tent, as a tent start is, and the connect finds the tent's place in the host's items.</summary>
+    void NoteLaunch(long account, OrderedDictionary<string, List<string>> form, bool hostTent = false)
     {
         latestTutorial.TryRemove(account, out _);
         var time = Form1(form, "time");
@@ -2238,16 +2245,16 @@ public sealed partial class State
         con.Begin();
         var now = Py.Now();
         var closed = con.Exec($"UPDATE expeditions SET end_ts = COALESCE(last_seen, ?), distance = COALESCE(distance, {WalkedMetres}) WHERE account_id = $a AND end_ts IS NULL", now) > 0;
-        var tent = tentStart && Py.IsDigit(start) && long.TryParse(start, out var guid) && Py.IsDigit(reserve) && long.TryParse(reserve, out var web) && TentAt(con, guid, web) ? guid : (long?)null;
+        var tent = !hostTent && tentStart && Py.IsDigit(start) && long.TryParse(start, out var guid) && Py.IsDigit(reserve) && long.TryParse(reserve, out var web) && TentAt(con, guid, web) ? guid : (long?)null;
         long? location = null;
-        if (tent is not null)
+        if (tent is not null || hostTent)
             location = (long.Parse(reserve) - 1) * 100;
         else if (!tentStart && Py.IsDigit(start) && long.TryParse(start, out var lodge))
             location = lodge;
         con.Exec("INSERT INTO expeditions (account_id, reserve, location_id, start_ts, first_event, start_time, tent) VALUES ($a, ?, ?, ?, ?, ?, ?)",
                  Py.IsDigit(reserve) ? long.Parse(reserve) : null, location, now, LastEvent(con),
                  Py.IsDigit(time) && long.TryParse(time, out var minutes) && minutes < 24 * 60 ? minutes : null, tent);  // out of one day: the recorded time stays
-        MissionLaunch(con, tent is null ? location : null);  // a tent is no lodge: no `Start at` objective
+        MissionLaunch(con, tent is null && !hostTent ? location : null);  // a tent is no lodge: no `Start at` objective
         // the previous launch's hidden marks go first: the loadout takes any row, and RefillAmmo decides again which lodge stacks the game is shown
         con.Exec($"UPDATE items SET metadata = json_remove(metadata, '$.{HIDDEN}') WHERE account_id = $a AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL");
         ApplyLoadout(con, Form1(form, "loadout_id"));
