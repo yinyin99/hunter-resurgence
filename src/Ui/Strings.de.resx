@@ -749,6 +749,9 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Sie haben eine gültige Lizenz bis:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Sie haben eine unbegrenzte Lizenz</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Unbegrenzte Munition</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Unbegrenzter Treibstoff</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Sie besitzen {0} von {1} Artikeln: {2} em$ statt {3} em$</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Sie besitzen alle Artikel dieses Pakets</value></data>
   <data name="Store.Or" xml:space="preserve"><value>oder</value></data>
   <data name="Store.Days" xml:space="preserve"><value>Tage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ANGEBOT</value></data>

@@ -151,6 +151,53 @@ public class ServerStoreServiceTests
         Assert.Equal(2, (await service.ItemAsync(1))!.Owned);
     }
 
+    const string LimitedStore = """
+        {"categories": [], "items": [
+           {"id": 1, "name": "Test Rifle", "variant": "", "description": "", "category": "0", "ems": 50, "was": null, "gms": 0, "buyable": true, "limit": 1},
+           {"id": 2, "name": "Test Fuel", "variant": "", "description": "", "category": "0", "ems": 5, "was": null, "gms": 0, "buyable": false, "fuel": true}],
+         "bundles": []}
+        """;
+
+    // one rifle at most: owning it ends the buying; a fuel the server gives every player is marked, not sold
+    [Fact]
+    public async Task AnItemAtItsLimitCannotBeBoughtAgainAndAFuelIsMarkedUnlimited()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, LimitedStore)), items: new Items(new(1, "Test Rifle", "", "0", "Rifles", null, false)));
+        var rows = (await service.ItemsAsync("all", "", 1)).Rows;
+        Assert.Equal([(1, true), (0, false)], rows.Select(r => (r.OwnLimit, r.LimitReached)));
+        Assert.Equal([false, true], rows.Select(r => r.Fuel));
+    }
+
+    // what a bundle costs is the server's own offer for the player (the list is the same for everyone); asked with the cookie, kept until a page opens or a purchase goes through
+    [Fact]
+    public async Task ABundleCostsWhatTheServerOffersThePlayerAndShowsHowManyItemsHeOwns()
+    {
+        var fake = new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles
+            ? Json(HttpStatusCode.OK, """{"bundles": [{"id": 9, "price": 60, "owned": 1, "of": 3, "buyable": true}]}""")
+            : Json(HttpStatusCode.OK, Store));
+        var service = Make(fake);
+        var bundle = (await service.BundleAsync(9))!;
+        Assert.Equal((60, 90, 1, true, 3), (bundle.Price, bundle.WasPrice, bundle.OwnedItems, bundle.Buyable, bundle.Lines.Count));
+        Assert.True(Assert.Single(fake.Seen, r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles).Headers.Contains("Cookie"));
+        await service.BundlesAsync();
+        Assert.Single(fake.Seen, r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles);
+        service.RefreshOwned();
+        await service.BundlesAsync();
+        Assert.Equal(2, fake.Seen.Count(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles));
+    }
+
+    [Fact]
+    public async Task ABundleTheServerWouldGiveNothingOfIsNotBuyableAndWithoutAnOfferTheListPriceStands()
+    {
+        var none = Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles
+            ? Json(HttpStatusCode.OK, """{"bundles": [{"id": 9, "price": 90, "owned": 3, "of": 3, "buyable": false}]}""") : Json(HttpStatusCode.OK, Store)));
+        var owned = (await none.BundleAsync(9))!;
+        Assert.Equal((90, 0, 3, false), (owned.Price, owned.WasPrice, owned.OwnedItems, owned.Buyable));
+        var unanswered = Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, Store)));
+        var listed = (await unanswered.BundleAsync(9))!;
+        Assert.Equal((90, 0, 0, true), (listed.Price, listed.WasPrice, listed.OwnedItems, listed.Buyable));
+    }
+
     sealed class Counting : IInventoryService
     {
         public int Reads;

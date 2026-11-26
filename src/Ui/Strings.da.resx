@@ -749,6 +749,9 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Du har en gyldig licens indtil:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Du har en ubegrænset licens</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Ubegrænset ammunition</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Ubegrænset brændstof</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Du ejer {0} af {1} elementer: {2} em$ i stedet for {3} em$</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du ejer allerede alle elementerne i denne pakke</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>

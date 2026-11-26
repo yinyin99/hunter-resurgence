@@ -62,13 +62,19 @@ public sealed record ServerStore(ServerCategory[] Categories, ServerItem[] Items
 
 public sealed record ServerCategory(string Key, string Name, ServerCategory[]? Children = null);
 
-/// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (the discount of the day taken off), <see cref="Was"/> the em$ price before an active discount (null without one); <see cref="Category"/> the key of its sub-category; <see cref="Unlimited"/> an ammunition every player has all of (not sold).</summary>
-public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable, bool Unlimited = false);
+/// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (the discount of the day taken off), <see cref="Was"/> the em$ price before an active discount (null without one); <see cref="Category"/> the key of its sub-category; <see cref="Unlimited"/> an ammunition every player has all of (not sold); <see cref="Fuel"/> a vehicle fuel while the server gives every player unlimited fuel (not sold); <see cref="Limit"/> the most copies a player owns, 0 for no limit.</summary>
+public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable, bool Unlimited = false, bool Fuel = false, int Limit = 0);
 
 /// <summary><see cref="Buyable"/>: the server sells it (a price of at least 1, only items of its catalogue).</summary>
 public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items);
 
 public sealed record ServerBundleItem(int Id, string Name);
+
+/// <summary>A bundle of <see cref="ServerAccountApi.Bundles"/>, as it costs the signed-in player now: <see cref="Price"/> is the em$ the server charges (the list price less the share of the items the player already owns up to their limit),
+/// <see cref="Owned"/> of its <see cref="Of"/> items are not given again, <see cref="Buyable"/> is false when the store does not sell it or it would give nothing.</summary>
+public sealed record ServerBundleOffer(int Id, int Price, int Owned, int Of, bool Buyable);
+
+public sealed record ServerBundleOffers(ServerBundleOffer[] Bundles);
 
 /// <summary>The JSON of <see cref="ServerCatalogApi.Item"/>: what an item's page shows beyond the list. <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Fits"/> what fits it, under
 /// its category's title; <see cref="Ethical"/> the permitted species of a weapon's ammunition or of an ammunition, by the rule the server judges kills by.</summary>
