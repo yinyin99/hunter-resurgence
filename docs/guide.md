@@ -56,7 +56,7 @@ More: [launcher](launcher.md#the-player-kit).
 
 **A seasonal event fixes the time.** While an event runs on a reserve and "Play seasonal events" is on, the time of day of a hunt there (single player or multiplayer) is the event's (night), so the launcher shows "Fixed by the event" with that time instead of the time list. Other reserves are unchanged. To choose the time yourself, turn off "Play seasonal events" (the launcher's Settings menu, or the box on the launch map).
 
-**A seasonal event changes what is ethical.** In a hunt the event runs for (on its reserves, with "Play seasonal events" on), only the event's silver ammunition is permitted on the animals there, small game included: one hit with any other ammunition makes the kill unethical (disqualified, no score and no gm$), even when silver finishes it. A hunt keeps the rule it started with until it ends, even when the event ends or you change the setting; a change applies from your next hunt. Tutorials keep the normal rule.
+**A seasonal event changes what is ethical.** In a hunt the event runs for (on its reserves, with "Play seasonal events" on), only the event's silver ammunition is permitted on the possessed animals there, small game included: one hit with any other ammunition makes the kill unethical (disqualified, no score and no gm$), even when silver finishes it. The coyote and the blacktail deer are not possessed: their usual ammunition is permitted too, with the silver. A hunt keeps the rule it started with until it ends, even when the event ends or you change the setting; a change applies from your next hunt. Tutorials keep the normal rule.
 
 ## Multiplayer (beta)
 

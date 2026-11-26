@@ -1011,8 +1011,19 @@ public sealed partial class State
     /// for a species it lists (<see cref="Facts.EventEthical"/>), else its connect `ethical` list; null if it has none (the dogs): no rule.</summary>
     JsonArray? Allowed(JsonNode? sp, string? huntEvent = null) =>
         sp is null ? null
-        : huntEvent is not null && facts.EventEthical(huntEvent) is { } ev && ev.Species.Contains(Mod100(sp)) ? ev.Ammo
+        : huntEvent is not null && EventAllowed(huntEvent, Mod100(sp)) is { } listed ? listed
         : Mod100(sp) < ethicalAmmo.Count && ethicalAmmo[(int)Mod100(sp)] is JsonArray { Count: > 0 } a ? a : null;
+
+    /// <summary>The permitted ammo of species <paramref name="sp"/> (a typical id) in a hunt of the event <paramref name="huntEvent"/>: the event's list, and for a species it says has no possessed version
+    /// (`no_possessed`) its normal list first, then the event's ammo it lacks; null when the event does not list the species. The one place the connect's `ethical` and the judging read the event's list.</summary>
+    JsonArray? EventAllowed(string huntEvent, long sp)
+    {
+        if (facts.EventEthical(huntEvent) is not { } ev || !ev.Species.Contains(sp))
+            return null;
+        if (!ev.NoPossessed.Contains(sp) || sp >= ethicalAmmo.Count || ethicalAmmo[(int)sp] is not JsonArray normal)
+            return ev.Ammo;
+        return new JsonArray([.. normal.Select(a => a?.DeepClone()), .. ev.Ammo.Where(a => !normal.Any(n => Py.Eq(n, a))).Select(a => a?.DeepClone())]);
+    }
 
     /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>; the event's silver ammunition is permitted on every species. The one rule the kills are judged by and the store shows.</summary>
     bool Permits(JsonArray allowed, JsonNode? ammo) => allowed.Concat(eventAmmo).Any(a => Py.Eq(a, ammo));
@@ -1558,7 +1569,7 @@ public sealed partial class State
                 foreach (var sp in list.Species)
                 {
                     while (ethical.Count <= sp) ethical.Add(new JsonArray());
-                    ethical[(int)sp] = list.Ammo.DeepClone();
+                    ethical[(int)sp] = EventAllowed(huntEvent, sp)!.DeepClone();
                 }
         }
         if (AllLicenses && reply["spawn_licenses"] is JsonArray licensed)  // 2 (not available) stays; 0 and 1 are licensed

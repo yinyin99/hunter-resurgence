@@ -97,7 +97,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Oggetti dell'evento nel negozio</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Ricompensa per ogni collaboratore: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} obiettivi su {1} completati</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale, selvaggina minuta compresa. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale posseduto, selvaggina minuta compresa. Il coyote e il cervo dalla coda nera non sono posseduti: per loro vanno bene anche le munizioni di sempre. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>

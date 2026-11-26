@@ -97,7 +97,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Event-Artikel im Shop</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belohnung für jeden Beitragenden: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} von {1} Zielen erledigt</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes Tier, auch für Niederwild. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes besessene Tier, auch für Niederwild. Kojote und Schwarzwedelhirsch sind nicht besessen: Bei ihnen ist auch die übliche Munition erlaubt. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Ereignis läuft: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>allen Revieren</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Saisonales Ereignis</value></data>
