@@ -79,6 +79,7 @@ public class HarvestScoreTests : StateTestBase
     {
         var species = Facts.Default.Families.Keys.Order().ToList();
         Assert.Equal(Facts.Default.Variants.Keys.Order(), species);  // a family and a row of bounds for each, 100 and up the non-typical deer
+        List<string> bad = [];
         foreach (var sp in species)
             foreach (var gender in new[] { 0, 1 })
             {
@@ -87,13 +88,14 @@ public class HarvestScoreTests : StateTestBase
                 var what = $"species {sp} ({Facts.Default.Families[sp]}), gender {gender}";
                 if (gender == 1 && NoScoreFemale.Contains(sp))
                 {
-                    Assert.True(Py.Eq(update["score_text"], "No score") && score == 0 && css == 0 && !paid, what + ": a female with no score");
+                    if (!(Py.Eq(update["score_text"], "No score") && score == 0 && css == 0 && !paid)) bad.Add(what + ": a female with no score");
                     continue;
                 }
-                Assert.True(Py.Eq(update["trophy_shot"], 1) && score > 0, what + ": score");
-                Assert.True(css > 0, what + ": css");
-                Assert.True(paid, what + ": gm$");
+                if (!(Py.Eq(update["trophy_shot"], 1) && score > 0)) bad.Add(what + ": score");
+                if (!(css > 0)) bad.Add(what + ": css");
+                if (!paid) bad.Add(what + ": gm$");
             }
+        Assert.True(bad.Count == 0, string.Join("\n", bad));  // every failing cell of a run, not the first
     }
 
     // the confirm-kill screen shows round(css) of update 6 as the reward: a bonus must show there as it is paid, and stop at its end
