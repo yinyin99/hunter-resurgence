@@ -137,6 +137,8 @@ jobs:
         run: docker compose -f deploy/compose.yml --env-file deploy/.env.example config -q
       - name: Check the shell scripts
         run: shellcheck deploy/firewall.sh deploy/rollout.sh tools/hooks/*
+      - name: Workflow scripts
+        run: node --test .github/scripts/*.test.mjs
       # iptables and curl are stubs that log their calls: no ranges from Cloudflare must change nothing
       - name: Firewall script with stubbed iptables
         run: |

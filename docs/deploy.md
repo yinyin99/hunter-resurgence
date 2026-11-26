@@ -20,9 +20,10 @@ The [website](website.md) (`src/Web/`) and the community server ([server.md](ser
 | `.github/workflows/ci.yml` | the `docker-natpt` job builds `server/natpt` and checks that the server starts and logs that it listens on UDP 10000 |
 | `.github/workflows/ci.yml` | the `docker-server` job builds the server's image, starts it with an empty install and checks that it answers, that the app user can write `/data` and that `server backup` runs |
 | `.github/workflows/ci.yml` | the `docker` job builds the image, starts it and checks that `/feed` shows the banner and names the fingerprinted `shell.<hash>.js` (the import map, see [website.md](website.md#build-and-run)), that `/robots.txt` is served ([website.md](website.md#build-and-run)), and that `/feed` and a 404 carry the security headers ([website.md](website.md#security-headers)) |
-| `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh` and `deploy/rollout.sh`, the roll-out script against stub `docker` and `curl` (healthy: the new tags stay; a restarting container or a 502: the old tags are back), and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules); then it puts the real `Caddyfile` in front of two stub backends and checks which one each path reaches ([routing](#the-community-server)) and that a request sent while the backends are gone is answered once they are back ([Deploys](#deploys)). The `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
+| `.github/workflows/ci.yml` | the `scripts` job runs actionlint on the workflows, `docker compose config` on `deploy/compose.yml` with `deploy/.env.example`, shellcheck on `deploy/firewall.sh` and `deploy/rollout.sh`, the roll-out script against stub `docker` and `curl` (healthy: the new tags stay; a restarting container or a 502: the old tags are back), and the firewall script against stub `iptables` and `curl` (no ranges: it fails and adds no rule; two ranges: the `RETURN`, `DROP` and `DOCKER-USER` rules), and runs the tests of `.github/scripts` (`node --test .github/scripts/*.test.mjs`: the VirusTotal parsing, [VirusTotal scan](#virustotal-scan)); then it puts the real `Caddyfile` in front of two stub backends and checks which one each path reaches ([routing](#the-community-server)) and that a request sent while the backends are gone is answered once they are back ([Deploys](#deploys)). The `docker` job also checks that the app user can write `/home/app/.aspnet/DataProtection-Keys` |
 | `.github/workflows/deploy.yml` | build, push and roll out on a `server-X.Y.Z` tag of a commit of `main` whose `ci` passed |
 | `.github/workflows/dependabot-locks.yml` | adds the regenerated `packages.lock.json` files to a Dependabot SDK or NuGet pull request |
+| `.github/workflows/virustotal.yml`, `.github/scripts/virustotal-notes.mjs` | after a release is published, scans the Setup and the backup zip on VirusTotal and appends the result to the release notes ([VirusTotal scan](#virustotal-scan)) |
 | `.github/workflows/discord-release-threads.yml`, `.github/scripts/discord-release-threads.mjs` | after a release is published, resolves the Discord forum threads linked in the release's pull requests and the issues they close ([Discord threads at release](#discord-threads-at-release)) |
 | `.github/workflows/codeql-caches.yml` | every 6 hours (and by hand), deletes the Actions caches `codeql-overlay-base-database-*` that CodeQL's default setup saves for every push to `main` (about 1 GB a day), except the newest per language, the only one CodeQL reads |
 | `.github/actions/setup-sdk/action.yml` | installs exactly the SDK of `global.json` for `ci`, `release` and `dependabot-locks`: it reads `sdk.version`, turns `rollForward` off in the runner's copy of `global.json` (never committed), runs `setup-dotnet` with that version and the NuGet package cache (keyed by every `packages.lock.json`) and prints `dotnet --version` |
@@ -366,6 +367,37 @@ A prerelease (`vX.Y.Z-rc.N`) resolves nothing, and the next stable release's ran
 | `DISCORD_GUILD_ID` | the Discord server's id |
 
 Without them (a fork) the run ends with a notice. To run it again for a release (or to catch up after the secrets were added), start the workflow by hand (Actions, discord-release-threads, Run workflow) with the tag, and optionally `from`, the tag where the range starts. The release is the launcher's `vX.Y.Z`: a change of the server or the website reaches players only with the next `server-X.Y.Z` tag ([Deploys](#deploys)), so the reply is sent when a release ships, which can be before that deploy.
+
+## VirusTotal scan
+
+`.github/workflows/virustotal.yml` runs after the `release` workflow succeeds (the release is published by then; like [Discord threads at release](#discord-threads-at-release) it follows the release run, because a release published with the workflow's own `GITHUB_TOKEN` does not fire `release: published`). It is a workflow of its own, so the publish never waits for or fails on VirusTotal. It downloads `backup-win-x64.zip` and `HunterResurgence-win-Setup.exe` from the release (a release without a launcher has the zip alone) and runs `.github/scripts/virustotal-notes.mjs` (Node 20+, no packages), which:
+
+- uploads each file to the VirusTotal API v3 (`POST /files`; the Setup and the zip are over 32 MB, so the address from `GET /files/upload_url` is used);
+- polls `GET /analyses/<id>` every 30 seconds, up to 15 minutes;
+- appends a `## VirusTotal` section to the release notes (`gh release edit --notes-file`, after reading the current notes): per file, "VirusTotal: m/n" (m engines flagged it, n gave a verdict) with the flagging engines grouped by the name of their result, e.g. "3/68 (Avast, AVG: FileRepMalware; Trapmine: ML)", and the report link `https://www.virustotal.com/gui/file/<sha256>`. When any engine flagged a file, one sentence says that new unsigned files are often flagged by reputation-based engines until they are widely downloaded and that the SHA-256 above matches what the release built.
+
+The free public API allows 4 requests a minute and 500 a day: the script waits 15 seconds between requests, and a release needs a few dozen at most. A failed download or scan (an API error, a rate limit that persists, no result after 15 minutes) ends the job with a notice and leaves the notes as they are, and the job never touches the published files; a release whose notes already have a `## VirusTotal` section is left alone before anything is uploaded, so running it again is safe. The workflow has `contents: write` for the notes. Repository secret:
+
+| Secret | Value |
+|---|---|
+| `VIRUSTOTAL_API_KEY` | a VirusTotal API key (the free account's is enough) |
+
+Without it (a fork) the run ends with a notice. To scan a release that is already published (or to catch up after the secret was added), start the workflow by hand (Actions, virustotal, Run workflow) with the tag. The script's parsing of an analysis is tested by `.github/scripts/virustotal-notes.test.mjs` (the `scripts` job of `ci`).
+
+**False positives.** A flag by one or two reputation or machine-learning engines on a new unsigned file is usually a false positive. The maintainer reports it to each flagging vendor by hand (the vendors' general submission pages, no account needed unless the page asks for one; name the file, its SHA-256 and the release link, and say that the source is public):
+
+| Vendor | Where |
+|---|---|
+| Avast, AVG | https://www.avast.com/false-positive-file-form.php |
+| Microsoft Defender | https://www.microsoft.com/en-us/wdsi/filesubmission |
+| Kaspersky | https://opentip.kaspersky.com/ |
+| Bitdefender | https://www.bitdefender.com/consumer/support/answer/29358/ |
+| ESET | https://support.eset.com/en/kb141-submit-a-virus-website-or-potential-false-positive-sample-to-the-eset-lab |
+| Sophos | https://support.sophos.com/support/s/filesubmission |
+| Malwarebytes | https://forums.malwarebytes.com/forum/122-file-detections/ |
+| Symantec, Norton | https://symsubmit.symantec.com/ |
+
+For any other vendor, search for its "false positive" or "submit a sample" page.
 
 ## Known limits
 
