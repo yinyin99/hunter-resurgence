@@ -14,18 +14,19 @@ public class MissionNeedsTests : MissionTestBase
     [Fact]
     public void TestACompletedDependencyDropsOutOfNeedsAndADependencyWithoutADefinitionIsListedById()
     {
+        // ids from 4 on: the server drops 0, 1 and 2 from every dependency list (#1012)
         state = New("needs.db", $$"""
             {"missions": [
-              {"id": 1, "title": "First", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]},
-              {"id": 2, "title": "Second", "dependencies": [1], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]},
-              {"id": 3, "title": "Third", "dependencies": [1, 99], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]}]}
+              {"id": 4, "title": "First", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]},
+              {"id": 5, "title": "Second", "dependencies": [4], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]},
+              {"id": 6, "title": "Third", "dependencies": [4, 99], "rewards": [], "objectives": [{"id": 0, "title": "{{Deer}}"}]}]}
             """);
-        Assert.Equal("""["First"]""", Needs(2));
-        Assert.Equal("""["First", "#99"]""", Needs(3));
-        state.MissionCall(ME, "activate", System.Text.Encoding.ASCII.GetBytes("mission_id=1"));
+        Assert.Equal("""["First"]""", Needs(5));
+        Assert.Equal("""["First", "#99"]""", Needs(6));
+        state.MissionCall(ME, "activate", System.Text.Encoding.ASCII.GetBytes("mission_id=4"));
         state.HeartbeatReply(ME, Events(Shot(1)));
-        Assert.Equal("1", Completed());
-        Assert.Equal("[]", Needs(2));
-        Assert.Equal("""["#99"]""", Needs(3));
+        Assert.Equal("4", Completed());
+        Assert.Equal("[]", Needs(5));
+        Assert.Equal("""["#99"]""", Needs(6));
     }
 }

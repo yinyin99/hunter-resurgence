@@ -8,15 +8,15 @@ namespace Resurgence.Server.Tests;
 /// <summary>Missions on a community server, with made-up definitions: the account's states, the replies, the progress the hunt's events make and the pay.</summary>
 public class MissionTests : StateTestBase
 {
-    // 1 a harvest; 2 a track and a harvest (needs 1); 3 starts at a lodge; 4 a harvest (needs 2); 5 a single-hunt track and spot; 6 arrive; 7 ordered; 8 two clues of one animal;
-    // 9 a female; 10 a harvest (needs 2); groups 10 holds 4 and 11 holds 10
+    // 11 a harvest; 12 a track and a harvest (needs 11); 3 starts at a lodge; 4 a harvest (needs 12); 5 a single-hunt track and spot; 6 arrive; 7 ordered; 8 two clues of one animal;
+    // 9 a female; 10 a harvest (needs 12); groups 10 holds 4 and 11 holds 10. Not 0, 1 or 2: the server drops those from every dependency list (#1012)
     const string Definitions = """
         {"missions": [
-          {"id": 1, "title": "Harvest a Test Deer", "dependencies": [], "rewards": [{"text": "100 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
-          {"id": 2, "title": "Track and Harvest", "dependencies": [1], "rewards": [{"text": "250 gm$"}, {"text": "5 em$"}, {"text": "Test Scope"}],
+          {"id": 11, "title": "Harvest a Test Deer", "dependencies": [], "rewards": [{"text": "100 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+          {"id": 12, "title": "Track and Harvest", "dependencies": [11], "rewards": [{"text": "250 gm$"}, {"text": "5 em$"}, {"text": "Test Scope"}],
            "objectives": [{"id": 0, "title": "Locate Test Deer tracks."}, {"id": 1, "title": "Harvest a Test Deer."}]},
           {"id": 3, "title": "Test Start", "dependencies": [], "rewards": [{"text": "40 gm$"}], "objectives": [{"id": 0, "title": "Start at Test Lodge."}]},
-          {"id": 4, "title": "Next", "dependencies": [2], "rewards": [{"text": "10 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+          {"id": 4, "title": "Next", "dependencies": [12], "rewards": [{"text": "10 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
           {"id": 5, "title": "One Hunt", "singleExpedition": true, "dependencies": [], "rewards": [{"text": "20 gm$"}],
            "objectives": [{"id": 0, "title": "Locate Test Deer tracks"}, {"id": 1, "title": "Spot a Test Deer"}]},
           {"id": 6, "title": "Pond", "dependencies": [], "rewards": [{"text": "30 gm$"}], "objectives": [{"id": 0, "title": "Visit Test Pond (x 5000, y 6000)"}]},
@@ -24,7 +24,7 @@ public class MissionTests : StateTestBase
            "objectives": [{"id": 0, "title": "Harvest a Test Deer"}, {"id": 1, "title": "Then, spot a Test Deer"}]},
           {"id": 8, "title": "Clues", "dependencies": [], "rewards": [{"text": "70 gm$"}], "objectives": [{"id": 0, "title": "Locate 2 Test Deer tracks from the same animal"}]},
           {"id": 9, "title": "Doe", "dependencies": [], "rewards": [{"text": "80 gm$"}], "objectives": [{"id": 0, "title": "Harvest a female Test Deer"}]},
-          {"id": 10, "title": "Other", "dependencies": [2], "rewards": [{"text": "15 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}],
+          {"id": 10, "title": "Other", "dependencies": [12], "rewards": [{"text": "15 gm$"}], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}],
          "mission_groups": [{"id": 10, "missions": [4]}, {"id": 11, "missions": [10]}]}
         """;
 
@@ -33,10 +33,10 @@ public class MissionTests : StateTestBase
         state = New("state.db");
     }
 
-    State New(string name, bool offline = false)
+    State New(string name, bool offline = false, string definitions = Definitions)
     {
         var app = APP;
-        foreach (var (key, value) in O(Definitions))
+        foreach (var (key, value) in O(definitions))
             app[key] = value!.DeepClone();
         app["locations"]![0]!["name"] = "Test Lodge";
         return new State(Path.Combine(tmp, name), Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: offline);
@@ -92,32 +92,68 @@ public class MissionTests : StateTestBase
     public void TestAvailableMissionsAreThoseWhoseDependenciesAreCompleted()
     {
         var reply = Missions();
-        Assert.Equal("1,3,5,6,7,8,9", Ids(reply["available"]));
+        Assert.Equal("3,5,6,7,8,9,11", Ids(reply["available"]));
         Eq("[[], [], 0, 0, 0, []]", T(reply["active"], reply["completed"], reply["auto_mission_activate"], reply["activate_only_favourite"], reply["hide_completed_favourite"], reply["favourites"]));
-        Eq("""{"state": 1}""", reply["states"]!["1"]);
-        Assert.Null(reply["states"]!["2"]);  // needs 1
+        Eq("""{"state": 1}""", reply["states"]!["11"]);
+        Assert.Null(reply["states"]!["12"]);  // needs 11
         Assert.Equal(7, reply["states"]!.AsObject().Count);  // an entry for every id listed and for no other
     }
 
     [Fact]
     public void TestOnlyAnAvailableMissionCanBeActivated()
     {
-        Assert.False(Call("activate", "mission_id=2"));  // needs 1
+        Assert.False(Call("activate", "mission_id=12"));  // needs 11
         Assert.False(Call("activate", "mission_id=99"));  // no definition
         Assert.False(Call("activate", "mission_id=nope"));
-        Assert.True(Call("activate", "mission_id=1"));
-        Assert.False(Call("activate", "mission_id=1"));  // already active
+        Assert.True(Call("activate", "mission_id=11"));
+        Assert.False(Call("activate", "mission_id=11"));  // already active
         var reply = Missions();
-        Assert.Equal(("1", "3,5,6,7,8,9"), (Ids(reply["active"]), Ids(reply["available"])));
-        Eq("""{"state": 2, "objectives": []}""", reply["states"]!["1"]);
+        Assert.Equal(("11", "3,5,6,7,8,9"), (Ids(reply["active"]), Ids(reply["available"])));
+        Eq("""{"state": 2, "objectives": []}""", reply["states"]!["11"]);
         Assert.True(Call("activate_all_available"));
-        Assert.Equal("1,3,5,6,7,8,9", Ids(Missions()["active"]));
+        Assert.Equal("3,5,6,7,8,9,11", Ids(Missions()["active"]));
+    }
+
+    [Fact]
+    public void TestAPackOpenerNeedsNoWhitetailMissionsButWhatFollowsItStaysLocked()
+    {
+        // the original gates a pack's opener (20) behind the Whitetail Deer missions 0, 1 and 2 (#1012); a mission after the opener (21) still waits for it
+        state = New("open.db", definitions: """
+            {"missions": [
+              {"id": 0, "title": "Zero", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 1, "title": "One", "dependencies": [0], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 2, "title": "Two", "dependencies": [1], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 20, "title": "Opener", "dependencies": [0, 1, 2], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 21, "title": "After", "dependencies": [20], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}]}
+            """);
+        Assert.Equal("0,1,2,20", Ids(Missions()["available"]));  // a new account: no progress, the opener is open
+        Assert.False(Call("activate", "mission_id=21"));  // locked until 20 is completed
+        Assert.True(Call("activate", "mission_id=20"));
+        Hb(Kill(71));
+        var reply = Missions();
+        Assert.Equal(("20", "0,1,2,21"), (Ids(reply["completed"]), Ids(reply["available"])));
+        Assert.True(Call("activate", "mission_id=21"));
+    }
+
+    [Fact]
+    public void TestTheGamesApplicationReplyListsNoWhitetailMissionAsAPrerequisite()
+    {
+        state = New("app.db", definitions: """
+            {"missions": [
+              {"id": 0, "title": "Zero", "dependencies": [], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 20, "title": "Opener", "dependencies": [0, 1, 2], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 21, "title": "After", "dependencies": [20], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]},
+              {"id": 22, "title": "Both", "dependencies": [2, 20, 21], "rewards": [], "objectives": [{"id": 0, "title": "Harvest a Test Deer"}]}]}
+            """);
+        var missions = Reply(state.ClientApplicationReply())["missions"]!.AsArray();
+        string Dependencies(int id) => missions.Single(m => (long)m!["id"]! == id)!["dependencies"]!.ToJsonString();
+        Assert.Equal(("[]", "[]", "[20]", "[20,21]"), (Dependencies(0), Dependencies(20), Dependencies(21), Dependencies(22)));
     }
 
     [Fact]
     public void TestAHarvestFinishesAMissionPaysItAndAnnouncesIt()
     {
-        Call("activate", "mission_id=1");
+        Call("activate", "mission_id=11");
         var before = Gm();
         var now = Hb(Kill(71));
         var paid = Update(now, 15)!;
@@ -131,21 +167,21 @@ public class MissionTests : StateTestBase
         Assert.Equal("6,3", Kinds(next));
         Assert.Equal("Mission Harvest a Test Deer completed.", (string)Update(next, 3)!["text"]!);
         var reply = Missions();
-        Assert.Equal(("", "1"), (Ids(reply["active"]), Ids(reply["completed"])));
-        Eq("""{"state": 3}""", reply["states"]!["1"]);
-        Assert.Contains("2", Ids(reply["available"]).Split(','));  // 2 needed 1
+        Assert.Equal(("", "11"), (Ids(reply["active"]), Ids(reply["completed"])));
+        Eq("""{"state": 3}""", reply["states"]!["11"]);
+        Assert.Contains("12", Ids(reply["available"]).Split(','));  // 12 needed 11
     }
 
     [Fact]
     public void TestATwoObjectiveMissionFinishesWithItsLastObjective()
     {
-        Call("activate", "mission_id=1");
+        Call("activate", "mission_id=11");
         Hb(Kill(71));
-        Call("activate", "mission_id=2");
+        Call("activate", "mission_id=12");
         Hb();
         Hb(Spawn(72), Track(72));
-        Assert.Equal("0", Objectives(2));
-        Eq("[true, false]", WebObjectives(2));  // the page ticks the finished one
+        Assert.Equal("0", Objectives(12));
+        Eq("[true, false]", WebObjectives(12));  // the page ticks the finished one
         var next = Hb();  // the objective toast: a mission that is not finished pays nothing
         Assert.Equal("3", Kinds(next));
         Assert.Equal("Mission \"Track and Harvest\", objective \"Locate Test Deer tracks.\" completed.", (string)Update(next, 3)!["text"]!);
@@ -157,20 +193,20 @@ public class MissionTests : StateTestBase
         Assert.DoesNotContain(Kinds(now).Split(','), k => k == "10");  // an item reward is not delivered
         Assert.True(Gm() >= gm + 250);
         Assert.Equal(["em$ reward"], state.WalletPage(ME, "em", 0).Select(r => (string)r!["summary"]!));
-        Assert.Equal("1,2", Ids(Missions()["completed"]));
-        Eq("[true, true]", WebObjectives(2));  // a completed mission has all done
+        Assert.Equal("11,12", Ids(Missions()["completed"]));
+        Eq("[true, true]", WebObjectives(12));  // a completed mission has all done
     }
 
     [Fact]
     public void TestAnotherSpeciesOrGenderFinishesNothing()
     {
-        Call("activate", "mission_id=1");
+        Call("activate", "mission_id=11");
         Call("activate", "mission_id=9");
         Hb(Kill(71, species: 17));
-        Hb(Kill(72));  // a male deer: mission 1 only
-        Assert.Equal("1", Ids(Missions()["completed"]));
+        Hb(Kill(72));  // a male deer: mission 11 only
+        Assert.Equal("11", Ids(Missions()["completed"]));
         Hb(Kill(73, gender: 1));
-        Assert.Equal("1,9", Ids(Missions()["completed"]));
+        Assert.Equal("9,11", Ids(Missions()["completed"]));
     }
 
     [Fact]
@@ -241,8 +277,8 @@ public class MissionTests : StateTestBase
     }
 
     const string Saved = """
-        {"active": [2, 901], "completed": [1, 900], "available": [3],
-         "states": {"1": {"state": 3}, "900": {"state": 3}, "2": {"state": 2, "objectives": [0]}, "901": {"state": 2, "objectives": [2, 3]}, "3": {"state": 1}},
+        {"active": [12, 901], "completed": [11, 900], "available": [3],
+         "states": {"11": {"state": 3}, "900": {"state": 3}, "12": {"state": 2, "objectives": [0]}, "901": {"state": 2, "objectives": [2, 3]}, "3": {"state": 1}},
          "auto_mission_activate": 1, "activate_only_favourite": 0, "hide_completed_favourite": true, "favourites": [500]}
         """;
 
@@ -260,16 +296,16 @@ public class MissionTests : StateTestBase
     {
         Saved8(Saved);
         var reply = Missions(8);
-        Assert.Equal(("2,901", "1,900", "3,5,6,7,8,9"), (Ids(reply["active"]), Ids(reply["completed"]), Ids(reply["available"])));
-        Eq("""{"state": 2, "objectives": [0]}""", reply["states"]!["2"]);
+        Assert.Equal(("12,901", "11,900", "3,5,6,7,8,9"), (Ids(reply["active"]), Ids(reply["completed"]), Ids(reply["available"])));
+        Eq("""{"state": 2, "objectives": [0]}""", reply["states"]!["12"]);
         Eq("""{"state": 2, "objectives": [2, 3]}""", reply["states"]!["901"]);
         Eq("""{"state": 3}""", reply["states"]!["900"]);
         Eq("[1, 0, 1, [500]]", T(reply["auto_mission_activate"], reply["activate_only_favourite"], reply["hide_completed_favourite"], reply["favourites"]));
         Assert.Equal("", Ids(Missions()["completed"]));  // the other account has none of it
-        // the saved progress counts: the harvest finishes mission 2, which unlocks 4 and 10, activated by the switch
+        // the saved progress counts: the harvest finishes mission 12, which unlocks 4 and 10, activated by the switch
         var before = Gm(8);
         state.HeartbeatReply(8, Events(Kill(71)));
-        Assert.Equal(("1,2,900", "4,10,901"), (Ids(Missions(8)["completed"]), Ids(Missions(8)["active"])));
+        Assert.Equal(("11,12,900", "4,10,901"), (Ids(Missions(8)["completed"]), Ids(Missions(8)["active"])));
         Assert.True(Gm(8) >= before + 250);
     }
 
@@ -290,16 +326,16 @@ public class MissionTests : StateTestBase
         var result = Restorer.Import(state, saved.Write(tmp, "a.zip"), null, tmp);
         using (var con = state.Store.Open(result.Account))
         {
-            Eq("[[1, 3], [2, 2], [900, 3], [901, 2]]", new JsonArray(con.Rows("SELECT mission_id, state FROM missions WHERE account_id = $a ORDER BY mission_id")
+            Eq("[[11, 3], [12, 2], [900, 3], [901, 2]]", new JsonArray(con.Rows("SELECT mission_id, state FROM missions WHERE account_id = $a ORDER BY mission_id")
                 .Select(r => (JsonNode?)new JsonArray((long)r[0], (long)r[1])).ToArray()));
             Eq("[2, 3]", Reply(Encoding.UTF8.GetBytes((string)con.Scalar("SELECT objectives FROM missions WHERE account_id = $a AND mission_id = 901")!)));
         }
-        Assert.Equal("1,900", Ids(Missions(result.Account)["completed"]));
+        Assert.Equal("11,900", Ids(Missions(result.Account)["completed"]));
         Restorer.Import(state, TestZip.Own().Write(tmp, "b.zip"), result.Account, tmp);  // a zip without a mission page
         Assert.Equal("", Ids(Missions(result.Account)["completed"]));
     }
 
-    // the website's missions page: mission 1 names a reserve, a species and a weapon (and has markup in its text), mission 3 none
+    // the website's missions page: mission 11 names a reserve, a species and a weapon (and has markup in its text), mission 3 none
     async Task<(Loopback Server, (string, string)[] Headers)> WebServer()
     {
         var app = APP;
@@ -328,21 +364,21 @@ public class MissionTests : StateTestBase
         Assert.Equal(404, (await server.SendAsync("POST", "web.test", "/account/missions/nope", headers, Q(""))).Status);
 
         var page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
-        var one = page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!;
+        var one = page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 11)!;
         Eq("""["Hello, take your time & care.", "available", ["Harvest a Test Deer"], "100 gm$", "Test Reserve", "Test Deer", "Test Rifle"]""", T(one["desc"], one["state"], one["objectives"], one["reward"], one["reserve"], one["species"], one["weapon"]));
-        Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
+        Eq("""["locked", "available", ""]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 12)!["state"], page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["state"],
             page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 3)!["reserve"]));
-        Eq("""["Harvest a Test Deer"]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 2)!["needs"]);  // locked: the open dependency's title
-        Eq("""[]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!["needs"]);  // nothing is needed by an available one
+        Eq("""["Harvest a Test Deer"]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 12)!["needs"]);  // locked: the open dependency's title
+        Eq("""[]""", page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 11)!["needs"]);  // nothing is needed by an available one
         Eq("""[{"id": 10, "title": "Test Pack", "desc": "", "favourite": false, "missions": [4]}, {"id": 11, "title": "", "desc": "", "favourite": false, "missions": [10]}]""", page["groups"]);
 
-        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=1"))).Status);
-        Assert.Equal(409, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=2"))).Status);  // a dependency is open
+        Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=11"))).Status);
+        Assert.Equal(409, (await server.SendAsync("POST", "web.test", "/account/missions/activate", headers, Q("mission_id=12"))).Status);  // a dependency is open
         Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/update_favourite", headers, Q("group_id=10&is_favourite=true"))).Status);
         Assert.Equal(200, (await server.SendAsync("POST", "web.test", "/account/missions/update_automatic_activation", headers, Q("auto_mission_activate=true"))).Status);
         page = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/missions", [headers[0]])).Body)!;
-        Eq("""["active", true, true, false]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 1)!["state"], page["groups"]![0]!["favourite"], page["auto_mission_activate"], page["hide_completed_favourite"]));
-        Assert.Equal("1", Ids(Missions()["active"]));  // the game sees the same rows
+        Eq("""["active", true, true, false]""", T(page["missions"]!.AsArray().Single(m => (long)m!["id"]! == 11)!["state"], page["groups"]![0]!["favourite"], page["auto_mission_activate"], page["hide_completed_favourite"]));
+        Assert.Equal("11", Ids(Missions()["active"]));  // the game sees the same rows
     }
 
     [Fact]
