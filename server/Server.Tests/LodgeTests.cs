@@ -268,6 +268,58 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
         Assert.Equal(once, Rows());
     }
 
+    [Fact]
+    public async Task TestEverySlotTypeOfLayoutSixGetsItsFullBodyFlag()
+    {
+        // layout 6 has a slot of each of the ten types: slot id -> type 7:2, 12:3, 1:4, 8:6 (the reported hogs' platform), 2:7, 6:8, 5:9, 3:10, 55:11, 15:12
+        var types = new (int Slot, int Type)[] { (7, 2), (12, 3), (1, 4), (8, 6), (2, 7), (6, 8), (5, 9), (3, 10), (55, 11), (15, 12) };
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 6, "name": "six", "lodge_engine_id": 6, "animal_slots": [], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "6", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "6", lodge.DeepClone());
+            con.Commit();
+        }
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/6", owner, $$"""{"animal_slots": [{{string.Join(", ", types.Select(t => $$"""{"slot_id": {{t.Slot}}, "trophy_id": 21}"""))}}]}"""));
+        var slots = (await Read(V2, $"/game/user/{OWNER}/lodges/6", viewer))["animal_slots"]!.AsArray();
+        Assert.Equal(types.Length, slots.Count);
+        foreach (var (slot, (id, type)) in slots.Zip(types))
+            Assert.True((bool)slot!["is_full_body"]! == type is 4 or 6 or 7 or 8 or 9, $"slot {id} of type {type}");
+    }
+
+    [Fact]
+    public void TestAStoredFlagThatIsNoBooleanIsRewrittenAndAnUnknownLayoutIsLeftAlone()
+    {
+        string[] sources = ["/game/user/lodges", "/game/user/lodge"];
+        var rows = new Dictionary<string, string>
+        {
+            ["1"] = """{"id": 1, "lodge_engine_id": 6, "animal_slots": [{"slot_id": 8, "trophy_id": 21, "is_full_body": 1}, {"slot_id": 7, "trophy_id": 21, "is_full_body": "false"}, {"slot_id": 1, "trophy_id": 21, "is_full_body": {"x": 1}}, {"slot_id": 2, "trophy_id": 21, "is_full_body": null}]}""",
+            ["2"] = """{"id": 2, "lodge_engine_id": 99, "animal_slots": [{"slot_id": 8, "trophy_id": 21, "is_full_body": 1},  {"slot_id": 7,"trophy_id": 21}]}""",
+            ["3"] = """{"id": 3, "lodge_engine_id": 1e30, "animal_slots": [{"slot_id": 8, "trophy_id": 21}]}""",
+            ["4"] = """{"id": 4, "lodge_engine_id": "6", "animal_slots": [{"slot_id": 8, "trophy_id": 21}]}""",
+        };
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            foreach (var (id, text) in rows)
+                foreach (var source in sources)
+                    PlayerRows.AddLodge(con, source, id, O(text));
+            con.Commit();
+        }
+        string Stored(string id)
+        {
+            using var con = state.Store.Open(OWNER);
+            return string.Join("|", con.Rows("SELECT node FROM lodges WHERE account_id = $a AND id = ? ORDER BY n", id).Select(r => (string)r[0]));
+        }
+        var untouched = new[] { "2", "3", "4" }.ToDictionary(id => id, Stored);
+        state.BackfillLodges(OWNER);
+        foreach (var source in Enumerable.Range(0, 2))
+            Eq("""[true, false, true, true]""", new JsonArray(JsonNode.Parse(Stored("1").Split('|')[source])!["animal_slots"]!.AsArray().Select(x => (JsonNode?)x!["is_full_body"]!.DeepClone()).ToArray()));
+        foreach (var (id, before) in untouched)
+            Assert.Equal(before, Stored(id));  // a layout the catalogue lacks, one too big or not a number: byte for byte as stored
+    }
+
     static IEnumerable<JsonObject> Read2(string rows) => JsonNode.Parse(rows.Split('|')[1])!["animal_slots"]!.AsArray().OfType<JsonObject>();
 
     JsonArray Mounts() => new(Reply(state.TrophiesReply(OWNER)).AsArray().OrderBy(t => (long)t!["id"]!)

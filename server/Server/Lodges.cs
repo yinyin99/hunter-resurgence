@@ -168,15 +168,18 @@ public sealed partial class State
     /// facts lack is left alone.</summary>
     bool Fit(JsonObject lodge, JsonNode? engine)
     {
-        if (!Py.IsNum(engine) || facts.LodgeCatalogue($"lodge/{Py.L(engine)}")?["animal_slots"] is not JsonArray layout || lodge["animal_slots"] is not JsonArray slots) return false;
-        var rotates = (facts.LodgeCatalogue("slot/animal") as JsonArray ?? []).OfType<JsonObject>().Where(t => t["can_rotate"]?.GetValue<bool>() == true).Select(t => Py.L(t["id"])).ToHashSet();
+        if (!TryKey(engine, out var layoutNumber) || facts.LodgeCatalogue($"lodge/{layoutNumber}")?["animal_slots"] is not JsonArray layout || lodge["animal_slots"] is not JsonArray slots) return false;
+        var types = new Dictionary<long, long>();  // slot id -> type
+        foreach (var place in layout.OfType<JsonObject>())
+            if (TryKey(place["id"], out var id) && TryKey(place["type"], out var type)) types.TryAdd(id, type);
+        var rotates = (facts.LodgeCatalogue("slot/animal") as JsonArray ?? []).OfType<JsonObject>().Where(t => t["can_rotate"] is JsonValue v && v.TryGetValue(out bool can) && can)
+            .Select(t => Py.L(t["id"])).ToHashSet();
         var changed = false;
         foreach (var slot in slots.OfType<JsonObject>())
-            if (layout.OfType<JsonObject>().FirstOrDefault(l => Py.Eq(l["id"], slot["slot_id"])) is { } place && Py.IsNum(place["type"]))
+            if (TryKey(slot["slot_id"], out var slotId) && types.TryGetValue(slotId, out var type))
             {
-                var type = Py.L(place["type"]);
                 var full = FullBodyTypes.Contains(type);
-                if (slot["is_full_body"]?.GetValue<bool?>() != full) (slot["is_full_body"], changed) = (full, true);
+                if (slot["is_full_body"] is not JsonValue flag || !flag.TryGetValue(out bool stored) || stored != full) (slot["is_full_body"], changed) = (full, true);  // a stored 1 or "true" is no flag: rewritten
                 if (slot["trophy_id"] is not null && rotates.Contains(type) && !slot.ContainsKey("rotation")) (slot["rotation"], changed) = (0, true);
             }
         return changed;
