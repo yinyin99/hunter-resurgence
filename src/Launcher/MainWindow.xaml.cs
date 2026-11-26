@@ -22,7 +22,8 @@ public partial class MainWindow : Window
         Content = NewBlazor();
         // a driver that cannot draw leaves the window black without any failure: no first successful navigation after the timeout is reported too
         var late = new System.Windows.Threading.DispatcherTimer { Interval = WebViewStart.LoadTimeout };
-        late.Tick += (_, _) => { late.Stop(); if (!pageLoaded) ShowProblem(WebViewStart.Problem.NotLoaded, null); };
+        // not over the close question (asking): that one is about a running game
+        late.Tick += (_, _) => { late.Stop(); if (!pageLoaded && !asking) ShowProblem(WebViewStart.Problem.NotLoaded, null); };
         late.Start();
         Title += " v" + LauncherEnv.AppVersion;
         // dev aid: resurgence-launcher.exe --route=/store opens that route first
@@ -64,40 +65,58 @@ public partial class MainWindow : Window
         b.BlazorWebViewInitializing += (_, e) =>
         {
             if (env.Prefs.DisableGpu) e.EnvironmentOptions = new CoreWebView2EnvironmentOptions { AdditionalBrowserArguments = WebViewStart.NoGpuArgument };
-            // before the browser starts, so that a failed start is heard
-            b.WebView.CoreWebView2InitializationCompleted += (_, c) => { if (!c.IsSuccess) ShowProblem(WebViewStart.Classify(c.InitializationException), c.InitializationException); };
+            // before the browser starts, so that a failed start is heard; once the page has loaded, a control that is created again after a crash (OnProcessFailed) is no start problem: the game's question stays with Closing
+            b.WebView.CoreWebView2InitializationCompleted += (_, c) => { if (!c.IsSuccess && !pageLoaded) ShowProblem(WebViewStart.Classify(c.InitializationException), c.InitializationException); };
         };
         b.BlazorWebViewInitialized += (_, e) =>
         {
             e.WebView.CoreWebView2.ProcessFailed += (_, f) => OnProcessFailed(f.ProcessFailedKind, f.Reason.ToString(), f.ExitCode);
             e.WebView.CoreWebView2.NavigationCompleted += (_, n) => pageLoaded |= n.IsSuccess;
+            // the browser process outlives its control: the restart waits for it (a new environment with other browser arguments fails while it still runs)
+            var exited = new TaskCompletionSource();
+            e.WebView.CoreWebView2.Environment.BrowserProcessExited += (_, _) => exited.TrySetResult();
+            browserExited = exited.Task;
         };
         return b;
     }
 
     bool pageLoaded, problemShown;
+    Task? browserExited; // null: the browser never started
 
     /// <summary>The browser did not start or the page did not load: the player is told once (<see cref="WebViewStart"/>) and the answer is carried out.</summary>
-    void ShowProblem(WebViewStart.Problem problem, Exception? cause) => Dispatcher.InvokeAsync(() =>
+    void ShowProblem(WebViewStart.Problem problem, Exception? cause) => Dispatcher.InvokeAsync(async () =>
     {
         if (problemShown) return;
         problemShown = true;
-        switch (WebViewStart.Report(problem, env.Prefs.DisableGpu, cause))
+        var next = WebViewStart.Report(problem, env.Prefs.DisableGpu, cause, this);
+        // the box runs a message loop of its own: the page may have loaded while it was open, then nothing is wrong any more
+        if (pageLoaded && next != WebViewStart.Next.Close) { log.LogInformation("The page loaded while the message was open: nothing to do"); return; }
+        switch (next)
         {
-            case WebViewStart.Next.Restart: RestartWithoutGpu(); break;
+            case WebViewStart.Next.Restart: await RestartWithoutGpu(); break;
             case WebViewStart.Next.Close: closing = true; Close(); break;
         }
     });
 
-    /// <summary>Remembers "no hardware acceleration" and starts the launcher again with the same arguments; the new one waits for this one to end (it holds the single-instance mutex).</summary>
-    void RestartWithoutGpu()
+    /// <summary>Remembers "no hardware acceleration", lets this launcher's browser process end (a new one with other browser arguments would fail to start while it runs) and starts the launcher again with the same arguments; the new one waits for this one to end (it holds the single-instance mutex).</summary>
+    async Task RestartWithoutGpu()
     {
         log.LogInformation("Restarting the launcher without hardware acceleration");
         env.Prefs.DisableGpu = true;
         env.Save();
+        if (browserExited is { } exited)
+        {
+            var old = Blazor;
+            Content = null;
+            try
+            {
+                var gone = Task.WhenAll(((IAsyncDisposable)old).DisposeAsync().AsTask(), exited);
+                if (await Task.WhenAny(gone, Task.Delay(WebViewStart.BrowserExitTimeout)) != gone) log.LogWarning("The WebView2 browser process did not end within {Seconds} seconds", WebViewStart.BrowserExitTimeout.TotalSeconds);
+            }
+            catch (Exception e) when (e is not OutOfMemoryException) { log.LogWarning(e, "the WebView2 page did not clean up before the restart"); }
+        }
         var start = new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!);
-        foreach (var a in Environment.GetCommandLineArgs().Skip(1).Where(a => !a.StartsWith("--wait-for="))) start.ArgumentList.Add(a);
-        start.ArgumentList.Add("--wait-for=" + Environment.ProcessId);
+        foreach (var a in WebViewStart.RestartArgs(Environment.GetCommandLineArgs().Skip(1), Environment.ProcessId)) start.ArgumentList.Add(a);
         System.Diagnostics.Process.Start(start)?.Dispose();
         closing = true;
         Close();

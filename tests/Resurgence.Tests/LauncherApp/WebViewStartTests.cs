@@ -48,6 +48,22 @@ public class WebViewStartTests
                 Assert.NotEqual(Next.Restart, Answer(Decide(problem, true), yes));
     }
 
+    [Theory]
+    [InlineData("--wait-for=1234", 1234)]
+    [InlineData("--wait-for=x", null)]
+    [InlineData("--wait-for=", null)]
+    [InlineData("--route=/store", null)]
+    public void TheProcessToWaitForIsReadFromTheArguments(string argument, int? expected) =>
+        Assert.Equal(expected, ParseWaitFor(["--route=/store", argument]));
+
+    [Fact]
+    public void ARestartKeepsTheArgumentsAndNamesOnlyTheCurrentProcess()
+    {
+        Assert.Equal(["--route=/store", "hunter-resurgence://open", "--wait-for=42"], RestartArgs(["--route=/store", "--wait-for=7", "hunter-resurgence://open"], 42));
+        Assert.Equal(["--route=/store"], ForwardedArgs(["--wait-for=7", "--route=/store"]));
+        Assert.Equal(["--wait-for=42"], RestartArgs([], 42));
+    }
+
     [Fact]
     public void EveryMessageHasItsText()
     {

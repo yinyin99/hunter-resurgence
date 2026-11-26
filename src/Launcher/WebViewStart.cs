@@ -30,6 +30,25 @@ public static class WebViewStart
     /// <summary>What the launcher does after the player's answer.</summary>
     public enum Next { Close, Restart, Wait }
 
+    /// <summary>The command-line argument that names the launcher a restart replaces (<c>--wait-for=&lt;process id&gt;</c>).</summary>
+    public const string WaitForPrefix = "--wait-for=";
+
+    /// <summary>How long the old launcher lets its browser process end before it starts the new one.</summary>
+    public static readonly TimeSpan BrowserExitTimeout = TimeSpan.FromSeconds(10);
+
+    /// <summary>How long the new launcher waits for the old one to release the single-instance mutex (more than <see cref="BrowserExitTimeout"/>, which comes first).</summary>
+    public static readonly TimeSpan OldLauncherTimeout = TimeSpan.FromSeconds(20);
+
+    /// <summary>The process id <c>--wait-for=</c> names; null when no such argument or no number.</summary>
+    public static int? ParseWaitFor(IEnumerable<string> args) =>
+        args.FirstOrDefault(a => a.StartsWith(WaitForPrefix, StringComparison.Ordinal)) is { } a && int.TryParse(a[WaitForPrefix.Length..], out var id) ? id : null;
+
+    /// <summary>The arguments a started-again launcher keeps (the update's restart and ours): all but a <c>--wait-for=</c> that an earlier restart left, which is stale by then.</summary>
+    public static string[] ForwardedArgs(IEnumerable<string> args) => [.. args.Where(a => !a.StartsWith(WaitForPrefix, StringComparison.Ordinal))];
+
+    /// <summary>The restart without hardware acceleration's arguments: the forwarded ones, then the process to wait for.</summary>
+    public static string[] RestartArgs(IEnumerable<string> args, int processId) => [.. ForwardedArgs(args), WaitForPrefix + processId];
+
     /// <summary>The Runtime is missing, or no version is found.</summary>
     public static bool RuntimeMissing(Func<string?> version)
     {
@@ -68,7 +87,7 @@ public static class WebViewStart
     };
 
     /// <summary>Writes the problem to launcher.log, shows the plain Windows message and carries out the install answer (opens the download page).</summary>
-    public static Next Report(Problem problem, bool gpuOff, Exception? cause)
+    public static Next Report(Problem problem, bool gpuOff, Exception? cause, Window? owner)
     {
         LauncherLog.Default.Write(LogLevel.Error, problem switch
         {
@@ -78,7 +97,11 @@ public static class WebViewStart
         }, cause);
         var notice = Decide(problem, gpuOff);
         var buttons = notice == Notice.Last ? MessageBoxButton.OK : MessageBoxButton.YesNo;
-        var yes = MessageBox.Show(Kit.S(Key(notice)), Kit.S("App.Name"), buttons, MessageBoxImage.Warning) is MessageBoxResult.Yes or MessageBoxResult.OK;
+        var text = Kit.S(Key(notice));
+        var answer = owner is null
+            ? MessageBox.Show(text, Kit.S("App.Name"), buttons, MessageBoxImage.Warning)
+            : MessageBox.Show(owner, text, Kit.S("App.Name"), buttons, MessageBoxImage.Warning);
+        var yes = answer is MessageBoxResult.Yes or MessageBoxResult.OK;
         if (notice == Notice.Install && yes)
             try { Process.Start(new ProcessStartInfo(InstallUrl) { UseShellExecute = true })?.Dispose(); }
             catch (Win32Exception e) { LauncherLog.Default.Write(LogLevel.Warning, "The WebView2 download page did not open", e); }

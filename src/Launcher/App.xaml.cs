@@ -24,7 +24,7 @@ public partial class App : System.Windows.Application
         // no WebView2 Runtime: a plain message instead of a window that stays black
         if (WebViewStart.RuntimeMissing(() => Microsoft.Web.WebView2.Core.CoreWebView2Environment.GetAvailableBrowserVersionString()))
         {
-            WebViewStart.Report(WebViewStart.Problem.RuntimeMissing, false, null);
+            WebViewStart.Report(WebViewStart.Problem.RuntimeMissing, false, null, null);
             Shutdown(1);
             return;
         }

@@ -57,7 +57,7 @@ public sealed class LauncherUpdater(UpdateManager manager, Func<bool> gameRunnin
         if (downloaded is null || gameRunning()) return false;
         // the process ends in the next call, without closing its window: the log says that this stop is planned, not a crash
         LauncherLog.Default.Write(Microsoft.Extensions.Logging.LogLevel.Information, $"The launcher restarts to install version {downloaded.TargetFullRelease.Version}");
-        manager.ApplyUpdatesAndRestart(downloaded.TargetFullRelease, Environment.GetCommandLineArgs()[1..]); // the restart keeps the arguments (Steam's %command%)
+        manager.ApplyUpdatesAndRestart(downloaded.TargetFullRelease, WebViewStart.ForwardedArgs(Environment.GetCommandLineArgs().Skip(1))); // the restart keeps the arguments (Steam's %command%), but not the stale --wait-for of an earlier restart
         return true;
     }
 }
