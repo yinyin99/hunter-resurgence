@@ -421,11 +421,21 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.False(await Linked());
         Assert.Equal(Redirect + "linked", await Callback(cookie));
         Assert.True(await Linked());
+        Assert.Equal(20000, (int)JsonNode.Parse((await Get("/auth/me", cookie)).Body)!["discordVeteranAt"]!);  // the default of discord_veteran_at
 
-        // without the Discord settings Linked Roles are off: the answer is null, and the pages offer no link
+        // the Veteran threshold is the server's setting, the one the role bot uses
+        var fifteen = new JsonObject(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))))
+        {
+            ["discord_client_id"] = AppId, ["discord_client_secret"] = "test-secret", ["discord_veteran_at"] = 15000L,
+        };
+        await using (var at = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), fifteen, state, tmp), tmp, discordHttp: new HttpClient(discord)))
+            Assert.Equal(15000, (int)JsonNode.Parse((await at.SendAsync("GET", "web.test", "/auth/me", [("Cookie", "hr_session=" + cookie)])).Body)!["discordVeteranAt"]!);
+
+        // without the Discord settings Linked Roles are off: both answers are null, and the pages offer no link
         var plain = new JsonObject(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
         await using var off = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), plain, state, tmp), tmp);
-        Assert.Null(JsonNode.Parse((await off.SendAsync("GET", "web.test", "/auth/me", [("Cookie", "hr_session=" + cookie)])).Body)!["discordLinked"]);
+        var me = JsonNode.Parse((await off.SendAsync("GET", "web.test", "/auth/me", [("Cookie", "hr_session=" + cookie)])).Body)!.AsObject();
+        Assert.Equal((true, null, true, null), (me.ContainsKey("discordLinked"), me["discordLinked"], me.ContainsKey("discordVeteranAt"), me["discordVeteranAt"]));
     }
 
     // ---- the refresh token and the hunterscore

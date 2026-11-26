@@ -138,8 +138,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 {
     public const string SessionCookie = "hr_session";
 
-    /// <summary>Linked Roles are on (the Discord settings are set): <c>/auth/me</c> says whether the account has linked; without them it says null, and the pages offer no link.</summary>
-    public bool LinkedRoles { get; init; }
+    /// <summary>The Veteran threshold (`discord_veteran_at`) while Linked Roles are on (the Discord settings are set): <c>/auth/me</c> then says it and whether the account has linked; null: Linked Roles are off,
+    /// <c>/auth/me</c> says null for both, and the pages offer no link.</summary>
+    public long? DiscordVeteranAt { get; init; }
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
@@ -529,7 +530,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
             ["rank"] = Store.Rank(account, state.LocalAccount), ["avatar"] = state.AvatarUrl(account, siteHost is not null ? "https://" + siteHost : Origin(r)),
             ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
-            ["imperial"] = Store.UsesImperial(account), ["discordLinked"] = LinkedRoles ? Store.DiscordLinked(account) : null,
+            ["imperial"] = Store.UsesImperial(account), ["discordLinked"] = DiscordVeteranAt is null ? null : Store.DiscordLinked(account), ["discordVeteranAt"] = DiscordVeteranAt,
         });
     }
 

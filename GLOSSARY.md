@@ -155,7 +155,7 @@ Discord's feature that lets a Discord server give roles from data an application
 The server's record of the Discord accounts paid the Linked Roles reward: one keyed hash of the Discord id each, tied to no account once that is deleted. The one part of a Discord link that outlives a deleted account.
 
 **Role bot**:
-A second Discord application's bot, with Manage Roles only, that the community server uses to give and take away the Discord server's normal roles "Verified hunter" (linked) and "Veteran" (hunterscore of 20000 or more) for linked players. Discord's managed Linked Roles cannot be given by a bot. Not the project application's own bot.
+A second Discord application's bot, with Manage Roles only, that the community server uses to give and take away the Discord server's normal roles "Verified hunter" (linked) and "Veteran" (hunterscore of `discord_veteran_at` or more, the server setting, default 20000) for linked players. Discord's managed Linked Roles cannot be given by a bot. Not the project application's own bot.
 
 ## Hunting
 

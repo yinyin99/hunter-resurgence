@@ -74,6 +74,15 @@ public class UnitsAndLanguageTests
         Assert.False((await Make("""{"userId": 1, "handle": "Fox", "hunterscore": 5}""").CurrentAsync())!.Imperial);  // a server that does not say: metric
     }
 
+    [Fact]
+    public async Task TheSessionCarriesTheServersVeteranThreshold()
+    {
+        static ServerSessionService Make(string me) =>
+            new(Client(new Fake(_ => Json(HttpStatusCode.OK, me))), new ServerCookie { Value = "abc", Host = "site.test" }, NullLogger<ServerSessionService>.Instance);
+        Assert.Equal(15000, (await Make("""{"userId": 1, "handle": "Fox", "hunterscore": 5, "discordLinked": true, "discordVeteranAt": 15000}""").CurrentAsync())!.DiscordVeteranAt);
+        Assert.Null((await Make("""{"userId": 1, "handle": "Fox", "hunterscore": 5, "discordLinked": null, "discordVeteranAt": null}""").CurrentAsync())!.DiscordVeteranAt);
+    }
+
     [Theory]
     [InlineData(true, "use_imperial=1")]
     [InlineData(false, "use_imperial=0")]

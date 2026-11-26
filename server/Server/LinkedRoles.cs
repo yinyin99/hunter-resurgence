@@ -50,7 +50,10 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         /// <summary>The bot of the settings: null unless `discord_role_bot_token`, `discord_guild_id`, `discord_role_verified` and `discord_role_veteran` are all set.</summary>
         public static RoleBot? From(JsonObject cfg) =>
             Str(cfg["discord_role_bot_token"]) is { Length: > 0 } token && Id(cfg["discord_guild_id"]) is { } guild && Id(cfg["discord_role_verified"]) is { } verified && Id(cfg["discord_role_veteran"]) is { } veteran
-                ? new(token, guild, verified, veteran, cfg["discord_veteran_at"] is JsonValue at && at.TryGetValue<long>(out var score) ? score : DefaultVeteranAt) : null;
+                ? new(token, guild, verified, veteran, VeteranAtOf(cfg)) : null;
+
+        /// <summary>`discord_veteran_at`: the HunterScore from which a linked player is a Veteran, the one value the role bot and the website (<c>/auth/me</c>) use; <see cref="DefaultVeteranAt"/> when unset.</summary>
+        public static long VeteranAtOf(JsonObject cfg) => cfg["discord_veteran_at"] is JsonValue at && at.TryGetValue<long>(out var score) ? score : DefaultVeteranAt;
 
         static string? Id(JsonNode? n) => Str(n) is { } s && IsDiscordId(s) ? s : null;
 

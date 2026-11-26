@@ -81,7 +81,7 @@ public sealed class DiscordLinkEntryTests : UiContext
         Assert.Equal((1, 1, 1), Entries(Services.GetRequiredService<ISessionService>().CurrentAsync().Result));
         state = "discord:linked";
         var linked = Services.GetRequiredService<ISessionService>().CurrentAsync().Result;
-        Assert.Equal((true, 7080), (linked!.DiscordLinked, linked.HunterScore));
+        Assert.Equal((true, 7080, 20000), (linked!.DiscordLinked, linked.HunterScore, linked.DiscordVeteranAt));
         Assert.Equal((0, 0, 0), Entries(linked));
         state = "discord:veteran";
         Assert.Equal(25000, Services.GetRequiredService<ISessionService>().CurrentAsync().Result!.HunterScore);
@@ -110,13 +110,16 @@ public sealed class DiscordLinkEntryTests : UiContext
     }
 
     [Theory]
-    [InlineData(7080, "Verified hunter", 12920)]
-    [InlineData(19999, "Verified hunter", 1)]
-    [InlineData(20000, "Veteran", 0)]
-    [InlineData(25000, "Veteran", 0)]
-    public void TheResultPageShowsTheScoreTheRoleAndTheWayToVeteranWithEnglishRoleNamesInEveryLanguage(int score, string role, int more)
+    [InlineData(20000, 7080, "Verified hunter", 12920)]
+    [InlineData(20000, 19999, "Verified hunter", 1)]
+    [InlineData(20000, 20000, "Veteran", 0)]
+    [InlineData(20000, 25000, "Veteran", 0)]
+    [InlineData(15000, 16000, "Veteran", 0)]           // the server's threshold, not a constant of the page
+    [InlineData(15000, 10000, "Verified hunter", 5000)]
+    [InlineData(null, 25000, "Verified hunter", 0)]    // a server that does not say: the role line without the way to Veteran
+    public void TheResultPageShowsTheScoreTheRoleAndTheWayToVeteranWithEnglishRoleNamesInEveryLanguage(int? veteranAt, int score, string role, int more)
     {
-        Use(new("Hunter01", score, DiscordLinked: true));
+        Use(new("Hunter01", score, DiscordLinked: true, DiscordVeteranAt: veteranAt));
         Services.AddSingleton(new Branding(new() { ["link_discord"] = "https://discord.test/invite" }));
         Services.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>().NavigateTo("/signin/discord?result=linked");
         var old = Thread.CurrentThread.CurrentUICulture;
@@ -133,12 +136,12 @@ public sealed class DiscordLinkEntryTests : UiContext
                 Assert.Single(cut.FindAll("a.btn"));
                 if (more == 0) { Assert.Empty(cut.FindAll(".bar, .more")); continue; }
                 var bar = cut.Find(".bar");
-                Assert.Equal(("progressbar", "0", "20000", score.ToString()), (bar.GetAttribute("role"), bar.GetAttribute("aria-valuemin"), bar.GetAttribute("aria-valuemax"), bar.GetAttribute("aria-valuenow")));
-                Assert.Equal($"width: {score * 100 / 20000}%", cut.Find(".fill").GetAttribute("style"));
+                Assert.Equal(("progressbar", "0", veteranAt.ToString(), score.ToString()), (bar.GetAttribute("role"), bar.GetAttribute("aria-valuemin"), bar.GetAttribute("aria-valuemax"), bar.GetAttribute("aria-valuenow")));
+                Assert.Equal($"width: {score * 100 / veteranAt}%", cut.Find(".fill").GetAttribute("style"));
                 Assert.Equal("Veteran", cut.Find(".more span").TextContent);
-                Assert.Equal(Text("DiscordLink.More").Replace("{0}", more.ToString()).Replace("{1}", "Veteran").Replace("{2}", DiscordLink.Veteran.ToString()), cut.Find(".more").TextContent);
-                Assert.EndsWith("(20000)", cut.Find(".more").TextContent);  // the threshold comes from the page's constant, not from the translation
-                Assert.Equal(string.Format(Text("DiscordLink.More"), more, "Veteran", 20000), bar.GetAttribute("aria-label"));
+                Assert.Equal(Text("DiscordLink.More").Replace("{0}", more.ToString()).Replace("{1}", "Veteran").Replace("{2}", veteranAt.ToString()), cut.Find(".more").TextContent);
+                Assert.EndsWith($"({veteranAt})", cut.Find(".more").TextContent);  // the threshold comes from the session, not from the translation
+                Assert.Equal(string.Format(Text("DiscordLink.More"), more, "Veteran", veteranAt), bar.GetAttribute("aria-label"));
             }
         }
         finally { Thread.CurrentThread.CurrentUICulture = old; }
