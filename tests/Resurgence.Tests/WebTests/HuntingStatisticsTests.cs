@@ -120,7 +120,7 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Equal(["Species", "Hours hunted", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hunters", "Best reserve"], tables[1].QuerySelectorAll("th").Select(h => h.TextContent));
         Assert.Equal(["Fox", "40.0", "450", "75", "6.0", "9", "Reserve B"], tables[1].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
         Assert.Empty(cut.FindAll(".norank"));
-        Assert.Equal("gm$ at the normal rate, bonuses left out.×2 weekend, 21–23 Nov; ×1.25 evening, 24–27 Nov", cut.Find(".hunting-note").TextContent);  // the base figures, then the period's events
+        Assert.Equal("gm$ at the normal rate, bonuses left out.×2, 21–23 Nov; ×1.25, 24–27 Nov", cut.Find(".hunting-note").TextContent);  // the base figures, then the period's events
         Assert.Empty(cut.FindAll("table.stats a"));  // no hunter's name or profile link
     }
 
