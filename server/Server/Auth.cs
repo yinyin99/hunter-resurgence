@@ -137,6 +137,9 @@ public sealed class GameTokens(Store store, string webHost)
 public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>? clock = null, string? siteHost = null, Claims? claims = null, string? discord = null, Action<string>? signupAlert = null)
 {
     public const string SessionCookie = "hr_session";
+
+    /// <summary>Linked Roles are on (the Discord settings are set): <c>/auth/me</c> says whether the account has linked; without them it says null, and the pages offer no link.</summary>
+    public bool LinkedRoles { get; init; }
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
@@ -526,7 +529,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
             ["rank"] = Store.Rank(account, state.LocalAccount), ["avatar"] = state.AvatarUrl(account, siteHost is not null ? "https://" + siteHost : Origin(r)),
             ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
-            ["imperial"] = Store.UsesImperial(account), ["discordLinked"] = Store.DiscordLinked(account),
+            ["imperial"] = Store.UsesImperial(account), ["discordLinked"] = LinkedRoles ? Store.DiscordLinked(account) : null,
         });
     }
 

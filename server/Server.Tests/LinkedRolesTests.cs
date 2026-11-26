@@ -325,6 +325,11 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.False(await Linked());
         Assert.Equal(Redirect + "linked", await Callback(cookie));
         Assert.True(await Linked());
+
+        // without the Discord settings Linked Roles are off: the answer is null, and the pages offer no link
+        var plain = new JsonObject(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
+        await using var off = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), plain, state, tmp), tmp);
+        Assert.Null(JsonNode.Parse((await off.SendAsync("GET", "web.test", "/auth/me", [("Cookie", "hr_session=" + cookie)])).Body)!["discordLinked"]);
     }
 
     // ---- the refresh token and the hunterscore

@@ -99,8 +99,8 @@ public sealed class LiveSiteTests : UiContext
     {
         Live(live);
         var cut = Render<SettingsMenu>();
-        Assert.Equal(5, cut.FindAll("li").Count);
-        Assert.Equal(["/settings", "/restore", "/discord/link"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
+        Assert.Equal(4, cut.FindAll("li").Count);
+        Assert.Equal(["/settings", "/restore"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
         Assert.Empty(cut.FindAll("#seasonal-events"));  // the website cannot start a hunt: the setting is in the launcher
         Assert.Equal(["Game Management"], cut.FindAll("li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));  // shown, not clickable
         Assert.Equal("Coming later", cut.Find("li[aria-disabled=true]").GetAttribute("title"));

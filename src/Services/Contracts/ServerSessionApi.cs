@@ -47,7 +47,7 @@ public static class ServerSessionApi
 }
 
 /// <summary>The JSON of <see cref="ServerSessionApi.Me"/>: <c>ems</c> and <c>gms</c> are the wallet, <c>imperial</c> whether the player chose imperial units, <c>discordLinked</c> whether the hunter linked a Discord account.</summary>
-public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0, string? Avatar = null, bool Imperial = false, bool DiscordLinked = false);
+public sealed record ServerAccount(long UserId, string Handle, int Hunterscore = 0, int Rank = 0, int Ems = 0, int Gms = 0, string? Avatar = null, bool Imperial = false, bool? DiscordLinked = null);
 
 /// <summary>A hunter on the hunterscore board of <see cref="ServerSessionApi.Hunters"/>.</summary>
 public sealed record ServerHunter(int Rank, string Handle, int Hunterscore, string? Avatar = null);

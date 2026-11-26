@@ -56,7 +56,7 @@ public sealed class DiscordLinkEntryTests : UiContext
     {
         var card = Render<DiscordLinkCard>().FindAll(".card").Count;
         var pill = Render<DiscordPill>(p => p.Add(x => x.Session, session)).FindAll("a.discord-pill").Count;
-        var item = Render<SettingsMenu>().FindAll("li a").Count(a => a.GetAttribute("href") == Path);
+        var item = Render<SettingsMenu>(p => p.Add(x => x.Session, session)).FindAll("li a").Count(a => a.GetAttribute("href") == Path);
         return (card, pill, item);
     }
 
@@ -66,7 +66,8 @@ public sealed class DiscordLinkEntryTests : UiContext
     [InlineData(true, true, false, true, 1)]     // signed in, not linked
     [InlineData(true, true, true, true, 0)]      // linked
     [InlineData(true, true, false, false, 0)]    // nothing to link at (no community server)
-    public void TheEntryPointsShowForASignedInHunterWhoHasNotLinkedAndNowhereElse(bool session, bool handle, bool linked, bool server, int shown)
+    [InlineData(true, true, null, true, 0)]      // the server has Linked Roles off (discordLinked is null)
+    public void TheEntryPointsShowForASignedInHunterWhoHasNotLinkedAndNowhereElse(bool session, bool handle, bool? linked, bool server, int shown)
     {
         var s = Use(session ? new(handle ? "Hunter01" : "", 7080, DiscordLinked: linked) : null, server ? Path : null);
         Assert.Equal((shown, shown, shown), Entries(s));
@@ -89,8 +90,10 @@ public sealed class DiscordLinkEntryTests : UiContext
     [Fact]
     public void OnTheWebsiteTheButtonIsAPlainLinkToThePageOfTheSite()
     {
-        Use(new("Hunter01", 7080));
-        Assert.Equal(Path, Render<DiscordLinkCard>().Find("a.link").GetAttribute("href"));
+        Use(new("Hunter01", 7080, DiscordLinked: false));
+        var markup = Render<DiscordLinkCard>();
+        Assert.Equal(Path, markup.Find("a.link").GetAttribute("href"));
+        Assert.DoesNotContain("blazor:onclick", markup.Markup);  // no click handler: the browser follows the link itself (a handler would swallow it)
     }
 
     [Fact]
@@ -99,7 +102,7 @@ public sealed class DiscordLinkEntryTests : UiContext
         const string Site = "https://site.test/discord/link";
         var log = new Opened();
         Services.AddSingleton<ILauncherBridge>(new MockLauncherBridge(log, null));
-        Use(new("Hunter01", 7080), Site);
+        Use(new("Hunter01", 7080, DiscordLinked: false), Site);
         Services.GetRequiredService<HostMode>().Launcher = true;
         var link = Render<DiscordLinkCard>().Find("a.link");
         link.Click();

@@ -46,7 +46,7 @@
                 @* the menu opens when the pointer enters the section and closes on a click on it or 0.3 s after the pointer left *@
                 <div class="section settings @(shut ? "shut" : "")" @onmouseenter="() => shut = false">
                     <a href="@(Mode.Live ? "/restore" : "/settings")">@L["Statusbar.Settings"] <Icon Name="chevron-down" /></a>
-                    <div class="menu" @onclick="() => shut = true"><SettingsMenu /></div>
+                    <div class="menu" @onclick="() => shut = true"><SettingsMenu Session="Session" /></div>
                 </div>
                 <a class="section score" href="/leaderboards/hunterscore" data-tip="@L["Tip.HunterScore"]"><Icon Name="paw" /> @session?.HunterScore</a>
                 <div class="user">

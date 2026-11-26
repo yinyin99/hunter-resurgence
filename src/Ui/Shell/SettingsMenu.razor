@@ -9,7 +9,7 @@
     @* could be built later (the lodges and bait sites the server keeps): shown disabled *@
     <li class="off" aria-disabled="true" title="@L["Settings.ComingLater"]"><span>@L["Settings.GameManagement"]</span><span class="sr"> (@L["Settings.ComingLater"])</span></li>
     <li><a href="/restore">@L["Settings.Restore"]</a></li>
-    @if (discordOffered) { <li><DiscordLinkButton>@L["Discord.LinkButton"]</DiscordLinkButton></li> }  @* until the hunter has linked Discord *@
+    @if (DiscordOffer.Shown(Session, Sessions)) { <li><DiscordLinkButton>@L["Discord.LinkButton"]</DiscordLinkButton></li> }  @* until the hunter has linked Discord *@
     <li><a href="#" @onclick="() => Modal.Show<LanguageModal>()" @onclick:preventDefault>@L["Settings.Language"]</a></li>
     @if (Mode.Launcher)
     {
@@ -30,9 +30,7 @@
 </ul>
 
 @code {
-    bool discordOffered;
-
-    protected override async Task OnInitializedAsync() => discordOffered = DiscordOffer.Shown(await Sessions.CurrentAsync(), Sessions);
+    [Parameter] public Session? Session { get; set; }
 
     // a refused folder or cache action says why (the error is a text key)
     void Show(Result r)
