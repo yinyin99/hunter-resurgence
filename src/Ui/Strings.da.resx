@@ -1442,7 +1442,7 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Spildataene på din konto: inventar, tegnebog, færdigheder, statistik, milepæle, trofæer, jagter, nedlagte dyr og de fotos, du tager i spillet.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Hver backup-zip, du uploader, uændret: gemt, så en operatør kan tjekke den, og efter gendannelsen, så operatøren kan nulstille din konto og gendanne den igen. En zip indeholder det, backupværktøjet har gemt fra din konto.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Login-cookies og spiltokens, som hashes, der ikke kan læses tilbage.</value></data>
-  <data name="Data.Stored.Discord" xml:space="preserve"><value>Kun hvis du forbinder Discord: dit Discord-id og de tokens, Discord gav serveren til at opdatere dine roller, gemt krypteret. Intet andet fra din Discord-profil gemmes. Serveren sender dit handle og din Hunter Score til Discord til dine roller.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Kun hvis du forbinder Discord: dit Discord-id og de tokens, Discord gav serveren til at opdatere dine roller, gemt krypteret. Intet andet fra din Discord-profil gemmes. Serveren sender dit handle og din HunterScore til Discord til dine roller.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Kun hvis du forbinder Discord: en registrering af, at belønningen på 5000 gm$ og 250 em$ er udbetalt for dit Discord-id, gemt som en nøglet hash, der ikke kan omdannes tilbage til id'et.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hvad konti ikke indeholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-mailadresse, dit rigtige navn, din postadresse eller dit telefonnummer: der spørges ikke efter dem, og de gemmes ikke på din konto. Hvis en backup indeholder et sådant felt, gendannes det ikke.</value></data>
@@ -1579,8 +1579,8 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Denne formular kommer ikke fra denne server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dette login er allerede bekræftet.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Forbundet</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger, og du har modtaget 5000 gm$ og 250 em$. Dine roller på Discord-serveren følger din Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger. Du har allerede modtaget de 5000 gm$ og 250 em$ for at forbinde, så der er ingen ny belønning. Dine roller på Discord-serveren følger din Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger, og du har modtaget 5000 gm$ og 250 em$. Dine roller på Discord-serveren følger din HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Din Discord-konto er forbundet med din jæger. Du har allerede modtaget de 5000 gm$ og 250 em$ for at forbinde, så der er ingen ny belønning. Dine roller på Discord-serveren følger din HunterScore.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Denne Discord-konto er forbundet med en anden jæger. En Discord-konto kan kun forbindes med én jæger.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Din jæger er allerede forbundet med en anden Discord-konto. En jæger kan kun forbindes med én Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Forbindelsen mislykkedes. Gå tilbage til Discord og prøv igen.</value></data>

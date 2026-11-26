@@ -1442,7 +1442,7 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Podatki o igri vašega računa: inventar, denarnica, spretnosti, statistika, dosežki, trofeje, lovi, odstreli in fotografije, ki jih posnamete v igri.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Vsak zip varnostne kopije, ki ga naložite, nespremenjen: shranjen, da ga operater preveri, in po obnovitvi, da lahko operater ponastavi vaš račun in ga znova obnovi. Zip vsebuje, kar je orodje za varnostno kopiranje shranilo o vašem računu.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Piškotki za prijavo in žetoni igre, kot zgoščene vrednosti, ki jih ni mogoče prebrati nazaj.</value></data>
-  <data name="Data.Stored.Discord" xml:space="preserve"><value>Samo če povežete Discord: vaš ID Discord in žetoni, ki jih je Discord dal strežniku za posodabljanje vaših vlog, shranjeni šifrirano. Nič drugega iz vašega profila Discord se ne shranjuje. Strežnik pošlje Discordu vaš vzdevek in Hunter Score za vaše vloge.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Samo če povežete Discord: vaš ID Discord in žetoni, ki jih je Discord dal strežniku za posodabljanje vaših vlog, shranjeni šifrirano. Nič drugega iz vašega profila Discord se ne shranjuje. Strežnik pošlje Discordu vaš vzdevek in HunterScore za vaše vloge.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Samo če povežete Discord: zapis, da je bila nagrada 5000 gm$ in 250 em$ izplačana za vaš ID Discord, shranjen kot zgoščena vrednost s ključem, ki je ni mogoče pretvoriti nazaj v ID.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Česa računi ne hranijo</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Vašega e-naslova, pravega imena, poštnega naslova ali telefonske številke: ti podatki se ne zahtevajo in se ne hranijo v vašem računu. Če varnostna kopija vsebuje tako polje, se ne obnovi.</value></data>
@@ -1579,8 +1579,8 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Ta obrazec ni s tega strežnika.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Ta prijava je že potrjena.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Povezano</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem in prejeli ste 5000 gm$ in 250 em$. Vaše vloge na strežniku Discord sledijo vašemu Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem. 5000 gm$ in 250 em$ za povezavo ste že prejeli, zato nove nagrade ni. Vaše vloge na strežniku Discord sledijo vašemu Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem in prejeli ste 5000 gm$ in 250 em$. Vaše vloge na strežniku Discord sledijo vašemu HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Vaš račun Discord je povezan z vašim lovcem. 5000 gm$ in 250 em$ za povezavo ste že prejeli, zato nove nagrade ni. Vaše vloge na strežniku Discord sledijo vašemu HunterScore.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Ta račun Discord je povezan z drugim lovcem. Račun Discord je mogoče povezati samo z enim lovcem.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Vaš lovec je že povezan z drugim računom Discord. Lovca je mogoče povezati samo z enim računom Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Povezava ni uspela. Vrnite se v Discord in poskusite znova.</value></data>

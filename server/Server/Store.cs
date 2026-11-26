@@ -191,7 +191,7 @@ public sealed class Store
     const string DiscordTables = """
         CREATE TABLE IF NOT EXISTS discord_links (
             account_id INTEGER PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE, discord_id TEXT NOT NULL UNIQUE,
-            access_token TEXT, refresh_token TEXT, expires_ts INTEGER NOT NULL DEFAULT 0, pushed_score INTEGER, linked_ts INTEGER NOT NULL);
+            access_token TEXT, refresh_token TEXT, expires_ts INTEGER NOT NULL DEFAULT 0, pushed_score INTEGER, pushed_handle TEXT, linked_ts INTEGER NOT NULL);
         CREATE TABLE IF NOT EXISTS discord_rewards (
             hash TEXT PRIMARY KEY, account_id INTEGER UNIQUE REFERENCES accounts (id) ON DELETE SET NULL) WITHOUT ROWID;
         """;

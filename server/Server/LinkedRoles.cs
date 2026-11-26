@@ -232,7 +232,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             con.Exec("UPDATE discord_links SET access_token = ?1, refresh_token = ?2, expires_ts = ?3 WHERE account_id = ?4 AND refresh_token = ?5",
                      Seal(fresh.Access, discordId), Seal(fresh.Refresh, discordId), Store.Now() + fresh.Life, account, (string)row[2]!);
         }
-        var put = new JsonObject { ["platform_name"] = PlatformName, ["platform_username"] = handle, ["metadata"] = new JsonObject { ["hunterscore"] = score } };
+        var put = new JsonObject { ["platform_name"] = PlatformName, ["platform_username"] = Username(handle, score), ["metadata"] = new JsonObject { ["hunterscore"] = score } };
         var (code, _) = await Send(HttpMethod.Put, $"/users/@me/applications/{clientId}/role-connection", new StringContent(put.ToJsonString(), Encoding.UTF8, "application/json"), access);
         using var after = store.Open();
         if (code is < 200 or >= 300)
@@ -241,7 +241,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             if (code == 401) after.Exec("UPDATE discord_links SET expires_ts = 0 WHERE account_id = ?1", account);  // the access token is not good: refresh it next time
             return false;
         }
-        after.Exec("UPDATE discord_links SET pushed_score = ?1 WHERE account_id = ?2", score, account);
+        after.Exec("UPDATE discord_links SET pushed_score = ?1, pushed_handle = ?2 WHERE account_id = ?3", score, handle, account);
         return true;
     }
 
@@ -261,7 +261,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         {
             using var con = store.Open();
             due = [.. con.Rows("SELECT l.account_id FROM discord_links l JOIN accounts a ON a.id = l.account_id WHERE l.refresh_token IS NOT NULL AND a.banned = 0"
-                               + " AND l.pushed_score IS NOT COALESCE(json_extract(a.account, '$.hunterscore'), 0)").Select(r => (long)r[0])];
+                               + " AND (l.pushed_score IS NOT COALESCE(json_extract(a.account, '$.hunterscore'), 0) OR l.pushed_handle IS NOT a.handle)").Select(r => (long)r[0])];
         }
         catch (SqliteException e)
         {
@@ -279,6 +279,17 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
                 Console.Error.WriteLine($"discord push of account {account}: {e.Message}");  // one account's failure never stops the others
             }
         return pushed;
+    }
+
+    /// <summary>Discord's limit for `platform_username`, in characters.</summary>
+    const int MaxUsername = 100;
+
+    /// <summary>What Discord's profile box shows: `&lt;handle&gt; · &lt;score&gt; HunterScore`, the score in plain digits with no thousands separator. A handle that would not fit the 100 characters is cut, never
+    /// the score (a handle has at most 30, so this only guards the limit).</summary>
+    public static string Username(string handle, long score)
+    {
+        var tail = $" · {score.ToString(CultureInfo.InvariantCulture)} HunterScore";
+        return (handle.Length > MaxUsername - tail.Length ? handle[..(MaxUsername - tail.Length)] : handle) + tail;
     }
 
     // ---- Discord's API

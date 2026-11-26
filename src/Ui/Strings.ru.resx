@@ -1442,7 +1442,7 @@
   <data name="Data.Stored.Game" xml:space="preserve"><value>Игровые данные вашего аккаунта: инвентарь, кошелёк, навыки, статистика, достижения, трофеи, охоты, добыча и фотографии, которые вы делаете в игре.</value></data>
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Каждый загруженный вами zip-архив резервной копии в неизменном виде: хранится, чтобы оператор проверил его, и после восстановления — чтобы оператор мог сбросить ваш аккаунт и восстановить его снова. В zip-архиве то, что инструмент резервного копирования сохранил из вашего аккаунта.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Файлы cookie для входа и игровые токены в виде хэшей, которые невозможно прочитать обратно.</value></data>
-  <data name="Data.Stored.Discord" xml:space="preserve"><value>Только если вы свяжете Discord: ваш идентификатор Discord и токены, которые Discord передал серверу для обновления ваших ролей, в зашифрованном виде. Больше ничего из вашего профиля Discord не хранится. Сервер отправляет в Discord ваш ник и Hunter Score для ваших ролей.</value></data>
+  <data name="Data.Stored.Discord" xml:space="preserve"><value>Только если вы свяжете Discord: ваш идентификатор Discord и токены, которые Discord передал серверу для обновления ваших ролей, в зашифрованном виде. Больше ничего из вашего профиля Discord не хранится. Сервер отправляет в Discord ваш ник и HunterScore для ваших ролей.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Только если вы свяжете Discord: запись о том, что награда 5000 gm$ и 250 em$ выплачена за ваш идентификатор Discord, в виде хеша с ключом, который нельзя превратить обратно в идентификатор.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Чего нет в аккаунтах</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ваш адрес электронной почты, настоящее имя, почтовый адрес или номер телефона: их не запрашивают и не хранят в вашем аккаунте. Если резервная копия содержит такое поле, оно не восстанавливается.</value></data>
@@ -1579,8 +1579,8 @@
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Эта форма пришла не с этого сервера.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Этот вход уже подтверждён.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Связано</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником, и вы получили 5000 gm$ и 250 em$. Ваши роли на сервере Discord зависят от вашего Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником. Вы уже получили 5000 gm$ и 250 em$ за привязку, поэтому новой награды нет. Ваши роли на сервере Discord зависят от вашего Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником, и вы получили 5000 gm$ и 250 em$. Ваши роли на сервере Discord зависят от вашего HunterScore.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ваш аккаунт Discord связан с вашим охотником. Вы уже получили 5000 gm$ и 250 em$ за привязку, поэтому новой награды нет. Ваши роли на сервере Discord зависят от вашего HunterScore.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Этот аккаунт Discord связан с другим охотником. Аккаунт Discord можно связать только с одним охотником.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Ваш охотник уже связан с другим аккаунтом Discord. Охотника можно связать только с одним аккаунтом Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Связать не удалось. Вернитесь в Discord и попробуйте ещё раз.</value></data>
