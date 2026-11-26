@@ -64,8 +64,9 @@ public class ScoreVectorTests
             if (score is null || Math.Abs(Math.Round(Py.D(score), 4) - want) > Tolerance.GetValueOrDefault(families[species]) + 1e-9 || type != (string?)r["type"])
                 bad.Add($"species {species} ({families[species]}), gender {gender}: want {want} {r["type"]}, got {score} {type}");
         }
+        bad.AddRange(families.Keys.Except(males).Order().Select(s => $"species {s} ({families[s]}): no male sheet"));
+        TestContext.Current.TestOutputHelper?.WriteLine($"{rows.Count} sheets: {males.Count} of {families.Count} species with a male row, {females.Count} with a female row");
         Assert.True(bad.Count == 0, $"{bad.Count} of {rows.Count}:\n" + string.Join("\n", bad));
-        Assert.Equal(families.Keys.Order(), males.Order());  // a male sheet of every scored species
         Assert.Equal(35, females.Count);  // no sheet: the 17 females without a score, and the pheasant, wild boar, Dall sheep, water buffalo and roebit
     }
 }
