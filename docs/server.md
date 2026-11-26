@@ -279,7 +279,7 @@ A harvest (heartbeat event 3) is scored from the kill's spawn (event 7), its tro
 | `weight_kg`, `weight_g` | red kangaroo 21; roebit 53 and wood grouse 57 | the weight in kilograms; the weight in grams | scores |
 | `skull` | bears 9, 13, 30, 37, wolf 36, bobcat 43, lynx 49, puma 52 | skull width plus length in inches (event 7 `feature`) | scores |
 | `tusks` | feral hog 5, wild boar 10 | the weight in pounds, plus the tusk circumferences, plus 50 times the tusk lengths | a sow has no tusks: her weight |
-| `turkey` | turkey 2 | the weight in pounds, plus 10 times the spurs, plus 2 times the beard (inches) | the weight (event 22 is all zeros) |
+| `turkey` | turkey 2 | the weight in pounds, plus 10 times the spurs, plus 2 times the beard (inches) | no score |
 | `pheasant` | pheasant 7 | the tail plus the spurs in inches (event 22 `tail`, `left_spur`, `right_spur`) | the tail |
 | `bc_deer` | whitetail 0, mule deer 1, blacktail 6, sitka 26, and the non-typical 100, 101, 106 | B&C typical or non-typical total | no antlers: no score |
 | `elk` | Roosevelt 3, Rocky Mountain 38 | the typical total plus the crown points of both antlers (event 22 `crown_points` lengths) | no score |

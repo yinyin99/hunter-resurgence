@@ -8,8 +8,10 @@ namespace Resurgence.Server.Tests;
 [Collection("ProcessState")]  // Scoring.Load replaces the process-wide variant table with the facts file's
 public class HarvestScoreTests : StateTestBase
 {
-    // families whose female has no antlers: a doe scores nothing, as the game does
-    static readonly HashSet<string> MaleOnly = ["bc_deer", "elk", "moose", "cic_roe", "cic_red", "cic_fallow", "tines"];
+    // the species whose female has no score, by id and not derived from the families, so a family rule that changes cannot change the expectation with it
+    static readonly HashSet<int> NoScoreFemale = [0, 1, 2, 3, 6, 8, 11, 12, 26, 38, 44, 45, 54, 55, 100, 101, 106];
+    // families whose female sends no trophy event (a doe has no antlers): only about the events Harvest() sends
+    static readonly HashSet<string> FemaleSendsNoTrophyEvent = ["bc_deer", "elk", "moose", "cic_roe", "cic_red", "cic_fallow", "tines"];
     const int Ammo = 10;
     double gm = 33;  // CONNECT's balance
     int seed;
@@ -51,7 +53,7 @@ public class HarvestScoreTests : StateTestBase
             (bird["beard"], bird["left_spur"], bird["right_spur"]) = (male ? 150000 : 0, male ? 15000 : 0, male ? 20000 : 0);
             events.Add(bird);
         }
-        else if (fam is not null && (gender == 0 || !MaleOnly.Contains(fam)) && fam is not ("weight_lb" or "weight_mg" or "weight_kg" or "weight_g" or "skull" or "tusks"))
+        else if (fam is not null && (gender == 0 || !FemaleSendsNoTrophyEvent.Contains(fam)) && fam is not ("weight_lb" or "weight_mg" or "weight_kg" or "weight_g" or "skull" or "tusks"))
         {
             var e22 = O($$"""{"event": 22, "individual": {{ind}}, "greatest_spread": 900, "tip_to_tip_spread": 800, "inside_spread_of_main_beams": 700, "weight": 9000, "volume": 200000, "color": 2, "pearling": 1, "coronets": 1, "age_rings": 1, "horn_curve": 1 }""");
             (e22["left_antler"], e22["right_antler"]) = (Antler(), Antler());
@@ -83,9 +85,9 @@ public class HarvestScoreTests : StateTestBase
                 var (update, paid) = Harvest(sp, gender);
                 double score = Py.D(update["score"]), css = Py.D(update["css"]);
                 var what = $"species {sp} ({Facts.Default.Families[sp]}), gender {gender}";
-                if (gender == 1 && MaleOnly.Contains(Facts.Default.Families[sp]))
+                if (gender == 1 && NoScoreFemale.Contains(sp))
                 {
-                    Assert.True(score == 0 && css == 0 && !paid, what + ": a doe scores nothing");
+                    Assert.True(Py.Eq(update["score_text"], "No score") && score == 0 && css == 0 && !paid, what + ": a female with no score");
                     continue;
                 }
                 Assert.True(Py.Eq(update["trophy_shot"], 1) && score > 0, what + ": score");
@@ -164,9 +166,10 @@ public class HarvestScoreTests : StateTestBase
     [Fact]
     public void PheasantTurkeyAndSowScoreFromTheirTrophyEvent()
     {
-        // pheasant: tail + spurs in inches; turkey: weight in pounds + 10 x spurs + 2 x beard; a sow: her weight, with no trophy event at all
+        // pheasant: tail + spurs in inches; turkey: weight in pounds + 10 x spurs + 2 x beard, a hen has no score; a sow: her weight, with no trophy event at all
         Eq("17.126", Scoring.Score(7, Scoring.Features(7, new JsonObject(), O("""{"event": 22, "tail": 400, "left_spur": 15000, "right_spur": 20000}"""), 1.0), 1618, null).Score);
         Eq("21.8896", Scoring.Score(2, Scoring.Features(2, new JsonObject(), O("""{"event": 22, "beard": 100000, "left_spur": 10000, "right_spur": 20000}"""), 1.0), 1000, null).Score);
+        Assert.Null(Scoring.Features(2, O("""{"gender": 1}"""), O("""{"event": 22, "beard": 0, "left_spur": 0, "right_spur": 0}"""), 1.0));
         Eq("220.4623", Scoring.Score(10, Scoring.Features(10, new JsonObject(), new JsonObject(), 1.0), 100000, null).Score);
     }
 
