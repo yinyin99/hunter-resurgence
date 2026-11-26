@@ -1647,4 +1647,6 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Ev sahibinin ağı</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Bu oyuna katılamazsın: ev sahibinin bağlantısı desteklenmiyor (oyun IPv6 üzerinden bağlanamıyor). Ev sahibinden başlatıcıyı güncellemesini ve oyunu yeniden başlatmasını iste.</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Harita ve ev sahibinin ekipmanı yalnızca bu oyuna katılabilecek oyunculara gösterilir.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
 </root>

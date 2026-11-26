@@ -75,7 +75,7 @@ public sealed class LeaderboardSeasonsTests : UiContext
         public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([], 1, 1));
         public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
         public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([.. Names.Select(n => new HallEntry(n, One, One))]);
-        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], []));
+        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], [], []));
     }
 
     /// <summary>The typical and the non-typical rack of a deer are two boards of the server, named apart.</summary>
@@ -88,7 +88,7 @@ public sealed class LeaderboardSeasonsTests : UiContext
         public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([One], 1, 1));
         public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
         public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([]);
-        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], []));
+        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], [], []));
     }
 
     /// <summary>A service whose boards come when the test says, or fail: the page's states while it waits and after.</summary>
@@ -105,7 +105,7 @@ public sealed class LeaderboardSeasonsTests : UiContext
         public Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season) => Task.FromResult(new Page<Ranked>([], 1, 1));
         public Task<Ranked?> MyRankAsync(string kind, int id, int season) => Task.FromResult<Ranked?>(null);
         public Task<IReadOnlyList<HallEntry>> HallAsync(int season) => Task.FromResult<IReadOnlyList<HallEntry>>([]);
-        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], []));
+        public Task<HuntingStats> HuntingAsync() => Task.FromResult(new HuntingStats([], [], []));
         public void Again() => Answer = new();
     }
 

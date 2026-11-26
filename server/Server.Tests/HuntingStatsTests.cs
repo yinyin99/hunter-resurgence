@@ -156,6 +156,19 @@ public class HuntingStatsTests : StateTestBase
     }
 
     [Fact]
+    public void TheBestReserveIsChosenAtTheBaseSoABonusNeverPicksIt()
+    {
+        state = Online();
+        Players(5);
+        for (var i = 0; i < 5; i++)
+        {
+            Harvest(First + i, Hunt(First + i, 2, 3 * Hour, 1 * Hour), 1, 150, baseGm: 150);  // reserve 2: 150 an hour, no bonus
+            Harvest(First + i, Hunt(First + i, 3, 6 * Hour, 1 * Hour), 1, 400, baseGm: 100);  // reserve 3 paid 400 an hour only because of a bonus (base 100)
+        }
+        Assert.Equal("Test Reserve", (string)state.HuntingStatistics()["species"]![0]!["bestReserve"]!);
+    }
+
+    [Fact]
     public void ARowOfFewerThanFivePlayersIsHiddenAndNoNameIsEverShown()
     {
         state = Online();

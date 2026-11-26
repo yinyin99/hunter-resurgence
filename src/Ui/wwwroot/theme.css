@@ -9,6 +9,9 @@
 @font-face { font-family: "Open Sans"; font-weight: 700; font-display: swap; src: url(fonts/open-sans-700.woff2) format("woff2"); }
 
 :root {
+    /* the bevel of the 3D bars (.bar3d) and the step rows of the achievements overview */
+    --shade: rgb(0 0 0 / .25);
+    --bevel: inset -2px -3px 0 var(--shade);
     /* surfaces */
     --bg-page: #000;
     --bg-column: #111;
@@ -314,6 +317,12 @@ a { transition: color var(--t-fast) var(--ease); }
 
 /* the old list pages are at least this tall */
 .page-min { min-height: 960px; }
+/* a page that marks itself .wide-main takes the shell's empty right column too (the hunting statistics) */
+.body:has(.wide-main) > .sidebar { display: none; }
+/* the 3D bar of the achievements overview and the hunting statistics: a dark track and a light-blue fill, each with a darker edge on the bottom and on the end side; --bevel alone is also the edge of an overview step row */
+.bar3d { position: relative; display: block; height: 18px; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: var(--bevel); }
+.bar3d > i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; box-shadow: var(--bevel); }
+.body:has(.wide-main) > main { width: calc(var(--w-main) + var(--w-sidebar)); }
 
 .asset-slot {
     display: inline-flex;

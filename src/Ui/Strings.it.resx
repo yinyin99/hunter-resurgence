@@ -1647,4 +1647,6 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rete dell'host</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Non puoi unirti a questa partita: la connessione dell'host non è supportata (il gioco non può connettersi tramite IPv6). Chiedi all'host di aggiornare il launcher e di riavviare la partita.</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
 </root>

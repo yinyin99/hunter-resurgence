@@ -141,8 +141,8 @@ public sealed partial class State
     }
 
     /// <summary>`GET /stats/hunting`: server-wide figures per reserve (playtime, gm$ per hour, gm$ per harvest, harvests per hour) and per species (the same, `hours` the playtime on the reserves where the
-    /// species was harvested, by the players who harvested it there; `bestReserve` the reserve where the species paid most gm$ per hour, from reserves of at least <see cref="HuntingMinPlayers"/> players, else null), `since` the day counted from.
-    /// Never a name, handle or rank; a row built from fewer than <see cref="HuntingMinPlayers"/> players is left out. Harvest gm$ only, as paid (a time-limited bonus included).</summary>
+    /// species was harvested, by the players who harvested it there; `bestReserve` the reserve where the species paid most gm$ per hour at the rewards' base (no bonus), from reserves of at least <see cref="HuntingMinPlayers"/> players, else null), `since` the day counted from.
+    /// Never a name, handle or rank; a row built from fewer than <see cref="HuntingMinPlayers"/> players is left out. Harvest gm$ only, sent both as paid (a time-limited bonus included) and as `comparable` (at the base, no bonus).</summary>
     public JsonObject HuntingStatistics()
     {
         var players = KeptHunting().Players;
@@ -157,7 +157,7 @@ public sealed partial class State
         var speciesRows = cells.GroupBy(c => c.Name).Where(g => g.Select(c => c.Account).Distinct().Count() >= HuntingMinPlayers)
             .Select(g =>
             {
-                var best = g.GroupBy(c => c.Reserve).Where(r => r.Count() >= HuntingMinPlayers && r.Sum(c => c.Seconds) > 0).MaxBy(r => r.Sum(c => c.Gm) / r.Sum(c => c.Seconds));
+                var best = g.GroupBy(c => c.Reserve).Where(r => r.Count() >= HuntingMinPlayers && r.Sum(c => c.Seconds) > 0).MaxBy(r => r.Sum(c => c.Base) / r.Sum(c => c.Seconds));
                 var row = Rates(new JsonObject { ["species"] = g.Key, ["players"] = g.Select(c => c.Account).Distinct().Count() }, g.Sum(c => c.Seconds), g.Sum(c => c.Gm), g.Sum(c => c.Harvests), g.Sum(c => c.Base));
                 row["bestReserve"] = best is null ? null : ReserveName(JsonValue.Create(best.Key));
                 return (g.Key, Row: row);

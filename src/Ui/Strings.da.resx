@@ -1647,4 +1647,6 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Værtens netværk</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan ikke deltage i dette spil: værtens forbindelse understøttes ikke (spillet kan ikke forbinde via IPv6). Bed værten om at opdatere launcheren og starte spillet igen.</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Kortet og værtens udstyr vises kun for spillere, der må deltage i dette spil.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonusser er udeladt.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusbegivenheder i perioden:</value></data>
 </root>

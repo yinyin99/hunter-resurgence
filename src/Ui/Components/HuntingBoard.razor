@@ -1,0 +1,63 @@
+@* The server-wide hunting statistics at the rewards' base: a strip saying so (with the bonus events of the period), then a table per view, reserves and species, each with the gm$ per hour as a 3D
+   bar and its number. The bar only repeats the number, so it is hidden from assistive technology. *@
+<div class="hunting">
+    <section class="base">
+        <p>@L["Board.HuntingBase"]</p>
+        @if (bonuses.Count > 0)
+        {
+            <div class="events">
+                <span>@L["Board.HuntingEvents"]</span>
+                <ul>@foreach (var e in bonuses) { <li>@Fmt.EventLine(e)</li> }</ul>
+            </div>
+        }
+    </section>
+
+    <section>
+        <h4 class="part">@L["Board.HuntingReserves"]</h4>
+        <div class="scroll">
+            <table>
+                <thead><tr><th scope="col">@L["Stat.Reserve"]</th><th scope="col" class="rate">@L["Board.HuntingGmHour"]</th><th scope="col">@L["Board.HuntingGmHarvest"]</th><th scope="col">@L["Board.HuntingHarvestsHour"]</th><th scope="col">@L["Board.HuntingHours"]</th><th scope="col">@L["Board.HuntingPlayers"]</th></tr></thead>
+                <tbody>
+                    @{ var topReserve = Stats.Reserves.Count == 0 ? 0 : Stats.Reserves.Max(r => r.ComparableGmPerHour); }
+                    @foreach (var r in Stats.Reserves.OrderByDescending(r => r.ComparableGmPerHour))
+                    {
+                        <tr>
+                            <th scope="row" title="@r.Reserve">@r.Reserve</th>
+                            <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(r.ComparableGmPerHour, topReserve)"></i></span><b>@Fmt.Num(r.ComparableGmPerHour, "0")</b></div></td>
+                            <td>@Fmt.Num(r.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(r.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(r.Hours, "0.0")</td><td>@r.Players</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h4 class="part">@L["Board.HuntingSpecies"]</h4>
+        <div class="scroll">
+            <table>
+                <thead><tr><th scope="col">@L["Stat.Species"]</th><th scope="col" class="rate">@L["Board.HuntingGmHour"]</th><th scope="col">@L["Board.HuntingGmHarvest"]</th><th scope="col">@L["Board.HuntingHarvestsHour"]</th><th scope="col">@L["Board.HuntingHours"]</th><th scope="col">@L["Board.HuntingPlayers"]</th><th scope="col" class="text">@L["Board.HuntingBest"]</th></tr></thead>
+                <tbody>
+                    @{ var topSpecies = Stats.Species.Count == 0 ? 0 : Stats.Species.Max(s => s.ComparableGmPerHour); }
+                    @foreach (var s in Stats.Species.OrderByDescending(s => s.ComparableGmPerHour))
+                    {
+                        <tr>
+                            <th scope="row" title="@L.Term(s.Species)">@L.Term(s.Species)</th>
+                            <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(s.ComparableGmPerHour, topSpecies)"></i></span><b>@Fmt.Num(s.ComparableGmPerHour, "0")</b></div></td>
+                            <td>@Fmt.Num(s.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(s.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(s.Hours, "0.0")</td><td>@s.Players</td><td class="text">@s.BestReserve</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public HuntingStats Stats { get; set; } = default!;
+
+    /// <summary>The events that are bonuses (they have a multiplier): a seasonal event changes no gm$ figure, so it is not listed.</summary>
+    IReadOnlyList<HuntingEvent> bonuses => [.. Stats.Events.Where(e => e.Multiplier is not null)];
+
+    static string Share(double value, double best) => (best > 0 ? Math.Max(0, 100 * value / best) : 0).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "%";
+}
