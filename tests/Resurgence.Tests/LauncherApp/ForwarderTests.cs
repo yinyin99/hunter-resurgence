@@ -262,7 +262,7 @@ public class ForwarderTests
         {
             var first = v4.AcceptSocketAsync();
             await using (await Forwarder.ConnectIPv4First("localhost", ((IPEndPoint)v4.LocalEndpoint).Port, default))
-            using (await first) { }
+            using (await first.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)) { }
             Assert.False(v6.Pending());
         }
         finally { v4.Stop(); v6.Stop(); }
