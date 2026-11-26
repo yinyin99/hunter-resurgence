@@ -1565,7 +1565,8 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Deze inloglink is verlopen. Begin opnieuw vanuit de launcher of de back-uptool.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Deze inloglink is ongeldig. Begin opnieuw vanuit de launcher of de back-uptool.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam heeft het inloggen niet bevestigd. Begin opnieuw.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dit Steam-account is geblokkeerd en kan niet inloggen.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Dit Steam-account is geblokkeerd en kan niet inloggen. Wil je erover praten, kom dan naar onze Discord.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Reden:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dit formulier komt niet van deze server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Dit inloggen is al bevestigd.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>

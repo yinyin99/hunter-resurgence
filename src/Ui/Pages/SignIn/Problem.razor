@@ -3,8 +3,10 @@
 
 <PageTitle>@L["SignInPage.Problem.Title"]</PageTitle>
 
-<SignInProblem Reason="@Reason" />
+<SignInProblem Reason="@Reason" Why="@Why" />
 
 @code {
     [SupplyParameterFromQuery] public string? Reason { get; set; }
+    /// <summary>The operator's ban reason the server adds to a banned sign-in's redirect (at most 200 characters, shown as text).</summary>
+    [SupplyParameterFromQuery] public string? Why { get; set; }
 }

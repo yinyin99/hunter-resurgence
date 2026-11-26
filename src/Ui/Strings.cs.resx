@@ -1565,7 +1565,8 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Odkaz pro přihlášení vypršel. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Odkaz pro přihlášení není platný. Začněte znovu z launcheru nebo zálohovacího nástroje.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam přihlášení nepotvrdil. Začněte znovu.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet Steam je zablokován a nemůže se přihlásit.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Tento účet Steam je zablokován a nemůže se přihlásit. Chcete-li to probrat, přijďte na náš Discord.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Důvod:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tento formulář nepochází z tohoto serveru.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Toto přihlášení už bylo potvrzeno.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>

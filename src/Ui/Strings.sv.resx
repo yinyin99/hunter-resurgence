@@ -1565,7 +1565,8 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Den här inloggningslänken har gått ut. Börja om från launchern eller säkerhetskopieringsverktyget.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Den här inloggningslänken är ogiltig. Börja om från launchern eller säkerhetskopieringsverktyget.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekräftade inte inloggningen. Börja om.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Det här Steam-kontot är avstängt och kan inte logga in.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Det här Steam-kontot är avstängt och kan inte logga in. Vill du prata om det, kom till vår Discord.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Anledning:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>

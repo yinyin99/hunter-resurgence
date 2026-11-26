@@ -1565,7 +1565,8 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Denne påloggingslenken har utløpt. Start på nytt fra launcheren eller sikkerhetskopiverktøyet.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Denne påloggingslenken er ugyldig. Start på nytt fra launcheren eller sikkerhetskopiverktøyet.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>Steam bekreftet ikke påloggingen. Start på nytt.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne Steam-kontoen er utestengt og kan ikke logge inn.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Denne Steam-kontoen er utestengt og kan ikke logge inn. Vil du snakke om det, kom til Discorden vår.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Årsak:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Dette skjemaet kommer ikke fra denne serveren.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Denne påloggingen er allerede bekreftet.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på at du vil lukke launcheren og spillet?</value></data>

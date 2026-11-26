@@ -1565,7 +1565,8 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Link" xml:space="preserve"><value>Esta ligação de início de sessão expirou. Comece de novo a partir do launcher ou da ferramenta de cópia de segurança.</value></data>
   <data name="SignInPage.Problem.App" xml:space="preserve"><value>Esta ligação de início de sessão não é válida. Comece de novo a partir do launcher ou da ferramenta de cópia de segurança.</value></data>
   <data name="SignInPage.Problem.Steam" xml:space="preserve"><value>O Steam não confirmou o início de sessão. Comece de novo.</value></data>
-  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta Steam está banida e não pode iniciar sessão.</value></data>
+  <data name="SignInPage.Problem.Banned" xml:space="preserve"><value>Esta conta Steam está banida e não pode iniciar sessão. Para falar sobre isso, junte-se ao nosso Discord.</value></data>
+  <data name="SignInPage.Problem.BanReason" xml:space="preserve"><value>Motivo:</value></data>
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Tens a certeza de que queres fechar o launcher e o jogo?</value></data>

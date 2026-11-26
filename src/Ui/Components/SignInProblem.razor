@@ -1,9 +1,17 @@
 <h1>@L["SignInPage.Problem.Title"]</h1>
 <p>@L[Key]</p>
+@* a banned player reads the operator's reason and is told to come and talk: the operator lifts a ban after a word on Discord *@
+@if (Reason == "banned")
+{
+    @if (!string.IsNullOrWhiteSpace(Why)) { <p class="ban-reason">@L["SignInPage.Problem.BanReason"] @(Why.Length > 200 ? Why[..200] : Why)</p> }
+    <SignInDiscord />
+}
 
 @code {
     /// <summary>One of the fixed reasons of the server's redirect (expired, link, app, steam, banned, form, confirmed); any other is "expired".</summary>
     [Parameter] public string? Reason { get; set; }
+    /// <summary>The operator's reason of a ban, shown under the banned text; nothing for the other reasons.</summary>
+    [Parameter] public string? Why { get; set; }
 
     string Key => Reason switch
     {

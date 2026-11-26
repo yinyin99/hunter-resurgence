@@ -1079,7 +1079,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Null(state.Store.AccountBySteam("99999999999999991"));
 
         var back = await Return("web.test", await Begin("web.test"));
-        Problem(back, "banned");
+        Problem(back, "banned&why=test%20reason");  // the operator's reason goes to the page the player sees
         Assert.Null(Cookie(back, "hr_session"));
         Assert.Null(state.Store.AccountBySteam("99999999999999991"));  // no account was made
 
@@ -1102,7 +1102,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(account, AdminApi.Unban(state, "99999999999999991").Done!.Account);
         using (var con = state.Store.Open())
             Assert.Equal(0L, con.Scalar("SELECT banned FROM accounts WHERE id = ?", account));
-        Problem(await Return("web.test", await Begin("web.test"), "88888888888888889"), "banned");
+        Problem(await Return("web.test", await Begin("web.test"), "88888888888888889"), "banned&why=no%20account%20yet");
         Assert.Equal(302, (await Return("web.test", await Begin("web.test"))).Status);  // the first one signs in again
     }
 

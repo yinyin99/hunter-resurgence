@@ -99,5 +99,13 @@ public sealed class SignInPagesTests : UiContext
         Assert.Equal(Invite, invited.Render<Done>().Find("a").GetAttribute("href"));
         Assert.Contains(plain.Text("SignInPage.Problem.Banned"), plain.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned")).Markup);
         Assert.Contains(plain.Text("SignInPage.Problem.Expired"), plain.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "<x>")).Markup);
+        // a banned player gets the invite to come and talk; the other problems send him back to sign in
+        Assert.Equal(Invite, invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned")).Find("a").GetAttribute("href"));
+        Assert.Empty(invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "expired")).FindAll("a"));
+        // the operator's reason is shown as text (a link is no link) and only on the banned page
+        var why = invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "banned").Add(x => x.Why, "<a href=x>Claimed</a> someone's profile"));
+        Assert.Equal(plain.Text("SignInPage.Problem.BanReason") + " <a href=x>Claimed</a> someone's profile", why.Find(".ban-reason").TextContent);
+        Assert.Single(why.FindAll("a"));  // the invite only
+        Assert.Empty(invited.Render<Resurgence.Ui.Components.SignInProblem>(p => p.Add(x => x.Reason, "expired").Add(x => x.Why, "x")).FindAll(".ban-reason"));
     }
 }

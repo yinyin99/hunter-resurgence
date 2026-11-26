@@ -219,6 +219,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>The website's problem page; <paramref name="reason"/> is one of its fixed keys (expired, link, app, steam, banned, form, confirmed).</summary>
     Reply Problem(Req r, string reason) => Redirect(Page(r, "problem?reason=" + reason));
 
+    /// <summary>The problem page of a banned Steam id, with the operator's reason (`why`) when he gave one: the player learns why and how to get it lifted.</summary>
+    Reply Banned(Req r, string? why) => Redirect(Page(r, "problem?reason=banned" + (string.IsNullOrEmpty(why) ? "" : "&why=" + Uri.EscapeDataString(why))));
+
     static Reply Redirect(string to, params string[] cookies) =>
         new(302, [("Location", to), ("Cache-Control", "no-store"), .. cookies.Select(c => ("Set-Cookie", c))], [], "auth");
 
@@ -310,10 +313,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             logins.TryRemove(id, out _);
             return Problem(r, "steam");
         }
-        if (Store.IsBanned(steamId))  // a banned Steam id signs nothing in and makes no account, whether or not an account of it exists
+        if (Store.BanReason(steamId) is { } why)  // a banned Steam id signs nothing in and makes no account, whether or not an account of it exists
         {
             logins.TryRemove(id, out _);
-            return Problem(r, "banned");
+            return Banned(r, why);
         }
         login.Steam = steamId;
         login.Expires = now() + Lifetimes.Login;
@@ -333,7 +336,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (Store.ResolveWebSession(cookie) is null)  // a banned account gets no session
         {
             Store.DeleteWebSession(cookie);
-            return Problem(r, "banned");
+            return Banned(r, login.Steam is { } steam ? Store.BanReason(steam) : null);
         }
         return Redirect(login.Next, Set(SessionCookie, cookie, "/", Lifetimes.Cookie), Clear(LoginCookie, "/"));
     }
@@ -365,10 +368,10 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     {
         if (Current(r) is not { Steam: { } steamId, Account: null } login)
             return Problem(r, "expired");
-        if (Store.IsBanned(steamId))  // banned between the Steam round trip and the form
+        if (Store.BanReason(steamId) is { } why)  // banned between the Steam round trip and the form
         {
             logins.TryRemove(login.Id, out _);
-            return Problem(r, "banned");
+            return Banned(r, why);
         }
         if (Store.AccountBySteam(steamId) is { } existing)  // another tab of this sign-in was faster
             return Finish(r, login, existing);
