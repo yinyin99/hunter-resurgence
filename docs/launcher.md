@@ -228,7 +228,7 @@ While an event runs, the launch map and the tutorials page show a line with the 
 
 ## Linking Discord
 
-For a signed-in hunter who has not linked a Discord account (and a server with Linked Roles on) the launcher shows the same three entry points as the website, which see [website.md](website.md#discord-linked-roles): a card on the feed above the Discord widget, a pill under the logo and a "Link Discord" Settings menu item. Its pages are local, so they open the community server's `/discord/link` in the player's browser (`ILauncherBridge.OpenExternal`, `LauncherSessionService.DiscordLinkUrl`); the server does the rest. Back in the launcher the entry points are gone at the next page (the shell asks for the session again while they show).
+For a signed-in hunter who has not linked a Discord account (and a server with Linked Roles on) the launcher shows the same three entry points as the website, which see [website.md](website.md#discord-linked-roles): a card on the feed above the Discord widget, the same slim pill centred between the top bar and the menu bar, and a "Link Discord" Settings menu item. Its pages are local, so they open the community server's `/discord/link` in the player's browser (`ILauncherBridge.OpenExternal`, `LauncherSessionService.DiscordLinkUrl`); the server does the rest. Back in the launcher the entry points are gone at the next page (the shell asks for the session again while they show).
 
 ## The Discord invitation
 
