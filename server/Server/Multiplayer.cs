@@ -92,14 +92,14 @@ public sealed class Games
     }
 
     /// <summary>Why the player cannot join `g` now, the first of: `own` (the player hosts it), `friends` (a friends-only session of a stranger), `hunterscore` (a score out of its range), `starting` (the host's port and
-    /// network id are not known yet), `network` (the host's connect came over IPv6, which the game cannot use; an IPv4-mapped address is IPv4), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
+    /// network id are not known yet), `network` (the host's connect came over IPv6, which the game cannot use; the connect's address is already IPv4 for an IPv4-mapped peer), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
     public static string? Why(Game g, long account, long score, Func<long, bool> friendOf, string? password = null)
     {
         if (g.Host == account) return "own";
         if (!g.Public && !friendOf(g.Host)) return "friends";
         if (score < g.HsMin || score > g.HsMax) return "hunterscore";
         if (!g.Ready) return "starting";
-        if (IPAddress.TryParse(g.Members[0].Ip, out var host) && host.AddressFamily == AddressFamily.InterNetworkV6 && !host.IsIPv4MappedToIPv6) return "network";
+        if (IPAddress.TryParse(g.Members[0].Ip, out var host) && host.AddressFamily == AddressFamily.InterNetworkV6) return "network";
         if (g.Password != "" && (password is null || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password)))) return "password";
         return g.Members.Count(m => m.Account != account) >= g.Max ? "full" : null;
     }

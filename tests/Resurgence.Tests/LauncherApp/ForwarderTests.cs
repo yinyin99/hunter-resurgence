@@ -213,31 +213,73 @@ public class ForwarderTests
         Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
     }
 
-    [Fact]
-    public async Task ConnectsToTheServerOverIpv4()
+    /// <summary>A started listener on `ip` (port 0: a free one).</summary>
+    static System.Net.Sockets.TcpListener Listen(IPAddress ip, int port = 0)
     {
-        var listener = new System.Net.Sockets.TcpListener(IPAddress.Loopback, 0);
-        listener.Start();
-        try
-        {
-            var accepted = listener.AcceptSocketAsync();
-            await using var stream = await Forwarder.ConnectIPv4("127.0.0.1", ((IPEndPoint)listener.LocalEndpoint).Port, default);
-            using var peer = await accepted;
-            Assert.Equal(System.Net.Sockets.AddressFamily.InterNetwork, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
-        }
-        finally { listener.Stop(); }
+        var l = new System.Net.Sockets.TcpListener(ip, port);
+        l.Start();
+        return l;
     }
 
     [Fact]
-    public async Task AServerWithoutAnIpv4AddressFailsAndIsNeverReachedOverIpv6()
+    public async Task ConnectsOverIpv4WhenTheNameHasBothAndOverIpv6WhenItHasOnlyThat()
     {
-        // an IPv6 address is the only one this name has: no connection is tried (nothing listens), the error is the unreachable-server one
-        var e = await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4("::1", 443, default));
-        Assert.Equal(System.Net.Sockets.SocketError.HostNotFound, e.SocketErrorCode);
-        await using var fwd = await StartForwarder(new Uri("http://[::1]:9"));
-        using var http = Client();
-        using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0]);
-        Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
+        if (!System.Net.Sockets.Socket.OSSupportsIPv6) return;
+        var v4 = Listen(IPAddress.Loopback);
+        var v6 = Listen(IPAddress.IPv6Loopback);
+        try
+        {
+            // both addresses of one name, the IPv6 one first: the IPv4 one is the one used
+            var first = v4.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First([IPAddress.IPv6Loopback, IPAddress.Loopback], ((IPEndPoint)v4.LocalEndpoint).Port, default))
+            using (await first) { }
+            Assert.False(v6.Pending());
+            // only an IPv6 address: it is reached over IPv6 (a PC without IPv4)
+            var second = v6.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First([IPAddress.IPv6Loopback], ((IPEndPoint)v6.LocalEndpoint).Port, default))
+            using (var peer = await second) Assert.Equal(System.Net.Sockets.AddressFamily.InterNetworkV6, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
+            // the IPv4 address refuses (nothing listens): the IPv6 one is tried next
+            var dead = Listen(IPAddress.Loopback);
+            var port = ((IPEndPoint)dead.LocalEndpoint).Port;
+            dead.Stop();
+            var third = Listen(IPAddress.IPv6Loopback, port);
+            try
+            {
+                var accepted = third.AcceptSocketAsync();
+                await using (await Forwarder.ConnectIPv4First([IPAddress.Loopback, IPAddress.IPv6Loopback], port, default))
+                using (await accepted) { }
+            }
+            finally { third.Stop(); }
+        }
+        finally { v4.Stop(); v6.Stop(); }
+    }
+
+    [Fact]
+    public async Task ResolvesANameAndKeepsTheIpv4ConnectionWhenBothFamiliesListen()
+    {
+        if (!System.Net.Sockets.Socket.OSSupportsIPv6) return;
+        var v4 = Listen(IPAddress.Loopback);
+        System.Net.Sockets.TcpListener v6;
+        try { v6 = Listen(IPAddress.IPv6Loopback, ((IPEndPoint)v4.LocalEndpoint).Port); }
+        catch (System.Net.Sockets.SocketException) { v4.Stop(); return; }  // that port is taken on ::1
+        try
+        {
+            var first = v4.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First("localhost", ((IPEndPoint)v4.LocalEndpoint).Port, default))
+            using (await first) { }
+            Assert.False(v6.Pending());
+        }
+        finally { v4.Stop(); v6.Stop(); }
+    }
+
+    [Fact]
+    public async Task AServerThatNoAddressReachesIsTheLastFailure()
+    {
+        var dead = Listen(IPAddress.Loopback);
+        var port = ((IPEndPoint)dead.LocalEndpoint).Port;
+        dead.Stop();
+        await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4First([IPAddress.Loopback], port, default));
+        await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4First([], port, default));
     }
 
     [Fact]

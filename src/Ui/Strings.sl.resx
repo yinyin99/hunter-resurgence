@@ -1641,5 +1641,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrične (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Omrežje gostitelja</value></data>
-  <data name="Join.HostNetwork" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: omrežje gostitelja ni podprto (igra se ne more povezati prek IPv6). Gostitelj lahko poskusi znova ali izklopi VPN.</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: povezava gostitelja ni podprta (igra se ne more povezati prek IPv6). Prosi gostitelja, naj posodobi zaganjalnik in igro zažene znova.</value></data>
 </root>

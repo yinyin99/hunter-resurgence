@@ -96,6 +96,7 @@ Caddy passes Cloudflare's `CF-Connecting-IP` to the apps as `X-Forwarded-For`. T
 
 - `ufw`: default deny incoming; allow SSH from your own address or range only (`ufw allow from <your-range> to any port 22 proto tcp`).
 - **Pitfall:** Docker publishes container ports through its own iptables rules, before `ufw`'s, so `ufw` rules do **not** protect ports 80 and 443. The rules for them go in Docker's `DOCKER-USER` chain. `deploy/firewall.sh` reads Cloudflare's [IPv4](https://www.cloudflare.com/ips-v4) and [IPv6](https://www.cloudflare.com/ips-v6) ranges, rebuilds a `CLOUDFLARE` chain with them (anything else is dropped) and jumps to it from `DOCKER-USER` for ports 80 and 443 on the public interface. Running it again replaces the old ranges. If Cloudflare sends no ranges, it stops with an error and changes nothing (the `scripts` job checks this against stub `iptables` and `curl`).
+- **Cloudflare's "Pseudo IPv4"** stays off (the default): with "Overwrite headers" it would replace an IPv6 client address by a made-up IPv4 one, and the server could no longer see that a host is on IPv6 (the `network` reason of [server.md](server.md#multiplayer)).
 
 ```
 sudo install -m 755 firewall.sh /usr/local/sbin/cloudflare-only

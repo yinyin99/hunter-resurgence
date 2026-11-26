@@ -1641,5 +1641,5 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Red del anfitrión</value></data>
-  <data name="Join.HostNetwork" xml:space="preserve"><value>No puedes unirte a esta partida: la red del anfitrión no es compatible (el juego no puede conectarse por IPv6). El anfitrión puede volver a intentarlo o desactivar una VPN.</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>No puedes unirte a esta partida: la conexión del anfitrión no es compatible (el juego no puede conectarse por IPv6). Pide al anfitrión que actualice el launcher y vuelva a iniciar la partida.</value></data>
 </root>

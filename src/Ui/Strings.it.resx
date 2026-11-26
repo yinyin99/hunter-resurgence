@@ -1641,5 +1641,5 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriche (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiali (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rete dell'host</value></data>
-  <data name="Join.HostNetwork" xml:space="preserve"><value>Non puoi unirti a questa partita: la rete dell'host non è supportata (il gioco non può connettersi tramite IPv6). L'host può riprovare o disattivare una VPN.</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Non puoi unirti a questa partita: la connessione dell'host non è supportata (il gioco non può connettersi tramite IPv6). Chiedi all'host di aggiornare il launcher e di riavviare la partita.</value></data>
 </root>
