@@ -166,6 +166,16 @@ public class ChallengeTests : StateTestBase
     }
 
     [Fact]
+    public void TestTheChallengeJudgesTheAnimalByItsCoat()
+    {
+        // the hare 17 in the event's coat 54 is possessed in any hunt: silver is ethical on it, on one in its normal coat 0 not (#582)
+        Hb(Spawn(33, 17, texture: 0), Hit(33, 1, ammo: 962, cms: 30000), Harvest(33, 17));
+        Assert.DoesNotContain("904", Done());
+        Hb(Spawn(34, 17, texture: 54), Hit(34, 1, ammo: 962, cms: 30000), Harvest(34, 17));
+        Assert.Contains("904", Done());
+    }
+
+    [Fact]
     public void TestHarvestsOfASpeciesWithinTheWindowAreCounted()
     {
         void Take(int individual) => Hb(Spawn(individual, 2), Harvest(individual, 2));

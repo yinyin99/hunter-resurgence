@@ -338,6 +338,23 @@ public class MpHarvestTests : StateTestBase
         Assert.Equal(disqualified, Py.Eq(score["score_text"], "Disqualified "));
         Assert.Equal(!disqualified, (bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);  // the page judges it the same
     }
+
+    [Fact]
+    public void TestACreditedHarvestKeepsItsVerdictInTheAdminCommandsAndItsBoardRowsAreCounted()
+    {
+        Game(GUEST);
+        Beat(GUEST, O("""{"event": 1, "individual": 460, "species": 2, "distance_cms": 8250, "organ1": 17, "organ2": 8388610, "weapon_id": 5, "ammunition_id": 962, "animal_state": 3}"""));
+        Beat(HOST, [O("""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 77}"""), .. Skinned(460, spawn: false)]);  // possessed by the harvester's sighting: silver
+        Assert.True((bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);
+        Assert.Empty(state.JudgeKills(GUEST, dryRun: true));  // the admin command judges it by the same animal as its score
+        using (var con = state.Store.Open(GUEST))
+            con.Exec("UPDATE events SET body = json_set(body, '$.ammunition_id', 10) WHERE account_id = $a AND event = 1 AND individual = 460");  // it now reads as a normal round on the possessed animal
+        Assert.False((bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);
+        var line = Assert.Single(state.JudgeKills(GUEST, dryRun: true));
+        Assert.Equal(("disqualify", (string?)"not_silver_on_possessed", (string?)"coat"), (line.Change, line.Reason, line.Basis));
+        Assert.True(line.Board && line.Top10 == line.BoardRows);  // the shooter's buck holds rows of the boards, each in the top 10
+        Assert.Equal(0, state.Rescore(GUEST, dryRun: true).Single().Rescored);  // the rescore leaves it, as a disqualified harvest
+    }
 }
 
 /// <summary>The mission rollback of a moved harvest reopens only what that harvest finished.</summary>

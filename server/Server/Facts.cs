@@ -46,6 +46,55 @@ public sealed class Facts
             OwnByType[long.Parse(type, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
         foreach (var (id, rule) in Obj("own_limits")["items"] as JsonObject ?? [])
             OwnByItem[long.Parse(id, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
+        foreach (var (name, ev) in Obj("events"))
+            CheckRule(name, ev as JsonObject ?? []);
+    }
+
+    /// <summary>The ammunition rule's data of the event <paramref name="name"/> (#582) is refused at load, naming the entry, rather than misjudging kills: `ethical` with a non-empty `ammo` and `species` of
+    /// whole ids, every species id one of `animals` (when the file has them); `creatures` and the species of `coats` among `ethical.species`, a creature with no coats; each `coats` entry with `possessed` and
+    /// `normal` lists of whole coat ids, not both empty, no coat in both.</summary>
+    void CheckRule(string name, JsonObject ev)
+    {
+        var at = $"facts: events.{name}";
+        bool Id(JsonNode? n) => n is JsonValue v && v.GetValueKind() == System.Text.Json.JsonValueKind.Number && Py.D(v) is var d && d == Math.Floor(d) && d >= 0;
+        long[] Ids(JsonNode? list, string where, bool species)
+        {
+            if (list is not JsonArray a || a.Any(n => !Id(n)))
+                throw new InvalidDataException($"{at}.{where}: a list of whole ids");
+            if (species && Animals.Length > 0 && a.FirstOrDefault(n => Py.L(n) >= Animals.Length) is { } unknown)
+                throw new InvalidDataException($"{at}.{where}: {unknown} is no species of `animals`");
+            return [.. a.Select(Py.L)];
+        }
+        if (ev["ethical"] is null && ev["creatures"] is null && ev["coats"] is null)
+            return;
+        if (ev["ethical"] is not JsonObject ethical)
+            throw new InvalidDataException($"{at}.ethical: missing, and `creatures` or `coats` need it");
+        if (Ids(ethical["ammo"], "ethical.ammo", false).Length == 0)
+            throw new InvalidDataException($"{at}.ethical.ammo: empty");
+        var named = Ids(ethical["species"], "ethical.species", true).ToHashSet();
+        if (named.Count == 0)
+            throw new InvalidDataException($"{at}.ethical.species: empty");
+        var creatures = ev["creatures"] is null ? [] : Ids(ev["creatures"], "creatures", true);
+        if (creatures.FirstOrDefault(c => !named.Contains(c), -1) is var stray and >= 0)
+            throw new InvalidDataException($"{at}.creatures: {stray} is not in ethical.species");
+        if (ev["coats"] is null)
+            return;
+        if (ev["coats"] is not JsonObject coats)
+            throw new InvalidDataException($"{at}.coats: an object of species ids");
+        foreach (var (key, entry) in coats)
+        {
+            var where = $"coats.{key}";
+            if (!long.TryParse(key, NumberStyles.None, CultureInfo.InvariantCulture, out var sp) || Animals.Length > 0 && sp >= Animals.Length)
+                throw new InvalidDataException($"{at}.{where}: not a species id of `animals`");
+            if (!named.Contains(sp) || creatures.Contains(sp))
+                throw new InvalidDataException($"{at}.{where}: a species with a possessed version (in ethical.species, not a creature)");
+            var possessed = Ids(entry?["possessed"], where + ".possessed", false);
+            var normal = Ids(entry?["normal"], where + ".normal", false);
+            if (possessed.Length == 0 && normal.Length == 0)
+                throw new InvalidDataException($"{at}.{where}: both lists empty: the entry decides nothing");
+            if (possessed.Intersect(normal).FirstOrDefault(-1) is var both and >= 0)
+                throw new InvalidDataException($"{at}.{where}: coat {both} is in both lists");
+        }
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));

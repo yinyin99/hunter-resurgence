@@ -27,10 +27,12 @@ const string AdminUsage = """
     it prints one line per account: id, handle, set / no uploaded avatar / fetch failed. --dry-run fetches nothing.
     admin rescore [--account <id or handle>] [--kill <id>] [--apply] scores the stored harvests again with today's rules (every account, one, or with --kill, that account's one harvest) and prints one JSON line per harvest whose score changes:
     {account, kill, species, oldScore, newScore, gmsPaid}, then a line per account that changed or would be paid. Without --apply it writes nothing; --kill needs --account (kill ids are per account). gm$ already paid are not taken back.
-    admin ethics [--account <id or handle>] [--apply] judges every stored kill again by today's ammunition rule (a possessed animal: the event's silver only; a normal one: its species' list, no silver) and prints one JSON line per kill that changes, in account and kill order:
-    {account, kill, species, change, flag, reason, ammo, basis, coat, score, board, taxidermied, lodge, slot, photo, gms, ifNormal, ifPossessed}. change: disqualify (unethical, it had a score: it loses the score and its board place), requalify (ethical, no score: scored and paid as rescore does),
-    flag (only flagged), unflag (its flag goes: the cause is gone). flag: kept (unethical and taxidermied or mounted in a lodge, which it keeps) or undecided (its verdict depends on a hunt the server could not decide: the kill stays as it is, ifNormal and ifPossessed give both verdicts).
-    reason: silver_on_normal | not_silver_on_possessed | not_permitted | undecided; basis: coat | species | hunt. gm$ already paid, taxidermies, lodge mounts and trophy shots stay. Then a total line. Without --apply it writes nothing; a second --apply changes nothing.
+    admin ethics [--account <id or handle>] [--apply] judges every stored kill again by today's ammunition rule (a possessed animal: the event's silver only; a normal one: its species' list, no silver) and prints one JSON line per kill that changes or is reported, in account and kill order:
+    {account, kill, species, change, flag, reason, ammo, basis, coat, score, board, boardRows, top10, taxidermied, lodge, slot, photo, gms, ifNormal, ifPossessed}. change: disqualify (unethical with a stored score: it loses the score and its leaderboard rows),
+    unscored (unethical, no score stored: nothing to change, listed so the list of kills the rule judges unethical is complete), requalify (ethical, no score: scored and paid as rescore does), flag (only flagged), unflag (its flag goes: the cause is gone).
+    flag: kept (unethical and taxidermied or mounted in a lodge, which it keeps) or undecided (a kill of a hunt the server could not decide: it keeps the verdict it was made under, ifNormal and ifPossessed give the rule's two verdicts).
+    reason: silver_on_normal | not_silver_on_possessed | not_permitted | undecided; basis: coat | species | hunt | undecided. board: it holds a leaderboard row now (boardRows of them, top10 in a top 10). gm$ already paid, taxidermies, lodge mounts and trophy shots stay.
+    Then a total line. Without --apply it writes nothing and takes no lock; --apply writes each change in its own short transaction (players may hunt meanwhile). A second --apply changes nothing (it prints the unscored lines again).
     admin ethics list [--account <id or handle>] [--kind kept|undecided] [--reason <reason>] [--species <id>] [--since <ISO date>] prints the flagged kills (table unethical_kills), one JSON line each, and a total line.
     admin gallery-details [--account <id or handle>] sets the species, score and kill of every restored gallery picture (or of one account's), and restores the saved profile background and ribbon an account lacks, from the zips the server kept (restores/<account>/): nothing is fetched, added or removed;
     it prints one line per account: id, handle, pictures updated of pictures restored.
@@ -241,6 +243,8 @@ void Admin(string[] a)
                 coat = j.Coat,
                 score = j.Score,
                 board = j.Board,
+                boardRows = j.BoardRows,
+                top10 = j.Top10,
                 taxidermied = j.Taxidermied,
                 lodge = j.Lodge,
                 slot = j.Slot,
@@ -257,6 +261,9 @@ void Admin(string[] a)
             reasons = Count(lost, j => j.Reason),
             lostScore = lost.Sum(j => j.Score),
             boards = lost.Count(j => j.Board),
+            boardRows = lost.Sum(j => j.BoardRows),
+            top10 = lost.Sum(j => j.Top10),
+            unscored = judged.Count(j => j.Change == "unscored"),
             gmsKept = lost.Sum(j => j.Gms),
             gmsPaid = judged.Where(j => j.Change == "requalify").Sum(j => j.Gms),
             applied = apply,

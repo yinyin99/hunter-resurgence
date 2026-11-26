@@ -180,7 +180,7 @@ public sealed partial class State
     public static JsonArray Heartbeat(Db con, double now, JsonArray events, Func<long, string, string> uploadUrl,
                                       Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage,
                                       Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-                                      Func<JsonObject, JsonNode?, JsonNode?, string?, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
+                                      Func<JsonObject, JsonNode?, JsonNode?, HuntRule, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
                                       Func<Db, JsonObject, JsonObject?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
                                       double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
@@ -334,7 +334,7 @@ public sealed partial class State
     /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
     /// `spawn` stands in for the animal's spawn event when the account's own events have none.</summary>
     static void StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-                             Func<JsonObject, JsonNode?, JsonNode?, string?, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
+                             Func<JsonObject, JsonNode?, JsonNode?, HuntRule, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
                              Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null)
     {
         var harvest = Py.Dumps(e);
@@ -410,17 +410,20 @@ public sealed partial class State
         .Select(r => Parse(r[0])).ToList();
 
     /// <summary>The harvest scoring step: the kill's spawn (event 7), whether a hit disqualifies it (the rule of its animal, <see cref="KindOf"/>: its spawn's species and coat, its hunt's event as the
-    /// fallback) and why (the first such hit), and (score, score_type, css) from its events and hits. The heartbeat, <see cref="Rescore"/> and <see cref="JudgeKills"/> use it.</summary>
+    /// fallback) and why (the first such hit), and (score, score_type, css) from its events and hits. The heartbeat, the missions, <see cref="Rescore"/>, <see cref="MoveMpHarvests"/> and <see cref="JudgeKills"/> use it.
+    /// The animal is the account's own sighting, else <paramref name="spawn"/> (the harvester's, at the harvest of a credited kill), else the one the stored kill's page was made from (<see cref="StoredSpawn"/>),
+    /// so a credited harvest has one verdict on every path; only the own sighting or <paramref name="spawn"/> feeds the score.</summary>
     public static (JsonObject E7, bool Disqualified, JsonNode? Score, string? Type, double Css, Unethical? Why) ScoreKill(
         Db con, JsonObject e3, string harvest, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
-        Func<JsonObject, JsonNode?, JsonNode?, string?, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck, JsonObject? spawn = null)
+        Func<JsonObject, JsonNode?, JsonNode?, HuntRule, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck, JsonObject? spawn = null)
     {
         var (e7, e22) = KillEvents(con, e3["individual"], harvest);
         if (e7.Count == 0 && spawn is not null)
             e7 = spawn;  // a harvest moved to its shooter, whose own events have no spawn of the animal: the harvester's (<see cref="CreditHarvest"/>)
+        var seen = e7.Count > 0 ? e7 : StoredSpawn(con, harvest) ?? e7;
         var hits = KillHits(con, e3["individual"], harvest);
-        var huntEvent = HarvestEvent(con, harvest);
-        var why = hits.Select(h => ammoCheck(h, e7["species"], e7["texture"], huntEvent)?.Why).FirstOrDefault(w => w is not null);
+        var hunt = HarvestEvent(con, harvest);
+        var why = hits.Select(h => ammoCheck(h, seen["species"], seen["texture"], hunt)?.Why).FirstOrDefault(w => w is not null);
         var (score, type, css) = why is not null ? (null, null, 0.0) : trophy(e3, e7, e22, hits.Count > 0 ? hits[^1] : null);
         return (e7, why is not null, score, type, css, why);
     }
@@ -1004,20 +1007,27 @@ public sealed partial class State
     }
 
     /// <summary>Why a hit makes its kill unethical (#582): the reason (<see cref="SilverOnNormal"/>, <see cref="NotSilverOnPossessed"/> or <see cref="NotPermitted"/>), the hit's ammunition and
-    /// how the animal's kind was decided (<see cref="KindOf"/>: "coat", "species" or "hunt").</summary>
+    /// how the animal's kind was decided (<see cref="KindOf"/>: "coat", "species", "hunt" or "undecided").</summary>
     public sealed record Unethical(string Reason, long? Ammo, string Basis);
 
     /// <summary>The reasons of <see cref="Unethical"/>: a normal animal hit with an event's silver; a possessed animal hit with an ammunition its event does not permit; any other ammunition outside the
-    /// species' list (a creature's included).</summary>
+    /// list (a creature's, and the list of an undecided kill, included).</summary>
     public const string SilverOnNormal = "silver_on_normal", NotSilverOnPossessed = "not_silver_on_possessed", NotPermitted = "not_permitted";
 
-    /// <summary>The kind of a kill's animal (#582): the seasonal event whose possessed animal or creature it is (null: a normal animal) and how that was decided. "species": one of the event's
+    /// <summary>What a hunt gives the kills whose coat proves nothing (<see cref="KindOf"/>): its event (`expeditions.event`, null for none) and, for a hunt the schema-41 step could not decide, the
+    /// event it may have had (`expeditions.event_undecided`).</summary>
+    public readonly record struct HuntRule(string? Event, string? Undecided = null);
+
+    /// <summary>The kind of a kill's animal (#582): the seasonal event whose possessed animal it is (null: a normal animal or a creature) and how that was decided. "species": one of the event's
     /// creatures, or a species no event has a possessed version of (the coyote and the blacktail deer among them); "coat": its sighting's coat is in the species' possessed or normal list
-    /// (<see cref="Facts.Proves"/>); "hunt": the coat proves nothing, so it is possessed when the hunt it was killed in has an event (<paramref name="huntEvent"/>, <see cref="HuntEvent"/>) whose list names the species.</summary>
-    (string? Event, string Basis) KindOf(JsonNode? sp, JsonNode? coat, string? huntEvent) =>
+    /// (<see cref="Facts.Proves"/>); "hunt": the coat proves nothing, so it is possessed when the hunt it was killed in has an event (<paramref name="hunt"/>, <see cref="HuntEvent"/>) whose list names the species;
+    /// "undecided": the coat proves nothing and the hunt is one the schema-41 step could not decide: the event is the one the hunt may have had, and the kill keeps the verdict it was made under (<see cref="AmmoCheck"/>).</summary>
+    (string? Event, string Basis) KindOf(JsonNode? sp, JsonNode? coat, HuntRule hunt) =>
         facts.Proves(sp, coat, out var creature) is { } proof ? creature ? (null, "species") : (proof == "" ? null : proof, "coat")
         : facts.Possessing(sp) is null ? (null, "species")
-        : (huntEvent is not null && facts.Possessing(sp, huntEvent) is not null ? huntEvent : null, "hunt");
+        : hunt.Event is not null && facts.Possessing(sp, hunt.Event) is not null ? (hunt.Event, "hunt")
+        : hunt.Event is null && hunt.Undecided is not null && facts.Possessing(sp, hunt.Undecided) is not null ? (hunt.Undecided, "undecided")
+        : (null, "hunt");
 
     /// <summary>The permitted ammo of a species by its id (a non-typical id uses the typical one's list): the event's list for an animal that event possesses (<paramref name="possessedBy"/>, <see cref="KindOf"/>,
     /// <see cref="Facts.EventEthical"/>), else its connect `ethical` list; null if it has none (the dogs): no rule.</summary>
@@ -1029,14 +1039,21 @@ public sealed partial class State
     /// <summary>Whether <paramref name="ammo"/> is in <paramref name="allowed"/>. The one rule the kills are judged by and the store shows.</summary>
     static bool Permits(JsonArray allowed, JsonNode? ammo) => allowed.Any(a => Py.Eq(a, ammo));
 
-    /// <summary>(toast update, notice message, why) for a hit with ammo outside the permitted list of its animal (<see cref="Allowed"/> of its kind, <see cref="KindOf"/>: the species and coat of its
-    /// sighting, <paramref name="huntEvent"/> the hunt's event); null if permitted or the species has no list. The one place every reader of a kill's ethics goes through.</summary>
-    public (JsonObject Toast, string Message, Unethical Why)? AmmoCheck(JsonObject hit, JsonNode? sp, JsonNode? coat, string? huntEvent)
+    /// <summary>(toast update, notice message, why) for a hit with ammo outside the permitted list of its animal (<see cref="KindOf"/>: the species and coat of its sighting, <paramref name="hunt"/> the hunt's):
+    /// a possessed animal's event list, a normal animal's species list, and for an undecided kill the list it was made under (its species' list and the event's silver); null if permitted or the species has
+    /// no list. The one place every reader of a kill's ethics goes through.</summary>
+    public (JsonObject Toast, string Message, Unethical Why)? AmmoCheck(JsonObject hit, JsonNode? sp, JsonNode? coat, HuntRule hunt)
     {
-        var (possessedBy, basis) = KindOf(sp, coat, huntEvent);
-        if (Allowed(sp, possessedBy) is not { } allowed || Permits(allowed, hit["ammunition_id"]))
+        var (ev, basis) = KindOf(sp, coat, hunt);
+        var undecided = basis == "undecided";
+        var possessedBy = undecided ? null : ev;
+        if (Allowed(sp, possessedBy) is not { } allowed)
             return null;
-        var reason = possessedBy is not null ? basis == "species" ? NotPermitted : NotSilverOnPossessed : facts.EventAmmo(hit["ammunition_id"]) ? SilverOnNormal : NotPermitted;
+        if (undecided && facts.EventEthical(ev!) is { } either)
+            allowed = [.. allowed.Concat(either.Ammo).Select(a => a?.DeepClone())];
+        if (Permits(allowed, hit["ammunition_id"]))
+            return null;
+        var reason = possessedBy is not null ? NotSilverOnPossessed : facts.EventAmmo(hit["ammunition_id"]) ? SilverOnNormal : NotPermitted;
         var name = SpeciesName(sp) ?? "None";
         var ammo = Py.Str(Lookup(items, hit["ammunition_id"])?["name"]);
         var toast = new JsonObject
@@ -1051,17 +1068,31 @@ public sealed partial class State
     }
 
     /// <summary>Whether no hit of a kill is outside the permitted list of its animal (<see cref="AmmoCheck"/>).</summary>
-    public bool Ethical(JsonNode? sp, JsonNode? coat, List<JsonObject> hits, string? huntEvent) => !hits.Any(h => AmmoCheck(h, sp, coat, huntEvent) is not null);
+    public bool Ethical(JsonNode? sp, JsonNode? coat, List<JsonObject> hits, HuntRule hunt) => !hits.Any(h => AmmoCheck(h, sp, coat, hunt) is not null);
 
-    /// <summary>The seasonal event a hunt's kills fall back on when an animal's coat proves nothing (<see cref="KindOf"/>; `expeditions.event`, decided by the hunt's first connect, <see cref="ConnectReply"/>, or for a hunt from
-    /// before that by the schema-41 step, <see cref="Store"/>): of the hunt the event row <paramref name="eventId"/> belongs to, else of the latest hunt; null for none (also ''), and for an event row after a tutorial
-    /// started (`event_until`, <see cref="NoteTutorial"/>).</summary>
-    public static string? HuntEvent(Db con, long eventId = long.MaxValue) =>
-        con.Scalar("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN NULLIF(event, '') END FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId) as string;
+    /// <summary>What a hunt's kills fall back on when an animal's coat proves nothing (<see cref="KindOf"/>): `expeditions.event` (decided by the hunt's first connect, <see cref="ConnectReply"/>, or for a hunt from
+    /// before that by the schema-41 step, <see cref="Store"/>) and `expeditions.event_undecided`, of the hunt the event row <paramref name="eventId"/> belongs to, else of the latest hunt; no event (also '') and
+    /// nothing undecided for an event row after a tutorial started (`event_until`, <see cref="NoteTutorial"/>).</summary>
+    public static HuntRule HuntEvent(Db con, long eventId = long.MaxValue) =>
+        con.Rows("SELECT CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN NULLIF(event, '') END, CASE WHEN ?1 <= COALESCE(event_until, ?1) THEN event_undecided END"
+                 + " FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId).FirstOrDefault() is { } r
+            ? new(r[0] as string, r[1] as string) : default;
 
-    /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); null when it has none.</summary>
-    public static string? HarvestEvent(Db con, string harvest) =>
-        con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : null;
+    /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); none when it has none.</summary>
+    public static HuntRule HarvestEvent(Db con, string harvest) =>
+        con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : default;
+
+    /// <summary>The spawn a harvest page was made from, as far as the page holds it (<see cref="HarvestPage"/>): species, coat, gender and weight.</summary>
+    static JsonObject PageSpawn(JsonObject page) => new()
+    {
+        ["species"] = C(page["species"]), ["texture"] = C(page["texture_id"]), ["gender"] = C(page["gender"]), ["weight_grams"] = C(page["weight"]),
+    };
+
+    /// <summary>The spawn of the stored kill whose harvest is <paramref name="harvest"/> (its page's, <see cref="PageSpawn"/>): the animal a harvest credited to a shooter who never saw it was judged by at its
+    /// harvest (the harvester's sighting); null before the kill is stored.</summary>
+    public static JsonObject? StoredSpawn(Db con, string harvest) =>
+        con.Scalar("SELECT h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id WHERE k.account_id = $a AND k.harvest = ? ORDER BY k.kill_id DESC LIMIT 1", harvest) is string page
+            ? PageSpawn(Parse(page)) : null;
 
     /// <summary>Skill XP of a spot (event 11), a track clue (event 12) or a permitted hit (event 1), applied inside the
     /// heartbeat's transaction; the level-up toast if the species or the fired weapon gained a level (sent with the next
@@ -1565,18 +1596,21 @@ public sealed partial class State
                         present.RemoveAt(i);
         var eventHere = tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
         // the hunt's event, the fallback of its kills whose coat proves nothing (KindOf, HuntEvent): decided once, by its first connect ('' for none), and kept to the hunt's end whatever the event's
-        // window or the player's setting do meanwhile; a later connect of the hunt changes nothing
+        // window or the player's setting do meanwhile; a later connect of the hunt changes nothing. This reply's `ethical` carries that event's list (silver) for the species it names, its possessed
+        // versions and its creatures, until a tutorial ends the hunt's judging by it; the coyote and the blacktail deer keep their normal list, and without the event no species but the creatures
+        // (`species_rules`) gets silver. So the game's hints agree with the fallback of its animals for the whole hunt
         if (tutorial is null)
-            using (var con = Con(account))
-                con.Exec("UPDATE expeditions SET event = ? WHERE account_id = $a AND id = ? AND event IS NULL", eventHere ?? "", expeditionId);
-        // this reply's `ethical` follows the animals this game loads (#582): with the event, its list (silver) for the species it possesses and its creatures; the others, the coyote and the blacktail deer
-        // among them, keep their normal list; without it no species but the creatures (`species_rules`) gets silver
-        if (eventHere is not null && facts.EventEthical(eventHere) is { } list && reply["ethical"] is JsonArray ethical)
-            foreach (var sp in list.Species)
-            {
-                while (ethical.Count <= sp) ethical.Add(new JsonArray());
-                ethical[(int)sp] = list.Ammo.DeepClone();
-            }
+        {
+            using var con = Con(account);
+            con.Exec("UPDATE expeditions SET event = ? WHERE account_id = $a AND id = ? AND event IS NULL", eventHere ?? "", expeditionId);
+            if (con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ? AND event_until IS NULL", expeditionId) is string huntEvent && facts.EventEthical(huntEvent) is { } list
+                && reply["ethical"] is JsonArray ethical)
+                foreach (var sp in list.Species)
+                {
+                    while (ethical.Count <= sp) ethical.Add(new JsonArray());
+                    ethical[(int)sp] = list.Ammo.DeepClone();
+                }
+        }
         if (AllLicenses && reply["spawn_licenses"] is JsonArray licensed)  // 2 (not available) stays; 0 and 1 are licensed
             for (var i = 0; i < licensed.Count; i++)
                 if (Py.L(licensed[i]) != 2)
@@ -2505,7 +2539,8 @@ public sealed partial class State
         List<JsonObject> hits;
         JsonObject page, e7, e22;
         object[]? expedition;
-        string? photo, huntEvent;
+        string? photo;
+        HuntRule huntEvent;
         using (var con = Con(account))
         {
             var found = con.Rows("SELECT k.individual, k.harvest, h.body FROM kills k JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
@@ -2632,7 +2667,7 @@ public sealed partial class State
     }
 
     /// <summary>One Public_user/expedition kill; <paramref name="huntEvent"/> is its hunt's (<see cref="HuntEvent"/>).</summary>
-    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId, string? huntEvent, string? photo)
+    JsonObject KillEntry(JsonNode? userId, long killId, JsonObject e3, JsonObject page, List<JsonObject> hits, JsonNode? expeditionId, HuntRule huntEvent, string? photo)
     {
         var confirm = DateTime.ParseExact((string)page["timestamp"]!, "yyyy-MM-dd'T'HH:mm:ss'Z'", null,
                                           DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);

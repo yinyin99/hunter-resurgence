@@ -156,9 +156,9 @@ public sealed class Store
     // the stored kills `admin ethics --apply` (State.JudgeKills) leaves in a state today's ammunition rule (#582, State.AmmoCheck) would not give them, flagged so they can be found later
     // (`admin ethics list`); no player sees the flag. kind kept: an unethical kill (disqualified) that keeps a mount, `taxidermied` (1 or 0) and/or the lodge (`lodges.n`) and `slot` (`slot_id`) that
     // hold it, with its `reason` (silver_on_normal | not_silver_on_possessed | not_permitted), `ammo` (the item id of its first hit outside the list), `basis` (how the animal's kind was decided:
-    // coat | species | hunt, State.KindOf) and `lost_score` (the stored score it had: 0 when it had none). kind undecided (reason undecided): a kill of a hunt the schema-41 step could not decide
-    // (`expeditions.event_undecided`) whose animal's coat proves nothing and whose verdict depends on the hunt's event: `if_normal` and `if_possessed` (ethical | unethical); it keeps its stored
-    // score. species, coat (its spawn's `texture`) and ts (when it was flagged, Unix seconds) on both
+    // coat | species | hunt, State.KindOf) and `lost_score` (the stored score it had: 0 when it had none). kind undecided (reason and basis undecided): a kill of a hunt the schema-41 step could not decide
+    // (`expeditions.event_undecided`) whose coat proves nothing, which keeps the verdict it was made under and which the rule could judge otherwise: `if_normal` and `if_possessed` (ethical | unethical).
+    // species, coat (its spawn's `texture`) and ts (when it was flagged, Unix seconds) on both
     const string UnethicalKills = $"""
         CREATE TABLE IF NOT EXISTS unethical_kills (
             {A}, kill_id INTEGER NOT NULL, kind TEXT NOT NULL, species INTEGER, coat INTEGER, reason TEXT NOT NULL, ammo INTEGER, basis TEXT, if_normal TEXT, if_possessed TEXT,
@@ -325,8 +325,8 @@ public sealed class Store
             tent INTEGER,         -- the guid of the placed tent the hunt starts at (NULL: it starts at location_id)
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
             walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
-            event TEXT,           -- the seasonal event whose permitted ammo the hunt's kills are judged by, decided by its first connect (State.HuntEvent; '': none; NULL: not decided yet)
-            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
+            event TEXT,           -- the seasonal event of the hunt, decided by its first connect ('': none; NULL: not decided yet): the fallback of its kills whose coat proves nothing (State.HuntEvent, State.KindOf)
+            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt). Schema 41 adds event_undecided (BackfillHuntEvents)
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -584,7 +584,8 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_undecided'")! == 0)
                 con.Script("ALTER TABLE expeditions ADD COLUMN event_undecided TEXT");
             BackfillHuntEvents(con, Facts.Default);
-            con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL AND stats IS NOT NULL AND id IN (SELECT json_extract(body, '$.expedition_id') FROM harvests)");
+            con.Script("UPDATE expeditions SET stats = NULL WHERE end_ts IS NOT NULL AND stats IS NOT NULL"
+                       + " AND id IN (SELECT json_extract(h.body, '$.expedition_id') FROM harvests h WHERE h.account_id = expeditions.account_id)");
             con.Script(UnethicalKills);
         }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
