@@ -1592,6 +1592,10 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="DiscordLink.More" xml:space="preserve"><value>Encore {0} pour {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Retour sur Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>Le launcher a besoin de Microsoft Edge WebView2, qui est absent ou ne fonctionne pas sur ce PC. L'installer maintenant ? Oui ouvre la page de téléchargement de Microsoft et ferme le launcher : relancez-le une fois WebView2 installé. Non ferme le launcher.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>Le navigateur du launcher (Microsoft Edge WebView2) n'a pas pu démarrer. Redémarrer le launcher sans accélération matérielle ? Le launcher se souvient de ce choix. Oui le redémarre, Non le ferme.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>La fenêtre du launcher n'est pas apparue après 20 secondes. Redémarrer le launcher sans accélération matérielle ? Le launcher se souvient de ce choix. Oui le redémarre, Non continue d'attendre.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>La fenêtre du launcher n'est pas apparue, même sans accélération matérielle. Mettez à jour le pilote graphique et Microsoft Edge WebView2, puis relancez le launcher. Ce qui s'est passé est écrit dans launcher.log, dans le dossier %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Envoie les journaux et événements de plantage du jeu et du launcher (WebView2 compris) au serveur communautaire pour que nous puissions vous aider. Conservés 30 jours.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Collecte des fichiers…</value></data>

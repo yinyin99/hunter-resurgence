@@ -20,6 +20,10 @@ static class Program
     {
         // before anything that can fail, so that a failure in the start-up is in launcher.log; not the elevated --hosts copy, which only edits the hosts file
         if (args is not ["--hosts", _]) LauncherLog.Default.WatchProcess();
+        // the restart without hardware acceleration (MainWindow.RestartWithoutGpu) names the launcher it replaces: it still holds the single-instance mutex until it has ended
+        if (args.FirstOrDefault(a => a.StartsWith("--wait-for="))?[11..] is { } old && int.TryParse(old, out var oldId))
+            try { System.Diagnostics.Process.GetProcessById(oldId).WaitForExit(10_000); }
+            catch (ArgumentException) { } // already ended
         // first: Velopack runs the install and uninstall hooks here and exits. A downloaded update is applied at start only by the first launcher (a second start, the link or the
         // elevated --hosts copy, must not close the open one) and never while the game runs
         var applyUpdate = !Mutex.TryOpenExisting(Instance, out var other) && args is not ["--hosts", _] && !GameFiles.ClientRunning(Settings.Load().ClientExe);

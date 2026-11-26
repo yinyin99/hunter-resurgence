@@ -1592,6 +1592,10 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="DiscordLink.More" xml:space="preserve"><value>Ještě {0} do role {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Zpět na Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>Launcher potřebuje Microsoft Edge WebView2, který na tomto počítači chybí nebo nefunguje. Nainstalovat jej nyní? Ano otevře stránku ke stažení od Microsoftu a zavře launcher: po instalaci WebView2 jej spusťte znovu. Ne launcher zavře.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>Prohlížeč launcheru (Microsoft Edge WebView2) se nepodařilo spustit. Restartovat launcher bez hardwarové akcelerace? Launcher si tuto volbu pamatuje. Ano jej restartuje, Ne jej zavře.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>Okno launcheru se ani po 20 sekundách nezobrazilo. Restartovat launcher bez hardwarové akcelerace? Launcher si tuto volbu pamatuje. Ano jej restartuje, Ne dál čeká.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>Okno launcheru se nezobrazilo ani bez hardwarové akcelerace. Aktualizujte ovladač grafické karty a Microsoft Edge WebView2 a launcher spusťte znovu. Co se stalo, je zapsáno v souboru launcher.log ve složce %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Nahlásit problém</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Odešle protokoly a události pádu hry a launcheru (včetně WebView2) komunitnímu serveru, abychom mohli pomoci. Uchovány 30 dní.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Shromažďuji soubory…</value></data>

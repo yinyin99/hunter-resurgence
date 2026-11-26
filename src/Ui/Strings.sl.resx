@@ -1592,6 +1592,10 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="DiscordLink.More" xml:space="preserve"><value>Še {0} do vloge {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Nazaj na Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
+  <data name="WebView.Install" xml:space="preserve"><value>Launcher potrebuje Microsoft Edge WebView2, ki na tem računalniku manjka ali ne deluje. Ga želiš namestiti zdaj? Da odpre Microsoftovo stran za prenos in zapre launcher: ponovno ga zaženi, ko bo WebView2 nameščen. Ne zapre launcher.</value></data>
+  <data name="WebView.StartFailed" xml:space="preserve"><value>Brskalnika launcherja (Microsoft Edge WebView2) ni bilo mogoče zagnati. Želiš ponovno zagnati launcher brez strojnega pospeševanja? Launcher si bo to izbiro zapomnil. Da ga ponovno zažene, Ne ga zapre.</value></data>
+  <data name="WebView.NotLoaded" xml:space="preserve"><value>Okno launcherja se ni prikazalo v 20 sekundah. Želiš ponovno zagnati launcher brez strojnega pospeševanja? Launcher si bo to izbiro zapomnil. Da ga ponovno zažene, Ne čaka naprej.</value></data>
+  <data name="WebView.Last" xml:space="preserve"><value>Okno launcherja se ni prikazalo niti brez strojnega pospeševanja. Posodobi grafični gonilnik in Microsoft Edge WebView2 ter ponovno zaženi launcher. Kaj se je zgodilo, je zapisano v datoteki launcher.log v mapi %APPDATA%\hunter-resurgence.</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>
   <data name="Report.Info" xml:space="preserve"><value>Pošlje dnevnike in dogodke zrušitev igre in zaganjalnika (vključno z WebView2) strežniku skupnosti, da lahko pomagamo. Hranjeni 30 dni.</value></data>
   <data name="Report.Building" xml:space="preserve"><value>Zbiranje datotek…</value></data>

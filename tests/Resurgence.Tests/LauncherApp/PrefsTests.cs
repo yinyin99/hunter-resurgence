@@ -11,9 +11,10 @@ public class PrefsTests
         var root = temp.Path;
         var path = Path.Combine(root, "prefs", "launcher.json");
         Assert.True(Prefs.Load(path).Language == "", "no launcher.json: defaults");
-        new Prefs { Language = "fr", GameFolder = @"C:\x y", CloseOnGameStart = true, Window = new(-1900, 20, 1296, 799, true) }.Save(path);
+        Assert.False(Prefs.Load(path).DisableGpu, "hardware acceleration stays on until the player accepts the restart without it");
+        new Prefs { Language = "fr", GameFolder = @"C:\x y", CloseOnGameStart = true, DisableGpu = true, Window = new(-1900, 20, 1296, 799, true) }.Save(path);
         var p = Prefs.Load(path);
-        Assert.True(p is { Language: "fr", GameFolder: @"C:\x y", CloseOnGameStart: true, Window: (-1900, 20, 1296, 799, true) }, "launcher.json round trip");
+        Assert.True(p is { Language: "fr", GameFolder: @"C:\x y", CloseOnGameStart: true, DisableGpu: true, Window: (-1900, 20, 1296, 799, true) }, "launcher.json round trip");
         File.WriteAllText(path, "{ not json");
         Assert.True(Prefs.Load(path).Language == "", "damaged launcher.json: defaults");
         Assert.True(App.Pick("fr", "en") == "fr" && App.Pick("", "fr") == "fr" && App.Pick("xx", "fr") == "fr" && App.Pick("pt-BR", "en") == "pt-BR" && App.Pick("", "de-AT") == "de" && App.Pick("", "pt-PT") == "pt-PT" && App.Pick("", "pt") == "pt-BR" && App.Pick("", "nb-NO") == "nb" && App.Pick("", "no") == "nb" && App.Pick("", "ru") == "ru" && App.Pick("", "ja") == "en" && App.Pick(null, "es-MX") == "es", "language: saved choice, else Windows language (any region), else English");
@@ -27,7 +28,7 @@ public class PrefsTests
         var path = Path.Combine(temp.Path, "launcher.json");
         new Prefs { Language = "fr", GameFolder = "x", CloseOnGameStart = true, GameSettingsSaved = true }.Save(path);
         var keys = System.Text.Json.JsonDocument.Parse(File.ReadAllBytes(path)).RootElement.EnumerateObject().Select(p => p.Name);
-        Assert.Equal(["language", "game_folder", "close_on_game_start", "start_with_steam", "game_settings_saved", "game_language", "display_mode", "steam_option_set", "steam_option_before", "steam_option_file", "steam_option_asked", "steam_option_never", "report_consent", "window"], keys);
+        Assert.Equal(["language", "game_folder", "close_on_game_start", "start_with_steam", "game_settings_saved", "game_language", "display_mode", "steam_option_set", "steam_option_before", "steam_option_file", "steam_option_asked", "steam_option_never", "report_consent", "window", "disable_gpu"], keys);
         Assert.False(File.Exists(path + ".part"));
         File.WriteAllText(path, "null");
         Assert.Equal("", Prefs.Load(path).Language);

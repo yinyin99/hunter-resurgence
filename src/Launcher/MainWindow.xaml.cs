@@ -20,6 +20,10 @@ public partial class MainWindow : Window
         InitializeComponent();
         startPath = Environment.GetCommandLineArgs().FirstOrDefault(a => a.StartsWith("--route="))?[8..] ?? "/splash";
         Content = NewBlazor();
+        // a driver that cannot draw leaves the window black without any failure: no first successful navigation after the timeout is reported too
+        var late = new System.Windows.Threading.DispatcherTimer { Interval = WebViewStart.LoadTimeout };
+        late.Tick += (_, _) => { late.Stop(); if (!pageLoaded) ShowProblem(WebViewStart.Problem.NotLoaded, null); };
+        late.Start();
         Title += " v" + LauncherEnv.AppVersion;
         // dev aid: resurgence-launcher.exe --route=/store opens that route first
         // the window opens where it was closed (on a screen that is still there); else it is sized so that the page area is exactly 1280x760, as in every reference picture
@@ -57,8 +61,46 @@ public partial class MainWindow : Window
         var b = new BlazorWebView { HostPage = @"wwwroot\index.html", Services = services, StartPath = startPath };
         b.RootComponents.Add(new RootComponent { Selector = "head::after", ComponentType = typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet) });
         b.RootComponents.Add(new RootComponent { Selector = "#app", ComponentType = typeof(Routes) });
-        b.BlazorWebViewInitialized += (_, e) => e.WebView.CoreWebView2.ProcessFailed += (_, f) => OnProcessFailed(f.ProcessFailedKind, f.Reason.ToString(), f.ExitCode);
+        b.BlazorWebViewInitializing += (_, e) =>
+        {
+            if (env.Prefs.DisableGpu) e.EnvironmentOptions = new CoreWebView2EnvironmentOptions { AdditionalBrowserArguments = WebViewStart.NoGpuArgument };
+            // before the browser starts, so that a failed start is heard
+            b.WebView.CoreWebView2InitializationCompleted += (_, c) => { if (!c.IsSuccess) ShowProblem(WebViewStart.Classify(c.InitializationException), c.InitializationException); };
+        };
+        b.BlazorWebViewInitialized += (_, e) =>
+        {
+            e.WebView.CoreWebView2.ProcessFailed += (_, f) => OnProcessFailed(f.ProcessFailedKind, f.Reason.ToString(), f.ExitCode);
+            e.WebView.CoreWebView2.NavigationCompleted += (_, n) => pageLoaded |= n.IsSuccess;
+        };
         return b;
+    }
+
+    bool pageLoaded, problemShown;
+
+    /// <summary>The browser did not start or the page did not load: the player is told once (<see cref="WebViewStart"/>) and the answer is carried out.</summary>
+    void ShowProblem(WebViewStart.Problem problem, Exception? cause) => Dispatcher.InvokeAsync(() =>
+    {
+        if (problemShown) return;
+        problemShown = true;
+        switch (WebViewStart.Report(problem, env.Prefs.DisableGpu, cause))
+        {
+            case WebViewStart.Next.Restart: RestartWithoutGpu(); break;
+            case WebViewStart.Next.Close: closing = true; Close(); break;
+        }
+    });
+
+    /// <summary>Remembers "no hardware acceleration" and starts the launcher again with the same arguments; the new one waits for this one to end (it holds the single-instance mutex).</summary>
+    void RestartWithoutGpu()
+    {
+        log.LogInformation("Restarting the launcher without hardware acceleration");
+        env.Prefs.DisableGpu = true;
+        env.Save();
+        var start = new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!);
+        foreach (var a in Environment.GetCommandLineArgs().Skip(1).Where(a => !a.StartsWith("--wait-for="))) start.ArgumentList.Add(a);
+        start.ArgumentList.Add("--wait-for=" + Environment.ProcessId);
+        System.Diagnostics.Process.Start(start)?.Dispose();
+        closing = true;
+        Close();
     }
 
     public enum Recovery { None, Reload, Recreate }
