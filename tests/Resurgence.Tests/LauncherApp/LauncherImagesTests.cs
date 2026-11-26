@@ -15,13 +15,14 @@ public class LauncherImagesTests
     [Fact]
     public async Task TheWebsitesListGivesItsPicturesAndAFailureTheBoxes()
     {
-        var (status, type, body, cut) = (200, "application/json", """{"logo-bar.png":"1f"}""", false);
+        var (status, type, body, cut, agent) = (200, "application/json", """{"logo-bar.png":"1f"}""", false, "");
         var b = WebApplication.CreateSlimBuilder();
         b.Logging.ClearProviders();
         b.WebHost.ConfigureKestrel(k => k.Listen(IPAddress.Loopback, 0));
         await using var app = b.Build();
         app.MapGet("/images.json", async ctx =>
         {
+            agent = ctx.Request.Headers.UserAgent.ToString();
             ctx.Response.StatusCode = status;
             ctx.Response.ContentType = type;
             if (cut)
@@ -40,6 +41,7 @@ public class LauncherImagesTests
 
         // only the scheme, host and port of server_url count
         Assert.Equal(origin.GetLeftPart(UriPartial.Authority) + "/images/logo-bar.png?v=1f", await LogoBar(new Uri(origin, "/some/path")));
+        Assert.StartsWith("HunterResurgence-Launcher/", agent); // the site's bot protection challenges a request without one, and the launcher cannot answer it
         Assert.Null(await LogoBar(null));
         foreach (var bad in new[] { (404, "application/json", "{}", false), (200, "application/json", "<html>", false), (200, "application/json; charset=no-such-charset", "{}", false), (200, "application/json", """{"logo-bar.png":"1f"}""", true) })
         {

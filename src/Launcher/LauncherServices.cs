@@ -73,12 +73,12 @@ static class LauncherServices
     static void AddServerServices(IServiceCollection services, Uri server)
     {
         services.AddSingleton<ServerCookie>();
-        services.AddSingleton(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) });
+        services.AddSingleton(ServerClient(server, TimeSpan.FromSeconds(5)));
         services.AddSingleton<ISessionService>(sp => new LauncherSessionService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             Path.Combine(Path.GetDirectoryName(Prefs.DefaultPath)!, "session.dat"), OpenBrowser, sp.GetRequiredService<ILogger<ServerSessionService>>()));
         services.AddSingleton<ServerCache<ServerStore>>();
         // the boards get a client of their own: the server may still be computing one (it does at its start), so it waits longer than the 5 seconds of the others
-        services.AddSingleton<ILeaderboardsService>(sp => new ServerLeaderboardsService(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(30) }, sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
+        services.AddSingleton<ILeaderboardsService>(sp => new ServerLeaderboardsService(ServerClient(server, TimeSpan.FromSeconds(30)), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerLeaderboardsService>>()));
         services.AddSingleton<IFriendsService>(sp => new ServerFriendsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerFriendsService>>()));
         services.AddSingleton<IMessagesService>(sp => new ServerMessagesService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMessagesService>>()));
         services.AddSingleton<IProfileService>(sp => new ServerProfileService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ISessionService>(),
@@ -105,8 +105,17 @@ static class LauncherServices
         services.AddSingleton<IServersService>(sp => new ServerServersService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             sp.GetRequiredService<ServerCache<ServerLaunchCatalogue>>(), sp.GetRequiredService<ILauncherBridge>(), sp.GetRequiredService<IGameSettingsService>(), sp.GetRequiredService<ILogger<ServerServersService>>()));
         // a player's backup upload takes longer than the 5 s of the other calls
-        services.AddSingleton<IRestoreService>(sp => new ServerRestoreService(new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(10) },
+        services.AddSingleton<IRestoreService>(sp => new ServerRestoreService(ServerClient(server, TimeSpan.FromMinutes(10)),
             sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerRestoreService>>()));
+    }
+
+    /// <summary>A client for the community server. It names the launcher: the site's bot protection (Cloudflare) challenges a request without a User-Agent,
+    /// and the launcher cannot answer a challenge, so on a flagged home connection sign-in and every page failed.</summary>
+    internal static HttpClient ServerClient(Uri? server, TimeSpan timeout)
+    {
+        var http = new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = timeout };
+        http.DefaultRequestHeaders.UserAgent.ParseAdd($"HunterResurgence-Launcher/{LauncherEnv.AppVersion}");
+        return http;
     }
 
     /// <summary>The pictures the website at <paramref name="server"/> lists at /images.json; none (the labelled boxes) without server_url, on an error, or after <paramref name="timeout"/> (5 s; only a test passes another).</summary>
@@ -116,7 +125,7 @@ static class LauncherServices
             return new AssetImages(new Dictionary<string, string>());
         try
         {
-            using var http = new HttpClient { Timeout = timeout ?? TimeSpan.FromSeconds(5) };
+            using var http = ServerClient(null, timeout ?? TimeSpan.FromSeconds(5));
             var index = await http.GetFromJsonAsync<Dictionary<string, string>>(new Uri(server, "/images.json"));
             return new AssetImages(index ?? new Dictionary<string, string>(), server.GetLeftPart(UriPartial.Authority));
         }

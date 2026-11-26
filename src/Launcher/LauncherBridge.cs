@@ -44,7 +44,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var history = new RunHistory(RunHistory.PathNextTo(env.PrefsPath));
         // the graphics and options files the Game settings dialog edits (GameSettingsService)
         var settings = new[] { env.Settings.GraphicsFile, env.Settings.GraphicsFileNoSteam, env.Settings.OptionsFile }.OfType<string>().Select(f => Path.Combine(GameFiles.AppData, f)).ToList();
-        var http = env.Settings.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromMinutes(2) } : null;
+        var http = env.Settings.ServerUrl is { } server ? LauncherServices.ServerClient(server, TimeSpan.FromMinutes(2)) : null;
         // Build runs off the UI thread (ProblemReporter.BuildAsync), so waiting for the checks is fine here
         return new(new Diagnostics(() => env.Install, settings, env.Version, history.Load, installChecks: () => env.Checks.RunAsync(false).GetAwaiter().GetResult(), launcherLog: LauncherLog.Default.FilePath), env.Prefs, env.Save, http, cookie);
     }
