@@ -166,7 +166,7 @@ public sealed partial class State
     /// with the next heartbeat, the message lands in the inbox, and a kill with any such hit is disqualified.
     /// skillUpdates(con, event, species) applies a spot's, clue's or hit's skill XP and returns its level-up toasts,
     /// which also come with the next heartbeat. An item metadata event (23) merges its keys into the item's (dog XP and
-    /// stamina; a feeder's `bait_amount` is a refill, <see cref="Feeders.Refill"/>) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
+    /// stamina; a feeder's `bait_amount` is a refill, <see cref="Feeders.Refill"/>; `bear_baited` on a placed feeder of the account starts its penalty, <see cref="Feeders"/>, and saves nothing) and pays the SILVER `rewards` of the connect's `dog_skills` rows its experience newly crosses (update 15). Item
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
@@ -226,6 +226,14 @@ public sealed partial class State
                 var cap = con.Scalar("SELECT item_id FROM items WHERE account_id = $a AND guid = ?", guid) is long itemId ? box(itemId) ?? 0 : 0;
                 con.Exec("UPDATE items SET units = CASE WHEN units - ?1 > units THEN MAX(units, MIN(units - ?1, ?3)) ELSE units - ?1 END, slot = CASE WHEN units - ?1 <= 0 THEN 0 ELSE slot END"
                          + $" WHERE account_id = $a AND guid = ?2 AND units IS NOT NULL AND {Shown}", G(e, "quantity", 0), guid, cap);
+            }
+            else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject hit && hit.ContainsKey("bear_baited"))
+            {
+                // a hit on an animal a feeder is baiting: the game reports it on the feeder and the penalty starts now (the metadata is not saved); on any other item nothing happens
+                var guid = long.Parse(Py.Str(e["item"]));
+                if (con.Scalar($"SELECT item_id FROM items WHERE account_id = $a AND guid = ? AND slot = {PLACED_SLOT} AND {Shown}", guid) is long feederId && isFeeder?.Invoke(feederId) == true)
+                    con.Exec($"UPDATE items SET metadata = json_patch(metadata, ?) WHERE account_id = $a AND guid = ? AND {Shown}",
+                             Py.Dumps(new JsonObject { ["shot_ts"] = (long)now }), guid);
             }
             else if (Is(e["event"], 23) && Py.IsDigit(Py.Str(G(e, "item", ""))) && e["metadata"] is JsonObject metadata)
             {
