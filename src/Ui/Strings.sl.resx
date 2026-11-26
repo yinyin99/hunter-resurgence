@@ -1589,7 +1589,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="DiscordLink.Other" xml:space="preserve"><value>Vaš lovec je že povezan z drugim računom Discord. Lovca je mogoče povezati samo z enim računom Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Povezava ni uspela. Vrnite se v Discord in poskusite znova.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Vaša vloga na Discordu: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Še {0} do vloge {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Še {0} do vloge {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Nazaj na Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Prijavi težavo</value></data>

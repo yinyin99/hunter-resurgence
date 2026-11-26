@@ -1589,7 +1589,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="DiscordLink.Other" xml:space="preserve"><value>Twój myśliwy jest już połączony z innym kontem Discord. Myśliwego można połączyć tylko z jednym kontem Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Połączenie się nie udało. Wróć do Discorda i spróbuj ponownie.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Twoja rola na Discordzie: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Jeszcze {0} do roli {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Jeszcze {0} do roli {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Wróć do Discorda</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Czy na pewno chcesz zamknąć launcher i grę?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Zgłoś problem</value></data>

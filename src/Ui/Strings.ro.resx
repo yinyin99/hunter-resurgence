@@ -1589,7 +1589,7 @@ Numele:</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Vânătorul dvs. este deja conectat la alt cont Discord. Un vânător poate fi conectat la un singur cont Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Conectarea nu a reușit. Reveniți la Discord și încercați din nou.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Rolul dvs. pe Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Înapoi la Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Raportează o problemă</value></data>

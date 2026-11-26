@@ -1589,7 +1589,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="DiscordLink.Other" xml:space="preserve"><value>Avcınız zaten başka bir Discord hesabına bağlı. Bir avcı yalnızca bir Discord hesabına bağlanabilir.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Bağlama işe yaramadı. Discord'a dönün ve tekrar deneyin.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Discord'daki rolünüz: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>{1} için {0} kaldı (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{1} için {0} kaldı ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Discord'a dön</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Sorun bildir</value></data>

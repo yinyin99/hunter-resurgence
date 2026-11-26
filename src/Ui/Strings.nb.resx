@@ -1589,7 +1589,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="DiscordLink.Other" xml:space="preserve"><value>Jegeren din er allerede koblet til en annen Discord-konto. En jeger kan bare kobles til én Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Koblingen mislyktes. Gå tilbake til Discord og prøv igjen.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Rollen din på Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>{0} igjen til {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} igjen til {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Tilbake til Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på at du vil lukke launcheren og spillet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapporter et problem</value></data>

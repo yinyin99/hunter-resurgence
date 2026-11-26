@@ -1589,7 +1589,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="DiscordLink.Other" xml:space="preserve"><value>Din jägare är redan länkad till ett annat Discord-konto. En jägare kan bara länkas till ett Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Länkningen misslyckades. Gå tillbaka till Discord och försök igen.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Din roll på Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>{0} kvar till {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>{0} kvar till {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Tillbaka till Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Rapportera ett problem</value></data>

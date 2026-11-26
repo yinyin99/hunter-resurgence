@@ -1589,7 +1589,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="DiscordLink.Other" xml:space="preserve"><value>Je jager is al gekoppeld aan een ander Discord-account. Een jager kan maar aan één Discord-account worden gekoppeld.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Koppelen is niet gelukt. Ga terug naar Discord en probeer het opnieuw.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Je rol op Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Nog {0} tot {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Nog {0} tot {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Terug naar Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Een probleem melden</value></data>

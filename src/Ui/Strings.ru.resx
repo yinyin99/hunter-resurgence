@@ -1589,7 +1589,7 @@
   <data name="DiscordLink.Other" xml:space="preserve"><value>Ваш охотник уже связан с другим аккаунтом Discord. Охотника можно связать только с одним аккаунтом Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Связать не удалось. Вернитесь в Discord и попробуйте ещё раз.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Ваша роль в Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Ещё {0} до роли {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ещё {0} до роли {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Назад в Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Сообщить о проблеме</value></data>

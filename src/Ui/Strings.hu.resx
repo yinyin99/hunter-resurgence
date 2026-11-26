@@ -1589,7 +1589,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="DiscordLink.Other" xml:space="preserve"><value>A vadászod már egy másik Discord-fiókhoz van kapcsolva. Egy vadász csak egy Discord-fiókhoz kapcsolható.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Az összekapcsolás nem sikerült. Menj vissza a Discordra, és próbáld újra.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>A szerepköröd a Discordon: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Még {0} a {1} szerepkörig (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Még {0} a {1} szerepkörig ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Vissza a Discordra</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Probléma bejelentése</value></data>

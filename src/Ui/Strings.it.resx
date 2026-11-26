@@ -1589,7 +1589,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="DiscordLink.Other" xml:space="preserve"><value>Il tuo cacciatore è già collegato a un altro account Discord. Un cacciatore può essere collegato a un solo account Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Il collegamento non è riuscito. Torna su Discord e riprova.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Il tuo ruolo su Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Ancora {0} per {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ancora {0} per {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Torna a Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Vuoi davvero chiudere il launcher e il gioco?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Segnala un problema</value></data>

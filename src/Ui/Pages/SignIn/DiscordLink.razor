@@ -16,8 +16,8 @@
     <p class="role">@(s >= Veteran ? Frame("DiscordLink.Role", Role(VeteranRole, "veteran")) : Frame("DiscordLink.Role", Role(VerifiedRole, "verified")))</p>
     @if (s < Veteran)
     {
-        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="@Veteran" aria-valuenow="@s" aria-label="@L["DiscordLink.More", Veteran - s, VeteranRole]"><div class="fill" style="width: @(s * 100 / Veteran)%"></div></div>
-        <p class="more">@Frame("DiscordLink.More", (Veteran - s).ToString(), Role(VeteranRole, "veteran"))</p>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="@Veteran" aria-valuenow="@s" aria-label="@L["DiscordLink.More", Veteran - s, VeteranRole, Veteran]"><div class="fill" style="width: @(s * 100 / Veteran)%"></div></div>
+        <p class="more">@Frame("DiscordLink.More", (Veteran - s).ToString(), Role(VeteranRole, "veteran"), Veteran.ToString())</p>
     }
 }
 @if (Good && Brand.Link("discord") is not null) { <p class="back"><ExternalLink Key="discord" Class="btn btn-primary btn-large">@L["DiscordLink.Back"]</ExternalLink></p> }

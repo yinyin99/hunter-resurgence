@@ -1589,7 +1589,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="DiscordLink.Other" xml:space="preserve"><value>Váš lovec je již propojen s jiným účtem Discord. Lovce lze propojit pouze s jedním účtem Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Propojení se nezdařilo. Vraťte se do Discordu a zkuste to znovu.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Vaše role na Discordu: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Ještě {0} do role {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Ještě {0} do role {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Zpět na Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Nahlásit problém</value></data>

@@ -1589,7 +1589,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="DiscordLink.Other" xml:space="preserve"><value>Votre chasseur est déjà lié à un autre compte Discord. Un chasseur ne peut être lié qu'à un seul compte Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>La liaison a échoué. Retournez sur Discord et réessayez.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Votre rôle sur Discord : {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Encore {0} pour {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Encore {0} pour {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Retour sur Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Voulez-vous vraiment fermer le launcher et le jeu ?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Signaler un problème</value></data>

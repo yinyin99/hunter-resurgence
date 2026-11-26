@@ -136,7 +136,9 @@ public sealed class DiscordLinkEntryTests : UiContext
                 Assert.Equal(("progressbar", "0", "20000", score.ToString()), (bar.GetAttribute("role"), bar.GetAttribute("aria-valuemin"), bar.GetAttribute("aria-valuemax"), bar.GetAttribute("aria-valuenow")));
                 Assert.Equal($"width: {score * 100 / 20000}%", cut.Find(".fill").GetAttribute("style"));
                 Assert.Equal("Veteran", cut.Find(".more span").TextContent);
-                Assert.Equal(Text("DiscordLink.More").Replace("{0}", more.ToString()).Replace("{1}", "Veteran"), cut.Find(".more").TextContent);
+                Assert.Equal(Text("DiscordLink.More").Replace("{0}", more.ToString()).Replace("{1}", "Veteran").Replace("{2}", DiscordLink.Veteran.ToString()), cut.Find(".more").TextContent);
+                Assert.EndsWith("(20000)", cut.Find(".more").TextContent);  // the threshold comes from the page's constant, not from the translation
+                Assert.Equal(string.Format(Text("DiscordLink.More"), more, "Veteran", 20000), bar.GetAttribute("aria-label"));
             }
         }
         finally { Thread.CurrentThread.CurrentUICulture = old; }

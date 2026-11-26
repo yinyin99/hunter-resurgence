@@ -1589,7 +1589,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="DiscordLink.Other" xml:space="preserve"><value>Ihr Jäger ist bereits mit einem anderen Discord-Konto verknüpft. Ein Jäger kann nur mit einem Discord-Konto verknüpft werden.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Die Verknüpfung hat nicht geklappt. Gehen Sie zurück zu Discord und versuchen Sie es erneut.</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Ihre Rolle auf Discord: {0}</value></data>
-  <data name="DiscordLink.More" xml:space="preserve"><value>Noch {0} bis {1} (20000)</value></data>
+  <data name="DiscordLink.More" xml:space="preserve"><value>Noch {0} bis {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Zurück zu Discord</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Möchten Sie den Launcher und das Spiel wirklich schließen?</value></data>
   <data name="Report.Menu" xml:space="preserve"><value>Ein Problem melden</value></data>
