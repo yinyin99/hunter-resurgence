@@ -36,5 +36,6 @@ jobs:
         if: env.VIRUSTOTAL_API_KEY != ''
         run: |
           mkdir assets
-          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir assets --pattern backup-win-x64.zip --pattern HunterResurgence-win-Setup.exe
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir assets --pattern backup-win-x64.zip --pattern HunterResurgence-win-Setup.exe || echo "::notice::No VirusTotal result: the release files could not be downloaded"
       - run: node .github/scripts/virustotal-notes.mjs assets/*
+        if: hashFiles('assets/*') != '' || env.VIRUSTOTAL_API_KEY == ''

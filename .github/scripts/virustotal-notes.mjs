@@ -45,9 +45,16 @@ async function main() {
     console.log('::notice::No VIRUSTOTAL_API_KEY: no VirusTotal scan');
     return;
   }
+  const gh = (...args) => execFileSync('gh', [...args, '--repo', process.env.GITHUB_REPOSITORY], { encoding: 'utf8' });
+  // a re-run: nothing is uploaded
+  const body = JSON.parse(gh('release', 'view', tag, '--json', 'body')).body;
+  if (body.includes(MARKER)) {
+    console.log('::notice::The notes have a VirusTotal section already');
+    return;
+  }
   const paths = process.argv.slice(2);
   let last = 0;
-  async function vt(method, url, body) {
+  async function vt(method, url, body, label = url.split('?')[0]) {
     for (let attempt = 0; ; attempt++) {
       await sleep(Math.max(0, last + 15_000 - Date.now()));
       last = Date.now();
@@ -56,7 +63,7 @@ async function main() {
         await sleep(60_000);
         continue;
       }
-      if (!res.ok) throw new Error(`VirusTotal ${method} ${url.split('?')[0].replace(API, '')}: ${res.status}`);
+      if (!res.ok) throw new Error(`VirusTotal ${method} ${label}: ${res.status}`); // the upload address is one-time and secret: never in the log
       return res.json();
     }
   }
@@ -67,7 +74,7 @@ async function main() {
     const form = new FormData();
     form.append('file', blob, basename(path));
     const url = blob.size > SMALL ? (await vt('GET', '/files/upload_url')).data : '/files';
-    files.push({ name: basename(path), sha: createHash('sha256').update(readFileSync(path)).digest('hex'), id: (await vt('POST', url, form)).data.id });
+    files.push({ name: basename(path), sha: createHash('sha256').update(readFileSync(path)).digest('hex'), id: (await vt('POST', url, form, 'upload')).data.id });
   }
 
   const deadline = Date.now() + 15 * 60_000;
@@ -80,12 +87,6 @@ async function main() {
     }
   }
 
-  const gh = (...args) => execFileSync('gh', args, { encoding: 'utf8' });
-  const body = JSON.parse(gh('release', 'view', tag, '--json', 'body')).body;
-  if (body.includes(MARKER)) {
-    console.log('::notice::The notes have a VirusTotal section already');
-    return;
-  }
   writeFileSync('notes-virustotal.md', `${body.trimEnd()}\n\n${section(files)}`);
   gh('release', 'edit', tag, '--notes-file', 'notes-virustotal.md');
   console.log(`VirusTotal result appended to the notes of ${tag}`);
