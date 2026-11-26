@@ -149,10 +149,13 @@ _Avoid_: ladder, leaderboard (the website's boards of the other kinds)
 One line of a profile's ranks tab: a species, a weapon or a kind of collectable, with the player's ethical kills or pickups of it. Not the player's rank on the hunterscore board.
 
 **Linked Roles**:
-Discord's feature that lets a Discord server give roles from data an application holds about a member. Here a player links their Discord account to their account on the community server once, the server tells Discord their hunterscore, and the roles "Verified hunter" (linked) and "Veteran" (hunterscore of 20000 or more) follow it. The first link of an account and of a Discord account also pays 5000 gm$ and 250 em$, once ever. Not the Discord invite (`link_discord`), which only shows the community's Discord server.
+Discord's feature that lets a Discord server give roles from data an application holds about a member. Here a player links their Discord account to their account on the community server once, and the server tells Discord their hunterscore (the role data and the profile box); the roles themselves are normal roles that the **role bot** gives. The first link of an account and of a Discord account also pays 5000 gm$ and 250 em$, once ever. Not the Discord invite (`link_discord`), which only shows the community's Discord server.
 
 **Reward ledger**:
 The server's record of the Discord accounts paid the Linked Roles reward: one keyed hash of the Discord id each, tied to no account once that is deleted. The one part of a Discord link that outlives a deleted account.
+
+**Role bot**:
+A second Discord application's bot, with Manage Roles only, that the community server uses to give and take away the Discord server's normal roles "Verified hunter" (linked) and "Veteran" (hunterscore of `discord_veteran_at` or more, the server setting, default 20000) for linked players. Discord's managed Linked Roles cannot be given by a bot. Not the project application's own bot.
 
 ## Hunting
 

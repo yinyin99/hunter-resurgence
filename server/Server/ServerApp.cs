@@ -86,9 +86,13 @@ public static class ServerApp
             CrashReports.TrimTelemetry(telemetryFile, crashHost, o.Game.State!.Store, Store.Now());
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"), telemetryFile, crashHost));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
-        // Linked Roles (docs/server.md#discord-linked-roles): on only with the Discord application's id and secret in the settings
+        // Linked Roles (docs/server.md#discord-linked-roles): on only with the Discord application's id and secret in the settings; the role bot only with its token, the guild and both roles too
+        var roleBot = LinkedRoles.RoleBot.From(o.Game.Cfg);
         if (o.Game.State is { Online: true } linking && (string?)o.Game.Cfg["discord_client_id"] is { } discordId && (string?)o.Game.Cfg["discord_client_secret"] is { } discordSecret)
-            builder.Services.AddSingleton(new LinkedRoles(linking, o.DiscordHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10), MaxResponseContentBufferSize = 1 << 20 }, discordId, discordSecret, o.Game.Web));
+            builder.Services.AddSingleton(new LinkedRoles(linking, o.DiscordHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10), MaxResponseContentBufferSize = 1 << 20 }, discordId, discordSecret, o.Game.Web, roleBot));
+        else roleBot = null;
+        if (roleBot is null && new[] { "discord_role_bot_token", "discord_guild_id", "discord_role_verified", "discord_role_veteran" }.Any(k => o.Game.Cfg[k] is not null))  // a half-done setup says so once
+            Console.Error.WriteLine("discord roles: off until discord_role_bot_token, discord_guild_id, discord_role_verified and discord_role_veteran are all set, with discord_client_id and discord_client_secret on an online server");
         if (o.Game.State is { } news && o.WorkDir is not null) builder.Services.AddSingleton(new News(news.Store, o.WorkDir));  // the posts of the feed (docs/server.md#news)
         // the account's own pages (/account/) keep and delete files in the work folder; offline or without one they are off
         if (o.Game.State is { Online: true } state && o.WorkDir is not null)

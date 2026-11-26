@@ -126,6 +126,14 @@ public sealed class Settings
             throw new InvalidDataException("discord_client_id: the application id, digits only");
         cfg["discord_client_id"] = discordId;
         cfg["discord_client_secret"] = discordSecret;
+        // the role bot (LinkedRoles.RoleBot): a second Discord application's bot with Manage Roles only that gives the linked players the Verified hunter and Veteran roles; the token is the operator's, never committed.
+        // Off unless the token, the guild and both roles are set (with Linked Roles on)
+        cfg["discord_role_bot_token"] = Text(root, "discord_role_bot_token");
+        foreach (var key in new[] { "discord_guild_id", "discord_role_verified", "discord_role_veteran" })
+            cfg[key] = Text(root, key) is not { } id ? null : LinkedRoles.IsDiscordId(id) ? id : throw new InvalidDataException($"{key}: a Discord id, digits only");
+        // at most 10 million: the website reads it as an int, and its progress bar multiplies a score below it by 100
+        cfg["discord_veteran_at"] = Whole(root, "discord_veteran_at", LinkedRoles.RoleBot.DefaultVeteranAt, 0) is var veteranAt && veteranAt <= 10_000_000 ? veteranAt
+            : throw new InvalidDataException("discord_veteran_at: a whole number from 0 to 10000000");
         // what the server stores for the operator (Uploads.cs): zips and bytes an account may have waiting or refused, bytes on the whole server, and the data disk's free bytes below which uploads stop
         cfg["upload_account_files"] = Whole(root, "upload_account_files", Uploads.AccountFilesDefault, 1);
         cfg["upload_account_bytes"] = Whole(root, "upload_account_bytes", Uploads.AccountBytesDefault, 1);

@@ -4,7 +4,8 @@ namespace Resurgence.Services;
 /// <param name="Avatar">The slot or link of the player's picture (<see cref="Avatars.Slot"/>).</param>
 /// <param name="DiscordLinked">Whether the hunter has linked a Discord account (Linked Roles): the pages offer the link only for false; null is a server without Linked Roles.</param>
 /// <param name="Imperial">The player chose imperial units (yards, pounds): the pages show them as the game does (<see cref="IAccountService.SetImperialAsync"/>).</param>
-public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default, bool Imperial = false, bool? DiscordLinked = null);
+/// <param name="DiscordVeteranAt">The HunterScore of the Discord server's "Veteran" role (the server's `discord_veteran_at`); null is a server without Linked Roles.</param>
+public sealed record Session(string Handle, int HunterScore, bool Membership = false, string Avatar = Avatars.Default, bool Imperial = false, bool? DiscordLinked = null, int? DiscordVeteranAt = null);
 
 /// <summary>Where the launcher goes at start: on to the game, to the username step of a new account, or to the sign-in.</summary>
 public enum StartOutcome { LoggedIn, NeedsSignup, LoggedOut }

@@ -13,23 +13,21 @@
 @if (Good && score is { } s)
 {
     <p class="score">@s <span class="unit">HunterScore</span></p>
-    <p class="role">@(s >= Veteran ? Frame("DiscordLink.Role", Role(VeteranRole, "veteran")) : Frame("DiscordLink.Role", Role(VerifiedRole, "verified")))</p>
-    @if (s < Veteran)
+    <p class="role">@(veteranAt is { } at && s >= at ? Frame("DiscordLink.Role", Role(VeteranRole, "veteran")) : Frame("DiscordLink.Role", Role(VerifiedRole, "verified")))</p>
+    @if (veteranAt is { } v && s < v)
     {
-        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="@Veteran" aria-valuenow="@s" aria-label="@L["DiscordLink.More", Veteran - s, VeteranRole, Veteran]"><div class="fill" style="width: @(s * 100 / Veteran)%"></div></div>
-        <p class="more">@Frame("DiscordLink.More", (Veteran - s).ToString(), Role(VeteranRole, "veteran"), Veteran.ToString())</p>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="@v" aria-valuenow="@s" aria-label="@L["DiscordLink.More", v - s, VeteranRole, v]"><div class="fill" style="width: @(s * 100 / v)%"></div></div>
+        <p class="more">@Frame("DiscordLink.More", (v - s).ToString(), Role(VeteranRole, "veteran"), v.ToString())</p>
     }
 }
 @if (Good && Brand.Link("discord") is not null) { <p class="back"><ExternalLink Key="discord" Class="btn btn-primary btn-large">@L["DiscordLink.Back"]</ExternalLink></p> }
 
 @code {
-    /// <summary>The hunterscore that earns the "Veteran" role.</summary>
-    public const int Veteran = 20000;
-
     /// <summary>`linked` (the reward was paid now), `rewarded` (linked, paid before), `taken` (that Discord account is another hunter's), `other` (this hunter has another Discord account), `error`.</summary>
     [SupplyParameterFromQuery] public string? Result { get; set; }
 
-    int? score;
+    /// <summary>The hunter's score, and the HunterScore of the "Veteran" role as the server says it (`discord_veteran_at`; null: the role line without the way to Veteran).</summary>
+    int? score, veteranAt;
 
     /// <summary>The names of the Discord server's roles: the same in every language, like the roles themselves (docs/deploy.md#discord-linked-roles).</summary>
     const string VerifiedRole = "Verified hunter", VeteranRole = "Veteran";
@@ -52,6 +50,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (Good && await Sessions.CurrentAsync() is { Handle.Length: > 0 } session) score = session.HunterScore;
+        if (Good && await Sessions.CurrentAsync() is { Handle.Length: > 0 } session) (score, veteranAt) = (session.HunterScore, session.DiscordVeteranAt);
     }
 }
