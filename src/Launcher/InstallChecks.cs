@@ -47,7 +47,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
     public static InstallChecks For(LauncherEnv env)
     {
         var s = env.Settings;
-        var http = s.ServerUrl is { } server ? new HttpClient(new SocketsHttpHandler { UseCookies = false }) { BaseAddress = server, Timeout = TimeSpan.FromSeconds(5) } : null;
+        var http = s.ServerUrl is { } server ? LauncherServices.ServerClient(server, TimeSpan.FromSeconds(5)) : null;
         return new(() => env.Install, s.SteamAppId, () => http is null ? Task.FromResult<long?>(null) : FetchBuild(http, env.Clock), () => Steam.ActiveAccount() != 0,
             s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? () => LauncherKit.SetupKey(DateTimeOffset.UtcNow) : () => null, GameFiles.ClientRunning,
             portUser: s.ServerUrl?.Scheme == Uri.UriSchemeHttps ? PortUser : null, steamInstalled: Steam.Installed,
