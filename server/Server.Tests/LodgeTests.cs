@@ -201,21 +201,74 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
             con.Begin();
             PlayerRows.AddTrophy(con, "/game/user/trophies", "22", O("""{"id": 22, "species": 3, "hidden": false}"""));
             var lodge = O("""
-                {"id": 5, "name": "five", "animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 21, "own": "restored"}},
-                                                          {"slot_id": 1, "trophy_id": 30, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 30, "own": "restored"}}], "weapon_slots": []}
+                {"id": 5, "name": "five", "lodge_engine_id": 3, "animal_slots": [{"slot_id": 1, "trophy_id": 21, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 21, "own": "restored"}},
+                                                          {"slot_id": 2, "trophy_id": 30, "pose_id": 1, "is_full_body": true, "trophy_details": {"id": 30, "own": "restored"}}], "weapon_slots": []}
                 """);
             PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
             PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
             con.Commit();
         }
-        // the game saves a lodge when the player leaves it: slot 0 as it was, slot 1 with another trophy, slot 2 is new
+        // the game saves a lodge when the player leaves it: slot 1 as it was, slot 2 with another trophy, slot 5 is new
         Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/5", owner,
-            """{"animal_slots": [{"slot_id": 0, "trophy_id": 21, "pose_id": 3}, {"slot_id": 1, "trophy_id": 22, "pose_id": 1}, {"slot_id": 2, "trophy_id": 30, "pose_id": 1}]}"""));
+            """{"animal_slots": [{"slot_id": 1, "trophy_id": 21, "pose_id": 3}, {"slot_id": 2, "trophy_id": 22, "pose_id": 1}, {"slot_id": 5, "trophy_id": 30, "pose_id": 1}]}"""));
         var slots = (await Read(V2, $"/game/user/{OWNER}/lodges/5", viewer))["animal_slots"]!;
-        Eq("""[3, true, "restored"]""", T(slots[0]!["pose_id"], slots[0]!["is_full_body"], slots[0]!["trophy_details"]!["own"]));
+        Eq("""[3, true, 0, "restored"]""", T(slots[0]!["pose_id"], slots[0]!["is_full_body"], slots[0]!["rotation"], slots[0]!["trophy_details"]!["own"]));
         Eq("""[true, 22]""", T(slots[1]!["is_full_body"], slots[1]!["trophy_details"]!["id"]));  // another trophy: the platform's flag, the new trophy's details
-        Eq("""[null, 30]""", T(slots[2]!["is_full_body"], slots[2]!["trophy_details"]!["id"]));  // a new slot: nothing stored
+        Eq("""[false, 30]""", T(slots[2]!["is_full_body"], slots[2]!["trophy_details"]!["id"]));  // a new slot: its type's flag (a small wall plaque), nothing else stored
     }
+
+    /// <summary>Store lodge 5 (layout 3: slots 1-3 are platform large (7), 4 is full body platform (9), 5-7 large wall plaques (2), 8 a small one (3)) empty, save these slots, read them back.</summary>
+    async Task<JsonNode> SaveFive(string slots)
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 5, "name": "five", "lodge_engine_id": 3, "animal_slots": [], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
+            con.Commit();
+        }
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/5", owner, $$"""{"animal_slots": {{slots}}}"""));
+        return (await Read(V2, $"/game/user/{OWNER}/lodges/5", viewer))["animal_slots"]!;
+    }
+
+    [Fact]
+    public async Task TestASavedSlotGetsItsFullBodyFlagFromItsTypeAndRotatableOnesARotation()
+    {
+        var slots = await SaveFive("""[{"slot_id": 1, "trophy_id": 21}, {"slot_id": 2, "trophy_id": 21}, {"slot_id": 5, "trophy_id": 21}, {"slot_id": 4, "trophy_id": 21, "rotation": 90}, {"slot_id": 8}]""");
+        Eq("""[[true, 0], [true, 0], [false, null], [true, 90], [false, null]]""", new JsonArray(slots.AsArray().Select(s => (JsonNode?)T(s!["is_full_body"], s["rotation"])).ToArray()));
+        // a trophy moved from the wall plaque (slot 5) to the platform (slot 2) takes the platform's flag
+        Assert.Equal((200, ""), await Call("PUT", V2, "/game/user/lodges/5", owner, """{"animal_slots": [{"slot_id": 2, "trophy_id": 21, "pose_id": 1}]}"""));
+        Eq("""[true]""", new JsonArray((await Read(V2, $"/game/user/{OWNER}/lodges/5", viewer))["animal_slots"]!.AsArray().Select(s => (JsonNode?)s!["is_full_body"]!.DeepClone()).ToArray()));
+    }
+
+    [Fact]
+    public async Task TestTheStartFixesStoredSlotsOnceAndAgainChangesNothing()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 5, "name": "five", "lodge_engine_id": 3, "animal_slots": [{"slot_id": 2, "trophy_id": 21}, {"slot_id": 4, "trophy_id": 21, "is_full_body": false}, {"slot_id": 5, "trophy_id": 21, "is_full_body": false}], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "5", O("""{"id": 5, "name": "five", "lodge_engine_id": 3}"""));
+            lodge.Remove("lodge_engine_id");  // the single's row may not name the layout
+            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge);
+            con.Commit();
+        }
+        string Rows()
+        {
+            using var con = state.Store.Open(OWNER);
+            return string.Join("|", con.Rows("SELECT node FROM lodges WHERE account_id = $a AND id = '5' ORDER BY n").Select(r => (string)r[0]));
+        }
+        var before = Rows();
+        state.BackfillLodges();
+        var once = Rows();
+        Assert.NotEqual(before, once);
+        Eq("""[[true, 0], [true, 0], [false, null]]""", new JsonArray(Read2(once).Select(s => (JsonNode?)T(s["is_full_body"], s["rotation"])).ToArray()));
+        state.BackfillLodges();
+        Assert.Equal(once, Rows());
+    }
+
+    static IEnumerable<JsonObject> Read2(string rows) => JsonNode.Parse(rows.Split('|')[1])!["animal_slots"]!.AsArray().OfType<JsonObject>();
 
     JsonArray Mounts() => new(Reply(state.TrophiesReply(OWNER)).AsArray().OrderBy(t => (long)t!["id"]!)
         .Select(t => (JsonNode?)T(t!["lodge_id"], t["slot_id"], t["pose_id"])).ToArray());
