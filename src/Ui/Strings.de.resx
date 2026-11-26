@@ -1640,4 +1640,5 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="GameSettings.Units" xml:space="preserve"><value>Einheiten</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisch (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ zum normalen Satz, Boni nicht eingerechnet.</value></data>
 </root>

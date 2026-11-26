@@ -206,13 +206,15 @@ public class ServerLeaderboardsServiceTests
     public async Task TheHuntingStatisticsAreTheServersRows()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, """
-            {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.5,"gmPerHarvest":310.25,"harvestsPerHour":5.5,"players":12}],
-             "species":[{"species":"Fox","hours":40,"gmPerHour":900,"gmPerHarvest":150,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve A"},
-                        {"species":"Deer","hours":10,"gmPerHour":500,"gmPerHarvest":100,"harvestsPerHour":5,"players":6,"bestReserve":null}]}
+            {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.5,"gmPerHarvest":310.25,"comparableGmPerHour":617.25,"comparableGmPerHarvest":155.5,"harvestsPerHour":5.5,"players":12}],
+             "species":[{"species":"Fox","hours":40,"gmPerHour":900,"gmPerHarvest":150,"comparableGmPerHour":450,"comparableGmPerHarvest":75,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve A"},
+                        {"species":"Deer","hours":10,"gmPerHour":500,"gmPerHarvest":100,"comparableGmPerHour":250,"comparableGmPerHarvest":50,"harvestsPerHour":5,"players":6,"bestReserve":null}],
+             "events":[{"name":"weekend","kind":"gm_bonus","start":"2026-11-21T00:00:00Z","end":"2026-11-24T00:00:00Z","multiplier":2},{"name":"x","kind":"gm_bonus","start":"2026-11-24T00:00:00Z","end":"2026-11-28T00:00:00Z","multiplier":null}]}
             """));
         var stats = await Make(fake).HuntingAsync();
-        Assert.Equal([new ReserveHunting("Reserve A", 120.5, 1234.5, 310.25, 5.5, 12)], stats.Reserves);
-        Assert.Equal([new SpeciesHunting("Fox", 40, 900, 150, 6, 9, "Reserve A"), new SpeciesHunting("Deer", 10, 500, 100, 5, 6, null)], stats.Species);
+        Assert.Equal([new ReserveHunting("Reserve A", 120.5, 1234.5, 310.25, 5.5, 12, 617.25, 155.5)], stats.Reserves);
+        Assert.Equal([new SpeciesHunting("Fox", 40, 900, 150, 6, 9, 450, 75, "Reserve A"), new SpeciesHunting("Deer", 10, 500, 100, 5, 6, 250, 50, null)], stats.Species);
+        Assert.Equal([new HuntingEvent("weekend", new(2026, 11, 21, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), 2), new HuntingEvent("x", new(2026, 11, 24, 0, 0, 0, TimeSpan.Zero), new(2026, 11, 28, 0, 0, 0, TimeSpan.Zero), null)], stats.Events);
         var request = Assert.Single(fake.Seen);
         Assert.Equal("/stats/hunting", request.RequestUri!.AbsolutePath);
         Assert.Equal("site.test", request.Headers.Host);

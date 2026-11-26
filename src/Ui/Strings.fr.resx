@@ -1640,4 +1640,5 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="GameSettings.Units" xml:space="preserve"><value>Unités</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métriques (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Impériales (yd, lbs)</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ au tarif normal, bonus exclus.</value></data>
 </root>

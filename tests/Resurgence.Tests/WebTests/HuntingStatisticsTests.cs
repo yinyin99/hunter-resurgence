@@ -92,10 +92,11 @@ public sealed class HuntingStatisticsTests : UiContext
     }
 
     const string Fixture = """
-        {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.6,"gmPerHarvest":310.4,"harvestsPerHour":5.84,"players":12},
-                     {"reserve":"Reserve B","hours":60.25,"gmPerHour":800,"gmPerHarvest":200,"harvestsPerHour":4,"players":7}],
-         "species":[{"species":"Fox","hours":40,"gmPerHour":900.6,"gmPerHarvest":150,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve B"}],
-         "since":1700000000}
+        {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.6,"gmPerHarvest":310.4,"comparableGmPerHour":617.4,"comparableGmPerHarvest":155.2,"harvestsPerHour":5.84,"players":12},
+                     {"reserve":"Reserve B","hours":60.25,"gmPerHour":800,"gmPerHarvest":200,"comparableGmPerHour":400,"comparableGmPerHarvest":100,"harvestsPerHour":4,"players":7}],
+         "species":[{"species":"Fox","hours":40,"gmPerHour":900.6,"gmPerHarvest":150,"comparableGmPerHour":450.4,"comparableGmPerHarvest":75,"harvestsPerHour":6,"players":9,"bestReserve":"Reserve B"}],
+         "since":1700000000,
+         "events":[{"name":"weekend","kind":"gm_bonus","start":"2026-11-21T00:00:00Z","end":"2026-11-24T00:00:00Z","multiplier":2},{"name":"evening","kind":"gm_bonus","start":"2026-11-24T00:00:00Z","end":"2026-11-28T00:00:00Z","multiplier":1.25}]}
         """;
 
     IRenderedComponent<Leaderboards> Board(HttpStatusCode code, string body, out Server server)
@@ -114,12 +115,21 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Equal("/stats/hunting", server.Path);
         var tables = cut.FindAll("table.stats");
         Assert.Equal(["Reserve", "Hours hunted", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hunters"], tables[0].QuerySelectorAll("th").Select(h => h.TextContent));
-        Assert.Equal(["Reserve A", "120.5", "1235", "310", "5.8", "12"], tables[0].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
+        Assert.Equal(["Reserve A", "120.5", "617", "155", "5.8", "12"], tables[0].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
         Assert.Equal(2, tables[0].QuerySelectorAll("tbody tr").Length);
         Assert.Equal(["Species", "Hours hunted", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hunters", "Best reserve"], tables[1].QuerySelectorAll("th").Select(h => h.TextContent));
-        Assert.Equal(["Fox", "40.0", "901", "150", "6.0", "9", "Reserve B"], tables[1].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
+        Assert.Equal(["Fox", "40.0", "450", "75", "6.0", "9", "Reserve B"], tables[1].QuerySelectorAll("tbody tr")[0].QuerySelectorAll("td").Select(c => c.TextContent));
         Assert.Empty(cut.FindAll(".norank"));
+        Assert.Equal("gm$ at the normal rate, bonuses left out.×2 weekend, 21–23 Nov; ×1.25 evening, 24–27 Nov", cut.Find(".hunting-note").TextContent);  // the base figures, then the period's events
         Assert.Empty(cut.FindAll("table.stats a"));  // no hunter's name or profile link
+    }
+
+    [Fact]
+    public void WithoutABonusEventOnlyTheFirstLineShows()
+    {
+        var cut = Board(HttpStatusCode.OK, Fixture[..Fixture.IndexOf(",\n         \"events\"")] + "}", out _);
+
+        cut.WaitForAssertion(() => Assert.Equal("gm$ at the normal rate, bonuses left out.", cut.Find(".hunting-note").TextContent));
     }
 
     [Fact]
