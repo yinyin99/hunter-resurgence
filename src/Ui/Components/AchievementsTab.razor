@@ -17,7 +17,7 @@
                 @if (b.Name is "Animals" or "Weapons" or "Exploration") { <AssetSlot Name="@("ach-" + b.Name.ToLowerInvariant())" Width="40" Height="40" /> }
                 else { <Icon Name="location-dot" /> }
                 <div class="bar" style="--c:@F(f)" tabindex="0" role="img" aria-label="@L.Term(b.Name)" aria-describedby="@tip">
-                    <span class="track"><i style="width:@F(100 * f)%"></i></span>
+                    <span class="track bar3d"><i style="width:@F(100 * f)%"></i></span>
                     <small id="@tip" role="tooltip" class="tip">@L.Term(b.Name) @L["Prof.Unlocked"]: @b.Done.ToString("N0") / @b.Total.ToString("N0") (@pct.ToString("0.0")%)</small>
                 </div>
             </div>

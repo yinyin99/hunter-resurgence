@@ -114,24 +114,25 @@ public sealed class HuntingStatisticsTests : UiContext
         return Render<Leaderboards>(p => p.Add(l => l.Path, "hunting"));
     }
 
-    static string[] Row(AngleSharp.Dom.IElement li) => [li.QuerySelector(".name")!.TextContent, li.QuerySelector(".figure")!.TextContent, .. li.QuerySelectorAll("dl div").Select(d => d.QuerySelector("dt")!.TextContent + " " + d.QuerySelector("dd")!.TextContent)];
+    static string[] Row(AngleSharp.Dom.IElement tr) => [.. tr.Children.Select(c => c.TextContent)];
 
     [Fact]
-    public void TheHuntingStatisticsAreRankedListsOfTheServersBaseFiguresWithoutAnyHunter() => InEnglish(() =>
+    public void TheHuntingStatisticsAreTwoTablesOfTheServersBaseFiguresWithoutAnyHunter() => InEnglish(() =>
     {
         var cut = Board(HttpStatusCode.OK, Fixture, out var server);
 
-        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".hunting")));
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll(".hunting table").Count));
         Assert.Equal("/stats/hunting", server.Path);
-        Assert.Empty(cut.FindAll("table.stats"));
-        Assert.Equal(["Per species", "Per reserve"], cut.FindAll(".hunting h4").Select(h => h.TextContent));
-        var species = cut.FindAll("ol.species > li");
-        Assert.Equal(["Fox", "450 gm$ per hour", "gm$ per harvest 75", "Harvests per hour 6.0", "Hours hunted 40.0", "Hunters 9", "Best reserve Reserve B"], Row(species[0]));  // the comparable figures, not the paid ones
-        var reserves = cut.FindAll("ol.reserves > li");
-        Assert.Equal(["Reserve A", "617 gm$ per hour", "gm$ per harvest 155", "Harvests per hour 5.8", "Hours hunted 120.5", "Hunters 12"], Row(reserves[0]));
-        Assert.Equal(["Reserve B", "400 gm$ per hour", "gm$ per harvest 100", "Harvests per hour 4.0", "Hours hunted 60.3", "Hunters 7"], Row(reserves[1]));  // best first
-        Assert.Equal(["--w:100%", "--w:64.8%"], cut.FindAll("ol.reserves .bar").Select(x => x.GetAttribute("style")!.TrimEnd(';')));
-        Assert.All(cut.FindAll(".bar"), x => Assert.Equal("true", x.GetAttribute("aria-hidden")));  // the number beside a bar says it
+        Assert.Equal(["Per reserve", "Per species"], cut.FindAll(".hunting h4").Select(h => h.TextContent));
+        var tables = cut.FindAll(".hunting table");
+        Assert.Equal(["Reserve", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hours hunted", "Hunters"], tables[0].QuerySelectorAll("thead th").Select(h => h.TextContent));
+        var reserves = tables[0].QuerySelectorAll("tbody tr");
+        Assert.Equal(["Reserve A", "617", "155", "5.8", "120.5", "12"], Row(reserves[0]));  // the comparable figures, not the paid ones; the best rate first
+        Assert.Equal(["Reserve B", "400", "100", "4.0", "60.3", "7"], Row(reserves[1]));
+        Assert.Equal(["Species", "gm$ per hour", "gm$ per harvest", "Harvests per hour", "Hours hunted", "Hunters", "Best reserve"], tables[1].QuerySelectorAll("thead th").Select(h => h.TextContent));
+        Assert.Equal(["Fox", "450", "75", "6.0", "40.0", "9", "Reserve B"], Row(Assert.Single(tables[1].QuerySelectorAll("tbody tr"))));
+        Assert.Equal(["width:100%", "width:64.8%"], reserves.Select(r => r.QuerySelector(".bar3d > i")!.GetAttribute("style")!.TrimEnd(';')));  // each bar is its share of the best
+        Assert.All(cut.FindAll(".bar3d"), x => Assert.Equal("true", x.GetAttribute("aria-hidden")));  // the number beside a bar says it
         Assert.Empty(cut.FindAll(".norank"));
         Assert.Empty(cut.FindAll(".hunting a"));  // no hunter's name or profile link
     });
