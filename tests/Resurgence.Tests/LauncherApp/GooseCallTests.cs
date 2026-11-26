@@ -7,9 +7,9 @@ namespace Resurgence.Tests.LauncherApp;
 public class GooseCallTests
 {
     // a synthetic exe: the five places below, beside the log lock's table at 64; the rest is zero
-    static readonly GooseCall Goose = new("synthetic", Site: 100, Args: 87, CategoryPush: 50, Category: 200, Register: 300);
+    internal static readonly GooseCall Goose = new("synthetic", Site: 100, Args: 87, CategoryPush: 50, Category: 200, Register: 300);
 
-    static FakeGame Game(uint image = Image)
+    internal static FakeGame Game(uint image = Image)
     {
         var game = LogLockTests.Game(image);
         byte[] call = [.. Convert.FromHexString("E8"), .. Le(300 - 105)];
@@ -22,7 +22,7 @@ public class GooseCallTests
         return game;
     }
 
-    sealed class Lines : ILogger
+    internal sealed class Lines : ILogger
     {
         public List<string> Seen { get; } = [];
         public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;

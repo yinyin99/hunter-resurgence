@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using static Resurgence.Launcher.LogLock;
 
@@ -152,7 +153,94 @@ public sealed record GooseCall(string ExeSha256, uint Site, uint Args, uint Cate
     }
 }
 
-/// <summary>The game started suspended, as the log lock and the goose call patch read and write it: the seam a test replaces with a byte array.</summary>
+/// <summary>
+/// In the current game one of a rabbit's nervous standing animations plays a loud honk where the game before played a quiet stomp, so a dozen rabbits around make constant noise; the honk belongs to the event's possessed rabbits only.
+/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the start of the game's function that plays an animal's sounds at a small function in a page of the game's memory.
+/// The small function looks at the sound about to play. For every sound but the rabbit's honk it runs the game's own code unchanged. For the honk it looks at the animal that makes it: an animal whose behaviour profile is one of the event's keeps the honk;
+/// any other animal, and any case that cannot be identified (every step to the profile is guarded), gets the rabbit's quiet stomp instead, which the function finds in the game's own table of sounds and hands over in place of the honk
+/// (a game whose table has no stomp plays the honk as before). It uses absolute addresses for two values only, so it is built for the image base; it does not depend on the page's address, only the jump written at the site does.
+/// Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is. Nothing on disk changes.
+/// </summary>
+/// <param name="ExeSha256">The SHA-256 of the exe this applies to (lowercase hex).</param>
+/// <param name="Site">Offset from the image base of the start of the game's function that plays an animal's sounds: its first six bytes are replaced by a jump to the function and a filler.</param>
+/// <param name="Profile">Offset of the value the function compares the animal's first field with, to know it is the kind of animal that has a behaviour profile.</param>
+/// <param name="Checks">The places checked before anything is written, in order (the first is the site): the offset from the image base and the expected bytes as hex, where <c>@N</c> stands for the 4 bytes of the image base plus <c>N</c>.</param>
+public sealed record RabbitSound(string ExeSha256, uint Site, uint Profile, (uint At, string Expected)[] Checks)
+{
+    /// <summary>The same exe as the log lock.</summary>
+    public static readonly RabbitSound Known = new(LogLock.Known.ExeSha256, Site: 6747264, Profile: 10909564, Checks: [
+        // the start of the function (the site's six bytes, then the push of its handler's address) and the places in and around it the function relies on
+        (6747264, "55 8B EC 83 E4 F8 6A FF 68 @8952384"),
+        (6747308, "8B F9 89 7C 24 18 8B 57 1C 89 54 24 14 3B 57 20"),
+        (6747330, "8B 0A 85 C9"),
+        (6747340, "8B 01 8B 49 04 3B C1"),
+        (6747360, "8B 75 08 3B 30 74 0C 83 C0 04 3B C1 75 F2"),
+        (6747379, "8B 45 0C 8B 48 04"),
+        (6747820, "83 C2 14"),
+        (6747854, "C2 08 00"),
+        // the places the function reaches the animal and the table of sounds through
+        (6945702, "8B 08 8B 44 24 3C 8B 11 8B 52 04 50 53 FF D2"),
+        (6944776, "8D 70 10 38 5C 24 20 74 64 8B 50 0C 8B 44 24 18 89 16"),
+        (2510786, "8B 80 6C 12 00 00 8B 50 0C 3B 51 04"),
+        (2636364, "8B 83 6C 12 00 00 8B 40 0C 85 C0 75 08 33 FF 89 7C 24 20 EB 0B 05 4C FF FF FF 89 44 24 20 8B F8 57 89 9F 74 04 00 00"),
+        (2392707, "C7 86 B4 00 00 00 @10909564"),
+        (2631587, "8B 86 1C 12 00 00 53 8B 58 04 57 56 32 D2 8B CB E8"),
+        (2635882, "8B 44 24 38 8D 50 0C 52 8B 50 08 52"),
+        (2614156, "68 @10752268"),
+        (2614235, "8D 4F 0C E8"),
+        (10752268, "A0 A5 75 A3"),
+        (231233, "83 7E 14 10 72 02 8B 36"),
+    ]);
+
+    /// <summary>The function for an image loaded at <paramref name="image"/>: 177 bytes, to be written at the start of a page of the game's memory.</summary>
+    public byte[] Code(uint image) => [
+        // mov eax, [esp+4] (the sound); cmp [eax], the honk's id; je to the honk's case
+        .. H("8B442404 81388A6B39B2 740D"),
+        // the game's own first six bytes of the function, then mov eax, the rest of the function; jmp eax: every other sound, and a possessed rabbit's honk, go this way
+        .. H("558BEC83E4F8 B8"), .. D(image + Site + 6), .. H("FFE0"),
+        // the honk's case: mov eax, [esp+8] (the animal); then its first field must be the value that marks a kind of animal with a behaviour profile, each link tested for null on the way (null: the stomp)
+        .. H("8B442408 85C0 7456 8B4004 85C0 744F 8138"), .. D(image + Profile), .. H("7547"),
+        // the links on to the profile's name (null: the stomp); a name shorter than 16 characters gets the stomp
+        .. H("8B80C0030000 85C0 743D 8B801C120000 85C0 7433 8B4004 85C0 742C 83782010 7226 8B400C"),
+        // the name's first 16 characters four at a time: a difference gets the stomp, the event's profile jumps back to the game's own code
+        .. H("8138616E696D 751B 817804616C2E77 7512 81780865726577 7509 81780C6F6C665F 7495"),
+        // the stomp: push ebx, esi; walk the game's table of sounds (entries of 20 bytes, each a list of sounds) for the sound with the stomp's id, none: the game's own code
+        .. H("53 56 8B511C 3B5120 7329 8B32 85F6 741A 8B06 3B4604 7313 8B18 85DB 7408 813B3BB5DCC2 740A 83C004 EBE8 83C214 EBD6"),
+        // found: mov [esp+12], it (the sound the game plays); pop esi, ebx; jmp back to the game's own first six bytes above
+        .. H("895C240C 5E 5B E95BFFFFFF"),
+    ];
+
+    static byte[] Expect(string expected, uint image) =>
+        H(Regex.Replace(expected, @"@(\d+)", m => Convert.ToHexString(D(image + uint.Parse(m.Groups[1].Value)))));
+
+    /// <summary>Checks every place, then writes the function and points the site at it; nothing is written unless every check passed. Null when applied, else why not.</summary>
+    public string? Apply(ISuspendedGame game)
+    {
+        var image = game.Image;
+        if (image == 0) return "the game's memory could not be read";
+        for (var i = 0; i < Checks.Length; i++)
+        {
+            var expected = Expect(Checks[i].Expected, image);
+            if (game.Read(image + Checks[i].At, expected.Length) is not { } found) return $"check {i + 1} could not be read";
+            if (!found.AsSpan().SequenceEqual(expected)) return $"check {i + 1} holds other values";
+        }
+        var code = Code(image);
+        var page = game.Allocate(code.Length);
+        if (page == 0) return "no memory could be allocated in the game";
+        if (!game.Write(page, code)) return "the sound function could not be written";
+        // jmp to the page, then a filler for the sixth byte
+        return game.Write(image + Site, [.. H("E9"), .. D(unchecked(page - (image + Site + 5))), .. H("90")]) ? null : "the jump to the sound function could not be written";
+    }
+
+    /// <summary>Applies the patch to a game started suspended and logs the outcome; the game is resumed by <see cref="LogLock.ApplyAndResume"/>.</summary>
+    public void ApplyAndLog(ISuspendedGame game, ILogger? log)
+    {
+        if (Apply(game) is { } why) log?.LogWarning("The game's rabbit sound patch is not applied, the game starts without it: {Why}", why);
+        else log?.LogInformation("The game's rabbit sound patch is applied");
+    }
+}
+
+/// <summary>The game started suspended, as the log lock, the goose call patch and the rabbit sound patch read and write it: the seam a test replaces with a byte array.</summary>
 public interface ISuspendedGame
 {
     /// <summary>Where the exe is loaded; 0 when not known.</summary>
