@@ -56,6 +56,18 @@ public class RabbitSoundTests
         Assert.Equal(RabbitSound.Known.Site, RabbitSound.Known.Checks[0].At);
     }
 
+    [Fact]
+    public void TheRealTableRunsThroughApplyOnAnImageBuiltFromItsOwnChecks()
+    {
+        var known = RabbitSound.Known;
+        var memory = new byte[11_000_000]; // past the last checked place
+        foreach (var (at, expected) in known.Checks) Bytes(expected, Image).CopyTo(memory, (int)at);
+        var game = new FakeGame(Image, memory);
+        Assert.Null(known.Apply(game));
+        Assert.Equal([Page, Image + known.Site], game.Writes.Select(w => w.Address));
+        Assert.Equal(known.Code(Image), game.Writes[0].Bytes);
+    }
+
     [Theory]
     [InlineData(Image)] // the page above the image
     [InlineData(134217728u)] // the page below the image
