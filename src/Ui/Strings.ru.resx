@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Экипировано</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Прочее</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Выйти</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Ваши очки охотника</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Ваш HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Настройки аккаунта</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Управление игрой</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Ваш прогресс</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Охота идёт</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Посмотреть охоту</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Рейтинг</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Последнее достижение</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Нет полученных достижений</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Защитить паролем</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Пароль игры</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Максимум игроков</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Ограничить очки охотника</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Ограничить HunterScore</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Мин.:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Макс.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Старт</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Хост:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Охотугодье:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Время игры:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Мин. очки охотника:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Макс. очки охотника:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Мин. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Макс. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Игроки ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Информация о многопользовательских подключениях</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Игра с людьми, которые находятся очень далеко от вас, может привести к проблемам с соединением и задержкам. Рекомендуем присоединяться к играм, где хост находится рядом с вами. Цветные точки рядом с флагами в списке серверов показывают, как далеко от вас находится хост игры.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Эта игра защищена паролем</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Требуется пароль</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Только для друзей</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Очки охотника {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Заполнена</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ваша игра</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Запускается…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Закрыть</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Неверный пароль. Попробуйте ещё раз.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Эта игра заполнена. Попробуйте другую игру.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: она только для друзей хозяина, или ваши очки охотника вне его ограничений.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: она только для друзей хозяина, или ваш HunterScore вне его ограничений.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Хозяин ещё не готов. Попробуйте ещё раз через минуту.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Пока закончили охоту?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Посмотреть статистику охоты</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>СПИСКИ ЛИДЕРОВ</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Баллы</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Дистанция</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Лучшие очки охотника</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Лучший HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Зал славы</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Лучшие 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Рядом с вашим местом</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Вас пока нет в рейтинге этой категории</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Лучшие очки охотника за всё время</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Лучший HunterScore за всё время</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Рейтинг</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Охотник</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Зал славы прошлого сезона</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Сезон {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>За всё время</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Рейтинг: {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>В сети</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Тип членства игрока {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Очки охотника игрока {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Рейтинг по очкам охотника игрока {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore игрока {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Рейтинг по HunterScore игрока {0}</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} в сети</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Отправить запрос в друзья</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Запрос в друзья ожидает ответа</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Оружие</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Предметы для сбора</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Прогресс</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Очки охотника</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Категории</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Открыто</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Исследование</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Под этим именем мы профиль не сохранили.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Сегодня слишком много поисков, попробуйте завтра.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Сервер не ответил.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, домики: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Навыки: {0}, статистика: {1}, достижения: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>да</value></data>

@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Ausgerüstet</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Sonstiges</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Abmelden</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr Hunter-Score</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Kontoeinstellungen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spielverwaltung</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Ihre Fortschritte</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Laufende Pirsch</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Pirsch ansehen</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter-Score</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Neueste Errungenschaft</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Keine Errungenschaften erzielt</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Mit Passwort schützen</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Spielpasswort</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max. Spielerzahl</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Hunter-Score begrenzen</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>HunterScore begrenzen</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min.:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max.:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Start</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Revier:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Spielzeit:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. Hunter-Score:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Hunter-Score:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Spieler ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informationen zu Multiplayer-Verbindungen</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Wenn Sie mit Spielern spielen, die weit von Ihnen entfernt sind, kann es zu Verbindungsproblemen oder Verzögerungen (Lag) kommen. Es wird empfohlen, Spielen beizutreten, deren Host sich in Ihrer Nähe befindet. Die farbigen Punkte neben den Flaggen in der Serverliste zeigen Ihnen an, wie weit Sie vom Host des Spiels entfernt sind.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Dieses Spiel ist passwortgeschützt</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Passwort erforderlich</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Nur für Freunde</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter-Score {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Voll</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Eigenes Spiel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Startet…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Schließen</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Falsches Passwort. Bitte versuche es erneut.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Dieses Spiel ist voll. Bitte versuche ein anderes Spiel.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Es ist nur für Freunde des Gastgebers, oder dein Hunter-Score liegt außerhalb seiner Grenzen.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Es ist nur für Freunde des Gastgebers, oder dein HunterScore liegt außerhalb seiner Grenzen.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Der Gastgeber ist noch nicht bereit. Bitte versuche es gleich noch einmal.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Schon fertig mit der Jagd?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Jagdstatistik ansehen</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>RANGLISTEN</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Bewertung</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Schussweite</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Top-Hunter-Score</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Top-HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Ruhmeshalle</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Rund um Ihren Rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Sie haben in dieser Kategorie derzeit keinen Rang</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Allzeit bester Hunter-Score</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Allzeit bester HunterScore</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Jäger</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter-Score</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Ruhmeshalle früherer Saisons</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Saison {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Alle Zeiten</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Rang {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Mitgliedschaftstyp von {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Hunter-Score von {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Hunter-Score-Rang von {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore von {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>HunterScore-Rang von {0}</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} ist online</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Freundschaftsanfrage senden</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Freundschaftsanfrage ausstehend</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Waffen</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Sammelobjekte</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Fortschritt</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter-Score</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorien</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Freigeschaltet</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Erforschung</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Unter diesem Namen haben wir kein Profil gespeichert.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Heute zu viele Suchen, versuche es morgen erneut.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Der Server hat nicht geantwortet.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Gegenstände: {0}, Trophäen: {1}, Hütten: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Fähigkeiten: {0}, Statistiken: {1}, Erfolge: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>

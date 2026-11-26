@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Opremljeno</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Drugo</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoje lovske točke</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoj HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Nastavitve računa</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Upravljanje igre</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Tvoj napredek</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Lov poteka</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Poglej lov</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Lovske točke</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Uvrstitev</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Zadnji dosežek</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Brez dosežkov</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Zaščita z geslom</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Geslo igre</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Največ igralcev</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Omeji lovske točke</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Omeji HunterScore</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Najmanj:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Največ:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Začetek</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Gostitelj:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezervat:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Čas igre:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Najmanj lovskih točk:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Največ lovskih točk:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Najmanjši HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Največji HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Igralci ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informacije o večigralskih povezavah</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Igranje skupinskega lova z ljudmi, ki so od tebe zelo oddaljeni, lahko povzroči težave s povezavo ali zakasnitve. Priporočamo, da se pridružuješ igram, katerih gostitelj je blizu tebe. Barvne pike ob zastavah na seznamu strežnikov ti pokažejo, kako daleč si od gostitelja igre.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Ta igra je zaščitena z geslom</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Potrebno geslo</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Samo za prijatelje</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Lovske točke {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Polna</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Tvoja igra</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Zaganja se…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Zapri</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Napačno geslo. Poskusite znova.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Ta igra je polna. Poskusi z drugo igro.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: je samo za prijatelje gostitelja ali so tvoje lovske točke zunaj njegovih omejitev.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: je samo za prijatelje gostitelja ali je tvoj HunterScore zunaj njegovih omejitev.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Gostitelj še ni pripravljen. Poskusi znova čez trenutek.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Ste za zdaj končali z lovom?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Ogled statistike lova</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>LESTVICE</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Rezultat</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Razdalja</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Najvišje lovske točke</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Najvišji HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Dvorana slavnih</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Najboljših 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Okoli tvoje uvrstitve</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>V tej kategoriji še nimaš uvrstitve</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Najvišje lovske točke vseh časov</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Najvišji HunterScore vseh časov</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Uvrstitev</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Lovec</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Lovske točke</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Dvorana slavnih pretekle sezone</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezona {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Vseh časov</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Uvrstitev: {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Na spletu</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>{0}: vrsta članstva</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>{0}: lovske točke</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>{0}: uvrstitev po lovskih točkah</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>{0}: HunterScore</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>{0}: uvrstitev po HunterScore</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} je na spletu</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Pošlji prošnjo za prijateljstvo</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Prošnja čaka na odgovor</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Orožje</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Zbirateljstvo</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Napredek</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Lovske točke</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorije</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Odklenjeno</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Raziskovanje</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Pod tem imenom nismo shranili profila.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Danes preveč iskanj, poskusite jutri.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Strežnik se ni odzval.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Predmeti: {0}, trofeje: {1}, koče: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Spretnosti: {0}, statistika: {1}, dosežki: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>da</value></data>

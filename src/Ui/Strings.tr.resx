@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Kuşanıldı</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Diğer</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Oturumu Kapat</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Avcı skorunuz</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScore'unuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Hesap ayarları</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Oyun Yönetimi</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>İlerleme durumunuz</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Av devam ediyor</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Avı görüntüle</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Avcı skoru</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Sıra</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Son başarı</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Henüz başarı yok</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Şifre koruması</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Oyun şifresi</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Oyuncu limiti</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Avcı skorunu sınırla</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>HunterScore'u sınırla</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>En az:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>En fazla:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Başlat</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Kurucu:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Rezerv:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Oyun süresi:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>En düşük avcı skoru:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>En yüksek avcı skoru:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>En düşük HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>En yüksek HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Oyuncular ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Çok oyunculu bağlantılar hakkında bilgi</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Çok uzak mesafedeki kişilerle çok oyunculu modda oynamak bağlantı sorunlarına veya gecikmeye neden olabilir. Kurucusu size yakın olan oyunlara katılmanız önerilir. Sunucu listesinde bayrakların yanında yer alan renkli noktalar, oyunun kurucusundan ne kadar uzakta olduğunuzu gösterir.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Bu oyun şifre korumalıdır</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Parola gerekli</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Yalnızca arkadaşlar</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Avcı skoru {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Dolu</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Senin oyunun</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Başlıyor…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Kapat</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Yanlış parola. Lütfen tekrar deneyin.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Bu oyun dolu. Lütfen başka bir oyun dene.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Bu oyuna katılamazsın: yalnızca ev sahibinin arkadaşlarına açık ya da avcı skorun ev sahibinin sınırlarının dışında.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Bu oyuna katılamazsın: yalnızca ev sahibinin arkadaşlarına açık ya da HunterScore'un ev sahibinin sınırlarının dışında.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Ev sahibi henüz hazır değil. Lütfen biraz sonra tekrar dene.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Şimdilik avı bitirdin mi?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Av istatistiklerini görüntüle</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>SIRALAMALAR</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Skor</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Mesafe</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>En yüksek avcı skoru</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>En yüksek HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Onur Listesi</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>İlk 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Sıranızın çevresi</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Şu an bu kategoride sıralamada değilsiniz</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Tüm zamanların en yüksek avcı skorları</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Tüm zamanların en yüksek HunterScore'ları</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Sıra</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Avcı</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Avcı skoru</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Geçen sezonun Onur Listesi</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Sezon {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Tüm zamanlar</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Sıra {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Çevrimiçi</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>{0} adlı kişinin üyelik türü</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>{0} adlı avcının skoru</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>{0} adlı avcının skor sırası</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>{0} adlı avcının HunterScore'u</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>{0} adlı avcının HunterScore sırası</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} çevrimiçi</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Arkadaşlık isteği gönder</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Arkadaşlık isteği beklemede</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Silahlar</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Koleksiyonlar</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>İlerleme</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Avcı skoru</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategoriler</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Açıldı</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Keşif</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Bu adla bir profil saklamadık.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Bugün çok fazla arama yapıldı, yarın tekrar deneyin.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Sunucu yanıt vermedi.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Eşyalar: {0}, kupalar: {1}, kulübeler: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Beceriler: {0}, istatistikler: {1}, başarımlar: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>evet</value></data>

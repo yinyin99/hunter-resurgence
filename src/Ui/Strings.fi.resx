@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Varusteena</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Muut</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Metsästäjän pisteesi</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScoresi</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Tilin asetukset</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Pelin hallinta</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Edistymisesi</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Metsästys käynnissä</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Näytä metsästys</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Sijoitus</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Viimeisin saavutus</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Ei saavutuksia vielä</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Salasanasuojaus</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Pelin salasana</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Maks. pelaajia</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Rajoita metsästäjän pisteitä</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>Rajoita HunterScorea</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Maks:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Aloitus</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Isäntä:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Alue:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Peliaika:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. metsästäjän pisteet:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Maks. metsästäjän pisteet:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Maks. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Pelaajat ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Tietoa moninpelin yhteyksistä</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Moninpelaaminen kaukana olevien pelaajien kanssa voi aiheuttaa yhteysongelmia tai viivettä. On suositeltavaa liittyä peleihin, joiden isäntä on lähelläsi. Palvelinluettelon lippujen vieressä olevat värilliset pisteet kertovat, kuinka kaukana pelin isännästä olet.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Tämä peli on salasanasuojattu</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Salasana vaaditaan</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Vain ystäville</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Metsästäjän pisteet {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Täynnä</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Oma pelisi</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Käynnistyy…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Sulje</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Väärä salasana. Yritä uudelleen.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Tämä peli on täynnä. Kokeile toista peliä.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Et voi liittyä tähän peliin: se on vain isännän ystäville tai metsästäjän pisteesi ovat isännän rajojen ulkopuolella.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Et voi liittyä tähän peliin: se on vain isännän ystäville tai HunterScoresi on isännän rajojen ulkopuolella.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>Isäntä ei ole vielä valmis. Yritä hetken kuluttua uudelleen.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Metsästys tältä erää ohi?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Näytä metsästystilastot</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>PISTETAULUKOT</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Pisteet</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Etäisyys</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Paras HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Kunniagalleria</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Parhaat 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Sijoituksesi ympärillä</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Et ole tällä hetkellä sijoittunut tässä kategoriassa</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Kaikkien aikojen parhaat: metsästäjän pisteet</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Kaikkien aikojen paras HunterScore</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Sijoitus</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Metsästäjä</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Viime kauden kunniagalleria</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Kausi {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Kaikkien aikojen</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Sijoitus {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Paikalla</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Jäsenyystyyppi: {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Metsästäjän pisteet: {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Metsästäjän pisteiden sijoitus: {0}</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore: {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>HunterScoren sijoitus: {0}</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} on paikalla</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Lähetä kaveripyyntö</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Kaveripyyntö odottaa vastausta</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Aseet</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Keräiltävät</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Edistyminen</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Metsästäjän pisteet</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategoriat</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Avattu</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Tutkimus</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>Tällä nimellä ei ole säilytettyä profiilia.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Liikaa hakuja tänään, yritä huomenna uudelleen.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Palvelin ei vastannut.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Esineet: {0}, trofeet: {1}, majat: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Taidot: {0}, tilastot: {1}, saavutukset: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>kyllä</value></data>

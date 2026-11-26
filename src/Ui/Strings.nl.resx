@@ -53,7 +53,7 @@
   <data name="Inv.Equipped" xml:space="preserve"><value>Uitgerust</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Overig</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
-  <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw Hunter Score</value></data>
+  <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
   <data name="Settings.Account" xml:space="preserve"><value>Accountinstellingen</value></data>
   <data name="Settings.GameManagement" xml:space="preserve"><value>Spelbeheer</value></data>
@@ -187,7 +187,7 @@
   <data name="Hunt.Progress" xml:space="preserve"><value>Jouw voortgang</value></data>
   <data name="Hunt.Current" xml:space="preserve"><value>Jacht bezig</value></data>
   <data name="Hunt.CurrentView" xml:space="preserve"><value>Bekijk de jacht</value></data>
-  <data name="Hunt.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Hunt.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Hunt.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Hunt.LatestAchievement" xml:space="preserve"><value>Laatste prestatie</value></data>
   <data name="Hunt.NoAchievements" xml:space="preserve"><value>Geen prestaties behaald</value></data>
@@ -218,7 +218,7 @@
   <data name="Launch.Password" xml:space="preserve"><value>Met wachtwoord beveiligen</value></data>
   <data name="Launch.PasswordPlaceholder" xml:space="preserve"><value>Spelwachtwoord</value></data>
   <data name="Launch.MaxPlayers" xml:space="preserve"><value>Max. spelers</value></data>
-  <data name="Launch.LimitScore" xml:space="preserve"><value>Hunter Score beperken</value></data>
+  <data name="Launch.LimitScore" xml:space="preserve"><value>HunterScore beperken</value></data>
   <data name="Launch.Min" xml:space="preserve"><value>Min:</value></data>
   <data name="Launch.Max" xml:space="preserve"><value>Max:</value></data>
   <data name="Launch.Start" xml:space="preserve"><value>Starten</value></data>
@@ -253,8 +253,8 @@
   <data name="Servers.HostLabel" xml:space="preserve"><value>Host:</value></data>
   <data name="Servers.ReserveLabel" xml:space="preserve"><value>Reservaat:</value></data>
   <data name="Servers.GameTime" xml:space="preserve"><value>Speltijd:</value></data>
-  <data name="Servers.MinScore" xml:space="preserve"><value>Min. Hunter Score:</value></data>
-  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. Hunter Score:</value></data>
+  <data name="Servers.MinScore" xml:space="preserve"><value>Min. HunterScore:</value></data>
+  <data name="Servers.MaxScore" xml:space="preserve"><value>Max. HunterScore:</value></data>
   <data name="Servers.PlayerList" xml:space="preserve"><value>Spelers ({0}/{1})</value></data>
   <data name="Servers.InfoTitle" xml:space="preserve"><value>Informatie over multiplayerverbindingen</value></data>
   <data name="Servers.Info" xml:space="preserve"><value>Multiplayer spelen met mensen die ver bij je vandaan zijn, kan verbindingsproblemen of lag veroorzaken. Het is aan te raden deel te nemen aan spellen waarvan de host dicht bij je in de buurt zit. De gekleurde stippen naast de vlaggen in de serverlijst geven aan hoe ver je van de host van het spel verwijderd bent.</value></data>
@@ -268,7 +268,7 @@
   <data name="Servers.Locked" xml:space="preserve"><value>Dit spel is met een wachtwoord beveiligd</value></data>
   <data name="Servers.PasswordRequired" xml:space="preserve"><value>Wachtwoord vereist</value></data>
   <data name="Servers.WhyFriends" xml:space="preserve"><value>Alleen vrienden</value></data>
-  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>Hunter Score {0}–{1}</value></data>
+  <data name="Servers.WhyHunterscore" xml:space="preserve"><value>HunterScore {0}–{1}</value></data>
   <data name="Servers.WhyFull" xml:space="preserve"><value>Vol</value></data>
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jouw spel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Wordt gestart…</value></data>
@@ -286,7 +286,7 @@
   <data name="Join.Close" xml:space="preserve"><value>Sluiten</value></data>
   <data name="Join.WrongPassword" xml:space="preserve"><value>Verkeerd wachtwoord. Probeer het opnieuw.</value></data>
   <data name="Join.Full" xml:space="preserve"><value>Dit spel is vol. Probeer een ander spel.</value></data>
-  <data name="Join.NotAllowed" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: het is alleen voor vrienden van de host, of je Hunter Score valt buiten zijn limieten.</value></data>
+  <data name="Join.NotAllowed" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: het is alleen voor vrienden van de host, of je HunterScore valt buiten zijn limieten.</value></data>
   <data name="Join.HostNotReady" xml:space="preserve"><value>De host is nog niet klaar. Probeer het zo meteen opnieuw.</value></data>
   <data name="Done.Title" xml:space="preserve"><value>Even klaar met jagen?</value></data>
   <data name="Done.Stats" xml:space="preserve"><value>Jachtstatistieken bekijken</value></data>
@@ -552,7 +552,7 @@
   <data name="Board.Title" xml:space="preserve"><value>RANGLIJSTEN</value></data>
   <data name="Board.Score" xml:space="preserve"><value>Score</value></data>
   <data name="Board.Range" xml:space="preserve"><value>Afstand</value></data>
-  <data name="Board.HunterScore" xml:space="preserve"><value>Hoogste Hunter Score</value></data>
+  <data name="Board.HunterScore" xml:space="preserve"><value>Hoogste HunterScore</value></data>
   <data name="Board.HallOfFame" xml:space="preserve"><value>Hall of Fame</value></data>
   <data name="Board.LaneBandit" xml:space="preserve"><value>Lane Bandit</value></data>
   <data name="Board.BustThrough" xml:space="preserve"><value>Bust Through</value></data>
@@ -565,10 +565,10 @@
   <data name="Board.Top100" xml:space="preserve"><value>Top 100</value></data>
   <data name="Board.Around" xml:space="preserve"><value>Rond jouw rang</value></data>
   <data name="Board.NoRank" xml:space="preserve"><value>Je staat momenteel niet in de ranglijst van deze categorie</value></data>
-  <data name="Board.AllTime" xml:space="preserve"><value>Hoogste Hunter Score aller tijden</value></data>
+  <data name="Board.AllTime" xml:space="preserve"><value>Hoogste HunterScore aller tijden</value></data>
   <data name="Board.Rank" xml:space="preserve"><value>Rang</value></data>
   <data name="Board.Hunter" xml:space="preserve"><value>Jager</value></data>
-  <data name="Board.ScoreColumn" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Board.ScoreColumn" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Board.Past" xml:space="preserve"><value>Hall of Fame van eerdere seizoenen</value></data>
   <data name="Board.SeasonN" xml:space="preserve"><value>Seizoen {0}</value></data>
   <data name="Board.SeasonAll" xml:space="preserve"><value>Alle tijden</value></data>
@@ -969,8 +969,8 @@
   <data name="Prof.Rank" xml:space="preserve"><value>Rang {0}</value></data>
   <data name="Prof.Online" xml:space="preserve"><value>Online</value></data>
   <data name="Prof.TipMembership" xml:space="preserve"><value>Lidmaatschapstype van {0}</value></data>
-  <data name="Prof.TipScore" xml:space="preserve"><value>Hunter Score van {0}</value></data>
-  <data name="Prof.TipRank" xml:space="preserve"><value>Rang van {0} voor Hunter Score</value></data>
+  <data name="Prof.TipScore" xml:space="preserve"><value>HunterScore van {0}</value></data>
+  <data name="Prof.TipRank" xml:space="preserve"><value>Rang van {0} voor HunterScore</value></data>
   <data name="Prof.TipOnline" xml:space="preserve"><value>{0} is online</value></data>
   <data name="Prof.Request" xml:space="preserve"><value>Vriendschapsverzoek sturen</value></data>
   <data name="Prof.RequestPending" xml:space="preserve"><value>Vriendschapsverzoek in afwachting</value></data>
@@ -979,7 +979,7 @@
   <data name="Prof.Weapons" xml:space="preserve"><value>Wapens</value></data>
   <data name="Prof.Collectables" xml:space="preserve"><value>Verzamelobjecten</value></data>
   <data name="Prof.Progress" xml:space="preserve"><value>Voortgang</value></data>
-  <data name="Prof.HunterScore" xml:space="preserve"><value>Hunter Score</value></data>
+  <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Categorieën</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Ontgrendeld</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Verkenning</value></data>
@@ -1420,7 +1420,7 @@
   <data name="Claim.Find.notfound" xml:space="preserve"><value>We hebben geen profiel onder deze naam bewaard.</value></data>
   <data name="Claim.Find.limit" xml:space="preserve"><value>Vandaag te veel zoekopdrachten, probeer het morgen opnieuw.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>De server antwoordde niet.</value></data>
-  <data name="Claim.Score" xml:space="preserve"><value>Hunterscore: {0}</value></data>
+  <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
   <data name="Claim.Counts" xml:space="preserve"><value>Voorwerpen: {0}, trofeeën: {1}, jachthutten: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Vaardigheden: {0}, statistieken: {1}, prestaties: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>ja</value></data>
