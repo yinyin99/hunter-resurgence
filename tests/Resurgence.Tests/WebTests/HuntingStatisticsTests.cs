@@ -91,6 +91,14 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Equal(["Distance Travelled", "2005.00 km (1245.85 miles)", "Hunt Duration", "37d 15h", "total", "3h", "on Hunter Resurgence"], rows);
     }
 
+    static void InEnglish(Action check)
+    {
+        var before = (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture);
+        CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo("en-US", useUserOverride: false);  // the dates follow the culture
+        try { check(); }
+        finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = before; }
+    }
+
     const string Fixture = """
         {"reserves":[{"reserve":"Reserve A","hours":120.5,"gmPerHour":1234.6,"gmPerHarvest":310.4,"comparableGmPerHour":617.4,"comparableGmPerHarvest":155.2,"harvestsPerHour":5.84,"players":12},
                      {"reserve":"Reserve B","hours":60.25,"gmPerHour":800,"gmPerHarvest":200,"comparableGmPerHour":400,"comparableGmPerHarvest":100,"harvestsPerHour":4,"players":7}],
@@ -107,7 +115,7 @@ public sealed class HuntingStatisticsTests : UiContext
     }
 
     [Fact]
-    public void TheHuntingStatisticsAreTwoTablesOfTheServersFiguresWithoutAnyHunter()
+    public void TheHuntingStatisticsAreTwoTablesOfTheServersFiguresWithoutAnyHunter() => InEnglish(() =>
     {
         var cut = Board(HttpStatusCode.OK, Fixture, out var server);
 
@@ -122,15 +130,15 @@ public sealed class HuntingStatisticsTests : UiContext
         Assert.Empty(cut.FindAll(".norank"));
         Assert.Equal("gm$ at the normal rate, bonuses left out.×2, 21–23 Nov; ×1.25, 24–27 Nov", cut.Find(".hunting-note").TextContent);  // the base figures, then the period's events
         Assert.Empty(cut.FindAll("table.stats a"));  // no hunter's name or profile link
-    }
+    });
 
     [Fact]
-    public void WithoutABonusEventOnlyTheFirstLineShows()
+    public void WithoutABonusEventOnlyTheFirstLineShows() => InEnglish(() =>
     {
-        var cut = Board(HttpStatusCode.OK, Fixture[..Fixture.IndexOf(",\n         \"events\"")] + "}", out _);
+        var cut = Board(HttpStatusCode.OK, Fixture[..Fixture.IndexOf("\"events\"")].TrimEnd().TrimEnd(',') + "}", out _);
 
         cut.WaitForAssertion(() => Assert.Equal("gm$ at the normal rate, bonuses left out.", cut.Find(".hunting-note").TextContent));
-    }
+    });
 
     [Fact]
     public void WithoutAnyFigureTheBoardSaysSo()
