@@ -1641,4 +1641,5 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ na taxa normal, sem bônus.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bônus no período:</value></data>
 </root>

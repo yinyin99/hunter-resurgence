@@ -1641,4 +1641,5 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrinen (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaalinen (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ normaalilla korolla, bonukset jätetty pois.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
 </root>

@@ -1641,4 +1641,5 @@ Numele:</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrice (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiale (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ la tariful normal, fără bonusuri.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Evenimente bonus în această perioadă:</value></data>
 </root>

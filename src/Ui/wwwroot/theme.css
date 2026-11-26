@@ -313,6 +313,9 @@ a { transition: color var(--t-fast) var(--ease); }
 
 /* the old list pages are at least this tall */
 .page-min { min-height: 960px; }
+/* a page that marks itself .wide-main takes the shell's empty right column too (the hunting statistics) */
+.body:has(.wide-main) > .sidebar { display: none; }
+.body:has(.wide-main) > main { width: calc(var(--w-main) + var(--w-sidebar)); }
 
 .asset-slot {
     display: inline-flex;

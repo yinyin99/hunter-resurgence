@@ -1,0 +1,20 @@
+.hunting { margin: 0 0 24px; }
+.base { margin: 0 0 24px; padding: 12px 16px; border-left: 3px solid var(--accent); background: var(--bg-block); }
+.base p { margin: 0; font-size: 14px; line-height: 20px; color: var(--text-1); }
+.events { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 8px 0 0; font-size: 14px; line-height: 20px; color: var(--text-2); }
+.events ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.events li { padding: 2px 10px; background: var(--bg-block-2); color: var(--accent-text); }
+.cols { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 0 40px; align-items: start; }
+@media (max-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.part { margin: 0 0 10px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
+ol { margin: 0 0 24px; padding: 0; list-style: none; }
+li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.name { font-size: 15px; line-height: 22px; color: #fff; overflow-wrap: anywhere; }
+.figure { text-align: end; white-space: nowrap; }
+.figure b { font-size: 16px; font-weight: 600; color: #fff; }
+.figure small { font-size: 12px; color: var(--text-2); }
+.bar { grid-column: 1 / -1; display: block; height: 6px; background: linear-gradient(90deg, var(--accent) var(--w), var(--bg-block-2) var(--w)); }
+dl { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0 16px; margin: 0; font-size: 13px; line-height: 18px; color: var(--text-2); }
+dl div { display: flex; gap: 6px; }
+dt::after { content: ":"; }
+dd { margin: 0; color: var(--text-1); }

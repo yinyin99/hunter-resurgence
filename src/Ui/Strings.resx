@@ -1641,4 +1641,5 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metric (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ at the normal rate, bonuses left out.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus events in this period:</value></data>
 </root>

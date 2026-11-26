@@ -1641,4 +1641,5 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrik (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>İngiliz sistemi (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
 </root>
