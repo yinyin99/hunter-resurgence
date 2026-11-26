@@ -52,13 +52,16 @@ public static class AdminApi
                     return NoAccount(account!);
                 var itemId = grant.ItemId!.Value;
                 if (!state.GrantItems(id, itemId, grant.Count))
-                    return TypedResults.Problem($"item {itemId} has no definition", statusCode: 404, title: "Unknown item");
+                    return state.ItemInfo(itemId) is null
+                        ? TypedResults.Problem($"item {itemId} has no definition", statusCode: 404, title: "Unknown item")
+                        : TypedResults.Problem($"the account would own more of item {itemId} than its limit", statusCode: 409, title: "Own limit");
                 return TypedResults.Ok(new ItemGrantResult(itemId, grant.Count, Py.Str(state.ItemInfo(itemId)!["name"])));
             })
              .WithName("GrantItems").WithSummary("Give the player items")
              .WithDescription("Full stacks in slot 0. A running hunt gets them with its next heartbeat (update 10), else the "
-                              + "next connect. Not idempotent: every call grants again.")
-             .ProducesProblem(404).ProducesProblem(503);
+                              + "next connect. Not idempotent: every call grants again. Refused (409, nothing granted) when the account would own more of the item than its limit "
+                              + "(docs/server.md#ownership-limits).")
+             .ProducesProblem(404).ProducesProblem(409).ProducesProblem(503);
 
         admin.MapPost("/grants/currency", Results<Ok<Balance>, ValidationProblem, ProblemHttpResult> (CurrencyGrant grant, [Description(AccountDoc)] string? account) =>
             {

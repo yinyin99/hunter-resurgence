@@ -11,6 +11,7 @@
   "offline_mode": true,
   "all_licenses": true,
   "unlimited_ammo": true,
+  "unlimited_fuel": true,
   "spawn_named_animals": false,
   "default_inventory_capacity": 20000,
   "listeners": [

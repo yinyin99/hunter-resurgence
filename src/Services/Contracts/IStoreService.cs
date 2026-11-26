@@ -17,12 +17,12 @@ public sealed record EthicalRow(int Id, string Species, IReadOnlyList<bool> Perm
 /// An item; <see cref="WasEms"/> is the struck-through price of an item on sale, <see cref="Category"/> the key of its (sub)category.
 /// <see cref="DaysLeft"/> is set for an item that is owned for a time (less than one day is 0.5); <see cref="OwnLimit"/> is 0 for no limit;
 /// <see cref="Banner"/> is premium, limited, new or community; <see cref="MultiBuy"/> items (ammunition) are bought in amounts.
-/// <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Contents"/> is what an item that has units holds. <see cref="Owned"/> is a count of copies, or the units of a <see cref="Counted"/> item; <see cref="Expires"/> is the end of an owned license in unix seconds, 0 when unlimited; <see cref="Unlimited"/> is an ammunition the server gives every player without limit (not sold).
+/// <see cref="Capacity"/> is the inventory weight as the store shows it, with no unit (0 for none); <see cref="Contents"/> is what an item that has units holds. <see cref="Owned"/> is a count of copies, or the units of a <see cref="Counted"/> item; <see cref="Expires"/> is the end of an owned license in unix seconds, 0 when unlimited; <see cref="Unlimited"/> is an ammunition the server gives every player without limit (not sold); <see cref="Fuel"/> is a vehicle fuel the server gives every player without limit (not sold).
 /// </summary>
 public sealed record StoreItem(int Id, string Name, string Variant, string Category, int Ems, int? WasEms, int Gms, int Owned, bool Buyable, double Capacity, string Description,
     double? DaysLeft = null, int OwnLimit = 0, bool DisabledByServices = false, string? Banner = null, bool MultiBuy = false,
     IReadOnlyList<ItemFit>? Fits = null, EthicalMatrix? Ethics = null,
-    bool Counted = false, long? Expires = null, StoreContents? Contents = null, bool Unlimited = false)
+    bool Counted = false, long? Expires = null, StoreContents? Contents = null, bool Unlimited = false, bool Fuel = false)
 {
     /// <summary>No more to buy: the own limit is reached, or the player has a license without end.</summary>
     public bool LimitReached => Expires == 0 || (OwnLimit > 0 && Owned >= OwnLimit);
@@ -34,7 +34,8 @@ public sealed record StoreContents(int Count, string Unit);
 /// <summary>A bundle line; <see cref="OwnLimit"/> is 0 for unlimited.</summary>
 public sealed record BundleLine(int ItemId, string Name, int Count, int Owned, int Value, string Variant = "", int OwnLimit = 0);
 
-public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines);
+/// <summary><see cref="Price"/> is what the signed-in player pays now; <see cref="WasPrice"/> the list price when it is higher (the player owns some of the items up to their limit), else 0; <see cref="OwnedItems"/> of its <see cref="OfItems"/> items are not given again (a copy listed beyond an item's limit is not counted).</summary>
+public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines, int WasPrice = 0, int OwnedItems = 0, int OfItems = 0);
 
 public interface IStoreService
 {

@@ -376,7 +376,7 @@ public static class Replay
             spawnNamedAnimals: (bool?)cfg["spawn_named_animals"] ?? false)
         {
             CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
-            UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
+            UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, UnlimitedFuel = (bool?)cfg["unlimited_fuel"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
             Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],
             HarvestGmBonus = cfg["harvest_gm_bonus"] is JsonObject bonus ? (Py.D(bonus["multiplier"]), Py.D(bonus["until"])) : null,
             PlaytimeSince = cfg["playtime_since"] is { } since ? Py.L(since) : State.DefaultPlaytimeSince

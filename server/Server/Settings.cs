@@ -73,6 +73,13 @@ public sealed class Settings
             JsonValue flag when flag.TryGetValue<bool>(out var unlimited) => unlimited,
             _ => throw new InvalidDataException("unlimited_ammo: true or false"),
         };
+        // true: every player has unlimited vehicle fuel and none is sold (docs/server.md#unlimited-fuel)
+        cfg["unlimited_fuel"] = root["unlimited_fuel"] switch
+        {
+            null => true,
+            JsonValue flag when flag.TryGetValue<bool>(out var unlimitedFuel) => unlimitedFuel,
+            _ => throw new InvalidDataException("unlimited_fuel: true or false"),
+        };
         // true: a hunt's reply places the animals the player's missions name (docs/server.md#named-animals); off until the game is seen to accept them
         cfg["spawn_named_animals"] = root["spawn_named_animals"] switch
         {

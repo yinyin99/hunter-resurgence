@@ -749,6 +749,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Imaš licenco, veljavno do:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Imaš neomejeno licenco</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Neomejeno strelivo</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Neomejeno gorivo</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Lastnik si {0} od {1} artiklov: {2} em$ namesto {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Lastnik si {0} od {1} artiklov</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Že si lastnik vseh artiklov v tem paketu</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ali</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>

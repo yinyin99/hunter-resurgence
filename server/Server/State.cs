@@ -43,9 +43,12 @@ public sealed partial class State
 
     /// <summary>The starting data of an account: items and wallet from src (a connect reply), skills from its levels and
     /// list (the player's Skill/list reply). The one source an importer's rows replace (call inside the account's transaction).</summary>
-    static void Seed(Db con, JsonObject src, JsonNode? list)
+    void Seed(Db con, JsonObject src, JsonNode? list)
     {
-        foreach (var i in src["inventory"]!["items"]!.AsArray())
+        var rows = src["inventory"]!["items"]!.AsArray();
+        // never more of an item than a player may own (OwnLimit): the kit may be a recorded connect
+        var over = Excess<JsonNode?>(rows, i => Py.L(i!["item_id"]), i => Py.L(i!["slot"]) > 0 || i["position"] is not null, i => long.Parse(Py.Str(i!["guid"]))).ToHashSet();
+        foreach (var i in rows.Where(r => !over.Contains(r)))
             con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                      long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
         foreach (var (currency, amount) in src["wallet"] as JsonObject ?? new JsonObject())
@@ -1411,10 +1414,11 @@ public sealed partial class State
             var inv = (JsonObject)inventory.DeepClone();
             inv["items"] = rows;
             inv["infos"] = infosOut;
-            if (UnlimitedAmmo)  // exactly 1 switches the game's mode on; the other services stay as recorded
+            if (UnlimitedAmmo || UnlimitedFuel)  // exactly 1 switches a game mode on; the other services stay as recorded
             {
                 var services = inv["active_services"] as JsonObject ?? [];
-                services["UNLIMITED_AMMO"] = 1;
+                if (UnlimitedAmmo) services["UNLIMITED_AMMO"] = 1;
+                if (UnlimitedFuel) services["UNLIMITED_FUEL"] = 1;
                 inv["active_services"] = services;
             }
             rows = new JsonArray();  // moved into inv
@@ -1632,8 +1636,8 @@ public sealed partial class State
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
                 ["gms"] = Whole(G(item, "silver_price", null)),
-                ["buyable"] = !IsUnlimitedAmmo(item) && (StoreSells(item, "price") || StoreSells(item, "silver_price")),
-                ["unlimited"] = IsUnlimitedAmmo(item),
+                ["buyable"] = !IsUnlimitedAmmo(item) && !IsUnlimitedFuel(Py.L(item["id"])) && (StoreSells(item, "price") || StoreSells(item, "silver_price")),
+                ["unlimited"] = IsUnlimitedAmmo(item), ["fuel"] = IsUnlimitedFuel(Py.L(item["id"])), ["limit"] = LimitOf(item) ?? 0,
             });
         }
         var categories = new JsonArray();
@@ -1645,7 +1649,7 @@ public sealed partial class State
             categories.Add(new JsonObject { ["key"] = key, ["name"] = C(c["title"]), ["children"] = new JsonArray(children) });
         }
         var bundles = new JsonArray();
-        foreach (var b in Arr(G(application, "bundles", null)))
+        foreach (var b in Arr(G(application, "bundles", null)).Where(x => !LeftOut(x!)))
             bundles.Add(new JsonObject
             {
                 ["id"] = C(b!["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
@@ -1754,7 +1758,7 @@ public sealed partial class State
     long[]? BundleSale(JsonNode b)
     {
         long[] ids = [.. Arr(b["items"]).Select(x => Py.L(x))];
-        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) && !ids.Any(i => IsUnlimitedAmmo(items[i])) ? ids : null;
+        return Whole(b["price"]) > 0 && ids.Length > 0 && ids.All(items.ContainsKey) && !(AllLicenses && ids.Any(i => IsLicense(items[i]))) && !ids.Any(i => IsUnlimitedAmmo(items[i])) && !ids.Any(IsUnlimitedFuel) ? ids : null;
     }
 
     /// <summary>The catalogue's ammunition (category 3), the item type <see cref="UnlimitedAmmo"/> makes unlimited.</summary>
@@ -1776,12 +1780,19 @@ public sealed partial class State
 
     /// <summary>Takes price from the currency and delivers the items in one transaction: the items (update 10) and the new balance
     /// (update 15) come with the next heartbeat, also mid-hunt. The new balance, or null (nothing changed) when it would drop below 0
-    /// or the player would own more of an item than the catalogue allows (<see cref="OverOwnLimit"/>).</summary>
-    JsonNode? Charge(long account, string currency, long price, IEnumerable<long> itemIds)
+    /// or the player would own more of an item than its limit (<see cref="OverOwnLimit"/>). For a <paramref name="bundle"/> the price and the items are the server's own offer for this account
+    /// (<see cref="Offer"/>), inside the transaction: <paramref name="price"/> and <paramref name="itemIds"/> are not read.</summary>
+    JsonNode? Charge(long account, string currency, long price, IEnumerable<long> itemIds, JsonNode? bundle = null)
     {
         long[] ids = [.. itemIds];
         using var con = Con(account);
         con.Begin();
+        if (bundle is not null)
+        {
+            if (Offer(con, bundle) is not { Give.Length: > 0 } offer)
+                return null;
+            (price, ids) = (offer.Price, offer.Give);
+        }
         if (ids.GroupBy(i => i).Any(g => OverOwnLimit(con, g.Key, g.Count())))
             return null;
         var balance = AddCurrency(con, currency, -price, PAYMENT, ids);
@@ -1793,20 +1804,16 @@ public sealed partial class State
         return balance;
     }
 
-    /// <summary>Whether n more copies of the item put the player over the catalogue's `ownLimit`, or over 1 when `ownMultiple` is false:
-    /// the website's store refuses the same. A copy is one inventory row; a field the catalogue lacks sets no limit. An item with `units`
-    /// (a one-use order or refill) is exempt from the `ownMultiple` rule only: the original store never showed one as owned. With `all_licenses`
-    /// a license is always over the limit: every player owns it already.</summary>
+    /// <summary>Whether n more copies of the item put the player over its limit (<see cref="OwnLimit(long)"/>: the facts file's `own_limits`, the catalogue's `ownLimit` and `ownMultiple`):
+    /// the website's store refuses the same. A copy is one inventory row. With `all_licenses` a license is always over the limit: every player owns it already; so is an ammunition
+    /// while `unlimited_ammo` is on and a fuel while `unlimited_fuel` is: nothing of them is sold.</summary>
     bool OverOwnLimit(Db con, long itemId, int n)
     {
+        if (IsUnlimitedFuel(itemId))
+            return true;
         if (items.GetValueOrDefault(itemId) is not { } item)
             return false;
-        if (AllLicenses && IsLicense(item) || IsUnlimitedAmmo(item))
-            return true;
-        var limit = Py.Truthy(item["ownLimit"]) ? Py.L(item["ownLimit"]) : long.MaxValue;
-        if (item["ownMultiple"] is not null && !Py.Truthy(item["ownMultiple"]) && !Py.Truthy(item["units"]))
-            limit = Math.Min(limit, 1);
-        return limit != long.MaxValue && (long)con.Scalar("SELECT COUNT(*) FROM items WHERE account_id = $a AND item_id = ?", itemId)! + n > limit;
+        return AllLicenses && IsLicense(item) || IsUnlimitedAmmo(item) || n > Room(con, itemId);
     }
 
     /// <summary>Inventory/buy item_id, amount, wallet: charge now, see <see cref="Charge"/>.</summary>
@@ -1827,14 +1834,14 @@ public sealed partial class State
     }
 
     /// <summary>The website's store (POST /account/buy): count of an item the store sells (<see cref="StoreSells"/>) at today's em$ price, or
-    /// at its gm$ price (<paramref name="gms"/>), or one bundle it sells (<see cref="BundleSale"/>) at its em$ price with each of its items.
+    /// at its gm$ price (<paramref name="gms"/>), or one bundle it sells (<see cref="BundleSale"/>) at the em$ price <see cref="Offer"/> works out for this account, with the items it gives.
     /// The new balance of the currency paid, or null (nothing changed) for something not for sale, a balance too low or an own limit reached.</summary>
     public JsonNode? WebBuy(long account, long id, bool bundle, int count, bool gms = false)
     {
         var (currency, key) = WALLETS[gms ? "SILVER" : "GOLD"];
         if (bundle)
-            return !gms && Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b && count == 1 && BundleSale(b) is { } ids
-                ? Charge(account, "em", Whole(b["price"]), ids)
+            return !gms && count == 1 && Arr(G(application, "bundles", null)).FirstOrDefault(x => Py.Eq(x!["id"], id)) is { } b
+                ? Charge(account, "em", 0, [], b)
                 : null;
         return items.GetValueOrDefault(id) is { } item && StoreSells(item, key) && count is >= 1 and <= MaxBuyAmount
             ? Charge(account, currency, Price(item, key) * count, Enumerable.Repeat(id, count))
@@ -1842,13 +1849,15 @@ public sealed partial class State
     }
 
     /// <summary>Admin: add count items; a running hunt gets them with its next heartbeat (update 10), else the next
-    /// connect carries them. False for an item without a definition.</summary>
+    /// connect carries them. False for an item without a definition, or when the account would own more of it than its limit (nothing is granted).</summary>
     public bool GrantItems(long account, long itemId, long count = 1)
     {
         if (!Py.Truthy(ItemInfo(itemId)))
             return false;
         using var con = Con(account);
         con.Begin();
+        if (count > Room(con, itemId))
+            return false;
         Give(con, Enumerable.Repeat(itemId, (int)count));
         con.Commit();
         return true;

@@ -16,11 +16,13 @@
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@(Mode.Live ? L["Store.NotBuyable"] : L["Store.MaxOwn"])">@L["Store.Buy"]</button> }
                 else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
-                <b>@bundle.Price em$</b>
+                @if (bundle.WasPrice > 0) { <b class="sale">@bundle.Price em$</b> <s>@bundle.WasPrice em$</s> } else { <b>@bundle.Price em$</b> }
             </div>
             <h1>@bundle.Name</h1>
             <p class="text">@bundle.Description</p>
             @if (!bundle.Buyable && !Mode.Live) { <p class="own">@L["Store.MaxOwn"]</p> }
+            @if (bundle.OwnedItems > 0 && bundle.OwnedItems == bundle.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
+            else if (bundle.OwnedItems > 0) { <p class="own">@(bundle.WasPrice > bundle.Price ? L["Store.BundleOwn", bundle.OwnedItems, bundle.OfItems, bundle.Price, bundle.WasPrice] : L["Store.BundleOwnCount", bundle.OwnedItems, bundle.OfItems])</p> }
             <table class="tbl">
                 <thead><tr><th>@L["Store.Included"]</th>@if (!Mode.Live) { <th class="own">@L["Store.Own"]</th><th>@L["Store.OwnLimit"]</th> }<th>@L["Store.Value"]</th></tr></thead>
                 <tbody>
@@ -33,7 +35,7 @@
                 </tbody>
             </table>
             <p class="total">@L["Store.BundlePrice"] <b>@bundle.Price em$</b></p>
-            <p class="total save">@L["Store.YouSave"] <b>@(bundle.Lines.Sum(l => l.Value) - bundle.Price) em$</b></p>
+            @if (bundle.OwnedItems == 0) { <p class="total save">@L["Store.YouSave"] <b>@(bundle.Lines.Sum(l => l.Value) - bundle.Price) em$</b></p> }
         </article>
     }
     else if (loaded) { <p class="text">@L["Store.None"]</p> }

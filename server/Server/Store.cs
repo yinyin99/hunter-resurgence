@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions"];
+         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 37;
+    public const int Version = 38;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -69,6 +69,14 @@ public sealed class Store
     const string MissionRollbacks = $"""
         CREATE TABLE IF NOT EXISTS mission_rollbacks (id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, record TEXT NOT NULL);
         CREATE INDEX IF NOT EXISTS mission_rollbacks_account ON mission_rollbacks (account_id, id);
+        """;
+
+    // the copies of an item the pass at start removed from an account because it owned more than its limit (State.EnforceOwnLimits): the removed row whole (guid, item, slot, metadata, units), `ts` unix seconds;
+    // own_limit_pass (shared, not per player) has a row once the pass has run: it runs once, so a later start never removes a copy
+    const string OwnLimitRemovals = $"""
+        CREATE TABLE IF NOT EXISTS own_limit_removals (id INTEGER PRIMARY KEY, {A}, ts INTEGER NOT NULL, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER);
+        CREATE INDEX IF NOT EXISTS own_limit_removals_account ON own_limit_removals (account_id, id);
+        CREATE TABLE IF NOT EXISTS own_limit_pass (done_ts INTEGER NOT NULL);
         """;
 
     // the account's daily missions: one JSON row (frozen, the day of the streak and its date, the finished objectives, the broken streak, the days completed here)
@@ -265,6 +273,7 @@ public sealed class Store
         {AdminMessagesTable}
         {CommunityProgress}
         {Loadouts}
+        {OwnLimitRemovals}
 
         CREATE TABLE items (
             {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, slot INTEGER NOT NULL, metadata TEXT NOT NULL, units INTEGER,
@@ -530,6 +539,8 @@ public sealed class Store
         // schema 37, guarded by the column and not by the version (every start): 1 when the player chose imperial units (yards, pounds) in the game's settings
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('accounts') WHERE name = 'use_imperial'")! == 0)
             con.Script("ALTER TABLE accounts ADD COLUMN use_imperial INTEGER NOT NULL DEFAULT 0");
+        // schema 38, every start and guarded by its own IF NOT EXISTS (not by the version): what the pass at start removed, and the mark that it has run
+        con.Script(OwnLimitRemovals);
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
