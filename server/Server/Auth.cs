@@ -141,7 +141,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
     /// account exists (first sign-in: after the name). Link: the launcher waiting for it, if any. App: the app on this PC that asked for it, if any.
-    /// Typed, Old, Restore and Error: the last name form and what was wrong with it, for the website's page to show again.</summary>
+    /// Typed, Old, Restore and Error: the last name form and what was wrong with it, for the website's page to show again.
+    /// Banned: the operator's ban reason ("" without one) once the Steam id turned out banned; the sign-in goes no further and /auth/pending gives the reason to this browser only.</summary>
     sealed class Login(string id, string next, string? link, AppRequest? app, DateTimeOffset expires)
     {
         public readonly string Id = id, Next = next;
@@ -153,6 +154,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         public string Typed = "", Old = "";
         public bool Restore;
         public string? Error;
+        public string? Banned;
     }
 
     /// <summary>What an app (the launcher or the backup tool) sent to the start route: SHA-256 of its secret verifier, the port it listens on at 127.0.0.1, and its random state.</summary>
@@ -219,8 +221,14 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>The website's problem page; <paramref name="reason"/> is one of its fixed keys (expired, link, app, steam, banned, form, confirmed).</summary>
     Reply Problem(Req r, string reason) => Redirect(Page(r, "problem?reason=" + reason));
 
-    /// <summary>The problem page of a banned Steam id, with the operator's reason (`why`) when he gave one: the player learns why and how to get it lifted.</summary>
-    Reply Banned(Req r, string? why) => Redirect(Page(r, "problem?reason=banned" + (string.IsNullOrEmpty(why) ? "" : "&why=" + Uri.EscapeDataString(why))));
+    /// <summary>The problem page of a banned Steam id. The reason stays in this browser's sign-in (/auth/pending), never in the URL: a link someone else made shows no reason.</summary>
+    Reply Banned(Req r, Login login, string steamId, string? why)
+    {
+        login.Steam = steamId;
+        login.Banned = why ?? "";
+        logins[login.Id] = login;
+        return Problem(r, "banned");
+    }
 
     static Reply Redirect(string to, params string[] cookies) =>
         new(302, [("Location", to), ("Cache-Control", "no-store"), .. cookies.Select(c => ("Set-Cookie", c))], [], "auth");
@@ -314,10 +322,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             return Problem(r, "steam");
         }
         if (Store.BanReason(steamId) is { } why)  // a banned Steam id signs nothing in and makes no account, whether or not an account of it exists
-        {
-            logins.TryRemove(id, out _);
-            return Banned(r, why);
-        }
+            return Banned(r, login, steamId, why);
         login.Steam = steamId;
         login.Expires = now() + Lifetimes.Login;
         return Store.AccountBySteam(steamId) is { } account ? Finish(r, login, account) : Redirect(Page(r, "handle"));
@@ -336,7 +341,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (Store.ResolveWebSession(cookie) is null)  // a banned account gets no session
         {
             Store.DeleteWebSession(cookie);
-            return Banned(r, login.Steam is { } steam ? Store.BanReason(steam) : null);
+            return Banned(r, login, login.Steam!, Store.BanReason(login.Steam!));
         }
         return Redirect(login.Next, Set(SessionCookie, cookie, "/", Lifetimes.Cookie), Clear(LoginCookie, "/"));
     }
@@ -349,6 +354,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (r.Header("X-Requested-With") is null) return Json(400, new JsonObject { ["error"] = "not from a page of this server" });
         if (Current(r) is not { Steam: not null } login || login.Link is { } link && !links.ContainsKey(link))
             return Json(404, new JsonObject { ["status"] = "expired" });
+        if (login.Banned is { } reason)
+            return Json(200, new JsonObject { ["step"] = "banned", ["csrf"] = "", ["reason"] = reason });
         if (login.Account is not { } account)
             return Json(200, new JsonObject
             {
@@ -369,10 +376,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         if (Current(r) is not { Steam: { } steamId, Account: null } login)
             return Problem(r, "expired");
         if (Store.BanReason(steamId) is { } why)  // banned between the Steam round trip and the form
-        {
-            logins.TryRemove(login.Id, out _);
-            return Banned(r, why);
-        }
+            return Banned(r, login, steamId, why);
         if (Store.AccountBySteam(steamId) is { } existing)  // another tab of this sign-in was faster
             return Finish(r, login, existing);
         var offer = claims is { Enabled: true };

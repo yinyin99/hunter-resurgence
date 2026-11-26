@@ -1,12 +1,18 @@
 @page "/signin/problem"
 @layout SignInLayout
+@inject ISignInService SignIn
 
 <PageTitle>@L["SignInPage.Problem.Title"]</PageTitle>
 
-<SignInProblem Reason="@Reason" Why="@Why" />
+<SignInProblem Reason="@Reason" Why="@why" />
 
 @code {
     [SupplyParameterFromQuery] public string? Reason { get; set; }
-    /// <summary>The operator's ban reason the server adds to a banned sign-in's redirect (at most 200 characters, shown as text).</summary>
-    [SupplyParameterFromQuery] public string? Why { get; set; }
+    string? why;
+
+    /// <summary>A banned player's reason comes from this browser's sign-in (the server keeps it there), never from the URL: a link someone else made shows none.</summary>
+    protected override async Task OnInitializedAsync()
+    {
+        if (Reason == "banned" && await SignIn.PendingAsync() is { Step: "banned" } step) why = step.Reason;
+    }
 }

@@ -1078,8 +1078,12 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         new Uploads(state, tmp).Delete(account);  // POST /account/delete: the account and its flag go, the ban does not
         Assert.Null(state.Store.AccountBySteam("99999999999999991"));
 
-        var back = await Return("web.test", await Begin("web.test"));
-        Problem(back, "banned&why=test%20reason");  // the operator's reason goes to the page the player sees
+        var begun = await Begin("web.test");
+        var back = await Return("web.test", begun);
+        Problem(back, "banned");  // the URL carries no reason: a link anyone makes could
+        var shown = JsonNode.Parse((await Pending("web.test", begun.Login)).Body)!;  // this browser's sign-in gives the page the operator's reason
+        Assert.Equal(("banned", "test reason"), ((string)shown["step"]!, (string)shown["reason"]!));
+        Assert.Equal(404, (await Pending("web.test", "0000")).Status);  // another browser gets none
         Assert.Null(Cookie(back, "hr_session"));
         Assert.Null(state.Store.AccountBySteam("99999999999999991"));  // no account was made
 
@@ -1102,7 +1106,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         Assert.Equal(account, AdminApi.Unban(state, "99999999999999991").Done!.Account);
         using (var con = state.Store.Open())
             Assert.Equal(0L, con.Scalar("SELECT banned FROM accounts WHERE id = ?", account));
-        Problem(await Return("web.test", await Begin("web.test"), "88888888888888889"), "banned&why=no%20account%20yet");
+        Problem(await Return("web.test", await Begin("web.test"), "88888888888888889"), "banned");
         Assert.Equal(302, (await Return("web.test", await Begin("web.test"))).Status);  // the first one signs in again
     }
 
