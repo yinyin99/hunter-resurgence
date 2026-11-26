@@ -23,5 +23,10 @@
   "max_body_bytes": 16777216,
   "game_build": 26432499,
   "event": null,
-  "event_community_divisor": 20
+  "event_community_divisor": 20,
+  "discord_role_bot_token": "",
+  "discord_guild_id": "",
+  "discord_role_verified": "",
+  "discord_role_veteran": "",
+  "discord_veteran_at": 20000
 }

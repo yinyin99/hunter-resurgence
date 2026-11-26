@@ -1,6 +1,7 @@
 // Discord Linked Roles: a player links a Discord account to their game account once, is paid 5000 gm$ and 250 em$ the first time ever, and the Discord server reads their
 // hunterscore as role data (docs/server.md#discord-linked-roles). Discord's documented flow: GET /discord/link is the application's Linked Roles Verification URL,
 // Discord's consent page follows, GET /discord/callback receives the code; the browser then lands on a page of the website that tells the result.
+// With the role bot set, the server also gives the linked players the Discord server's Verified hunter and Veteran roles itself (docs/server.md#discord-linked-roles, "The roles").
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,8 +17,8 @@ namespace Resurgence.Server;
 public enum LinkResult { Paid, Linked, Taken, Other }
 
 /// <summary>The Discord application is the project's own: <paramref name="clientId"/> (also its application id) and <paramref name="clientSecret"/> are the operator's settings.
-/// <paramref name="webHost"/> is the website's domain, where the redirect address the operator registered lives.</summary>
-public sealed class LinkedRoles(State state, HttpClient http, string clientId, string clientSecret, string webHost)
+/// <paramref name="webHost"/> is the website's domain, where the redirect address the operator registered lives. <paramref name="bot"/>: the role bot, null when it is not set.</summary>
+public sealed class LinkedRoles(State state, HttpClient http, string clientId, string clientSecret, string webHost, LinkedRoles.RoleBot? bot = null)
 {
     /// <summary>What is paid once ever, per game account and per Discord id: gm$ and em$.</summary>
     public const long RewardGm = 5000, RewardEm = 250;
@@ -39,6 +40,25 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
 
     /// <summary>A Discord id (a snowflake): digits only; it goes into a URL and a SQL value, so nothing else is let in.</summary>
     public static bool IsDiscordId(string s) => s.Length is >= 15 and <= 25 && s.All(char.IsAsciiDigit);
+
+    /// <summary>The role bot: a second Discord application's bot with Manage Roles only, whose token (sent as `Authorization: Bot`) the server's settings alone hold. It gives every linked player
+    /// the Discord server's <paramref name="Verified"/> role, and <paramref name="Veteran"/> while their HunterScore is at least <paramref name="VeteranAt"/>; both are normal roles of <paramref name="Guild"/>.</summary>
+    public sealed record RoleBot(string Token, string Guild, string Verified, string Veteran, long VeteranAt)
+    {
+        public const long DefaultVeteranAt = 20000;
+
+        /// <summary>The bot of the settings: null unless `discord_role_bot_token`, `discord_guild_id`, `discord_role_verified` and `discord_role_veteran` are all set.</summary>
+        public static RoleBot? From(JsonObject cfg) =>
+            Str(cfg["discord_role_bot_token"]) is { Length: > 0 } token && Id(cfg["discord_guild_id"]) is { } guild && Id(cfg["discord_role_verified"]) is { } verified && Id(cfg["discord_role_veteran"]) is { } veteran
+                ? new(token, guild, verified, veteran, cfg["discord_veteran_at"] is JsonValue at && at.TryGetValue<long>(out var score) ? score : DefaultVeteranAt) : null;
+
+        static string? Id(JsonNode? n) => Str(n) is { } s && IsDiscordId(s) ? s : null;
+
+        public override string ToString() => $"the role bot of guild {Guild}";  // never the token
+    }
+
+    /// <summary>Where the lines of the links, the pushes and the roles go: the server's error output.</summary>
+    public Action<string> Log { get; set; } = line => Console.Error.WriteLine(line);
 
     string RedirectUri => $"https://{webHost}/discord/callback";
 
@@ -137,6 +157,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             if (result is LinkResult.Taken) return Done("taken");
             if (result is LinkResult.Other) return Done("other");
             await PushAsync(account);  // a failed push is logged and the sweep tries again; the link and the reward stand
+            await RolesAsync(account, []);  // so do the roles
             return Done(result is LinkResult.Paid ? "linked" : "rewarded");
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or InvalidOperationException or SqliteException)
@@ -145,9 +166,9 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
     }
 
-    static Reply Fail(long account, string why)
+    Reply Fail(long account, string why)
     {
-        Console.Error.WriteLine($"discord link of account {account}: {why}");
+        Log($"discord link of account {account}: {why}");
         return Done("error");
     }
 
@@ -194,7 +215,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or SqliteException)
         {
-            Console.Error.WriteLine($"discord push of account {account}: {e.Message}");
+            Log($"discord push of account {account}: {e.Message}");
             return false;
         }
         finally
@@ -203,8 +224,8 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
     }
 
-    /// <summary>Delete my data: under the push gate, so no push runs meanwhile and a push that waited for it finds no link, take the account off Discord and then run <paramref name="delete"/>.
-    /// Discord's side is best effort: a failure is logged and never stops or fails the delete.</summary>
+    /// <summary>Delete my data: under the push gate, so no push runs meanwhile and a push that waited for it finds no link, take the account's roles away on the Discord server, take the account off Discord and then
+    /// run <paramref name="delete"/>. Discord's side is best effort: a failure is logged and never stops or fails the delete.</summary>
     public async Task UnlinkAsync(long account, Action delete)
     {
         await gate.WaitAsync();
@@ -212,11 +233,19 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         {
             try
             {
+                await Roles(account, false, []);
+            }
+            catch (Exception e)  // whatever Discord or the network does, the unlink and the delete go on
+            {
+                Log($"discord roles of account {account}: {e.Message}");
+            }
+            try
+            {
                 await Unlink(account);
             }
             catch (Exception e)  // whatever Discord, the network or a stored row does, the delete goes on
             {
-                Console.Error.WriteLine($"discord unlink of account {account}: {e.Message}");
+                Log($"discord unlink of account {account}: {e.Message}");
             }
             delete();
         }
@@ -241,21 +270,21 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         {
             var (status, body) = await OAuth("/oauth2/token", ("grant_type", "refresh_token"), ("refresh_token", refresh));
             if (ReadTokens(body) is { } fresh) (access, refresh) = (fresh.Access, fresh.Refresh);
-            else Console.Error.WriteLine($"discord unlink of account {account}: the token refresh failed ({status})");
+            else Log($"discord unlink of account {account}: the token refresh failed ({status})");
         }
         if (access is not null)
         {
             var (code, _) = await Send(HttpMethod.Delete, $"/users/@me/applications/{clientId}/role-connection", null, access);
-            if (code is < 200 or >= 300) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {code} to the role connection delete");
+            if (code is < 200 or >= 300) Log($"discord unlink of account {account}: Discord answered {code} to the role connection delete");
         }
         var (token, hint) = refresh is not null ? (refresh, "refresh_token") : (access ?? Unseal(row[1], discordId), "access_token");
         if (token is null)
         {
-            Console.Error.WriteLine($"discord unlink of account {account}: no token left to revoke");
+            Log($"discord unlink of account {account}: no token left to revoke");
             return;
         }
         var (revoked, _) = await OAuth("/oauth2/token/revoke", ("token", token), ("token_type_hint", hint));
-        if (revoked != 200) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {revoked} to the revoke");
+        if (revoked != 200) Log($"discord unlink of account {account}: Discord answered {revoked} to the revoke");
     }
 
     async Task<bool> Push(long account)
@@ -278,7 +307,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             if (ReadTokens(body) is not { } fresh)
             {
                 if (status == 400 && Str(body?["error"]) == "invalid_grant") Drop(account, "Discord no longer accepts its refresh token", (string)row[2]!);
-                else Console.Error.WriteLine($"discord push of account {account}: the token refresh failed ({status})");
+                else Log($"discord push of account {account}: the token refresh failed ({status})");
                 return false;
             }
             access = fresh.Access;
@@ -292,7 +321,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         using var after = store.Open();
         if (code is < 200 or >= 300)
         {
-            Console.Error.WriteLine($"discord push of account {account}: Discord answered {code}");
+            Log($"discord push of account {account}: Discord answered {code}");
             if (code == 401) after.Exec("UPDATE discord_links SET expires_ts = 0 WHERE account_id = ?1", account);  // the access token is not good: refresh it next time
             return false;
         }
@@ -302,25 +331,27 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
 
     void Drop(long account, string why, string held)
     {
-        Console.Error.WriteLine($"discord push of account {account}: {why}");
+        Log($"discord push of account {account}: {why}");
         using var con = store.Open();
         con.Exec("UPDATE discord_links SET access_token = NULL, refresh_token = NULL, expires_ts = 0 WHERE account_id = ?1 AND refresh_token = ?2", account, held);  // not the tokens of a link made meanwhile
     }
 
-    /// <summary>Push every linked account whose hunterscore, or handle, is not the one last pushed (every account just linked is one); the number of pushes Discord took. Run every <see cref="SweepEvery"/>.
+    /// <summary>Push every linked account whose hunterscore, or handle, is not the one last pushed (every account just linked is one); the number of pushes Discord took. Then, with the role bot, bring every linked
+    /// account's roles in line (<see cref="Roles"/>). Run every <see cref="SweepEvery"/>.
     /// ponytail: the hunterscore is recomputed on every heartbeat with hunt events, so a push from there would be one call per few seconds per player; this one asks every few minutes. A push that keeps failing is tried at every sweep.</summary>
     public async Task<int> SweepAsync()
     {
-        List<long> due;
+        List<long> due, linked;
         try
         {
             using var con = store.Open();
             due = [.. con.Rows("SELECT l.account_id FROM discord_links l JOIN accounts a ON a.id = l.account_id WHERE l.refresh_token IS NOT NULL AND a.banned = 0"
                                + " AND (l.pushed_score IS NOT COALESCE(json_extract(a.account, '$.hunterscore'), 0) OR l.pushed_handle IS NOT a.handle)").Select(r => (long)r[0])];
+            linked = bot is null ? [] : [.. con.Rows("SELECT l.account_id FROM discord_links l JOIN accounts a ON a.id = l.account_id WHERE a.banned = 0").Select(r => (long)r[0])];
         }
         catch (SqliteException e)
         {
-            Console.Error.WriteLine("discord sweep: " + e.Message);
+            Log("discord sweep: " + e.Message);
             return 0;
         }
         var pushed = 0;
@@ -331,9 +362,73 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             }
             catch (Exception e) when (e is not OperationCanceledException)
             {
-                Console.Error.WriteLine($"discord push of account {account}: {e.Message}");  // one account's failure never stops the others
+                Log($"discord push of account {account}: {e.Message}");  // one account's failure never stops the others
+            }
+        // ponytail: a full pass, one GET per linked account (hundreds) every sweep, so members who joined the Discord server after linking are caught; a member list or the gateway if it ever gets to thousands
+        var told = new HashSet<string>();  // one sweep's failures already logged
+        foreach (var account in linked)
+            try
+            {
+                await RolesAsync(account, told);
+            }
+            catch (Exception e) when (e is not OperationCanceledException)
+            {
+                Log($"discord roles of account {account}: {e.Message}");
             }
         return pushed;
+    }
+
+    // ---- the roles (with the role bot)
+
+    /// <summary><see cref="Roles"/> of a linked account under the push gate, so it never runs during a Delete my data; never throws for Discord's or the network's sake (a failure is logged, the next sweep tries again).</summary>
+    async Task RolesAsync(long account, HashSet<string> told)
+    {
+        if (bot is null) return;
+        await gate.WaitAsync();
+        try
+        {
+            await Roles(account, true, told);
+        }
+        catch (Exception e) when (e is HttpRequestException or TaskCanceledException or JsonException or SqliteException)
+        {
+            Log($"discord roles of account {account}: {e.Message}");
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    /// <summary>Make the account's two roles on the Discord server what its link says: Verified hunter while <paramref name="linked"/>, Veteran while linked with a HunterScore of at least the bot's VeteranAt. Reads
+    /// the member first and changes only what differs, and never any other role. A member who is not in the Discord server (404) is skipped quietly: the next sweep looks again. A refusal is logged once per
+    /// <paramref name="told"/> (one sweep), so a bot whose own role sits below a role (403) is one line, not one per account. The caller holds the gate.</summary>
+    async Task Roles(long account, bool linked, HashSet<string> told)
+    {
+        if (bot is null) return;
+        object[]? row;
+        using (var con = store.Open())
+            row = con.Rows("SELECT l.discord_id, COALESCE(json_extract(a.account, '$.hunterscore'), 0) FROM discord_links l JOIN accounts a ON a.id = l.account_id WHERE l.account_id = ?1", account).FirstOrDefault();
+        if (row is null) return;
+        var (discordId, score) = ((string)row[0], Convert.ToInt64(row[1], CultureInfo.InvariantCulture));
+        var member = $"/guilds/{bot.Guild}/members/{discordId}";
+        var (status, body) = await Send(HttpMethod.Get, member, null, bot.Token, "Bot");
+        if (status == 404) return;
+        if (status != 200 || body?["roles"] is not JsonArray roles)
+        {
+            if (told.Add($"member {status}")) Log($"discord roles of account {account}: Discord answered {status} to reading the member");
+            return;
+        }
+        var has = roles.Select(Str).ToHashSet();
+        foreach (var (role, name, want) in new[] { (bot.Verified, "Verified hunter", linked), (bot.Veteran, "Veteran", linked && score >= bot.VeteranAt) })
+        {
+            if (has.Contains(role) == want) continue;
+            var (code, _) = await Send(want ? HttpMethod.Put : HttpMethod.Delete, $"{member}/roles/{role}", null, bot.Token, "Bot");
+            if (code is >= 200 and < 300)
+                Log($"discord roles of account {account}: {(want ? "gave" : "took away")} {name}");
+            else if (told.Add($"{name} {code}"))
+                Log($"discord roles of account {account}: Discord answered {code} to {(want ? "giving" : "taking away")} {name}"
+                    + (code == 403 ? " (the bot needs Manage Roles and its own role above this one; logged once per sweep)" : ""));
+        }
     }
 
     /// <summary>Discord's limit for `platform_username`, in characters.</summary>
@@ -361,16 +456,26 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
     Task<(int Status, JsonObject? Body)> OAuth(string path, params (string, string)[] form) =>
         Send(HttpMethod.Post, path, new FormUrlEncodedContent([.. form.Select(p => KeyValuePair.Create(p.Item1, p.Item2)), KeyValuePair.Create("client_id", clientId), KeyValuePair.Create("client_secret", clientSecret)]), null);
 
-    async Task<(int Status, JsonObject? Body)> Send(HttpMethod method, string path, HttpContent? content, string? bearer)
+    /// <summary>A call to Discord's API, with <paramref name="token"/> as `Authorization: <paramref name="scheme"/>`. A 429 (Discord's rate limit) on a call without a body is sent again after the `retry_after`
+    /// seconds it gives, at most 3 times in all and never after more than a minute; otherwise the 429 is the answer.</summary>
+    async Task<(int Status, JsonObject? Body)> Send(HttpMethod method, string path, HttpContent? content, string? token, string scheme = "Bearer")
     {
-        using var request = new HttpRequestMessage(method, Api + path) { Content = content };
-        request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
-        if (bearer is not null) request.Headers.Authorization = new("Bearer", bearer);
-        using var reply = await http.SendAsync(request);
-        JsonObject? body = null;
-        try { body = JsonNode.Parse(await reply.Content.ReadAsStringAsync()) as JsonObject; }
-        catch (JsonException) { }  // an empty or foreign body: no object
-        return ((int)reply.StatusCode, body);
+        for (var tries = 1; ; tries++)
+        {
+            using var request = new HttpRequestMessage(method, Api + path) { Content = content };
+            request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
+            if (token is not null) request.Headers.Authorization = new(scheme, token);
+            using var reply = await http.SendAsync(request);
+            JsonObject? body = null;
+            try { body = JsonNode.Parse(await reply.Content.ReadAsStringAsync()) as JsonObject; }
+            catch (JsonException) { }  // an empty or foreign body: no object
+            if ((int)reply.StatusCode == 429 && content is null && tries < 3 && body?["retry_after"] is JsonValue after && after.TryGetValue<double>(out var seconds) && seconds is >= 0 and <= 60)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(seconds));
+                continue;
+            }
+            return ((int)reply.StatusCode, body);
+        }
     }
 }
 

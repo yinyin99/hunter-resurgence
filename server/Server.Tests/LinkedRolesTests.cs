@@ -8,7 +8,7 @@ using static Resurgence.Server.Tests.Fixtures;
 
 namespace Resurgence.Server.Tests;
 
-/// <summary>Discord's API as the server calls it (the token endpoint, the user, the role connection): what it was asked, and the answers a test sets.</summary>
+/// <summary>Discord's API as the server calls it (the token endpoint, the user, the role connection, the guild's members and their roles): what it was asked, and the answers a test sets.</summary>
 sealed class FakeDiscord : HttpMessageHandler
 {
     public string UserId = "111111111111111111";
@@ -19,10 +19,13 @@ sealed class FakeDiscord : HttpMessageHandler
     public string RefreshError = "invalid_grant";
     public bool Down;
     public Action? OnRefresh;  // runs when a refresh token is traded, before Discord answers: what happens meanwhile
+    public readonly Dictionary<string, HashSet<string>> Members = [];  // the guild's members by Discord id, with their role ids; anyone else is 404
+    public int RoleStatus = 204;  // the answer to a role given or taken away
+    public int Limited;  // how many guild calls get a 429 first
     public readonly List<Call> Asked = [];
     int issued;
 
-    public sealed record Call(string Method, string Path, string? Bearer, Dictionary<string, string> Form, JsonNode? Json)
+    public sealed record Call(string Method, string Path, string? Bearer, Dictionary<string, string> Form, JsonNode? Json, string? Scheme)
     {
         public string Line => Method + " " + Path;
     }
@@ -35,7 +38,7 @@ sealed class FakeDiscord : HttpMessageHandler
         var isForm = request.Content?.Headers.ContentType?.MediaType == "application/x-www-form-urlencoded";
         var form = isForm ? HttpUtility.ParseQueryString(body).AllKeys.ToDictionary(k => k!, k => HttpUtility.ParseQueryString(body)[k]!) : [];
         lock (Asked)
-            Asked.Add(new(request.Method.Method, path, request.Headers.Authorization?.Parameter, form, body.StartsWith('{') ? JsonNode.Parse(body) : null));
+            Asked.Add(new(request.Method.Method, path, request.Headers.Authorization?.Parameter, form, body.StartsWith('{') ? JsonNode.Parse(body) : null, request.Headers.Authorization?.Scheme));
         if (Down) throw new HttpRequestException("down");
         static HttpResponseMessage Json(int status, string json) => new((HttpStatusCode)status) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
         if (path == "/api/v10/oauth2/token/revoke") return Json(RevokeStatus, "{}");
@@ -50,6 +53,20 @@ sealed class FakeDiscord : HttpMessageHandler
         if (path == "/api/v10/users/@me") return Json(200, $$"""{"id": "{{UserId}}", "username": "someone"}""");
         if (path.EndsWith("/role-connection", StringComparison.Ordinal) && request.Method == HttpMethod.Put) return Json(PutStatus, "{}");
         if (path.EndsWith("/role-connection", StringComparison.Ordinal) && request.Method == HttpMethod.Delete) return new(HttpStatusCode.NoContent);
+        if (path.StartsWith("/api/v10/guilds/", StringComparison.Ordinal))  // /api/v10/guilds/<guild>/members/<user>[/roles/<role>]
+        {
+            if (Limited > 0 && Limited-- > 0) return Json(429, """{"message": "You are being rate limited.", "retry_after": 0.01, "global": false}""");
+            var part = path.Split('/');
+            lock (Members)
+            {
+                if (!Members.TryGetValue(part[6], out var roles)) return Json(404, """{"message": "Unknown Member", "code": 10007}""");
+                if (part.Length == 7) return Json(200, new JsonObject { ["user"] = new JsonObject { ["id"] = part[6] }, ["roles"] = new JsonArray([.. roles.Select(r => (JsonNode?)r)]) }.ToJsonString());
+                if (RoleStatus is < 200 or >= 300) return Json(RoleStatus, """{"message": "Missing Permissions", "code": 50013}""");
+                if (request.Method == HttpMethod.Put) roles.Add(part[8]);
+                else roles.Remove(part[8]);
+                return new(HttpStatusCode.NoContent);
+            }
+        }
         return Json(404, "{}");
     }
 

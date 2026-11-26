@@ -62,6 +62,23 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheRoleBotSettingsAreOptionalTheIdsDigitsAndVeteranStartsAt20000()
+    {
+        var none = Load(Minimal()).Cfg;
+        Assert.Equal((null, null, 20000L), ((string?)none["discord_role_bot_token"], (string?)none["discord_guild_id"], (long)none["discord_veteran_at"]!));
+        var ok = Minimal();
+        (ok["discord_role_bot_token"], ok["discord_guild_id"], ok["discord_role_verified"], ok["discord_role_veteran"], ok["discord_veteran_at"]) = ("a-token", "900000000000000001", "900000000000000002", "900000000000000003", 15000);
+        var cfg = Load(ok).Cfg;
+        Assert.Equal(("a-token", "900000000000000001", 15000L), ((string?)cfg["discord_role_bot_token"], (string?)cfg["discord_guild_id"], (long)cfg["discord_veteran_at"]!));
+        foreach (var (key, value) in new (string, JsonNode)[] { ("discord_guild_id", "not-digits"), ("discord_role_verified", "12345"), ("discord_role_veteran", "1/roles/2"), ("discord_veteran_at", -1) })
+        {
+            var o = Minimal();
+            o[key] = value;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void TheGameBuildIsOptionalAndAPositiveWholeNumber()
     {
         Assert.Null(Load(Minimal()).Cfg["game_build"]);
