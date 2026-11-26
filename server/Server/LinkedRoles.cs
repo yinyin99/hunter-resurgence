@@ -1,4 +1,4 @@
-// Discord Linked Roles: a player links a Discord account to their game account once, is paid 2500 gm$ the first time ever, and the Discord server reads their
+// Discord Linked Roles: a player links a Discord account to their game account once, is paid 5000 gm$ and 250 em$ the first time ever, and the Discord server reads their
 // hunterscore as role data (docs/server.md#discord-linked-roles). Discord's documented flow: GET /discord/link is the application's Linked Roles Verification URL,
 // Discord's consent page follows, GET /discord/callback receives the code; the browser then lands on a page of the website that tells the result.
 using System.Globalization;
@@ -19,8 +19,8 @@ public enum LinkResult { Paid, Linked, Taken, Other }
 /// <paramref name="webHost"/> is the website's domain, where the redirect address the operator registered lives.</summary>
 public sealed class LinkedRoles(State state, HttpClient http, string clientId, string clientSecret, string webHost)
 {
-    /// <summary>The gm$ paid once ever, per game account and per Discord id.</summary>
-    public const long Reward = 2500;
+    /// <summary>What is paid once ever, per game account and per Discord id: gm$ and em$.</summary>
+    public const long RewardGm = 5000, RewardEm = 250;
     /// <summary>The `wallet_log` reason of the reward.</summary>
     public const string RewardSummary = "Reward for linking Discord";
     public const string PlatformName = "Hunter Resurgence";
@@ -170,9 +170,12 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         var paid = con.Exec("INSERT OR IGNORE INTO discord_rewards (hash, account_id) VALUES (?1, $a)", Ledger(discordId)) == 1;
         if (paid)
         {
-            var balance = State.AddCurrency(con, "gm", Reward, RewardSummary) ?? throw new InvalidOperationException("the account has no gm$ wallet");
-            con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = balance.DeepClone(), ["type"] = "gm", ["update"] = 15 }));
-            Uploads.Notify(con, $"Thank you for linking your Discord account: {Reward} gm$ were added to your wallet.");
+            foreach (var (currency, amount) in new[] { ("gm", RewardGm), ("em", RewardEm) })
+            {
+                var balance = State.AddCurrency(con, currency, amount, RewardSummary) ?? throw new InvalidOperationException($"the account has no {currency}$ wallet");
+                con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(new JsonObject { ["amount"] = balance.DeepClone(), ["type"] = currency, ["update"] = 15 }));
+            }
+            Uploads.Notify(con, $"Thank you for linking your Discord account: {RewardGm} gm$ and {RewardEm} em$ were added to your wallet.");
         }
         con.Commit();
         return paid ? LinkResult.Paid : LinkResult.Linked;

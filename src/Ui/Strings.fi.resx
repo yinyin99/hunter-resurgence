@@ -1443,7 +1443,7 @@
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Jokainen lähettämäsi varmuuskopio-zip muuttumattomana: säilytetään, jotta operaattori voi tarkistaa sen, ja palauttamisen jälkeen, jotta operaattori voi nollata tilisi ja palauttaa sen uudelleen. Zip sisältää sen, minkä varmuuskopiotyökalu tallensi tilistäsi.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sisäänkirjautumisevästeet ja pelitunnisteet tiivisteinä, joita ei voi palauttaa luettavaan muotoon.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Vain jos yhdistät Discordin: Discord-tunnuksesi ja tokenit, jotka Discord antoi palvelimelle roolisi päivittämistä varten, salattuina. Muuta Discord-profiilistasi ei tallenneta. Palvelin lähettää käyttäjänimesi ja Hunter Scoresi Discordille rooliasi varten.</value></data>
-  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Vain jos yhdistät Discordin: merkintä siitä, että 2500 gm$ palkinto on maksettu Discord-tunnuksellesi, tallennettuna avaimellisena tiivisteenä, jota ei voi muuttaa takaisin tunnukseksi.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Vain jos yhdistät Discordin: merkintä siitä, että 5000 gm$ ja 250 em$ palkinto on maksettu Discord-tunnuksellesi, tallennettuna avaimellisena tiivisteenä, jota ei voi muuttaa takaisin tunnukseksi.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Mitä tilit eivät sisällä</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Sähköpostiosoitteesi, oikea nimesi, postiosoitteesi tai puhelinnumerosi: niitä ei kysytä eikä tallenneta tilillesi. Jos varmuuskopio sisältää tällaisen kentän, sitä ei palauteta.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Tietojesi poistaminen</value></data>
@@ -1579,8 +1579,8 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Tämä lomake ei ole tältä palvelimelta.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Tämä kirjautuminen on jo vahvistettu.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Yhdistetty</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi ja sait 2500 gm$. Roolisi Discord-palvelimella määräytyvät Hunter Scoren mukaan.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi. Olet jo saanut 2500 gm$ yhdistämisestä, joten uutta palkintoa ei tule. Roolisi Discord-palvelimella määräytyvät Hunter Scoren mukaan.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi ja sait 5000 gm$ ja 250 em$. Roolisi Discord-palvelimella määräytyvät Hunter Scoren mukaan.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord-tilisi on yhdistetty metsästäjääsi. Olet jo saanut 5000 gm$ ja 250 em$ yhdistämisestä, joten uutta palkintoa ei tule. Roolisi Discord-palvelimella määräytyvät Hunter Scoren mukaan.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Tämä Discord-tili on yhdistetty toiseen metsästäjään. Discord-tilin voi yhdistää vain yhteen metsästäjään.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Metsästäjäsi on jo yhdistetty toiseen Discord-tiliin. Metsästäjän voi yhdistää vain yhteen Discord-tiliin.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Yhdistäminen epäonnistui. Palaa Discordiin ja yritä uudelleen.</value></data>

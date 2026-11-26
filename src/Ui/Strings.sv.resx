@@ -1443,7 +1443,7 @@
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Varje zip-fil med säkerhetskopia du laddar upp, oförändrad: sparas för att en operatör ska granska den, och efter att den återställts, så att operatören kan återställa ditt konto och återställa det igen. En zip-fil innehåller det som säkerhetskopieringsverktyget sparade från ditt konto.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inloggningscookies och speltokens, som hashvärden som inte kan läsas tillbaka.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Bara om du länkar Discord: ditt Discord-id och de token som Discord gav servern för att uppdatera dina roller, lagrade krypterade. Inget annat från din Discord-profil lagras. Servern skickar ditt handle och din Hunter Score till Discord för dina roller.</value></data>
-  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bara om du länkar Discord: en post om att belöningen på 2500 gm$ har betalats ut för ditt Discord-id, lagrad som en nyckelhash som inte kan göras om till id:t.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bara om du länkar Discord: en post om att belöningen på 5000 gm$ och 250 em$ har betalats ut för ditt Discord-id, lagrad som en nyckelhash som inte kan göras om till id:t.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Vad konton inte innehåller</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-postadress, ditt riktiga namn, din postadress eller ditt telefonnummer: de efterfrågas inte och sparas inte i ditt konto. Om en säkerhetskopia innehåller ett sådant fält återställs det inte.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>
@@ -1579,8 +1579,8 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Det här formuläret kommer inte från den här servern.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Den här inloggningen är redan bekräftad.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Länkad</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare och du fick 2500 gm$. Dina roller på Discord-servern följer din Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare. Du har redan fått de 2500 gm$ för länkningen, så det blir ingen ny belöning. Dina roller på Discord-servern följer din Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare och du fick 5000 gm$ och 250 em$. Dina roller på Discord-servern följer din Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Ditt Discord-konto är länkat till din jägare. Du har redan fått de 5000 gm$ och 250 em$ för länkningen, så det blir ingen ny belöning. Dina roller på Discord-servern följer din Hunter Score.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Det här Discord-kontot är länkat till en annan jägare. Ett Discord-konto kan bara länkas till en jägare.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Din jägare är redan länkad till ett annat Discord-konto. En jägare kan bara länkas till ett Discord-konto.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Länkningen misslyckades. Gå tillbaka till Discord och försök igen.</value></data>

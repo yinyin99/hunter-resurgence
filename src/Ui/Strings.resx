@@ -1443,7 +1443,7 @@
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Each backup zip you upload, unchanged: kept for an operator to check, and after it is restored, so that the operator can reset your account and restore it again. A zip holds what the backup tool saved of your account.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Only if you link Discord: your Discord id and the tokens Discord gave the server to update your roles, kept encrypted. Nothing else of your Discord profile is kept. The server sends your handle and Hunter Score to Discord for your roles.</value></data>
-  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Only if you link Discord: a record that the 2500 gm$ reward was paid for your Discord id, kept as a keyed hash that cannot be turned back into the id.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Only if you link Discord: a record that the 5000 gm$ and 250 em$ reward was paid for your Discord id, kept as a keyed hash that cannot be turned back into the id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>
@@ -1579,8 +1579,8 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>This form is not from this server.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>This sign-in was already confirmed.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Linked</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Your Discord account is linked to your hunter and you received 2500 gm$. Your roles on the Discord server follow your Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Your Discord account is linked to your hunter. You already received the 2500 gm$ for linking, so there is no new reward. Your roles on the Discord server follow your Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Your Discord account is linked to your hunter and you received 5000 gm$ and 250 em$. Your roles on the Discord server follow your Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Your Discord account is linked to your hunter. You already received the 5000 gm$ and 250 em$ for linking, so there is no new reward. Your roles on the Discord server follow your Hunter Score.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>This Discord account is linked to another hunter. A Discord account can be linked to one hunter only.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Your hunter is already linked to another Discord account. A hunter can be linked to one Discord account only.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Linking did not work. Go back to Discord and try again.</value></data>

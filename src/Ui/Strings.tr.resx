@@ -1443,7 +1443,7 @@
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Yüklediğiniz her yedek zip dosyası, değiştirilmeden: bir operatörün kontrol etmesi için ve geri yüklendikten sonra da operatörün hesabınızı sıfırlayıp yeniden geri yükleyebilmesi için saklanır. Zip dosyası, yedekleme aracının hesabınızdan kaydettiklerini içerir.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Oturum açma çerezleri ve oyun belirteçleri; geri okunamayan karma değerler olarak.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: Discord kimliğiniz ve Discord'un rollerinizi güncellemek için sunucuya verdiği belirteçler, şifrelenmiş olarak saklanır. Discord profilinizden başka hiçbir şey saklanmaz. Sunucu, rolleriniz için kullanıcı adınızı ve Hunter Score'unuzu Discord'a gönderir.</value></data>
-  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: 2500 gm$ ödülünün Discord kimliğiniz için ödendiğine dair bir kayıt, kimliğe geri çevrilemeyen anahtarlı bir özet (hash) olarak saklanır.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: 5000 gm$ ve 250 em$ ödülünün Discord kimliğiniz için ödendiğine dair bir kayıt, kimliğe geri çevrilemeyen anahtarlı bir özet (hash) olarak saklanır.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hesapların içermedikleri</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-posta adresiniz, gerçek adınız, posta adresiniz veya telefon numaranız: bunlar istenmez ve hesabınızda saklanmaz. Bir yedek böyle bir alan içeriyorsa geri yüklenmez.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>
@@ -1579,8 +1579,8 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Bu form bu sunucudan gelmiyor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Bu oturum açma zaten onaylandı.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Bağlandı</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı ve 2500 gm$ aldınız. Discord sunucusundaki rolleriniz Hunter Score'unuza göre verilir.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı. Bağlama için 2500 gm$ ödülünü zaten aldınız, bu yüzden yeni bir ödül yok. Discord sunucusundaki rolleriniz Hunter Score'unuza göre verilir.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı ve 5000 gm$ ve 250 em$ aldınız. Discord sunucusundaki rolleriniz Hunter Score'unuza göre verilir.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>Discord hesabınız avcınıza bağlandı. Bağlama için 5000 gm$ ve 250 em$ ödülünü zaten aldınız, bu yüzden yeni bir ödül yok. Discord sunucusundaki rolleriniz Hunter Score'unuza göre verilir.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Bu Discord hesabı başka bir avcıya bağlı. Bir Discord hesabı yalnızca bir avcıya bağlanabilir.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>Avcınız zaten başka bir Discord hesabına bağlı. Bir avcı yalnızca bir Discord hesabına bağlanabilir.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>Bağlama işe yaramadı. Discord'a dönün ve tekrar deneyin.</value></data>

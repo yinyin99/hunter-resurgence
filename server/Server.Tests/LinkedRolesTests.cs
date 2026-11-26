@@ -91,6 +91,8 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
 
     double Gm(long account) => Py.D(state.Wallet(account)["gm"]);
 
+    double Em(long account) => Py.D(state.Wallet(account)["em"]);
+
     void SetHunterscore(long account, long score)
     {
         using var con = state.Store.Open();
@@ -121,6 +123,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         return (long)con.Scalar($"SELECT COUNT(*) FROM {table} WHERE {where}")!;
     }
 
+    /// <summary>The reward's `wallet_log` rows of the account: 2 once it was paid (a gm$ and an em$ row), 0 before.</summary>
     long Paid(long account)
     {
         using var con = state.Store.Open(account);
@@ -209,15 +212,15 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.Equal(["access-1", "access-1"], discord.Asked.Skip(1).Select(c => c.Bearer));
         Eq("""{"platform_name": "Hunter Resurgence", "platform_username": "second", "metadata": {"hunterscore": 20500}}""", discord.Asked[2].Json);
 
-        // 2500 gm$ through the wallet: a wallet_log row with the reason, base = amount, no bonus event; a message in the notice thread
-        Assert.Equal(33.0 + 2500, Gm(8));
+        // 5000 gm$ and 250 em$ through the wallet: a wallet_log row of each with the reason, base = amount, no bonus event; one message in the notice thread
+        Assert.Equal((33.0 + 5000, 182.0 + 250), (Gm(8), Em(8)));
         using (var con = state.Store.Open(8))
         {
-            var row = con.Rows("SELECT currency, amount, after, base, bonus_event FROM wallet_log WHERE account_id = $a AND summary = ?", LinkedRoles.RewardSummary).Single();
-            Assert.Equal(("gm", 2500.0, 2533.0, 2500.0), ((string)row[0], (double)row[1], (double)row[2], (double)row[3]));
-            Assert.IsType<DBNull>(row[4]);
+            var rows = con.Rows("SELECT currency, amount, after, base, bonus_event FROM wallet_log WHERE account_id = $a AND summary = ? ORDER BY n", LinkedRoles.RewardSummary);
+            Assert.Equal([("gm", 5000.0, 5033.0, 5000.0), ("em", 250.0, 432.0, 250.0)], rows.Select(r => ((string)r[0], (double)r[1], (double)r[2], (double)r[3])));
+            Assert.All(rows, r => Assert.IsType<DBNull>(r[4]));
         }
-        Assert.Contains("2500 gm$", Assert.Single(Inbox(8)));
+        Assert.Contains("5000 gm$ and 250 em$", Assert.Single(Inbox(8)));
 
         // the link keeps the Discord id and the two tokens sealed (never as they came), and what was pushed
         var link = LinkRow(8);
@@ -252,7 +255,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         discord.UserId = "111111111111111111";
         Assert.Equal(Redirect + "rewarded", await Callback(a, code: "code-2"));
         Assert.Single(discord.Puts);
-        Assert.Equal((33.0 + 2500, 1L), (Gm(8), Paid(8)));
+        Assert.Equal((33.0 + 5000, 182.0 + 250, 2L), (Gm(8), Em(8), Paid(8)));
         Assert.Equal(1L, Count("discord_links"));
     }
 
@@ -270,7 +273,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         var results = await Task.WhenAll(Enumerable.Range(0, 6).Select(i => Raw("code-" + i)));
         Assert.Equal(1, results.Count(r => r == Redirect + "linked"));
         Assert.Equal(5, results.Count(r => r == Redirect + "rewarded"));
-        Assert.Equal((33.0 + 2500, 1L, 1, 1L), (Gm(8), Paid(8), Inbox(8).Length, Count("discord_rewards")));
+        Assert.Equal((33.0 + 5000, 182.0 + 250, 2L, 1, 1L), (Gm(8), Em(8), Paid(8), Inbox(8).Length, Count("discord_rewards")));
     }
 
     [Fact]
@@ -280,14 +283,14 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.Equal(Redirect + "linked", await Callback(a));
         Unlink(8);
         Assert.Equal(Redirect + "rewarded", await Callback(a));  // the same pair again after an unlink
-        Assert.Equal(33.0 + 2500, Gm(8));
+        Assert.Equal((33.0 + 5000, 182.0 + 250), (Gm(8), Em(8)));
         Unlink(8);
         Assert.Equal(Redirect + "rewarded", await Callback(b));  // a second hunter with the Discord account that was paid: linked, not paid
         Assert.Equal((33.0, 1L), (Gm(9), Count("discord_links", "account_id = 9")));
         Unlink(9);
         discord.UserId = "222222222222222222";  // the hunter that was paid, with another Discord account: linked, not paid
         Assert.Equal(Redirect + "rewarded", await Callback(a));
-        Assert.Equal((33.0 + 2500, 1L), (Gm(8), Paid(8)));
+        Assert.Equal((33.0 + 5000, 182.0 + 250, 2L), (Gm(8), Em(8), Paid(8)));
         Assert.Equal(0L, Paid(9));
         Assert.Equal(1L, Count("discord_rewards"));
     }
@@ -366,7 +369,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         // linking again with new tokens takes the player back in
         Assert.Equal(Redirect + "rewarded", await Callback(cookie, code: "code-9"));
         Assert.Equal((false, 30000L), (LinkRow(8)[2] is DBNull, (long)LinkRow(8)[4]));
-        Assert.Equal(33.0 + 2500, Gm(8));
+        Assert.Equal((33.0 + 5000, 182.0 + 250), (Gm(8), Em(8)));
     }
 
     [Fact]
@@ -399,7 +402,7 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
     {
         discord.PutStatus = 500;  // Discord is failing while the player links: the link and the reward stand, the push waits
         Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
-        Assert.Equal(33.0 + 2500, Gm(8));
+        Assert.Equal((33.0 + 5000, 182.0 + 250), (Gm(8), Em(8)));
         Assert.IsType<DBNull>(LinkRow(8)[4]);
         Assert.Equal(0, await Roles.SweepAsync());
         discord.Down = true;

@@ -1443,7 +1443,7 @@
   <data name="Data.Stored.Zip" xml:space="preserve"><value>Cada zip de cópia de segurança que envia, sem alterações: guardado para um operador o verificar e, depois de restaurado, para que o operador possa repor a sua conta e restaurá-la novamente. Um zip contém o que a ferramenta de cópia de segurança guardou da sua conta.</value></data>
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de início de sessão e tokens do jogo, como hashes que não podem ser revertidos.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Apenas se associar o Discord: o seu id do Discord e os tokens que o Discord deu ao servidor para atualizar os seus cargos, guardados cifrados. Nada mais do seu perfil do Discord é guardado. O servidor envia o seu nome de caçador e o seu Hunter Score ao Discord para os seus cargos.</value></data>
-  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Apenas se associar o Discord: um registo de que a recompensa de 2500 gm$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
+  <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Apenas se associar o Discord: um registo de que a recompensa de 5000 gm$ e 250 em$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não contêm</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>O seu endereço de e-mail, nome verdadeiro, morada ou número de telefone: não são pedidos nem guardados na sua conta. Se uma cópia de segurança contiver um campo desse tipo, este não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar os seus dados</value></data>
@@ -1579,8 +1579,8 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="SignInPage.Problem.Form" xml:space="preserve"><value>Este formulário não vem deste servidor.</value></data>
   <data name="SignInPage.Problem.Confirmed" xml:space="preserve"><value>Este início de sessão já foi confirmado.</value></data>
   <data name="DiscordLink.Linked" xml:space="preserve"><value>Associado</value></data>
-  <data name="DiscordLink.Reward" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador e recebeu 2500 gm$. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
-  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador. Já recebeu os 2500 gm$ pela associação, por isso não há nova recompensa. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
+  <data name="DiscordLink.Reward" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador e recebeu 5000 gm$ e 250 em$. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
+  <data name="DiscordLink.Rewarded" xml:space="preserve"><value>A sua conta do Discord está associada ao seu caçador. Já recebeu os 5000 gm$ e 250 em$ pela associação, por isso não há nova recompensa. Os seus cargos no servidor do Discord seguem o seu Hunter Score.</value></data>
   <data name="DiscordLink.Taken" xml:space="preserve"><value>Esta conta do Discord está associada a outro caçador. Uma conta do Discord só pode ser associada a um caçador.</value></data>
   <data name="DiscordLink.Other" xml:space="preserve"><value>O seu caçador já está associado a outra conta do Discord. Um caçador só pode ser associado a uma conta do Discord.</value></data>
   <data name="DiscordLink.Error" xml:space="preserve"><value>A associação não funcionou. Volte ao Discord e tente novamente.</value></data>
