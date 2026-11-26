@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 39;
+    public const int Version = 40;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -300,7 +300,8 @@ public sealed class Store
             last_x REAL, last_z REAL,   -- the horizontal position (metres) of the hunt's latest heartbeat (NULL: none yet)
             walked REAL,          -- the metres between consecutive heartbeats so far, a jump no one walks or drives left out (NULL: no position came); the hunt's distance when the game's disconnect brings none
             event TEXT,           -- the seasonal event whose permitted ammo the hunt's kills are judged by, decided by its first connect (State.HuntEvent; '': none; NULL: not decided yet)
-            event_until INTEGER); -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
+            event_until INTEGER,  -- the last event row that event judges: a tutorial started after it (NULL: every row of the hunt)
+            silver_before_40 INTEGER); -- 1: a hunt from before schema 40, judged by the earlier rule that the event's silver ammunition is permitted on every species (State.HuntRule); NULL: a later hunt
         CREATE INDEX expeditions_account ON expeditions (account_id, end_ts);
         CREATE TABLE events (
             id INTEGER PRIMARY KEY, {A}, event INTEGER, body TEXT NOT NULL, ts REAL,  -- ts: when the server received it (NULL before schema 14)
@@ -549,6 +550,10 @@ public sealed class Store
             con.Script("ALTER TABLE expeditions ADD COLUMN event TEXT; UPDATE expeditions SET event = ''");
         if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_until'")! == 0)
             con.Script("ALTER TABLE expeditions ADD COLUMN event_until INTEGER");
+        // schema 40, guarded by the column and not by the version (every start): every hunt that exists now, an open one too, keeps the earlier rule that the event's silver ammunition is permitted on
+        // every species (State.HuntRule); the column is only added once, so a hunt started after it is never marked
+        if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'silver_before_40'")! == 0)
+            con.Script("ALTER TABLE expeditions ADD COLUMN silver_before_40 INTEGER; UPDATE expeditions SET silver_before_40 = 1");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

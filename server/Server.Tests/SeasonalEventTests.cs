@@ -404,6 +404,66 @@ public class SeasonalEventTests : StateTestBase
         Assert.False(Disqualified(Harvest(restarted, 403, 14)));
     }
 
+    /// <summary>What a hunt's kills read as: the latest hunt's kill flags, the ethical kills of species 17 and 4 in the statistics of every hunt (recomputed) and the hunterscore those
+    /// statistics give (the local account's own is not computed: <see cref="State.Score"/> of the same statistics).</summary>
+    static string Reads(State s)
+    {
+        static long Kills(JsonObject d, string species) => d["animal"]![species]?["ethical_kills"] is { } n ? Py.L(n) : 0;
+        using var con = s.Store.Open(ME);
+        con.Exec("UPDATE expeditions SET stats = NULL WHERE account_id = $a");
+        s.UpdateHunterscore(con, ME);
+        var all = con.Rows("SELECT stats FROM expeditions WHERE account_id = $a ORDER BY id").Select(r => JsonNode.Parse((string)r[0])!["data"]!.AsObject()).ToList();
+        var ethical = all.Sum(d => Kills(d, "17") + Kills(d, "4"));
+        return $"{KillsEthical(s)}|{ethical}|{all.Sum(d => State.Score(Facts.Default, d))}";
+    }
+
+    [Fact]
+    public void TestHuntsFromBeforeSchema40KeepTheEarlierRuleOnEveryPathAndLaterHuntsGetTheNewOne()
+    {
+        var db = Path.Combine(tmp, "before40.db");
+        var s = Hunt(1, db: db);
+        void Launch(bool plays)
+        {
+            s.Store.SetPlaysEvents(ME, plays);
+            s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+            Connect(s);
+        }
+        void Earlier() { using var con = s.Store.Open(ME); con.Exec("UPDATE expeditions SET silver_before_40 = 1 WHERE account_id = $a"); }
+        Launch(false);  // a hunt decided none, the dominant kind on a live server: its silver kill of an ordinary species was ethical
+        Earlier();
+        Assert.False(Disqualified(HarvestOf(s, 17, 401, 962)));
+        Launch(true);  // an event hunt, whose list no longer names the coyote: its silver kill was ethical too
+        Earlier();
+        Assert.False(Disqualified(HarvestOf(s, 4, 402, 962)));
+        var before = Reads(s);
+        Assert.StartsWith("True|2|", before);
+        for (var restart = 0; restart < 3; restart++)  // the upgrade (a database of schema 39: no column), then two more starts: the step is safe to run twice
+        {
+            if (restart == 0)
+                using (var con = s.Store.Open())
+                {
+                    con.Exec("ALTER TABLE expeditions DROP COLUMN silver_before_40");
+                    con.Exec("PRAGMA user_version = 39");
+                }
+            s = Hunt(1, db: db);
+            s.Clock = () => Start.ToUnixTimeSeconds() + 3600;
+            using (var con = s.Store.Open(ME))
+            {
+                Assert.Equal(2L, con.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_40 = 1"));
+            }
+            using (var con = s.Store.Open())
+                Assert.Equal((long)Store.Version, con.Scalar("PRAGMA user_version"));
+            Assert.Equal(before, Reads(s));
+        }
+        Launch(false);  // a hunt started after the step: the species' own list alone
+        Assert.True(Disqualified(HarvestOf(s, 17, 403, 962)));
+        Assert.False(Disqualified(HarvestOf(s, 17, 404, 14)));
+        s = Hunt(1, db: db);  // and a start after it marks nothing more
+        using var check = s.Store.Open(ME);
+        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM expeditions WHERE account_id = $a AND silver_before_40 = 1"));
+        Assert.Equal(DBNull.Value, check.Scalar("SELECT silver_before_40 FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1"));
+    }
+
     static JsonObject[] Rows(JsonNode reply) => [.. reply["populations"]!.AsArray().OfType<JsonObject>()];
 
     [Theory]
