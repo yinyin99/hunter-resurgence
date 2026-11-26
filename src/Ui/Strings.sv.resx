@@ -1641,4 +1641,5 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriska (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiska (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ till normal taxa, bonusar ej inräknade.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
 </root>

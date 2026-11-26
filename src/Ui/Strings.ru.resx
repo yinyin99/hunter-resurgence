@@ -1641,4 +1641,5 @@
   <data name="GameSettings.Metric" xml:space="preserve"><value>Метрические (м, кг)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Имперские (ярды, фунты)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ по обычной ставке, без бонусов.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
 </root>

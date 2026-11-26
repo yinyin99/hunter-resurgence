@@ -1641,4 +1641,5 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisk (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperisk (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonuser er utelatt.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushendelser i perioden:</value></data>
 </root>

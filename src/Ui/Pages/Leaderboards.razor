@@ -7,7 +7,7 @@
 
 <PageTitle>@L["Board.Title"]</PageTitle>
 
-<div class="page-min">
+<div class="page-min @(kind == "hunting" ? "wide-main" : "")">
 <h2 class="page-title">@L["Board.Title"]</h2>
 <Tabs Kind="strip" Items="tabs" Active="@active" />
 
@@ -122,21 +122,8 @@ else if (loaded)
                 <p>@L["Board.HuntingInfo"]</p>
             </section>
             @if (hunting is { Reserves.Count: 0, Species.Count: 0 }) { <p class="norank">@L["Board.HuntingEmpty"]</p> }
-            else if (Mode.Dev && Variant == "B") { <HuntingVariantB Stats="hunting!" SpeciesName="@(s => L.Term(s))" /> }  @* PROTOTYPE *@
-            else
-            {
-                <h4 class="part">@L["Board.HuntingReserves"]</h4>
-                <table class="board stats">
-                    <thead><tr><th class="hunter">@L["Stat.Reserve"]</th><th>@L["Board.HuntingHours"]</th><th>@L["Board.HuntingGmHour"]</th><th>@L["Board.HuntingGmHarvest"]</th><th>@L["Board.HuntingHarvestsHour"]</th><th>@L["Board.HuntingPlayers"]</th></tr></thead>
-                    <tbody>@foreach (var r in hunting!.Reserves) { <tr><td class="hunter">@r.Reserve</td><td>@Fmt.Num(r.Hours, "0.0")</td><td>@Fmt.Num(r.ComparableGmPerHour, "0")</td><td>@Fmt.Num(r.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(r.HarvestsPerHour, "0.0")</td><td>@r.Players</td></tr> }</tbody>
-                </table>
-                <h4 class="part">@L["Board.HuntingSpecies"]</h4>
-                <table class="board stats">
-                    <thead><tr><th class="hunter">@L["Stat.Species"]</th><th>@L["Board.HuntingHours"]</th><th>@L["Board.HuntingGmHour"]</th><th>@L["Board.HuntingGmHarvest"]</th><th>@L["Board.HuntingHarvestsHour"]</th><th>@L["Board.HuntingPlayers"]</th><th>@L["Board.HuntingBest"]</th></tr></thead>
-                    <tbody>@foreach (var s in hunting.Species) { <tr><td class="hunter">@L.Term(s.Species)</td><td>@Fmt.Num(s.Hours, "0.0")</td><td>@Fmt.Num(s.ComparableGmPerHour, "0")</td><td>@Fmt.Num(s.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(s.HarvestsPerHour, "0.0")</td><td>@s.Players</td><td>@s.BestReserve</td></tr> }</tbody>
-                </table>
-                <p class="hunting-note">@L["Board.HuntingBase"]@if (hunting.Events.Count > 0) { <br />@string.Join("; ", hunting.Events.Select(e => Fmt.EventLine(e, System.Globalization.CultureInfo.CurrentCulture))) }</p>
-            }
+            else if (Mode.Dev && Variant == "C") { <HuntingVariantC Stats="hunting!" /> }  @* PROTOTYPE *@
+            else { <HuntingBoard Stats="hunting!" /> }
             break;
     }
 }
@@ -146,7 +133,7 @@ else
     <div class="tiles two">@for (var i = 0; i < 4; i++) { <div class="skeleton wait-tile"></div> }</div>
 }
 </div>
-@if (Mode.Dev && kind == "hunting") { <PrototypeSwitcher Current="@(Variant == "B" ? "B" : "A")" /> }  @* PROTOTYPE *@
+@if (Mode.Dev && kind == "hunting") { <PrototypeSwitcher Current="@(Variant == "C" ? "C" : "B")" /> }  @* PROTOTYPE *@
 
 @code {
     /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
@@ -171,7 +158,7 @@ else
     /// <summary>The season of a species board or the hall of fame: 0 is all time; missing is the current season (the hall's: the last ended one).</summary>
     [SupplyParameterFromQuery(Name = "season")] public int? SeasonQuery { get; set; }
 
-    /// <summary>PROTOTYPE (branch prototype/958-hunting-stats): the hunting page variant, A (today) or B.</summary>
+    /// <summary>PROTOTYPE (branch prototype/958-hunting-stats): the hunting page variant: B (the real page, default) or C.</summary>
     [SupplyParameterFromQuery(Name = "variant")] public string? Variant { get; set; }
 
     protected override void OnInitialized()

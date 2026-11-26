@@ -1641,4 +1641,5 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisch (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaal (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ tegen het normale tarief, zonder bonussen.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusevenementen in deze periode:</value></data>
 </root>

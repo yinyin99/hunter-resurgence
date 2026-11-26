@@ -1641,4 +1641,5 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriche (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiali (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
 </root>

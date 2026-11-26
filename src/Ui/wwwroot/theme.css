@@ -313,6 +313,9 @@ a { transition: color var(--t-fast) var(--ease); }
 
 /* the old list pages are at least this tall */
 .page-min { min-height: 960px; }
+/* a page that marks itself .wide-main takes the shell's empty right column too (the hunting statistics) */
+.body:has(.wide-main) > .sidebar { display: none; }
+.body:has(.wide-main) > main { width: calc(var(--w-main) + var(--w-sidebar)); }
 
 .asset-slot {
     display: inline-flex;
@@ -462,3 +465,7 @@ html:has(.su) { overflow: hidden; }
 .su-dialog.tutorial select { justify-self: start; font-size: 12px; }
 .su-dialog.tutorial input[type=checkbox] { justify-self: start; margin: 0; }
 .su-dialog.tutorial .su-actions { margin-top: 14px; }
+
+/* PROTOTYPE (branch prototype/958-hunting-stats): the achievements overview's 3D bar (AchievementsTab.razor.css .track), shareable: a dark track with a light-blue fill, both with a darker edge at the bottom and the end side */
+.bar3d { --shade: rgb(0 0 0 / .25); --bevel: inset -2px -3px 0 var(--shade); position: relative; display: block; height: 18px; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: var(--bevel); }
+.bar3d > i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; box-shadow: var(--bevel); }

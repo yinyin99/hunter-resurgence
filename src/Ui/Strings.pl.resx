@@ -1641,4 +1641,5 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metryczne (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ według zwykłej stawki, bez premii.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
 </root>

@@ -1641,4 +1641,5 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrické (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiální (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ za běžnou sazbu, bez bonusů.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusové události v tomto období:</value></data>
 </root>

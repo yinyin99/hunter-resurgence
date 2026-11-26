@@ -1641,4 +1641,5 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrikus (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Angolszász (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a normál díjszabással, a bónuszok nélkül.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bónuszesemények az időszakban:</value></data>
 </root>

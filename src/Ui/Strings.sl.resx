@@ -1641,4 +1641,5 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrične (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperialne (yd, lbs)</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ po običajni stopnji, brez bonusov.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus dogodki v obdobju:</value></data>
 </root>
