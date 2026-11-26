@@ -1,0 +1,36 @@
+@* PROTOTYPE (throwaway, branch prototype/958-hunting-stats): floating ← label → bar, arrow keys, ?variant= URL param. Rendered only when HostMode.Dev. *@
+@using Microsoft.JSInterop
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<div class="proto-bar" role="group" aria-label="Prototype variants">
+    <button type="button" @onclick="() => Go(-1)" aria-label="Previous variant">←</button>
+    <span>@Current (@Names[Array.IndexOf(Keys, Current)])</span>
+    <button type="button" @onclick="() => Go(1)" aria-label="Next variant">→</button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Current { get; set; } = "A";
+    static readonly string[] Keys = ["A", "B"];
+    static readonly string[] Names = ["today's tables", "base rate first"];
+    IJSObjectReference? module;
+    DotNetObjectReference<PrototypeSwitcher>? self;
+
+    void Go(int d) => Nav.NavigateTo(Nav.GetUriWithQueryParameter("variant", Keys[(Array.IndexOf(Keys, Current) + d + Keys.Length) % Keys.Length]), replace: true);
+
+    [JSInvokable] public void Key(int d) => Go(d);
+
+    protected override async Task OnAfterRenderAsync(bool first)
+    {
+        if (!first) return;
+        (module, self) = (await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js"), DotNetObjectReference.Create(this));
+        await module.InvokeVoidAsync("protoWatch", self);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try { if (module is not null) await module.InvokeVoidAsync("protoUnwatch"); } catch { }
+        self?.Dispose();
+    }
+}

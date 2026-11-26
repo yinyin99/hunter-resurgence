@@ -122,6 +122,7 @@ else if (loaded)
                 <p>@L["Board.HuntingInfo"]</p>
             </section>
             @if (hunting is { Reserves.Count: 0, Species.Count: 0 }) { <p class="norank">@L["Board.HuntingEmpty"]</p> }
+            else if (Mode.Dev && Variant == "B") { <HuntingVariantB Stats="hunting!" SpeciesName="@(s => L.Term(s))" /> }  @* PROTOTYPE *@
             else
             {
                 <h4 class="part">@L["Board.HuntingReserves"]</h4>
@@ -145,6 +146,7 @@ else
     <div class="tiles two">@for (var i = 0; i < 4; i++) { <div class="skeleton wait-tile"></div> }</div>
 }
 </div>
+@if (Mode.Dev && kind == "hunting") { <PrototypeSwitcher Current="@(Variant == "B" ? "B" : "A")" /> }  @* PROTOTYPE *@
 
 @code {
     /// <summary>The viewer chose imperial units (<see cref="Session.Imperial"/>, cascaded by the shell).</summary>
@@ -168,6 +170,9 @@ else
 
     /// <summary>The season of a species board or the hall of fame: 0 is all time; missing is the current season (the hall's: the last ended one).</summary>
     [SupplyParameterFromQuery(Name = "season")] public int? SeasonQuery { get; set; }
+
+    /// <summary>PROTOTYPE (branch prototype/958-hunting-stats): the hunting page variant, A (today) or B.</summary>
+    [SupplyParameterFromQuery(Name = "variant")] public string? Variant { get; set; }
 
     protected override void OnInitialized()
     {

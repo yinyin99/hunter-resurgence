@@ -127,3 +127,16 @@ export function firstTime(name) {
 export function copy(text) {
     return navigator.clipboard.writeText(text);
 }
+
+// PROTOTYPE (branch prototype/958-hunting-stats): ← → keys cycle the prototype variants unless a field is focused; returns the remover.
+let protoKeys;
+export function protoWatch(ref) {
+    protoKeys = e => {
+        const a = document.activeElement;
+        if (a && (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) || a.isContentEditable)) return;
+        if (e.key === 'ArrowLeft') ref.invokeMethodAsync('Key', -1);
+        if (e.key === 'ArrowRight') ref.invokeMethodAsync('Key', 1);
+    };
+    document.addEventListener('keydown', protoKeys);
+}
+export function protoUnwatch() { document.removeEventListener('keydown', protoKeys); }
