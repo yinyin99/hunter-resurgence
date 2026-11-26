@@ -223,7 +223,7 @@ public class HarvestScoreTests : StateTestBase
     [Fact]
     public void RescoreReportsTheHarvestsOutsideTheirSpeciesBoundsAndWritesNothingForIt()
     {
-        var score = Py.D(Harvest(17, 0).Update["score"]);
+        var score = Py.D(Harvest(17, 1).Update["score"]);  // a female: the report's gender is the kill's own
         Assert.True(score > 0);
         var (lo, hi) = (score + 1, score + 100);  // the harvest sits 1 under the minimum
         Scoring.Variants[17] = (lo, hi, 0.9);
@@ -232,7 +232,7 @@ public class HarvestScoreTests : StateTestBase
         List<(long, long, double)> scores = [];
         state.Rescore(ME, dryRun: true, scores: scores);
         var row = Assert.Single(State.BoundsReport(scores));
-        Assert.Equal((17L, 0L, 1, 1, lo, hi, score), (row.Species, row.Gender, row.Harvests, row.Outside, row.Min, row.Max, row.Lowest));
+        Assert.Equal((17L, 1L, 1, 1, lo, hi, score), (row.Species, row.Gender, row.Harvests, row.Outside, row.Min, row.Max, row.Lowest));
         Assert.Equal(pages, Pages());
         Scoring.Variants[17] = (score - 1, hi, 0.9);
         Assert.Empty(State.BoundsReport(scores));  // inside
