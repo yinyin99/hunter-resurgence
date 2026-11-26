@@ -1640,4 +1640,6 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="GameSettings.Units" xml:space="preserve"><value>Units</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metric (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Host's network</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>You cannot join this game: the host's connection is not supported (the game cannot connect over IPv6). Ask the host to update the launcher and start the game again.</value></data>
 </root>

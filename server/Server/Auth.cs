@@ -541,7 +541,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` or `tent` (the guid of one of the
     /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; with `mp=host` it also
     /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
-    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "gone"}`;
+    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "host_network" | "gone"}`;
     /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve. Any of them may carry `lang`, one of
     /// <see cref="GameTokens.GameLanguages"/>, the language the game starts in (the launch URL's `lang` segment; en_US when missing or unknown).</summary>
     public Reply Launch(Req r, GameTokens tokens)

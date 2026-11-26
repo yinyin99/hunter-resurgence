@@ -122,7 +122,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return LaunchAsync([.. form]);
     }
 
-    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady" };
+    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady", ["host_network"] = "Join.HostNetwork" };
 
     /// <summary>A placed tent's marker id is its negated guid (<see cref="Placed"/>).</summary>
     static (string, string) Start(int marker) => marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}");

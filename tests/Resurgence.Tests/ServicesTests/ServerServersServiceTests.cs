@@ -306,6 +306,7 @@ public class ServerServersServiceTests
     [InlineData("full", "Join.Full")]
     [InlineData("not_allowed", "Join.NotAllowed")]
     [InlineData("host_not_ready", "Join.HostNotReady")]
+    [InlineData("host_network", "Join.HostNetwork")]
     [InlineData("gone", "Launch.Failed")]
     [InlineData("something else", "Launch.Failed")]
     public async Task ARefusedJoinFailsWithTheMessageOfItsReasonAndTheGameIsNotStarted(string why, string key)

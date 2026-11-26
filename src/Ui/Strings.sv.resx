@@ -1640,4 +1640,6 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="GameSettings.Units" xml:space="preserve"><value>Enheter</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriska (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiska (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Värdens nätverk</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värdens anslutning stöds inte (spelet kan inte ansluta via IPv6). Be värden uppdatera launchern och starta spelet igen.</value></data>
 </root>

@@ -1640,4 +1640,6 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="GameSettings.Units" xml:space="preserve"><value>Enheter</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisk (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperisk (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Vertens nettverk</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: vertens tilkobling støttes ikke (spillet kan ikke koble til via IPv6). Be verten om å oppdatere launcheren og starte spillet på nytt.</value></data>
 </root>

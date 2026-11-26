@@ -1640,4 +1640,6 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="GameSettings.Units" xml:space="preserve"><value>Einheiten</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisch (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Netzwerk des Gastgebers</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Die Verbindung des Gastgebers wird nicht unterstützt (das Spiel kann sich nicht über IPv6 verbinden). Bitte den Gastgeber, den Launcher zu aktualisieren und das Spiel neu zu starten.</value></data>
 </root>

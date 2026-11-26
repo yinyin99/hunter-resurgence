@@ -1640,4 +1640,6 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="GameSettings.Units" xml:space="preserve"><value>Birimler</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrik (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>İngiliz sistemi (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Ev sahibinin ağı</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Bu oyuna katılamazsın: ev sahibinin bağlantısı desteklenmiyor (oyun IPv6 üzerinden bağlanamıyor). Ev sahibinden başlatıcıyı güncellemesini ve oyunu yeniden başlatmasını iste.</value></data>
 </root>

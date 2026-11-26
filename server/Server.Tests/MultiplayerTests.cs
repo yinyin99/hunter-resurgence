@@ -488,6 +488,26 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal("127.0.0.1", (string?)Json(direct)["network"]!["ip"]);  // a peer that is no proxy: the header counts for nothing
     }
 
+    [Theory]
+    [InlineData("203.0.113.5", "203.0.113.5", null)]
+    [InlineData("::ffff:203.0.113.5", "203.0.113.5", null)]  // an IPv4-mapped peer is an IPv4 host
+    [InlineData("2001:db8::1", "2001:db8::1", "network")]
+    public async Task TestAHostWhoseConnectCameOverIpv6IsListedNotJoinableAndTheJoinIsRefused(string forwarded, string recorded, string? why)
+    {
+        var session = await ReadyHost();
+        Settings.TryNetwork("127.0.0.0/8", out var loopback);
+        await using var proxied = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp, [loopback]);
+        var connect = await proxied.SendAsync("POST", Gs, Replay.CONNECT, [("X-Hun-Session", session), ("X-Forwarded-For", forwarded)], "{}"u8.ToArray());
+        Assert.Equal(recorded, (string?)Json(connect)["network"]!["ip"]);
+        await Agrees(GUEST, why);
+        if (why is not null)
+        {
+            var page = await server.SendAsync("POST", "web.test", "/auth/launch", [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "XMLHttpRequest"),
+                ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(GUEST, TimeSpan.FromHours(1))}")], Encoding.UTF8.GetBytes($"mp=join&network_id={await NetworkId()}&lodge=101&loadout=0"));
+            Assert.Equal((400, "host_network"), (page.Status, (string)Json(page)["error"]!));
+        }
+    }
+
     [Fact]
     public async Task TestMapLocationsAreThoseOfTheSessionsReserve()
     {

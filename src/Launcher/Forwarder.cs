@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,7 @@ static class Forwarder
 
         var http = new HttpClient(new SocketsHttpHandler
         {
+            ConnectCallback = (c, ct) => ConnectIPv4First(c.DnsEndPoint.Host, c.DnsEndPoint.Port, ct),
             AllowAutoRedirect = false, UseCookies = false, AutomaticDecompression = DecompressionMethods.None, UseProxy = false,
             RequestHeaderEncodingSelector = (_, _) => Encoding.Latin1, ResponseHeaderEncodingSelector = (_, _) => Encoding.Latin1,
         })
@@ -82,6 +84,32 @@ static class Forwarder
             }
         });
         return app;
+    }
+
+    /// <summary>A TCP connection to the server, over IPv4 first: the server records the address a connect came from and gives it to the players who join that host, and the game's networking cannot use an IPv6 one.
+    /// The addresses of the name are tried one after the other, the IPv4 ones before the IPv6 ones, so a PC with no IPv4 route (IPv6 only, NAT64) still reaches the server; the last failure is the error.</summary>
+    internal static async ValueTask<Stream> ConnectIPv4First(string host, int port, CancellationToken ct) => await ConnectIPv4First(await Dns.GetHostAddressesAsync(host, ct), port, ct);
+
+    internal static async ValueTask<Stream> ConnectIPv4First(IPAddress[] addresses, int port, CancellationToken ct)
+    {
+        Exception? last = null;
+        foreach (var address in addresses.OrderBy(a => a.AddressFamily == AddressFamily.InterNetwork ? 0 : 1))
+        {
+            ct.ThrowIfCancellationRequested();
+            var socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp) { NoDelay = true };
+            try
+            {
+                await socket.ConnectAsync(address, port, ct);
+                return new NetworkStream(socket, ownsSocket: true);
+            }
+            catch (Exception e)
+            {
+                socket.Dispose();
+                last = e;
+            }
+        }
+        ct.ThrowIfCancellationRequested();
+        throw last ?? new SocketException((int)SocketError.HostNotFound);
     }
 
     /// <summary>The URLs a started forwarder listens on (a port 0 resolved).</summary>

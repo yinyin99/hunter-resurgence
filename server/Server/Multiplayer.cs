@@ -1,6 +1,8 @@
 // Multiplayer: a host's session and the players who joined it. The game plays peer to peer around the host; the server only
 // holds who is in which session (in memory: a session ends with its host), tells each player in the connect reply who the
 // host is and how to reach it, learns the host's port and network id from heartbeat event 29, and lists the open sessions.
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -90,18 +92,19 @@ public sealed class Games
     }
 
     /// <summary>Why the player cannot join `g` now, the first of: `own` (the player hosts it), `friends` (a friends-only session of a stranger), `hunterscore` (a score out of its range), `starting` (the host's port and
-    /// network id are not known yet), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
+    /// network id are not known yet), `network` (the host's connect came over IPv6, which the game cannot use; the connect's address is already IPv4 for an IPv4-mapped peer), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
     public static string? Why(Game g, long account, long score, Func<long, bool> friendOf, string? password = null)
     {
         if (g.Host == account) return "own";
         if (!g.Public && !friendOf(g.Host)) return "friends";
         if (score < g.HsMin || score > g.HsMax) return "hunterscore";
         if (!g.Ready) return "starting";
+        if (IPAddress.TryParse(g.Members[0].Ip, out var host) && host.AddressFamily == AddressFamily.InterNetworkV6) return "network";
         if (g.Password != "" && (password is null || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password)))) return "password";
         return g.Members.Count(m => m.Account != account) >= g.Max ? "full" : null;
     }
 
-    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `password`, `full`.
+    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `host_network` (`network`), `password`, `full`.
     /// `session` makes the player's session token once it is let in.</summary>
     public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session)
     {
@@ -110,7 +113,7 @@ public sealed class Games
             Prune(now);
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
             if (Why(g, account, score, friendOf, password) is { } why)
-                return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", _ => why }, null);
+                return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", "network" => "host_network", _ => why }, null);
             LeaveLocked(account);
             var token = session();
             g.Members.Add(new(account, token, now));

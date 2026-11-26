@@ -141,7 +141,7 @@ public static class GameApi
                .WithName("LaunchJoin").WithSummary("Join a multiplayer hunt")
                .WithDescription("Adds the caller to the session `network_id` of Network/list and opens a hunt in its reserve (at the session's time unless `time` is sent). Reply as LaunchStart; the connect of the "
                                 + "returned `session` names the host and how to reach it. HTTP 200 `{\"errorCode\": 23, \"message\": \"USER_CANT_JOIN\"}` for a wrong password, a full session, a friends-only session of a non-friend, "
-                                + "a hunterscore outside the session's range, the host's own session, an unknown session, and a session whose host has not reported its port yet. Community server only.")
+                                + "a hunterscore outside the session's range, the host's own session, an unknown session, a session whose host has not reported its port yet, and a session whose host connected over IPv6 (the game cannot use it). Community server only.")
                .Body<JoinForm>(Form).Produces(200, contentType: "application/json");
             api.MapMethods(NETWORK_LIST, ["GET", "POST"], Handle(game, r => s.Online && r.Path == NETWORK_LIST && r.Method is "GET" or "POST" ? new(200, JsonAnyOrigin(), s.NetworkListReply(), "state") : null))
                .WithName("NetworkList").WithSummary("The open multiplayer sessions")
