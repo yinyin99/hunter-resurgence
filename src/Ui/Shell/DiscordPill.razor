@@ -1,12 +1,10 @@
-@inject HostMode Mode
 @inject ISessionService Sessions
 
-@* every page, for a signed-in hunter who has not linked Discord: where the retired backup tool button was (BackupButton): a slim pill between the top bar and the menu bar on the website, a 280px button
-   in the left margin from 1880px, under the logo in the launcher *@
+@* every page, for a signed-in hunter who has not linked Discord: a slim pill centred between the top bar and the menu bar, on the website and in the launcher *@
 @if (DiscordOffer.Shown(Session, Sessions))
 {
     <div class="host">
-        <DiscordLinkButton Title="@L["Discord.LinkPill"]" Class="@($"btn btn-large discord-pill {(Mode.Launcher ? "" : "web")}")"><span class="text">@L["Discord.LinkPill"]</span></DiscordLinkButton>
+        <DiscordLinkButton Title="@L["Discord.LinkPill"]" Class="btn btn-large discord-pill"><span class="text">@L["Discord.LinkPill"]</span></DiscordLinkButton>
     </div>
 }
 
