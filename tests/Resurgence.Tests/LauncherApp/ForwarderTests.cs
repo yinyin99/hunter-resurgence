@@ -213,6 +213,71 @@ public class ForwarderTests
         Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
     }
 
+    /// <summary>A started listener on `ip` (port 0: a free one).</summary>
+    static System.Net.Sockets.TcpListener Listen(IPAddress ip, int port = 0)
+    {
+        var l = new System.Net.Sockets.TcpListener(ip, port);
+        l.Start();
+        return l;
+    }
+
+    [Fact]
+    public async Task FallsBackToIpv6WhenTheNameHasNoIpv4AddressOrItRefuses()
+    {
+        if (!System.Net.Sockets.Socket.OSSupportsIPv6) return;
+        // only an IPv6 address: it is reached over IPv6 (a PC without IPv4)
+        var v6 = Listen(IPAddress.IPv6Loopback);
+        try
+        {
+            var accepted = v6.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First([IPAddress.IPv6Loopback], ((IPEndPoint)v6.LocalEndpoint).Port, default))
+            using (var peer = await accepted) Assert.Equal(System.Net.Sockets.AddressFamily.InterNetworkV6, ((IPEndPoint)peer.RemoteEndPoint!).AddressFamily);
+        }
+        finally { v6.Stop(); }
+        // the IPv4 address refuses (nothing listens): the IPv6 one is tried next
+        var dead = Listen(IPAddress.Loopback);
+        var port = ((IPEndPoint)dead.LocalEndpoint).Port;
+        dead.Stop();
+        System.Net.Sockets.TcpListener fallback;
+        try { fallback = Listen(IPAddress.IPv6Loopback, port); }
+        catch (System.Net.Sockets.SocketException) { return; }  // that port is taken on ::1
+        try
+        {
+            var accepted = fallback.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First([IPAddress.Loopback, IPAddress.IPv6Loopback], port, default))
+            using (await accepted) { }
+        }
+        finally { fallback.Stop(); }
+    }
+
+    [Fact]
+    public async Task ResolvesANameAndKeepsTheIpv4ConnectionWhenBothFamiliesListen()
+    {
+        if (!System.Net.Sockets.Socket.OSSupportsIPv6) return;
+        var v4 = Listen(IPAddress.Loopback);
+        System.Net.Sockets.TcpListener v6;
+        try { v6 = Listen(IPAddress.IPv6Loopback, ((IPEndPoint)v4.LocalEndpoint).Port); }
+        catch (System.Net.Sockets.SocketException) { v4.Stop(); return; }  // that port is taken on ::1
+        try
+        {
+            var first = v4.AcceptSocketAsync();
+            await using (await Forwarder.ConnectIPv4First("localhost", ((IPEndPoint)v4.LocalEndpoint).Port, default))
+            using (await first.WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken)) { }
+            Assert.False(v6.Pending());
+        }
+        finally { v4.Stop(); v6.Stop(); }
+    }
+
+    [Fact]
+    public async Task AServerThatNoAddressReachesIsTheLastFailure()
+    {
+        var dead = Listen(IPAddress.Loopback);
+        var port = ((IPEndPoint)dead.LocalEndpoint).Port;
+        dead.Stop();
+        await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4First([IPAddress.Loopback], port, default));
+        await Assert.ThrowsAsync<System.Net.Sockets.SocketException>(async () => await Forwarder.ConnectIPv4First([], port, default));
+    }
+
     [Fact]
     public async Task AnswersOverTlsWithTheLeafOfTheLocalAuthority() =>
         await OverTls(HttpVersion.Version11, HttpVersionPolicy.RequestVersionExact, (resp, origin) =>

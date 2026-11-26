@@ -125,6 +125,52 @@ public class ServerServersServiceTests
     }
 
     [Fact]
+    public async Task TheJoinMapIsTheStartsAndTheHostsItemsShownOnlyAndAPasswordTravelsPercentEncodedInAHeader()
+    {
+        const long game = 4000000001;
+        string? sent = null;
+        var fake = new Fake(r =>
+        {
+            if (r.RequestUri!.AbsolutePath != ServerCatalogApi.GamePlaced(game)) return Answer(r);
+            sent = r.Headers.TryGetValues(ServerCatalogApi.GamePassword, out var v) ? v.Single() : null;
+            return sent == "p%C3%A4%20ss" ? Json(HttpStatusCode.OK, PlacedItems) : Json(HttpStatusCode.Forbidden, """{"status": "refused", "why": "password"}""");
+        });
+        var service = Make(fake, new Bridge());
+        var none = await service.JoinMarkersAsync(game, 2, null);  // refused: no map, and the reason is the password
+        Assert.Equal((null, "Join.WrongPassword"), (none.Markers, none.Error));
+        Assert.Null(sent);
+        Assert.Equal("Join.WrongPassword", (await service.JoinMarkersAsync(game, 2, "wrong")).Error);
+        var map = (await service.JoinMarkersAsync(game, 2, "pä ss")).Markers;
+        Assert.Equal("p%C3%A4%20ss", sent);
+        Assert.Equal(["101:False", "102:False", "103:False", "104:False", "-501:False", "-502:True", "-503:True", "-504:True", "-507:True", "-508:True", "-509:True"],
+            map!.Select(m => $"{m.Id}:{m.Only}"));  // the starts can be picked, the host's tent can be picked, its other items only show; the other reserve's tent is not there
+        Assert.DoesNotContain(fake.Seen, s => s.Path == ServerAccountApi.Placed);  // the player's own items are not the join map's
+        Assert.All(fake.Seen.Where(s => s.Path == ServerCatalogApi.GamePlaced(game)), s => Assert.Equal("hr_session=secret", s.Cookie));
+        // signed out, or a server that does not answer: no map and the generic message, and signed out asks nothing
+        var signedOut = new Fake(_ => Json(HttpStatusCode.OK, PlacedItems));
+        var out1 = await Make(signedOut, new Bridge(), session: null).JoinMarkersAsync(game, 2, null);
+        Assert.Equal((null, "Launch.Failed"), (out1.Markers, out1.Error));
+        Assert.Empty(signedOut.Seen);
+        Assert.Equal("Launch.Failed", (await Make(new Fake(_ => Json(HttpStatusCode.InternalServerError, "{}")), new Bridge()).JoinMarkersAsync(game, 2, null)).Error);
+        Assert.Equal("Launch.Failed", (await Make(new Fake(_ => Json(HttpStatusCode.NotFound, """{"status": "gone"}""")), new Bridge()).JoinMarkersAsync(game, 2, null)).Error);
+    }
+
+    [Theory]
+    [InlineData("password", "Join.WrongPassword")]
+    [InlineData("full", "Join.Full")]
+    [InlineData("friends", "Join.NotAllowed")]
+    [InlineData("hunterscore", "Join.NotAllowed")]
+    [InlineData("starting", "Join.HostNotReady")]
+    [InlineData("network", "Join.HostNetwork")]
+    [InlineData("own", "Launch.Failed")]
+    public async Task AGameThatShowsNoMapGivesTheMessageOfItsOwnReason(string why, string key)
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.Forbidden, $$"""{"status": "refused", "why": "{{why}}"}""")), new Bridge());
+        var answer = await service.JoinMarkersAsync(4000000001, 2, null);
+        Assert.Equal((null, key), (answer.Markers, answer.Error));
+    }
+
+    [Fact]
     public async Task AServerThatDoesNotAnswerIsAnEmptyMap()
     {
         var service = Make(new Fake(_ => Json(HttpStatusCode.NotFound, "{}")), new Bridge());
@@ -297,7 +343,7 @@ public class ServerServersServiceTests
         var service = Make(fake, bridge);
         Assert.True((await service.JoinAsync(4000000002, 101, "letmein", 4)).Ok);
         Assert.True((await service.JoinAsync(4000000001, -501, null, 0)).Ok);
-        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein&lang=en_US", "mp=join&network_id=4000000001&tent=501&loadout=0&lang=en_US"], fake.Seen.Select(s => s.Body));
+        Assert.Equal(["mp=join&network_id=4000000002&lodge=101&loadout=4&password=letmein&lang=en_US", "mp=join&network_id=4000000001&tent=501&loadout=0&host_tent=1&lang=en_US"], fake.Seen.Select(s => s.Body));
         Assert.Equal(2, bridge.Started.Count);
     }
 
@@ -306,6 +352,7 @@ public class ServerServersServiceTests
     [InlineData("full", "Join.Full")]
     [InlineData("not_allowed", "Join.NotAllowed")]
     [InlineData("host_not_ready", "Join.HostNotReady")]
+    [InlineData("host_network", "Join.HostNetwork")]
     [InlineData("gone", "Launch.Failed")]
     [InlineData("something else", "Launch.Failed")]
     public async Task ARefusedJoinFailsWithTheMessageOfItsReasonAndTheGameIsNotStarted(string why, string key)

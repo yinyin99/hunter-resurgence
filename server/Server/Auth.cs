@@ -541,7 +541,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` or `tent` (the guid of one of the
     /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; with `mp=host` it also
     /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
-    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "gone"}`;
+    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "host_network" | "bad_start" | "gone"}` (`bad_start`: `host_tent` 1 with a `tent` that is not a tent of the game's host on its reserve); with `host_tent` 1 the `tent` is one of the host's;
     /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve. Any of them may carry `lang`, one of
     /// <see cref="GameTokens.GameLanguages"/>, the language the game starts in (the launch URL's `lang` segment; en_US when missing or unknown).</summary>
     public Reply Launch(Req r, GameTokens tokens)
@@ -575,7 +575,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             state.NoteLaunch(account, Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={f.Item2}"))));
             return Url();
         }
-        foreach (var key in join ? new[] { "network_id", "password" } : ["reserve", "name", "description", "public_game", "free_players", "hs_min", "hs_max", "password", "max_players"])
+        foreach (var key in join ? new[] { "network_id", "password", "host_tent" } : ["reserve", "name", "description", "public_game", "free_players", "hs_min", "hs_max", "password", "max_players"])
             fields.Add((key, F(key)));
         var body = Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={Uri.EscapeDataString(f.Item2)}")));
         if (!join)

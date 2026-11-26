@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>You have a valid license until:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>You have an unlimited license</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Unlimited ammunition</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Unlimited fuel</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>You own {0} of {1} items: {2} em$ instead of {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>You own {0} of {1} items</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>You own all the items of this bundle</value></data>
   <data name="Store.Or" xml:space="preserve"><value>or</value></data>
   <data name="Store.Days" xml:space="preserve"><value>days</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SALE</value></data>
@@ -1641,4 +1645,9 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="GameSettings.Units" xml:space="preserve"><value>Units</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metric (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Host's network</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>You cannot join this game: the host's connection is not supported (the game cannot connect over IPv6). Ask the host to update the launcher and start the game again.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>The map and the host's setup are only shown to players who may join this game.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ at the normal rate, bonuses left out.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus events in this period:</value></data>
 </root>

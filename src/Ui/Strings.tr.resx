@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Lisansınız bu tarihe kadar geçerli:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Limitsiz bir lisansa sahipsiniz</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Sınırsız mühimmat</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Sınırsız yakıt</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>{1} öğeden {0} tanesine sahipsiniz: {3} em$ yerine {2} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>{1} öğeden {0} tanesine sahipsiniz</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Bu paketteki tüm öğelere zaten sahipsiniz</value></data>
   <data name="Store.Or" xml:space="preserve"><value>veya</value></data>
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>
@@ -1641,4 +1645,9 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="GameSettings.Units" xml:space="preserve"><value>Birimler</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrik (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>İngiliz sistemi (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Ev sahibinin ağı</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Bu oyuna katılamazsın: ev sahibinin bağlantısı desteklenmiyor (oyun IPv6 üzerinden bağlanamıyor). Ev sahibinden başlatıcıyı güncellemesini ve oyunu yeniden başlatmasını iste.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Harita ve ev sahibinin ekipmanı yalnızca bu oyuna katılabilecek oyunculara gösterilir.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
 </root>

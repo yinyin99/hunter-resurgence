@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Tiene una licencia válida hasta:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Usted tiene una licencia ilimitada</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Munición ilimitada</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Combustible ilimitado</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Usted tiene {0} de {1} elementos: {2} em$ en lugar de {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Usted tiene {0} de {1} elementos</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Usted ya tiene todos los elementos de este pack</value></data>
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>días</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTA</value></data>
@@ -1641,4 +1645,9 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="GameSettings.Units" xml:space="preserve"><value>Unidades</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Red del anfitrión</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>No puedes unirte a esta partida: la conexión del anfitrión no es compatible (el juego no puede conectarse por IPv6). Pide al anfitrión que actualice el launcher y vuelva a iniciar la partida.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>El mapa y el equipo del anfitrión solo se muestran a los jugadores que pueden unirse a esta partida.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a la tarifa normal, sin bonificaciones.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bonificación en este periodo:</value></data>
 </root>

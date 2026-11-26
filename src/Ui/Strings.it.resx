@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Hai una licenza valida fino al:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Hai una licenza illimitata</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Munizioni illimitate</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Carburante illimitato</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Possiedi {0} oggetti su {1}: {2} em$ invece di {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Possiedi {0} oggetti su {1}</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Possiedi già tutti gli oggetti di questo pacchetto</value></data>
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>giorni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFFERTA</value></data>
@@ -1641,4 +1645,9 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="GameSettings.Units" xml:space="preserve"><value>Unità di misura</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriche (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiali (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rete dell'host</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Non puoi unirti a questa partita: la connessione dell'host non è supportata (il gioco non può connettersi tramite IPv6). Chiedi all'host di aggiornare il launcher e di riavviare la partita.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
 </root>

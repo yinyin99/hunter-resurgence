@@ -29,7 +29,7 @@
                         @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
-                <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" />
+                <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" Fuel="i.Fuel" />
                 @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button class="btn btn-primary" @onclick="() => Buy(i)">@L["Store.Buy"]</button> }
@@ -41,7 +41,9 @@
                 <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
                 <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
-                <p class="price"><b>@b.Price em$</b></p>
+                <p class="price">@if (b.WasPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.WasPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
+                else if (b.OwnedItems > 0) { <p class="own">@(b.WasPrice > b.Price ? L["Store.BundleOwn", b.OwnedItems, b.OfItems, b.Price, b.WasPrice] : L["Store.BundleOwnCount", b.OwnedItems, b.OfItems])</p> }
                 @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@
                 <button class="btn btn-primary" @onclick='() => Nav.NavigateTo($"/store/bundle/{b.Id}")'>@L["Store.Details"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</button>
             </div>

@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Sie haben eine gültige Lizenz bis:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Sie haben eine unbegrenzte Lizenz</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Unbegrenzte Munition</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Unbegrenzter Treibstoff</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Sie besitzen {0} von {1} Artikeln: {2} em$ statt {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Sie besitzen {0} von {1} Artikeln</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Sie besitzen alle Artikel dieses Pakets</value></data>
   <data name="Store.Or" xml:space="preserve"><value>oder</value></data>
   <data name="Store.Days" xml:space="preserve"><value>Tage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ANGEBOT</value></data>
@@ -1641,4 +1645,9 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="GameSettings.Units" xml:space="preserve"><value>Einheiten</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisch (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Netzwerk des Gastgebers</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Die Verbindung des Gastgebers wird nicht unterstützt (das Spiel kann sich nicht über IPv6 verbinden). Bitte den Gastgeber, den Launcher zu aktualisieren und das Spiel neu zu starten.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Die Karte und die Ausrüstung des Gastgebers sehen nur Spieler, die diesem Spiel beitreten dürfen.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ zum normalen Satz, Boni nicht eingerechnet.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus-Ereignisse in diesem Zeitraum:</value></data>
 </root>

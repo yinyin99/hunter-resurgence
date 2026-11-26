@@ -42,6 +42,10 @@ public sealed class Facts
         DailyTemplates = [.. (daily["templates"] as JsonArray ?? []).Select(t => new DailyTemplate(Py.L(t!["id"]), Py.L(t["difficulty"]), (string)t["title"]!,
             Py.L(t["giver"]!["id"]), (string)t["giver"]!["alias"]!, (string?)t["giver"]!["name"], (string?)t["giver"]!["image"] ?? ((string)t["giver"]!["alias"]!).ToLowerInvariant() + ".jpg", [.. t["objectives"]!.AsArray().Select(o => (string)o!)]))];
         StoreAvatars = [.. Arr("store_avatars").Select(a => new StoreAvatar(Py.L(a!["item"]), Py.L(a["id"]), (string)a["name"]!, (string)a["gender"]!))];
+        foreach (var (type, rule) in Obj("own_limits")["client_types"] as JsonObject ?? [])
+            OwnByType[long.Parse(type, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
+        foreach (var (id, rule) in Obj("own_limits")["items"] as JsonObject ?? [])
+            OwnByItem[long.Parse(id, CultureInfo.InvariantCulture)] = Py.IsStr(rule) ? null : Py.L(rule);
     }
 
     public static Facts Load(string path) => Parse(File.ReadAllText(path));
@@ -91,6 +95,15 @@ public sealed class Facts
     public sealed record StoreAvatar(long Item, long Id, string Name, string Gender);
     /// <summary>The avatars the store sells, which the avatar list lacks (empty when the file has none).</summary>
     public readonly StoreAvatar[] StoreAvatars;
+
+    readonly Dictionary<long, long?> OwnByType = [], OwnByItem = [];
+
+    /// <summary>What `own_limits` says of an item (its own entry in `items`, else its client type's in `client_types`): the most copies a player owns, 0 for no limit, null for the catalogue's own
+    /// (`ownMultiple` and `ownLimit`; also an item and a type the table lacks).</summary>
+    public long? OwnRule(long item, long clientType) => OwnByItem.TryGetValue(item, out var rule) || OwnByType.TryGetValue(clientType, out rule) ? rule : null;
+
+    /// <summary>Whether `own_limits` leaves the client type to the catalogue (`"catalogue"`: binoculars, callers and the consumables among them).</summary>
+    bool FollowsCatalogue(long clientType) => OwnByType.TryGetValue(clientType, out var rule) && rule is null;
 
     /// <summary>The names of the reserves (in id order, joined by ", ") whose `species` holds the species id.</summary>
     public string ReserveNames(long species) => string.Join(", ", Arr("reserves").Where(r => (r!["species"] as JsonArray ?? []).Any(s => Py.L(s) == species))
@@ -237,6 +250,9 @@ public sealed class Facts
                     ["inbackpack"] = true, ["slotUnlock"] = null,
                 },
             };
+            // an install has no `ownMultiple`: for a client type that follows the catalogue, an item that counts uses (a positive `units`: scents, face paint, a water bottle) is a consumable, several; the others (binoculars, callers) are one
+            if (item["client_type"] is { } clientType && Py.IsNum(clientType) && FollowsCatalogue(Py.L(clientType)))
+                item["ownMultiple"] = units is not null;
             if (d["extra"]?["arm_type"] is { } arm)
                 item["extra"] = new JsonObject { ["arm_type"] = arm.DeepClone() };
             items.Add(item);

@@ -20,7 +20,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons
-        i switch { 2 => "friends", 3 => "starting", 4 => "own", _ => null })).ToList();
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", _ => null })).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",
@@ -43,6 +43,15 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
             new(20, MarkerKind.Caller, "Electronic caller", 56, 60),
             .. mock == "tents" ? (MapMarker[])[new(11, MarkerKind.Tent, "Tent One", 48, 66), new(16, MarkerKind.Tent, "Tent Two", 80, 44)] : [],
         ]);
+
+    /// <summary>The mock's map of a game: its markers without the player's own tents, a tent of the host (a start) and a stand of it (shown only); no map, with the reason's message, for a game the player cannot join, or a protected one without <see cref="Secret"/>.</summary>
+    public async Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password) =>
+        Servers.FirstOrDefault(s => s.Id == server) is not { } game ? new(null, "Launch.Failed")
+        : game.Why is "friends" or "hunterscore" ? new(null, "Join.NotAllowed")
+        : game.Why is "starting" ? new(null, "Join.HostNotReady")
+        : game.Refused ? new(null, "Launch.Failed")
+        : game.Password && password != Secret ? new(null, "Join.WrongPassword")
+        : new([.. (await MarkersAsync(reserve)).Where(m => m.Kind != MarkerKind.Tent), new(-21, MarkerKind.Tent, "Host's tent", 40, 36), new(-22, MarkerKind.TreeStand, "Host's stand", 36, 30, true)]);
 
     public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>(mock == "servers:none" ? [] : Servers);
     public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>(Tutorials);

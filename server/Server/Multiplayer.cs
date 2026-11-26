@@ -1,6 +1,8 @@
 // Multiplayer: a host's session and the players who joined it. The game plays peer to peer around the host; the server only
 // holds who is in which session (in memory: a session ends with its host), tells each player in the connect reply who the
 // host is and how to reach it, learns the host's port and network id from heartbeat event 29, and lists the open sessions.
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -22,6 +24,7 @@ public sealed class Games
         public double X, Y, Z, Joined = now;
         public bool Positioned;  // the host's heartbeat has given X, Y and Z
         public double? Seen;  // the last heartbeat
+        public long? HostTent;  // a joiner who starts at a tent of the host: its guid (in the host's items)
         public Member Copy() => (Member)MemberwiseClone();
     }
 
@@ -90,30 +93,34 @@ public sealed class Games
     }
 
     /// <summary>Why the player cannot join `g` now, the first of: `own` (the player hosts it), `friends` (a friends-only session of a stranger), `hunterscore` (a score out of its range), `starting` (the host's port and
-    /// network id are not known yet), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
+    /// network id are not known yet), `network` (the host's connect came over IPv6, which the game cannot use; the connect's address is already IPv4 for an IPv4-mapped peer), `password` (the session has one and `password` is not it; null asks for none), `full`; null when the player may. The one rule of <see cref="Join"/> and of the games list's `why`.</summary>
     public static string? Why(Game g, long account, long score, Func<long, bool> friendOf, string? password = null)
     {
         if (g.Host == account) return "own";
         if (!g.Public && !friendOf(g.Host)) return "friends";
         if (score < g.HsMin || score > g.HsMax) return "hunterscore";
         if (!g.Ready) return "starting";
+        if (IPAddress.TryParse(g.Members[0].Ip, out var host) && host.AddressFamily == AddressFamily.InterNetworkV6) return "network";
         if (g.Password != "" && (password is null || !CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(g.Password)))) return "password";
         return g.Members.Count(m => m.Account != account) >= g.Max ? "full" : null;
     }
 
-    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `password`, `full`.
+    /// <summary>Add the player to session `id`, or say why not: `gone` (no such session), `own_game`, `not_allowed` (`friends` or `hunterscore` of <see cref="Why"/>), `host_not_ready` (`starting`), `host_network` (`network`), `password`, `full`, `bad_start`
+    /// (`startOk` is false: the start tent is not the host's, checked by the caller before the lock and only reported here, once the rule lets the player in). `hostTent` is the host's tent the player starts at, kept with the player for its connect.
     /// `session` makes the player's session token once it is let in.</summary>
-    public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session)
+    public (Game? Game, string? Error, string? Session) Join(double now, long id, long account, string password, long score, Func<long, bool> friendOf, Func<string> session,
+                                                             long? hostTent = null, bool startOk = true)
     {
         lock (gate)
         {
             Prune(now);
             if (!games.TryGetValue(id, out var g)) return (null, "gone", null);
             if (Why(g, account, score, friendOf, password) is { } why)
-                return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", _ => why }, null);
+                return (null, why switch { "own" => "own_game", "friends" or "hunterscore" => "not_allowed", "starting" => "host_not_ready", "network" => "host_network", _ => why }, null);
+            if (!startOk) return (null, "bad_start", null);
             LeaveLocked(account);
             var token = session();
-            g.Members.Add(new(account, token, now));
+            g.Members.Add(new(account, token, now) { HostTent = hostTent });
             return (g.Copy(), null, token);
         }
     }
@@ -196,12 +203,22 @@ public sealed partial class State
         if (Num(Form1(form, "network_id")) is not { } id) return ("gone", null);
         var score = HunterScore(account);
         var friends = Store.FriendsOf(account, LocalAccount).Friends;  // read before the lock: every heartbeat waits on it
+        // `host_tent` 1: the start is a tent of the game's host (`start`, a guid of the host's items) rather than one of the joiner's own
+        var wantsHostTent = Form1(form, "host_tent") == "1";
+        long? hostTent = wantsHostTent && TentDefine.IsMatch(Form1(form, "loctype")) ? Num(Form1(form, "start")) : null;
+        // the host's database is read here, before the games lock; a refused player still sees the refusal of `Games.Why` first, `Games.Join` reports `bad_start` only after it
+        var startOk = !wantsHostTent;
+        if (hostTent is { } guid && games.Find(Clock(), id) is { } peek)
+        {
+            using var con = Con(peek.Host);
+            startOk = TentAt(con, guid, peek.Reserve);
+        }
         var (joined, error, session) = games.Join(Clock(), id, account, Form1(form, "password"), score,
-            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session));  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
+            friends.Contains, () => Store.CreateToken(account, Lifetimes.Session), hostTent, startOk);  // ponytail: the token is written under the lock; make it after the checks if joins ever queue
         if (joined is null) return (error, null);
         form["reserve"] = [joined.Reserve.ToString()];
         if (Form1(form, "time") == "") form["time"] = [joined.Time];
-        NoteLaunch(account, form);
+        NoteLaunch(account, form, hostTent is not null);
         return (null, session);
     }
 
@@ -244,7 +261,7 @@ public sealed partial class State
     /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `joinable` and `why`, the refusal
     /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`), and each client `mapX` and `mapY`: its position as percent of the
     /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
-    /// session of a caller who may not join shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
+    /// session of a caller who may not join (`why` is not null: friends only, hunterscore, password, full ...) and is not in it shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
     /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet.</summary>
     public byte[] NetworkListReply(long? caller = null)
     {
@@ -255,7 +272,7 @@ public sealed partial class State
         {
             var reserve = Arr(G(application, "reserves", null)).OfType<JsonObject>().FirstOrDefault(r => TryKey(r["id"], out var k) && k == g.Reserve);
             var why = caller is { } who ? Games.Why(g, who, score, friends.Contains) : null;
-            var shown = g is { Public: true, Password: "" } || (caller is not null && (why is null || g.Members.Any(m => m.Account == caller)));  // a session that is not open to all shows its positions to those who may join
+            var shown = caller is null ? g is { Public: true, Password: "" } : why is null || g.Members.Any(m => m.Account == caller);  // the website's list shows positions to those who may join it or are in it
             var box = caller is not null && shown && g.Members.Any(m => m.Positioned) ? MapBox(g.Reserve, starts.Value.GetValueOrDefault(g.Reserve) ?? []) : default;
             var list = new JsonObject
             {
@@ -288,6 +305,15 @@ public sealed partial class State
             }
             return (JsonNode?)list;
         })]));
+    }
+
+    /// <summary>`GET /catalog/games/&lt;id&gt;/placed`: the host's placed items on the session's reserve (<see cref="PlacedItems"/>) for a player the session would let in, by the rule of <see cref="Games.Why"/> with `password` (null: none given);
+    /// else the reason, `gone` (no such session) or the join's own refusal, and no items.</summary>
+    public (string? Why, JsonObject? Items) GamePlaced(long caller, long id, string? password)
+    {
+        if (games.Find(Clock(), id) is not { } g) return ("gone", null);
+        var why = Games.Why(g, caller, HunterScore(caller), Store.FriendsOf(caller, LocalAccount).Friends.Contains, password);
+        return why is null ? (null, PlacedItems(g.Host, g.Reserve)) : (why, null);
     }
 
     /// <summary>Map/locations: the catalogue's locations of the reserve of session `network_id` (else of `reserve`), `[]` for neither.</summary>

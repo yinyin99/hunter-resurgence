@@ -7,10 +7,8 @@ h5 { margin: 0 0 20px; font-size: 14px; line-height: 20px; font-weight: 400; col
 .ov ::deep .asset-slot { flex: none; margin-left: 12px; object-fit: contain; }
 .ov ::deep .icon { flex: none; width: 36px; height: 36px; margin-left: 12px; color: #fff; }
 .bar { position: relative; flex: 1; height: 26px; }
-/* a bevel: a darker edge on the bottom and on the end side (the right) of the overview bars; a step row is one bar: the bottom edge on every cell, the end edge on the last cell only */
-.steps, .track { --shade: rgb(0 0 0 / .25); --bevel: inset -2px -3px 0 var(--shade); }
-.track { position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: var(--bevel); }
-.track i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; box-shadow: var(--bevel); }
+/* the overview bars are the shared .bar3d of theme.css, laid over the .bar box; a step row is one bar: the bottom edge on every cell, the end edge on the last cell only */
+.track { position: absolute; inset: 0; height: auto; }
 .row { display: flex; gap: 18px; padding: 15px 0; border-top: 1px solid var(--line); }
 .row ::deep .badge { flex: none; margin-left: 10px; }
 .what { flex: 1; }

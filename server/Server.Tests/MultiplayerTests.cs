@@ -22,7 +22,14 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     {
         var connect = CONNECT;
         connect["network"] = O("""{"singleplayer": true, "host": 7, "user_id": 7, "handle": "x", "ip": "203.0.113.9", "max_players": 8, "clients": null}""");
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: MapFacts()) { Clock = () => now };
+        var app = APP;  // two items that can be placed: a tent and a stand
+        foreach (var (id, define) in new[] { (901, "TENT02"), (902, "TREE_STAND01") })
+            app["items"]!.AsArray().Add(JsonNode.Parse($$"""
+                {"id": {{id}}, "name": "Test {{define}}", "description": "", "define": "{{define}}", "type": 41, "group": 13, "cat": 41, "client_type": 4,
+                 "image": "x", "variationname": null, "units": null, "fit": {}, "inventory": {"slots": [0, 23], "capacity": 0, "weight": 1},
+                 "price": 10, "silver_price": 100, "notbuyable": 0, "ownMultiple": true, "subcat": {"id": 0}, "hidden": 0}
+                """));
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: MapFacts()) { Clock = () => now };
         foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest"), (THIRD, "third") })
         {
             state.CreateAccount(id, handle);
@@ -283,6 +290,11 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         foreach (var client in game["clients"]!.AsArray())
             foreach (var name in new[] { "mapX", "mapY" })
                 client!.AsObject().Remove(name);
+        // the caller may not join this game yet (`starting`), so the website's list hides the raw coordinates too (null); the game's own list cannot tell who asks and sends 0
+        Assert.All(game["clients"]!.AsArray(), c => Assert.Equal((true, true, true), (c!["x"] is null, c["y"] is null, c["z"] is null)));
+        foreach (var client in game["clients"]!.AsArray())
+            foreach (var name in new[] { "x", "y", "z" })
+                client![name] = 0;
         Eq(await List(), listed);  // the game's own list has none of them
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
     }
@@ -404,6 +416,164 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal(["100,0"], await Places(GUEST));
     }
 
+    /// <summary>An item of the account placed in a reserve, `mmX` and `mmZ` millimetres from the origin.</summary>
+    void Place(long who, long guid, long item, long reserve, long mmX, long mmZ)
+    {
+        using var con = state.Store.Open(who);
+        con.Begin();
+        PlayerRows.AddItem(con, guid, item, 23, null, O($$"""{"__position": {"x": {{mmX}}, "y": 0, "z": {{mmZ}}}, "__reserve": {{reserve}}}"""));
+        con.Commit();
+    }
+
+    /// <summary>`GET /catalog/games/&lt;id&gt;/placed` of the first game as `who` (null: signed out), with the password the player entered.</summary>
+    async Task<Reply> PlacedOf(long? who, string? password = null)
+    {
+        List<(string, string)> headers = [];
+        if (who is { } w) headers.Add(("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(w, TimeSpan.FromHours(1))}"));
+        if (password is not null) headers.Add((CatalogApi.GamePassword, Uri.EscapeDataString(password)));
+        return await server.SendAsync("GET", "web.test", $"/catalog/games/{await NetworkId()}/placed", [.. headers]);
+    }
+
+    /// <summary>The answer is the host's items (ids of the items, in order), or a 403 with this reason.</summary>
+    async Task Placed(long who, string? answer, string? password = null)
+    {
+        var reply = await PlacedOf(who, password);
+        if (answer is null)
+            Assert.Equal((200, "501,502"), (reply.Status, string.Join(",", Json(reply)["items"]!.AsArray().Select(i => (long)i!["id"]!))));
+        else
+        {
+            Assert.Equal((403, "refused", answer), (reply.Status, (string)Json(reply)["status"]!, (string)Json(reply)["why"]!));
+            Assert.Null(Json(reply)["items"]);
+        }
+    }
+
+    [Fact]
+    public async Task TestTheGamesPlacedItemsAreTheHostsInTheGamesReserveAndOnlyForAPlayerWhoMayJoin()
+    {
+        Place(HOST, 501, 901, 2, 0, 1_000_000);  // the host's tent in the middle of the map
+        Place(HOST, 502, 902, 2, -1_000_000, 500_000);  // a stand at the top left corner
+        Place(HOST, 503, 902, 1, 0, 0);  // a stand in another reserve
+        Place(THIRD, 601, 901, 2, 0, 1_000_000);  // the joining player's own tent is not the host's
+
+        await Host();
+        await Placed(THIRD, "starting");  // the host's port and network id are not known yet
+        await ReadyHost();
+        Eq("""{"items": [{"id": 501, "reserve": 2, "kind": "tent", "name": "Test TENT02", "x": 50, "y": 50}, {"id": 502, "reserve": 2, "kind": "treestand", "name": "Test TREE_STAND01", "x": 0, "y": 0}]}""", Json(await PlacedOf(THIRD)));
+        await Placed(GUEST, null);
+        await Placed(HOST, "own");
+        Assert.Equal(401, (await PlacedOf(null)).Status);
+        Assert.Equal(404, (await server.SendAsync("GET", "web.test", "/catalog/games/7000000001/placed", [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(THIRD, TimeSpan.FromHours(1))}")])).Status);
+
+        // full: the host and two players are in (max 3)
+        Joined(await Join(GUEST));
+        Joined(await Join(THIRD));
+        state.CreateAccount(14, "fourth");
+        await Placed(14, "full");
+
+        await ReadyHost("&public_game=0");
+        await Placed(THIRD, "friends");
+        state.Store.AddFriend(GUEST, HOST);
+        state.Store.AddFriend(HOST, GUEST);
+        await Placed(GUEST, null);
+
+        await ReadyHost("&hs_min=100&hs_max=200");
+        await Placed(THIRD, "hunterscore");
+        Score(THIRD, 150);
+        await Placed(THIRD, null);
+
+        await ReadyHost("&password=pä ss");  // a password with a character that is no ASCII travels percent-encoded
+        await Placed(GUEST, "password");
+        await Placed(GUEST, "password", "wrong");
+        await Placed(GUEST, null, "pä ss");
+        await Placed(GUEST, "password", "pä");
+    }
+
+    [Fact]
+    public async Task TestAGameHidesItsPositionsFromAPlayerWhoMayNotJoinItWhateverTheReason()
+    {
+        var session = await ReadyHost("&hs_min=100&hs_max=200");
+        await Positions(session, (HOST, 0, 1000));
+        Assert.Equal(["-"], await Places(THIRD));  // a public game, but the score is out of its range
+        Score(THIRD, 150);
+        Assert.Equal(["50,50"], await Places(THIRD));
+
+        session = await ReadyHost();  // max 3: full for a fourth player
+        await Positions(session, (HOST, 0, 1000));
+        Joined(await Join(GUEST));
+        Joined(await Join(THIRD));
+        state.CreateAccount(14, "fourth");
+        tokens[14] = state.Store.CreateToken(14);
+        Assert.Equal(["-", "-", "-"], await Places(14));
+        Assert.Equal(["50,50", "-", "-"], await Places(GUEST));  // the ones in it see it
+    }
+
+    /// <summary>`POST /auth/launch` of the page, as `who`: the status and the `error` (null on success) or the session token.</summary>
+    async Task<(int Status, string? Error, string? Session)> PageJoin(long who, string form)
+    {
+        var reply = await server.SendAsync("POST", "web.test", "/auth/launch",
+            [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "XMLHttpRequest"), ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(who, TimeSpan.FromHours(1))}")], Encoding.UTF8.GetBytes(form));
+        return (reply.Status, (string?)Json(reply)["error"], Regex.Match((string?)Json(reply)["url"] ?? "", "/([0-9a-f]{40})/lang/") is { Success: true } m ? m.Groups[1].Value : null);
+    }
+
+    [Fact]
+    public async Task TestAJoinerMayStartAtTheHostsTentAndAtNoOtherPlayersTent()
+    {
+        Place(HOST, 501, 901, 2, 500_000, 1_200_000);  // the host's tent, 500 m and 1200 m from the origin
+        Place(HOST, 502, 901, 1, 0, 0);  // a tent of the host in another reserve
+        Place(HOST, 503, 902, 2, 0, 0);  // a stand of the host: no start
+        Place(THIRD, 601, 901, 2, 0, 0);  // another player's tent
+        Place(GUEST, 501, 901, 2, -700_000, 600_000);  // the joiner's own tent, with the guid of the host's
+        await ReadyHost();
+        var id = await NetworkId();
+        string Form(string start) => $"mp=join&network_id={id}&{start}&loadout=0";
+
+        // another player's tent, one of the host's in another reserve and a stand are no start; nobody joined
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=601&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=502&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("tent=503&host_tent=1"))).Error);
+        Assert.Equal("bad_start", (await PageJoin(THIRD, Form("lodge=101&host_tent=1"))).Error);  // `host_tent` without a tent
+        Assert.Equal(1L, (long)(await List())[0]!["clients_len"]!);
+
+        // the host's tent is the joiner's start: the hunt is at the host's tent, not at the joiner's tent of the same guid
+        var joined = await PageJoin(GUEST, Form("tent=501&host_tent=1"));
+        Assert.Equal((200, null), (joined.Status, joined.Error));
+        var expedition = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.Equal((500.0, 1200.0), ((double)expedition["x"]!, (double)expedition["z"]!));
+        Assert.Equal(2L, (long)(await List())[0]!["clients_len"]!);
+
+        // without `host_tent` a tent is the joiner's own, as before
+        var own = await PageJoin(THIRD, Form("tent=601"));
+        Assert.Null(own.Error);
+        Assert.Equal(0.0, (double)(await Connect(own.Session!, THIRD))["expedition"]!["x"]!);
+
+        // a player the game refuses cannot start at its tent either: no setup of the host reaches it
+        await ReadyHost("&public_game=0");
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&tent=501&host_tent=1&loadout=0")).Error);
+    }
+
+    [Fact]
+    public async Task TestAJoinersStartFallsBackToTheReservesFirstLocationWhenTheHostPicksUpTheTent()
+    {
+        Place(HOST, 501, 901, 2, 500_000, 1_200_000);
+        await ReadyHost();
+        var joined = await PageJoin(GUEST, $"mp=join&network_id={await NetworkId()}&tent=501&host_tent=1&loadout=0");
+        Assert.Null(joined.Error);
+        var first = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.Equal((500.0, 1200.0), ((double)first["x"]!, (double)first["z"]!));  // at the host's tent
+
+        using (var con = state.Store.Open(HOST))  // the host picks the tent up: it goes back to the stash
+            con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = 501");
+        var expedition = (await Connect(joined.Session!, GUEST))["expedition"]!;
+        Assert.NotEqual((500.0, 1200.0), ((double)expedition["x"]!, (double)expedition["z"]!));  // no longer at the tent
+        using var guest = state.Store.Open(GUEST);
+        Assert.Equal("100:", string.Join(",", guest.Rows("SELECT location_id, tent FROM expeditions WHERE account_id = $a AND end_ts IS NULL").Select(r => $"{r[0]}:{r[1]}")));  // the hunt is at the reserve's first location, with no tent of the joiner's own
+
+        // a refused player sees the refusal of the rule, also with a start that is no tent of the host's
+        await ReadyHost("&public_game=0");
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&lodge=101&host_tent=1&loadout=0")).Error);
+        Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&tent=999&host_tent=1&loadout=0")).Error);
+    }
+
     [Fact]
     public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
     {
@@ -486,6 +656,26 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Null(await Ip("not an address"));
         var direct = await server.SendAsync("POST", Gs, Replay.CONNECT, [("X-Hun-Session", session), ("X-Forwarded-For", "203.0.113.5")], "{}"u8.ToArray());
         Assert.Equal("127.0.0.1", (string?)Json(direct)["network"]!["ip"]);  // a peer that is no proxy: the header counts for nothing
+    }
+
+    [Theory]
+    [InlineData("203.0.113.5", "203.0.113.5", null)]
+    [InlineData("::ffff:203.0.113.5", "203.0.113.5", null)]  // an IPv4-mapped peer is an IPv4 host
+    [InlineData("2001:db8::1", "2001:db8::1", "network")]
+    public async Task TestAHostWhoseConnectCameOverIpv6IsListedNotJoinableAndTheJoinIsRefused(string forwarded, string recorded, string? why)
+    {
+        var session = await ReadyHost();
+        Settings.TryNetwork("127.0.0.0/8", out var loopback);
+        await using var proxied = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp, [loopback]);
+        var connect = await proxied.SendAsync("POST", Gs, Replay.CONNECT, [("X-Hun-Session", session), ("X-Forwarded-For", forwarded)], "{}"u8.ToArray());
+        Assert.Equal(recorded, (string?)Json(connect)["network"]!["ip"]);
+        await Agrees(GUEST, why);
+        if (why is not null)
+        {
+            var page = await server.SendAsync("POST", "web.test", "/auth/launch", [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "XMLHttpRequest"),
+                ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(GUEST, TimeSpan.FromHours(1))}")], Encoding.UTF8.GetBytes($"mp=join&network_id={await NetworkId()}&lodge=101&loadout=0"));
+            Assert.Equal((400, "host_network"), (page.Status, (string)Json(page)["error"]!));
+        }
     }
 
     [Fact]

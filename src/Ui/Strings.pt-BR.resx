@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Você tem uma licença válida até:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Você tem uma licença ilimitada</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Munição ilimitada</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Combustível ilimitado</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Você possui {0} de {1} itens: {2} em$ em vez de {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Você possui {0} de {1} itens</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Você já possui todos os itens deste pacote</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ou</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dias</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>PROMOÇÃO</value></data>
@@ -1641,4 +1645,9 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="GameSettings.Units" xml:space="preserve"><value>Unidades</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Métrico (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rede do anfitrião</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Você não pode entrar neste jogo: a conexão do anfitrião não é compatível (o jogo não consegue se conectar por IPv6). Peça ao anfitrião para atualizar o launcher e iniciar o jogo de novo.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só aparecem para jogadores que podem entrar nesta partida.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ na taxa normal, sem bônus.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bônus no período:</value></data>
 </root>

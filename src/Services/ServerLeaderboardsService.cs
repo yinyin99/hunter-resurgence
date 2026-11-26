@@ -32,7 +32,7 @@ public sealed class ServerLeaderboardsService(HttpClient http, ServerCookie cook
             : [];
 
     public async Task<HuntingStats> HuntingAsync() =>
-        await GetAsync<HuntingStats>(ServerSessionApi.HuntingStatistics) is { Reserves: not null, Species: not null } h ? h : new([], []);
+        await GetAsync<HuntingStats>(ServerSessionApi.HuntingStatistics) is { Reserves: not null, Species: not null } h ? h with { Events = h.Events ?? [] } : new([], [], []);
 
     public async Task<Page<Ranked>> RowsAsync(string kind, int id, int page, int season)
     {

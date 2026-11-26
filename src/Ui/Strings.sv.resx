@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Du har en giltig licens till:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Du har en obegränsad licens</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Obegränsad ammunition</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Obegränsat bränsle</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Du äger {0} av {1} föremål: {2} em$ i stället för {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Du äger {0} av {1} föremål</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du äger redan alla föremål i det här paketet</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagar</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>REA</value></data>
@@ -1641,4 +1645,9 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="GameSettings.Units" xml:space="preserve"><value>Enheter</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metriska (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiska (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Värdens nätverk</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värdens anslutning stöds inte (spelet kan inte ansluta via IPv6). Be värden uppdatera launchern och starta spelet igen.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Kartan och värdens utrustning visas bara för spelare som får gå med i det här spelet.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ till normal taxa, bonusar ej inräknade.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
 </root>

@@ -15,14 +15,17 @@ public sealed record Board(int Id, string Name, IReadOnlyList<Ranked> Top);
 /// <summary>Winner of a past season for one species: best score and best range.</summary>
 public sealed record HallEntry(string Species, Ranked? Score, Ranked? Range);
 
-/// <summary>A reserve's row of the hunting statistics: the hours hunted there by every hunter, gm$ earned per hour and per harvest, harvests per hour and the number of hunters behind the row.</summary>
-public sealed record ReserveHunting(string Reserve, double Hours, double GmPerHour, double GmPerHarvest, double HarvestsPerHour, int Players);
+/// <summary>A reserve's row of the hunting statistics: the hours hunted there by every hunter, harvests per hour, the number of hunters behind the row and the gm$ earned per hour and per harvest at the rewards' base, with no bonus (the server's `comparable…` figures; the paid ones are the operator's view).</summary>
+public sealed record ReserveHunting(string Reserve, double Hours, double HarvestsPerHour, int Players, double ComparableGmPerHour, double ComparableGmPerHarvest);
 
-/// <summary>A species' row of the hunting statistics, with the reserve where it earns most gm$ per hour (null when none).</summary>
-public sealed record SpeciesHunting(string Species, double Hours, double GmPerHour, double GmPerHarvest, double HarvestsPerHour, int Players, string? BestReserve = null);
+/// <summary>A species' row of the hunting statistics, the figures of <see cref="ReserveHunting"/> (gm$ at the rewards' base, no bonus), with the reserve where it earns most gm$ per hour at that base (null when none).</summary>
+public sealed record SpeciesHunting(string Species, double Hours, double HarvestsPerHour, int Players, double ComparableGmPerHour, double ComparableGmPerHarvest, string? BestReserve = null);
 
 /// <summary>The server-wide hunting statistics: figures of all hunters together, never a player's name; a row built from too few hunters is left out by the server.</summary>
-public sealed record HuntingStats(IReadOnlyList<ReserveHunting> Reserves, IReadOnlyList<SpeciesHunting> Species);
+public sealed record HuntingStats(IReadOnlyList<ReserveHunting> Reserves, IReadOnlyList<SpeciesHunting> Species, IReadOnlyList<HuntingEvent> Events);
+
+/// <summary>A bonus event inside the period the hunting statistics cover (the paid gm$ include it, the comparable ones do not); the multiplier is null for an event that has none (a seasonal one), which the page does not list.</summary>
+public sealed record HuntingEvent(string Name, DateTimeOffset Start, DateTimeOffset End, double? Multiplier);
 
 /// <summary>A board that could not be read: the server did not answer (in time) or answered an error. An empty board is an answer, not this.</summary>
 public sealed class BoardUnavailableException(string message, Exception? inner = null) : Exception(message, inner);

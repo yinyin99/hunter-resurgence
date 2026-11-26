@@ -1,0 +1,41 @@
+name: virustotal
+# After the release workflow succeeds (its last step publishes the release), scans the Setup and the backup zip on VirusTotal and appends the result to the release notes (docs/deploy.md, "VirusTotal scan").
+# A separate workflow, so the publish never waits for or fails on VirusTotal. A release published with the workflow's GITHUB_TOKEN does not fire `release: published`, so this follows the release run (workflow_run). By hand: Actions, virustotal, Run workflow, with the tag.
+# The tag comes from the run, never from a shell line. Without the secret VIRUSTOTAL_API_KEY (a fork) the script ends with a notice.
+on:
+  workflow_run:
+    workflows: [release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "The release tag, vMAJOR.MINOR.PATCH[-suffix] (a release whose notes have the VirusTotal section already is left as it is)"
+        required: true
+permissions:
+  contents: write # gh release edit: the notes
+concurrency:
+  group: virustotal
+  cancel-in-progress: false
+jobs:
+  scan:
+    # a tag push of release that succeeded: for those, head_branch is the tag
+    if: github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TAG: ${{ inputs.tag || github.event.workflow_run.head_branch }}
+      GH_TOKEN: ${{ github.token }}
+      VIRUSTOTAL_API_KEY: ${{ secrets.VIRUSTOTAL_API_KEY }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          persist-credentials: false
+      # the downloads as published (the launcher's Setup is not in a release without a launcher)
+      - name: Download the Setup and the zip
+        if: env.VIRUSTOTAL_API_KEY != ''
+        run: |
+          mkdir assets
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir assets --pattern backup-win-x64.zip --pattern HunterResurgence-win-Setup.exe || echo "::notice::No VirusTotal result: the release files could not be downloaded"
+      - run: node .github/scripts/virustotal-notes.mjs assets/*
+        if: hashFiles('assets/*') != '' || env.VIRUSTOTAL_API_KEY == ''

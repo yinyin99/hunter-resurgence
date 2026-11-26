@@ -6,9 +6,17 @@
 @* the old container closes on a click beside the map and the details; the backdrop is a layer of its own as the dialog element belongs to the shell *@
 <div class="backdrop" @onclick="Modal.Close"></div>
 <div class="join" role="dialog" aria-modal="true">
-    <MapPlaceholder Markers="markers" Reserve="Server.Reserve" Height="608" Zoom="false" OnPick="Pick" Players="Server.Roster" HoverPlayer="@hoverPlayer">
-        <p class="hint"><Icon Name="caret-down" /> @L["Join.Hint"]</p>
-    </MapPlaceholder>
+    @* the map, the host's setup and the players' places are only for a player who may join: none for a game the server refuses, and for a game with a password none until it is entered *@
+    @if (markers is { } shown)
+    {
+        <MapPlaceholder Markers="shown" Reserve="Server.Reserve" Height="608" Zoom="false" OnPick="Pick" Players="Server.Roster" HoverPlayer="@hoverPlayer">
+            <p class="hint"><Icon Name="caret-down" /> @L["Join.Hint"]</p>
+        </MapPlaceholder>
+    }
+    else
+    {
+        <div class="nomap">@if (!loading && !AsksPassword) { <p>@L[error ?? "Join.Hidden"]</p> }</div>
+    }
     <aside>
         <button class="close" aria-label="@L["Join.Close"]" @onclick="Modal.Close">&times;</button>
         <h2>@Server.Name</h2>
@@ -33,22 +41,26 @@
             </div>
         }
     </aside>
-    @if (asking is not null)
+    @if (AsksPassword)
     {
-        <form class="password" @onsubmit="Submit" id="mp-password-dialog">
-            <button type="button" class="close" aria-label="@L["Join.Close"]" @onclick="() => asking = null">&times;</button>
+        <form class="password" @onsubmit="Unlock" id="mp-password-dialog">
             <label for="join-password">@L["Join.Password"]</label>
             <input id="join-password" type="password" maxlength="20" placeholder="@L["Join.PasswordPlaceholder"]" @bind="password" autofocus />
-            <button class="btn btn-primary" disabled="@joining">@L["Join.Go"]</button>
+            @if (error is not null) { <p class="wrong" role="alert">@L[error]</p> }
+            <button class="btn btn-primary" disabled="@checking">@L["Join.Go"]</button>
         </form>
     }
 </div>
 
 @code {
-    IReadOnlyList<MapMarker> markers = [];
+    /// <summary>The starts and the host's items; null while there is no map to show.</summary>
+    IReadOnlyList<MapMarker>? markers;
     string reserve = "";
-    MapMarker? asking;
     string? password, hoverPlayer;
+    /// <summary>The message key of why the server showed no map: the wrong password only for a password the game has and the player gave wrong, the refusal's own text for any other (full, not allowed, the host's network ...), the generic one for no answer.</summary>
+    string? error;
+    bool loading = true, checking;
+    bool AsksPassword => !loading && markers is null && Server.Password && !Server.Refused;
     IReadOnlyList<Loadout> loadouts = [];
     int loadout;
 
@@ -61,18 +73,28 @@
     protected override async Task OnInitializedAsync()
     {
         loadout = Loadout;
-        markers = await Servers.MarkersAsync(Server.Reserve);
+        if (!Server.Refused && !Server.Password) await Load(null);
         loadouts = await Servers.LoadoutsAsync();
         reserve = (await Servers.ReservesAsync()).FirstOrDefault(r => r.Id == Server.Reserve)?.Name ?? "";
+        loading = false;
     }
 
-    async Task Pick(MapMarker marker)
+    async Task Load(string? pass)
     {
-        if (Server.Password) { (asking, password) = (marker, null); return; }
-        await Join(marker, null);
+        var map = await Servers.JoinMarkersAsync(Server.Id, Server.Reserve, pass);
+        (markers, error) = (map.Markers, map.Markers is null ? map.Error : null);
     }
 
-    Task Submit() => Join(asking!, password);
+    /// <summary>The server shows the map of a game with a password only after the right one (it checks it before it sends the host's items).</summary>
+    async Task Unlock()
+    {
+        if (checking) return;
+        checking = true;
+        try { await Load(password); }
+        finally { checking = false; }
+    }
+
+    Task Pick(MapMarker marker) => Join(marker, Server.Password ? password : null);
 
     bool joining;  // a second click while the join runs would open another hunt
 
@@ -85,7 +107,7 @@
             if (!await Modal.SetUpFirst(GameSettings)) return;
             var result = await Servers.JoinAsync(Server.Id, marker.Id, pass, loadout);
             // the map stays until the "Done hunting" window replaces it, as in the old app
-            if (result.Ok) { asking = null; Modal.GameStarted(Bridge); } else Modal.StartFailed(result);
+            if (result.Ok) Modal.GameStarted(Bridge); else Modal.StartFailed(result);
         }
         finally { joining = false; }
     }

@@ -21,6 +21,9 @@ public sealed class LauncherUpdater(UpdateManager manager, Func<bool> gameRunnin
         VelopackLocator.IsCurrentSet && new UpdateManager(new GithubSource(Repo, null, false)) is { IsInstalled: true } m
             ? new(m, () => GameFiles.ClientRunning(Settings.Load().ClientExe)) : null;
 
+    /// <summary>The new window comes to the front only after the restart of an update, and never over a running game.</summary>
+    public static bool ShouldActivate(bool restartedAfterUpdate, bool gameRunning) => restartedAfterUpdate && !gameRunning;
+
     /// <summary>The update is found, downloaded and waiting for the restart.</summary>
     public bool Pending => downloaded is not null;
 

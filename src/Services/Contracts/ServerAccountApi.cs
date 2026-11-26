@@ -58,6 +58,8 @@ public static class ServerAccountApi
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
     public const string Inventory = "/account/inventory";
+    /// <summary>GET with the cookie: 200 <see cref="ServerBundleOffers"/>, what each bundle the store lists costs the player now (the list price less the share of the items already owned up to their limit).</summary>
+    public const string Bundles = "/account/bundles";
     /// <summary>GET with the cookie: 200 <see cref="ServerPlaced"/>, the player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes.</summary>
     public const string Placed = "/account/placed";
     public const long MaxZipBytes = 1L << 30;

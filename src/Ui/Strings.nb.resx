@@ -750,6 +750,10 @@
   <data name="Store.LicenseUntil" xml:space="preserve"><value>Du har en lisens som er gyldig til:</value></data>
   <data name="Store.UnlimitedLicense" xml:space="preserve"><value>Du har en ubegrenset lisens</value></data>
   <data name="Store.UnlimitedAmmo" xml:space="preserve"><value>Ubegrenset ammunisjon</value></data>
+  <data name="Store.UnlimitedFuel" xml:space="preserve"><value>Ubegrenset drivstoff</value></data>
+  <data name="Store.BundleOwn" xml:space="preserve"><value>Du eier {0} av {1} artikler: {2} em$ i stedet for {3} em$</value></data>
+  <data name="Store.BundleOwnCount" xml:space="preserve"><value>Du eier {0} av {1} artikler</value></data>
+  <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du eier allerede alle artiklene i denne pakken</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dager</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
@@ -1641,4 +1645,9 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="GameSettings.Units" xml:space="preserve"><value>Enheter</value></data>
   <data name="GameSettings.Metric" xml:space="preserve"><value>Metrisk (m, kg)</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperisk (yd, lbs)</value></data>
+  <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Vertens nettverk</value></data>
+  <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: vertens tilkobling støttes ikke (spillet kan ikke koble til via IPv6). Be verten om å oppdatere launcheren og starte spillet på nytt.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Kartet og vertens utstyr vises bare for spillere som kan bli med i dette spillet.</value></data>
+  <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonuser er utelatt.</value></data>
+  <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushendelser i perioden:</value></data>
 </root>

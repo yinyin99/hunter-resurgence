@@ -166,7 +166,7 @@ public static class Restorer
         {
             pictures = state.PreparePictures(con, read, hashes, replace: fill is null && !merge, keepFiles: fill is not null || merge);
             report = merge ? Merge(con, model, read.Report, sha, pictures.Report) : Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
-                          finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill);  // the importer warns of an address that is no stock avatar; a stored picture is no default
+                          finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill, state);  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
             if (merge) return;
             if (finalId != current) Adopt(con, current, finalId);
@@ -360,7 +360,7 @@ public static class Restorer
 
     /// <summary>Replace the account's profile rows with the model's (inside the caller's transaction) and add the audit row; `filled` not null: replace nothing, fill what the account lacks (see <see cref="Apply"/>).
     /// returns the report.</summary>
-    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit, HashSet<string>? filled)
+    static string Rows(Db con, PlayerModel m, Report layerA, long id, string handle, bool replaced, string sha, string? backup, string pictures, string avatarUrl, JsonArray kit, HashSet<string>? filled, State state)
     {
         // the start em$ the account has not spent yet, until a zip's wallet replaced them once (a claim keeps the account's wallet)
         var unspentStartEm = con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND zip_sha256 NOT LIKE 'archive:%' AND mode <> 'merge'") is null
@@ -412,7 +412,10 @@ public static class Restorer
 
         if (empty.Contains("items"))
         {
-            foreach (var i in m.Items)
+            // a player owns at most as many of an item as its limit: the copies in use stay (equipped, placed), then the oldest (State.Excess); the rest are not restored
+            var over = state.Excess(m.Items, i => i.ItemId, i => i.Slot > 0 || i.Position is not null, i => i.Guid).Select(i => i.Guid).ToHashSet();
+            if (over.Count > 0) lines.Add($"items over their own limit, not restored: {over.Count}");
+            foreach (var i in m.Items.Where(x => !over.Contains(x.Guid)))
             {
                 var metadata = (JsonObject)i.Metadata.DeepClone();
                 metadata.Remove(State.POSITION);  // the zip's own metadata cannot claim a placement

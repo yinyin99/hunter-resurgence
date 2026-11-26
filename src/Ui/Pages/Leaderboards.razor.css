@@ -12,8 +12,6 @@
 .board th { padding: 8px; font-size: 14px; line-height: 20px; font-weight: 100; color: var(--text-1); text-align: center; }
 .board .hunter { text-align: left; }
 .board.small { margin: 0 0 10px; }
-.part { margin: 14px 0 10px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
-.stats td { padding: 6px 8px; font-size: 14px; line-height: 20px; text-align: center; }
 .tiles { display: flex; flex-wrap: wrap; gap: 20px; margin: 0 0 20px; }
 .tiles.two .tile { width: 460px; }
 .tiles.four .tile { width: 220px; }

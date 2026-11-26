@@ -405,7 +405,7 @@ void Admin(string[] a)
     if (a[0] == "item")
     {
         if (count is < 1 or > AdminApi.MaxStacks || !state.GrantItems(account!.Value, itemId, count))
-            Die($"item {itemId}: unknown or bad count (1 to {AdminApi.MaxStacks})");
+            Die($"item {itemId}: unknown, bad count (1 to {AdminApi.MaxStacks}) or more than the account may own of it");
         Console.WriteLine($"granted {count} x {Py.Str(state.ItemInfo(itemId)!["name"])} ({itemId})");
     }
     else
@@ -661,7 +661,12 @@ async Task Serve()
         Console.WriteLine($"missions: {overrides} objective rules from {State.MissionRulesFile}");
     if (state is not null && state.ConfirmMissions() is > 0 and var confirmed)
         Console.WriteLine($"missions: {confirmed} objectives confirmed against the harvests and clues made before this start");
-    if (state is not null && (bool?)settings.Cfg["offline_mode"] == false) state.BackfillLodges();  // a community server: the lodges its accounts' lodge items lack
+    if (state is not null && (bool?)settings.Cfg["offline_mode"] == false)  // a community server
+    {
+        state.BackfillLodges();  // the lodges its accounts' lodge items lack
+        foreach (var line in state.EnforceOwnLimits())  // once: the copies over an item's limit. The server makes no backup at start and the deploy takes none: the operator copies the database before (docs/deploy.md)
+            Console.WriteLine(line);
+    }
     var certs = new List<X509Certificate2>();
     try
     {

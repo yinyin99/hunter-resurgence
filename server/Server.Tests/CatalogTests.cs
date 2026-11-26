@@ -158,13 +158,22 @@ public class CatalogTests : StateTestBase
 
     [Theory]
     [InlineData("id=1&count=3", new long[] { 1, 1, 1 })]  // 6 of a rifle the player may own 5 of
-    [InlineData("id=9&bundle=1", new long[] { 3 })]       // the bundle's hidden item may be owned once
     public async Task APurchaseOverTheOwnLimitChangesNothing(string form, long[] owned)
     {
         var (reply, items) = await Buy(form, owned: owned);
         Assert.Equal(409, reply.Status);
         Assert.Empty(items);
         Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
+    // a bundle gives at most the limit of each item and not again one the player owns up to it, at a price cut by the owned share: 90 em$ for items worth 100, 200 and 10, the hidden one owned (limit 1) -> 88
+    [Fact]
+    public async Task ABundleWithAnItemOwnedUpToItsLimitIsSoldWithoutItAtAReducedPrice()
+    {
+        var (reply, items) = await Buy("id=9&bundle=1", owned: [3]);
+        Assert.Equal(200, reply.Status);
+        Assert.Equal(new long[] { 1, 2 }, items);
+        Eq("94.0", state.Wallet(ME)["em"]);
     }
 
     // the game's call: an item with a gm$ price of 0 or none is not given away, whatever the balance

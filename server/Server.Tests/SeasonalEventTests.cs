@@ -315,22 +315,25 @@ public class SeasonalEventTests : StateTestBase
         Assert.Equal("True,True", KillsEthical(s));  // the earlier kill keeps its verdict
     }
 
-    [Fact]
-    public void TestTheSchemaOfVersion37GetsTheHuntsEventDecidedAsNone()
+    [Theory]
+    [InlineData(true)]   // main's schema 38: neither column
+    [InlineData(false)]  // a database that already has `event` but not `event_until` gets the missing one and keeps its decisions
+    public void TestTheSchemaOfVersion38GetsTheHuntsEventDecidedAsNone(bool withoutEvent)
     {
-        var file = Path.Combine(tmp, "v37.db");
+        var file = Path.Combine(tmp, "v38.db");
         var store = new Store(file);
         store.CreateAccount(5, "old", new JsonObject());
         using (var con = store.Open(5))
-            con.Exec("INSERT INTO expeditions (account_id, start_ts) VALUES ($a, 1)");  // an open hunt at the upgrade
+            con.Exec("INSERT INTO expeditions (account_id, start_ts, event) VALUES ($a, 1, ?)", withoutEvent ? null : "halloween_2026");  // an open hunt at the upgrade
         using (var con = store.Open())
         {
-            con.Exec("ALTER TABLE expeditions DROP COLUMN event");
+            if (withoutEvent)
+                con.Exec("ALTER TABLE expeditions DROP COLUMN event");
             con.Exec("ALTER TABLE expeditions DROP COLUMN event_until");
-            con.Exec("PRAGMA user_version = 37");
+            con.Exec("PRAGMA user_version = 38");
         }
         using var migrated = new Store(file).Open(5);
-        Assert.Equal("", migrated.Scalar("SELECT event FROM expeditions WHERE account_id = $a"));  // decided: no event, so its kills keep their judgement
+        Assert.Equal(withoutEvent ? "" : "halloween_2026", migrated.Scalar("SELECT event FROM expeditions WHERE account_id = $a"));  // '': decided, no event, so its kills keep their judgement
         Assert.Equal(DBNull.Value, migrated.Scalar("SELECT event_until FROM expeditions WHERE account_id = $a"));
         Assert.Equal((long)Store.Version, migrated.Scalar("PRAGMA user_version"));
     }

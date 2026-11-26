@@ -166,11 +166,12 @@ public class InstallTests : IDisposable
     }
 
     [Fact]
-    public void TheShippedStartKitStoresTheEventShotgunAndItsSilverSlugs()
+    public void TheShippedStartKitStoresTheEventShotgunItsSilverSlugsAndBustThrough()
     {
         Assert.Contains(1143L, Facts.Default.StartStored());
         Assert.Contains(1142L, Facts.Default.StartStored());
-        Assert.Equal(3, Facts.Default.StartVersion());
+        Assert.Contains(65L, Facts.Default.StartStored());  // the Bust Through minigame
+        Assert.Equal(4, Facts.Default.StartVersion());
     }
 
     [Fact]

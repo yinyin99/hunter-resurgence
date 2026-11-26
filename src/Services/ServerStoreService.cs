@@ -17,8 +17,10 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
 
     // read once and kept until a page opens or a purchase goes through, so a search is not a request each
     Dictionary<int, (int Owned, bool Counted, long? Expires)>? owned;
+    // what each bundle costs the player now (the server's own price, see ServerAccountApi.Bundles), kept the same way
+    Dictionary<int, ServerBundleOffer>? offers;
 
-    public void RefreshOwned() => owned = null;
+    public void RefreshOwned() => (owned, offers) = (null, null);
 
     static readonly ServerStore Empty = new([], [], []);
 
@@ -50,7 +52,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     public async Task<IReadOnlyList<StoreBundle>> BundlesAsync()
     {
         var s = await LoadAsync();
-        return [.. s.Bundles.Select(b => Bundle(b, s))];
+        var prices = s.Bundles.Length > 0 ? await OffersAsync() : new Dictionary<int, ServerBundleOffer>();
+        return [.. s.Bundles.Select(b => Bundle(b, s, prices))];
     }
 
     public async Task<bool> HasSalesAsync() => (await LoadAsync()).Items.Any(i => i.Was is not null);
@@ -90,7 +93,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     public async Task<StoreBundle?> BundleAsync(int id)
     {
         var s = await LoadAsync();
-        return s.Bundles.Where(b => b.Id == id).Select(b => Bundle(b, s)).FirstOrDefault();
+        var prices = s.Bundles.Any(b => b.Id == id) ? await OffersAsync() : new Dictionary<int, ServerBundleOffer>();
+        return s.Bundles.Where(b => b.Id == id).Select(b => Bundle(b, s, prices)).FirstOrDefault();
     }
 
     public async Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1)
@@ -102,7 +106,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
             request.Content = new FormUrlEncodedContent([KeyValuePair.Create("id", $"{id}"), KeyValuePair.Create("count", $"{count}"), KeyValuePair.Create("bundle", bundle ? "1" : "0"), KeyValuePair.Create("wallet", gms ? "SILVER" : "GOLD")]);
             using var response = await http.SendAsync(request);
-            if (response.IsSuccessStatusCode) { owned = null; return Result.Success; }
+            if (response.IsSuccessStatusCode) { RefreshOwned(); return Result.Success; }
             log.LogWarning("The server refused {Path} for {Id} ({Status})", ServerAccountApi.Buy, id, (int)response.StatusCode);
         }
         catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
@@ -118,15 +122,44 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             g => (g.Any(x => x.Units is not null) ? g.Sum(x => x.Units ?? 0) : g.Count(), g.Any(x => x.Units is not null),
                   g.Any(x => x.Expires == 0) ? 0L : g.Max(x => x.Expires)));
 
-    static StoreItem Item(ServerItem i, Dictionary<int, (int Owned, bool Counted, long? Expires)> own) =>
-        new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, own.GetValueOrDefault(i.Id).Owned, i.Buyable, Capacity: 0, i.Description,
-            Counted: own.GetValueOrDefault(i.Id).Counted, Expires: own.GetValueOrDefault(i.Id).Expires, Unlimited: i.Unlimited);
+    static StoreItem Item(ServerItem i, Dictionary<int, (int Owned, bool Counted, long? Expires)> own)
+    {
+        var (have, counted, expires) = own.GetValueOrDefault(i.Id);
+        return new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, have, i.Buyable, Capacity: 0, i.Description,
+            OwnLimit: counted ? 0 : i.Limit, Counted: counted, Expires: expires, Unlimited: i.Unlimited, Fuel: i.Fuel);
+    }
 
-    // a line is one unit of an item at its full price; the page adds up the lines of one item
-    static StoreBundle Bundle(ServerBundle b, ServerStore s) => new(b.Id, b.Name, b.Description, b.Price, b.Buyable,
-        [.. b.Items.Select(x => s.Items.FirstOrDefault(i => i.Id == x.Id) is { } i
-            ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant)
-            : new BundleLine(x.Id, x.Name, 1, 0, 0))]);
+    // a line is one unit of an item at its full price; the page adds up the lines of one item. The price and what is already owned are the server's offer for this player.
+    static StoreBundle Bundle(ServerBundle b, ServerStore s, Dictionary<int, ServerBundleOffer> offers)
+    {
+        BundleLine[] lines = [.. b.Items.Select(x => s.Items.FirstOrDefault(i => i.Id == x.Id) is { } i
+            ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant, i.Limit)
+            : new BundleLine(x.Id, x.Name, 1, 0, 0))];
+        return offers.TryGetValue(b.Id, out var o)
+            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of)
+            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines);
+    }
+
+    /// <summary>What each bundle costs the player now, by bundle id; none without a session or when the server does not answer (the list prices then stand).</summary>
+    async Task<Dictionary<int, ServerBundleOffer>> OffersAsync()
+    {
+        if (offers is not null) return offers;
+        if (cookie.Value is not { } sent) return [];
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.Bundles);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerBundleOffers>() is { Bundles: { } list })
+                return offers = list.ToDictionary(o => o.Id);
+            log.LogWarning("The server answered {Path} with {Status}: the list prices of the bundles stand", ServerAccountApi.Bundles, (int)response.StatusCode);
+            cookie.Refused(response, sent);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): the list prices of the bundles stand", ServerAccountApi.Bundles, e.Message);
+        }
+        return [];
+    }
 
     async Task<ServerStore> LoadAsync() => cookie.Value is null ? Empty
         : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value) ?? Empty;

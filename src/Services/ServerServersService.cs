@@ -16,8 +16,40 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
 
     public async Task<IReadOnlyList<Reserve>> ReservesAsync() => [.. (await LoadAsync()).Reserves.Select(r => new Reserve(r.Id, r.Name))];
 
-    public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) =>
-        [.. (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>(), .. await PlacedAsync(reserve)];
+    public async Task<IReadOnlyList<MapMarker>> MarkersAsync(int reserve) => [.. await StartsAsync(reserve), .. await PlacedAsync(reserve)];
+
+    async Task<IEnumerable<MapMarker>> StartsAsync(int reserve) =>
+        (await LoadAsync()).Reserves.Where(r => r.Id == reserve).SelectMany(r => r.Starts).Select(s => Marker(s)).OfType<MapMarker>();
+
+    /// <summary>The starts of the game's reserve and the host's placed items there (<see cref="ServerCatalogApi.GamePlaced"/>): the host's tents can be picked as the start (<see cref="JoinAsync"/>), its other items are shown only (<see cref="MapMarker.Only"/>). Without markers when the server does not give them, with the message key of
+    /// the reason: the 403's <c>why</c> (<see cref="ServerPlacedRefusal"/>; a password it has was not given or is wrong, <see cref="ServerCatalogApi.GamePassword"/>, percent-encoded), else the generic <c>Launch.Failed</c> (the game is gone, the player is signed out, the server does not answer).</summary>
+    public async Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password)
+    {
+        if (cookie.Value is null) return new(null, Failed);
+        var path = ServerCatalogApi.GamePlaced(server);
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, path);
+            if (password is { Length: > 0 }) request.Headers.Add(ServerCatalogApi.GamePassword, Uri.EscapeDataString(password));
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerPlaced>() is { Items: not null } placed)
+                return new([.. await StartsAsync(reserve), .. placed.Items.Where(i => i.Reserve == reserve && i.Id is > 0 and <= int.MaxValue).Select(Placed).OfType<MapMarker>().Select(m => m.Kind == MarkerKind.Tent ? m : m with { Only = true })]);
+            log.LogWarning("The server answered {Path} with {Status}: no map of the game", path, (int)response.StatusCode);
+            if (response.StatusCode == System.Net.HttpStatusCode.Forbidden && await response.Content.ReadFromJsonAsync<ServerPlacedRefusal>() is { Why: { } why } && PlacedRefusals.TryGetValue(why, out var key))
+                return new(null, key);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no map of the game", path, e.Message);
+        }
+        return new(null, Failed);
+    }
+
+    /// <summary>The 403's reasons (<see cref="ServerPlacedRefusal"/>) and the message each has, the join's own where it has one.</summary>
+    static readonly Dictionary<string, string> PlacedRefusals = new()
+    {
+        ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["friends"] = "Join.NotAllowed", ["hunterscore"] = "Join.NotAllowed", ["starting"] = "Join.HostNotReady", ["network"] = "Join.HostNetwork",
+    };
 
     /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, for a signed-in player: the browser's host and the session cookie); none when signed out (the server is not asked) or when it does not answer. A player is placed on the map where the server says (<c>mapX</c>, <c>mapY</c>), and not when it does not.</summary>
     public async Task<IReadOnlyList<GameServer>> ServersAsync()
@@ -114,15 +146,16 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return LaunchAsync([.. form]);
     }
 
-    /// <summary>The game has its reserve and start time, so a join sends neither.</summary>
+    /// <summary>The game has its reserve and start time, so a join sends neither. A tent marker of a join map (a negative id, the negated guid) is a tent of the game's host: <c>host_tent</c> says so, and the server checks it.</summary>
     public Task<Result> JoinAsync(long server, int marker, string? password, int loadout)
     {
         List<(string, string)> form = [("mp", "join"), ("network_id", $"{server}"), Start(marker), ("loadout", $"{loadout}")];
+        if (marker < 0) form.Add(("host_tent", "1"));
         if (password is { Length: > 0 }) form.Add(("password", password));
         return LaunchAsync([.. form]);
     }
 
-    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady" };
+    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady", ["host_network"] = "Join.HostNetwork" };
 
     /// <summary>A placed tent's marker id is its negated guid (<see cref="Placed"/>).</summary>
     static (string, string) Start(int marker) => marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}");
