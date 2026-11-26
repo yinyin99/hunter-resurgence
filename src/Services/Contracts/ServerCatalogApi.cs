@@ -12,6 +12,10 @@ public static class ServerCatalogApi
     public const string Item = "/catalog/item/";
     /// <summary>GET: 200 the open multiplayer games, a JSON array of <see cref="ServerGame"/> (empty without one).</summary>
     public const string Games = "/catalog/games";
+    /// <summary>GET with the cookie: this path is a game's <see cref="ServerGame.Id"/> and <c>/placed</c>: 200 <see cref="ServerPlaced"/>, the host's placed items, only for a player the game would let in (403 otherwise, 404 for a game that is gone).</summary>
+    public static string GamePlaced(long id) => $"{Games}/{id}/placed";
+    /// <summary>The header that carries the entered password of a game with one to <see cref="GamePlaced"/>, percent-encoded.</summary>
+    public const string GamePassword = "X-Game-Password";
 }
 
 /// <summary>What the launcher starts a hunt from: <c>POST</c> with the cookie and <c>X-Requested-With</c> to <see cref="Launch"/> a form of <c>reserve</c> and <c>lodge</c> (a <see cref="ServerStart"/> id)
@@ -27,6 +31,9 @@ public static class ServerLaunchApi
 public sealed record ServerLaunch(string Url);
 
 public sealed record ServerRefusal(string? Error);
+
+/// <summary>The 403 of <see cref="ServerCatalogApi.GamePlaced"/>: <c>Why</c> is the join's reason (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>network</c>, <c>password</c>, <c>full</c>).</summary>
+public sealed record ServerPlacedRefusal(string? Why);
 
 /// <summary>A game of <see cref="ServerCatalogApi.Games"/>, in the shape of the game's own list (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
 /// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one; a host can set any number, so they are wide), <c>Country</c> is missing on a community server, <c>Why</c> the server's reason the signed-in player cannot join

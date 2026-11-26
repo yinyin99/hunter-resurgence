@@ -1646,4 +1646,5 @@ Numele:</value></data>
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiale (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rețeaua gazdei</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Nu te poți alătura acestui joc: conexiunea gazdei nu este acceptată (jocul nu se poate conecta prin IPv6). Roagă gazda să actualizeze launcherul și să pornească jocul din nou.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Harta și echipamentul gazdei sunt afișate doar jucătorilor care se pot alătura acestui joc.</value></data>
 </root>

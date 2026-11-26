@@ -1646,4 +1646,5 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperial (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Rede do anfitrião</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Você não pode entrar neste jogo: a conexão do anfitrião não é compatível (o jogo não consegue se conectar por IPv6). Peça ao anfitrião para atualizar o launcher e iniciar o jogo de novo.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só aparecem para jogadores que podem entrar nesta partida.</value></data>
 </root>

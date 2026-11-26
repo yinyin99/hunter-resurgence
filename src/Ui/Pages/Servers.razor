@@ -79,7 +79,8 @@
             }
             @if (s.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="preview-loadout" Width="282" />
-            @if (s.Roster.Any(p => p.X is not null && p.Y is not null))
+            @* a game the player may not join shows no map, and one with a password none until the password is entered in the join dialog *@
+            @if (s.Joinable && s.Roster.Any(p => p.X is not null && p.Y is not null))
             {
                 <div class="preview-map"><MapPlaceholder Markers="noMarkers" Reserve="s.Reserve" Height="200" Zoom="false" Players="s.Roster" HoverPlayer="@hoverPlayer" /></div>
             }

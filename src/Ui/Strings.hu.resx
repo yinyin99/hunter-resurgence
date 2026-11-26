@@ -1646,4 +1646,5 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Angolszász (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>A házigazda hálózata</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: a házigazda kapcsolata nem támogatott (a játék nem tud IPv6-on csatlakozni). Kérd meg a házigazdát, hogy frissítse a launchert, és indítsa újra a játékot.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>A térképet és a házigazda felszerelését csak azok a játékosok látják, akik csatlakozhatnak ehhez a játékhoz.</value></data>
 </root>

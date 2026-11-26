@@ -1646,4 +1646,5 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperisk (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Vertens nettverk</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: vertens tilkobling støttes ikke (spillet kan ikke koble til via IPv6). Be verten om å oppdatere launcheren og starte spillet på nytt.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Kartet og vertens utstyr vises bare for spillere som kan bli med i dette spillet.</value></data>
 </root>

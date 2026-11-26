@@ -1646,4 +1646,5 @@
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Имперские (ярды, фунты)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Сеть хозяина</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: подключение хозяина не поддерживается (игра не может подключаться по IPv6). Попросите хозяина обновить лаунчер и запустить игру заново.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Карту и снаряжение хозяина видят только игроки, которые могут присоединиться к этой игре.</value></data>
 </root>

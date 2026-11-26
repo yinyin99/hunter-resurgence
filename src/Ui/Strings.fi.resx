@@ -1646,4 +1646,5 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="GameSettings.Imperial" xml:space="preserve"><value>Imperiaalinen (yd, lbs)</value></data>
   <data name="Servers.WhyHostNetwork" xml:space="preserve"><value>Isännän verkko</value></data>
   <data name="Join.HostNetwork" xml:space="preserve"><value>Et voi liittyä tähän peliin: isännän yhteyttä ei tueta (peli ei voi yhdistää IPv6:n kautta). Pyydä isäntää päivittämään launcher ja aloittamaan peli uudelleen.</value></data>
+  <data name="Join.Hidden" xml:space="preserve"><value>Kartta ja isännän varusteet näytetään vain pelaajille, jotka saavat liittyä tähän peliin.</value></data>
 </root>
