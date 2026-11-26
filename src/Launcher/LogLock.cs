@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using static Resurgence.Launcher.LogLock;
 
 namespace Resurgence.Launcher;
 
@@ -77,18 +78,88 @@ public sealed record LogLock(string ExeSha256, uint Table, uint Cleanup, uint Wr
         return game.Resume();
     }
 
-    static byte[] D(uint value) => BitConverter.GetBytes(value);
-    static byte[] H(string hex) => Convert.FromHexString(hex.Replace(" ", ""));
+    internal static byte[] D(uint value) => BitConverter.GetBytes(value);
+    internal static byte[] H(string hex) => Convert.FromHexString(hex.Replace(" ", ""));
 }
 
-/// <summary>The game started suspended, as the log lock reads and writes it: the seam a test replaces with a byte array.</summary>
+/// <summary>
+/// In the current game the Snow Goose's call animation raises an event of its own instead of the one the other birds' call animations raise, so its call is heard but never registers as a clue.
+/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points one call of the game at a small function in a page of the game's memory.
+/// The game makes that call for each event of an animation it loads; the function looks at the event's name: when it is exactly the 28 characters <c>snd_snow_goose_call_sequence</c>,
+/// it hands the game the name <c>play_call_sound</c> instead (kept after the function in the game's own text form: the 15 characters, their count and the capacity), then jumps to the game's own
+/// registration function. Every other name passes through unchanged. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is.
+/// Nothing on disk changes.
+/// </summary>
+/// <param name="ExeSha256">The SHA-256 of the exe this applies to (lowercase hex).</param>
+/// <param name="Site">Offset from the image base of the call that registers one event of an animation: a call of <paramref name="Register"/>, pointed at the function.</param>
+/// <param name="Args">Offset of the 13 bytes before that call that push its arguments (checked, never changed).</param>
+/// <param name="CategoryPush">Offset of the push of the events' category before them (checked, never changed).</param>
+/// <param name="Category">Offset of the category's text, <c>animation_track_event</c> (checked, never changed).</param>
+/// <param name="Register">Offset of the game's registration function (its first 12 bytes checked, never changed).</param>
+public sealed record GooseCall(string ExeSha256, uint Site, uint Args, uint CategoryPush, uint Category, uint Register)
+{
+    /// <summary>The same exe as the log lock.</summary>
+    public static readonly GooseCall Known = new(LogLock.Known.ExeSha256, Site: 5041552, Args: 5041539, CategoryPush: 5041502, Category: 11006028, Register: 6946480);
+
+    /// <summary>The new name starts this many bytes into the page, after the function; <see cref="Size"/> is the whole.</summary>
+    public const int NameAt = 96, Size = 124;
+
+    /// <summary>The function for an image loaded at <paramref name="image"/>, written at <paramref name="page"/> (where its new name is).</summary>
+    public byte[] Code(uint image, uint page) => [
+        // mov eax, [esp+4] (the name); cmp [eax+16], 28 (its count); jne to the jump; mov eax, [eax] (its characters)
+        .. H("8B442404 8378101C 7548 8B00"),
+        // the 28 characters four at a time ("snd_", "snow", "_goo", "se_c", "all_", "sequ", "ence"), each followed by jne to the jump
+        .. H("8138736E645F 753E 817804736E6F77 7535 8178085F676F6F 752C 81780C73655F63 7523 817810616C6C5F 751A 81781473657175 7511 817818656E6365 7508"),
+        // the same name: mov [esp+4], the new name
+        .. H("C7442404"), .. D(page + NameAt),
+        // the jump: mov eax, Register; jmp eax; then filler up to the name
+        .. H("B8"), .. D(image + Register), .. H("FFE0 CCCCCCCCCCCCCC"),
+        // the new name as the game keeps text: 16 bytes of characters, the count, the capacity, 4 unused bytes
+        .. "play_call_sound\0"u8, .. D(15), .. D(15), .. D(0),
+    ];
+
+    /// <summary>The call instruction at <see cref="Site"/> of an image loaded at <paramref name="image"/> when it calls <paramref name="target"/>.</summary>
+    byte[] Call(uint image, uint target) => [.. H("E8"), .. D(unchecked(target - (image + Site + 5)))];
+
+    /// <summary>Checks the five places, then writes the function and points the call at it; nothing is written unless every check passed. Null when applied, else why not.</summary>
+    public string? Apply(ISuspendedGame game)
+    {
+        var image = game.Image;
+        if (image == 0) return "the game's memory could not be read";
+        (uint At, byte[] Expected, string What)[] checks = [
+            (Site, Call(image, image + Register), "the registration call"),
+            (Args, H("55 8D4C244C 51 56 8BCF 896C247C"), "the registration call's arguments"),
+            (CategoryPush, [.. H("6A15 68"), .. D(image + Category)], "the category's push"),
+            (Category, [.. "animation_track_event\0"u8], "the category's text"),
+            (Register, H("55 8BEC 83E4F8 81EC1C040000"), "the registration function"),
+        ];
+        foreach (var (at, expected, what) in checks)
+        {
+            if (game.Read(image + at, expected.Length) is not { } found) return "the game's memory could not be read";
+            if (!found.AsSpan().SequenceEqual(expected)) return $"other values in {what}";
+        }
+        var page = game.Allocate(Size);
+        if (page == 0) return "no memory could be allocated in the game";
+        if (!game.Write(page, Code(image, page))) return "the function could not be written";
+        return game.Write(image + Site, Call(image, page)) ? null : "the registration call could not be written";
+    }
+
+    /// <summary>Applies the patch to a game started suspended and logs the outcome; the game is resumed by <see cref="LogLock.ApplyAndResume"/>.</summary>
+    public void ApplyAndLog(ISuspendedGame game, ILogger? log)
+    {
+        if (Apply(game) is { } why) log?.LogWarning("The game's goose call patch is not applied, the game starts without it: {Why}", why);
+        else log?.LogInformation("The game's goose call patch is applied");
+    }
+}
+
+/// <summary>The game started suspended, as the log lock and the goose call patch read and write it: the seam a test replaces with a byte array.</summary>
 public interface ISuspendedGame
 {
     /// <summary>Where the exe is loaded; 0 when not known.</summary>
     uint Image { get; }
     /// <summary>The bytes, or null when they cannot all be read.</summary>
     byte[]? Read(uint address, int count);
-    /// <summary>Writes over any protection (put back afterwards); false when it fails.</summary>
+    /// <summary>Writes over any protection, code included (put back afterwards, the instruction cache flushed); false when it fails.</summary>
     bool Write(uint address, byte[] bytes);
     /// <summary>A new executable page of at least <paramref name="size"/> bytes; 0 when none.</summary>
     uint Allocate(int size);

@@ -4,17 +4,17 @@ namespace Resurgence.Tests.LauncherApp;
 
 public class LogLockTests
 {
-    const uint Image = 4194304, Page = 67108864;
+    internal const uint Image = 4194304, Page = 67108864;
     // a synthetic exe: the writer's table at 64 holds its three entries, the rest is zero
-    static readonly LogLock Synthetic = new("synthetic", Table: 64, Cleanup: 1000, Write: 2000, Flush: 3000, Lock: 4000, Enter: 5000, Leave: 5004);
+    internal static readonly LogLock Synthetic = new("synthetic", Table: 64, Cleanup: 1000, Write: 2000, Flush: 3000, Lock: 4000, Enter: 5000, Leave: 5004);
 
-    static byte[] Le(params uint[] values) => [.. values.SelectMany(BitConverter.GetBytes)];
+    internal static byte[] Le(params uint[] values) => [.. values.SelectMany(BitConverter.GetBytes)];
 
-    static FakeGame Game()
+    internal static FakeGame Game(uint image = Image)
     {
         var memory = new byte[8192];
-        Le(Image + 1000, Image + 2000, Image + 3000).CopyTo(memory, 64);
-        return new(Image, memory);
+        Le(image + 1000, image + 2000, image + 3000).CopyTo(memory, 64);
+        return new(image, memory);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class LogLockTests
         var noPage = Game();
         noPage.CanAllocate = false;
         var noWrite = Game();
-        noWrite.CanWrite = false;
+        noWrite.WritesAllowed = 0;
         var tableOutside = Synthetic with { Table = 8190 };
         foreach (var (patch, game) in new[] { (Synthetic, unknownImage), (Synthetic, noPage), (Synthetic, noWrite), (tableOutside, Game()) })
         {
@@ -84,12 +84,13 @@ public class LogLockTests
         Assert.Matches("^[0-9a-f]{64}$", LogLock.Known.ExeSha256);
     }
 
-    sealed class FakeGame(uint image, byte[] memory) : ISuspendedGame
+    internal sealed class FakeGame(uint image, byte[] memory) : ISuspendedGame
     {
         public byte[] Memory => memory;
         public List<(uint Address, byte[] Bytes)> Writes { get; } = [];
         public bool CanAllocate { get; set; } = true;
-        public bool CanWrite { get; set; } = true;
+        /// <summary>How many writes succeed; every later one fails.</summary>
+        public int WritesAllowed { get; set; } = int.MaxValue;
         public int Allocated { get; private set; }
         public bool Resumed { get; private set; }
         public uint Image => image;
@@ -99,7 +100,7 @@ public class LogLockTests
 
         public bool Write(uint address, byte[] bytes)
         {
-            if (!CanWrite) return false;
+            if (Writes.Count >= WritesAllowed) return false;
             Writes.Add((address, bytes));
             if (address >= image && address - image + bytes.Length <= memory.Length) bytes.CopyTo(memory, address - image);
             return true;
