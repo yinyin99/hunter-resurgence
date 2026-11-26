@@ -15,6 +15,7 @@ sealed class FakeDiscord : HttpMessageHandler
     public string Scope = "identify role_connections.write";
     public int PutStatus = 200;
     public int RefreshStatus = 200;
+    public int RevokeStatus = 200;
     public string RefreshError = "invalid_grant";
     public bool Down;
     public Action? OnRefresh;  // runs when a refresh token is traded, before Discord answers: what happens meanwhile
@@ -37,6 +38,7 @@ sealed class FakeDiscord : HttpMessageHandler
             Asked.Add(new(request.Method.Method, path, request.Headers.Authorization?.Parameter, form, body.StartsWith('{') ? JsonNode.Parse(body) : null));
         if (Down) throw new HttpRequestException("down");
         static HttpResponseMessage Json(int status, string json) => new((HttpStatusCode)status) { Content = new StringContent(json, Encoding.UTF8, "application/json") };
+        if (path == "/api/v10/oauth2/token/revoke") return Json(RevokeStatus, "{}");
         if (path == "/api/v10/oauth2/token")
         {
             if (form.GetValueOrDefault("grant_type") == "refresh_token") OnRefresh?.Invoke();
@@ -47,10 +49,12 @@ sealed class FakeDiscord : HttpMessageHandler
         }
         if (path == "/api/v10/users/@me") return Json(200, $$"""{"id": "{{UserId}}", "username": "someone"}""");
         if (path.EndsWith("/role-connection", StringComparison.Ordinal) && request.Method == HttpMethod.Put) return Json(PutStatus, "{}");
+        if (path.EndsWith("/role-connection", StringComparison.Ordinal) && request.Method == HttpMethod.Delete) return new(HttpStatusCode.NoContent);
         return Json(404, "{}");
     }
 
     public IEnumerable<Call> Puts => Asked.Where(c => c.Method == "PUT");
+    public IEnumerable<Call> Revokes => Asked.Where(c => c.Path == "/api/v10/oauth2/token/revoke");
 }
 
 /// <summary>Discord Linked Roles (docs/server.md#discord-linked-roles) through the real HTTP pipeline, with Discord faked.</summary>
@@ -300,9 +304,13 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
     {
         var cookie = SessionOf(8);
         Assert.Equal(Redirect + "linked", await Callback(cookie));
-        var reply = await server.SendAsync("POST", "web.test", "/account/delete",
-            [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], "confirm=delete"u8.ToArray());
-        Assert.Equal(200, reply.Status);
+        discord.Asked.Clear();
+        Assert.Equal(200, (await Delete(cookie)).Status);
+        // Discord's side first: the role connection goes with the user's access token, then the authorization is revoked once with the stored refresh token
+        Assert.Equal([$"DELETE /api/v10/users/@me/applications/{AppId}/role-connection", "POST /api/v10/oauth2/token/revoke"], discord.Asked.Select(c => c.Line));
+        Assert.Equal("access-1", discord.Asked[0].Bearer);
+        var revoke = Assert.Single(discord.Revokes).Form;
+        Assert.Equal(("refresh-1", "refresh_token", AppId, "test-secret"), (revoke["token"], revoke["token_type_hint"], revoke["client_id"], revoke["client_secret"]));
         Assert.Equal(0L, Count("discord_links"));  // the id and the tokens
         using (var con = state.Store.Open())
         {
@@ -315,6 +323,50 @@ public class LinkedRolesTests : StateTestBase, IAsyncLifetime
         Assert.Equal(Redirect + "rewarded", await Callback(SessionOf(10)));
         Assert.Equal((33.0, 0L, 1L), (Gm(10), Paid(10), Count("discord_links")));
         Assert.Equal(1L, Count("discord_rewards"));
+    }
+
+    Task<Reply> Delete(string cookie) => server.SendAsync("POST", "web.test", "/account/delete",
+        [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "x"), ("Cookie", "hr_session=" + cookie)], "confirm=delete"u8.ToArray());
+
+    [Fact]
+    public async Task TestDeleteMyDataDeletesTheAccountWhenDiscordRefusesOrIsDown()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));
+        discord.UserId = "222222222222222222";
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(9)));
+        discord.RevokeStatus = 500;  // Discord refuses the revoke: logged, the delete goes on
+        Assert.Equal(200, (await Delete(SessionOf(8))).Status);
+        Assert.Single(discord.Revokes);
+        discord.Down = true;  // Discord cannot be reached at all
+        Assert.Equal(200, (await Delete(SessionOf(9))).Status);
+        Assert.Equal((0L, 0L), (Count("accounts", "id IN (8, 9)"), Count("discord_links")));
+    }
+
+    [Fact]
+    public async Task TestASweepRacingADeletePushesNothingForTheDeletedAccount()
+    {
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(8)));  // tokens access-1 and refresh-1
+        discord.UserId = "222222222222222222";
+        Assert.Equal(Redirect + "linked", await Callback(SessionOf(9)));  // access-2 and refresh-2
+        SetHunterscore(8, 500);
+        SetHunterscore(9, 600);
+        Expire(8);
+        Expire(9);
+        Task? deleting = null;
+        discord.OnRefresh = () =>
+        {
+            // the sweep has listed both accounts and holds the gate for the first one: the other is deleted now, and the delete waits for the gate
+            discord.OnRefresh = null;
+            var other = discord.Asked[^1].Form["refresh_token"] == "refresh-1" ? 9 : 8;
+            deleting = Roles.UnlinkAsync(other, () => new Uploads(state, tmp).Delete(other));
+        };
+        discord.Asked.Clear();
+        Assert.Equal(1, await Roles.SweepAsync());
+        await deleting!;
+        Assert.Single(discord.Puts);  // the first account only
+        Assert.Single(discord.Revokes);
+        Assert.Equal((1L, 1L), (Count("accounts", "id IN (8, 9)"), Count("discord_links")));
+        Assert.Equal(0, await Roles.SweepAsync());
     }
 
     [Fact]

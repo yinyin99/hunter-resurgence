@@ -127,7 +127,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             return Done("error");  // another session's or an old state, a tampered one, or the player said no (no code)
         try
         {
-            var (status, body) = await Token(("grant_type", "authorization_code"), ("code", code), ("redirect_uri", RedirectUri));
+            var (status, body) = await OAuth("/oauth2/token", ("grant_type", "authorization_code"), ("code", code), ("redirect_uri", RedirectUri));
             if (ReadTokens(body) is not { } tokens || !Grants(body))
                 return Fail(account, $"Discord refused the code ({status})");
             var (meStatus, me) = await Send(HttpMethod.Get, "/users/@me", null, tokens.Access);
@@ -203,13 +203,61 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
         }
     }
 
+    /// <summary>Delete my data: under the push gate, so no push runs meanwhile and a push that waited for it finds no link, take the account off Discord and then run <paramref name="delete"/>.
+    /// Discord's side is best effort: a failure is logged and never stops or fails the delete.</summary>
+    public async Task UnlinkAsync(long account, Action delete)
+    {
+        await gate.WaitAsync();
+        try
+        {
+            try
+            {
+                await Unlink(account);
+            }
+            catch (Exception e)  // whatever Discord, the network or a stored row does, the delete goes on
+            {
+                Console.Error.WriteLine($"discord unlink of account {account}: {e.Message}");
+            }
+            delete();
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    /// <summary>Remove the role connection with the access token while it holds (Discord's documented DELETE: the profile box and the roles' data go), then revoke the authorization with the refresh token,
+    /// else the access token (Discord revokes every token of the authorization whichever is sent). ponytail: an ended access token is not refreshed just to remove the connection; the revoke still ends the app's access.</summary>
+    async Task Unlink(long account)
+    {
+        object[]? row;
+        using (var con = store.Open())
+            row = con.Rows("SELECT discord_id, access_token, refresh_token, expires_ts FROM discord_links WHERE account_id = ?1", account).FirstOrDefault();
+        if (row is null) return;
+        var discordId = (string)row[0];
+        var access = Unseal(row[1], discordId);
+        if (access is not null && row[3] is long expires && expires > Store.Now() + 60)
+        {
+            var (code, _) = await Send(HttpMethod.Delete, $"/users/@me/applications/{clientId}/role-connection", null, access);
+            if (code is < 200 or >= 300) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {code} to the role connection delete");
+        }
+        var (token, hint) = Unseal(row[2], discordId) is { } refresh ? (refresh, "refresh_token") : (access, "access_token");
+        if (token is null)
+        {
+            Console.Error.WriteLine($"discord unlink of account {account}: no token left to revoke");
+            return;
+        }
+        var (status, _) = await OAuth("/oauth2/token/revoke", ("token", token), ("token_type_hint", hint));
+        if (status != 200) Console.Error.WriteLine($"discord unlink of account {account}: Discord answered {status} to the revoke");
+    }
+
     async Task<bool> Push(long account)
     {
         object[]? row;
         using (var con = store.Open())
             row = con.Rows("SELECT l.discord_id, l.access_token, l.refresh_token, l.expires_ts, a.handle, COALESCE(json_extract(a.account, '$.hunterscore'), 0) FROM discord_links l"
                            + " JOIN accounts a ON a.id = l.account_id WHERE l.account_id = ?1 AND l.refresh_token IS NOT NULL", account).FirstOrDefault();
-        if (row is null) return false;
+        if (row is null) return false;  // read under the gate: an account deleted meanwhile (UnlinkAsync) has no row
         var (discordId, expires, handle, score) = ((string)row[0], (long)row[3], (string)row[4], Convert.ToInt64(row[5], CultureInfo.InvariantCulture));
         var access = Unseal(row[1], discordId);
         if (access is null || expires <= Store.Now() + 60)
@@ -219,7 +267,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
                 Drop(account, "its tokens cannot be read with this server's key", (string)row[2]!);
                 return false;
             }
-            var (status, body) = await Token(("grant_type", "refresh_token"), ("refresh_token", refresh));
+            var (status, body) = await OAuth("/oauth2/token", ("grant_type", "refresh_token"), ("refresh_token", refresh));
             if (ReadTokens(body) is not { } fresh)
             {
                 if (status == 400 && Str(body?["error"]) == "invalid_grant") Drop(account, "Discord no longer accepts its refresh token", (string)row[2]!);
@@ -306,8 +354,9 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
     /// <summary>Did the token reply grant both scopes asked for (`scope` is a space-separated list).</summary>
     static bool Grants(JsonObject? b) => (Str(b?["scope"]) ?? "").Split(' ') is var granted && granted.Contains("identify") && granted.Contains("role_connections.write");
 
-    Task<(int Status, JsonObject? Body)> Token(params (string, string)[] form) =>
-        Send(HttpMethod.Post, "/oauth2/token", new FormUrlEncodedContent([.. form.Select(p => KeyValuePair.Create(p.Item1, p.Item2)), KeyValuePair.Create("client_id", clientId), KeyValuePair.Create("client_secret", clientSecret)]), null);
+    /// <summary>A form POST to Discord's OAuth2 endpoint <paramref name="path"/> with the application's client id and secret in the body.</summary>
+    Task<(int Status, JsonObject? Body)> OAuth(string path, params (string, string)[] form) =>
+        Send(HttpMethod.Post, path, new FormUrlEncodedContent([.. form.Select(p => KeyValuePair.Create(p.Item1, p.Item2)), KeyValuePair.Create("client_id", clientId), KeyValuePair.Create("client_secret", clientSecret)]), null);
 
     async Task<(int Status, JsonObject? Body)> Send(HttpMethod method, string path, HttpContent? content, string? bearer)
     {
