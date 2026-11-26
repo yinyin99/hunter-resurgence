@@ -5,7 +5,7 @@
 
 @if (Notice is { } notice)
 {
-    <div class="overlay @(Status.Notice == LauncherNotice.SteamOnly ? "full" : "")" role="alertdialog" aria-modal="true">
+    <div class="overlay @(Status.Notice == LauncherNotice.SteamOnly ? "full" : "") @(BarShown ? "above-bar" : "")" role="alertdialog" aria-modal="true">
         <div class="box">
             @switch (notice)
             {

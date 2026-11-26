@@ -107,4 +107,12 @@ public class LauncherUpdaterTests
         }
         finally { Registry.CurrentUser.DeleteSubKeyTree(name, false); }
     }
+
+    [Theory]
+    [InlineData(true, false, true)]
+    [InlineData(true, true, false)]
+    [InlineData(false, false, false)]
+    [InlineData(false, true, false)]
+    public void The_window_comes_forward_only_after_an_update_restart_and_not_over_the_game(bool restarted, bool game, bool expected) =>
+        Assert.Equal(expected, LauncherUpdater.ShouldActivate(restarted, game));
 }

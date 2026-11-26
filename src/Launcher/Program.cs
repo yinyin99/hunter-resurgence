@@ -12,6 +12,9 @@ static class Program
     /// <summary>True in the one start Velopack makes right after the install: the clean-up of an older setup (<see cref="LauncherCleanup"/>) runs then.</summary>
     public static bool FirstRun { get; private set; }
 
+    /// <summary>True in the start Velopack makes after it applied an update (the restart of <see cref="LauncherUpdater.ApplyAndRestart"/>): the new window is brought forward then.</summary>
+    public static bool Restarted { get; private set; }
+
     [STAThread]
     static void Main(string[] args)
     {
@@ -25,6 +28,7 @@ static class Program
             .SetAutoApplyOnStartup(applyUpdate)
             .OnAfterInstallFastCallback(_ => LinkScheme.Register(Registry.CurrentUser, Environment.ProcessPath!))
             .OnFirstRun(_ => FirstRun = true)
+            .OnRestarted(_ => Restarted = true)
             .OnBeforeUninstallFastCallback(_ =>
             {
                 // the hook is stopped after 30 seconds: the hosts block, the certificate and the link first, Steam's launch option last (it may wait for the player and for Steam)
@@ -68,6 +72,18 @@ static class Program
         if (w.WindowState == WindowState.Minimized) w.WindowState = WindowState.Normal;
         w.Activate();
     }
+
+    /// <summary>Blinks the window's taskbar button until the player brings it forward.</summary>
+    public static void Flash(nint window)
+    {
+        var info = new FlashInfo { Size = (uint)Marshal.SizeOf<FlashInfo>(), Window = window, Flags = 3 | 12 }; // FLASHW_ALL | FLASHW_TIMERNOFG
+        FlashWindowEx(ref info);
+    }
+
+    struct FlashInfo { public uint Size; public nint Window; public uint Flags, Count, Timeout; }
+
+    [DllImport("user32.dll")]
+    static extern bool FlashWindowEx(ref FlashInfo info);
 
     [DllImport("user32.dll")]
     static extern bool AllowSetForegroundWindow(int processId);
