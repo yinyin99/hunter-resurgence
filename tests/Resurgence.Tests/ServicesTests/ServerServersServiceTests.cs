@@ -294,7 +294,7 @@ public class ServerServersServiceTests
         Assert.Equal([null, null, "hunterscore"], games.Select(g => g.Why));  // the server's reason, none from a server that does not send one
         Assert.Equal([true, false, false], games.Select(g => g.Joinable));  // a game with a password is not one the filter lists
         Assert.Equal([false, false, true], games.Select(g => g.Refused));  // and its Join stays on: it asks for the password
-        Assert.All(games, g => Assert.Equal("", g.Country));
+        Assert.All(games, g => Assert.Null(g.Distance));  // a community server does not say how far a host is
         Assert.Equal(["pt-BR", "", ""], games.Select(g => g.Language));  // the host's language, none for a game without one (null, or a server that does not send it)
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);

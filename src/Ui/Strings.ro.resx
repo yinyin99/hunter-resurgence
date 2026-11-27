@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezervație</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Jucători</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Gazdă</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Țară</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jucători: {1}/{2} - Gazdă: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Detaliile jocului</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Alăturați-vă jocului</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jocul tău</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Se pornește…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Se aplică patch-ul...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Locația serverului: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>America de Nord</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>America de Sud</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Faceți clic pe un punct de start de pe hartă pentru a vă alătura acestui joc</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Introduceți parola pentru a vă alătura acestui joc:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Introduceți parola</value></data>

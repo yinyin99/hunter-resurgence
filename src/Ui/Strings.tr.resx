@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezerv</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Oyuncular</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Kurucu</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Ülke</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Oyuncular: {1}/{2} - Kurucu: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Oyun detayları</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Oyuna Katıl</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Senin oyunun</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Başlıyor…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Yama uygulanıyor...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Avrupa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Kuzey Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Güney Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asya</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Okyanusya</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Bu oyuna katılmak için haritada bir başlangıç konumuna tıklayın</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Bu oyuna katılmak için şifreyi girin:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Şifre girin</value></data>

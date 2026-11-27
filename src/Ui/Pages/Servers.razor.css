@@ -23,7 +23,6 @@ td.host { max-width: 110px; overflow: hidden; text-overflow: ellipsis; }
 th.lang, td.lang { text-align: center; }
 td.lang .flag { width: 22px; height: 16px; vertical-align: middle; }
 td.where { padding-left: 14px; }
-td.where ::deep .flag { margin: 0 0 0 10px; }
 .lock { margin-left: 34px; color: var(--text-3); }
 .empty { padding: 40px 0; text-align: center; }
 .info-title { margin: 40px 0 10px; font-size: 14px; font-weight: 400; color: var(--fg-heading); }

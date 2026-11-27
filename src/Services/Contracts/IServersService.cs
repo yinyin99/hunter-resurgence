@@ -13,8 +13,9 @@ public sealed record GamePlayer(string Handle, int HunterScore, double? X = 50, 
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }
 /// <param name="Why">The server's reason this player cannot join: <c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player.</param>
+/// <param name="Distance">How far the host is from the player; null when the server does not say (a community server does not: no dots, no legend).</param>
 /// <param name="Language">The language its host chose for the game, a code of the launcher's interface languages (<c>fr</c>, <c>pt-BR</c>); empty for none (a game hosted without one).</param>
-public sealed record GameServer(long Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, string Country, Distance Distance,
+public sealed record GameServer(long Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, Distance? Distance,
     int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster, string? Why = null, string Language = "")
 {
     /// <summary>The host limited the hunter score: the game shows its limits (0 and 99999 mean none).</summary>

@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Obora</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Hráči</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Hostitel</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Země</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Hráči: {1}/{2} - Hostitel: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Podrobnosti o hře</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Připojit se</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Vaše hra</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Spouští se…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aktualizace...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Poloha serveru: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severní Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Jižní Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asie</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceánie</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Kliknutím na počáteční místo na mapě se připojíte k této hře</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Pro připojení k této hře zadejte heslo:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Zadejte heslo</value></data>

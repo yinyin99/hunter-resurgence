@@ -5,21 +5,21 @@ namespace Resurgence.Services.Mocks;
 /// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents).</param>
 public sealed class MockServersService(ILogger<MockServersService> log, ILauncherBridge bridge, string? mock = null) : IServersService
 {
-    static readonly (string Host, string Country, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
+    static readonly (string Host, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
     [
-        ("Hunter05", "se", Distance.Short, 2, 1, 3, false), ("Ranger_Test", "ca", Distance.Short, 11, 1, 8, false), ("Moss_Walker", "us", Distance.Short, 4, 1, 8, false),
-        ("Hunter08", "de", Distance.Short, 4, 1, 8, false), ("Hunter09", "us", Distance.Short, 1, 1, 8, false), ("Pine_Walker", "de", Distance.Short, 10, 1, 8, false),
-        ("River_Test", "us", Distance.Short, 4, 1, 8, true), ("Hunter12", "br", Distance.Medium, 12, 2, 3, false), ("Hunter13", "au", Distance.Medium, 10, 1, 8, true),
-        ("Hunter14", "br", Distance.Medium, 6, 2, 8, false), ("Hunter15", "br", Distance.Medium, 5, 1, 4, false), ("Hunter16", "ca", Distance.Medium, 9, 1, 8, false),
-        ("Hunter17", "se", Distance.Medium, 1, 1, 8, false), ("Hunter18", "us", Distance.Medium, 6, 1, 2, false), ("Hunter19", "de", Distance.Medium, 12, 1, 8, false),
-        ("Hunter20", "au", Distance.Long, 10, 1, 8, false),
+        ("Hunter05", Distance.Short, 2, 1, 3, false), ("Ranger_Test", Distance.Short, 11, 1, 8, false), ("Moss_Walker", Distance.Short, 4, 1, 8, false),
+        ("Hunter08", Distance.Short, 4, 1, 8, false), ("Hunter09", Distance.Short, 1, 1, 8, false), ("Pine_Walker", Distance.Short, 10, 1, 8, false),
+        ("River_Test", Distance.Short, 4, 1, 8, true), ("Hunter12", Distance.Medium, 12, 2, 3, false), ("Hunter13", Distance.Medium, 10, 1, 8, true),
+        ("Hunter14", Distance.Medium, 6, 2, 8, false), ("Hunter15", Distance.Medium, 5, 1, 4, false), ("Hunter16", Distance.Medium, 9, 1, 8, false),
+        ("Hunter17", Distance.Medium, 1, 1, 8, false), ("Hunter18", Distance.Medium, 6, 1, 2, false), ("Hunter19", Distance.Medium, 12, 1, 8, false),
+        ("Hunter20", Distance.Long, 10, 1, 8, false),
     ];
 
     /// <summary>The language of each game of <see cref="Rows"/> (a code of the launcher's languages); the eighth has none, as a game hosted by an older launcher.</summary>
     static readonly string[] Languages = ["en", "fr", "de", "es", "pt-BR", "ru", "it", "", "en", "pt-BR", "nl", "pl", "sv", "fr", "de", "en"];
 
     static readonly IReadOnlyList<GameServer> Servers = Rows.Select((r, i) => new GameServer(i + 1, $"{r.Host}'s game", i == 0 ? "Placeholder description of the game. The host writes a short text here for the other players." : "",
-        r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Country, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
+        r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons

@@ -37,9 +37,9 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     // 10-digit ids: a network id does not fit an int
-    static readonly GameServer Open = new(4000000001, "Test game", "Come and hunt.", 2, 2, 4, "HostOne", false, "", Distance.Short, 600, 100, 2000,
+    static readonly GameServer Open = new(4000000001, "Test game", "Come and hunt.", 2, 2, 4, "HostOne", false, null, 600, 100, 2000,
         [new("HostOne", 1500, null, null), new("Guest", 300, null, null)]);
-    static readonly GameServer Locked = new(4000000002, "Locked game", "", 4, 1, 8, "HostTwo", true, "", Distance.Short, 60, 0, 99999, [new("HostTwo", 900, null, null)]);
+    static readonly GameServer Locked = new(4000000002, "Locked game", "", 4, 1, 8, "HostTwo", true, null, 60, 0, 99999, [new("HostTwo", 900, null, null)]);
 
     [Fact]
     public void TheListShowsEachGamesNameHostReservePlayersLockAndScoreRange()
@@ -52,7 +52,7 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Equal(["Test game", "Test Reserve", "2/4", "HostOne"], rows[0].QuerySelectorAll("td").Take(4).Select(td => td.TextContent.Trim()));
         Assert.Empty(rows[0].QuerySelectorAll(".lock"));
         Assert.NotEmpty(rows[1].QuerySelectorAll(".lock"));
-        // the games have no country: no location column, no dots, no text about them
+        // the games have no distance: no dots, no text about them (and no country column: the language column is there)
         Assert.DoesNotContain("Country", cut.Find("table.tbl thead").TextContent);
         Assert.Empty(cut.FindAll("i.dot"));
         Assert.Empty(cut.FindAll("p.legend"));

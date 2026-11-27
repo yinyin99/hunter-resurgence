@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Reserva</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Jugadores</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>País</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jugadores: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Detalles de la partida</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Entrar</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Tu partida</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Iniciando…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aplicando parche...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Ubicación del servidor: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Norteamérica</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Sudamérica</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanía</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Haz clic en un punto de partida del mapa para unirte a esta partida</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Introduce la contraseña para unirte a esta partida:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Escribe la contraseña</value></data>

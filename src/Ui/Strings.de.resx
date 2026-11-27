@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Revier</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spieler</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spieler: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Spieldetails</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Beitreten</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Eigenes Spiel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Startet…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Wird gepatcht…</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverstandort: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Südamerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asien</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Ozeanien</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klicken Sie auf der Karte auf einen Startpunkt, um diesem Spiel beizutreten</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Geben Sie das Passwort ein, um diesem Spiel beizutreten:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Passwort eingeben</value></data>
