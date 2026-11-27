@@ -104,12 +104,17 @@ public static class GameApi
                .Body<MoveMultiple2Form>(Form).Produces(200, contentType: "application/json");
             api.MapExactPost(game, BUY, r => Own(game, r, a => new(200, JsonAnyOrigin(), s.BuyReply(a, r.Body), "state")))
                .WithName("Buy").WithSummary("Buy a catalogue item")
-               .WithDescription("Charges now (the item's first Application/discounts row if active, rounded half up, as the "
+               .WithDescription("Charges now (the store's price: the catalogue's, or the sale price while a `store_sales` sale of the operator applies, rounded half up, as the "
                                 + "store shows it); the items (`update: 10`) and the new balance (`update: 15`) come with the "
                                 + "next heartbeat. Between hunts the next connect carries the items and the first heartbeat "
                                 + "still the balance. `{\"success\": false}` for an unknown item, a missing price, a service or "
                                 + "too little currency.")
                .Body<BuyForm>(Form).Produces<BuyReply>();
+            api.MapMethods(DISCOUNTS, ["GET", "POST"], Handle(game, r => r.Path == DISCOUNTS && r.Method is "GET" or "POST" ? new(200, JsonAnyOrigin(), s.DiscountsReply(), "state") : null))
+               .WithName("Discounts").WithSummary("The store's em$ discounts of today")
+               .WithDescription("`[{item_id, percentage, start_ts, end_ts}]`: the items on sale in em$ now under the operator's `store_sales` (docs/server.md#store-sales), which the game's store takes off today's prices; `[]` without a sale. The recorded reply of the original is never used. "
+                                + "A gm$ sale is not in it (the original's discounts are em$ only).")
+               .Produces(200, contentType: "application/json");
             api.MapExactPost(game, REFILL_BARREL, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.RefillBarrelReply(a, r.Body), "state"), WithJsonToken(r)))
                .WithName("RefillBarrel").WithSummary("Fill a placed feeder with the bait the account owns (the Bait Sites page's Refill)")
                .WithDescription("Moves bait of the feeder's kind into it up to `max_amount` (at most 50) and restarts its timers (docs/server.md, \"Bait feeders\"). Paid with a refill pack (`pack`, one use) or the refill service's em$ (`gold`) or gm$ (`silver`) price. "
@@ -828,7 +833,7 @@ public static class GameApi
 
     public sealed record BuyForm(long item_id,
         [property: Description("Count (usually 1)")] long amount,
-        [property: Description("`GOLD` (em, catalogue price, discounted) or `SILVER` (gm, catalogue `silver_price`, not discounted)")] string wallet,
+        [property: Description("`GOLD` (em, the store's price) or `SILVER` (gm, catalogue `silver_price`); a `store_sales` sale lowers the price of the currencies it names")] string wallet,
         string? oauth_access_token);
 
     public sealed record RefillBarrelReply([property: Description("Price charged: 0 for a refill pack, absent on failure")] double? price, bool success,

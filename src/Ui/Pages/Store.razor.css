@@ -10,6 +10,8 @@
 .price span { margin-left: 6px; }
 .price .sale { color: #f4503d; }
 .price s { margin: 0 6px; text-decoration: none; color: var(--fg-muted-2); }
+.ends { margin: 0 5px; font-size: 12px; line-height: 14px; color: #f4503d; }
+.ends + .price { margin-top: 9px; }
 .card ::deep .own { margin: 0 5px; font-size: 12px; line-height: 14px; color: #f4503d; }
 .card .btn { position: absolute; left: 10px; right: 10px; bottom: 5px; height: 28px; padding: 0; font-size: 12px; line-height: 28px; }
 .card .btn:disabled { background: #999; color: #222; opacity: 1; }

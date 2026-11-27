@@ -178,7 +178,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     async Task StartAsync(bool offline, params (string Method, string Host, string Path, string Body)[] recorded)
     {
         if (server is not null) await server.DisposeAsync();
-        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS, offline: offline, avatars: AvatarList());
+        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: offline, avatars: AvatarList());
         var table = new HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Hit(2, "", 200, [], "{}"u8.ToArray());
         foreach (var (method, host, path, body) in recorded)
@@ -1626,7 +1626,7 @@ public class DogsWithoutATableTests : StateTestBase
     {
         var connect = Fixtures.CONNECT;
         connect.Remove("dog_skills");
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
         state.CreateAccount(9, "third");
         using (var con = state.Store.Open(9))
             PlayerRows.AddItem(con, 1, 700, 0, null, O("""{"dog_name": "Rex", "experience": 150}"""));
@@ -1642,7 +1642,7 @@ public class DogsWithoutATableTests : StateTestBase
              {"lvl": 2, "xp": 100, "unlocks": [{"type": "retrieving", "skill": "DOG_SKILL_RETRIEVE_RABBIT"}, {"type": "pointing", "skill": "DOG_SKILL_DETECTION"}, {"type": "trophy", "define": "RIBBON"}]},
              {"lvl": 3, "xp": 200, "unlocks": [{"type": "retrieving", "skill": "DOG_SKILL_RETRIEVE_RABBIT"}, {"type": "trophy", "define": "RIBBON"}]}]
             """);
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES);
         state.CreateAccount(9, "third");
         using (var con = state.Store.Open(9))
             PlayerRows.AddItem(con, 1, 501, 0, null, O("""{"dog_name": "Bo", "experience": 150}"""));

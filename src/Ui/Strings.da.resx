@@ -756,6 +756,7 @@
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Tilbuddet slutter {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKKE</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>BEGRÆNSET</value></data>

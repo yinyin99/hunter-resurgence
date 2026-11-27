@@ -91,8 +91,9 @@ public sealed partial class State
     sealed record BundleOffer(long[] Give, long Price, int Owned, int Of);
 
     /// <summary>The bundle for this account, null when the store does not sell it at all (<see cref="BundleSale"/>). The items a bundle lists more often than their limit allows, and those the account owns up to their limit, are not given;
-    /// the price drops by their share: each item's own em$ price (the catalogue's, before a discount) over the sum of those of the bundle's items, `price × (1 − share)` rounded up to a whole em$, at least 1.
-    /// Nothing given (<c>Give</c> empty): not for sale, at its list price. Call inside a transaction.</summary>
+    /// the price drops by their share: each item's own em$ list price (the catalogue's, whatever sale is on) over the sum of those of the bundle's items, `price × (1 − share)` rounded up to a whole em$, at least 1; `price` is the bundle's
+    /// price under a sale that lists it (<see cref="BundlePrice"/>), so the sale's percentage comes first and the share second.
+    /// Nothing given (<c>Give</c> empty): not for sale, at its list price (the sale's, while one is on). Call inside a transaction.</summary>
     BundleOffer? Offer(Db con, JsonNode b)
     {
         if (BundleSale(b) is not { } ids)
@@ -124,7 +125,7 @@ public sealed partial class State
                 }
             }
         }
-        var price = Whole(b["price"]);
+        var price = BundlePrice(b);  // the sale's percentage first, then the share of what the player owns
         if (skipped > 0 && total > 0 && give.Count > 0)
             price = Math.Max(1, (price * (total - skipped) + total - 1) / total);
         return new BundleOffer([.. give], price, owned, of);
@@ -148,7 +149,7 @@ public sealed partial class State
             var offer = Offer(con, b!);
             bundles.Add(new JsonObject
             {
-                ["id"] = C(b!["id"]), ["price"] = offer?.Price ?? Whole(b["price"]), ["owned"] = offer?.Owned ?? 0, ["of"] = offer?.Of ?? Arr(b["items"]).Count,
+                ["id"] = C(b!["id"]), ["price"] = offer?.Price ?? BundlePrice(b), ["owned"] = offer?.Owned ?? 0, ["of"] = offer?.Of ?? Arr(b["items"]).Count,
                 ["buyable"] = offer is { Give.Length: > 0 },
             });
         }

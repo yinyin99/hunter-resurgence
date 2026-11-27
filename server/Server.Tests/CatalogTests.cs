@@ -31,13 +31,10 @@ public class CatalogTests : StateTestBase
                      {"id": 13, "name": "Test Gone Pack", "price": 20, "items": [1, 404]}]}
         """;
 
-    // item 1 is half price
-    const string Discounts = """[{"item_id": 1, "percentage": 50, "start_ts": 0, "end_ts": 1099511627776}]""";
-
     async Task<Loopback> Start(string application, bool offline = false)
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(application)!, LOCALE, TEXTURES,
-            discounts: (JsonArray)JsonNode.Parse(Discounts)!, offline: offline);
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(application)!, LOCALE, TEXTURES, offline: offline);
+        state.LoadStoreSales(SALES(1, 50));  // item 1 is half price
         var table = new Replay.HarTable();
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
         return await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);

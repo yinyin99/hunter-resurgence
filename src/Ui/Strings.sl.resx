@@ -756,6 +756,7 @@
   <data name="Store.Or" xml:space="preserve"><value>ali</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Akcija se konča {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITED</value></data>

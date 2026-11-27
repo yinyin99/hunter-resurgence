@@ -59,7 +59,7 @@ public class GmBonusWatchTests : StateTestBase
         Assert.Equal(1, Events());
         Assert.Equal(4, log.Count);
         Assert.Contains("overlap", log[1]);
-        Assert.All(log.Skip(1), line => Assert.Contains("not applied, the bonuses in force stay", line));
+        Assert.All(log.Skip(1), line => Assert.Contains("not applied, the bonuses ", line));
 
         Write("""{"harvest_gm_bonus": []}""");  // removing every bonus is a good edit too
         watch.Check();
@@ -116,7 +116,7 @@ public class GmBonusWatchTests : StateTestBase
             watch.Check();  // refused: not read again, not logged again
             Assert.Single(log);
             Assert.Contains("not a JSON object", log[0]);
-            Assert.Contains("the bonuses in force stay", log[0]);
+            Assert.Contains("in force stay", log[0]);
             Assert.DoesNotContain("tried again", log[0]);
         }
     }

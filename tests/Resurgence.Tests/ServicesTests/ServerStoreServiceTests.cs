@@ -101,6 +101,57 @@ public class ServerStoreServiceTests
         Assert.Null(await Ok().ItemAsync(404));
     }
 
+    // an operator's sale: today's prices, the prices before it (null for a price that is not on sale) and the sale itself; the sales view lists an item whose gm$ price alone is on sale
+    const string SaleStore = """
+        {"categories": [], "bundles": [
+           {"id": 9, "name": "Test Pack", "description": "", "price": 72, "was": 90, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}], "sale": {"name": "Test weekend", "percent": 20, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 10, "name": "Test Plain Pack", "description": "", "price": 50, "was": null, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}], "sale": null}], "items": [
+           {"id": 1, "name": "Test Rifle", "variant": "", "description": "", "category": "0", "ems": 75, "was": 100, "gms": 150, "gwas": 200, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 2, "name": "Test Pistol", "variant": "", "description": "", "category": "0", "ems": 80, "was": null, "gms": 90, "gwas": 120, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 3, "name": "Test Scope", "variant": "", "description": "", "category": "0", "ems": 200, "was": null, "gms": 0, "gwas": null, "buyable": true, "sale": null}]}
+        """;
+
+    [Fact]
+    public async Task ASalesPricesBeforeItAndItsEndAreMapped()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, SaleStore)));
+        var rifle = (await service.ItemAsync(1))!;
+        Assert.Equal((75, 100, 150, 200), (rifle.Ems, rifle.WasEms, rifle.Gms, rifle.WasGms));
+        Assert.Equal(new StoreSale("Test weekend", 25, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)), rifle.Sale);
+        var pistol = (await service.ItemAsync(2))!;
+        Assert.Equal((80, (int?)null, 90, (int?)120), (pistol.Ems, pistol.WasEms, pistol.Gms, pistol.WasGms));
+        var scope = (await service.ItemAsync(3))!;
+        Assert.Equal((200, (int?)null, 0, (int?)null), (scope.Ems, scope.WasEms, scope.Gms, scope.WasGms));
+        Assert.Null(scope.Sale);
+        Assert.False(scope.OnSale);
+        Assert.Equal([1, 2], (await service.ItemsAsync("sales", "", 1)).Rows.Select(i => i.Id));
+        Assert.True(await service.HasSalesAsync());
+        Assert.Contains("sales", (await service.CategoriesAsync()).Select(c => c.Key));
+    }
+
+    [Fact]
+    public async Task ABundlesPriceBeforeItsSaleAndItsEndAreMapped()
+    {
+        var service = Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, SaleStore)));
+        var pack = (await service.BundleAsync(9))!;
+        Assert.Equal((72, 90, 90), (pack.Price, pack.PreSale, pack.StruckPrice));
+        Assert.Equal(new StoreSale("Test weekend", 20, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)), pack.Sale);
+        Assert.True(pack.OnSale);
+        var plain = (await service.BundleAsync(10))!;
+        Assert.Equal((50, (int?)null, 0), (plain.Price, plain.PreSale, plain.StruckPrice));
+        Assert.Null(plain.Sale);
+        Assert.False(plain.OnSale);
+    }
+
+    // only bundles on sale make a Sales entry
+    [Fact]
+    public async Task ABundleOnSaleMakesTheSalesEntry()
+    {
+        var only = Make(new Fake(_ => Json(HttpStatusCode.OK, """{"categories": [], "items": [], "bundles": [{"id": 9, "name": "Test Pack", "description": "", "price": 72, "was": 90, "buyable": true, "items": []}]}""")));
+        Assert.Contains("sales", (await only.CategoriesAsync()).Select(c => c.Key));
+        Assert.True(await only.HasSalesAsync());
+    }
+
     const string Page = """
         {"capacity": 0.45, "contents": {"count": 10, "name": "cartridges"},
          "fits": [{"title": "Weapons", "key": "0", "items": [{"id": 1, "name": "Test Rifle", "variant": "Blue"}]}],
@@ -299,6 +350,42 @@ public class ServerStoreServiceTests
         cache.Fail(start);
         cache.Set(start, store);  // an answer ends the pause
         Assert.False(cache.Paused(start));
+    }
+
+    // after a sale ends the server charges the full price: a read that shows a sale is not kept past its earliest end (but at least the pause, so a clock that is off does not ask on every call)
+    [Fact]
+    public void TheCacheDropsAStoreWhenTheFirstSaleEnds()
+    {
+        var start = new DateTime(2026, 11, 28, 12, 0, 0, DateTimeKind.Utc);
+        var store = new ServerStore([], [], []);
+
+        var soon = new ServerCache<ServerStore>();
+        soon.Set(start, store, new DateTimeOffset(start.AddMinutes(2), TimeSpan.Zero));
+        Assert.Same(store, soon.Get(start.AddMinutes(2).AddTicks(-1)));
+        Assert.Null(soon.Get(start.AddMinutes(2)));
+
+        var later = new ServerCache<ServerStore>();   // a sale that ends after the usual five minutes changes nothing
+        later.Set(start, store, new DateTimeOffset(start.AddHours(3), TimeSpan.Zero));
+        Assert.Same(store, later.Get(start.AddMinutes(4).AddSeconds(59)));
+        Assert.Null(later.Get(start.AddMinutes(5)));
+
+        var over = new ServerCache<ServerStore>();    // an end already past is kept for the pause only
+        over.Set(start, store, new DateTimeOffset(start.AddHours(-1), TimeSpan.Zero));
+        Assert.Same(store, over.Get(start.AddSeconds(9)));
+        Assert.Null(over.Get(start.AddSeconds(10)));
+    }
+
+    [Fact]
+    public void TheFirstSaleEndIsTheEarliestOfItemsAndBundlesAndNoneWithoutASale()
+    {
+        var early = new ServerSale("A", 10, new(2026, 11, 29, 7, 0, 0, TimeSpan.Zero));
+        var late = new ServerSale("B", 10, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero));
+        ServerItem Item(ServerSale? sale) => new(1, "Test Rifle", "", "", "0", 10, null, 0, true, Sale: sale);
+        ServerBundle Bundle(ServerSale? sale) => new(9, "Test Pack", "", 10, true, [], Sale: sale);
+
+        Assert.Equal(early.Until, ServerStoreService.FirstSaleEnd(new([], [Item(late), Item(null)], [Bundle(early)])));
+        Assert.Equal(early.Until, ServerStoreService.FirstSaleEnd(new([], [Item(early)], [Bundle(late)])));
+        Assert.Null(ServerStoreService.FirstSaleEnd(new([], [Item(null)], [Bundle(null)])));
     }
 
     // a purchase is the player's: it carries the session cookie, the header a cross-site form cannot set, and the form the server reads

@@ -756,6 +756,7 @@
   <data name="Store.Or" xml:space="preserve"><value>или</value></data>
   <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Скидка действует до {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>КОМПЛЕКТ</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>ПРЕМИУМ</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>ОГРАНИЧЕННЫЙ СРОК</value></data>

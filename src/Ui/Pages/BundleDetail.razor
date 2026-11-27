@@ -10,14 +10,15 @@
     @if (bundle is not null)
     {
         <article class="item">
-            <Ribbon Text="@L["Store.BundleTag"]" Class="blue" />
+            @if (bundle.OnSale) { <Ribbon Text="@L.SaleTag(bundle.Sale)" /> } else { <Ribbon Text="@L["Store.BundleTag"]" Class="blue" /> }
             <AssetSlot Name="@Mode.BundleSlot(bundle.Id)" Width="190" Height="207" Class="pic" />
             <div class="buy">
                 @if (!signedIn) { <button class="btn btn-tall btn-primary" disabled>@L["Store.Login"]</button> }
                 else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@(Mode.Live ? L["Store.NotBuyable"] : L["Store.MaxOwn"])">@L["Store.Buy"]</button> }
                 else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
-                @if (bundle.WasPrice > 0) { <b class="sale">@bundle.Price em$</b> <s>@bundle.WasPrice em$</s> } else { <b>@bundle.Price em$</b> }
+                @if (bundle.StruckPrice > 0) { <b class="sale">@bundle.Price em$</b> <s>@bundle.StruckPrice em$</s> } else { <b>@bundle.Price em$</b> }
             </div>
+            @if (bundle.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
             <h1>@bundle.Name</h1>
             <p class="text">@bundle.Description</p>
             @if (!bundle.Buyable && !Mode.Live) { <p class="own">@L["Store.MaxOwn"]</p> }

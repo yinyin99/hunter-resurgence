@@ -109,7 +109,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             var reply = await Send(community, "POST", HostOf(rule), Sample(rule), tokenA);
             Assert.Equal(Recorded, Encoding.ASCII.GetString(reply.Body));
         }
-        foreach (var rule in ReplayScope.Rules.Where(r => !r.Global && r.Host == "api" && !r.Path.Contains("Me/") && !r.Path.Contains("Expedition/list") && !r.Path.Contains("Inventory/list")))
+        foreach (var rule in ReplayScope.Rules.Where(r => !r.Global && r.Host == "api" && !r.Path.Contains("Me/") && !r.Path.Contains("Expedition/list") && !r.Path.Contains("Inventory/list") && !r.Path.Contains("Application/discounts")))  // the discounts are the operator's sales, never the recording
             Assert.Equal(Recorded, Encoding.ASCII.GetString((await Send(local, "POST", HostOf(rule), Sample(rule), null)).Body));
     }
 

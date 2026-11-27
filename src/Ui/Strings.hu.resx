@@ -756,6 +756,7 @@
   <data name="Store.Or" xml:space="preserve"><value>vagy</value></data>
   <data name="Store.Days" xml:space="preserve"><value>nap</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIÓ</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Az akció vége: {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>CSOMAG</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PRÉMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>KORLÁTOZOTT</value></data>

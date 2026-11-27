@@ -32,7 +32,7 @@ public sealed partial class State
     public const string POSITION = "__position", DIRECTION = "__direction", RESERVE = "__reserve", CLONE = "__clone", HIDDEN = "__hidden";
     /// <summary>SQL condition on an items row: not a hidden lodge stack (<see cref="HIDDEN"/>).</summary>
     const string Shown = $"NOT (slot = 0 AND json_extract(metadata, '$.{HIDDEN}') IS NOT NULL)";
-    // Inventory/buy `wallet` → (wallet currency, catalogue price key); gm$ is charged the catalogue's silver_price, never discounted (see Price)
+    // Inventory/buy `wallet` → (wallet currency, catalogue price key); em$ pays `price`, gm$ the catalogue's `silver_price`; a sale of the operator may lower either (see Price)
     static readonly Dictionary<string, (string Currency, string Key)> WALLETS = new() { ["GOLD"] = ("em", "price"), ["SILVER"] = ("gm", "silver_price") };
     public static readonly byte[] BUY_FAILED = "{\"success\": false}"u8.ToArray();  // not for sale or over the balance
     const int MaxBuyAmount = 1000;
@@ -752,7 +752,7 @@ public sealed partial class State
     readonly Dictionary<int, JsonObject> reserveData = new();
     /// <summary>Admin spawner entries (spawn.json), added to the connect reply.</summary>
     public readonly Spawner Spawns;
-    readonly JsonArray discounts, ethicalAmmo;
+    readonly JsonArray ethicalAmmo;
     /// <summary>The seasonal event the operator set (settings.json `event`); null: none.</summary>
     public SeasonalEvent? Seasonal { get; }
     /// <summary>settings.json `all_licenses`: every species is licensed on connect and every license item of the catalogue is owned without end
@@ -772,9 +772,11 @@ public sealed partial class State
     {
         using var con = Store.Open();
         scheduled = [.. bonuses.Select(b => new ScheduledBonus(b, b.Multiplier != 1 && b.Until > Clock()
-            ? RewardEvents.Record(con, b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
-                                  (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
+            ? RewardEvents.Record(con, BonusName(b), RewardEvents.GmBonus, (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
     }
+
+    /// <summary>The name of a bonus: the setting's `name`, else `Harvest gm$ x` and the multiplier; what a sale's `event` calls it.</summary>
+    static string BonusName(GmBonus b) => b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
 
     volatile ScheduledBonus[] scheduled = [];
 
@@ -804,7 +806,7 @@ public sealed partial class State
     /// iconUrl: image shown in the toast queued on connect and in skill level-up toasts.
     /// application: the recorded Application/application reply (species, items, reserves, locations);
     /// locale: the recorded English locale strings ({key: text}); textures: {texture id: name} (ScorePage);
-    /// discounts: the recorded Application/discounts reply; sampleInfos: item definitions of the
+    /// sampleInfos: item definitions of the
     /// json_inventory.json sample (`infos`); reserveConnects: {reserve id: connect body recorded after a Launch/start of
     /// that reserve}, the source of that reserve's RESERVE_KEYS; skillList: the player's recorded Skill/list reply, seeds
     /// the skills; itemDefs: the py_data item.json, whose `parent` chain groups weapon variants into the family
@@ -815,7 +817,7 @@ public sealed partial class State
     /// which replaces the rules of single objectives; a bad entry throws. spawnNamedAnimals: settings.json `spawn_named_animals`, the hunt's reply places the animals named objectives ask for
     /// (<see cref="PlaceNamedAnimals"/>); off, the 1000 m guess meets them.</summary>
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
-                 Dictionary<long, string> textures, JsonArray? discounts = null, JsonArray? sampleInfos = null,
+                 Dictionary<long, string> textures, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
                  byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false)
     {
@@ -862,7 +864,6 @@ public sealed partial class State
                     data[k] = C(v);
             reserveData[r] = data;
         }
-        this.discounts = discounts ?? new JsonArray();
         var connectInfos = connect["inventory"]!["infos"]!.AsArray();
         foreach (var i in Arr(sampleInfos).Concat(connectInfos))
             infos[Py.L(i!["item_id"])] = i.AsObject();
@@ -1703,23 +1704,17 @@ public sealed partial class State
         return built;
     }
 
-    /// <summary>The store script's getPrice: the item's first row in the Application/discounts reply, if active, taken off
-    /// and rounded half up (350 at 95 % off costs 18). A later active
-    /// row (100 % ones listed after the 95 % ones) is never used. The discount is the em$ price's: a gm$ price (<c>silver_price</c>) is charged
-    /// as the catalogue has it.</summary>
+    /// <summary>What the store charges for the item in a currency (<c>price</c> em$, <c>silver_price</c> gm$): the catalogue's price, or the sale price while a sale of the operator
+    /// (settings.json `store_sales`, StoreSales.cs) applies to that currency, the larger discount when two do (<see cref="Discounted"/>). The recorded Application/discounts of the original is not read.</summary>
     long Price(JsonObject item, string key)
     {
-        var now = Py.Now();
-        var d = key == "price" ? discounts.FirstOrDefault(r => Py.Eq(r!["item_id"], item["id"])) : null;
-        var price = Py.D(item[key]);
-        if (d is not null && Py.Truthy(d["percentage"]) && Py.D(d["start_ts"]) < now && now < Py.D(d["end_ts"]))
-            price -= price * (Py.D(d["percentage"]) / 100);
-        return (long)Math.Floor(price + 0.5);  // JS Math.round
+        var full = Whole(G(item, key, null));
+        return SaleOn(item, key, Clock()) is { } sale ? Discounted(full, sale.Percent) : full;
     }
 
     /// <summary>The store as the website shows it (GET /catalog/store): categories by their address key (a top-level one by its default
     /// sub-category, as the store's links; one without items, the store's link to its bundles, is left out), the items that are not hidden with
-    /// today's prices (<see cref="Price"/>; <c>was</c> the em$ price before the discount) and the bundles. A catalogue from the
+    /// today's prices (<see cref="Price"/>; <c>was</c> and <c>gwas</c> the prices before a sale, <c>sale</c> the one that applies) and the bundles. A catalogue from the
     /// install has no categories or bundles: empty lists. No game data is made up: every name and price is the catalogue's; what belongs to one item
     /// (the inventory weight, what fits it) is <see cref="StoreItemPage"/>'s.</summary>
     public JsonObject StoreCatalogue()
@@ -1732,8 +1727,11 @@ public sealed partial class State
             var item = i!.AsObject();
             names[Py.L(item["id"])] = C(item["name"]);  // a bundle may list an item the store does not show
             if (Py.Truthy(G(item, "hidden", null))) continue;
-            var full = Whole(G(item, "price", null));
-            var ems = full > 0 ? Price(item, "price") : 0;
+            var (full, gfull, now) = (Whole(G(item, "price", null)), Whole(G(item, "silver_price", null)), Clock());
+            SaleHit? emSale = SaleOn(item, "price", now), gmSale = SaleOn(item, "silver_price", now);
+            long ems = emSale is null ? full : Discounted(full, emSale.Percent), gms = gmSale is null ? gfull : Discounted(gfull, gmSale.Percent);
+            var (emOn, gmOn) = (ems < full ? emSale : null, gms < gfull ? gmSale : null);
+            var sale = emOn is not null && (gmOn is null || emOn.Percent >= gmOn.Percent) ? emOn : gmOn;
             var key = item["subcat"] is JsonObject sub && sub["id"] is { } id ? Py.Str(id) : "";
             keys.Add(key);
             items.Add(new JsonObject
@@ -1741,7 +1739,8 @@ public sealed partial class State
                 ["id"] = C(item["id"]), ["name"] = C(item["name"]), ["variant"] = C(G(item, "variationname", null)) ?? "",
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
-                ["gms"] = Whole(G(item, "silver_price", null)),
+                ["gms"] = gms, ["gwas"] = gms < gfull ? gfull : null,
+                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
                 ["buyable"] = !IsUnlimitedAmmo(item) && !IsUnlimitedFuel(Py.L(item["id"])) && (StoreSells(item, "price") || StoreSells(item, "silver_price")),
                 ["unlimited"] = IsUnlimitedAmmo(item), ["fuel"] = IsUnlimitedFuel(Py.L(item["id"])), ["limit"] = LimitOf(item) ?? 0,
             });
@@ -1756,12 +1755,17 @@ public sealed partial class State
         }
         var bundles = new JsonArray();
         foreach (var b in Arr(G(application, "bundles", null)).Where(x => !LeftOut(x!)))
+        {
+            var (list, price) = (Whole(b!["price"]), BundlePrice(b));
+            var sale = price < list ? BundleSaleOn(b, Clock()) : null;
             bundles.Add(new JsonObject
             {
-                ["id"] = C(b!["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
-                ["price"] = Whole(b["price"]), ["buyable"] = BundleSale(b) is not null,
+                ["id"] = C(b["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
+                ["price"] = price, ["was"] = price < list ? list : null, ["buyable"] = BundleSale(b) is not null,
+                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
                 ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
             });
+        }
         return new JsonObject { ["categories"] = categories, ["items"] = items, ["bundles"] = bundles };
     }
 
