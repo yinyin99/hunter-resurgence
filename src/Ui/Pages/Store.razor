@@ -27,6 +27,7 @@
                 }
                 else
                 {
+                    @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
                     <p class="price">
                         @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
                         @if (i.Ems <= 0 && i.Gms > 0) { if (i.WasGms is { } onlyWas) { <b class="sale">@i.Gms gm$</b> <s>@onlyWas gm$</s> } else { <b>@i.Gms gm$</b> } }
@@ -57,6 +58,7 @@
                 }
                 else
                 {
+                    @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
                     <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
                 }
                 @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
