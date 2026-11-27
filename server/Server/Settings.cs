@@ -1,5 +1,6 @@
 // The operator's settings.json: the host names the server answers for, where its files are, how it listens and which
 // proxies it trusts. Relative paths are relative to the settings file.
+using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -83,7 +84,7 @@ public sealed class Settings
             _ => throw new InvalidDataException("spawn_named_animals: true or false"),
         };
         // scheduled gm$ multipliers for harvests (docs/server.md#harvest-gm-bonus): a list of periods, stored as Unix seconds
-        cfg["harvest_gm_bonus"] = HarvestGmBonus(root["harvest_gm_bonus"]);
+        cfg["harvest_gm_bonus"] = ParseHarvestGmBonus(root["harvest_gm_bonus"], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch
@@ -186,17 +187,17 @@ public sealed class Settings
         try { return JsonNode.Parse(File.ReadAllText(path)) as JsonObject ?? throw new InvalidDataException("not a JSON object"); }
         catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException or InvalidDataException)
         {
-            throw new InvalidDataException($"{path}: {e.Message}");
+            throw new InvalidDataException($"{path}: {e.Message}", e);  // the cause stays: GmBonusWatch retries a read that failed, not a file that is wrong
         }
     }
 
-    /// <summary>Only `harvest_gm_bonus` of the file, checked as <see cref="Load"/> does: what <see cref="GmBonusWatch"/> applies when the file changes.</summary>
-    public static JsonArray? ReadHarvestGmBonus(string path) => HarvestGmBonus(Read(path)["harvest_gm_bonus"]);
+    /// <summary>Only `harvest_gm_bonus` of the file, checked as <see cref="Load"/> does, `now` (Unix seconds) being when it is read: what <see cref="GmBonusWatch"/> applies when the file changes.</summary>
+    public static JsonArray? ReadHarvestGmBonus(string path, long now) => ParseHarvestGmBonus(Read(path)["harvest_gm_bonus"], now);
 
     /// <summary>`harvest_gm_bonus`: a list of `{"multiplier": above 0, "from": an ISO time, "until": an ISO time after it, "name": optional}`, or one such object (today's form). `from` left out:
-    /// the period starts when the setting is read (<see cref="State.LoadHarvestGmBonuses"/>), so `{multiplier, until}` keeps working. A time without a zone is UTC. Periods are half open (from ≤ t &lt; until),
-    /// so one may start where another ends, but not overlap. Returns them by start, as Unix seconds (`from` null when left out); absent: null.</summary>
-    static JsonArray? HarvestGmBonus(JsonNode? node)
+    /// the period starts when the setting is read, `now` (<see cref="State.LoadHarvestGmBonuses"/>), so `{multiplier, until}` keeps working; one whose `until` is already past is over and is not checked against the others.
+    /// A time without a zone is UTC. Periods are half open (from ≤ t &lt; until), so one may start where another ends, but not overlap. Returns them by start, as Unix seconds (`from` null when left out); absent: null.</summary>
+    public static JsonArray? ParseHarvestGmBonus(JsonNode? node, long now)
     {
         if (node is null) return null;
         const string shape = "harvest_gm_bonus: a list of {\"multiplier\": a number above 0, \"from\": an ISO time, \"until\": an ISO time after it, \"name\": optional}; times look like \"2026-11-23T05:00:00Z\"";
@@ -216,11 +217,14 @@ public sealed class Settings
             if (from >= until) throw new InvalidDataException($"harvest_gm_bonus: until must be after from ({untilText})");
             found.Add((times, from, until, name));
         }
-        found.Sort((a, b) => (a.From ?? long.MinValue).CompareTo(b.From ?? long.MinValue));
-        for (var i = 1; i < found.Count; i++)
-            if (found[i - 1].Until > (found[i].From ?? long.MinValue))
-                throw new InvalidDataException($"harvest_gm_bonus: the periods ending {RewardEvents.Iso(found[i - 1].Until)} and starting {(found[i].From is { } s ? RewardEvents.Iso(s) : "now")} overlap");
-        return [.. found.Select(b => new JsonObject { ["multiplier"] = b.Multiplier, ["from"] = b.From, ["until"] = b.Until, ["name"] = b.Name })];
+        // an entry without `from` starts when the file is read, so it is checked from `now`, and not at all once it is over
+        var running = found.Where(b => (b.From ?? now) < b.Until).OrderBy(b => b.From ?? now).ToList();
+        string Span((double Multiplier, long? From, long Until, string? Name) b) =>
+            $"x{b.Multiplier.ToString(CultureInfo.InvariantCulture)} from {(b.From is { } s ? RewardEvents.Iso(s) : "the time the file is read (no from)")} until {RewardEvents.Iso(b.Until)}";
+        for (var i = 1; i < running.Count; i++)
+            if (running[i - 1].Until > (running[i].From ?? now))
+                throw new InvalidDataException($"harvest_gm_bonus: the periods overlap: {Span(running[i - 1])} and {Span(running[i])}");
+        return [.. found.OrderBy(b => b.From ?? Math.Min(now, b.Until)).Select(b => new JsonObject { ["multiplier"] = b.Multiplier, ["from"] = b.From, ["until"] = b.Until, ["name"] = b.Name })];
     }
 
     /// <summary>`avatar_uploads`: an https base URL (no query or fragment; a trailing `/` is dropped); absent: null.</summary>

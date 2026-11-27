@@ -755,31 +755,27 @@ public sealed partial class State
 
     /// <summary>settings.json `harvest_gm_bonus`, periods that do not overlap. Setting them (at the start, and again by <see cref="GmBonusWatch"/> when the file changes) records each one that has not ended
     /// in the events log (<see cref="RewardEvents"/>) as soon as it is known, a coming one too, once per distinct bonus, so the payments made under it name it. The list is swapped whole.</summary>
-    public IReadOnlyList<GmBonus> HarvestGmBonuses
+    public void SetHarvestGmBonuses(IEnumerable<GmBonus> bonuses)
     {
-        get => [.. scheduled.Select(s => s.Bonus)];
-        set
-        {
-            using var con = Store.Open();
-            scheduled = [.. value.Select(b => new ScheduledBonus(b, b.Multiplier != 1 && b.Until > Clock()
-                ? RewardEvents.Record(con, b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
-                                      (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
-        }
+        using var con = Store.Open();
+        scheduled = [.. bonuses.Select(b => new ScheduledBonus(b, b.Multiplier != 1 && b.Until > Clock()
+            ? RewardEvents.Record(con, b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
+                                  (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
     }
 
-    ScheduledBonus[] scheduled = [];
+    volatile ScheduledBonus[] scheduled = [];
 
-    /// <summary>Sets <see cref="HarvestGmBonuses"/> from the settings' `harvest_gm_bonus` (Settings.cs); a period with no `from` starts now.</summary>
+    /// <summary>Sets the bonuses from the settings' `harvest_gm_bonus` (Settings.cs); a period with no `from` starts now.</summary>
     public void LoadHarvestGmBonuses(JsonNode? cfg) =>
-        HarvestGmBonuses = [.. (cfg as JsonArray ?? []).Select(n => new GmBonus(Py.D(n!["multiplier"]), n["from"] is { } start ? Py.D(start) : Clock(), Py.D(n["until"]), (string?)n["name"]))];
+        SetHarvestGmBonuses([.. (cfg as JsonArray ?? []).Select(n => new GmBonus(Py.D(n!["multiplier"]), n["from"] is { } start ? Py.D(start) : Clock(), Py.D(n["until"]), (string?)n["name"]))]);
 
-    ScheduledBonus? RunningBonus(double now) => Array.Find(scheduled, s => s.Bonus.From <= now && now < s.Bonus.Until);
-
-    /// <summary>The harvest gm$ multiplier at `now`: that of the bonus whose period holds it, else 1.</summary>
-    public double GmMultiplier(double now) => RunningBonus(now)?.Bonus.Multiplier ?? 1;
-
-    /// <summary>The events_log id of the harvest bonus running at `now`; null when none (or one that multiplies by 1).</summary>
-    public long? GmEvent(double now) => RunningBonus(now)?.Event;
+    /// <summary>The harvest gm$ bonus at `now`, from ONE lookup: the multiplier of the bonus whose period holds it (1 when none) and that bonus's events_log id (null when none, or one that multiplies by 1).
+    /// A harvest takes `now` once and both values from here, so a boundary or a reload between two lookups cannot pay one bonus and log another.</summary>
+    public (double Multiplier, long? Event) GmAt(double now)
+    {
+        var running = Array.Find(scheduled, s => s.Bonus.From <= now && now < s.Bonus.Until);
+        return (running?.Bonus.Multiplier ?? 1, running?.Event);
+    }
 
     /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
     public const long DefaultInventoryCapacity = 20000;
@@ -2301,9 +2297,11 @@ public sealed partial class State
         List<long> shooters = [];
         try
         {
-            updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
+            var now = Clock();
+            var gm = GmAt(now);
+            updates = Heartbeat(con, now, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()),
+                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, gm.Multiplier, position, gm.Event,
                                 (c, e, id) => TryCredit(c, e, id, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
         }
         finally

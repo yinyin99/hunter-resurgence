@@ -108,6 +108,8 @@ public class SettingsTests : IDisposable
         }
     }
 
+    static readonly long Now = new DateTimeOffset(2026, 11, 20, 0, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();  // when the file is read, in the tests that fix it
+
     // a time without a zone is UTC, so "Monday 05:00" is the same instant on every server
     [Fact]
     public void TheHarvestGmBonusIsAListOfPeriodsAndTodaysSingleObjectIsOneThatStartsWhenItIsRead()
@@ -122,12 +124,10 @@ public class SettingsTests : IDisposable
         Assert.Equal(new DateTimeOffset(2026, 11, 23, 5, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)only["until"]!);
 
         // listed out of order, the x1.25 running now and the x2 weekend starting where it ends: kept by start, the first with no `from`
-        var list = Minimal();
-        list["harvest_gm_bonus"] = JsonNode.Parse("""
+        var rows = Settings.ParseHarvestGmBonus(JsonNode.Parse("""
             [{"multiplier": 2, "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00", "name": " Harvest gm$ x2 weekend "},
              {"multiplier": 1.25, "until": "2026-11-27T15:00:00Z"}]
-            """);
-        var rows = Load(list).Cfg["harvest_gm_bonus"]!.AsArray();
+            """), Now)!;
         Assert.Equal([1.25, 2], rows.Select(r => (double)r!["multiplier"]!));
         Assert.Null(rows[0]!["from"]);
         Assert.Equal(new DateTimeOffset(2026, 11, 27, 15, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)rows[1]!["from"]!);
@@ -150,11 +150,27 @@ public class SettingsTests : IDisposable
     [InlineData("""[{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-23T05:00:00Z"}, {"multiplier": 3, "from": "2026-11-23T04:59:59Z", "until": "2026-11-25T00:00:00Z"}]""")]  // one second of overlap
     [InlineData("""[{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-25T00:00:00Z"}, {"multiplier": 3, "from": "2026-11-22T00:00:00Z", "until": "2026-11-23T00:00:00Z"}]""")]  // one inside the other
     [InlineData("""[{"multiplier": 2, "until": "2026-11-23T05:00:00Z"}, {"multiplier": 3, "until": "2026-11-25T00:00:00Z"}]""")]  // both start when read
-    public void AWrongHarvestGmBonusIsRefused(string bad)
+    public void AWrongHarvestGmBonusIsRefused(string bad) =>
+        Assert.Throws<InvalidDataException>(() => Settings.ParseHarvestGmBonus(JsonNode.Parse(bad), Now));
+
+    [Fact]
+    public void AnEntryWithoutFromStartsWhenReadSoItIsNotCheckedAgainstPastPeriodsOrAfterItsEnd()
     {
-        var o = Minimal();
-        o["harvest_gm_bonus"] = JsonNode.Parse(bad);
-        Assert.Throws<InvalidDataException>(() => Load(o));
+        // read on 2026-11-27 16:00: the x2 weekend ended at 15:00 that day and the x1.25 that has no `from` starts now
+        long read = new DateTimeOffset(2026, 11, 27, 16, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds();
+        var rows = Settings.ParseHarvestGmBonus(JsonNode.Parse("""
+            [{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-27T15:00:00Z"}, {"multiplier": 1.25, "until": "2026-11-30T07:00:00Z"}]
+            """), read)!;
+        Assert.Equal([2.0, 1.25], rows.Select(r => (double)r!["multiplier"]!));
+        // one that is over already, whatever dated ones surround it
+        Assert.Equal(2, Settings.ParseHarvestGmBonus(JsonNode.Parse("""
+            [{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-30T00:00:00Z"}, {"multiplier": 3, "until": "2026-11-25T00:00:00Z"}]
+            """), read)!.Count);
+        // but one that runs overlaps a dated one that is still running, and the message names both
+        var e = Assert.Throws<InvalidDataException>(() => Settings.ParseHarvestGmBonus(JsonNode.Parse("""
+            [{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-30T00:00:00Z"}, {"multiplier": 3, "until": "2026-12-01T00:00:00Z"}]
+            """), read));
+        Assert.Contains("x2 from 2026-11-21T00:00:00Z until 2026-11-30T00:00:00Z and x3 from the time the file is read (no from) until 2026-12-01T00:00:00Z", e.Message);
     }
 
     [Fact]

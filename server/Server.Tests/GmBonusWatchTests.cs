@@ -41,11 +41,11 @@ public class GmBonusWatchTests : StateTestBase
     {
         long from = T("2026-11-27T15:00:00Z");
         var watch = Start(from - 3600);
-        Assert.Equal(1, state.GmMultiplier(from));
+        Assert.Equal(1, state.GmAt(from).Multiplier);
 
         Write($$"""{"harvest_gm_bonus": [{{Weekend}}]}""");
         watch.Check();
-        Assert.Equal([1.0, 2], new[] { from - 1, from }.Select(t => state.GmMultiplier(t)));
+        Assert.Equal([1.0, 2], new[] { from - 1, from }.Select(t => state.GmAt(t).Multiplier));
         Assert.Equal(1, Events());  // written as soon as it is read, before it starts
         Assert.Single(log);
 
@@ -55,7 +55,7 @@ public class GmBonusWatchTests : StateTestBase
         watch.Check();
         Write("""{"harvest_gm_bonus": [{"multiplier": 0, "until": "2026-12-01T00:00:00Z"}]}""");
         watch.Check();
-        Assert.Equal(2, state.GmMultiplier(from));
+        Assert.Equal(2, state.GmAt(from).Multiplier);
         Assert.Equal(1, Events());
         Assert.Equal(4, log.Count);
         Assert.Contains("overlap", log[1]);
@@ -63,7 +63,7 @@ public class GmBonusWatchTests : StateTestBase
 
         Write("""{"harvest_gm_bonus": []}""");  // removing every bonus is a good edit too
         watch.Check();
-        Assert.Equal(1, state.GmMultiplier(from));
+        Assert.Equal(1, state.GmAt(from).Multiplier);
     }
 
     [Fact]
@@ -79,6 +79,32 @@ public class GmBonusWatchTests : StateTestBase
         Assert.Single(log);
     }
 
+    // a file that cannot be read at this look (an editor holds it) is no verdict on its content: it is read again at the next look, where a refused file is not
+    [Fact]
+    public void AReadThatFailedIsTriedAgainAtTheNextLook()
+    {
+        var watch = Start(T("2026-11-27T15:00:00Z") - 3600);
+        Write($$"""{"harvest_gm_bonus": [{{Weekend}}]}""");
+        using (new FileStream(SettingsFile, FileMode.Open, FileAccess.Read, FileShare.None))
+            watch.Check();
+        Assert.Single(log);
+        Assert.Contains("tried again at the next look", log[0]);
+        Assert.Equal(1, state.GmAt(T("2026-11-27T15:00:00Z") - 1).Multiplier);
+        watch.Check();  // no edit in between: the same file, read now
+        Assert.Equal(2, state.GmAt(T("2026-11-27T15:00:00Z")).Multiplier);
+        Assert.Equal(1, Events());
+    }
+
+    // an edit made between the start's read of the file and the watch's first look is not missed: the first look reads the file whatever its stamp
+    [Fact]
+    public void AnEditMadeBeforeTheFirstLookIsApplied()
+    {
+        var watch = Start(T("2026-11-27T15:00:00Z") - 3600);
+        Write($$"""{"harvest_gm_bonus": [{{Weekend}}]}""");
+        watch.Check();
+        Assert.Equal(2, state.GmAt(T("2026-11-27T15:00:00Z")).Multiplier);
+    }
+
     [Fact]
     public void TodaysSingleObjectStartsWhenItIsReadAndEndsAtItsUntil()
     {
@@ -86,6 +112,6 @@ public class GmBonusWatchTests : StateTestBase
         var watch = Start(at);
         Write("""{"harvest_gm_bonus": {"multiplier": 2, "until": "2026-11-30T07:00:00Z"}}""");
         watch.Check();
-        Assert.Equal([2.0, 2, 1], new[] { at, until - 1, until }.Select(t => state.GmMultiplier(t)));
+        Assert.Equal([2.0, 2, 1], new[] { at, until - 1, until }.Select(t => state.GmAt(t).Multiplier));
     }
 }
