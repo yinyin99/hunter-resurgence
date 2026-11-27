@@ -15,6 +15,8 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
     public int? ExitCode() => exitCode();
     /// <summary>The process id; 0 when not known.</summary>
     public int Id { get; init; }
+    /// <summary>The process's memory (<see cref="GameMemory"/>); null for a process without one (a test's). Still answers after the process has exited, until it is disposed.</summary>
+    public Func<GameMemory?>? Memory { get; init; }
     public void Dispose() => dispose?.Invoke();
 
     /// <summary>
@@ -43,7 +45,7 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         try
         {
             if (Process.Start(info) is not { } p) return null;
-            return new(() => !p.HasExited && HasVisibleWindow((uint)p.Id), () => p.HasExited ? p.ExitCode : null, p.Dispose) { Id = p.Id };
+            return new(() => !p.HasExited && HasVisibleWindow((uint)p.Id), () => p.HasExited ? p.ExitCode : null, p.Dispose) { Id = p.Id, Memory = () => GameMemory.Read(p.Handle) };
         }
         catch (Exception e) when (e is System.ComponentModel.Win32Exception or InvalidOperationException) { return null; }
     }
@@ -68,7 +70,10 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
         {
             if (handle != 0) CloseHandle(handle);
             p.Dispose();
-        });
+        })
+        {
+            Memory = () => handle != 0 ? GameMemory.Read(handle) : null,
+        };
     }
 
     internal static bool HasVisibleWindow(uint pid)
