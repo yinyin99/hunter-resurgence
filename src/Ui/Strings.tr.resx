@@ -1448,7 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Oturum açma çerezleri ve oyun belirteçleri; geri okunamayan karma değerler olarak.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: Discord kimliğiniz ve Discord'un rollerinizi güncellemek için sunucuya verdiği belirteçler, şifrelenmiş olarak saklanır. Discord profilinizden başka hiçbir şey saklanmaz. Sunucu, rolleriniz için kullanıcı adınızı ve HunterScore'unuzu Discord'a gönderir.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Yalnızca Discord'u bağlarsanız: 5000 gm$ ve 250 em$ ödülünün Discord kimliğiniz için ödendiğine dair bir kayıt, kimliğe geri çevrilemeyen anahtarlı bir özet (hash) olarak saklanır.</value></data>
-  <data name="Data.Place" xml:space="preserve"><value>Çok oyunculu bir oyunun kurucusuna olan mesafeyi göstermek için sunucu, bağlantınızın adresinin yaklaşık yerini arar; hiçbir şey saklanmaz veya paylaşılmaz.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Çok oyunculu bir oyunun kurucusuna olan mesafeyi göstermek için sunucu, bağlantınızın adresinin yaklaşık konumunu belirler; hiçbir şey saklanmaz veya paylaşılmaz.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hesapların içermedikleri</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-posta adresiniz, gerçek adınız, posta adresiniz veya telefon numaranız: bunlar istenmez ve hesabınızda saklanmaz. Bir yedek böyle bir alan içeriyorsa geri yüklenmez.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Verilerinizi silme</value></data>

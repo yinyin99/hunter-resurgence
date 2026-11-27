@@ -1448,7 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Innloggingsinformasjonskapsler og spilltokener, som hasher som ikke kan leses tilbake.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Bare hvis du kobler til Discord: Discord-iden din og tokenene Discord ga serveren for å oppdatere rollene dine, lagret kryptert. Ingenting annet fra Discord-profilen din lagres. Serveren sender handlen din og HunterScore til Discord for rollene dine.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bare hvis du kobler til Discord: en registrering av at belønningen på 5000 gm$ og 250 em$ er utbetalt for Discord-iden din, lagret som en nøklet hash som ikke kan gjøres om til iden.</value></data>
-  <data name="Data.Place" xml:space="preserve"><value>For å vise avstanden til verten i et flerspillerspill slår serveren opp omtrentlig sted for adressen til tilkoblingen din; ingenting lagres eller deles.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>For å vise avstanden til verten i et flerspillerspill slår serveren opp den omtrentlige plasseringen av adressen til tilkoblingen din; ingenting lagres eller deles.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hva kontoer ikke inneholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>E-postadressen din, ditt virkelige navn, postadresse eller telefonnummer: det etterspørres ikke og lagres ikke i kontoen din. Hvis en sikkerhetskopi inneholder et slikt felt, gjenopprettes det ikke.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletting av dataene dine</value></data>
