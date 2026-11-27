@@ -1677,4 +1677,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Set.BansEmpty" xml:space="preserve"><value>Nobenemu igralcu nisi prepovedal dostopa.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Odpravi prepoved</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Ali res želiš odpraviti prepoved za {0} v tvojih igrah?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Jezik</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Jezik:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Samo igre v mojem jeziku</value></data>
 </root>

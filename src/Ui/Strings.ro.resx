@@ -1677,4 +1677,7 @@ Numele:</value></data>
   <data name="Set.BansEmpty" xml:space="preserve"><value>Nu ai blocat niciun jucător.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Deblochează</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Sigur vrei să deblochezi jucătorul {0} din jocurile tale?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Limba</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Limba:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Doar jocurile în limba mea</value></data>
 </root>

@@ -1677,4 +1677,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Set.BansEmpty" xml:space="preserve"><value>Hiçbir oyuncuyu yasaklamadın.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Yasağı kaldır</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>{0} adlı oyuncunun oyunlarından yasağını kaldırmak istediğinden emin misin?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Dil</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Dil:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Yalnızca benim dilimdeki oyunlar</value></data>
 </root>

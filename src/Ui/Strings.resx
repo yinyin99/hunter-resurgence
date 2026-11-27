@@ -1677,4 +1677,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Set.BansEmpty" xml:space="preserve"><value>You have not banned any player.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Unban</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Language:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Only games in my language</value></data>
 </root>

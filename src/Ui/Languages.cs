@@ -23,4 +23,10 @@ public static class Languages
         if (primary is "no" or "nn") primary = "nb";
         return Find(tag) ?? All.FirstOrDefault(l => l.Code.Split('-')[0].Equals(primary, StringComparison.OrdinalIgnoreCase));
     }
+
+    /// <summary>The language the page renders in (the launcher's current one); English when the culture is none of the 19.</summary>
+    public static Language Current => Match(System.Globalization.CultureInfo.CurrentUICulture.Name) ?? All[0];
+
+    /// <summary>The language the host form preselects: the host's last choice (a code, null before it chose one), else <see cref="Current"/>.</summary>
+    public static Language ForHosting(string? saved) => Find(saved) ?? Current;
 }

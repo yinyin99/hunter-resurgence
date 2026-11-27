@@ -1677,4 +1677,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du hast keinen Spieler gebannt.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Bann aufheben</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Möchtest du den Bann von {0} aus deinen Spielen wirklich aufheben?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprache:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Nur Spiele in meiner Sprache</value></data>
 </root>

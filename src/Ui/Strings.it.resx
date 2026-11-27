@@ -1677,4 +1677,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Set.BansEmpty" xml:space="preserve"><value>Non hai bannato nessun giocatore.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Rimuovi ban</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Vuoi davvero rimuovere il ban di {0} dalle tue partite?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Lingua</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Lingua:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Solo partite nella mia lingua</value></data>
 </root>

@@ -1677,4 +1677,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Set.BansEmpty" xml:space="preserve"><value>Je hebt geen spelers verbannen.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Ban opheffen</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Weet je zeker dat je de ban van {0} uit je spellen wilt opheffen?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Taal:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Alleen spellen in mijn taal</value></data>
 </root>

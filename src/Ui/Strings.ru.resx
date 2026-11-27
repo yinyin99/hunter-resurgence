@@ -1677,4 +1677,7 @@
   <data name="Set.BansEmpty" xml:space="preserve"><value>Вы никого не заблокировали.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Разблокировать</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Вы действительно хотите разблокировать {0} в своих играх?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Язык:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Только игры на моём языке</value></data>
 </root>

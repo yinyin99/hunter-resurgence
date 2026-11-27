@@ -285,7 +285,8 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         var game = listed[0]!.AsObject();
         Assert.Equal((false, "starting"), ((bool)game["joinable"]!, (string?)game["why"]));  // the host's game has not reported its port yet
         Assert.Null(game["clients"]![0]!["mapX"]);  // no position yet
-        foreach (var name in new[] { "joinable", "why" })
+        Assert.True(game.ContainsKey("language") && game["language"] is null);  // hosted without one
+        foreach (var name in new[] { "joinable", "why", "language" })
             game.Remove(name);
         foreach (var client in game["clients"]!.AsArray())
             foreach (var name in new[] { "mapX", "mapY" })
@@ -297,6 +298,29 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
                 client![name] = 0;
         Eq(await List(), listed);  // the game's own list has none of them
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
+    }
+
+    [Theory]
+    [InlineData("&language=fr", "fr")]
+    [InlineData("&language=pt-br", "pt-BR")]  // the code as the launcher has it, whatever the case
+    [InlineData("&language=xx", null)]  // not one of the launcher's 19
+    [InlineData("&language=en_US", null)]  // the game's codes are not the launcher's
+    [InlineData("&language=", null)]
+    [InlineData("", null)]
+    public async Task TestAHostsLanguageIsStoredAndListedOrNone(string extra, string? expected)
+    {
+        await Host(extra);
+        Assert.Equal(expected, (string?)(await Listed(THIRD))["language"]);
+    }
+
+    [Fact]
+    public async Task TestTheStartPageHostsWithALanguage()
+    {
+        var cookie = $"{SignIn.SessionCookie}={state.Store.CreateWebSession(HOST, TimeSpan.FromHours(1))}";
+        var hosted = await server.SendAsync("POST", "web.test", "/auth/launch", [("Content-Type", "application/x-www-form-urlencoded"), ("X-Requested-With", "XMLHttpRequest"), ("Cookie", cookie)],
+            Encoding.UTF8.GetBytes("mp=host&reserve=2&lodge=101&time=540&loadout=0&language=sv&lang=sv_SE"));
+        Assert.Equal(200, hosted.Status);
+        Assert.Equal("sv", (string?)(await Listed(THIRD))["language"]);
     }
 
     /// <summary>The first game of `GET /catalog/games` as `who` sees it.</summary>

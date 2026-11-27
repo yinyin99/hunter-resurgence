@@ -1677,4 +1677,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Set.BansEmpty" xml:space="preserve"><value>No has expulsado a ningún jugador.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Levantar expulsión</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>¿Seguro que quieres levantar la expulsión de {0} de tus partidas?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Idioma:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Solo partidas en mi idioma</value></data>
 </root>

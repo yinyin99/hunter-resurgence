@@ -32,6 +32,7 @@ public sealed class Games
     {
         public long Id, Host, Reserve;
         public string Name = "", Description = "", Password = "", Time = "";
+        public string Language = "";  // one of <see cref="Languages"/>, "" for none
         public bool Public = true, Free = true;
         public long? HsMin, HsMax;
         public int Max = 8;
@@ -40,10 +41,19 @@ public sealed class Games
         public bool Ready => Members[0].Port > 0 && Members[0].Guid != "";  // the host's event 29 came
         public Game Copy() => new()
         {
-            Id = Id, Host = Host, Reserve = Reserve, Name = Name, Description = Description, Password = Password, Time = Time, Public = Public, Free = Free,
+            Id = Id, Host = Host, Reserve = Reserve, Name = Name, Description = Description, Password = Password, Time = Time, Language = Language, Public = Public, Free = Free,
             HsMin = HsMin, HsMax = HsMax, Max = Max, Start = Start, Members = [.. Members.Select(m => m.Copy())]
         };
     }
+
+    /// <summary>The language codes of the launcher (its 19 interface languages) a host can name for its game.</summary>
+    public static readonly string[] Languages =
+    [
+        "en", "fr", "de", "es", "pt-BR", "ru", "it", "nl", "pl", "pt-PT", "sv", "da", "nb", "fi", "cs", "hu", "ro", "sl", "tr",
+    ];
+
+    /// <summary>The code of <see cref="Languages"/> that `code` names, whatever its case; "" for none or an unknown one.</summary>
+    public static string LanguageOf(string code) => Languages.FirstOrDefault(l => l.Equals(code, StringComparison.OrdinalIgnoreCase)) ?? "";
 
     readonly object gate = new();
     readonly Dictionary<long, Game> games = [];
@@ -188,7 +198,7 @@ public sealed partial class State
 
     /// <summary>Launch/start_mp: the account opens a session as its host and a hunt at the form's start (as <see cref="NoteLaunch(long, byte[])"/>); `session` is the token the game
     /// will connect with. The form: `reserve`, `start` and `loctype` (or `lodge_id`), `time`, `loadout_id`, and the session's `name` (up to 25 characters, else "&lt;handle&gt;'s game"),
-    /// `description` (255), `public_game` (0: friends only), `free_players`, `hs_min`, `hs_max`, `password` (20) and `max_players` (2 to 8, else 8).</summary>
+    /// `description` (255), `language` (one of <see cref="Games.Languages"/>, else none), `public_game` (0: friends only), `free_players`, `hs_min`, `hs_max`, `password` (20) and `max_players` (2 to 8, else 8).</summary>
     public void HostGame(long account, string session, byte[] formBody)
     {
         var form = Py.ParseQs(Encoding.UTF8.GetString(formBody));
@@ -197,7 +207,7 @@ public sealed partial class State
             Host = account, Reserve = Num(Form1(form, "reserve")) ?? 0, Time = Form1(form, "time"),
             Name = Form1(form, "name") is { Length: > 0 } name ? Cut(name, 25) : $"{Store.HandleOf(account)}'s game",
             Description = Cut(Form1(form, "description"), 255), Public = Form1(form, "public_game") != "0", Free = Form1(form, "free_players") != "0",
-            HsMin = Hs(Form1(form, "hs_min")), HsMax = Hs(Form1(form, "hs_max")), Password = Cut(Form1(form, "password"), 20),
+            Language = Games.LanguageOf(Form1(form, "language")), HsMin = Hs(Form1(form, "hs_min")), HsMax = Hs(Form1(form, "hs_max")), Password = Cut(Form1(form, "password"), 20),
             Max = (int)Math.Clamp(Num(Form1(form, "max_players")) ?? 8, 2, 8),
         }, session);
         NoteLaunch(account, form);
@@ -267,7 +277,7 @@ public sealed partial class State
 
     long HunterScore(long account) => Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
 
-    /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `joinable` and `why`, the refusal
+    /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `language` (its host's, null for none), `joinable` and `why`, the refusal
     /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`), and each client `mapX` and `mapY`: its position as percent of the
     /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
     /// session of a caller who may not join (`why` is not null: friends only, hunterscore, password, full ...) and is not in it shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
@@ -310,6 +320,7 @@ public sealed partial class State
             };
             if (caller is not null)
             {
+                list["language"] = g.Language == "" ? null : g.Language;
                 list["joinable"] = why is null;
                 list["why"] = why;
             }

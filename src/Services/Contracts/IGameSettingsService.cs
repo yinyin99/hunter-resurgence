@@ -51,4 +51,7 @@ public interface IGameSettingsService
     /// <summary>The language the game starts in, a code of <see cref="GameLanguages"/>: the player's choice, before one the launcher's language when the game has it, else English.</summary>
     Task<string> LanguageAsync();
     Task SetLanguageAsync(string code);
+    /// <summary>The language the host chose last for its games, a code of the launcher's interface languages; null until the host has chosen one (the host form then preselects the launcher's language).</summary>
+    Task<string?> HostLanguageAsync();
+    Task SetHostLanguageAsync(string code);
 }

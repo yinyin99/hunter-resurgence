@@ -1677,4 +1677,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Set.BansEmpty" xml:space="preserve"><value>Et ole estänyt yhtään pelaajaa.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Poista esto</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa pelaajan {0} eston peleistäsi?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Kieli</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Kieli:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Vain pelit omalla kielelläni</value></data>
 </root>

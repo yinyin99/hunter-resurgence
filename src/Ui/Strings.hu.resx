@@ -1677,4 +1677,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Set.BansEmpty" xml:space="preserve"><value>Még nem tiltottál ki senkit.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Kitiltás feloldása</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Biztosan fel akarod oldani {0} kitiltását a játékaidból?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Nyelv</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Nyelv:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Csak a saját nyelvemen futó játékok</value></data>
 </root>

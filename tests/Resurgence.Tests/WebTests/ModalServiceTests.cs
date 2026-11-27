@@ -70,5 +70,7 @@ public class ModalServiceTests
         public Task<bool> FirstStartAsync() => Task.FromResult(first);
         public Task<string> LanguageAsync() => Task.FromResult(GameLanguages.Default);
         public Task SetLanguageAsync(string code) => Task.CompletedTask;
+        public Task<string?> HostLanguageAsync() => Task.FromResult<string?>(null);
+        public Task SetHostLanguageAsync(string code) => Task.CompletedTask;
     }
 }

@@ -15,12 +15,15 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         ("Hunter20", "au", Distance.Long, 10, 1, 8, false),
     ];
 
+    /// <summary>The language of each game of <see cref="Rows"/> (a code of the launcher's languages); the eighth has none, as a game hosted by an older launcher.</summary>
+    static readonly string[] Languages = ["en", "fr", "de", "es", "pt-BR", "ru", "it", "", "en", "pt-BR", "nl", "pl", "sv", "fr", "de", "en"];
+
     static readonly IReadOnlyList<GameServer> Servers = Rows.Select((r, i) => new GameServer(i + 1, $"{r.Host}'s game", i == 0 ? "Placeholder description of the game. The host writes a short text here for the other players." : "",
         r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Country, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons
-        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null })).ToList();
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null }, Languages[i])).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",
@@ -61,7 +64,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         Task.FromResult<IReadOnlyList<Loadout>>(mock == "loadouts" ? [new(1, "Loadout 1"), new(2, "Loadout 2"), new(3, "Loadout 3")] : []);
 
     public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) => Launch($"single reserve {reserve} marker {marker} at {minutes} min, loadout {loadout}");
-    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Launch($"multiplayer \"{game.Name}\" reserve {reserve} marker {marker} at {minutes} min, max {game.MaxPlayers}, loadout {loadout}");
+    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Launch($"multiplayer \"{game.Name}\" reserve {reserve} marker {marker} at {minutes} min, max {game.MaxPlayers}, language {game.Language}, loadout {loadout}");
 
     /// <summary>The password of every protected game of the mock is <see cref="Secret"/>; anything else is turned down like the server does.</summary>
     public const string Secret = "letmein";

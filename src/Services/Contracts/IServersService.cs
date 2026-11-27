@@ -13,8 +13,9 @@ public sealed record GamePlayer(string Handle, int HunterScore, double? X = 50, 
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }
 /// <param name="Why">The server's reason this player cannot join: <c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player.</param>
+/// <param name="Language">The language its host chose for the game, a code of the launcher's interface languages (<c>fr</c>, <c>pt-BR</c>); empty for none (a game hosted without one).</param>
 public sealed record GameServer(long Id, string Name, string Description, int Reserve, int Players, int Max, string Host, bool Password, string Country, Distance Distance,
-    int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster, string? Why = null)
+    int Seconds, int MinScore, int MaxScore, IReadOnlyList<GamePlayer> Roster, string? Why = null, string Language = "")
 {
     /// <summary>The host limited the hunter score: the game shows its limits (0 and 99999 mean none).</summary>
     public bool Limited => MinScore > 0 || MaxScore < 99999;
@@ -23,7 +24,8 @@ public sealed record GameServer(long Id, string Name, string Description, int Re
     /// <summary>The player cannot join and a password would not help: the Join button is off.</summary>
     public bool Refused => Why is not (null or "password");
 }
-public sealed record NewGame(string Name, string Description, bool FriendsOnly, string? Password, int MaxPlayers, int? MinScore, int? MaxScore);
+/// <param name="Language">The language the host chose for the game, a code of the launcher's interface languages; empty for none.</param>
+public sealed record NewGame(string Name, string Description, bool FriendsOnly, string? Password, int MaxPlayers, int? MinScore, int? MaxScore, string Language = "");
 public sealed record Tutorial(int Id, string Title, string Description, int Reserve);
 
 /// <summary>The hunt screens: lobby, create game, server list, join map, tutorials. Starting a game hands the launch address to <see cref="ILauncherBridge"/>.</summary>

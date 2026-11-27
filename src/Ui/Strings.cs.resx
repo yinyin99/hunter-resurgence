@@ -1677,4 +1677,7 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Set.BansEmpty" xml:space="preserve"><value>Nezablokoval jsi žádného hráče.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Odblokovat</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Opravdu chceš odblokovat hráče {0} z tvých her?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Jazyk</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Jazyk:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Jen hry v mém jazyce</value></data>
 </root>

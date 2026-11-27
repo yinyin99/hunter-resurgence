@@ -1677,4 +1677,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du har ikke utestengt noen spillere.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Opphev utestengelse</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Er du sikker på at du vil oppheve utestengelsen av {0} fra spillene dine?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Språk:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Bare spill på mitt språk</value></data>
 </root>

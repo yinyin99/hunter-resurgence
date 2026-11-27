@@ -1677,4 +1677,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Set.BansEmpty" xml:space="preserve"><value>Vous n'avez banni aucun joueur.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Lever le bannissement</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Voulez-vous vraiment lever le bannissement de {0} de vos parties ?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Langue</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Langue :</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Uniquement les parties dans ma langue</value></data>
 </root>

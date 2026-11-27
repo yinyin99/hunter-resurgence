@@ -1677,4 +1677,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Set.BansEmpty" xml:space="preserve"><value>Nie zbanowałeś żadnego gracza.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Zdejmij bana</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Czy na pewno chcesz zdjąć bana z gracza {0} w twoich grach?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Język</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Język:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Tylko gry w moim języku</value></data>
 </root>

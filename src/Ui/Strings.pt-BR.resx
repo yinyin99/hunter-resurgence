@@ -1677,4 +1677,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Set.BansEmpty" xml:space="preserve"><value>Você não baniu nenhum jogador.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Remover banimento</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Tem certeza de que deseja remover o banimento de {0} dos seus jogos?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Idioma:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Apenas jogos no meu idioma</value></data>
 </root>

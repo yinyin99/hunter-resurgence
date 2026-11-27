@@ -1677,4 +1677,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du har ikke udelukket nogen spillere.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Ophæv udelukkelse</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Er du sikker på, at du vil ophæve udelukkelsen af {0} fra dine spil?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Sprog</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprog:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Kun spil på mit sprog</value></data>
 </root>

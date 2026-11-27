@@ -1677,4 +1677,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du har inte bannlyst någon spelare.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Häv bannlysning</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Är du säker på att du vill häva bannlysningen av {0} från dina spel?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Språk:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Bara spel på mitt språk</value></data>
 </root>
