@@ -200,13 +200,13 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Просмотреть предстоящие соревнования</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>СОЗДАТЬ ОДИНОЧНУЮ ИГРУ</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>СОЗДАТЬ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на стоянки (значки домиков), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на охотничьи домики (их значки), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Одни из самых великолепных уголков природы и 45 видов животных ждут вас. Удачной охоты!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Время начала:</value></data>
   <data name="Launch.EventTime" xml:space="preserve"><value>Задано событием: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Начать игру</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Обновление</value></data>
-  <data name="Launch.Lodges" xml:space="preserve"><value>Стоянки:</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Охотничьи домики:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Палатки:</value></data>
   <data name="Launch.NoTents" xml:space="preserve"><value>У вас нет палаток на этом охотугодье. Палатки, которые вы ставите на охотугодье, служат переносными точками возрождения и доступа к инвентарю. Палатки можно приобрести в {0}магазине{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Приблизить</value></data>
@@ -1029,7 +1029,7 @@
   <data name="Stat.Start" xml:space="preserve"><value>Старт</value></data>
   <data name="Stat.Dur" xml:space="preserve"><value>Длительность</value></data>
   <data name="Stat.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
-  <data name="Stat.Lodge" xml:space="preserve"><value>Стоянка</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Охотничий домик</value></data>
   <data name="Stat.CollectablesCol" xml:space="preserve"><value>Предметы для сбора</value></data>
   <data name="Stat.KillsCol" xml:space="preserve"><value>Убийств</value></data>
   <data name="Stat.AllTime" xml:space="preserve"><value>За всё время</value></data>
@@ -1629,9 +1629,9 @@
   <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>осталось {0} ч</value></data>
   <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>осталось {0} мин</value></data>
   <data name="Taxidermy.Skull" xml:space="preserve"><value>Установленный череп</value></data>
-  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Вы можете сделать чучело животного для своей стоянки*</value></data>
-  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Вы можете сделать чучело животного или установить череп для своей стоянки*</value></data>
-  <data name="Taxidermy.Note" xml:space="preserve"><value>* Для показа нужна стоянка, но если её у вас ещё нет, они сохраняются</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Вы можете сделать чучело животного для своего зала трофеев*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Вы можете сделать чучело животного или установить череп для своего зала трофеев*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Для показа нужен зал трофеев, но если его у вас ещё нет, они сохраняются</value></data>
   <data name="Taxidermy.Done" xml:space="preserve"><value>Чучело готово. Чучело животного отправлено в менеджер трофеев.</value></data>
   <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Череп успешно установлен. Установленный череп отправлен в менеджер трофеев.</value></data>
   <data name="Taxidermy.Badge" xml:space="preserve"><value>Чучело готово</value></data>
