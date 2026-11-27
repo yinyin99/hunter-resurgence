@@ -16,10 +16,13 @@
         @foreach (var i in rows)
         {
             <div class="card panel hover-tint">
-                @if (i.OnSale) { <Ribbon Text="@L.SaleTag(i.Sale)" /> }
-                <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
-                <a href="/store/item/@i.Id" class="name">@i.Name</a>
+                @if (i.OnSale && !variantB) { <Ribbon Text="@L.SaleTag(i.Sale)" /> }
+                <a href="/store/item/@i.Id@sq" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/item/@i.Id@sq" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
+                @if (variantB && i.OnSale) { <SaleCardB Percent="SaleCardB.ItemPct(i)" Prices="SaleCardB.ItemPrices(i)" Sale="i.Sale" /> }
+                else
+                {
                 @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
                 <p class="price">
                     @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
@@ -31,6 +34,7 @@
                         else if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
+                }
                 <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" Fuel="i.Fuel" />
                 @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
@@ -40,15 +44,19 @@
         @foreach (var b in bundles)
         {
             <div class="card panel hover-tint">
-                @if (b.OnSale) { <Ribbon Text="@L.SaleTag(b.Sale)" /> } else { <Ribbon Text="@L["Store.BundleTag"]" Class="blue" /> }
-                <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
-                <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
-                @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
-                <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                @if (b.OnSale && !variantB) { <Ribbon Text="@L.SaleTag(b.Sale)" /> } else if (!b.OnSale) { <Ribbon Text="@L["Store.BundleTag"]" Class="blue" /> }
+                <a href="/store/bundle/@b.Id@sq" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
+                <a href="/store/bundle/@b.Id@sq" class="name">@b.Name</a>
+                @if (variantB && b.OnSale) { <SaleCardB Percent="SaleCardB.BundlePct(b)" Prices="SaleCardB.BundlePrices(b)" Sale="b.Sale" /> }
+                else
+                {
+                    @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
+                    <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                }
                 @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
                 else if (b.OwnedItems > 0) { <p class="own">@(b.WasPrice > b.Price ? L["Store.BundleOwn", b.OwnedItems, b.OfItems, b.Price, b.WasPrice] : L["Store.BundleOwnCount", b.OwnedItems, b.OfItems])</p> }
                 @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@
-                <button class="btn btn-primary" @onclick='() => Nav.NavigateTo($"/store/bundle/{b.Id}")'>@L["Store.Details"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</button>
+                <button class="btn btn-primary" @onclick='() => Nav.NavigateTo($"/store/bundle/{b.Id}{sq}")'>@L["Store.Details"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture)</button>
             </div>
         }
     </div>
@@ -64,6 +72,10 @@
 
     [Parameter] public string? Key { get; set; }
     [SupplyParameterFromQuery(Name = "page")] public int? PageNo { get; set; }
+    // PROTOTYPE (sale card variant B), not production: ?salecard=b shows the other sale presentation; sq carries it to the item and bundle pages
+    [SupplyParameterFromQuery(Name = "salecard")] public string? SaleCard { get; set; }
+    bool variantB => SaleCard == "b";
+    string sq => variantB ? "?salecard=b" : "";
     string key => Key ?? "all";
 
     protected override async Task OnParametersSetAsync()

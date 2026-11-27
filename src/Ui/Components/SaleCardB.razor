@@ -1,0 +1,68 @@
+@* PROTOTYPE (sale card variant B), not production. Switched on by ?salecard=b on the store list, the item page and the bundle pages; English only on purpose (no resx strings).
+   One block: a "-30 %" pill over the card's top-left corner (absolute, so it sits in the nearest positioned ancestor: the card or the article), then the new price first and large, the old one
+   small and struck, a "You save" line and the time left. Without Prices (a signed-out item page) only the pill shows. *@
+@if (Percent > 0)
+{
+    <span class="pill @(PillRight ? "right" : "")"><span class="vh">Sale, @Percent percent off</span><span aria-hidden="true">-@Percent %</span></span>
+}
+@if (Prices.Count > 0)
+{
+    var saved = Prices.Where(x => x.Was > x.Now).Select(x => $"{x.Was - x.Now} {x.Cur}").ToList();
+    <div class="sp @(Big ? "big" : "")">
+        <p class="line">
+            @for (var n = 0; n < Prices.Count; n++)
+            {
+                var p = Prices[n];
+                @if (n > 0) { <span class="or">or</span> }
+                <b class="now">@p.Now @p.Cur</b>
+                @if (p.Was > p.Now) { <s class="was"><span class="vh">was </span>@p.Was @p.Cur</s> }
+            }
+        </p>
+        @if (saved.Count > 0 || Sale is not null)
+        {
+            <p class="meta">
+                @if (saved.Count > 0) { <span class="save">You save @string.Join(" or ", saved)</span> }
+                @if (saved.Count > 0 && Sale is not null) { <span aria-hidden="true"> · </span> }
+                @if (Sale is { } s) { <span title="@Fmt.Utc(s.Until.UtcDateTime)">@Left(s)</span> }
+            </p>
+        }
+    </div>
+}
+
+@code {
+    public sealed record Price(int Now, int? Was, string Cur);
+
+    [Parameter] public int Percent { get; set; }
+    [Parameter] public IReadOnlyList<Price> Prices { get; set; } = [];
+    [Parameter] public StoreSale? Sale { get; set; }
+    /// <summary>The item and bundle pages: a larger price.</summary>
+    [Parameter] public bool Big { get; set; }
+    /// <summary>The corner already holds another banner (premium): the pill goes to the top-right.</summary>
+    [Parameter] public bool PillRight { get; set; }
+
+    /// <summary>The discount of a price the catalogue gives no sale percentage for.</summary>
+    public static int Pct(int now, int? was) => was is > 0 ? (int)Math.Round(100.0 * (was.Value - now) / was.Value) : 0;
+
+    /// <summary>The prices of an item as A shows them (a gm$-only item has no em$ price); none when <paramref name="show"/> is false (the signed-out item page shows no price).</summary>
+    public static IReadOnlyList<Price> ItemPrices(StoreItem i, bool show = true)
+    {
+        var l = new List<Price>();
+        if (!show) return l;
+        if (i.Ems > 0 || i.Gms <= 0) l.Add(new(i.Ems, i.WasEms, "em$"));
+        if (i.Gms > 0) l.Add(new(i.Gms, i.WasGms, "gm$"));
+        return l;
+    }
+    public static int ItemPct(StoreItem i) => i.Sale?.Percent ?? Math.Max(Pct(i.Ems, i.WasEms), Pct(i.Gms, i.WasGms));
+
+    public static IReadOnlyList<Price> BundlePrices(StoreBundle b) => [new(b.Price, b.StruckPrice > 0 ? b.StruckPrice : null, "em$")];
+    public static int BundlePct(StoreBundle b) => b.Sale?.Percent ?? Pct(b.Price, b.StruckPrice);
+
+    // ponytail: counted once per render, no ticking timer; a sale more than 30 days away shows its UTC date instead
+    static string Left(StoreSale s)
+    {
+        var t = s.Until - DateTimeOffset.UtcNow;
+        if (t <= TimeSpan.Zero) return "Sale ended";
+        if (t.TotalDays > 30) return $"Ends {Fmt.Utc(s.Until.UtcDateTime)}";
+        return t.TotalDays >= 1 ? $"Ends in {t.Days} d {t.Hours} h" : t.TotalHours >= 1 ? $"Ends in {t.Hours} h {t.Minutes} min" : $"Ends in {Math.Max(1, t.Minutes)} min";
+    }
+}

@@ -1,0 +1,16 @@
+/* PROTOTYPE (sale card variant B), not production */
+.pill { position: absolute; left: 10px; top: 10px; z-index: 1; padding: 0 9px; border-radius: var(--radius-pill); background: var(--primary-bg-hover); font-size: 13px; line-height: 22px; font-weight: 700; color: #fff; pointer-events: none; }
+.pill.right { left: auto; right: 10px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sp { margin: 6px 5px 0; font-variant-numeric: tabular-nums; }
+.line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; margin: 0; line-height: 24px; color: var(--fg-muted-2); }
+.now { font-size: 18px; font-weight: 700; color: #fff; }
+.was { font-size: 12px; color: var(--fg-muted-2); text-decoration: line-through; }
+.or { margin: 0 2px; font-size: 12px; }
+.meta { margin: 0; font-size: 12px; line-height: 16px; color: var(--fg-muted-2); }
+.save { font-weight: 500; color: var(--success); }
+.sp.big { margin: 0 14px 0 0; text-align: right; }
+.big .line { justify-content: flex-end; line-height: 28px; }
+.big .now { font-size: 26px; }
+.big .was { font-size: 14px; }
+.big .meta { font-size: 13px; line-height: 18px; }

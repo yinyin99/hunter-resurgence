@@ -10,11 +10,12 @@
     @if (item is not null)
     {
         <article class="item panel">
-            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L.SaleTag(item.Sale) : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
+            @if (banner is { } b && !(variantB && b == "sale")) { <Ribbon Text="@(b == "sale" ? L.SaleTag(item.Sale) : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
             <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="270" Height="197" Class="pic" />
             <div class="buy">
                 @* signed out the old page shows only the button *@
-                @if (signedIn)
+                @if (variantB && item.OnSale) { <SaleCardB Big Percent="SaleCardB.ItemPct(item)" PillRight="@(banner != "sale")" Prices="SaleCardB.ItemPrices(item, signedIn)" Sale="item.Sale" /> }
+                else if (signedIn)
                 {
                     @if (item.Gms > 0) { <span class="gms @(item.WasGms is null ? "" : "sale")">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> @if (item.WasGms is { } wasGms) { <s>@wasGms gm$</s> } }
                     @* an item sold for gm$ alone has no em$ price to show *@
@@ -28,7 +29,7 @@
                 else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
             </div>
-            @if (signedIn && item.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
+            @if (signedIn && item.Sale is { } sale && !variantB) { <p class="ends">@L.SaleEnds(sale)</p> }
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0 || item.Contents is not null)
@@ -102,6 +103,10 @@
 
     // "10 cartridges" in the player's language by the catalogue's unit word; a word with no text stays as the catalogue gives it
     string Units(StoreContents c) => L["Store.Unit." + c.Unit, c.Count] is { ResourceNotFound: false } s ? s.Value : $"{c.Count} {c.Unit}";
+
+    // PROTOTYPE (sale card variant B), not production: ?salecard=b shows the other sale presentation
+    [SupplyParameterFromQuery(Name = "salecard")] public string? SaleCard { get; set; }
+    bool variantB => SaleCard == "b";
 
     [Parameter] public int Id { get; set; }
 
