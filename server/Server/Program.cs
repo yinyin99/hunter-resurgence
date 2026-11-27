@@ -21,6 +21,8 @@ const string AdminUsage = """
     a harvest payment inside a bonus's period gets base = paid / multiplier and that event, every other payment base = amount, and the events are written. Without --apply nothing is written (a line per event and the counts); a second run changes nothing. Run it with the server stopped, after `backup`.
     admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
     it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
+    admin ammo-fit [--apply] [--account <id or handle>] lists the ammunition stacks that sit in an equipped ammunition slot beside a weapon the catalogue says they do not fit (one line per stack: account, slot, weapon, ammunition, stack) and a total line; with --apply it moves each stack, whole, to the lodge (nothing is lost, the player can equip it under a weapon it fits).
+    A second run lists nothing; without --apply nothing is written. Run it once, with the server stopped, after `backup`.
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any. The player reads the reason on the sign-in page: write it for him.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
@@ -345,6 +347,19 @@ void Admin(string[] a)
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.BackfillLodgeContents(apply, only)) Console.WriteLine(line);
         Console.WriteLine(apply ? "applied" : "dry run: nothing written; add --apply to write");
+        return;
+    }
+    if (a.Length > 0 && a[0] == "ammo-fit")
+    {
+        var apply = a.Contains("--apply");
+        var rest = a[1..].Where(x => x != "--apply").ToArray();
+        if (rest is not ([] or ["--account", _])) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
+        foreach (var line in loaded.MoveMisfitAmmo(apply, only)) Console.WriteLine(line);
         return;
     }
     if (a.Length > 0 && a[0] == "missions-rollback")

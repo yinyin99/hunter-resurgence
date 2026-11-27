@@ -427,8 +427,12 @@ public static class Restorer
                 PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
             }
 
+            // an ammunition in the ammunition slot of a weapon it does not fit (the zip's two inventory replies can give one) goes to the lodge (#1009)
+            var lodged = state.LodgeMisfits(con);
+            if (lodged > 0) lines.Add($"ammunition not fitting the weapon beside it, put in the lodge: {lodged}");
+
             // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
-            var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max());
+            var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max(), state.Suits);
             if (added > 0) lines.Add($"start items added: {added}");
         }
 

@@ -920,7 +920,7 @@ public sealed partial class State
                 {
                     con.Begin();
                     PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
-                                               (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
+                                               (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!, Suits);
                     con.Exec("UPDATE accounts SET start_kit = ? WHERE id = ?", kit, id);
                     con.Commit();
                 }
@@ -2398,6 +2398,24 @@ public sealed partial class State
     /// <summary>The ammunition ids that fit a weapon, in order: the catalogue's `fit` list of the ammunition category, else (a server without the recorded catalogue) the ammunition among the install's attachments of the weapon.</summary>
     long[] AmmoFor(long weapon) => Arr((items.GetValueOrDefault(weapon) ?? installItems.GetValueOrDefault(weapon))?["fit"]?["3"]) is { Count: > 0 } fit
         ? [.. fit.Select(f => Py.L(f!["id"]))] : installFit.GetValueOrDefault(weapon) ?? [];
+
+    /// <summary>Whether <paramref name="item"/> may sit in the ammunition slot (8 to 10) of <paramref name="weapon"/>, the item in the slot 6 below (#1009): an ammunition the catalogue's fit list of the weapon lacks may not
+    /// (the game fires whatever sits there, with no check of its own); a weapon with no fit list, and an item that is no ammunition, are left alone.</summary>
+    public bool Suits(long weapon, long item) => !IsAmmo(item) || AmmoFor(weapon) is not { Length: > 0 } fit || fit.Contains(item);
+
+    /// <summary>The account's ammunition stacks in an ammunition slot beside a weapon they do not fit (<see cref="Suits"/>), as (guid, ammunition, weapon, slot) by slot; inside the account's transaction.</summary>
+    public List<(long Guid, long Ammo, long Weapon, long Slot)> Misfits(Db con) =>
+        [.. con.Rows("SELECT a.guid, a.item_id, w.item_id, a.slot FROM items a JOIN items w ON w.account_id = a.account_id AND w.slot = a.slot - 6 WHERE a.account_id = $a AND a.slot BETWEEN 8 AND 10 ORDER BY a.slot, a.guid")
+            .Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]), Convert.ToInt64(r[2]), Convert.ToInt64(r[3]))).Where(m => !Suits(m.Item3, m.Item2))];
+
+    /// <summary>Moves every <see cref="Misfits"/> stack to the lodge (slot 0), whole: the player can equip it under a weapon it fits; returns how many.</summary>
+    internal int LodgeMisfits(Db con)
+    {
+        var misfits = Misfits(con);
+        foreach (var m in misfits)
+            con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = ?", m.Guid);
+        return misfits.Count;
+    }
 
     /// <summary>With unlimited ammunition, at a launch, inside its transaction: the account owns a full box of every ammunition that fits a weapon it owns (a weapon with none could not be equipped, and ammunition is not sold),
     /// as a row of its own that the connect that follows lists; only an ammunition the game has a definition for (a recorded one or the install's ballistics, as a restore needs). An equipped weapon (slots 2 to 4) whose ammunition slot

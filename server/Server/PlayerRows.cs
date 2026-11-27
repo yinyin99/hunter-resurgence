@@ -23,26 +23,30 @@ public static class PlayerRows
                  guid, itemId, slot, Py.Dumps(metadata), units);
 
     /// <summary>Adds each start item (<paramref name="kit"/>: the rows a new account gets) the account does not own, as a new account gets it: in its slot unless
-    /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.</summary>
-    public static int AddMissingStart(Db con, JsonArray kit, IEnumerable<(long ItemId, long Slot)> have, long guid)
+    /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.
+    /// An ammunition whose slot (8 to 10) has a weapon beside it (slot - 6, owned or added now) that <paramref name="suits"/> (weapon, item) refuses goes to slot 0, the lodge, instead (#1009).</summary>
+    public static int AddMissingStart(Db con, JsonArray kit, IEnumerable<(long ItemId, long Slot)> have, long guid, Func<long, long, bool> suits)
     {
-        var (owned, slots) = (new HashSet<long>(), new HashSet<long>());
+        var (owned, slots, weapons) = (new HashSet<long>(), new HashSet<long>(), new Dictionary<long, long>());
         foreach (var (itemId, slot) in have)
         {
             owned.Add(itemId);
             slots.Add(slot);
+            if (slot is >= 2 and <= 4) weapons[slot] = itemId;
         }
-        var added = 0;
+        var added = new List<(long Id, long Slot, long? Units)>();
         foreach (var k in kit)
         {
             var id = Py.L(k!["item_id"]);
             if (!owned.Add(id)) continue;
             var slot = Py.L(k["slot"]);
             if (slot > 1 && !slots.Add(slot)) slot = 0;
-            AddItem(con, ++guid, id, slot, k["units"] is { } u ? Py.L(u) : null, []);
-            added++;
+            if (slot is >= 2 and <= 4) weapons[slot] = id;
+            added.Add((id, slot, k["units"] is { } u ? Py.L(u) : (long?)null));
         }
-        return added;
+        foreach (var (id, slot, units) in added)
+            AddItem(con, ++guid, id, slot is >= 8 and <= 10 && weapons.TryGetValue(slot - 6, out var weapon) && !suits(weapon, id) ? 0 : slot, units, []);
+        return added.Count;
     }
 
     public static void SetWallet(Db con, string currency, double amount) =>
