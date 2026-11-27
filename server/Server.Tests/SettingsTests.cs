@@ -110,20 +110,51 @@ public class SettingsTests : IDisposable
 
     // a time without a zone is UTC, so "Monday 05:00" is the same instant on every server
     [Fact]
-    public void TheHarvestGmBonusNeedsAMultiplierAboveZeroAndATime()
+    public void TheHarvestGmBonusIsAListOfPeriodsAndTodaysSingleObjectIsOneThatStartsWhenItIsRead()
     {
         Assert.Null(Load(Minimal()).Cfg["harvest_gm_bonus"]);
-        var two = Minimal();
-        two["harvest_gm_bonus"] = JsonNode.Parse("""{"multiplier": 2, "until": "2026-11-23T05:00:00"}""");
-        var bonus = Load(two).Cfg["harvest_gm_bonus"]!;
-        Assert.Equal(2.0, (double)bonus["multiplier"]!);
-        Assert.Equal(new DateTimeOffset(2026, 11, 23, 5, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)bonus["until"]!);
-        foreach (var bad in new[] { """{"multiplier": 0, "until": "2026-11-23T05:00:00Z"}""", """{"multiplier": 2}""", """{"multiplier": 2, "until": "monday"}""", "2" })
-        {
-            var o = Minimal();
-            o["harvest_gm_bonus"] = JsonNode.Parse(bad);
-            Assert.Throws<InvalidDataException>(() => Load(o));
-        }
+        var old = Minimal();
+        old["harvest_gm_bonus"] = JsonNode.Parse("""{"multiplier": 2, "until": "2026-11-23T05:00:00"}""");
+        var only = Load(old).Cfg["harvest_gm_bonus"]!.AsArray().Single()!;
+        Assert.Equal(2.0, (double)only["multiplier"]!);
+        Assert.Null(only["from"]);
+        Assert.Null(only["name"]);
+        Assert.Equal(new DateTimeOffset(2026, 11, 23, 5, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)only["until"]!);
+
+        // listed out of order, the x1.25 running now and the x2 weekend starting where it ends: kept by start, the first with no `from`
+        var list = Minimal();
+        list["harvest_gm_bonus"] = JsonNode.Parse("""
+            [{"multiplier": 2, "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00", "name": " Harvest gm$ x2 weekend "},
+             {"multiplier": 1.25, "until": "2026-11-27T15:00:00Z"}]
+            """);
+        var rows = Load(list).Cfg["harvest_gm_bonus"]!.AsArray();
+        Assert.Equal([1.25, 2], rows.Select(r => (double)r!["multiplier"]!));
+        Assert.Null(rows[0]!["from"]);
+        Assert.Equal(new DateTimeOffset(2026, 11, 27, 15, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)rows[1]!["from"]!);
+        Assert.Equal(new DateTimeOffset(2026, 11, 30, 7, 0, 0, TimeSpan.Zero).ToUnixTimeSeconds(), (long)rows[1]!["until"]!);
+        Assert.Equal("Harvest gm$ x2 weekend", (string?)rows[1]!["name"]);
+        var empty = Minimal();
+        empty["harvest_gm_bonus"] = new JsonArray();
+        Assert.Empty(Load(empty).Cfg["harvest_gm_bonus"]!.AsArray());
+    }
+
+    [Theory]
+    [InlineData("""{"multiplier": 0, "until": "2026-11-23T05:00:00Z"}""")]
+    [InlineData("""{"multiplier": 2}""")]
+    [InlineData("""{"multiplier": 2, "until": "monday"}""")]
+    [InlineData("2")]
+    [InlineData("""[{"multiplier": 2, "from": "2026-11-23T05:00:00Z", "until": "2026-11-23T05:00:00Z"}]""")]  // empty period
+    [InlineData("""[{"multiplier": 2, "from": "2026-11-24T05:00:00Z", "until": "2026-11-23T05:00:00Z"}]""")]  // ends before it starts
+    [InlineData("""[{"multiplier": 2, "from": "soon", "until": "2026-11-23T05:00:00Z"}]""")]
+    [InlineData("""[{"multiplier": 2, "until": "2026-11-23T05:00:00Z", "name": ""}]""")]
+    [InlineData("""[{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-23T05:00:00Z"}, {"multiplier": 3, "from": "2026-11-23T04:59:59Z", "until": "2026-11-25T00:00:00Z"}]""")]  // one second of overlap
+    [InlineData("""[{"multiplier": 2, "from": "2026-11-21T00:00:00Z", "until": "2026-11-25T00:00:00Z"}, {"multiplier": 3, "from": "2026-11-22T00:00:00Z", "until": "2026-11-23T00:00:00Z"}]""")]  // one inside the other
+    [InlineData("""[{"multiplier": 2, "until": "2026-11-23T05:00:00Z"}, {"multiplier": 3, "until": "2026-11-25T00:00:00Z"}]""")]  // both start when read
+    public void AWrongHarvestGmBonusIsRefused(string bad)
+    {
+        var o = Minimal();
+        o["harvest_gm_bonus"] = JsonNode.Parse(bad);
+        Assert.Throws<InvalidDataException>(() => Load(o));
     }
 
     [Fact]

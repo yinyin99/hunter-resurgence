@@ -63,25 +63,54 @@ public class RewardEventsTests : StateTestBase
     {
         var at = (double)T("2026-11-24T20:00:00Z");
         state = Start(at);
-        state.HarvestGmBonus = (1.25, T("2026-11-27T15:00:00Z"));
+        state.HarvestGmBonuses = [new(1.25, at, T("2026-11-27T15:00:00Z"))];
         state = Start(at + 3600);  // the next start reads the same setting
-        state.HarvestGmBonus = (1.25, T("2026-11-27T15:00:00Z"));
+        state.HarvestGmBonuses = [new(1.25, at + 3600, T("2026-11-27T15:00:00Z"))];
         Assert.Equal(1, Count("SELECT COUNT(*) FROM events_log"));
         Assert.Equal(1.25, state.GmMultiplier(at + 3600));
         Assert.NotNull(state.GmEvent(at + 3600));
-        state.HarvestGmBonus = (2, T("2026-11-27T15:00:00Z"));  // another multiplier is another event
+        state.HarvestGmBonuses = [new(2, at + 3600, T("2026-11-27T15:00:00Z"))];  // another multiplier is another event
         Assert.Equal(2, Count("SELECT COUNT(*) FROM events_log"));
-        state.HarvestGmBonus = (3, T("2026-11-20T00:00:00Z"));  // over before the start: nothing to record, nothing applies
+        state.HarvestGmBonuses = [new(3, 0, T("2026-11-20T00:00:00Z"))];  // over before the start: nothing to record, nothing applies
         Assert.Equal(2, Count("SELECT COUNT(*) FROM events_log"));
         Assert.Null(state.GmEvent(at));
     }
+
+    // docs/server.md#harvest-gm-bonus: a harvest pays the bonus whose period holds the heartbeat's time, `from` included and `until` not
+    [Fact]
+    public void ABonusPaysFromItsStartUntilItsEndAndABonusStillToComeIsInTheEventsLogAlready()
+    {
+        long from = T("2026-11-27T15:00:00Z"), until = T("2026-11-30T07:00:00Z");
+        state = Start(from - 3600);
+        state.HarvestGmBonuses = [new(2, from, until, "Harvest gm$ x2 weekend")];
+        Assert.Equal(1, Count($"SELECT COUNT(*) FROM events_log WHERE name = 'Harvest gm$ x2 weekend' AND kind = 'gm_bonus' AND start_ts = {from} AND end_ts = {until} AND multiplier = 2"));
+        Assert.Equal([1.0, 2, 2, 1, 1], new[] { from - 1, from, until - 1, until, until + 1 }.Select(t => state.GmMultiplier(t)));
+        Assert.Equal([false, true, true, false], new[] { from - 1, from, until - 1, until }.Select(t => state.GmEvent(t) is not null));
+    }
+
+    [Fact]
+    public void TwoBackToBackBonusesPayEachItsOwnMultiplierAndAreTwoEventsWrittenOnce()
+    {
+        long start = T("2026-11-24T13:19:51Z"), change = T("2026-11-27T15:00:00Z"), end = T("2026-11-30T07:00:00Z");
+        state = Start(start);
+        Two(state, start, change, end);
+        Assert.Equal([1.25, 1.25, 2, 2, 1], new[] { start, change - 1, change, end - 1, end }.Select(t => state.GmMultiplier(t)));
+        long quarter = state.GmEvent(change - 1)!.Value, doubled = state.GmEvent(change)!.Value;
+        Assert.NotEqual(quarter, doubled);
+        Two(state, start, change, end);  // known again: the same two rows
+        Assert.Equal(2, Count("SELECT COUNT(*) FROM events_log"));
+        Assert.Equal((quarter, doubled), (state.GmEvent(change - 1)!.Value, state.GmEvent(change)!.Value));
+    }
+
+    static void Two(State s, long start, long change, long end) =>
+        s.HarvestGmBonuses = [new(1.25, start, change), new(2, change, end, "Harvest gm$ x2 weekend")];
 
     [Fact]
     public void TwoOverlappingBonusesKeepTheirOwnBaseAndTheirOwnEvent()
     {
         var at = (double)T("2026-11-24T20:00:00Z");
         state = Start(at);
-        state.HarvestGmBonus = (2, T("2026-11-27T15:00:00Z"));
+        state.HarvestGmBonuses = [new(2, at, T("2026-11-27T15:00:00Z"))];
         using var con = state.Store.Open(ME);
         var mission = RewardEvents.Record(con, "Mission rewards x2", RewardEvents.MissionBonus, T("2026-11-24T00:00:00Z"), T("2026-11-26T00:00:00Z"), 2, "mission_reward");
         var harvest = state.GmEvent(at)!.Value;
@@ -100,7 +129,7 @@ public class RewardEventsTests : StateTestBase
     public void BackfillGivesTheTwoEventsTheirBasesAndEveryOtherPaymentItsAmountAndASecondRunChangesNothing()
     {
         state = Start(T("2026-11-24T20:00:00Z"));
-        state.HarvestGmBonus = (1.25, T("2026-11-27T15:00:00Z"));  // the deploy during the x1.25: its event exists, started later than the operator says
+        state.HarvestGmBonuses = [new(1.25, T("2026-11-24T20:00:00Z"), T("2026-11-27T15:00:00Z"))];  // the deploy during the x1.25: its event exists, started later than the operator says
         state.CreateAccount(First, "hunter0");
         state.CreateAccount(First + 1, "hunter1");
         // the x2 weekend: a doubled harvest, an odd one (rounds as the payment did: to even), one just before it, one at its end (not inside), a mission reward inside it

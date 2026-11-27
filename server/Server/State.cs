@@ -748,32 +748,38 @@ public sealed partial class State
     /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
     /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
     public bool UnlimitedAmmo { get; init; }
-    /// <summary>settings.json `harvest_gm_bonus`: harvests pay `Multiplier` times their gm$ until `Until` (Unix seconds); null: no bonus. Setting one that has not ended
-    /// records it in the events log (<see cref="RewardEvents"/>), once per distinct bonus, so the payments made under it name it.</summary>
-    public (double Multiplier, double Until)? HarvestGmBonus
+    /// <summary>A harvest gm$ bonus: harvests made from `From` (Unix seconds, included) until `Until` (excluded) pay `Multiplier` times their gm$. `Name` null: `Harvest gm$ x` and the multiplier.</summary>
+    public sealed record GmBonus(double Multiplier, double From, double Until, string? Name = null);
+
+    sealed record ScheduledBonus(GmBonus Bonus, long? Event);
+
+    /// <summary>settings.json `harvest_gm_bonus`, periods that do not overlap. Setting them (at the start, and again by <see cref="GmBonusWatch"/> when the file changes) records each one that has not ended
+    /// in the events log (<see cref="RewardEvents"/>) as soon as it is known, a coming one too, once per distinct bonus, so the payments made under it name it. The list is swapped whole.</summary>
+    public IReadOnlyList<GmBonus> HarvestGmBonuses
     {
-        get => harvestGmBonus;
+        get => [.. scheduled.Select(s => s.Bonus)];
         set
         {
-            harvestGmBonus = value;
-            harvestGmEvent = null;
-            if (value is { } b && b.Until > Clock() && b.Multiplier != 1)
-            {
-                using var con = Store.Open();
-                harvestGmEvent = RewardEvents.Record(con, $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
-                                                     (long)Clock(), (long)b.Until, b.Multiplier, RewardEvents.HarvestGm);
-            }
+            using var con = Store.Open();
+            scheduled = [.. value.Select(b => new ScheduledBonus(b, b.Multiplier != 1 && b.Until > Clock()
+                ? RewardEvents.Record(con, b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
+                                      (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
         }
     }
 
-    (double Multiplier, double Until)? harvestGmBonus;
-    long? harvestGmEvent;
+    ScheduledBonus[] scheduled = [];
 
-    /// <summary>The harvest gm$ multiplier at `now`: the bonus's while it runs, else 1.</summary>
-    public double GmMultiplier(double now) => HarvestGmBonus is { } b && now < b.Until ? b.Multiplier : 1;
+    /// <summary>Sets <see cref="HarvestGmBonuses"/> from the settings' `harvest_gm_bonus` (Settings.cs); a period with no `from` starts now.</summary>
+    public void LoadHarvestGmBonuses(JsonNode? cfg) =>
+        HarvestGmBonuses = [.. (cfg as JsonArray ?? []).Select(n => new GmBonus(Py.D(n!["multiplier"]), n["from"] is { } start ? Py.D(start) : Clock(), Py.D(n["until"]), (string?)n["name"]))];
+
+    ScheduledBonus? RunningBonus(double now) => Array.Find(scheduled, s => s.Bonus.From <= now && now < s.Bonus.Until);
+
+    /// <summary>The harvest gm$ multiplier at `now`: that of the bonus whose period holds it, else 1.</summary>
+    public double GmMultiplier(double now) => RunningBonus(now)?.Bonus.Multiplier ?? 1;
 
     /// <summary>The events_log id of the harvest bonus running at `now`; null when none (or one that multiplies by 1).</summary>
-    public long? GmEvent(double now) => GmMultiplier(now) != 1 ? harvestGmEvent : null;
+    public long? GmEvent(double now) => RunningBonus(now)?.Event;
 
     /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
     public const long DefaultInventoryCapacity = 20000;

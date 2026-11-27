@@ -240,7 +240,7 @@ ssh deploy@<vps> "cd ~/web && docker compose restart web"
 - `discord_client_id`, `discord_client_secret`: optional, both or neither, the Discord application's id and client secret ([Discord Linked Roles](#discord-linked-roles)). The secret belongs in this file on the VPS and nowhere else: never in the repository, a workflow, an issue or `.env`.
 - `discord_role_bot_token`, `discord_guild_id`, `discord_role_verified`, `discord_role_veteran`, `discord_veteran_at`: optional, the role bot that gives the Discord roles ([Discord Linked Roles](#discord-linked-roles)); off unless the first four are set. The token belongs in this file on the VPS and nowhere else, like the client secret.
 
-`docker compose up -d` after any change of `settings.json` (the server reads it at start). The server image is public like the website's and contains no game files.
+`docker compose up -d` after any change of `settings.json` (the server reads it at start), except `harvest_gm_bonus`: the server reads that one again within seconds of every change of the file, so a bonus is scheduled by editing the file, with no restart ([server.md](server.md#harvest-gm-bonus)). The server image is public like the website's and contains no game files.
 
 ## Discord Linked Roles
 
