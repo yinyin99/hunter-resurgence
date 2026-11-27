@@ -418,7 +418,8 @@ public sealed partial class State
             theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 22, ?, ?)", Py.Dumps(e22), now);
         theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(e3), now);
         void Pending(JsonNode update) => theirs.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
-        StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, GmMultiplier(now), GmEvent(now), gold => Pending(gold), e7);
+        var gm = GmAt(now);
+        StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, gm.Multiplier, gm.Event, gold => Pending(gold), e7);
         var updates = new JsonArray();
         MissionEvent(theirs, e3, updates);
         ChallengeEvent(theirs, e3);

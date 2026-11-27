@@ -796,6 +796,11 @@ async Task Serve()
         // the leaderboards are computed in the background at the start and again before they expire: no request waits for a cold board
         if (state is { Online: true })
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => state.KeepBoardsWarm(State.BoardRefresh, app.Lifetime.ApplicationStopping)));
+        if (state is not null)
+        {
+            var bonuses = new GmBonusWatch(state, settingsFile, settings.Cfg["harvest_gm_bonus"]);
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => bonuses.Run(app.Lifetime.ApplicationStopping)));
+        }
         await app.RunAsync();
     }
     finally
