@@ -12,24 +12,33 @@ namespace Resurgence.Server;
 public sealed class Places(Func<IPAddress, (double Lat, double Lon)?> find, Func<double>? clock = null, Action<string>? log = null)
 {
     public const int Cap = 4096;
-    /// <summary>Seconds the remembered places live: the whole memory is emptied at the next lookup after this long.</summary>
-    public const double Lifetime = 3600;
+    /// <summary>Seconds between the server's sweeps (the stale-hunt sweep of <c>ServerApp</c> calls <see cref="Expire"/> each time).</summary>
+    public const double SweepSeconds = 30;
+    /// <summary>Seconds after it was last emptied that the whole memory is emptied again, by the next lookup or sweep: an hour less one sweep, so that no place is ever older than an hour.</summary>
+    public const double Lifetime = 3600 - SweepSeconds;
     readonly Func<double> clock = clock ?? Py.Now;
     readonly Action<string> log = log ?? Console.WriteLine;
     readonly ConcurrentDictionary<string, (double Lat, double Lon)?> known = [];
     double cleared = (clock ?? Py.Now)();
     int off;
 
+    /// <summary>How many addresses are remembered now.</summary>
+    public int Remembered => known.Count;
+
+    /// <summary>Empties the whole memory when <see cref="Lifetime"/> has passed since it was last emptied. Called first by every lookup and by the server's sweep, so that an idle server forgets too.</summary>
+    public void Expire()
+    {
+        var now = clock();
+        if (now - cleared < Lifetime) return;
+        known.Clear();
+        cleared = now;
+    }
+
     /// <summary>The place of the address text; null for no address, one that does not parse, a private, loopback, link-local or shared (CGNAT) one, one the database does not have, and every address once a lookup has failed.</summary>
     public (double Lat, double Lon)? Locate(string? address)
     {
+        Expire();
         if (address is null || off != 0) return null;
-        var now = clock();
-        if (now - cleared >= Lifetime)
-        {
-            known.Clear();
-            cleared = now;
-        }
         if (known.TryGetValue(address, out var seen)) return seen;
         (double Lat, double Lon)? place = null;
         try

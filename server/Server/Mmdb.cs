@@ -10,9 +10,14 @@ namespace Resurgence.Server;
 public sealed class Mmdb : IDisposable
 {
     static readonly byte[] Marker = [171, 205, 239, .. "MaxMind.com"u8];
-    const int MaxMetadata = 128 * 1024, MaxValue = 1 << 20, Depth = 16;
+    const int MaxMetadata = 128 * 1024, Depth = 16;
     /// <summary>The most values (a pointer counts as one, and its target as another) one lookup decodes: a real record has a few dozen, so a damaged or crafted file that fans out is refused, not followed.</summary>
     public const int MaxDecoded = 10_000;
+    /// <summary>The most bytes one lookup reads for the values of a record: a real record is a few kilobytes, so a crafted file with huge strings (or a map of long strings) is refused before the bytes are read.</summary>
+    public const int MaxBytes = 64 * 1024;
+
+    /// <summary>What one lookup may still decode.</summary>
+    sealed class Budget { public int Values = MaxDecoded, Bytes = MaxBytes; }
 
     readonly SafeFileHandle file;
     readonly long length;
@@ -37,8 +42,7 @@ public sealed class Mmdb : IDisposable
             var at = end.AsSpan().LastIndexOf(Marker);
             if (at < 0) throw new InvalidDataException("not an MMDB file: no metadata");
             dataBase = length - tail + at + Marker.Length;
-            var budget = MaxDecoded;
-            var meta = Decode(dataBase, 0, ref budget, out _) as Dictionary<string, object?> ?? throw new InvalidDataException("not an MMDB file: no metadata");
+            var meta = Decode(dataBase, 0, new Budget(), out _) as Dictionary<string, object?> ?? throw new InvalidDataException("not an MMDB file: no metadata");
             if (Number(meta, "binary_format_major_version") != 2) throw new InvalidDataException("not an MMDB file of format 2");
             nodeCount = (uint)Number(meta, "node_count");
             recordBits = (int)Number(meta, "record_size");
@@ -65,6 +69,13 @@ public sealed class Mmdb : IDisposable
         meta.TryGetValue(key, out var v) && v is long n ? n : throw new InvalidDataException($"MMDB: no {key}");
 
     public void Dispose() => file.Dispose();
+
+    /// <summary>The bytes of a value, counted against the lookup's byte budget before they are read.</summary>
+    byte[] Read(long offset, int count, Budget budget)
+    {
+        if ((budget.Bytes -= count) < 0) throw new InvalidDataException("MMDB: a record is too long");
+        return Read(offset, count);
+    }
 
     byte[] Read(long offset, int count)
     {
@@ -109,32 +120,31 @@ public sealed class Mmdb : IDisposable
             node = Record(node, bits[i >> 3] >> (7 - (i & 7)) & 1);
         if (node <= nodeCount) return null;  // equal: the tree says "no data here"
         var data = treeBytes + (node - nodeCount);  // a record's value counts from the tree's end plus 16, and the data section starts 16 bytes after the tree
-        var budget = MaxDecoded;
-        if (Decode(data, 0, ref budget, out _) is not Dictionary<string, object?> record || record.GetValueOrDefault("location") is not Dictionary<string, object?> where) return null;
+        if (Decode(data, 0, new Budget(), out _) is not Dictionary<string, object?> record || record.GetValueOrDefault("location") is not Dictionary<string, object?> where) return null;
         return where.GetValueOrDefault("latitude") is double lat && where.GetValueOrDefault("longitude") is double lon ? (lat, lon) : null;
     }
 
     /// <summary>The value at a file offset of the data section: text, a whole number as long, a float or double as double, a map, a list, a bool or bytes; `next` is where the following value starts.</summary>
-    object? Decode(long offset, int depth, ref int budget, out long next)
+    object? Decode(long offset, int depth, Budget budget, out long next)
     {
-        if (--budget < 0) throw new InvalidDataException("MMDB: a record decodes to too many values");
+        if (--budget.Values < 0) throw new InvalidDataException("MMDB: a record decodes to too many values");
         if (depth > Depth) throw new InvalidDataException("MMDB: data nested too deep");
-        var ctrl = Read(offset++, 1)[0];
+        var ctrl = Read(offset++, 1, budget)[0];
         var type = ctrl >> 5;
         if (type == 1)  // a pointer, relative to the data section (16 bytes after the tree)
         {
             var width = (ctrl >> 3 & 3) + 1;
-            var raw = Read(offset, width);
+            var raw = Read(offset, width, budget);
             offset += width;
             next = offset;
-            return Decode(dataBase + PointerTarget((byte)ctrl, raw), depth + 1, ref budget, out _);
+            return Decode(dataBase + PointerTarget((byte)ctrl, raw), depth + 1, budget, out _);
         }
-        if (type == 0) type = 7 + Read(offset++, 1)[0];
+        if (type == 0) type = 7 + Read(offset++, 1, budget)[0];
         long size = ctrl & 31;
         if (size >= 29)
         {
             var extra = (int)size - 28;
-            size = (long)BigEndian(Read(offset, extra)) + (size == 29 ? 29 : size == 30 ? 285 : 65821);
+            size = (long)BigEndian(Read(offset, extra, budget)) + (size == 29 ? 29 : size == 30 ? 285 : 65821);
             offset += extra;
         }
         if (type is 7)
@@ -142,8 +152,8 @@ public sealed class Mmdb : IDisposable
             var map = new Dictionary<string, object?>();
             for (var i = 0; i < size; i++)
             {
-                var key = Decode(offset, depth + 1, ref budget, out offset) as string ?? throw new InvalidDataException("MMDB: a map key is not text");
-                map[key] = Decode(offset, depth + 1, ref budget, out offset);
+                var key = Decode(offset, depth + 1, budget, out offset) as string ?? throw new InvalidDataException("MMDB: a map key is not text");
+                map[key] = Decode(offset, depth + 1, budget, out offset);
             }
             next = offset;
             return map;
@@ -151,13 +161,12 @@ public sealed class Mmdb : IDisposable
         if (type is 11)
         {
             var list = new List<object?>();
-            for (var i = 0; i < size; i++) list.Add(Decode(offset, depth + 1, ref budget, out offset));
+            for (var i = 0; i < size; i++) list.Add(Decode(offset, depth + 1, budget, out offset));
             next = offset;
             return list;
         }
         if (type is 14) { next = offset; return size != 0; }  // a bool's value is its size
-        if (size > MaxValue) throw new InvalidDataException("MMDB: a value is too long");
-        var body = Read(offset, (int)size);
+        var body = Read(offset, (int)Math.Min(size, int.MaxValue), budget);
         next = offset + size;
         return type switch
         {

@@ -4,10 +4,10 @@ using System.Text;
 namespace Resurgence.Server.Tests;
 
 /// <summary>Builds a tiny MMDB file (format 2, an IPv6 tree with the IPv4 addresses under the 96 zero bits, as the IP databases do) from invented networks: each has a place and a city name.
-/// Repeated map keys are written as pointers, as the real writers do; <c>padding</c> bytes of text in the first record push the keys' offsets past the first pointer size.</summary>
+/// Repeated map keys are written as pointers, as the real writers do; <c>padding</c> bytes of text before the first record push the keys' offsets past the first pointer size.</summary>
 public static class MmdbFile
 {
-    public sealed record Net(string Cidr, double Lat, double Lon, string City = "Test City", bool Floats = false, int Fields = 0);
+    public sealed record Net(string Cidr, double Lat, double Lon, string City = "Test City", bool Floats = false, int Fields = 0, int Huge = 0);
 
     // set by Write for the maps and pointers it builds (tests build one file at a time per thread)
     [ThreadStatic] static bool Wide, Ipv4Only;
@@ -24,12 +24,11 @@ public static class MmdbFile
         var data = new MemoryStream();
         var keys = new Dictionary<string, int>();
         var root = new Node();
-        var first = true;
+        if (padding > 0) Text(new string('x', padding))(data);  // a value no address leads to: later records sit that far into the data
         foreach (var net in nets)
         {
             var offset = (int)data.Position;
-            Record(data, keys, net, first ? padding : 0);
-            first = false;
+            Record(data, keys, net);
             var (address, length) = Parse(net.Cidr);
             Node at = root;
             for (var i = 0; i < length; i++)
@@ -82,10 +81,10 @@ public static class MmdbFile
         return ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork ? ([.. new byte[12], .. ip.GetAddressBytes()], 96 + prefix) : (ip.GetAddressBytes(), prefix);
     }
 
-    static void Record(MemoryStream s, Dictionary<string, int> keys, Net net, int padding)
+    static void Record(MemoryStream s, Dictionary<string, int> keys, Net net)
     {
         var fields = new List<(string, Action<MemoryStream>)>();
-        if (padding > 0) fields.Add(("note", Text(new string('x', padding))));
+        if (net.Huge > 0) fields.Add(("note", Text(new string('x', net.Huge))));
         for (var i = 0; i < net.Fields; i++) fields.Add(("f", Text("x")));  // the same key again: a pointer each
         fields.Add(("city", m => Map(m, keys, ("names", n => Map(n, keys, ("en", Text(net.City)))))));
         fields.Add(("location", m => Map(m, keys, net.Floats

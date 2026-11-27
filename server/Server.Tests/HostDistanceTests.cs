@@ -99,6 +99,22 @@ public class HostDistanceTests : IDisposable
     }
 
     [Fact]
+    public void TestARecordWithHugeStringsIsRefusedBeforeItsBytesAreReadAndQuickly()
+    {
+        // 3 values only, far under the value budget, but 10 million bytes of text
+        using var db = new Mmdb(MmdbFile.Write(tmp, [new("203.0.113.0/24", Paris.Lat, Paris.Lon, Huge: 10_000_000), new("198.51.100.0/24", London.Lat, London.Lon, Huge: 66_000), new("192.0.2.0/24", 0, 0, Huge: 60_000)]));
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        Assert.Contains("too long", Assert.Throws<InvalidDataException>(() => db.Find(IPAddress.Parse("203.0.113.1"))).Message);
+        Assert.Contains("too long", Assert.Throws<InvalidDataException>(() => db.Find(IPAddress.Parse("198.51.100.1"))).Message);  // just over 64 KiB of text
+        Assert.Equal((0, 0), db.Find(IPAddress.Parse("192.0.2.1")));  // 60 KB of text is within the budget
+        Assert.True(clock.ElapsedMilliseconds < 1000);
+        var lines = new List<string>();
+        var places = new Places(db.Find, log: lines.Add);
+        Assert.Null(places.Locate("203.0.113.1"));
+        Assert.Single(lines);  // the feature is off
+    }
+
+    [Fact]
     public void TestAPlaceStoredAsFloatsIsRead()
     {
         using var db = new Mmdb(MmdbFile.Write(tmp, [new("203.0.113.0/24", 48.5, 2.25, Floats: true)]));
@@ -184,6 +200,48 @@ public class HostDistanceTests : IDisposable
     }
 
     [Fact]
+    public void TestTheMemoryIsForgottenByTheSweepAloneOnAnIdleServer()
+    {
+        double now = 5000;
+        var places = new Places(_ => Paris, () => now);
+        places.Locate("203.0.113.5");
+        places.Locate("203.0.113.6");
+        Assert.Equal(2, places.Remembered);
+        now += Places.Lifetime - 1;
+        places.Expire();
+        Assert.Equal(2, places.Remembered);
+        now += 1;
+        places.Expire();  // no lookup in between: only the sweep runs
+        Assert.Equal(0, places.Remembered);
+    }
+
+    [Fact]
+    public void TestTheMemoryIsEmptiedAtOnceWhenTheFeatureTurnsOff()
+    {
+        var broken = false;
+        var lines = new List<string>();
+        var places = new Places(_ => broken ? throw new InvalidDataException("damaged") : Paris, log: lines.Add);
+        places.Locate("203.0.113.5");
+        places.Locate("203.0.113.6");
+        Assert.Equal(2, places.Remembered);
+        broken = true;
+        places.Locate("203.0.113.7");
+        Assert.Equal(0, places.Remembered);
+        Assert.Null(places.Locate("203.0.113.5"));  // what was remembered is not served either
+        Assert.Equal(0, places.Remembered);
+    }
+
+    [Fact]
+    public void TestTheOffLineIsPrintedOnceHoweverManyLookupsFail()
+    {
+        var lines = new List<string>();
+        var places = new Places(_ => throw new InvalidDataException("damaged"), log: lines.Add);
+        Parallel.For(0, 200, i => places.Locate($"203.0.{i >> 8}.{i & 255}"));
+        for (var i = 0; i < 50; i++) places.Locate($"198.51.100.{i}");
+        Assert.Equal(["distance dots: off (damaged)"], lines);
+    }
+
+    [Fact]
     public void TestTheMemoryIsForgottenAnHourAfterItWasLastEmptied()
     {
         double now = 5000;
@@ -202,7 +260,7 @@ public class HostDistanceTests : IDisposable
         now += Places.Lifetime - 1;
         places.Locate("203.0.113.5");
         Assert.Equal(4, calls);  // the hour counts from the last time it was emptied
-        Assert.Equal(3600, Places.Lifetime);
+        Assert.True(Places.Lifetime + Places.SweepSeconds <= 3600);  // the sweep runs every SweepSeconds: no place is older than an hour
     }
 
     [Fact]
