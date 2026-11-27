@@ -91,8 +91,9 @@ public class MpHarvestTests : StateTestBase
         var mine = Beat(HOST, Skinned(460));
         Assert.DoesNotContain(mine, u => Py.Eq(u!["update"], 15));
         var screen = Assert.Single(mine, u => Py.Eq(u!["update"], 6))!;  // the harvester's confirm-kill screen shows the shooter's score, pays nothing and has nothing to taxidermize
-        Eq("""[460, 1, 168.8186, "Score: 168.8186 (shooter's kill)", 0.0, 0]""", T(screen["individual"], screen["trophy_shot"], screen["score"], screen["score_text"], screen["css"], screen["kill_id"]));
-        Eq("\"This harvest counts for the player who shot it.\"", Assert.Single(mine, u => Py.Eq(u!["update"], 3))!["text"]);
+        Eq("""[460, 1, 168.8186, "Score: 168.8186", 0.0, 0]""", T(screen["individual"], screen["trophy_shot"], screen["score"], screen["score_text"], screen["css"], screen["kill_id"]));
+        Assert.DoesNotContain(mine, u => Py.Eq(u!["update"], 3));  // no notice
+        Assert.False(state.HarvestScreenOwn(HOST));  // the page keeps Taxidermize disabled
         Assert.Equal(404, state.Taxidermize(HOST, 0, State.TAXIDERMY, "em").Status);
         Assert.Empty(Beat(HOST));  // nothing more is queued for him
         Assert.Equal((0L, 0L, 33.0), (Count(HOST, "kills"), Count(HOST, "harvests"), Gm(HOST)));
@@ -119,6 +120,22 @@ public class MpHarvestTests : StateTestBase
         Assert.True(Paid(updates, 99));
         Assert.Equal((1L, 99.0, 0L, 33.0), (Count(HOST, "kills"), Gm(HOST), Count(GUEST, "kills"), Gm(GUEST)));
         Assert.Equal(50000.0, Py.D(Assert.Single(KillsOf(HOST)[0]!["hits"]!.AsArray())!["distance"]));
+        Assert.True(state.HarvestScreenOwn(HOST));
+    }
+
+    [Fact]
+    public void TestTheTaxidermyAnswerFollowsTheLatestHarvest()
+    {
+        Game(GUEST);
+        Assert.True(state.HarvestScreenOwn(HOST));  // no harvest yet
+        Beat(GUEST, Shot(460));
+        Beat(HOST, Skinned(460));  // the guest's
+        Assert.False(state.HarvestScreenOwn(HOST));
+        Assert.True(state.HarvestScreenOwn(GUEST));  // the shooter's own screen is not touched
+        Beat(HOST);  // a heartbeat with no harvest keeps the answer
+        Assert.False(state.HarvestScreenOwn(HOST));
+        Beat(HOST, Skinned(461, 2));  // his own next harvest (nobody hit it)
+        Assert.True(state.HarvestScreenOwn(HOST));
     }
 
     [Fact]

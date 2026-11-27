@@ -2300,7 +2300,10 @@ public sealed partial class State
         using var con = Con(account);
         var harvesting = events.OfType<JsonObject>().Any(e => Is(e["event"], 3));
         if (harvesting)
+        {
             Monitor.Enter(harvestGate);  // a harvest's owner is read from the players' stored events: two harvests of one animal at once must not both miss the other
+            NewHarvestScreen(account);
+        }
         JsonArray updates;
         List<long> shooters = [];
         try

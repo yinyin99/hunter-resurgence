@@ -430,9 +430,13 @@ public static class Replay
             [("toggleSet:function(){c(\".set-missions\",this.$el).toggle()}", "toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}"),
              ("toggleDetails:function(){c(\".mission-details\",this.$el).toggle()}", "toggleDetails:function(){c(\".mission-details\",this.$el).toggle(),c(\".mission-row\",this.$el).first().toggleClass(\"hr-open\")}"),
              ("l.find(\".set-missions\").toggle()", "l.find(\".set-missions\").toggle(),l.find(\".set-row\").toggleClass(\"hr-open\")")];
-        /// <summary>The confirm-kill page enables its Taxidermize button for an ethical score (`score >= 0`, the game's `ethical`). A harvest that counts for the member who shot the animal is not the harvester's to taxidermize (#1042):
-        /// its score text (the page's `score`) ends with <see cref="State.ShootersKill"/>, and the button then stays disabled. Matched by pattern (the script's minified names differ between versions); not found exactly once: skipped, one warning.</summary>
+        /// <summary>The confirm-kill page enables its Taxidermize button for an ethical score (`score >= 0`, the game's `ethical`). A harvest that counts for the member who shot the animal is not the harvester's to taxidermize (#1042),
+        /// and nothing of what the game hands the page tells it apart, so the page asks the server (`GET /v1/harvest/screen` with the player's token, <see cref="State.HarvestScreenOwn"/>): the button stays disabled until the answer,
+        /// and is enabled unless the answer is `taxidermy: false` (a failed call enables it, as before; the purchase itself is refused for a harvest that is not the player's). Matched by pattern (the script's minified names differ
+        /// between versions); not found exactly once: skipped, one warning.</summary>
         static readonly Regex Taxidermy = new(@"(\w)\.ethical\?(\w)\(!0,\1\):\2\(!1\)", RegexOptions.ECMAScript);
+        const string AskTaxidermy = "$1.ethical?($2(!1),Promise.resolve(HUNTER.getAccessToken()).then(function(t){return fetch(\"/v1/harvest/screen\",{headers:{Authorization:\"Bearer \"+t},cache:\"no-store\"})})"
+            + ".then(function(r){return r.json()}).then(function(x){x&&x.taxidermy===false||$2(!0,$1)},function(){$2(!0,$1)})):$2(!1)";
         static int warnedRows, warnedTrackers, warned, warnedApp, warnedFrame, warnedPage, warnedTaxidermy;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
@@ -522,7 +526,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             var rows = ReplaceOnce(t, Rows, ref warnedRows, "the in-game missions panel's pack and mission rows") ?? t;
             var script = MissionWrite.Replace(ReplaceOnce(rows, Reads, ref warned, "the in-game page's round timer read") ?? rows, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
             if (Taxidermy.Matches(script).Count == 1)
-                script = Taxidermy.Replace(script, $"$1.ethical&&String($1.score).indexOf(\"{State.ShootersKill.Trim()}\")<0?$2(!0,$1):$2(!1)");
+                script = Taxidermy.Replace(script, AskTaxidermy);
             else if (Interlocked.Exchange(ref warnedTaxidermy, 1) == 0)
                 Console.Error.WriteLine("warning: the confirm-kill page's Taxidermize button was not found; that rewrite is skipped");
             return script == src ? reply : NoCache(reply, Encoding.Latin1.GetBytes(script));

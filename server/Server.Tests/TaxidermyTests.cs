@@ -76,6 +76,14 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
     static string Text(Reply r) => Encoding.UTF8.GetString(r.Body);
 
     [Fact]
+    public async Task TestTheConfirmKillPageAsksWhetherItsHarvestIsThePlayersToTaxidermize()
+    {
+        var mine = await server.SendAsync("GET", Current, "/v1/harvest/screen", [("Authorization", "Bearer " + tokenMe)]);
+        Assert.Equal((200, "{\"taxidermy\": true}"), (mine.Status, Text(mine)));  // a harvest of his own (no harvest credited to another member); MpHarvestTests has the false answer
+        Assert.DoesNotContain("taxidermy", Text(await server.SendAsync("GET", Current, "/v1/harvest/screen")));  // no token: the expired-token reply (the page then enables the button)
+    }
+
+    [Fact]
     public async Task TheCurrentBuildsPathChargesEmsAndWritesTheWalletRow()
     {
         var reply = await Game(Current, 20, tokenMe, Gold);

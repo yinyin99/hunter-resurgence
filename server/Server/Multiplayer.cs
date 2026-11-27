@@ -433,13 +433,20 @@ public sealed partial class State
         }
     }
 
-    /// <summary>What a harvester's score text ends with when the harvest counts for the member who shot the animal (<see cref="TryCredit"/>); the confirm-kill page's Taxidermize button stays disabled for it (<c>TimerFix</c>).</summary>
-    public const string ShootersKill = " (shooter's kill)";
+    /// <summary>The accounts whose latest harvest counts for the member who shot the animal (<see cref="TryCredit"/>): their confirm-kill screen shows a harvest that is not theirs to taxidermize. In memory only: a harvest's screen lasts seconds.</summary>
+    readonly System.Collections.Concurrent.ConcurrentDictionary<long, byte> creditedAway = new();
+
+    /// <summary>`GET /v1/harvest/screen`: whether the harvest on the account's confirm-kill screen (its latest) is its own to taxidermize: false when it counts for the member who shot the animal (#1042). The in-game page asks
+    /// when the screen gets its score and keeps the Taxidermize button disabled until a true answer (<c>TimerFix</c>).</summary>
+    public bool HarvestScreenOwn(long account) => !creditedAway.ContainsKey(account);
+
+    /// <summary>A heartbeat of the account brings a harvest: its screen is the new one's, its own until <see cref="TryCredit"/> credits it to the shooter.</summary>
+    void NewHarvestScreen(long account) => creditedAway.TryRemove(account, out _);
 
     /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
     /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit; the harvester's mission objectives that ask for a harvest follow it, <see cref="HarvesterEvent"/>, their
     /// updates 15 added to `updates`, the heartbeat's reply, once the write is released). Once released, the reply also gets the harvester's update 6 for his confirm-kill screen: the shooter's score (score, its text and type,
-    /// trophy shot) on his own `individual`, `css` 0 (his reward) and `kill_id` 0 (no harvest of his to taxidermize), the text ending with <see cref="ShootersKill"/>, and an update 3 that says whose it is.
+    /// trophy shot) on his own `individual`, `css` 0 (his reward) and `kill_id` 0 (no harvest of his to taxidermize), and his screen is noted as not his (<see cref="HarvestScreenOwn"/>).
     /// When writing it for the shooter fails, that write is undone (a savepoint) with the harvester's objectives, the failure is logged
     /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone; nothing of the undone write reaches the reply.</summary>
     bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters)
@@ -462,13 +469,8 @@ public sealed partial class State
                 Into(updates)(u.DeepClone().AsObject());
             score["kill_id"] = 0;
             score["css"] = 0.0;
-            score["score_text"] = Py.Str(score["score_text"]) + ShootersKill;
             updates.Add(score);
-            updates.Add(new JsonObject
-            {
-                ["text"] = "This harvest counts for the player who shot it.", ["colour"] = COLOUR, ["destination"] = MediaUrl("doc_64.jpg"),
-                ["update"] = 3, ["timer"] = 1000, ["type"] = 100,
-            });
+            creditedAway[con.Account!.Value] = 0;
             return true;
         }
         catch (Exception ex)

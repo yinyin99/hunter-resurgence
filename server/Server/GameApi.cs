@@ -488,6 +488,14 @@ public static class GameApi
                  .PathParams(("id", "harvest id (= kill id)"))
                  .Produces(200, contentType: "text/plain");
             api.MapPost("/v1/harvest/{id}/taxidermize", harvest).ExcludeFromDescription();  // the current build's path of the same purchase
+            // the in-game confirm-kill page asks whether the harvest on its screen is the player's own to taxidermize (#1042; the served client.js, Replay.TimerFix)
+            api.MapGet("/v1/harvest/screen", Handle(game, r =>
+                r.Method != "GET" ? null
+                : s.Authenticate(r.Tokens()) is { } a ? new(200, [("Content-Type", "application/json"), .. Cors(r.Header)], Py.DumpBytes(new JsonObject { ["taxidermy"] = s.HarvestScreenOwn(a) }), "state")
+                : Denied(game, r)))
+               .WithName("HarvestScreen").WithSummary("Whether the harvest on the confirm-kill screen is the player's to taxidermize")
+               .WithDescription("`{taxidermy}`: false when the player's latest harvest counts for the session member who shot the animal, else true. The served in-game page asks it to enable its Taxidermize button. Needs the player's token.")
+               .Produces(200, contentType: "application/json");
             // CORS preflights and any other method: the same handler (OPTIONS answers for a stored harvest)
             foreach (var pattern in new[] { "/game/user/harvest/{id}", "/game/user/harvest/{id}/taxidermize" })
                 apiv2.Map(pattern, harvest).WithOrder(1).ExcludeFromDescription();
