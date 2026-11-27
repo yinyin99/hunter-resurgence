@@ -3,16 +3,11 @@
 <SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/ranks")" />
 @if (sub == "")
 {
-    <div class="overview">
-        @if (profile?.Ribbon is { } ribbon) { <AssetSlot Name="@("ribbon-" + ribbon)" Width="200" Height="320" Class="top-badge" /> }
-        <div class="bars">
-            <h4>@L["Prof.Progress"]</h4>
-            <h5>@L["Prof.HunterScore"]</h5>
-            @if (bars.Count > 0) { @Overview(bars[0], "rank-score", 0) }
-            <h5>@L["Prof.Categories"]</h5>
-            @foreach (var (b, i) in bars.Skip(1).Select((b, i) => (b, i + 1))) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", i) }
-        </div>
-    </div>
+    <h4>@L["Prof.Progress"]</h4>
+    <h5>@L["Prof.HunterScore"]</h5>
+    @if (bars.Count > 0) { @Overview(bars[0], "rank-score", 0) }
+    <h5>@L["Prof.Categories"]</h5>
+    @foreach (var (b, i) in bars.Skip(1).Select((b, i) => (b, i + 1))) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", i) }
 }
 else
 {

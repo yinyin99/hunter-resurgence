@@ -124,7 +124,7 @@ public static class AssetSlots
         new("mission-giver-", "missions", "150x150", "DailyMissions", Values("mission-giver-", "vera_herzschlag", "buck_williams", "angelica_rodriguez", "harley_lovegrove", "clinton_douglas", "igsivalitaq", "laura_francese", "taxidermist_max")),  // the givers of the server's templates; one that is not here is listed when drawn
         new("mission-species-", "missions", "250x360", "DailyMissions", Values("mission-species-", [.. MissionSpecies.SelectMany(n => new[] { n + "-m", n + "-f" })])),
         new("rank-", "profile", "114x114", "RanksTab", Values("rank-", "score", "animals", "weapons", "collectables")),   // rank-<id> of the live site: drawn
-        new("ribbon-", "profile", "250x400", "RanksTab", Values("ribbon-", "turkey", "fox", "bear", "elk", "moose")),   // the collector ribbons of the profile, by the share of achievement points
+        new("ribbon-", "profile", "250x400", "HunterProfile", Values("ribbon-", "turkey", "fox", "bear", "elk", "moose")),   // the collector ribbons of the profile, by the share of achievement points
         new("ach-", "profile", "100x100", "AchievementsTab", Values("ach-", "animals", "weapons", "exploration", "day-mission")),
         // from a player's profile (the server's tables, not the website's): listed when a page draws them
         new("ach-icon-", "profile", "150x150", "AchievementsTab"),

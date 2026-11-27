@@ -1,10 +1,6 @@
 h4 { margin: 0 0 8px; font-size: 20px; line-height: 28px; font-weight: 400; color: #fff; }
 h5 { margin: 0 0 10px; font-size: 14px; line-height: 20px; font-weight: 400; color: #fff; }
-/* the overview: the highest rank's badge on the left, the bars on the right; narrow widths stack them */
-.overview { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px; }
-.overview ::deep .top-badge { flex: none; }
-.bars { flex: 1 1 360px; max-width: 700px; min-width: 0; }
-.ov { display: flex; align-items: center; gap: 24px; margin: 0 0 13px; }
+.ov { display: flex; align-items: center; gap: 24px; max-width: 700px; margin: 0 0 13px; }
 .ov + h5 { margin-top: 38px; }
 .ov ::deep .asset-slot { flex: none; margin-left: 12px; }
 .bar { position: relative; flex: 1; height: 26px; }

@@ -18,6 +18,8 @@
         @* the header picture: on the live site the one the player chose (none without one); on the mock the most recent kill's *@
         @if (banner is not null) { <AssetSlot Name="@banner" Width="940" Height="200" Class="banner" /> }
         <div class="polaroid"><AssetSlot Name="polaroid-back" Width="239" Height="288" /><AssetSlot Name="@avatar" Width="171" Height="171" Class="avatar" /><AssetSlot Name="polaroid-front" Width="239" Height="288" Class="front" /></div>
+        @* the collector ribbon hangs under the polaroid on every tab, as in the original; none without one *@
+        @if (profile.Ribbon is { } ribbon) { <AssetSlot Name="@("ribbon-" + ribbon)" Width="250" Height="400" Class="ribbon" /> }
         <h1>@profile.Handle</h1>
         @if (signedIn && !profile.Own && !profile.Friend)
         {
