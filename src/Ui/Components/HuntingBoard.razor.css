@@ -7,12 +7,12 @@
 .events li { padding: 2px 10px; border-radius: var(--r-2); background: var(--bg-block-2); color: var(--accent-text); }
 section + section { margin-block-start: 32px; }
 .part { margin: 0 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
-/* the columns share the box's width at any size (the bar shrinks first, names truncate, headers wrap), so nothing overflows sideways: no scrollbar */
-.scroll { overflow-x: hidden; }
+/* the columns share the box's width at any size (the bar shrinks first, names truncate, headers wrap to at most two lines), so nothing overflows sideways: no scrollbar */
 table { table-layout: fixed; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 th, td { padding: 8px; text-align: end; font-size: 14px; line-height: 20px; font-weight: 400; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-thead th { white-space: normal; overflow-wrap: anywhere; hyphens: auto; vertical-align: bottom; padding-block: 6px; font-size: 13px; color: var(--text-2); border-block-end: 1px solid var(--line); }
+thead th { white-space: normal; vertical-align: bottom; padding-block: 6px; font-size: 13px; color: var(--text-2); border-block-end: 1px solid var(--line); }
 thead th:first-child { width: 18%; }
+thead th span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
 tbody th { color: #fff; }
 tbody th, thead th:first-child, th.text, td.text { text-align: start; }
 tbody tr { transition: background-color 150ms ease-out; }
