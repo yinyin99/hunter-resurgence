@@ -53,4 +53,82 @@ public sealed class MapPlaceholderTests : UiContext
         }
         finally { (CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture) = (culture, ui); }
     }
+
+    static string Plane(IRenderedComponent<MapPlaceholder> cut) => cut.Find(".plane").GetAttribute("style")!.Split(';')[0];
+
+    // the buttons and the wheel/keys share one view: + and − step by half, stop at ×1 and ×2, and a zoom out pulls the pan back inside the picture
+    [Fact]
+    public async Task TheZoomButtonsStepAndStopAtTheLimitsAndKeepThePanInsideThePicture()
+    {
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers));
+        Assert.Equal("transform:scale(1) translate(0%, 0%)", Plane(cut));
+        Assert.True(cut.Find(".zoom button:last-child").HasAttribute("disabled"));
+
+        cut.Find(".zoom button:first-child").Click();
+        cut.Find(".zoom button:first-child").Click();
+        Assert.Equal("transform:scale(2) translate(0%, 0%)", Plane(cut));
+        Assert.True(cut.Find(".zoom button:first-child").HasAttribute("disabled"));
+
+        await cut.InvokeAsync(() => cut.Instance.View(2, 25, -25));
+        Assert.Equal("transform:scale(2) translate(25%, -25%)", Plane(cut));
+        cut.Find(".zoom button:last-child").Click();
+        Assert.Equal("transform:scale(1.5) translate(16.67%, -16.67%)", Plane(cut));
+        cut.Find(".zoom button:last-child").Click();
+        Assert.Equal("transform:scale(1) translate(0%, 0%)", Plane(cut));
+    }
+
+    // where a drag, the wheel or a key ended: the pan stops where the picture's edge meets the map's (|pan| <= 50 (scale - 1) / scale), the scale between ×1 and ×2
+    [Theory]
+    [InlineData(1, 30, 30, "scale(1) translate(0%, 0%)")]
+    [InlineData(1.5, -99, 5, "scale(1.5) translate(-16.67%, 5%)")]
+    [InlineData(2, 99, -99, "scale(2) translate(25%, -25%)")]
+    [InlineData(7, 0, 0, "scale(2) translate(0%, 0%)")]
+    [InlineData(.2, 3, 3, "scale(1) translate(0%, 0%)")]
+    public async Task TheViewOfAGestureIsClampedToThePicture(double scale, double x, double y, string expected)
+    {
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers));
+        await cut.InvokeAsync(() => cut.Instance.View(scale, x, y));
+        Assert.Equal("transform:" + expected, Plane(cut));
+        Assert.Equal(expected.Contains("scale(2)") ? "2" : expected.Contains("1.5") ? "1.5" : "1", cut.Find(".map").GetAttribute("data-s"));
+    }
+
+    // a marker is brought to the middle (zooming in once from ×1) while the picture still reaches the edges; a later drag is not undone by a render,
+    // and CentreOn (the strip buttons) centres again after a drag
+    [Fact]
+    public async Task CentringAMarkerZoomsInOnceAndEveryCentreOnCentresAgainAfterADragAndAClickOnlySelects()
+    {
+        MapMarker[] markers = [new(1, MarkerKind.Lodge, "Near", 45, 55), new(2, MarkerKind.Lodge, "Edge", 5, 5)];
+        MapMarker? picked = null;
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, markers).Add(m => m.OnPick, m => picked = m));
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(1));
+        Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
+
+        await cut.InvokeAsync(() => cut.Instance.View(1.5, -10, 10));
+        cut.Render(p => p.Add(m => m.Markers, markers).Add(m => m.OnPick, m => picked = m).Add(m => m.Hover, 2));
+        Assert.Equal("transform:scale(1.5) translate(-10%, 10%)", Plane(cut));
+
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(1));
+        Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
+
+        // a click on a marker only selects it: the view stays where the player put it
+        await cut.InvokeAsync(() => cut.Instance.View(1.5, -10, 10));
+        cut.Find("button.k-lodge").Click();
+        Assert.Equal("transform:scale(1.5) translate(-10%, 10%)", Plane(cut));
+        Assert.Equal(1, picked?.Id);
+
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(2));
+        Assert.Equal("transform:scale(1.5) translate(16.67%, 16.67%)", Plane(cut));
+    }
+
+    // a map without the zoom buttons (join map, score sheet, server list) is no pan/zoom surface; the layer over the map moves with the picture
+    [Fact]
+    public void OnlyAMapWithZoomButtonsIsFocusableAndTheLayerOverTheMapSitsOnThePlane()
+    {
+        Assert.Null(Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers).Add(m => m.Zoom, false)).Find(".map").GetAttribute("tabindex"));
+
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers).AddChildContent("<span class=\"label\">here</span>"));
+        Assert.Equal("0", cut.Find(".map").GetAttribute("tabindex"));
+        Assert.False(string.IsNullOrWhiteSpace(cut.Find(".map").GetAttribute("aria-label")));
+        Assert.Single(cut.FindAll(".plane .label"));
+    }
 }

@@ -14,42 +14,38 @@
 
     <section>
         <h4 class="part">@L["Board.HuntingReserves"]</h4>
-        <div class="scroll">
-            <table>
-                <thead><tr><th scope="col">@L["Stat.Reserve"]</th><th scope="col" class="rate">@L["Board.HuntingGmHour"]</th><th scope="col">@L["Board.HuntingGmHarvest"]</th><th scope="col">@L["Board.HuntingHarvestsHour"]</th><th scope="col">@L["Board.HuntingHours"]</th><th scope="col">@L["Board.HuntingPlayers"]</th></tr></thead>
-                <tbody>
-                    @{ var topReserve = Stats.Reserves.Count == 0 ? 0 : Stats.Reserves.Max(r => r.ComparableGmPerHour); }
-                    @foreach (var r in Stats.Reserves.OrderByDescending(r => r.ComparableGmPerHour))
-                    {
-                        <tr>
-                            <th scope="row" title="@r.Reserve">@r.Reserve</th>
-                            <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(r.ComparableGmPerHour, topReserve)"></i></span><b>@Fmt.Num(r.ComparableGmPerHour, "0")</b></div></td>
-                            <td>@Fmt.Num(r.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(r.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(r.Hours, "0.0")</td><td>@r.Players</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead><tr><th scope="col"><span>@L["Stat.Reserve"]</span></th><th scope="col" class="rate"><span>@L["Board.HuntingGmHour"]</span></th><th scope="col"><span>@L["Board.HuntingGmHarvest"]</span></th><th scope="col"><span>@L["Board.HuntingHarvestsHour"]</span></th><th scope="col"><span>@L["Board.HuntingHours"]</span></th><th scope="col"><span>@L["Board.HuntingPlayers"]</span></th></tr></thead>
+            <tbody>
+                @{ var topReserve = Stats.Reserves.Count == 0 ? 0 : Stats.Reserves.Max(r => r.ComparableGmPerHour); }
+                @foreach (var r in Stats.Reserves.OrderByDescending(r => r.ComparableGmPerHour))
+                {
+                    <tr>
+                        <th scope="row" title="@r.Reserve">@r.Reserve</th>
+                        <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(r.ComparableGmPerHour, topReserve)"></i></span><b>@Fmt.Num(r.ComparableGmPerHour, "0")</b></div></td>
+                        <td>@Fmt.Num(r.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(r.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(r.Hours, "0.0")</td><td>@r.Players</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </section>
 
     <section>
         <h4 class="part">@L["Board.HuntingSpecies"]</h4>
-        <div class="scroll">
-            <table>
-                <thead><tr><th scope="col">@L["Stat.Species"]</th><th scope="col" class="rate">@L["Board.HuntingGmHour"]</th><th scope="col">@L["Board.HuntingGmHarvest"]</th><th scope="col">@L["Board.HuntingHarvestsHour"]</th><th scope="col">@L["Board.HuntingHours"]</th><th scope="col">@L["Board.HuntingPlayers"]</th><th scope="col" class="text">@L["Board.HuntingBest"]</th></tr></thead>
-                <tbody>
-                    @{ var topSpecies = Stats.Species.Count == 0 ? 0 : Stats.Species.Max(s => s.ComparableGmPerHour); }
-                    @foreach (var s in Stats.Species.OrderByDescending(s => s.ComparableGmPerHour))
-                    {
-                        <tr>
-                            <th scope="row" title="@L.Term(s.Species)">@L.Term(s.Species)</th>
-                            <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(s.ComparableGmPerHour, topSpecies)"></i></span><b>@Fmt.Num(s.ComparableGmPerHour, "0")</b></div></td>
-                            <td>@Fmt.Num(s.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(s.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(s.Hours, "0.0")</td><td>@s.Players</td><td class="text">@s.BestReserve</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        <table>
+            <thead><tr><th scope="col"><span>@L["Stat.Species"]</span></th><th scope="col" class="rate"><span>@L["Board.HuntingGmHour"]</span></th><th scope="col"><span>@L["Board.HuntingGmHarvest"]</span></th><th scope="col"><span>@L["Board.HuntingHarvestsHour"]</span></th><th scope="col"><span>@L["Board.HuntingHours"]</span></th><th scope="col"><span>@L["Board.HuntingPlayers"]</span></th><th scope="col" class="text"><span>@L["Board.HuntingBest"]</span></th></tr></thead>
+            <tbody>
+                @{ var topSpecies = Stats.Species.Count == 0 ? 0 : Stats.Species.Max(s => s.ComparableGmPerHour); }
+                @foreach (var s in Stats.Species.OrderByDescending(s => s.ComparableGmPerHour))
+                {
+                    <tr>
+                        <th scope="row" title="@L.Term(s.Species)">@L.Term(s.Species)</th>
+                        <td class="rate"><div><span class="bar3d" aria-hidden="true"><i style="width:@Share(s.ComparableGmPerHour, topSpecies)"></i></span><b>@Fmt.Num(s.ComparableGmPerHour, "0")</b></div></td>
+                        <td>@Fmt.Num(s.ComparableGmPerHarvest, "0")</td><td>@Fmt.Num(s.HarvestsPerHour, "0.0")</td><td>@Fmt.Num(s.Hours, "0.0")</td><td>@s.Players</td><td class="text" title="@s.BestReserve">@s.BestReserve</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </section>
 </div>
 

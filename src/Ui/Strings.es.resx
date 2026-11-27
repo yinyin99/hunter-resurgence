@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>No tienes ninguna tienda de campaña en esta reserva. Las tiendas de campaña que colocas en una reserva funcionan como puntos de aparición portátiles y como puntos de acceso al inventario. Consigue tus tiendas de campaña en la {0}tienda{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Acercar</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Alejar</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mapa: arrastra para moverlo, usa la rueda del ratón o + / − para acercar o alejar, las flechas lo desplazan</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Inicio en {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Información de la partida y punto de partida</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nombre de la partida:</value></data>

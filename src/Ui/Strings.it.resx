@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Non hai nessuna tenda in questa riserva. Le tende che posizioni in una riserva fungono da punti di spawn portatili e da punti di accesso all’inventario. Acquista le tue tende nel {0}negozio{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Ingrandisci</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Riduci</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mappa: trascina per spostarla, rotella del mouse o + / − per lo zoom, i tasti freccia la spostano</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Partenza: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Info sulla partita e punto di partenza</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nome partita:</value></data>

@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Bu rezervde hiç çadırınız yok. Bir rezerve kurduğunuz çadırlar taşınabilir doğuş noktası ve envanter erişim noktası görevi görür. Çadırlarınızı {0}mağazadan{1} edinin.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Yakınlaştır</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Uzaklaştır</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Harita: taşımak için sürükleyin, yakınlaştırmak için fare tekerleği veya + / − kullanın, ok tuşları haritayı kaydırır</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Başlangıç: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Oyun bilgisi ve başlangıç noktası</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Oyun adı:</value></data>

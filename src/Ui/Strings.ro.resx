@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Nu aveți niciun cort în această rezervație. Corturile pe care le amplasați într-o rezervație funcționează ca puncte portabile de apariție și de acces la inventar. Cumpărați corturi din {0}magazin{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Măriți</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Micșorați</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Hartă: trageți pentru a o muta, rotița mouse-ului sau + / − pentru zoom, săgețile o mută</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start la {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informații despre joc și punctul de start</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Numele jocului:</value></data>

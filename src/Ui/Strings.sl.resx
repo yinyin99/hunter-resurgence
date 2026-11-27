@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>V tem rezervatu nimaš šotorov. Šotori, ki jih postaviš v rezervatu, služijo kot prenosne začetne točke in dostop do inventarja. Šotore dobiš v {0}trgovini{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Približaj</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Oddalji</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Zemljevid: povlecite za premik, kolesce miške ali + / − za povečavo, puščice premikajo zemljevid</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Začetek: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Podatki o igri in začetna točka</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Ime igre:</value></data>

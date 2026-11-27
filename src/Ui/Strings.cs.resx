@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>V této oboře nemáte žádné stany. Stany, které v oboře postavíte, slouží jako přenosná startovní místa (spawn pointy) s přístupem k inventáři. Stany pořídíte v {0}obchodě{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Přiblížit</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Oddálit</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mapa: tažením ji posunete, kolečkem myši nebo + / − přibližujete, šipkami posouváte</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Začátek: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informace o hře a počáteční bod</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Název hry:</value></data>
