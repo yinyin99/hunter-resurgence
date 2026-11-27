@@ -23,7 +23,8 @@ public static class PlayerRows
                  guid, itemId, slot, Py.Dumps(metadata), units);
 
     /// <summary>Adds each start item (<paramref name="kit"/>: the rows a new account gets) the account does not own, as a new account gets it: in its slot unless
-    /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.</summary>
+    /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.
+    /// The caller judges the equipped slots afterwards (<see cref="State.SettleEquipped"/>): a kit ammunition may sit under a weapon it does not fit.</summary>
     public static int AddMissingStart(Db con, JsonArray kit, IEnumerable<(long ItemId, long Slot)> have, long guid)
     {
         var (owned, slots) = (new HashSet<long>(), new HashSet<long>());

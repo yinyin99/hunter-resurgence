@@ -77,16 +77,22 @@ public sealed partial class State
     /// <summary>The launch's `loadout_id`, inside the launch's transaction: the account's loadout of that id sets the item slots as the page does when it is clicked.
     /// Every owned item goes to slot 0 (a placed one stays), then each entry in order takes the owned row of its `item_guid`, else the first row of its `item_id` still in
     /// slot 0, and gives it the entry's slot; an entry with no such row is skipped. While unlimited ammunition is on (<see cref="UnlimitedAmmo"/>, or the connect template has it), an ammunition entry with no
-    /// free row clones a row the account owns of it. 0, a loadout of another account or none: nothing changes.</summary>
+    /// free row clones a row the account owns of it. An ammunition entry for the ammunition slot (8 to 10) of a weapon the loadout puts in the slot 6 below that it does not fit (<see cref="Suits"/>) is skipped (#1009).
+    /// 0, a loadout of another account or none: nothing changes.</summary>
     void ApplyLoadout(Db con, string loadoutId)
     {
         if (!long.TryParse(loadoutId, out var id) || con.Scalar("SELECT entries FROM loadouts WHERE account_id = $a AND id = ?", id) is not string list)
             return;
         con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND slot <> ?", PLACED_SLOT);
         var unlimited = UnlimitedService;
-        foreach (var entry in JsonNode.Parse(list) as JsonArray ?? [])
+        var entries = (JsonNode.Parse(list) as JsonArray ?? []).OfType<JsonObject>().ToList();
+        var weapons = new Dictionary<long, long>();  // slot -> the weapon the loadout names for it
+        foreach (var e in entries)
+            if (IntOf(e["slot_id"], out var s) && IntOf(e["item_id"], out var w) && s is >= 2 and <= 4) weapons[s] = w;
+        foreach (var e in entries)
         {
-            if (entry is not JsonObject e || !IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;
+            if (!IntOf(e["slot_id"], out var slot) || !IntOf(e["item_id"], out var itemId) || slot < 1 || slot == PLACED_SLOT) continue;
+            if (slot is >= 8 and <= 10 && weapons.TryGetValue(slot - 6, out var weapon) && !Suits(weapon, itemId)) continue;
             long? guid = IntOf(e["item_guid"], out var g) ? g : null;
             if (con.Scalar("SELECT guid FROM items WHERE account_id = $a AND slot = 0 AND item_id = ?1 AND (?2 IS NULL OR guid = ?2) ORDER BY guid LIMIT 1", itemId, guid) is long free)
                 con.Exec("UPDATE items SET slot = ? WHERE account_id = $a AND guid = ?", slot, free);
