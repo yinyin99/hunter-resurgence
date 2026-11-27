@@ -39,7 +39,7 @@ public sealed record ServerPlacedRefusal(string? Why);
 /// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one; a host can set any number, so they are wide), <c>Why</c> the server's reason the signed-in player cannot join
 /// (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player; missing on an older server), <c>Language</c> the host's language code (<c>fr</c>, <c>pt-BR</c>; null for none and on an older server),
 /// <c>Event</c> the id of the seasonal event the game runs (the host's setting decides it for everyone in the game; null for none) and <c>EventDiffers</c> whether that differs from what the signed-in player's own hunt on that reserve gets now (false when signed out).
-/// An older server sends neither of these two: no event, no difference. <c>Distance</c> is how far the host is from the player, <c>short</c>, <c>medium</c> or <c>long</c> (under 3,000 km, up to 7,000 km, more); null when the server does not know (a private address, no IP database, the player's own game) and on an older server.</summary>
+/// An older server sends neither of these two: no event, no difference. <c>Distance</c> is how far the host is from the player, <c>short</c> (under 3,000 km), <c>medium</c> (3,000 km to under 7,000 km) or <c>long</c> (7,000 km and more); null when the server does not know (a private address, no IP database, the player's own game) and on an older server.</summary>
 public sealed record ServerGame(
     long Id, string? Name, string? Handle, string? Description, bool Password,
     [property: System.Text.Json.Serialization.JsonPropertyName("hs_min")] long? Min,

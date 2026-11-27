@@ -62,6 +62,17 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     [Fact]
+    public void QuickJoinShowsNoDotBecauseItHasNeitherTheLegendNorTheCredit()
+    {
+        Services.AddSingleton<IServersService>(new Fake { Games = [At(Open, "Near", Distance.Short), At(Open, "Far", Distance.Long)] });
+        var cut = Render<Dashboard>();
+
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll(".servers li").Count));
+        Assert.Empty(cut.FindAll("i.dot"));
+        Assert.Empty(cut.FindAll("p.attribution"));
+    }
+
+    [Fact]
     public void AnEmptyListHasNoLegendAndNoCredit()
     {
         Services.AddSingleton<IServersService>(new Fake { Games = [] });

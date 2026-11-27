@@ -788,7 +788,7 @@ async Task Serve()
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
     if (state is { Online: true })
     {
-        var (places, message) = Places.Open((string?)settings.Cfg["geoip_file"]);
+        var (places, message) = Places.Open((string?)settings.Cfg["geoip_file"], clock: () => state.Clock());
         state.Places = places;
         Console.WriteLine(message);
     }

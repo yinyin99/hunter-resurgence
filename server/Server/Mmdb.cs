@@ -11,6 +11,8 @@ public sealed class Mmdb : IDisposable
 {
     static readonly byte[] Marker = [171, 205, 239, .. "MaxMind.com"u8];
     const int MaxMetadata = 128 * 1024, MaxValue = 1 << 20, Depth = 16;
+    /// <summary>The most values (a pointer counts as one, and its target as another) one lookup decodes: a real record has a few dozen, so a damaged or crafted file that fans out is refused, not followed.</summary>
+    public const int MaxDecoded = 10_000;
 
     readonly SafeFileHandle file;
     readonly long length;
@@ -19,6 +21,8 @@ public sealed class Mmdb : IDisposable
     readonly long treeBytes;
     readonly bool ipv6;
     readonly uint ipv4Start;
+    /// <summary>When the file was built, from its metadata; null when it says none.</summary>
+    public DateTimeOffset? Built { get; }
     long dataBase;  // what a pointer counts from: the metadata's start while it is read, then the data section
 
     /// <summary>Opens the file; InvalidDataException when it is no MMDB file of a version and record size this reader knows.</summary>
@@ -33,12 +37,14 @@ public sealed class Mmdb : IDisposable
             var at = end.AsSpan().LastIndexOf(Marker);
             if (at < 0) throw new InvalidDataException("not an MMDB file: no metadata");
             dataBase = length - tail + at + Marker.Length;
-            var meta = Decode(dataBase, 0, out _) as Dictionary<string, object?> ?? throw new InvalidDataException("not an MMDB file: no metadata");
+            var budget = MaxDecoded;
+            var meta = Decode(dataBase, 0, ref budget, out _) as Dictionary<string, object?> ?? throw new InvalidDataException("not an MMDB file: no metadata");
             if (Number(meta, "binary_format_major_version") != 2) throw new InvalidDataException("not an MMDB file of format 2");
             nodeCount = (uint)Number(meta, "node_count");
             recordBits = (int)Number(meta, "record_size");
             ipv6 = Number(meta, "ip_version") switch { 4 => false, 6 => true, _ => throw new InvalidDataException("MMDB: ip_version is not 4 or 6") };
             if (recordBits is not (24 or 28 or 32)) throw new InvalidDataException("MMDB: record_size is not 24, 28 or 32");
+            Built = meta.GetValueOrDefault("build_epoch") is long epoch and >= 0 and < 253_402_300_799 ? DateTimeOffset.FromUnixTimeSeconds(epoch) : null;
             nodeBytes = recordBits / 4;
             treeBytes = (long)nodeCount * nodeBytes;
             if (treeBytes + 16 > length) throw new InvalidDataException("MMDB: the search tree is longer than the file");
@@ -73,16 +79,23 @@ public sealed class Mmdb : IDisposable
         return bytes;
     }
 
-    /// <summary>The left (bit 0) or right (bit 1) record of a node.</summary>
-    uint Record(uint node, int bit)
+    uint Record(uint node, int bit) => Record(Read(node * (long)nodeBytes, nodeBytes), recordBits, bit);
+
+    /// <summary>The left (bit 0) or right (bit 1) record of a node's bytes: 24 bits each; 28 bits each, the middle byte's high nibble the left's top bits and its low nibble the right's; 32 bits each.</summary>
+    public static uint Record(ReadOnlySpan<byte> b, int bits, int bit) => bits switch
     {
-        var b = Read(node * (long)nodeBytes, nodeBytes);
-        return recordBits switch
-        {
-            24 => bit == 0 ? (uint)(b[0] << 16 | b[1] << 8 | b[2]) : (uint)(b[3] << 16 | b[4] << 8 | b[5]),
-            28 => bit == 0 ? (uint)((b[3] & 240) << 20 | b[0] << 16 | b[1] << 8 | b[2]) : (uint)((b[3] & 15) << 24 | b[4] << 16 | b[5] << 8 | b[6]),
-            _ => bit == 0 ? (uint)(b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3]) : (uint)(b[4] << 24 | b[5] << 16 | b[6] << 8 | b[7]),
-        };
+        24 => bit == 0 ? (uint)(b[0] << 16 | b[1] << 8 | b[2]) : (uint)(b[3] << 16 | b[4] << 8 | b[5]),
+        28 => bit == 0 ? (uint)((b[3] & 240) << 20 | b[0] << 16 | b[1] << 8 | b[2]) : (uint)((b[3] & 15) << 24 | b[4] << 16 | b[5] << 8 | b[6]),
+        _ => bit == 0 ? (uint)(b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3]) : (uint)(b[4] << 24 | b[5] << 16 | b[6] << 8 | b[7]),
+    };
+
+    /// <summary>Where a pointer's control byte and its 1 to 4 following bytes lead, counted from the data section: the control byte's low 3 bits are the top bits of the 1, 2 and 3 byte forms (which add 0, 2,048 and 526,336), and are unused in the 4 byte form.</summary>
+    public static long PointerTarget(byte ctrl, ReadOnlySpan<byte> raw)
+    {
+        var width = raw.Length;
+        long n = 0;
+        foreach (var x in raw) n = n << 8 | x;
+        return n + (width == 4 ? 0 : (long)(ctrl & 7) << (8 * width)) + (width switch { 2 => 2048, 3 => 526336, _ => 0 });
     }
 
     /// <summary>The place the file gives the address (its record's `location`), null when the file has none for it. An IPv4 address in an IPv4-only or IPv6 file, an IPv6 one in an IPv6 file only.</summary>
@@ -96,13 +109,15 @@ public sealed class Mmdb : IDisposable
             node = Record(node, bits[i >> 3] >> (7 - (i & 7)) & 1);
         if (node <= nodeCount) return null;  // equal: the tree says "no data here"
         var data = treeBytes + (node - nodeCount);  // a record's value counts from the tree's end plus 16, and the data section starts 16 bytes after the tree
-        if (Decode(data, 0, out _) is not Dictionary<string, object?> record || record.GetValueOrDefault("location") is not Dictionary<string, object?> where) return null;
+        var budget = MaxDecoded;
+        if (Decode(data, 0, ref budget, out _) is not Dictionary<string, object?> record || record.GetValueOrDefault("location") is not Dictionary<string, object?> where) return null;
         return where.GetValueOrDefault("latitude") is double lat && where.GetValueOrDefault("longitude") is double lon ? (lat, lon) : null;
     }
 
     /// <summary>The value at a file offset of the data section: text, a whole number as long, a float or double as double, a map, a list, a bool or bytes; `next` is where the following value starts.</summary>
-    object? Decode(long offset, int depth, out long next)
+    object? Decode(long offset, int depth, ref int budget, out long next)
     {
+        if (--budget < 0) throw new InvalidDataException("MMDB: a record decodes to too many values");
         if (depth > Depth) throw new InvalidDataException("MMDB: data nested too deep");
         var ctrl = Read(offset++, 1)[0];
         var type = ctrl >> 5;
@@ -111,9 +126,8 @@ public sealed class Mmdb : IDisposable
             var width = (ctrl >> 3 & 3) + 1;
             var raw = Read(offset, width);
             offset += width;
-            var target = (long)BigEndian(raw) + (width == 4 ? 0 : (long)(ctrl & 7) << (8 * width)) + (width switch { 2 => 2048, 3 => 526336, _ => 0 });
             next = offset;
-            return Decode(dataBase + target, depth + 1, out _);
+            return Decode(dataBase + PointerTarget((byte)ctrl, raw), depth + 1, ref budget, out _);
         }
         if (type == 0) type = 7 + Read(offset++, 1)[0];
         long size = ctrl & 31;
@@ -128,8 +142,8 @@ public sealed class Mmdb : IDisposable
             var map = new Dictionary<string, object?>();
             for (var i = 0; i < size; i++)
             {
-                var key = Decode(offset, depth + 1, out offset) as string ?? throw new InvalidDataException("MMDB: a map key is not text");
-                map[key] = Decode(offset, depth + 1, out offset);
+                var key = Decode(offset, depth + 1, ref budget, out offset) as string ?? throw new InvalidDataException("MMDB: a map key is not text");
+                map[key] = Decode(offset, depth + 1, ref budget, out offset);
             }
             next = offset;
             return map;
@@ -137,7 +151,7 @@ public sealed class Mmdb : IDisposable
         if (type is 11)
         {
             var list = new List<object?>();
-            for (var i = 0; i < size; i++) list.Add(Decode(offset, depth + 1, out offset));
+            for (var i = 0; i < size; i++) list.Add(Decode(offset, depth + 1, ref budget, out offset));
             next = offset;
             return list;
         }

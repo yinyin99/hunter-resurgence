@@ -43,6 +43,62 @@ public class HostDistanceTests : IDisposable
     }
 
     [Fact]
+    public void TestTheFourBytePointerFormIsReadAndItsUnusedControlBitsAreIgnored()
+    {
+        using var db = new Mmdb(MmdbFile.Write(tmp, Nets, wide: true));
+        Assert.Equal(Paris, db.Find(IPAddress.Parse("203.0.113.77")));
+        Assert.Equal(NewYork, db.Find(IPAddress.Parse("2001:db8:1::5")));
+    }
+
+    [Fact]
+    public void TestAnIpv4OnlyFileGivesNoPlaceToAnIpv6AddressWhoseFirstBitsAreAnIpv4Network()
+    {
+        using var db = new Mmdb(MmdbFile.Write(tmp, [new("203.0.113.0/24", Paris.Lat, Paris.Lon)], ipv4Only: true));
+        Assert.Equal(Paris, db.Find(IPAddress.Parse("203.0.113.77")));
+        Assert.Equal(Paris, db.Find(IPAddress.Parse("::ffff:203.0.113.77")));
+        Assert.Null(db.Find(IPAddress.Parse("cb00:7100::1")));  // 203.0.113.0 in its first 32 bits
+    }
+
+    [Fact]
+    public void TestTheBuildDateComesFromTheMetadata()
+    {
+        using var db = new Mmdb(MmdbFile.Write(tmp, Nets));
+        Assert.Equal(DateTimeOffset.FromUnixTimeSeconds(1), db.Built);
+    }
+
+    // records that use their top bits: a reader that swaps the halves of a 28 bit pair, or drops the 32 bit record's high byte, reads another node
+    [Fact]
+    public void TestTheRecordsOfANodeUseTheirTopBitsAtEveryRecordSize()
+    {
+        byte[] n24 = [255, 1, 2, 128, 4, 5];
+        Assert.Equal((255u << 16) | (1u << 8) | 2, Mmdb.Record(n24, 24, 0));
+        Assert.Equal((128u << 16) | (4u << 8) | 5, Mmdb.Record(n24, 24, 1));
+        byte[] n28 = [17, 34, 51, 165, 68, 85, 102];  // the middle byte 165: its high nibble 10 is the left record's top bits, its low nibble 5 the right's
+        Assert.Equal((10u << 24) | (17u << 16) | (34u << 8) | 51, Mmdb.Record(n28, 28, 0));
+        Assert.Equal((5u << 24) | (68u << 16) | (85u << 8) | 102, Mmdb.Record(n28, 28, 1));
+        byte[] n32 = [200, 1, 2, 3, 129, 4, 5, 6];
+        Assert.Equal((200u << 24) | (1u << 16) | (2u << 8) | 3, Mmdb.Record(n32, 32, 0));
+        Assert.Equal((129u << 24) | (4u << 16) | (5u << 8) | 6, Mmdb.Record(n32, 32, 1));
+    }
+
+    [Fact]
+    public void TestAPointerLeadsWhereEachOfItsFourFormsSays()
+    {
+        Assert.Equal((5L << 8) | 9, Mmdb.PointerTarget(32 | 5, [9]));  // 1 byte: 3 top bits from the control byte
+        Assert.Equal((3L << 16) + 258 + 2048, Mmdb.PointerTarget(32 | 8 | 3, [1, 2]));
+        Assert.Equal((2L << 24) + 66051 + 526336, Mmdb.PointerTarget(32 | 16 | 2, [1, 2, 3]));
+        Assert.Equal(16909060L, Mmdb.PointerTarget(32 | 24 | 7, [1, 2, 3, 4]));  // 4 bytes: nothing from the control byte, nothing added
+    }
+
+    [Fact]
+    public void TestARecordThatDecodesToTooManyValuesIsRefusedAndASmallOneIsNot()
+    {
+        using var db = new Mmdb(MmdbFile.Write(tmp, [new("203.0.113.0/24", Paris.Lat, Paris.Lon, Fields: 300), new("198.51.100.0/24", London.Lat, London.Lon, Fields: 5000)]));
+        Assert.Equal(Paris, db.Find(IPAddress.Parse("203.0.113.1")));
+        Assert.Contains("too many values", Assert.Throws<InvalidDataException>(() => db.Find(IPAddress.Parse("198.51.100.1"))).Message);
+    }
+
+    [Fact]
     public void TestAPlaceStoredAsFloatsIsRead()
     {
         using var db = new Mmdb(MmdbFile.Write(tmp, [new("203.0.113.0/24", 48.5, 2.25, Floats: true)]));
@@ -73,7 +129,7 @@ public class HostDistanceTests : IDisposable
         var (open, ok) = Places.Open(MmdbFile.Write(tmp, Nets));
         Assert.NotNull(open);
         Assert.Equal(Paris, open.Locate("203.0.113.5"));
-        Assert.StartsWith("distance dots: from ", ok);
+        Assert.Equal("distance dots: from test.mmdb (built 1970-01-01)", ok);  // the file's name and build date, no folder
     }
 
     [Theory]
@@ -104,14 +160,78 @@ public class HostDistanceTests : IDisposable
     }
 
     [Fact]
-    public void TestAnAddressIsLookedUpOnceAndTheMemoryIsBounded()
+    public void TestAnAddressIsLookedUpOnce()
     {
         var calls = 0;
         var places = new Places(_ => { calls++; return null; });
         for (var i = 0; i < 5; i++) places.Locate("203.0.113.5");
         Assert.Equal(1, calls);  // a miss is remembered too
-        for (var i = 0; i < Places.Cap + 10; i++) places.Locate($"203.{i >> 8 & 255}.{i & 255}.1");
-        Assert.True(calls <= Places.Cap + 12);
+    }
+
+    [Fact]
+    public void TestTheMemoryIsBoundedByCount()
+    {
+        var calls = 0;
+        var places = new Places(_ => { calls++; return Paris; });
+        string Address(int i) => $"203.0.{i >> 8 & 255}.{i & 255}";
+        for (var i = 0; i < Places.Cap; i++) places.Locate(Address(i));
+        places.Locate(Address(0));
+        Assert.Equal(Places.Cap, calls);  // the cache is full, not over
+        places.Locate(Address(Places.Cap));  // one more: the memory is emptied first
+        Assert.Equal(Places.Cap + 1, calls);
+        places.Locate(Address(0));
+        Assert.Equal(Places.Cap + 2, calls);  // the first address is forgotten and looked up again
+    }
+
+    [Fact]
+    public void TestTheMemoryIsForgottenAnHourAfterItWasLastEmptied()
+    {
+        double now = 5000;
+        var calls = 0;
+        var places = new Places(_ => { calls++; return Paris; }, () => now);
+        places.Locate("203.0.113.5");
+        places.Locate("203.0.113.6");
+        now += Places.Lifetime - 1;
+        places.Locate("203.0.113.5");
+        Assert.Equal(2, calls);  // 59 min 59 s: remembered
+        now += 1;
+        places.Locate("203.0.113.5");
+        Assert.Equal(3, calls);  // an hour: forgotten, looked up again
+        places.Locate("203.0.113.6");
+        Assert.Equal(4, calls);  // all of it, not only the address asked for
+        now += Places.Lifetime - 1;
+        places.Locate("203.0.113.5");
+        Assert.Equal(4, calls);  // the hour counts from the last time it was emptied
+        Assert.Equal(3600, Places.Lifetime);
+    }
+
+    [Fact]
+    public void TestADamagedFileOpensThenTheFirstFailingLookupTurnsTheFeatureOffWithOneLineAndNoRetry()
+    {
+        var path = MmdbFile.Write(tmp, Nets, corruptData: true);  // the end (metadata) and the tree are intact: the start accepts it
+        var (opened, message) = Places.Open(path);
+        Assert.NotNull(opened);
+        Assert.StartsWith("distance dots: from ", message);
+        var calls = 0;
+        var db = new Mmdb(path);
+        var lines = new List<string>();
+        var places = new Places(ip => { calls++; return db.Find(ip); }, log: lines.Add);
+        Assert.Null(places.Locate("203.0.113.5"));
+        var line = Assert.Single(lines);
+        Assert.StartsWith("distance dots: off (MMDB: ", line);
+        Assert.DoesNotContain("203.0.113", line);
+        Assert.Null(places.Locate("198.51.100.7"));
+        Assert.Null(places.Locate("203.0.113.5"));
+        Assert.Equal((1, 1), (calls, lines.Count));  // off for the process's life: the file is not read again, nothing more is said
+    }
+
+    [Fact]
+    public void TestAnyFailureOfTheLookupTurnsItOffAndNamesNoAddress()
+    {
+        var lines = new List<string>();
+        var places = new Places(_ => throw new IOException("read of /srv/geoip.mmdb failed at 203.0.113.5"), log: lines.Add);
+        Assert.Null(places.Locate("203.0.113.5"));
+        Assert.Equal(["distance dots: off (IOException)"], lines);  // the type, not a message that could hold a path or an address
     }
 
     [Fact]
@@ -143,6 +263,13 @@ public class HostDistanceTests : IDisposable
     [InlineData(19000, "long")]
     public void TestTheBucketsAtTheBounds(double km, string bucket) =>
         Assert.Equal(bucket, HostDistance.Bucket((0, 0), North(km)));
+
+    [Theory]
+    [InlineData(2999.999, "short")]
+    [InlineData(3000, "medium")]
+    [InlineData(6999.999, "medium")]
+    [InlineData(7000, "long")]
+    public void TestTheWordOfADistanceAtTheExactBounds(double km, string word) => Assert.Equal(word, HostDistance.Word(km));
 
     [Fact]
     public void TestTheBoundsAreThreeAndSevenThousandKilometres()

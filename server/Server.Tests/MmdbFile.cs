@@ -7,12 +7,20 @@ namespace Resurgence.Server.Tests;
 /// Repeated map keys are written as pointers, as the real writers do; <c>padding</c> bytes of text in the first record push the keys' offsets past the first pointer size.</summary>
 public static class MmdbFile
 {
-    public sealed record Net(string Cidr, double Lat, double Lon, string City = "Test City", bool Floats = false);
+    public sealed record Net(string Cidr, double Lat, double Lon, string City = "Test City", bool Floats = false, int Fields = 0);
+
+    // set by Write for the maps and pointers it builds (tests build one file at a time per thread)
+    [ThreadStatic] static bool Wide, Ipv4Only;
 
     sealed class Node { public object?[] Child = [null, null]; }  // a Node, or an int: the data offset of a leaf
 
-    public static string Write(string folder, IEnumerable<Net> nets, int recordBits = 24, int padding = 0, string name = "test.mmdb")
+    /// <param name="wide">Every pointer in the 4 byte form, whatever offset it leads to.</param>
+    /// <param name="ipv4Only">An IPv4 tree (ip_version 4) with IPv4 networks only.</param>
+    /// <param name="corruptData">The data section filled with bytes that are no value: the metadata and the tree stay intact, so the file opens and its lookups fail.</param>
+    public static string Write(string folder, IEnumerable<Net> nets, int recordBits = 24, int padding = 0, string name = "test.mmdb", bool wide = false, bool ipv4Only = false, bool corruptData = false)
     {
+        Wide = wide;
+        Ipv4Only = ipv4Only;
         var data = new MemoryStream();
         var keys = new Dictionary<string, int>();
         var root = new Node();
@@ -54,11 +62,11 @@ public static class MmdbFile
         }
         var meta = new MemoryStream();
         Map(meta, null, ("binary_format_major_version", UInt(5, 2)), ("binary_format_minor_version", UInt(5, 0)), ("node_count", UInt(6, (uint)order.Count)),
-            ("record_size", UInt(5, (uint)recordBits)), ("ip_version", UInt(5, 6)), ("database_type", Text("Test-City")), ("build_epoch", UInt(9, 1)));
+            ("record_size", UInt(5, (uint)recordBits)), ("ip_version", UInt(5, ipv4Only ? 4u : 6u)), ("database_type", Text("Test-City")), ("build_epoch", UInt(9, 1)));
         var file = new MemoryStream();
         file.Write(tree.ToArray());
         file.Write(new byte[16]);
-        file.Write(data.ToArray());
+        file.Write(corruptData ? Enumerable.Repeat((byte)255, (int)data.Length).ToArray() : data.ToArray());
         file.Write([171, 205, 239, .. "MaxMind.com"u8]);
         file.Write(meta.ToArray());
         var path = Path.Combine(folder, name);
@@ -70,6 +78,7 @@ public static class MmdbFile
     {
         var (text, prefix) = (cidr[..cidr.IndexOf('/')], int.Parse(cidr[(cidr.IndexOf('/') + 1)..]));
         var ip = IPAddress.Parse(text);
+        if (Ipv4Only) return ([.. ip.GetAddressBytes()], prefix);
         return ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork ? ([.. new byte[12], .. ip.GetAddressBytes()], 96 + prefix) : (ip.GetAddressBytes(), prefix);
     }
 
@@ -77,6 +86,7 @@ public static class MmdbFile
     {
         var fields = new List<(string, Action<MemoryStream>)>();
         if (padding > 0) fields.Add(("note", Text(new string('x', padding))));
+        for (var i = 0; i < net.Fields; i++) fields.Add(("f", Text("x")));  // the same key again: a pointer each
         fields.Add(("city", m => Map(m, keys, ("names", n => Map(n, keys, ("en", Text(net.City)))))));
         fields.Add(("location", m => Map(m, keys, net.Floats
             ? [("latitude", Float((float)net.Lat)), ("longitude", Float((float)net.Lon))]
@@ -116,7 +126,9 @@ public static class MmdbFile
     /// <summary>A pointer to a data offset, of the smallest size that holds it.</summary>
     static void Pointer(MemoryStream s, int at)
     {
-        if (at < 2048) s.Write([(byte)(32 | at >> 8), (byte)at]);
+        if (Wide) s.Write([63, (byte)(at >> 24),  // the 3 low bits of the control byte are unused in this form: set them, a reader must ignore them
+             (byte)(at >> 16), (byte)(at >> 8), (byte)at]);
+        else if (at < 2048) s.Write([(byte)(32 | at >> 8), (byte)at]);
         else if (at < 2048 + 524288) { var v = at - 2048; s.Write([(byte)(40 | v >> 16), (byte)(v >> 8), (byte)v]); }
         else { var v = at - 526336; s.Write([(byte)(48 | v >> 24), (byte)(v >> 16), (byte)(v >> 8), (byte)v]); }
     }

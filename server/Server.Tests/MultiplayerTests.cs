@@ -9,6 +9,7 @@ namespace Resurgence.Server.Tests;
 
 /// <summary>Multiplayer sessions through the real HTTP pipeline: Launch/start_mp and Launch/join (and the start page's /auth/launch), Network/list, Map/locations, the connect reply's `network` of a host,
 /// a joiner and a single-player hunt, heartbeat events 29 and 30, and a session that ends with its host. The players are invented.</summary>
+[Collection("ProcessState")]  // a test captures the console
 public class MultiplayerTests : StateTestBase, IAsyncLifetime
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
@@ -311,9 +312,9 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     };
 
     /// <summary>A game hosted from 203.0.113.5 (its connect came through a trusted proxy), and a server on the same state that believes `X-Forwarded-For`, like the one behind the reverse proxy.</summary>
-    async Task<Loopback> HostedFromParis(bool databaseLoaded = true)
+    async Task<Loopback> HostedFromParis(bool databaseLoaded = true, Places? places = null)
     {
-        state.Places = databaseLoaded ? new Places(ip => Where.TryGetValue(ip.ToString(), out var place) ? place : null) : null;
+        state.Places = places ?? (databaseLoaded ? new Places(ip => Where.TryGetValue(ip.ToString(), out var place) ? place : null) : null);
         var session = await ReadyHost();
         Settings.TryNetwork("127.0.0.0/8", out var loopback);
         var proxied = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp, [loopback]);
@@ -356,6 +357,46 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     {
         await using var proxied = await HostedFromParis(databaseLoaded: false);
         Assert.Null(Json(await ListFrom(proxied, THIRD, "198.51.100.8"))[0]!["distance"]);
+    }
+
+    [Fact]
+    public async Task TestADamagedDatabaseNeverBreaksTheListItTurnsTheDotsOffOnce()
+    {
+        var path = MmdbFile.Write(tmp, [new("203.0.113.0/24", 48.8566, 2.3522), new("198.51.100.0/24", 40.7128, -74.0060)], corruptData: true);  // opens, every lookup fails
+        var db = new Mmdb(path);
+        var (calls, lines) = (0, new List<string>());
+        await using var proxied = await HostedFromParis(places: new Places(ip => { calls++; return db.Find(ip); }, log: lines.Add));
+        for (var i = 0; i < 3; i++)
+        {
+            var reply = await ListFrom(proxied, THIRD, "198.51.100.8");
+            Assert.Equal(200, reply.Status);
+            Assert.Null(Json(reply)[0]!["distance"]);
+        }
+        Assert.Equal((1, 1), (calls, lines.Count));  // the first lookup failed, said so once and was never repeated
+        Assert.StartsWith("distance dots: off (", lines[0]);
+        Assert.DoesNotContain("198.51.100", lines[0]);
+        Assert.DoesNotContain("203.0.113", lines[0]);
+    }
+
+    [Fact]
+    public async Task TestTheListWritesNoAddressOrPlaceToTheConsoleOrTheRequestLog()
+    {
+        await using var proxied = await HostedFromParis();
+        var (old, output) = (Console.Out, new StringWriter());
+        Console.SetOut(output);
+        try
+        {
+            var reply = await ListFrom(proxied, THIRD, "198.51.100.8");
+            Assert.Equal("medium", (string?)Json(reply)[0]!["distance"]);
+            new RequestLog(console: true, null).Write(new Req("GET", "web.test", "/catalog/games", "", _ => null, [], false, "198.51.100.8"), reply);  // the line the server prints for a request
+        }
+        finally
+        {
+            Console.SetOut(old);
+        }
+        Assert.Contains("/catalog/games", output.ToString());
+        foreach (var leak in new[] { "198.51.100", "203.0.113", "48.85", "2.35", "40.71", "74.00", "medium" })
+            Assert.DoesNotContain(leak, output.ToString());
     }
 
     [Fact]
