@@ -159,6 +159,64 @@ public class SeasonalEventGameTests : StateTestBase
     }
 
     [Fact]
+    public void TestAGuestWhoDecidedBeforeTheHostKeepsHisOwnDecisionWhenTheHostDecidesOtherwiseLater()
+    {
+        var s = Server();
+        Game(s, hostPlays: true, guestPlays: false, hostConnects: false);
+        Eq(Halloween, GuestConnects(s)["ingame_event"]);  // the host has not connected: his setting decides for the guest's hunt
+        s.Store.SetPlaysEvents(HOST, false);  // the host's own first connect decides otherwise
+        Assert.Null(Reply(s.ConnectReply(HOST, "host-session", "203.0.113.1"))["ingame_event"]);
+        Assert.Equal(("", "halloween_2026"), (Recorded(s, HOST), Recorded(s, GUEST)));
+        var again = GuestConnects(s);  // the game started again: his hunt's decision, not the host's record, decides
+        Eq(Halloween, again["ingame_event"]);
+        Eq("[962, 963, 1142]", again["ethical"]![17]);
+        Assert.Equal("halloween_2026", Recorded(s, GUEST));
+        AssertJudgedByEvent(s, true, 401);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestOnlyTheHostsOpenHuntDecidesNotAnOlderClosedOne(bool hostConnects)
+    {
+        var s = Server();
+        s.Store.SetPlaysEvents(HOST, true);
+        s.NoteLaunch(HOST, "start=100&reserve=2"u8.ToArray());  // an older hunt of the host's, with the event
+        s.ConnectReply(HOST);  // a single-player connect: the hunt records the event
+        Assert.Equal("halloween_2026", Recorded(s, HOST));
+        Game(s, hostPlays: false, guestPlays: true, hostConnects);  // its game: closes that hunt, the host has no event now
+        var reply = GuestConnects(s);
+        Assert.Null(reply["ingame_event"]);
+        Eq("[241, 14]", reply["ethical"]![17]);
+        Assert.Equal("", Recorded(s, GUEST));
+        Assert.Null(Reply(s.NetworkListReply(THIRD, website: true))[0]!["event"]);
+    }
+
+    [Theory]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void TestAGuestWhoThenHostsAGameFollowsHisOwnSettingAndHisGuestsFollowIt(bool hostPlays, bool guestPlays)
+    {
+        var s = Server();
+        Game(s, hostPlays, guestPlays);
+        Assert.Equal(hostPlays, GuestConnects(s)["ingame_event"] is not null);  // a guest of the first game
+        s.Store.SetPlaysEvents(THIRD, hostPlays);  // the other setting than his own
+        s.HostGame(GUEST, "guest-host-session", Encoding.UTF8.GetBytes(Camp + "2"));
+        var own = Reply(s.ConnectReply(GUEST, "guest-host-session", "203.0.113.2"));
+        Assert.Equal(guestPlays, own["ingame_event"] is not null);  // his own game: his own setting
+        Assert.Equal(guestPlays ? "halloween_2026" : "", Recorded(s, GUEST));
+        s.HeartbeatReply(GUEST, Events(O("""{"event": 29, "port": 32304, "guid": "9007199254740994", "color": "c73378"}""")));
+        var id = (long)Reply(s.NetworkListReply()).AsArray().Single(g => (long)g!["host"]! == GUEST)!["id"]!;
+        var (error, session) = s.JoinGame(THIRD, Encoding.UTF8.GetBytes($"start=100&loctype=LODGE&network_id={id}&loadout_id=0"));
+        Assert.Null(error);
+        var third = Reply(s.ConnectReply(THIRD, session, "203.0.113.3"));
+        Assert.Equal(guestPlays, third["ingame_event"] is not null);  // his guest follows him, not his own setting
+        Eq(guestPlays ? "[962, 963, 1142]" : "[241, 14]", third["ethical"]![17]);
+        Assert.Equal(guestPlays ? "halloween_2026" : "", Recorded(s, THIRD));
+        Assert.Equal(guestPlays, Disqualified(Rabbit(s, THIRD, 601, 14)));
+    }
+
+    [Fact]
     public void TestAGuestsHuntKeepsTheHostsDecisionAcrossAServerRestartAndWithoutAnEvent()
     {
         var s = Server();

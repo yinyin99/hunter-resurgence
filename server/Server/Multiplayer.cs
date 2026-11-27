@@ -239,9 +239,9 @@ public sealed partial class State
     /// <summary>What the event adds on the game's reserve number <paramref name="reserve"/> (<see cref="Facts.Event"/>): null when the event does not cover that reserve or the facts have nothing for it.</summary>
     (long[] Ammo, JsonObject[] Populations)? ContentOf(SeasonalEvent e, int reserve) => e.Covers(reserve) ? facts.Event(e.Name, reserve) : null;
 
-    /// <summary>The event a single-player hunt of <paramref name="account"/> on the game's reserve number <paramref name="reserve"/> would record at its first connect now (its setting, the event's window and the reserve); null for none.</summary>
-    string? OwnEvent(long account, int reserve) =>
-        Seasonal is { } e && e.Running(Clock()) && Store.PlaysEvents(account) && ContentOf(e, reserve) is not null ? e.Name : null;
+    /// <summary>The event a single-player hunt of a player who <paramref name="plays"/> seasonal events (his setting) on the game's reserve number <paramref name="reserve"/> would record at its first connect now (the setting, the event's window and the reserve); null for none.</summary>
+    string? OwnEvent(bool plays, int reserve) =>
+        plays && Seasonal is { } e && e.Running(Clock()) && ContentOf(e, reserve) is not null ? e.Name : null;
 
     /// <summary>The event a multiplayer game runs (#996): the one its host's hunt recorded at its first connect (`expeditions.event`, null for none), and while the host has not connected, the one the server would decide for him
     /// (<see cref="OwnEvent"/>). A game has one event whoever joins it: the host's.</summary>
@@ -250,7 +250,7 @@ public sealed partial class State
         using var con = Con(host);
         return con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND end_ts IS NULL ORDER BY id DESC LIMIT 1") is string decided
             ? decided == "" ? null : decided
-            : OwnEvent(host, reserve);
+            : OwnEvent(Store.PlaysEvents(host), reserve);
     }
 
     /// <summary>The event of a joiner's hunt <paramref name="expedition"/> (the connect reply's `reply`, <see cref="ConnectReply"/>): the host's (<see cref="HostEvent"/>), never the joiner's own setting; null for none. A hunt that already has
@@ -298,6 +298,7 @@ public sealed partial class State
     {
         var score = caller is { } me ? HunterScore(me) : 0;
         var friends = caller is { } you ? Store.FriendsOf(you, LocalAccount).Friends : [];
+        var callerPlays = website && caller is { } viewer && Store.PlaysEvents(viewer);  // read once for the list, not once per game
         var starts = new Lazy<Dictionary<long, List<JsonObject>>>(StartLocations);
         return Py.DumpBytes(new JsonArray([.. games.Open(Clock()).Select(g =>
         {
@@ -334,7 +335,7 @@ public sealed partial class State
                 var gameReserve = (int)g.Reserve - 1;  // the game's own reserve number, as the lodge's / 100
                 var gameEvent = HostEvent(g.Host, gameReserve);
                 list["event"] = gameEvent;
-                list["event_differs"] = caller is { } asker && OwnEvent(asker, gameReserve) != gameEvent;
+                list["event_differs"] = caller is not null && OwnEvent(callerPlays, gameReserve) != gameEvent;
             }
             if (caller is not null)
             {
