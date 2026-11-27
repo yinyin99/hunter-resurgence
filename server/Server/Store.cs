@@ -196,6 +196,15 @@ public sealed class Store
             id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, account_id INTEGER REFERENCES accounts (id) ON DELETE CASCADE, recipients INTEGER NOT NULL, text TEXT NOT NULL);
         """;
 
+    // the host's multiplayer bans (#937, docs/server.md#the-hosts-bans): `host_id` banned `banned_id` from its games (the in-game Ban button, User/ban_player) at `ts`. Like friends, no foreign keys:
+    // DeleteAccount drops both directions, Restorer.Adopt moves both, and the reads join accounts.
+    const string HostBans = """
+        CREATE TABLE IF NOT EXISTS host_bans (
+            host_id INTEGER NOT NULL, banned_id INTEGER NOT NULL, ts INTEGER NOT NULL,
+            PRIMARY KEY (host_id, banned_id)) WITHOUT ROWID;
+        CREATE INDEX IF NOT EXISTS host_bans_banned ON host_bans (banned_id);
+        """;
+
     // Discord Linked Roles (LinkedRoles.cs, docs/server.md#discord-linked-roles). discord_links: one row per account and per Discord id (both UNIQUE), the user's two OAuth tokens sealed (AES-GCM, the key
     // derived from the secret key file; both null once Discord refused the refresh token), when the access token ends, and the hunterscore last pushed (null: none yet). It goes with its account (and moves
     // with it: Restorer.Adopt). discord_rewards: the reward ledger, one row per Discord id ever paid: `hash` is its keyed hash (never the id), `account_id` the account that was paid (UNIQUE: one reward per
@@ -297,6 +306,7 @@ public sealed class Store
         {ClaimTables}
         {SteamTables}
         {AdminMessagesTable}
+        {HostBans}
         {CommunityProgress}
         {Loadouts}
         {OwnLimitRemovals}
@@ -599,6 +609,7 @@ public sealed class Store
         foreach (var column in (string[])["last_attempt INTEGER", "attempts INTEGER NOT NULL DEFAULT 0"])
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('banned_steam') WHERE name = ?", column.Split(' ')[0])! == 0)
                 con.Script($"ALTER TABLE banned_steam ADD COLUMN {column}");
+        con.Script(HostBans);  // schema 42 (#937), every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
@@ -762,6 +773,7 @@ public sealed class Store
         con.Begin();
         con.Exec("INSERT OR REPLACE INTO steam_deletions (steam_id64, ts) SELECT steam_id64, ?2 FROM accounts WHERE id = ?1 AND steam_id64 IS NOT NULL", id, at ?? Now());
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", id);
+        con.Exec("DELETE FROM host_bans WHERE host_id = ?1 OR banned_id = ?1", id);
         con.Exec("DELETE FROM accounts WHERE id = ?", id);
         con.Commit();
     }
@@ -872,6 +884,36 @@ public sealed class Store
     {
         using var con = Open();
         con.Exec("DELETE FROM friends WHERE (account_id = ?1 AND other_id = ?2) OR (account_id = ?2 AND other_id = ?1)", id, other);
+    }
+
+    // ---- the host's multiplayer bans (the host_bans table)
+
+    /// <summary>`host` bans `banned` from its games; a second ban keeps the first one's time.</summary>
+    public void BanFromGames(long host, long banned)
+    {
+        using var con = Open();
+        con.Exec("INSERT OR IGNORE INTO host_bans (host_id, banned_id, ts) VALUES (?, ?, ?)", host, banned, Now());
+    }
+
+    /// <summary>`host` lifts its ban of `banned`; false when there was none.</summary>
+    public bool UnbanFromGames(long host, long banned)
+    {
+        using var con = Open();
+        return con.Exec("DELETE FROM host_bans WHERE host_id = ? AND banned_id = ?", host, banned) > 0;
+    }
+
+    /// <summary>The hosts that banned the player from their games.</summary>
+    public HashSet<long> BannedBy(long banned)
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT host_id FROM host_bans WHERE banned_id = ?", banned).Select(r => (long)r[0])];
+    }
+
+    /// <summary>The players `host` banned that still have an account: user id and ban time, the latest first.</summary>
+    public List<(long Account, long Ts)> GameBansOf(long host)
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT b.banned_id, b.ts FROM host_bans b JOIN accounts a ON a.id = b.banned_id WHERE b.host_id = ? ORDER BY b.ts DESC, b.banned_id", host).Select(r => ((long)r[0], (long)r[1]))];
     }
 
     /// <summary>The account that now holds the profile of the old user id `uid` (inside the caller's transaction): the account with that id (it kept its own, or took the

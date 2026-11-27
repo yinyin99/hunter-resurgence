@@ -24,6 +24,25 @@ public class RestoreTests : StateTestBase
         state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, offline: false);
     }
 
+    [Fact]
+    public void TestAnAccountGivenAnotherUserIdKeepsItsMultiplayerBansBothWays()
+    {
+        foreach (var (id, handle) in new[] { (105L, "host"), (106L, "other"), (107L, "third") })
+            state.CreateAccount(id, handle);
+        state.Store.BanFromGames(105, 106);  // account 105 banned 106
+        state.Store.BanFromGames(107, 105);  // and 107 banned account 105
+        using (var con = state.Store.Open(105))
+        {
+            con.Begin();
+            Restorer.Adopt(con, 105, 150);
+            con.Commit();
+        }
+        Assert.Equal([106L], state.Store.GameBansOf(150).Select(b => b.Account));
+        Assert.Equal([150L], state.Store.GameBansOf(107).Select(b => b.Account));  // the ban of the account moved with it
+        Assert.Empty(state.Store.GameBansOf(105));
+        Assert.Empty(state.Store.BannedBy(106).Where(h => h == 105));
+    }
+
     string Zip(TestZip zip, string name = "backup.zip") => zip.Write(tmp, name);
 
     /// <summary>Every row of the account's profile tables, as text.</summary>

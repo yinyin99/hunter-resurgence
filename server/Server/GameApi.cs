@@ -142,7 +142,7 @@ public static class GameApi
                .WithName("LaunchJoin").WithSummary("Join a multiplayer hunt")
                .WithDescription("Adds the caller to the session `network_id` of Network/list and opens a hunt in its reserve (at the session's time unless `time` is sent). Reply as LaunchStart; the connect of the "
                                 + "returned `session` names the host and how to reach it. HTTP 200 `{\"errorCode\": 23, \"message\": \"USER_CANT_JOIN\"}` for a wrong password, a full session, a friends-only session of a non-friend, "
-                                + "a hunterscore outside the session's range, the host's own session, an unknown session, a session whose host has not reported its port yet, and a session whose host connected over IPv6 (the game cannot use it). Community server only.")
+                                + "a session whose host banned the caller (`User/ban_player`), a hunterscore outside the session's range, the host's own session, an unknown session, a session whose host has not reported its port yet, and a session whose host connected over IPv6 (the game cannot use it). Community server only.")
                .Body<JoinForm>(Form).Produces(200, contentType: "application/json");
             api.MapMethods(NETWORK_LIST, ["GET", "POST"], Handle(game, r => s.Online && r.Path == NETWORK_LIST && r.Method is "GET" or "POST" ? new(200, JsonAnyOrigin(), s.NetworkListReply(), "state") : null))
                .WithName("NetworkList").WithSummary("The open multiplayer sessions")
@@ -425,6 +425,11 @@ public static class GameApi
                .WithDescription("`{total, friends: [as Me/friends]}` of the token's own `user_id` (a player sees only his own friends); `limit` 1 to 50 (missing, empty or below 1: all). Another player's `user_id`: `{total: 0, friends: []}`; "
                                 + "no `user_id`: `{\"errorCode\": 400}`; an empty or non-positive one: `null`; a non-numeric value: the handler error. Without a token: token expired.")
                .Body<FriendsListForm>(Form).Produces(200, contentType: "application/json");
+            api.MapExactPost(game, BAN_PLAYER, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(), s.BanPlayerReply(a, r.Body), "state")))
+               .WithName("BanPlayer").WithSummary("The host bans a player from its games (the in-game Ban button)")
+               .WithDescription("`true`, and the player is refused every join of the caller's games (`Games.Why` `banned`; the website's Settings lists the bans and lifts them); `{\"errorCode\": 400}` for the caller's own id and any id that is not a player of his multiplayer session or one he may see. "
+                                + "Posted by the game's page over http to `api.<domain>`, which ignores the reply, and followed by the game's own kick.")
+               .Body<BanForm>(Form).Produces(200, contentType: "application/json");
             // the profile reads (community server only; a local server replays): a player's token; by handle any player here (State.PublicAccount), by user id one the player may see (State.SeenAccount)
             api.MapExactPost(game, PUBLIC_USER, r => !s.Online ? null : Own(game, r, a => new(200, JsonAnyOrigin(),
                     s.PublicAccount(FormValue(r, "hostname") ?? "") is var other && (other == a || s.ReadAllowed(a)) && other is { } o ? Py.DumpBytes(s.PublicUser(o, a)) : "null"u8.ToArray(), "state")))
@@ -851,6 +856,7 @@ public static class GameApi
     public sealed record UserForm(long user_id, string? oauth_access_token);
     public sealed record PersonalForm(long user_id, long season_no, string? oauth_access_token);
     public sealed record FriendForm(long friend_user_id, string? oauth_access_token);
+    public sealed record BanForm(long banned_user_id, string? oauth_access_token);
     public sealed record FriendsListForm(long user_id, long? offset, long? limit);
 
     public sealed record AnimalSlot(long slot_id, long? trophy_id, long? pose_id, double rotation, [property: Description("The texture's name, \"\" for none")] string? base_texture, bool is_skull);

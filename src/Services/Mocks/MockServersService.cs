@@ -20,7 +20,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons
-        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", _ => null })).ToList();
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null })).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",
@@ -48,6 +48,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     public async Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password) =>
         Servers.FirstOrDefault(s => s.Id == server) is not { } game ? new(null, "Launch.Failed")
         : game.Why is "friends" or "hunterscore" ? new(null, "Join.NotAllowed")
+        : game.Why is "banned" ? new(null, "Join.Banned")
         : game.Why is "starting" ? new(null, "Join.HostNotReady")
         : game.Refused ? new(null, "Launch.Failed")
         : game.Password && password != Secret ? new(null, "Join.WrongPassword")

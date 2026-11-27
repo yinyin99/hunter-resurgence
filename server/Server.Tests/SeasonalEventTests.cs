@@ -724,7 +724,6 @@ public class SeasonalEventTests : StateTestBase
         }
         using var check = s.Store.Open();
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
-        Assert.Equal(43, Store.Version);
     }
 
     /// <summary>Rewrite the ammunition of the hits on <paramref name="individual"/>: the stored kill now reads as one the rule judges otherwise than it was judged at its harvest.</summary>

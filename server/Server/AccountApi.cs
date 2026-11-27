@@ -410,6 +410,26 @@ public static class AccountApi
             .WithDescription("`{friends, requests, pending}`, each a list of `{handle, online, avatar}` by handle (upper case, ordinal), `online` only true for friends; `avatar` as in `GET /hunters/<handle>` (docs/server.md#avatars).")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/bans", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.WebBans(account, site))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountBans").WithSummary("The players the player banned from its multiplayer games")
+            .WithDescription("`{bans: [{handle, avatar, ts}]}`, the latest first; `ts` Unix seconds, `avatar` as in `GET /hunters/<handle>` (docs/server.md#avatars). The in-game Ban button adds to it (`User/ban_player`).")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/bans/unban", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                return form.TryGetValue("handle", out var h) && state.WebUnban(account, h[0])
+                    ? Json(200, new JsonObject { ["status"] = "ok" })
+                    : Refuse(404, "invalid", "You have not banned this player.");
+            })
+            .WithName("AccountUnban").WithSummary("Lift the player's ban of another player from its games (form `handle`)")
+            .WithDescription("`{status: ok}`; 404 `invalid` for a handle the player has not banned (another player's ban cannot be lifted).")
+            .Produces(200, contentType: "application/json");
+
         group.MapGet("/friends/search", (HttpContext ctx) =>
             {
                 if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");

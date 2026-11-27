@@ -1671,4 +1671,10 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Join.Hidden" xml:space="preserve"><value>Die Karte und die Ausrüstung des Gastgebers sehen nur Spieler, die diesem Spiel beitreten dürfen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ zum normalen Satz, Boni nicht eingerechnet.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus-Ereignisse in diesem Zeitraum:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Vom Gastgeber gebannt</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Der Gastgeber hat dich von seinen Spielen gebannt.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spieler, die du mit der Schaltfläche „Bannen“ auf der Spielerseite im Spiel bannst, können deinen Multiplayer-Spielen nicht beitreten, bis du den Bann aufhebst.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Du hast keinen Spieler gebannt.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Bann aufheben</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Möchtest du den Bann von {0} aus deinen Spielen wirklich aufheben?</value></data>
 </root>

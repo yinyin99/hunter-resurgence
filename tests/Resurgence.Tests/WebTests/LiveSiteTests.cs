@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
+using Resurgence.Ui.Modals;
 using Resurgence.Ui.Components;
 using Resurgence.Ui.Pages;
 using Resurgence.Ui.Shell;
@@ -107,9 +108,47 @@ public sealed class LiveSiteTests : UiContext
         Assert.Empty(cut.FindAll("a[href='/game-management']"));
 
         var page = Render<Settings>();
-        Assert.Equal(["Avatar"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the one that works
-        Assert.Equal(["Account email", "Language & time zone", "Purchase History", "Multiplayer bans", "Steam settings", "Profile settings"], page.FindAll("nav.menu li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));
+        Assert.Equal(["Avatar", "Multiplayer bans"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the two that work
+        Assert.Equal(["/settings", "/settings/bans"], page.FindAll("nav.menu li a").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["Account email", "Language & time zone", "Purchase History", "Steam settings", "Profile settings"], page.FindAll("nav.menu li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));
         Assert.DoesNotContain("Facebook", page.Markup);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheMultiplayerBansTabListsTheBannedPlayersWithAnUnbanEach(bool live)
+    {
+        Live(live);
+        var page = Render<Settings>(p => p.Add(s => s.Tab, "bans"));
+        Assert.Equal(["Multiplayer bans"], page.FindAll("nav.menu li.on a").Select(a => a.TextContent.Trim()));
+        Assert.Equal(["Hunter04", "Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim()));
+        Assert.Equal(["2026-11-20", "2026-11-03"], page.FindAll("ul.list li .date").Select(d => d.TextContent.Trim()));
+        Assert.Equal(["Unban", "Unban"], page.FindAll("ul.list li button").Select(b => b.TextContent.Trim()));
+        Assert.Empty(page.FindAll("p.empty"));
+        Assert.Empty(page.FindAll(".avatars"));  // not the avatar page
+    }
+
+    [Fact]
+    public void UnbanningAsksFirstAndTheLastOneLeavesTheEmptyText()
+    {
+        var modal = Services.GetRequiredService<ModalService>();
+        var page = Render<Settings>(p => p.Add(s => s.Tab, "bans"));
+        void Answer(bool yes)
+        {
+            page.Find("ul.list li button").Click();
+            var wait = Assert.IsType<TaskCompletionSource<bool>>(modal.Parameters!["Answer"]);
+            Assert.Contains("Hunter04", (string)modal.Parameters["Text"]!);
+            wait.SetResult(yes);
+        }
+        Answer(false);  // the player says no: nothing changes
+        page.WaitForAssertion(() => Assert.Equal(["Hunter04", "Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim())));
+        Answer(true);
+        page.WaitForAssertion(() => Assert.Equal(["Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim())));
+        page.Find("ul.list li button").Click();
+        Assert.IsType<TaskCompletionSource<bool>>(modal.Parameters!["Answer"]).SetResult(true);
+        page.WaitForAssertion(() => Assert.Equal("You have not banned any player.", page.Find("p.empty").TextContent.Trim()));
+        Assert.Empty(page.FindAll("ul.list"));
     }
 
     [Theory]

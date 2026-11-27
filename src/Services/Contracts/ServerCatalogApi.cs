@@ -22,7 +22,7 @@ public static class ServerCatalogApi
 /// or <c>tent</c> (the id of a tent of <see cref="ServerAccountApi.Placed"/>), <c>time</c> (minutes) and <c>loadout</c> (an id, 0 for the last equipment), or of <c>tutorial</c>: 200 <see cref="ServerLaunch"/>, 400 for a refused start, 401 when signed out.
 /// A multiplayer hunt adds <c>mp=host</c> with <c>name</c>, <c>description</c>, <c>public_game</c> (1 anyone, 0 friends only), <c>free_players</c> (1), <c>hs_min</c> and <c>hs_max</c> (only when the Hunter Score is limited),
 /// <c>password</c> (only when set) and <c>max_players</c>; or <c>mp=join</c> with <c>network_id</c> (<see cref="ServerGame.Id"/>), <c>lodge</c> or <c>tent</c>, <c>loadout</c> and <c>password</c> (only when set; no reserve, no time: the game has them).
-/// A refused join is 400 <see cref="ServerRefusal"/> with <c>password</c>, <c>full</c>, <c>not_allowed</c>, <c>host_not_ready</c> or <c>host_network</c>.</summary>
+/// A refused join is 400 <see cref="ServerRefusal"/> with <c>password</c>, <c>full</c>, <c>not_allowed</c>, <c>host_not_ready</c>, <c>host_network</c> or <c>banned</c>.</summary>
 public static class ServerLaunchApi
 {
     public const string Launch = "/auth/launch";
@@ -32,7 +32,7 @@ public sealed record ServerLaunch(string Url);
 
 public sealed record ServerRefusal(string? Error);
 
-/// <summary>The 403 of <see cref="ServerCatalogApi.GamePlaced"/>: <c>Why</c> is the join's reason (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>network</c>, <c>password</c>, <c>full</c>).</summary>
+/// <summary>The 403 of <see cref="ServerCatalogApi.GamePlaced"/>: <c>Why</c> is the join's reason (<c>own</c>, <c>banned</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>network</c>, <c>password</c>, <c>full</c>).</summary>
 public sealed record ServerPlacedRefusal(string? Why);
 
 /// <summary>A game of <see cref="ServerCatalogApi.Games"/>, in the shape of the game's own list (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,

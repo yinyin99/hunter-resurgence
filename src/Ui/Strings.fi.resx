@@ -1671,4 +1671,10 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Join.Hidden" xml:space="preserve"><value>Kartta ja isännän varusteet näytetään vain pelaajille, jotka saavat liittyä tähän peliin.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ perustasolla, bonukset jätetty pois.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Isäntä on estänyt</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Et voi liittyä tähän peliin: isäntä on estänyt sinut peleistään.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Pelaajat, jotka estät pelin pelaajasivun Estä-painikkeella, eivät voi liittyä moninpelipeleihisi, ennen kuin poistat eston.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Et ole estänyt yhtään pelaajaa.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Poista esto</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa pelaajan {0} eston peleistäsi?</value></data>
 </root>

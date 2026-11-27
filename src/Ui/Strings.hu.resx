@@ -1671,4 +1671,10 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Join.Hidden" xml:space="preserve"><value>A térképet és a házigazda felszerelését csak azok a játékosok látják, akik csatlakozhatnak ehhez a játékhoz.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a normál díjszabással, a bónuszok nélkül.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bónuszesemények az időszakban:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>A házigazda kitiltotta</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: a házigazda kitiltott a játékaiból.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Azok a játékosok, akiket a játék játékosoldalán a Kitiltás gombbal kitiltasz, nem csatlakozhatnak a többjátékos játékaidhoz, amíg fel nem oldod a kitiltást.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Még nem tiltottál ki senkit.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Kitiltás feloldása</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Biztosan fel akarod oldani {0} kitiltását a játékaidból?</value></data>
 </root>

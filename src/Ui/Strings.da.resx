@@ -1671,4 +1671,10 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Join.Hidden" xml:space="preserve"><value>Kortet og værtens udstyr vises kun for spillere, der må deltage i dette spil.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonusser er udeladt.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusbegivenheder i perioden:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Udelukket af værten</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Du kan ikke deltage i dette spil: værten har udelukket dig fra sine spil.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spillere, du udelukker med knappen Udeluk på spillerlisten i spillet, kan ikke deltage i dine multiplayer-spil, før du ophæver udelukkelsen.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Du har ikke udelukket nogen spillere.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Ophæv udelukkelse</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Er du sikker på, at du vil ophæve udelukkelsen af {0} fra dine spil?</value></data>
 </root>

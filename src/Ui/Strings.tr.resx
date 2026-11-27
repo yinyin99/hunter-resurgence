@@ -1671,4 +1671,10 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Join.Hidden" xml:space="preserve"><value>Harita ve ev sahibinin ekipmanı yalnızca bu oyuna katılabilecek oyunculara gösterilir.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Ev sahibi tarafından yasaklandı</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Bu oyuna katılamazsın: ev sahibi seni oyunlarından yasakladı.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Oyun içi oyuncular sayfasındaki Yasakla düğmesiyle yasakladığın oyuncular, yasağı kaldırana kadar çok oyunculu oyunlarına katılamaz.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Hiçbir oyuncuyu yasaklamadın.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Yasağı kaldır</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>{0} adlı oyuncunun oyunlarından yasağını kaldırmak istediğinden emin misin?</value></data>
 </root>

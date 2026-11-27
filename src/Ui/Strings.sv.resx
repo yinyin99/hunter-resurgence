@@ -1671,4 +1671,10 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Join.Hidden" xml:space="preserve"><value>Kartan och värdens utrustning visas bara för spelare som får gå med i det här spelet.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ till normal taxa, bonusar ej inräknade.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannlyst av värden</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värden har bannlyst dig från sina spel.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spelare du bannlyser med knappen Bannlys på spelarsidan i spelet kan inte gå med i dina flerspelarspel förrän du hävt bannlysningen.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Du har inte bannlyst någon spelare.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Häv bannlysning</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Är du säker på att du vill häva bannlysningen av {0} från dina spel?</value></data>
 </root>
