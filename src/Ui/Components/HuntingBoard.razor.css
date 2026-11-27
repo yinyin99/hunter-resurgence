@@ -7,8 +7,8 @@
 .events li { padding: 2px 10px; border-radius: var(--r-2); background: var(--bg-block-2); color: var(--accent-text); }
 section + section { margin-block-start: 32px; }
 .part { margin: 0 0 8px; font-size: var(--fs-h4); line-height: 24px; font-weight: 400; color: var(--text-1); }
-/* the columns share the box's width (the bar shrinks first, names truncate, headers wrap); only below a phone width does the table scroll inside its box, keyboard-reachable (the region has a tab stop) */
-.scroll { overflow-x: auto; }
+/* the columns share the box's width at any size (the bar shrinks first, names truncate, headers wrap), so nothing overflows sideways: no scrollbar */
+.scroll { overflow-x: hidden; }
 table { table-layout: fixed; width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 th, td { padding: 8px; text-align: end; font-size: 14px; line-height: 20px; font-weight: 400; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 thead th { white-space: normal; overflow-wrap: anywhere; hyphens: auto; vertical-align: bottom; padding-block: 6px; font-size: 13px; color: var(--text-2); border-block-end: 1px solid var(--line); }
@@ -23,5 +23,4 @@ td.rate > div { display: flex; align-items: center; gap: 12px; }
 td.rate b { flex: none; min-width: 4ch; font-size: 15px; font-weight: 600; color: #fff; }
 .rate .bar3d { flex: 1; min-width: 0; }
 th.text { width: 16%; }
-@media (max-width: 600px) { table { min-width: 560px; } }
 @media (hover: none) { tbody tr:hover { background: none; } }
