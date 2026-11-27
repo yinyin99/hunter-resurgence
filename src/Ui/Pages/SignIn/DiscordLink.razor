@@ -21,7 +21,7 @@
     }
 }
 @* the menu item in the Discord client's own words for the language, with the English in brackets (docs/website.md#discord-linked-roles); "Linked" is the role's name *@
-@if (Good) { <p class="claim">@Frame("DiscordLink.Claim", $"<b>{WebUtility.HtmlEncode(L["DiscordLink.LinkedRoles"].Value)}</b>", "<b>Linked</b>")</p> }
+@if (Good) { <p class="claim">@Frame("DiscordLink.Claim", $"<b>{WebUtility.HtmlEncode(L["DiscordLink.LinkedRoles"].Value)}</b>", $"<b>{LinkedRole}</b>")</p> }
 @if (Good && Brand.Link("discord") is not null) { <p class="back"><ExternalLink Key="discord" Class="btn btn-primary btn-large">@L["DiscordLink.Back"]</ExternalLink></p> }
 
 @code {
@@ -31,8 +31,8 @@
     /// <summary>The hunter's score, and the HunterScore of the "Veteran" role as the server says it (`discord_veteran_at`; null: the role line without the way to Veteran).</summary>
     int? score, veteranAt;
 
-    /// <summary>The names of the Discord server's roles: the same in every language, like the roles themselves (docs/deploy.md#discord-linked-roles).</summary>
-    const string VerifiedRole = "Verified hunter", VeteranRole = "Veteran";
+    /// <summary>The names of the Discord server's roles: the same in every language, like the roles themselves (docs/deploy.md#discord-linked-roles). "Linked" is the Linked Role the player claims once so the profile box shows.</summary>
+    const string VerifiedRole = "Verified hunter", VeteranRole = "Veteran", LinkedRole = "Linked";
 
     /// <summary>A translated frame with its arguments in place: the text is encoded, the arguments are markup (a role name in the colour of the Discord server's role).</summary>
     MarkupString Frame(string key, params string[] html) => new(string.Format(WebUtility.HtmlEncode(L[key].Value), html));
