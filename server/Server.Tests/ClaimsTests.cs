@@ -97,6 +97,22 @@ public class ClaimsTests : StateTestBase, IAsyncLifetime
         Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'admin_messages'"));
     }
 
+    [Fact]
+    public void TestADatabaseAtTheCurrentVersionWithoutTheHostBansGetsTheTableAndADeletedAccountsBansGo()
+    {
+        var file = Path.Combine(tmp, "bans.db");
+        using (var con = new Store(file).Open())
+            con.Exec("DROP TABLE host_bans");  // user_version stays at Store.Version
+        var store = new Store(file);
+        store.BanFromGames(5, 6);
+        Assert.Contains(5L, store.BannedBy(6));
+        store.DeleteAccount(5);
+        Assert.Empty(store.BannedBy(6));
+        store.BanFromGames(7, 5);
+        store.DeleteAccount(5);
+        Assert.Empty(store.GameBansOf(7));
+    }
+
     protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
     void MakeArchive()

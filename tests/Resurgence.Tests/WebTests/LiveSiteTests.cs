@@ -107,9 +107,25 @@ public sealed class LiveSiteTests : UiContext
         Assert.Empty(cut.FindAll("a[href='/game-management']"));
 
         var page = Render<Settings>();
-        Assert.Equal(["Avatar"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the one that works
-        Assert.Equal(["Account email", "Language & time zone", "Purchase History", "Multiplayer bans", "Steam settings", "Profile settings"], page.FindAll("nav.menu li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));
+        Assert.Equal(["Avatar", "Multiplayer bans"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the two that work
+        Assert.Equal(["/settings", "/settings/bans"], page.FindAll("nav.menu li a").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["Account email", "Language & time zone", "Purchase History", "Steam settings", "Profile settings"], page.FindAll("nav.menu li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));
         Assert.DoesNotContain("Facebook", page.Markup);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheMultiplayerBansTabListsTheBannedPlayersWithAnUnbanEach(bool live)
+    {
+        Live(live);
+        var page = Render<Settings>(p => p.Add(s => s.Tab, "bans"));
+        Assert.Equal(["Multiplayer bans"], page.FindAll("nav.menu li.on a").Select(a => a.TextContent.Trim()));
+        Assert.Equal(["Hunter04", "Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim()));
+        Assert.Equal(["2026-11-20", "2026-11-03"], page.FindAll("ul.list li .date").Select(d => d.TextContent.Trim()));
+        Assert.Equal(["Unban", "Unban"], page.FindAll("ul.list li button").Select(b => b.TextContent.Trim()));
+        Assert.Empty(page.FindAll("p.empty"));
+        Assert.Empty(page.FindAll(".avatars"));  // not the avatar page
     }
 
     [Theory]

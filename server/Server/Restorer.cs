@@ -284,6 +284,9 @@ public static class Restorer
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
             con.Exec($"UPDATE OR IGNORE friends SET {column} = ? WHERE {column} = ?", to, from);
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", from);
+        foreach (var column in new[] { "host_id", "banned_id" })  // the host bans (no foreign keys either)
+            con.Exec($"UPDATE OR IGNORE host_bans SET {column} = ? WHERE {column} = ?", to, from);
+        con.Exec("DELETE FROM host_bans WHERE host_id = ?1 OR banned_id = ?1", from);
     }
 
     /// <summary>The friend edges of the restored `User_friendslist` and `Me_friends` replies: a friend, an incoming request (`requests`),

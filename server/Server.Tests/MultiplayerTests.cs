@@ -574,13 +574,56 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.Equal("not_allowed", (await PageJoin(THIRD, $"mp=join&network_id={await NetworkId()}&tent=999&host_tent=1&loadout=0")).Error);
     }
 
+    /// <summary>`User/ban_player` as the game's page posts it: the host's token and `banned_user_id` in the form; the reply's text.</summary>
+    async Task<string> Ban(long host, long banned) =>
+        Encoding.UTF8.GetString((await Send("POST", Api, Replay.BAN_PLAYER, body: $"oauth_access_token={tokens[host]}&banned_user_id={banned}")).Body);
+
+    [Fact]
+    public async Task TestBanPlayerStoresTheHostsBanOnceAndNeverOfItselfOrAnUnknownPlayer()
+    {
+        await ReadyHost();
+        Joined(await Join(GUEST));
+        Assert.Equal("true", await Ban(HOST, GUEST));
+        var first = state.Store.GameBansOf(HOST);
+        Assert.Equal("true", await Ban(HOST, GUEST));  // again: nothing changes
+        Assert.Equal(first, state.Store.GameBansOf(HOST));
+        Assert.Equal([GUEST], first.Select(b => b.Account));
+        const string refused = """{"errorCode": 400}""";
+        Assert.Equal(refused, await Ban(HOST, HOST));
+        Assert.Equal(refused, await Ban(HOST, 999));  // no such player
+        var unsigned = await Send("POST", Api, Replay.BAN_PLAYER, body: $"banned_user_id={GUEST}");  // without a token: nothing stored
+        Assert.NotEqual("true", Encoding.UTF8.GetString(unsigned.Body));
+        Assert.Equal(first, state.Store.GameBansOf(HOST));
+        Assert.Empty(state.Store.GameBansOf(GUEST));  // the ban is the host's own list
+    }
+
+    [Fact]
+    public async Task TestABannedPlayerCannotJoinTheHostsGameAndTheListAndPlacedSayWhy()
+    {
+        await ReadyHost();
+        var guestSession = Joined(await Join(GUEST));
+        Assert.Equal("true", await Ban(HOST, GUEST));
+        await Send("POST", Gs, Replay.DISCONNECT, GUEST, "{}", guestSession);  // the game's own kick follows the ban
+        Refused(await Join(GUEST));
+        var game = await Listed(GUEST);
+        Assert.Equal((false, "banned"), ((bool)game["joinable"]!, (string?)game["why"]));
+        var placed = await PlacedOf(GUEST);
+        Assert.Equal((403, "banned"), (placed.Status, (string)Json(placed)["why"]!));
+        Assert.Equal("banned", (await PageJoin(GUEST, $"mp=join&network_id={await NetworkId()}&lodge=101&loadout=0")).Error);
+        await Agrees(THIRD, null);  // another player is unaffected
+        Assert.True(state.Store.UnbanFromGames(HOST, GUEST));
+        await Agrees(GUEST, null);
+    }
+
     [Fact]
     public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
     {
         var host = new Games.Member(HOST, "s", 0);
         var g = new Games.Game { Host = HOST, Public = false, Password = "pw", HsMin = 100, Max = 2, Members = [host] };
-        string? Why(long who, long score, bool friend, string? password = null) => Games.Why(g, who, score, _ => friend, password);
-        Assert.Equal("own", Why(HOST, 50, false));
+        string? Why(long who, long score, bool friend, string? password = null, bool banned = false) => Games.Why(g, who, score, _ => friend, _ => banned, password);
+        Assert.Equal("own", Why(HOST, 50, false, banned: true));
+        Assert.Equal("banned", Why(GUEST, 50, false, banned: true));  // before the friends-only refusal
+        Assert.Equal("banned", Why(GUEST, 150, true, "pw", banned: true));
         Assert.Equal("friends", Why(GUEST, 50, false));
         Assert.Equal("hunterscore", Why(GUEST, 50, true));
         Assert.Equal("starting", Why(GUEST, 150, true));  // the host's port and network id are not known

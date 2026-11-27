@@ -27,3 +27,10 @@ h5 { margin: 12px 0 8px; font-size: 17.5px; line-height: 20px; font-weight: 400;
 .avatars + h5 + .avatars { margin-bottom: 70px; }
 .cur { margin: 0 0 28px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.list { margin: 0; padding: 0; list-style: none; }
+.list li { display: flex; align-items: center; gap: 6px; padding: 8px 10px; font-size: 14px; color: var(--text-2); }
+.list li:nth-child(even) { background: var(--surface-2); }
+.list ::deep .asset-slot { margin-right: 6px; }
+.buttons { margin-left: auto; }
+.buttons .btn-inverse { background: #3a3a3a; color: #fff; }
+.empty { margin: 60px 0; text-align: center; font-size: 1.8em; font-weight: 100; color: #ccc; }

@@ -214,6 +214,27 @@ public sealed partial class State
         return true;
     }
 
+    /// <summary>User/ban_player of `banned_user_id`: the account bans that player from its games (<see cref="Games.Why"/> `banned`), once; `true`. `{"errorCode": 400}`, and nothing stored, for the account's own id
+    /// and any id that is not a player of its multiplayer session or one it may see (<see cref="SeenAccount"/>, as for <see cref="FriendReply"/>: banning any id would name the player in the website's list of bans).</summary>
+    public byte[] BanPlayerReply(long account, byte[] formBody)
+    {
+        if (!long.TryParse(Form1(Py.ParseQs(Encoding.UTF8.GetString(formBody)), "banned_user_id"), out var id) || id == account)
+            return """{"errorCode": 400}"""u8.ToArray();
+        var other = PublicAccount(id) is { } o && InSessionWith(account, o) ? o : SeenAccount(account, id);
+        if (other is not { } known) return """{"errorCode": 400}"""u8.ToArray();
+        Store.BanFromGames(account, known);
+        return "true"u8.ToArray();
+    }
+
+    /// <summary>`GET /account/bans`: `{bans: [{handle, avatar, ts}]}`, the players the account banned from its games, the latest first (`avatar` as <see cref="AvatarUrl"/>, on `site`; `ts` Unix seconds).</summary>
+    public JsonObject WebBans(long account, string site) => new()
+    {
+        ["bans"] = new JsonArray([.. Store.GameBansOf(account).Select(b => (JsonNode?)new JsonObject { ["handle"] = Store.HandleOf(b.Account), ["avatar"] = AvatarUrl(b.Account, site), ["ts"] = b.Ts })]),
+    };
+
+    /// <summary>`POST /account/bans/unban` of a player by handle: lifts the account's own ban of it; false when it banned no such player.</summary>
+    public bool WebUnban(long account, string handle) => Store.AccountByHandle(handle) is { } other && Store.UnbanFromGames(account, other);
+
     /// <summary>The restored `/game/user/&lt;uid&gt;/profile` reply, by whatever user id the zip or the archive named: the account may keep an id of its own (a restore into an existing account, a claim).</summary>
     JsonNode? RestoredProfile(Db con) =>
         con.Scalar("SELECT body FROM extras WHERE account_id = $a AND path LIKE 'game!_user!_%!_profile.json' ESCAPE '!'") is string s ? JsonNode.Parse(s) : null;

@@ -715,6 +715,36 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheWebsiteListsAndLiftsTheSignedInPlayersOwnMultiplayerBansOnly()
+    {
+        var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));
+        var me = state.Store.Listed("one", null)!.Value;
+        state.CreateAccount(9, "Third");
+        state.CreateAccount(10, "Fourth");
+        state.CreateAccount(11, "Fifth");
+        foreach (var (host, banned) in new[] { (me, 10L), (me, 11L), (9L, 11L), (9L, me) })
+            state.Store.BanFromGames(host, banned);
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE host_bans SET ts = 1700000000 + banned_id WHERE host_id = ?", me);
+        async Task<string[]> Bans() => [.. JsonNode.Parse((await Get("web.test", "/account/bans", ck)).Body)!["bans"]!.AsArray().Select(b => $"{b!["handle"]}:{b["ts"]}")];
+        Task<Reply> Unban(string handle, params (string, string)[] headers) => server.SendAsync("POST", "web.test", "/account/bans/unban",
+            [("Content-Type", "application/x-www-form-urlencoded"), .. headers], Encoding.UTF8.GetBytes("handle=" + handle));
+        var xhr = new[] { ck, ("X-Requested-With", "XMLHttpRequest") };
+
+        Assert.Equal(["Fifth:1700000011", "Fourth:1700000010"], await Bans());  // the latest first; Third's ban of Fifth is not here
+        Assert.Equal(200, (await Unban("Fifth", xhr)).Status);
+        Assert.Equal(["Fourth:1700000010"], await Bans());
+        Assert.Equal(404, (await Unban("Fifth", xhr)).Status);  // lifted already
+        Assert.Equal(404, (await Unban("Third", xhr)).Status);  // Third banned this player, not the other way round: that ban stays
+        Assert.Equal(404, (await Unban("nobody", xhr)).Status);
+        Assert.Equal([11L, me], state.Store.GameBansOf(9).Select(b => b.Account).Order());  // another host's bans are not touched
+        Assert.Equal(401, (await Get("web.test", "/account/bans")).Status);
+        Assert.Equal(401, (await Unban("Fourth", ("X-Requested-With", "XMLHttpRequest"))).Status);
+        Assert.Equal(400, (await Unban("Fourth", ck)).Status);  // not from a page of this server
+        Assert.Equal(["Fourth:1700000010"], await Bans());
+    }
+
+    [Fact]
     public async Task TestTheFriendSearchFindsTenHandlesExactFirstAndThirtyTimesAnHour()
     {
         var ck = Ck("hr_session", await SignIn("99999999999999991", "one"));

@@ -1671,4 +1671,10 @@
   <data name="Join.Hidden" xml:space="preserve"><value>Карту и снаряжение хозяина видят только игроки, которые могут присоединиться к этой игре.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ по обычной ставке, без бонусов.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Заблокирован хостом</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: хост заблокировал вас в своих играх.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Игроки, которых вы блокируете кнопкой «Заблокировать» на странице игроков в игре, не смогут присоединяться к вашим многопользовательским играм, пока вы не снимете блокировку.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Вы никого не заблокировали.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Разблокировать</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Вы действительно хотите разблокировать {0} в своих играх?</value></data>
 </root>

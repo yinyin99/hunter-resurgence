@@ -1671,4 +1671,10 @@ Numele:</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Harta și echipamentul gazdei sunt afișate doar jucătorilor care se pot alătura acestui joc.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ la tariful normal, fără bonusuri.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Evenimente bonus în această perioadă:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Blocat de gazdă</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nu te poți alătura acestui joc: gazda te-a blocat din jocurile sale.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Jucătorii pe care îi blochezi cu butonul Blochează din pagina jucătorilor din joc nu se pot alătura jocurilor tale multiplayer până când nu le ridici blocarea.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Nu ai blocat niciun jucător.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Deblochează</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Sigur vrei să deblochezi jucătorul {0} din jocurile tale?</value></data>
 </root>

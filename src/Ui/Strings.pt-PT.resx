@@ -1671,4 +1671,10 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só são mostrados a jogadores que podem entrar neste jogo.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ à taxa normal, sem bónus.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bónus no período:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banido pelo anfitrião</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Não podes entrar neste jogo: o anfitrião baniu-te dos jogos dele.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Os jogadores que baneres com o botão Banir da página de jogadores do jogo não podem entrar nos teus jogos multijogador até removeres o banimento.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Não baniste nenhum jogador.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Remover banimento</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Tens a certeza de que queres remover o banimento de {0} dos teus jogos?</value></data>
 </root>

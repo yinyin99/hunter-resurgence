@@ -1671,4 +1671,10 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannato dall'host</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Non puoi unirti a questa partita: l'host ti ha bannato dalle sue partite.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>I giocatori che banni con il pulsante Banna nella pagina dei giocatori del gioco non possono unirsi alle tue partite multiplayer finché non rimuovi il ban.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Non hai bannato nessun giocatore.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Rimuovi ban</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Vuoi davvero rimuovere il ban di {0} dalle tue partite?</value></data>
 </root>

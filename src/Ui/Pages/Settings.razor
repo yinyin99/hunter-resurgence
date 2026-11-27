@@ -1,10 +1,11 @@
-@page "/settings"
+@page "/settings/{Tab?}"
 @inject IAccountService Service
 @inject ISessionService Sessions
+@inject ModalService Modal
 
 <PageTitle>@L["Set.Title"]</PageTitle>
 
-@* the avatar is the only account setting the community server has (docs/website.md#sign-in); the others could be built later and show disabled *@
+@* the avatar and the multiplayer bans are the account settings the community server has (docs/website.md#sign-in); the others could be built later and show disabled *@
 <div class="page-min">
     <h2 class="page-title">@(L["Set.Title"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
     <div class="cols">
@@ -13,9 +14,9 @@
             <ul>
                 @foreach (var (key, label) in tabs)
                 {
-                    @if (key == "avatar")
+                    @if (key is "avatar" or "bans")
                     {
-                        <li class="on"><a href="/settings">@L[label]</a></li>
+                        <li class="@(key == (onBans ? "bans" : "avatar") ? "on" : null)"><a href="@(key == "bans" ? "/settings/bans" : "/settings")">@L[label]</a></li>
                     }
                     else
                     {
@@ -24,34 +25,64 @@
                 }
             </ul>
         </nav>
-        <section class="panel">
-            <h4 class="bar">@L["Set.AvatarTitle"]</h4>
-            <div class="pane">
-                <p class="info">@L["Set.AvatarInfo"]</p>
-                <h5>@L["Set.AvatarCurrent"]</h5>
-                <div class="cur"><AssetSlot Name="@(account?.Avatar ?? Avatars.Default)" Width="150" Height="150" /></div>
-                <h5>@L["Set.AvatarSelect"]</h5>
-                @if (avatars.Any(a => Avatars.IdOf(a.Id) is null))
-                {
-                    <p class="hint">@L["Set.AvatarHeadHint"]</p>
-                }
-                <div class="avatars">
-                    @foreach (var a in avatars.Where(a => !a.Locked))
+        @if (onBans)
+        {
+            <section class="panel">
+                <h4 class="bar">@L["Set.TabBans"]</h4>
+                <div class="pane">
+                    <p class="info">@L["Set.BansInfo"]</p>
+                    @if (bans.Count == 0)
                     {
-                        var on = a.Id == account?.Avatar;
-                        var css = "pick" + (on ? " on" : "") + (a.InGame ? " game" : "");
-                        <button type="button" class="@css" title="@a.Name" @onclick="() => Pick(a.Id)"><AssetSlot Name="@a.Id" Width="60" Height="60" />@if (on && Avatars.IdOf(a.Id) is null) { <span class="tag">@L["Set.AvatarPicture"]</span> } else if (a.InGame) { <span class="tag">@L["Set.AvatarInGame"]</span> }</button>
+                        <p class="empty">@L["Set.BansEmpty"]</p>
+                    }
+                    else
+                    {
+                        <ul class="list">
+                            @foreach (var b in bans)
+                            {
+                                <li>
+                                    <AssetSlot Name="@b.Avatar" Width="48" Height="48" />
+                                    <a href="/profile/@b.Handle" class="handle">@b.Handle</a>
+                                    <span class="date">@b.Date.ToString("yyyy-MM-dd")</span>
+                                    <span class="buttons"><button type="button" class="btn btn-inverse" @onclick="() => Unban(b)">@L["Set.BansUnban"]</button></span>
+                                </li>
+                            }
+                        </ul>
                     }
                 </div>
-                <h5>@L["Set.AvatarUnlockable"]</h5>
-                <div class="avatars">
-                    @foreach (var a in avatars.Where(a => a.Locked))
+            </section>
+        }
+        else
+        {
+            <section class="panel">
+                <h4 class="bar">@L["Set.AvatarTitle"]</h4>
+                <div class="pane">
+                    <p class="info">@L["Set.AvatarInfo"]</p>
+                    <h5>@L["Set.AvatarCurrent"]</h5>
+                    <div class="cur"><AssetSlot Name="@(account?.Avatar ?? Avatars.Default)" Width="150" Height="150" /></div>
+                    <h5>@L["Set.AvatarSelect"]</h5>
+                    @if (avatars.Any(a => Avatars.IdOf(a.Id) is null))
                     {
-                        <a class="pick locked" href="/store/item/@a.Item" title="@L["Set.AvatarLocked"]"><AssetSlot Name="@a.Id" Width="60" Height="60" /><Icon Name="lock" /><span>@a.Name</span></a>
+                        <p class="hint">@L["Set.AvatarHeadHint"]</p>
                     }
+                    <div class="avatars">
+                        @foreach (var a in avatars.Where(a => !a.Locked))
+                        {
+                            var on = a.Id == account?.Avatar;
+                            var css = "pick" + (on ? " on" : "") + (a.InGame ? " game" : "");
+                            <button type="button" class="@css" title="@a.Name" @onclick="() => Pick(a.Id)"><AssetSlot Name="@a.Id" Width="60" Height="60" />@if (on && Avatars.IdOf(a.Id) is null) { <span class="tag">@L["Set.AvatarPicture"]</span> } else if (a.InGame) { <span class="tag">@L["Set.AvatarInGame"]</span> }</button>
+                        }
+                    </div>
+                    <h5>@L["Set.AvatarUnlockable"]</h5>
+                    <div class="avatars">
+                        @foreach (var a in avatars.Where(a => a.Locked))
+                        {
+                            <a class="pick locked" href="/store/item/@a.Item" title="@L["Set.AvatarLocked"]"><AssetSlot Name="@a.Id" Width="60" Height="60" /><Icon Name="lock" /><span>@a.Name</span></a>
+                        }
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        }
     </div>
 </div>
 
@@ -62,19 +93,33 @@
         ("steam", "Set.TabSteam"), ("profile", "Set.TabProfile"),
     ];
 
+    /// <summary>"bans" shows the multiplayer bans; anything else, the avatar.</summary>
+    [Parameter] public string? Tab { get; set; }
+
+    bool onBans => Tab == "bans";
     Account? account;
     IReadOnlyList<AvatarChoice> avatars = [];
+    IReadOnlyList<GameBan> bans = [];
     string handle = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => handle = (await Sessions.CurrentAsync())?.Handle ?? "";
+
+    protected override async Task OnParametersSetAsync()
     {
-        handle = (await Sessions.CurrentAsync())?.Handle ?? "";
-        (account, avatars) = (await Service.AccountAsync(), await Service.AvatarsAsync());
+        if (onBans) bans = await Service.GameBansAsync();
+        else (account, avatars) = (await Service.AccountAsync(), await Service.AvatarsAsync());
     }
 
     async Task Pick(string id)
     {
         await Service.SetAvatarAsync(id);
         (account, avatars) = (await Service.AccountAsync(), await Service.AvatarsAsync());  // the in-game head is marked only while the own picture is selected
+    }
+
+    async Task Unban(GameBan b)
+    {
+        if (!await Modal.Confirm(L["Set.BansUnbanConfirm", b.Handle])) return;
+        await Service.UnbanAsync(b.Handle);
+        bans = await Service.GameBansAsync();
     }
 }
