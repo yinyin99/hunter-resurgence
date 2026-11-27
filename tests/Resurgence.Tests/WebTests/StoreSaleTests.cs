@@ -172,4 +172,18 @@ public sealed class StoreSaleTests : UiContext
         var page = Render<BundleDetail>(p => p.Add(b => b.Id, 7));
         Assert.Equal(["was 90 em$"], Texts(page.FindAll(".buy .was")));
     }
+
+    // a bundle shows its gm$ price after the em$ one, struck through too while on sale, and the buy dialog gets it
+    [Fact]
+    public void ABundleShowsItsGmPriceAfterItsEmPrice()
+    {
+        Services.AddSingleton<IStoreService>(new One(Filler, new StoreBundle(7, "Made-up Pack", "", 36, true, [new(1, "Made-up Rifle", 1, 0, 36)], Gms: 612)));
+        var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
+        list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
+        Assert.Equal(["36 em$", "or 612 gm$"], Texts(list.FindAll(".card .price b, .card .price span")));
+
+        var onSale = new StoreBundle(8, "Made-up Sale Pack", "", 36, true, [new(1, "Made-up Rifle", 1, 0, 36)], PreSale: 45, Sale: Weekend, Gms: 612, PreSaleGms: 765);
+        Assert.Equal(["36 em$", "612 gm$"], Resurgence.Ui.Components.SalePrice.Of(onSale).Select(p => $"{p.Now} {p.Cur}"));
+        Assert.Equal([45, 765], Resurgence.Ui.Components.SalePrice.Of(onSale).Select(p => p.Was!.Value));
+    }
 }

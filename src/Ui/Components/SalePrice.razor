@@ -27,5 +27,5 @@
         return l;
     }
 
-    public static IReadOnlyList<Price> Of(StoreBundle b) => [new(b.Price, b.StruckPrice > 0 ? b.StruckPrice : null, "em$")];
+    public static IReadOnlyList<Price> Of(StoreBundle b) => [new(b.Price, b.StruckPrice > 0 ? b.StruckPrice : null, "em$"), .. b.Gms > 0 ? [new Price(b.Gms, b.PreSaleGms, "gm$")] : Array.Empty<Price>()];
 }

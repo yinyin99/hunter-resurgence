@@ -59,10 +59,10 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
 
     static readonly StoreBundle[] Bundles =
     [
-        new(0, "Bait - Refill Pack", "Buy three bait, get one free!", 90, true, [new(137, "Bait", 4, 0, 120)]),
+        new(0, "Bait - Refill Pack", "Buy three bait, get one free!", 90, true, [new(137, "Bait", 4, 0, 120)], Gms: 1530),
         new(1, "Hunter Starter Pack", "A rifle, ammunition and a scope to start with.\nOne rifle per hunter.", 80, true,
             [new(1226, "Rifle A", 1, 0, 120, "Engraved", 1), new(1225, "Rifle Ammo A", 2, 0, 40, "Black"), new(1225, "Rifle Ammo A", 3, 0, 60, "Black"), new(1224, "Rifle Scope A", 1, 0, 50, "Silver", 2)],
-            PreSale: 100, Sale: new("Harvest weekend", 20, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero))),
+            PreSale: 100, Sale: new("Harvest weekend", 20, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)), Gms: 1360, PreSaleGms: 1700),
     ];
 
     // the items and bundles as the account sees them now: what it bought is owned, a limit may be reached
@@ -82,7 +82,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     StoreBundle Live(StoreBundle b)
     {
         var lines = b.Lines.Select(l => l with { Owned = l.Owned + state.Bought(l.ItemId) }).ToList();
-        return b with { Lines = lines, Buyable = b.Buyable && !lines.Any(l => l.OwnLimit > 0 && l.Owned >= l.OwnLimit), PreSale = mock == "store:nosales" ? null : b.PreSale, Sale = mock == "store:nosales" ? null : b.Sale };
+        return b with { Lines = lines, Buyable = b.Buyable && !lines.Any(l => l.OwnLimit > 0 && l.Owned >= l.OwnLimit), PreSale = mock == "store:nosales" ? null : b.PreSale, PreSaleGms = mock == "store:nosales" ? null : b.PreSaleGms, Sale = mock == "store:nosales" ? null : b.Sale };
     }
 
     public Task<IReadOnlyList<StoreCategory>> CategoriesAsync() => Task.FromResult<IReadOnlyList<StoreCategory>>(Categories);
@@ -115,7 +115,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
         if (mock == "store:fail" || count < 1) return Result.Fail("Store.Oops");
         if (bundle)
         {
-            if (Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault() is not { Buyable: true } b || gms || !state.Spend(false, b.Price, b.Name)) return Result.Fail("Store.Oops");
+            if (Bundles.Where(b => b.Id == id).Select(Live).FirstOrDefault() is not { Buyable: true } b || !state.Spend(gms, gms ? b.Gms : b.Price, b.Name)) return Result.Fail("Store.Oops");
             foreach (var l in b.Lines) state.Add(l.ItemId, l.Count);
             return Result.Success;
         }

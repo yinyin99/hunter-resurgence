@@ -18,6 +18,7 @@
                 else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
                 @if (bundle.OnSale) { <SalePrice Big Prices="SalePrice.Of(bundle)" /> }
                 else if (bundle.StruckPrice > 0) { <b class="sale">@bundle.Price em$</b> <s>@bundle.StruckPrice em$</s> } else { <b>@bundle.Price em$</b> }
+                @if (!bundle.OnSale && bundle.Gms > 0) { <span class="gms">@L["Store.Or"] @bundle.Gms gm$</span> }
             </div>
             @if (bundle.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
             <h1>@bundle.Name</h1>
@@ -61,7 +62,7 @@
 
     void Buy() => Modal.Show<BuyModal>(new Dictionary<string, object?>
     {
-        ["Id"] = bundle!.Id, ["Name"] = bundle.Name, ["Ems"] = bundle.Price, ["Bundle"] = true, ["Lines"] = bundle.Lines,
+        ["Id"] = bundle!.Id, ["Name"] = bundle.Name, ["Ems"] = bundle.Price, ["Gms"] = bundle.Gms, ["Bundle"] = true, ["Lines"] = bundle.Lines,
         ["Bought"] = EventCallback.Factory.Create(this, Load),
     });
 }

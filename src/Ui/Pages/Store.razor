@@ -58,7 +58,7 @@
                 else
                 {
                     @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
-                    <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                    <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }@if (b.Gms > 0) { <span> @L["Store.Or"] @b.Gms gm$</span> }</p>
                 }
                 @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
                 else if (b.OwnedItems > 0) { <p class="own">@(b.WasPrice > b.Price ? L["Store.BundleOwn", b.OwnedItems, b.OfItems, b.Price, b.WasPrice] : L["Store.BundleOwnCount", b.OwnedItems, b.OfItems])</p> }

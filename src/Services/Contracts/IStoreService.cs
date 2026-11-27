@@ -41,10 +41,10 @@ public sealed record StoreContents(int Count, string Unit);
 public sealed record BundleLine(int ItemId, string Name, int Count, int Owned, int Value, string Variant = "", int OwnLimit = 0);
 
 /// <summary><see cref="Price"/> is what the signed-in player pays now; <see cref="WasPrice"/> the list price when it is higher (the player owns some of the items up to their limit), else 0; <see cref="OwnedItems"/> of its <see cref="OfItems"/> items are not given again (a copy listed beyond an item's limit is not counted).
-/// <see cref="PreSale"/> is the list price before the bundle's <see cref="Sale"/> (null when it is not on sale).</summary>
-public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines, int WasPrice = 0, int OwnedItems = 0, int OfItems = 0, int? PreSale = null, StoreSale? Sale = null)
+/// <see cref="PreSale"/> is the list price before the bundle's <see cref="Sale"/> (null when it is not on sale). <see cref="Gms"/> is the same price in gm$ (0 for none) and <see cref="PreSaleGms"/> the gm$ list price before the sale.</summary>
+public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines, int WasPrice = 0, int OwnedItems = 0, int OfItems = 0, int? PreSale = null, StoreSale? Sale = null, int Gms = 0, int? PreSaleGms = null)
 {
-    public bool OnSale => PreSale is not null;
+    public bool OnSale => PreSale is not null || PreSaleGms is not null;
 
     /// <summary>The price to strike through next to <see cref="Price"/>: the list price before the sale when it is on sale (before the player's own items save anything too), else what the player's items save; 0 for none.</summary>
     public int StruckPrice => PreSale ?? WasPrice;
