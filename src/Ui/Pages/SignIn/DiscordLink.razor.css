@@ -7,6 +7,7 @@
 .fill { height: 100%; min-width: 2px; border-radius: 5px; background: var(--accent); }
 .more { margin: 0 0 4px; color: var(--fg-muted); }
 .more ::deep .veteran { color: var(--discord-role-veteran); }
+.claim ::deep b { color: #fff; font-weight: 500; white-space: nowrap; }  /* Roboto has no 700: a plain <b> would be a smeared synthetic bold */
 .back { margin: 22px 0 0; }
 .back ::deep .btn { display: block; box-sizing: border-box; width: 100%; background-color: var(--discord); text-align: center; }
 .back ::deep .btn:hover { background-color: var(--discord-hover); }

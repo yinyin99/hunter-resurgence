@@ -1585,6 +1585,8 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="DiscordLink.Role" xml:space="preserve"><value>Din roll på Discord: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>{0} kvar till {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Tillbaka till Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Visa din HunterScore på din Discord-profil genom att göra så här en gång på Discord-servern: servernamnet → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Länkade roller (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Är du säker på att du vill stänga launchern och spelet?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launchern behöver Microsoft Edge WebView2, som saknas eller inte fungerar på den här datorn. Vill du installera det nu? Ja öppnar Microsofts nedladdningssida och stänger launchern: starta den igen när WebView2 är installerat. Nej stänger launchern.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Launcherns webbläsare (Microsoft Edge WebView2) kunde inte starta. Vill du starta om launchern utan hårdvaruacceleration? Launchern kommer ihåg ditt val. Ja startar om den, Nej stänger den.</value></data>

@@ -1585,6 +1585,8 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="DiscordLink.Role" xml:space="preserve"><value>Discord'daki rolünüz: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>{1} için {0} kaldı ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Discord'a dön</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>HunterScore'unuzu Discord profilinizde göstermek için Discord sunucusunda bunu bir kez yapın: sunucu adı → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Bağlı Roller (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Launcher'ı ve oyunu kapatmak istediğinizden emin misiniz?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcher, bu bilgisayarda eksik olan veya çalışmayan Microsoft Edge WebView2'ye ihtiyaç duyuyor. Şimdi yüklemek istiyor musunuz? Evet, Microsoft'un indirme sayfasını açar ve launcher'ı kapatır: WebView2 yüklendikten sonra launcher'ı yeniden başlatın. Hayır, launcher'ı kapatır.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Launcher'ın tarayıcısı (Microsoft Edge WebView2) başlatılamadı. Launcher'ı donanım hızlandırması olmadan yeniden başlatmak istiyor musunuz? Launcher bu seçimi hatırlar. Evet, yeniden başlatır; Hayır, kapatır.</value></data>

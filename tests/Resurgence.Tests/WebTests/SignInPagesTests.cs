@@ -137,5 +137,22 @@ public sealed class SignInPagesTests : UiContext
         var cut = Render<DiscordLink>();
         Assert.Equal(Text(linked ? "DiscordLink.Linked" : "SignInPage.Problem.Title"), cut.Find("h1").TextContent);
         Assert.Equal(Text(key), cut.Find("p").TextContent);
+        var old = Thread.CurrentThread.CurrentUICulture;
+        try
+        {
+            foreach (var lang in Languages.All)  // a linked result tells how to show the HunterScore on Discord: Discord's menu item in its own words for the language with the English in brackets, the role "Linked" in English
+            {
+                Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(lang.Code);
+                var claim = Render<DiscordLink>().FindAll(".claim");
+                if (!linked) { Assert.Empty(claim); continue; }
+                var menu = Text("DiscordLink.LinkedRoles");
+                Assert.True(menu == "Linked Roles" || menu.EndsWith(" (Linked Roles)"), $"{lang.Code}: {menu}");
+                Assert.Equal(Text("DiscordLink.Claim").Replace("{0}", menu).Replace("{1}", "Linked"), Assert.Single(claim).TextContent);
+                Assert.Equal(new[] { menu, "Linked" }, claim[0].QuerySelectorAll("b").Select(b => b.TextContent));
+                Assert.Contains("HunterScore", claim[0].TextContent);
+                if (lang.Code == "fr") Assert.Equal("Rôles liés (Linked Roles)", menu);  // the Discord client's French menu item
+            }
+        }
+        finally { Thread.CurrentThread.CurrentUICulture = old; }
     }
 }

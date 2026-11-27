@@ -1585,6 +1585,8 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="DiscordLink.Role" xml:space="preserve"><value>Din rolle på Discord: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>{0} mere til {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Tilbage til Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Vis din HunterScore på din Discord-profil ved at gøre dette én gang på Discord-serveren: servernavnet → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Tilknyttede roller (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Er du sikker på, at du vil lukke launcheren og spillet?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcheren har brug for Microsoft Edge WebView2, som mangler eller ikke virker på denne pc. Vil du installere det nu? Ja åbner Microsofts downloadside og lukker launcheren: start den igen, når WebView2 er installeret. Nej lukker launcheren.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Launcherens browser (Microsoft Edge WebView2) kunne ikke starte. Vil du genstarte launcheren uden hardwareacceleration? Launcheren husker dit valg. Ja genstarter den, Nej lukker den.</value></data>

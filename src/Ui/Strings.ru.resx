@@ -1585,6 +1585,8 @@
   <data name="DiscordLink.Role" xml:space="preserve"><value>Ваша роль в Discord: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Ещё {0} до роли {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Назад в Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Чтобы ваш HunterScore отображался в профиле Discord, один раз выберите на сервере Discord: название сервера → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Привязанные роли (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Вы уверены, что хотите закрыть лаунчер и игру?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Лаунчеру нужен Microsoft Edge WebView2, который отсутствует или не работает на этом ПК. Установить его сейчас? «Да» откроет страницу загрузки Microsoft и закроет лаунчер: запустите его снова после установки WebView2. «Нет» закроет лаунчер.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Браузер лаунчера (Microsoft Edge WebView2) не удалось запустить. Перезапустить лаунчер без аппаратного ускорения? Лаунчер запомнит этот выбор. «Да» перезапустит его, «Нет» закроет.</value></data>

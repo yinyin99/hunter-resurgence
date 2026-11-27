@@ -1585,6 +1585,8 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="DiscordLink.Role" xml:space="preserve"><value>Roolisi Discordissa: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>{0} lisää rooliin {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Takaisin Discordiin</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Jotta HunterScore näkyy Discord-profiilissasi, tee tämä kerran Discord-palvelimella: palvelimen nimi → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Linkitetyt roolit (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Haluatko varmasti sulkea launcherin ja pelin?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcher tarvitsee Microsoft Edge WebView2:n, joka puuttuu tästä tietokoneesta tai ei toimi. Asennetaanko se nyt? Kyllä avaa Microsoftin lataussivun ja sulkee launcherin: käynnistä se uudelleen, kun WebView2 on asennettu. Ei sulkee launcherin.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Launcherin selainta (Microsoft Edge WebView2) ei voitu käynnistää. Käynnistetäänkö launcher uudelleen ilman laitteistokiihdytystä? Launcher muistaa valinnan. Kyllä käynnistää sen uudelleen, Ei sulkee sen.</value></data>
