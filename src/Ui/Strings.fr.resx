@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Vous ne possédez aucune tente dans cette réserve. Les tentes que vous placez dans une réserve servent de points de départ mobiles et d’accès à votre inventaire. Obtenez vos tentes à la {0}boutique{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom avant</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom arrière</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Carte : faites glisser pour la déplacer, molette de la souris ou + / − pour zoomer, les flèches la déplacent</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Départ : {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Infos &amp; point de départ</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nom de la partie :</value></data>

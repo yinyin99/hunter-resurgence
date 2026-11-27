@@ -92,20 +92,30 @@ public sealed class MapPlaceholderTests : UiContext
         Assert.Equal(expected.Contains("scale(2)") ? "2" : expected.Contains("1.5") ? "1.5" : "1", cut.Find(".map").GetAttribute("data-s"));
     }
 
-    // a picked marker is brought to the middle (zooming in once from ×1) while the picture still reaches the edges; a later drag is not undone by the next render
+    // a marker is brought to the middle (zooming in once from ×1) while the picture still reaches the edges; a later drag is not undone by a render,
+    // and picking the same marker again (its strip button or a click on it) after a drag centres it again
     [Fact]
-    public async Task CentringAMarkerZoomsInOnceAndALaterPanStays()
+    public async Task CentringAMarkerZoomsInOnceAndEveryPickCentresAgainAfterADrag()
     {
         MapMarker[] markers = [new(1, MarkerKind.Lodge, "Near", 45, 55), new(2, MarkerKind.Lodge, "Edge", 5, 5)];
-        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, markers));
-        cut.Render(p => p.Add(m => m.Markers, markers).Add(m => m.Centre, 1));
+        MapMarker? picked = null;
+        var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, markers).Add(m => m.OnPick, m => picked = m));
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(1));
         Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
 
         await cut.InvokeAsync(() => cut.Instance.View(1.5, -10, 10));
-        cut.Render(p => p.Add(m => m.Markers, markers).Add(m => m.Centre, 1).Add(m => m.Hover, 2));
+        cut.Render(p => p.Add(m => m.Markers, markers).Add(m => m.OnPick, m => picked = m).Add(m => m.Hover, 2));
         Assert.Equal("transform:scale(1.5) translate(-10%, 10%)", Plane(cut));
 
-        cut.Render(p => p.Add(m => m.Markers, markers).Add(m => m.Centre, 2));
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(1));
+        Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
+
+        await cut.InvokeAsync(() => cut.Instance.View(1.5, -10, 10));
+        cut.Find("button.k-lodge").Click();
+        Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
+        Assert.Equal(1, picked?.Id);
+
+        await cut.InvokeAsync(() => cut.Instance.CentreOn(2));
         Assert.Equal("transform:scale(1.5) translate(16.67%, 16.67%)", Plane(cut));
     }
 
@@ -117,6 +127,7 @@ public sealed class MapPlaceholderTests : UiContext
 
         var cut = Render<MapPlaceholder>(p => p.Add(m => m.Markers, Markers).AddChildContent("<span class=\"label\">here</span>"));
         Assert.Equal("0", cut.Find(".map").GetAttribute("tabindex"));
+        Assert.False(string.IsNullOrWhiteSpace(cut.Find(".map").GetAttribute("aria-label")));
         Assert.Single(cut.FindAll(".plane .label"));
     }
 }

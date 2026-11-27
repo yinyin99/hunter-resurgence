@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Não tens nenhuma tenda nesta reserva. As tendas que colocas numa reserva funcionam como pontos de partida portáteis e pontos de acesso ao inventário. Obtém as tuas tendas na {0}loja{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Aumentar zoom</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Diminuir zoom</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mapa: arraste para mover, use a roda do rato ou + / − para ampliar, as setas movem o mapa</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Início às {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informações do jogo e ponto de partida</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nome do jogo:</value></data>

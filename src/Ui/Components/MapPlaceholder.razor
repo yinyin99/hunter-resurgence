@@ -2,14 +2,14 @@
 @inject IJSRuntime JS
 @inject AssetImages Images
 @inject NavigationManager Nav
-<div @ref="map" class="@(Zoom ? "map zoomable" : "map")" tabindex="@(Zoom ? 0 : null)" data-s="@Fmt.Num(scale, "0.####")" data-x="@Pc(panX)" data-y="@Pc(panY)" style="height:@(Height)px">
+<div @ref="map" class="@(Zoom ? "map zoomable" : "map")" tabindex="@(Zoom ? 0 : null)" role="@(Zoom ? "group" : null)" aria-label="@(Zoom ? L["Map.Label"].Value : null)" data-s="@Fmt.Num(scale, "0.####")" data-x="@Pc(panX)" data-y="@Pc(panY)" style="height:@(Height)px">
     @* the picture sits on the plane, so it zooms and pans with the markers and the layer over the map (the start label) *@
     <div class="plane" style="transform:@Transform;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
         @foreach (var m in Markers)
         {
             var pickable = !m.Only && m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
             var slot = SlotOf(m);
-            <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
+            <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => Pick(m)">
                 @if (slot is not null) { <AssetSlot Name="@slot" Width="@MarkerSize" Height="@MarkerSize" /> }
                 else { <Icon Name="@IconOf(m.Kind)" /> }
             </button>
@@ -41,7 +41,7 @@
 @code {
     const double MaxScale = 2, Step = .5;
     double scale = 1, panX, panY;
-    int? centred, shown;
+    int? shown;
     ElementReference map;
     IJSObjectReference? module;
     DotNetObjectReference<MapPlaceholder>? self;
@@ -52,8 +52,6 @@
     [Parameter] public int? Selected { get; set; }
     /// <summary>Marker whose label is shown (the hover of the old marker lists).</summary>
     [Parameter] public int? Hover { get; set; }
-    /// <summary>Marker to bring to the middle of the map (the click of the old marker lists); the map zooms in once if it is not.</summary>
-    [Parameter] public int? Centre { get; set; }
     /// <summary>Hunters of a game, drawn as dots (the join map).</summary>
     [Parameter] public IReadOnlyList<GamePlayer> Players { get; set; } = [];
     /// <summary>Hunter whose name label is shown.</summary>
@@ -74,10 +72,21 @@
     protected override void OnParametersSet()
     {
         if (Bg is null) Images.NoteMissing(BgKey, new Uri(Nav.Uri).AbsolutePath);
-        if (Reserve != shown) (shown, centred, panX, panY) = (Reserve, null, 0, 0);
-        if (!Zoom || Centre is null || Centre == centred || Markers.FirstOrDefault(m => m.Id == Centre) is not { } m) return;
-        centred = Centre;
+        if (Reserve != shown) (shown, panX, panY) = (Reserve, 0, 0);
+    }
+
+    /// <summary>Brings a marker to the middle of the map (the click of the old marker lists), zooming in once if the map is not; the picture still reaches the edges. Every call centres again, also after the map was dragged away.</summary>
+    public void CentreOn(int id)
+    {
+        if (!Zoom || Markers.FirstOrDefault(k => k.Id == id) is not { } m) return;
         SetView(scale == 1 ? 1.5 : scale, 50 - m.X, 50 - m.Y);
+        StateHasChanged();
+    }
+
+    Task Pick(MapMarker m)
+    {
+        CentreOn(m.Id);
+        return OnPick.InvokeAsync(m);
     }
 
     /// <summary>The view, applied as the plane's <c>scale</c> then <c>translate</c>: the pan is a percent of the map before the scale. The picture's edge can't pass the map's edge: |pan| ≤ 50·(scale−1)/scale.</summary>
