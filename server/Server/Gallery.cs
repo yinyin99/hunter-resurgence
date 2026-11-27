@@ -55,7 +55,7 @@ public sealed partial class State
     }
 
     /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}` with the account whose picture it is (`Owner`): its own (<see cref="OwnRows"/>), and the trophy shots
-    /// its game took of other members' kills (`taker`), which are theirs; with `kills` such a row also has `hunter`, the handle of the member whose kill it shows.</summary>
+    /// its game took of other members' kills (`taker`), which are theirs, but not those of a banned member (hidden like everywhere else, <see cref="Store.Listed"/>); with `kills` such a row also has `hunter`, the handle of the member whose kill it shows.</summary>
     List<(long Owner, JsonObject Row)> GalleryRows(long account, string? site = null, bool kills = false)
     {
         var rows = OwnRows(account, site, kills).Select(r => (Owner: account, Row: r)).ToList();
@@ -64,6 +64,8 @@ public sealed partial class State
             taken = con.Rows("SELECT account_id, id FROM photos WHERE taker = $a AND file IS NOT NULL");
         foreach (var owner in taken.GroupBy(r => (long)r[0], r => (long)r[1]))
         {
+            if (Store.Listed(owner.Key, null) is null)
+                continue;
             var handle = Store.HandleOf(owner.Key);
             foreach (var row in OwnRows(owner.Key, site, kills).Where(r => owner.Contains((long)r["id"]!)))
             {
@@ -221,10 +223,10 @@ public sealed partial class State
         $"(SELECT MAX(s.id) FROM events s WHERE s.account_id = $a AND s.event = 7 AND s.individual = {individual}"
         + $" AND s.id < (SELECT MAX(t.id) FROM events t WHERE t.account_id = $a AND t.event = 3 AND t.body = {harvest}))";
 
-    /// <summary>The link of the picture of a kill: the newest trophy shot among the photos asked for while its animal was the individual, or that another member took of the kill (`kill_id`); null without one. No other photo type is a kill's picture.</summary>
-    string? KillPhoto(Db con, long account, object? individual, string harvest) =>
-        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND photo_type = {TrophyShot} AND (individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
-                   + " OR kill_id = (SELECT kill_id FROM kills WHERE account_id = $a AND harvest = ?2)) ORDER BY id DESC LIMIT 1", individual, harvest) is string file
+    /// <summary>The link of the picture of a kill (`killId`): the newest trophy shot among the photos asked for while its animal was the individual, or that another member took of the kill (`kill_id`); null without one. No other photo type is a kill's picture.</summary>
+    string? KillPhoto(Db con, long account, object? individual, string harvest, long killId) =>
+        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND photo_type = {TrophyShot} AND (individual = ?1 AND spawn = {KillSpawn("?1", "?2")} OR kill_id = ?3)"
+                   + " ORDER BY id DESC LIMIT 1", individual, harvest, killId) is string file
             ? PhotoUrl(account, file) : null;
 
     /// <summary>A harvest <see cref="TryCredit"/> gave the member who shot the animal (`theirs`, after <see cref="CreditHarvest"/> stored his kill `killId` of it) is noted on the harvester's side (`con`), by the animal's

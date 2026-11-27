@@ -134,7 +134,7 @@ public sealed partial class State
                     con.Exec("DELETE FROM unethical_kills WHERE account_id = $a AND kill_id = ?", killId);
             }
             return new(id, killId, species, change, keeps ? "kept" : null, why.Reason, why.Ammo, why.Basis, coatId, stored, rows, top10,
-                       taxidermied, mount?.Lodge, mount?.Slot, KillPhoto(con, id, k[0], harvest) is not null, known.Gms(killId));
+                       taxidermied, mount?.Lodge, mount?.Slot, KillPhoto(con, id, k[0], harvest, killId) is not null, known.Gms(killId));
         }
         var requalify = !scored && Py.Truthy(score);
         if (flag is null && !requalify)

@@ -10,7 +10,7 @@ namespace Resurgence.Server.Tests;
 /// that kill (`harvest_links`, `photos.kill_id`, `photos.taker`). The players are invented; the mule deer buck scores 168.8186, as in `MpHarvestTests`.</summary>
 public class MpTrophyShotTests : StateTestBase
 {
-    const long HOST = 11, GUEST = 12;
+    const long HOST = 11, GUEST = 12, THIRD = 13;
     const string Start = "start=101&loctype=LODGE&reserve=2&time=540&loadout_id=0";
 
     public MpTrophyShotTests()
@@ -42,14 +42,17 @@ public class MpTrophyShotTests : StateTestBase
         return spawn ? [Spawn(individual), trophy, harvest] : [trophy, harvest];
     }
 
-    /// <summary>`who`'s game asks for a photo of the animal and uploads it: the picture's path.</summary>
-    string Photo(long who, int individual, int type = 2)
+    /// <summary>`who`'s game asks for a photo of the animal and uploads it: the picture's path and the upload's query.</summary>
+    (string Path, string Query) Upload(long who, int individual, int type = 2)
     {
         var update = Beat(who, O($$"""{"event": 4, "hash": 1, "photo_type": {{type}}, "individual": {{individual}}}""")).Single(u => Py.Eq(u!["update"], 11))!;
-        var (status, body) = state.UploadReply(who, new Uri((string)update["url"]!).Query.TrimStart('?'), [1, 2]);
+        var query = new Uri((string)update["url"]!).Query.TrimStart('?');
+        var (status, body) = state.UploadReply(who, query, [1, 2]);
         Assert.Equal(200, status);
-        return new Uri((string)Reply(body)["mediaLink"]!).AbsolutePath;
+        return (new Uri((string)Reply(body)["mediaLink"]!).AbsolutePath, query);
     }
+
+    string Photo(long who, int individual, int type = 2) => Upload(who, individual, type).Path;
 
     JsonArray Gallery(long account) => JsonNode.Parse(state.GalleryListReply(account, []))!["photos"]!.AsArray();
 
@@ -120,6 +123,58 @@ public class MpTrophyShotTests : StateTestBase
         Assert.Equal("guest", (string?)Assert.Single(WebRows(98))!["hunter"]);
         Beat(98, Spawn(460));  // a new spawn of that individual number is another animal: its trophy shot is the harvester's
         Assert.StartsWith("/photos/98/", Photo(98, 460));
+    }
+
+    [Fact]
+    public void TestTheFirstTrophyShotUsesTheLinkUpAndItsPictureIsNotReplaced()
+    {
+        Beat(GUEST, Spawn(460), Hit(460));
+        Beat(HOST, Skinned(460));
+        var (first, query) = Upload(HOST, 460);
+        Assert.StartsWith($"/photos/{GUEST}/", first);
+        Assert.Equal(404, state.UploadReply(HOST, query, [9]).Status);  // the shooter's picture is stored once: the harvester cannot replace it
+        Assert.StartsWith($"/photos/{HOST}/", Photo(HOST, 460));  // a second trophy shot of the animal is the harvester's own
+        Assert.EndsWith(first, (string)Kill(GUEST)["kill"]!["photo"]!);
+        Assert.Single(Gallery(GUEST));
+
+        // once the shooter deleted it, the harvester can neither upload it again nor link a new one
+        Assert.True(state.DeletePhoto(GUEST, (long)Gallery(GUEST)[0]!["id"]!));
+        Assert.Equal(404, state.UploadReply(HOST, query, [9]).Status);
+        Assert.StartsWith($"/photos/{HOST}/", Photo(HOST, 460));
+        Assert.Empty(Gallery(GUEST));
+        Assert.Null(Kill(GUEST)["kill"]!["photo"]);
+    }
+
+    [Fact]
+    public void TestAnotherPlayerSeesTheLinkWithoutShareAndABannedShootersShotIsHidden()
+    {
+        state.CreateAccount(THIRD, "third");
+        Beat(GUEST, Spawn(460), Hit(460));
+        Beat(HOST, Skinned(460));
+        Photo(HOST, 460);
+        var seen = Assert.Single(state.PublicGallery(HOST, 1, "https://web.test", THIRD)["rows"]!.AsArray())!;
+        Assert.Equal(("guest", null), ((string?)seen["hunter"], seen["share"]));
+        Assert.Contains($"viewer={THIRD}", (string)seen["url"]!);
+
+        using (var con = state.Store.Open())
+            con.Exec("UPDATE accounts SET banned = 1 WHERE id = ?", GUEST);
+        Assert.Empty(Gallery(HOST));  // hidden like a banned account everywhere else
+        Assert.Empty(WebRows(HOST));
+    }
+
+    [Fact]
+    public void TestADatabaseAtTheCurrentVersionWithoutTheLinksGetsThem()
+    {
+        using (var con = state.Store.Open())
+        {
+            // `taker` is in a foreign key, which SQLite does not drop: the table, its index and the other column stand for the step
+            foreach (var sql in (string[])["DROP INDEX photos_taker", "ALTER TABLE photos DROP COLUMN kill_id", "DROP TABLE harvest_links"])
+                con.Exec(sql);
+            Assert.Equal((long)Store.Version, con.Scalar("PRAGMA user_version"));  // the version stays at Store.Version
+        }
+        using var check = new Store(Db).Open();
+        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name IN ('taker', 'kill_id')"));
+        Assert.Equal(2L, check.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name IN ('harvest_links', 'photos_taker')"));
     }
 
     [Fact]

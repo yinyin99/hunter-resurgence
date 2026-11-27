@@ -292,17 +292,20 @@ public sealed partial class State
                 StoreHarvest(con, e, trophy, ammoCheck, harvestPage, gmMultiplier, gmEvent, gold => updates.Add(gold));
             else if (Is(e["event"], 4))
             {
-                // a trophy shot of an animal whose harvest went to the member who shot it (TryCredit, harvest_links) is that member's kill's photo: its row is his, and this account's game uploads it (UploadReply)
+                // a trophy shot of an animal whose harvest went to the member who shot it (TryCredit, harvest_links) is that member's kill's photo: its row is his, and this account's game uploads it (UploadReply).
+                // The link is used up by that first trophy shot: any later one is this account's own
                 var link = Is(e["photo_type"], TrophyShot)
-                    ? con.Rows("SELECT owner, kill_id FROM harvest_links WHERE account_id = $a AND individual = ?1"
+                    ? con.Rows("SELECT id, owner, kill_id FROM harvest_links WHERE account_id = $a AND individual = ?1"
                                + " AND spawn IS (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1) ORDER BY id DESC LIMIT 1", e["individual"]).FirstOrDefault()
                     : null;
+                if (link is not null)
+                    con.Exec("DELETE FROM harvest_links WHERE account_id = $a AND id = ?", link[0]);
                 var photoId = link is null
                     ? con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, spawn)"
                                  + " VALUES ($a, ?, ?, ?, ?, (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?5))",
                                  e["hash"], e["photo_type"], e["shot_id"], e["individual"], e["individual"])
-                    : con.Sharing((long)link[0]).Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, kill_id, taker) VALUES ($a, ?, ?, ?, ?, ?, ?)",
-                                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"], link[1], con.Account);
+                    : con.Sharing((long)link[1]).Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, kill_id, taker) VALUES ($a, ?, ?, ?, ?, ?, ?)",
+                                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"], link[2], con.Account);
                 var update = new JsonObject
                 {
                     ["url"] = uploadUrl(photoId, ""), ["photo_type"] = C(e["photo_type"]), ["hash"] = C(e["hash"]), ["update"] = 11,
@@ -2572,7 +2575,7 @@ public sealed partial class State
             foreach (var r in rows)
                 hits[(long)r[0]] = KillHits(con, Py.FromSql(r[1]), (string)r[2]);
             var userId = Account(account)["user_id"];
-            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, HarvestEvent(con, (string)r[2]), KillPhoto(con, account, r[1], (string)r[2]))).ToArray());
+            kills = new JsonArray(rows.Select(r => (JsonNode?)KillEntry(userId, (long)r[0], Parse(r[2]), Parse(r[3]), hits[(long)r[0]], expeditionId, HarvestEvent(con, (string)r[2]), KillPhoto(con, account, r[1], (string)r[2], (long)r[0]))).ToArray());
             // an open hunt's are those of its events so far; expeditions from before first_event have no scope; a closed one's are stored at its close
             if (row[5] is not DBNull)
                 stats = row[4] is DBNull ? HuntStatsOf(con, account, [row[0], row[3], row[4], row[5], row[6], long.MaxValue]) : row[7] is string s ? Parse(s) : null;
@@ -2630,7 +2633,7 @@ public sealed partial class State
             var individual = Py.FromSql(row[0]);
             var harvest = (string)row[1];
             (hits, page) = (KillHits(con, individual, harvest), Parse(row[2]));
-            photo = KillPhoto(con, account, row[0], harvest);
+            photo = KillPhoto(con, account, row[0], harvest, killId);
             (e7, e22) = KillEvents(con, individual, harvest);
             huntEvent = HarvestEvent(con, harvest);
             expedition = con.Rows("SELECT id, reserve, location_id, start_ts, end_ts FROM expeditions WHERE account_id = $a AND id = ?",
@@ -2779,7 +2782,7 @@ public sealed partial class State
         $"{baseUrl}{UPLOAD_PATH}?uploadType=resumable&upload_id={photoId}" + (part != "" ? $"&part={part}" : "");
 
     /// <summary>POST of a photo to UploadUrl(): store it, reply like GCS (storage#object), 404 if the id is unknown. A trophy shot this account took of another member's kill (`taker`, Heartbeat's event 4)
-    /// is stored as that member's, in his folder.</summary>
+    /// is stored as that member's, in his folder, once: a part already stored (the picture or its thumbnail) is not replaced (404), so the taker cannot change the other member's picture afterwards.</summary>
     public (int Status, byte[] Body) UploadReply(long account, string query, byte[] data)
     {
         var q = Py.ParseQs(query);
@@ -2789,10 +2792,15 @@ public sealed partial class State
         var owner = account;
         if (Py.IsDigit(photoId))
         {
+            var id = long.Parse(photoId);
+            object[]? taken;
             using (var con = Con(account))
-                owner = con.Scalar("SELECT account_id FROM photos WHERE id = ? AND taker = $a", long.Parse(photoId)) as long? ?? account;
-            using (var con = Con(owner))
-                name = SavePhoto(con, AccountPhotos(owner), long.Parse(photoId), data, part);
+                taken = con.Rows("SELECT account_id, photo_type FROM photos WHERE id = ? AND taker = $a", id).FirstOrDefault();
+            if (taken is not null)
+                owner = (long)taken[0];
+            if (taken is null || taken[1] is string || !File.Exists(Path.Combine(AccountPhotos(owner), PhotoName(owner, id, Py.Str(Py.FromSql(taken[1])), part))))
+                using (var con = Con(owner))
+                    name = SavePhoto(con, AccountPhotos(owner), id, data, part);
         }
         if (string.IsNullOrEmpty(name))
             return (404, "{\"error\": {\"code\": 404, \"message\": \"No such upload\"}}"u8.ToArray());
