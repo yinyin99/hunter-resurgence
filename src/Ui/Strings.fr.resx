@@ -644,7 +644,7 @@
   <data name="Mis.All" xml:space="preserve"><value>Toutes</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Favorites</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Actives</value></data>
-  <data name="Mis.Packs" xml:space="preserve"><value>Mission Packs</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Packs de missions</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Espèces</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
