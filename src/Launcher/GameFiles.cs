@@ -159,11 +159,11 @@ public static class GameFiles
         ? new() { Width = w, Height = h, Hz = hz, Scene = 1, Texture = 1, Shadow = 1, Vsync = true }
         : new() { Width = 1280, Height = 720, Hz = 60, Scene = 1, Texture = 1, Shadow = 1, Vsync = true };
 
-    /// <summary>Writes a new graphics file in the game's format: 12 lines, CRLF; the three after vertical sync (contextual help, extended audio memory, one unknown) are 0.
+    /// <summary>Writes a new graphics file in the game's format: 12 lines, CRLF; the three after vertical sync (contextual help, extended audio memory, one unknown) are 0, the audio line holds the switch when the caller has one.
     /// Never replaces a file: one that appeared in the meantime is an IOException.</summary>
     public static void CreateGraphics(string path, GraphicsSettings g)
     {
-        int[] lines = [Marker, g.Fullscreen ? 1 : 0, -1, g.Scene, g.Texture, g.Shadow, g.Msaa, g.Aniso, g.Vsync ? 1 : 0, 0, 0, 0];
+        int[] lines = [Marker, g.Fullscreen ? 1 : 0, -1, g.Scene, g.Texture, g.Shadow, g.Msaa, g.Aniso, g.Vsync ? 1 : 0, 0, g.ExtendedAudio ?? 0, 0];
         var text = string.Concat(lines.Select(v => (v == -1 ? $"{g.Width} {g.Height} {g.Hz}" : v.ToString()) + "\r\n"));
         using var f = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         f.Write(Latin1.GetBytes(text));

@@ -88,7 +88,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
             var read = paths.Select(gp => (gp, GameFiles.ReadGraphics(gp))).ToList();
             if (read.Any(r => r.Item2.Value is null && r.Item2.Problem != FileProblem.Missing)) return Task.FromResult(Result.Fail("GameSettings.BadFormat"));
             foreach (var (gp, (g, _)) in read)
-                if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics(), options));
+                if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics() with { ExtendedAudio = 0 }, options));
                 else GameFiles.WriteGraphics(gp, ToGraphics(g, options));
             if (OptionsPath is { } op && GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value is { } o && options.ContextualHelp is { } help && o.Has("ContextualHelp"))
             {

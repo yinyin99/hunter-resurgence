@@ -302,6 +302,21 @@ public class GameSettingsServiceTests
         Assert.Equal(Gfx + "0\n" + after + "\n0\n", Bytes(g));
     }
 
+    // a graphics file that Save creates (mode unknown, one of the two missing) takes the player's choice, not 0
+    [Fact]
+    public async Task ACreatedGraphicsFileTakesTheExtendedAudioSwitch()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var s = new Settings("1", "no-such-client.exe", "gSettings_steam_live.cfg", "o.bin", "fake_");
+        var (steam, noSteam) = (Path.Combine(temp.Path, "gSettings_steam_live.cfg"), Path.Combine(temp.Path, "gSettings_live.cfg"));
+        Write(steam, Gfx + "0\n1\n0\n");
+        var svc = new GameSettingsService(s, new Prefs(), temp.Path, () => { });
+        var read = await svc.ReadAsync();
+        Assert.True(read.Options.ExtendedAudio);
+        Assert.True((await svc.SaveAsync(read.Options)).Ok);
+        Assert.Equal((1, 1), (GameFiles.ReadGraphics(steam).Value!.ExtendedAudio, GameFiles.ReadGraphics(noSteam).Value!.ExtendedAudio));
+    }
+
     [Fact]
     public async Task AFileWithoutTheExtendedAudioLineIsLeftAlone()
     {
