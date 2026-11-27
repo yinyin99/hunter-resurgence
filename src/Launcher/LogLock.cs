@@ -240,7 +240,76 @@ public sealed record RabbitSound(string ExeSha256, uint Site, uint Profile, (uin
     }
 }
 
-/// <summary>The game started suspended, as the log lock, the goose call patch and the rabbit sound patch read and write it: the seam a test replaces with a byte array.</summary>
+/// <summary>
+/// The game looks up an animal's coat table by the name of the texture it replaces, and picks the coat's layer by its name, with an exact comparison of the letters. Since the game update of late October the snowshoe hare's coat tables
+/// are filed under a name whose letter case differs from the one the hare's model uses, so the game finds no table and picks one of the model's three skins at random, each with the same chance: the normal one, the albino one and the seasonal event's.
+/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the two calls of the game's exact comparison of two names (the table lookup and the layer match after the weighted pick)
+/// at one small function in a page of the game's memory. The function takes the same arguments the same way (two addresses in ecx and edx, the length on the stack, the caller removes it) and calls the compare the game already imports,
+/// <c>_memicmp</c>, which ignores letter case, on the same bytes in the same order; it returns that function's result, which like the original is zero for equal names, negative or positive otherwise, and the callers only test it against zero.
+/// The game's third comparison, which groups the tables when the file is loaded, is not touched: it must stay exact. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is.
+/// Nothing on disk changes.
+/// </summary>
+/// <param name="ExeSha256">The SHA-256 of the exe this applies to (lowercase hex).</param>
+/// <param name="Lookup">Offset from the image base of the call in the table lookup: a call of the game's exact compare, pointed at the function.</param>
+/// <param name="Layer">Offset of the call in the layer match, the same kind of call, pointed at the function.</param>
+/// <param name="Import">Offset of the exe's import of <c>_memicmp</c> (the exe is checked before it runs, so the slot still holds the place of the import's name).</param>
+/// <param name="Checks">The places checked before anything is written, in order: the offset from the image base and the expected bytes as hex.</param>
+public sealed record CoatTable(string ExeSha256, uint Lookup, uint Layer, uint Import, (uint At, string Expected)[] Checks)
+{
+    /// <summary>The same exe as the log lock.</summary>
+    public static readonly CoatTable Known = new(LogLock.Known.ExeSha256, Lookup: 4459452, Layer: 4468103, Import: 9806852, Checks: [
+        // the two calls, with the instructions that show how they are used: the name's address in edx and the length pushed before, the length removed and the result tested against zero after
+        (4459445, "8B 17 EB 02 8B D7 50 E8 8F 04 BC FF 83 C4 04 85 C0"),
+        (4468096, "8B 17 EB 02 8B D7 50 E8 C4 E2 BB FF 83 C4 04 85 C0"),
+        // the game's compare: its first instructions (the length from the stack, the addresses from edx and ecx), and its two ends (the result in eax, the stack left to the caller)
+        (4176, "56 8B 74 24 08 57 83 FE 04 72 19 EB 03"),
+        (4275, "C1 F8 1F 5F 83 C8 01 5E C3 5F 33 C0 5E C3"),
+        // the import's slot holds the place of its name, which is the hint then the name
+        (9806852, "FC D1 B4 00"),
+        (11850238, "5F 6D 65 6D 69 63 6D 70 00"),
+    ]);
+
+    /// <summary>The function's size.</summary>
+    public const int Size = 16;
+
+    /// <summary>The function for an image loaded at <paramref name="image"/>: 16 bytes, to be written at the start of a page of the game's memory.</summary>
+    public byte[] Code(uint image) => [
+        // push [esp+4] (the length), push ecx, push edx: the arguments of the case-blind compare, the first and second names in the order the game's compare reads them
+        .. H("FF742404 51 52"),
+        // call [the import]; add esp, 12; ret (the caller removes the length)
+        .. H("FF15"), .. D(image + Import), .. H("83C40C C3"),
+    ];
+
+    /// <summary>The call instruction at <paramref name="at"/> of an image loaded at <paramref name="image"/> when it calls <paramref name="target"/>.</summary>
+    static byte[] Call(uint image, uint at, uint target) => [.. H("E8"), .. D(unchecked(target - (image + at + 5)))];
+
+    /// <summary>Checks every place, then writes the function and points the two calls at it; nothing is written unless every check passed. Null when applied, else why not.</summary>
+    public string? Apply(ISuspendedGame game)
+    {
+        var image = game.Image;
+        if (image == 0) return "the game's memory could not be read";
+        for (var i = 0; i < Checks.Length; i++)
+        {
+            var expected = H(Checks[i].Expected);
+            if (game.Read(image + Checks[i].At, expected.Length) is not { } found) return $"check {i + 1} could not be read";
+            if (!found.AsSpan().SequenceEqual(expected)) return $"check {i + 1} holds other values";
+        }
+        var page = game.Allocate(Size);
+        if (page == 0) return "no memory could be allocated in the game";
+        if (!game.Write(page, Code(image))) return "the compare function could not be written";
+        // the layer match first: a lookup that finds the table followed by an exact layer match would leave a hare without a skin, so a failure between the two writes must leave the game as it was
+        return game.Write(image + Layer, Call(image, Layer, page)) && game.Write(image + Lookup, Call(image, Lookup, page)) ? null : "the calls could not be written";
+    }
+
+    /// <summary>Applies the patch to a game started suspended and logs the outcome; the game is resumed by <see cref="LogLock.ApplyAndResume"/>.</summary>
+    public void ApplyAndLog(ISuspendedGame game, ILogger? log)
+    {
+        if (Apply(game) is { } why) log?.LogWarning("The game's coat table patch is not applied, the game starts without it: {Why}", why);
+        else log?.LogInformation("The game's coat table patch is applied");
+    }
+}
+
+/// <summary>The game started suspended, as the log lock, the goose call patch, the rabbit sound patch and the coat table patch read and write it: the seam a test replaces with a byte array.</summary>
 public interface ISuspendedGame
 {
     /// <summary>Where the exe is loaded; 0 when not known.</summary>
