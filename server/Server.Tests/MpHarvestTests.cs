@@ -477,9 +477,11 @@ public class MpHarvesterObjectiveTests : MissionTestBase
     {
         Beat(HOST, Shot(2));  // the host's own deer: every mission but the sequence
         Assert.Equal("1,2,3,4,5,6", Completed(HOST));
+        Beat(GUEST, Shot(3));  // the guest's own deer, so the guest's harvests (the kill's events) make a sequence of two
         Beat(GUEST, Shot(1)[..2]);
         Beat(HOST, Shot(1, hits: 0));  // a second deer within 5 minutes, but the guest's
         Assert.Equal("1,2,3,4,5,6", Completed(HOST));
+        Assert.Equal("1,2,3,4,5,6,7", Completed(GUEST));  // the sequence is the shooter's
     }
 
     [Fact]
