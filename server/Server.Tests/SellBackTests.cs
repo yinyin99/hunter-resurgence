@@ -22,18 +22,27 @@ public class SellBackTests : StateTestBase
            {"id": 11, "name": "Test Event", "subcat": {"id": 0}, "price": 50, "silver_price": 100, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 12, "name": "Test Cheap", "subcat": {"id": 0}, "price": 2, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 13, "name": "Test Odd", "subcat": {"id": 0}, "price": 7, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 14, "name": "Test Gm Sale", "subcat": {"id": 0}, "price": 10, "silver_price": 500, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 811, "name": "Test Loadout Slot", "subcat": {"id": 0}, "price": 20, "silver_price": 400, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 512, "name": "Test Start", "subcat": {"id": 0}, "price": 100, "silver_price": 2000, "hidden": 0, "inventory": {}, "fit": {}}],
          "categories": [{"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}], "default": 0}],
          "bundles": [{"id": 21, "name": "Test Pack", "price": 60.0, "items": [13]}]}
         """;
 
-    const string Discounts = """[{"item_id": 1, "percentage": 50, "start_ts": 0, "end_ts": 1099511627776}]""";
+    // item 1 is half price in em$ (a sale of its own: the gm$ price stays), item 14 is 20 % off in gm$ (500 gm$ costs 400)
+    const string Sales = """
+        [{"name": "Half", "from": "2020-01-01T00:00:00Z", "until": "2100-01-01T00:00:00Z", "percent": 50, "currencies": ["em"], "items": [1]},
+         {"name": "Gm", "from": "2020-01-01T00:00:00Z", "until": "2100-01-01T00:00:00Z", "percent": 20, "currencies": ["gm"], "items": [14]}]
+        """;
 
     public SellBackTests() => state = Make(Db);
 
-    static State Make(string file) =>
-        new(file, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(Catalogue)!, LOCALE, TEXTURES, discounts: (JsonArray)JsonNode.Parse(Discounts)!, offline: false);
+    static State Make(string file)
+    {
+        var made = new State(file, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(Catalogue)!, LOCALE, TEXTURES, offline: false);
+        made.LoadStoreSales((JsonArray)JsonNode.Parse(Sales)!);
+        return made;
+    }
 
     double Balance(string currency, long account = ME)
     {
@@ -75,12 +84,13 @@ public class SellBackTests : StateTestBase
         Assert.Equal((items, em, gm), (ItemCount(), Balance("em"), Balance("gm")));  // nothing changes
     }
 
-    /// <summary>Paying 100 em$, 50 em$ (half price today), 7 em$ (2.8 rounds down to 2) or 4,000 gm$ and selling the copy back: the copy goes, 40 % of the price paid comes back in that currency, one wallet row says so.</summary>
+    /// <summary>Paying 100 em$, 50 em$ (half price today), 7 em$ (2.8 rounds down to 2), 4,000 gm$ or 400 gm$ (a gm$ sale off 500) and selling the copy back: the copy goes, 40 % of the price paid comes back in that currency, one wallet row says so.</summary>
     [Theory]
     [InlineData(7L, false, 100.0, 40L)]
     [InlineData(1L, false, 50.0, 20L)]   // a sale price: 40 % of what was paid, never of the list price
     [InlineData(13L, false, 7.0, 2L)]
     [InlineData(1L, true, 4000.0, 1600L)]
+    [InlineData(14L, true, 400.0, 160L)]  // a gm$ sale: 40 % of the discounted gm$ price, not of the 500 list price
     public void SellingACopyBoughtHerePaysFortyPercentOfThePricePaidInTheCurrencyPaid(long item, bool gms, double price, long refund)
     {
         AddGm(5000);
@@ -96,7 +106,7 @@ public class SellBackTests : StateTestBase
         Assert.Equal((before - price + refund, other, items), (Balance(currency), Balance(gms ? "em" : "gm"), ItemCount()));  // the other wallet is not touched, the copy is gone
         using var con = state.Store.Open(ME);
         var row = con.Rows("SELECT currency, amount, summary, item_ids FROM wallet_log WHERE account_id = $a ORDER BY n DESC")[0];
-        Assert.Equal((currency, (double)refund, "Sold: " + (item == 7 ? "Test Limited" : item == 13 ? "Test Odd" : "Test Rifle"), $"[{item}]"), ((string)row[0], Convert.ToDouble(row[1]), (string)row[2], (string)row[3]));
+        Assert.Equal((currency, (double)refund, "Sold: " + (item switch { 7 => "Test Limited", 13 => "Test Odd", 14 => "Test Gm Sale", _ => "Test Rifle" }), $"[{item}]"), ((string)row[0], Convert.ToDouble(row[1]), (string)row[2], (string)row[3]));
         Assert.Equal(0L, con.Scalar("SELECT COUNT(*) FROM purchases WHERE account_id = $a AND guid = ?", guid));
         Assert.Equal("unknown", state.WebSell(ME, guid).Why);  // no undo, and no second sale
     }
