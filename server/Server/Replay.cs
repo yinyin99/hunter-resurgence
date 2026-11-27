@@ -410,7 +410,7 @@ public static class Replay
     {
         static readonly Regex Script = new(@"\A/static/app/[^/]+/client\.js\z", RegexOptions.ECMAScript);
         static readonly Regex Token = new(@"(/client\.js)(\?t=[\w.-]*)?", RegexOptions.ECMAScript);
-        public const string Version = "timer5";
+        public const string Version = "timer6";
         static readonly Regex TrackerIds = new(@"(""google_(?:tag_manager|analytics)_id""\s*:\s*)""[^""]*""", RegexOptions.ECMAScript);
         // the script's 2 s picture preload and its error-reporting init (skipped on localhost only)
         public static readonly (string From, string To)[] Trackers =
@@ -424,6 +424,9 @@ public static class Replay
         /// server answers token expired (the list call passes `oauth_access_token`, so it loaded). Each of the six calls (empty options, no token of its own) is given the helper's own `authMode:"required"` option: the helper then waits
         /// for the game's token and sends it as `Authorization: Bearer`, which the server already accepts.</summary>
         static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_favourite|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite)"",(\{(?:(?!oauth_access_token)[^{}])*\}),\{\}\)", RegexOptions.ECMAScript);
+        /// <summary>The inventory page's two loadout saves (the save icon and the rename/colour dialog) call the page's API helper with no options, so it sends no token and the server answers token expired (#814; the list call passes
+        /// an auth mode of its own, so it loads). Each is given `authMode:"required"`, as the missions writes are. Only a save with no options matches, so a second pass changes nothing.</summary>
+        static readonly Regex LoadoutSave = new(@"([\w$]+)\.v1\(""PUT"",""/game/user/loadout/""\+([^,]+),(\{name:[^{}]*\})\)", RegexOptions.ECMAScript);
         /// <summary>The missions panel opens a mission pack (`toggleSet`), a mission (`toggleDetails`) and, when the route names a pack id, that pack (`l.find(".set-missions").toggle()`) by showing a hidden list, and changes nothing on the row, so the arrow in front of it (`icon-caret-right`) never turned. Each now also toggles the class `hr-open` on its row, which <see cref="ClientStyle"/> turns the arrow by. The Packs, Active and Available headlines already swap their own caret class.</summary>
         static readonly (string From, string To)[] Rows =
             [("toggleSet:function(){c(\".set-missions\",this.$el).toggle()}", "toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}"),
@@ -524,6 +527,7 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             var t = ReplaceOnce(src, Trackers, ref warnedTrackers, "the in-game page's picture preload or error reporting") ?? src;
             var rows = ReplaceOnce(t, Rows, ref warnedRows, "the in-game missions panel's pack and mission rows") ?? t;
             var script = MissionWrite.Replace(ReplaceOnce(rows, Reads, ref warned, "the in-game page's round timer read") ?? rows, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
+            script = LoadoutSave.Replace(script, "$1.v1(\"PUT\",\"/game/user/loadout/\"+$2,$3,{authMode:\"required\"})");
             if (Taxidermy.Matches(script).Count == 1)
                 script = Taxidermy.Replace(script, AskTaxidermy);
             else if (Interlocked.Exchange(ref warnedTaxidermy, 1) == 0)
