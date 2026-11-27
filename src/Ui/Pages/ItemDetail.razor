@@ -15,6 +15,7 @@
             <div class="buy">
                 @* signed out the old page shows only the button *@
                 @if (variantB && item.OnSale) { <SaleCardB Big Percent="SaleCardB.ItemPct(item)" PillRight="@(banner != "sale")" Prices="SaleCardB.ItemPrices(item, signedIn)" Sale="item.Sale" /> }
+                else if (variantC && item.OnSale && signedIn) { <SaleCardC Big Prices="SaleCardB.ItemPrices(item)" /> }
                 else if (signedIn)
                 {
                     @if (item.Gms > 0) { <span class="gms @(item.WasGms is null ? "" : "sale")">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> @if (item.WasGms is { } wasGms) { <s>@wasGms gm$</s> } }
@@ -104,9 +105,10 @@
     // "10 cartridges" in the player's language by the catalogue's unit word; a word with no text stays as the catalogue gives it
     string Units(StoreContents c) => L["Store.Unit." + c.Unit, c.Count] is { ResourceNotFound: false } s ? s.Value : $"{c.Count} {c.Unit}";
 
-    // PROTOTYPE (sale card variant B), not production: ?salecard=b shows the other sale presentation
+    // PROTOTYPE (sale card variants B and C), not production: ?salecard=b or c shows another sale presentation
     [SupplyParameterFromQuery(Name = "salecard")] public string? SaleCard { get; set; }
     bool variantB => SaleCard == "b";
+    bool variantC => SaleCard == "c";
 
     [Parameter] public int Id { get; set; }
 

@@ -1,0 +1,20 @@
+@* PROTOTYPE (sale card variant C), not production. Switched on by ?salecard=c on the store list, the item page and the bundle pages.
+   Variant A's colours and texts, only the layout of the prices changes: each currency is one group, the sale price (red, larger, bolder) with the old one right after it (smaller, dimmer, struck),
+   groups joined by "or"; the "Sale ends" line is A's own, the pages put it below the prices. Reuses SaleCardB.Price and its item/bundle helpers. *@
+<span class="sc @(Big ? "big" : "")">
+    @for (var n = 0; n < Prices.Count; n++)
+    {
+        var p = Prices[n];
+        @if (n > 0) { <span class="or">@L["Store.Or"]</span> }
+        <span class="grp">
+            <b class="now @(p.Was is null ? "" : "sale")">@p.Now @p.Cur</b>
+            @if (p.Was is { } was) { <s class="was"><span class="vh">was </span>@was @p.Cur</s> }
+        </span>
+    }
+</span>
+
+@code {
+    [Parameter] public IReadOnlyList<SaleCardB.Price> Prices { get; set; } = [];
+    /// <summary>The item and bundle pages: a larger price.</summary>
+    [Parameter] public bool Big { get; set; }
+}

@@ -21,6 +21,11 @@
                 <a href="@($"/store/item/{i.Id}{sq}")" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
                 @if (variantB && i.OnSale) { <SaleCardB Percent="SaleCardB.ItemPct(i)" Prices="SaleCardB.ItemPrices(i)" Sale="i.Sale" /> }
+                else if (variantC && i.OnSale)
+                {
+                    <SaleCardC Prices="SaleCardB.ItemPrices(i)" />
+                    @if (i.Sale is { } saleC) { <p class="ends">@L.SaleEnds(saleC)</p> }
+                }
                 else
                 {
                 @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
@@ -48,6 +53,11 @@
                 <a href="@($"/store/bundle/{b.Id}{sq}")" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="@($"/store/bundle/{b.Id}{sq}")" class="name">@b.Name</a>
                 @if (variantB && b.OnSale) { <SaleCardB Percent="SaleCardB.BundlePct(b)" Prices="SaleCardB.BundlePrices(b)" Sale="b.Sale" /> }
+                else if (variantC && b.OnSale)
+                {
+                    <SaleCardC Prices="SaleCardB.BundlePrices(b)" />
+                    @if (b.Sale is { } bundleSaleC) { <p class="ends">@L.SaleEnds(bundleSaleC)</p> }
+                }
                 else
                 {
                     @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
@@ -72,10 +82,11 @@
 
     [Parameter] public string? Key { get; set; }
     [SupplyParameterFromQuery(Name = "page")] public int? PageNo { get; set; }
-    // PROTOTYPE (sale card variant B), not production: ?salecard=b shows the other sale presentation; sq carries it to the item and bundle pages
+    // PROTOTYPE (sale card variants B and C), not production: ?salecard=b or c shows another sale presentation; sq carries it to the item and bundle pages
     [SupplyParameterFromQuery(Name = "salecard")] public string? SaleCard { get; set; }
     bool variantB => SaleCard == "b";
-    string sq => variantB ? "?salecard=b" : "";
+    bool variantC => SaleCard == "c";
+    string sq => variantB || variantC ? $"?salecard={SaleCard}" : "";
     string key => Key ?? "all";
 
     protected override async Task OnParametersSetAsync()

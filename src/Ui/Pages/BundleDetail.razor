@@ -17,6 +17,7 @@
                 else if (!bundle.Buyable) { <button class="btn btn-tall" disabled title="@(Mode.Live ? L["Store.NotBuyable"] : L["Store.MaxOwn"])">@L["Store.Buy"]</button> }
                 else { <button id="buy-bundle" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
                 @if (variantB && bundle.OnSale) { <SaleCardB Big Percent="SaleCardB.BundlePct(bundle)" Prices="SaleCardB.BundlePrices(bundle)" Sale="bundle.Sale" /> }
+                else if (variantC && bundle.OnSale) { <SaleCardC Big Prices="SaleCardB.BundlePrices(bundle)" /> }
                 else if (bundle.StruckPrice > 0) { <b class="sale">@bundle.Price em$</b> <s>@bundle.StruckPrice em$</s> } else { <b>@bundle.Price em$</b> }
             </div>
             @if (bundle.Sale is { } sale && !variantB) { <p class="ends">@L.SaleEnds(sale)</p> }
@@ -51,6 +52,7 @@
     // PROTOTYPE (sale card variant B), not production: ?salecard=b shows the other sale presentation
     [SupplyParameterFromQuery(Name = "salecard")] public string? SaleCard { get; set; }
     bool variantB => SaleCard == "b";
+    bool variantC => SaleCard == "c";
 
     [Parameter] public int Id { get; set; }
 
