@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 41;
+    public const int Version = 43;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -595,6 +595,10 @@ public sealed class Store
                 """);
             con.Script(UnethicalKills);
         }
+        // schema 43 (#969), guarded by the columns and not by the version (every start): how often a banned Steam id tried to sign in (BanAttempt)
+        foreach (var column in (string[])["last_attempt INTEGER", "attempts INTEGER NOT NULL DEFAULT 0"])
+            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('banned_steam') WHERE name = ?", column.Split(' ')[0])! == 0)
+                con.Script($"ALTER TABLE banned_steam ADD COLUMN {column}");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))
@@ -810,6 +814,25 @@ public sealed class Store
         using var con = Open();
         var rows = con.Rows("SELECT ts, lifted_ts FROM banned_steam WHERE steam_id64 = ?", steamId64).ToList();
         return rows.Count == 0 ? null : ((long)rows[0][0], rows[0][1] as long?);
+    }
+
+    /// <summary>One sign-in attempt of a Steam id that is banned now: counts it on the ban row and returns the count with the time of the attempt before (null: the first). Null: no ban row (an account flagged banned by hand).</summary>
+    public (long Attempts, long? Previous)? BanAttempt(string steamId64, long at)
+    {
+        using var con = Open();
+        con.Begin();
+        var rows = con.Rows("SELECT attempts, last_attempt FROM banned_steam WHERE steam_id64 = ? AND lifted_ts IS NULL", steamId64).ToList();
+        if (rows.Count > 0) con.Exec("UPDATE banned_steam SET attempts = attempts + 1, last_attempt = ?2 WHERE steam_id64 = ?1", steamId64, at);
+        con.Commit();
+        return rows.Count == 0 ? null : ((long)rows[0][0]! + 1, rows[0][1] as long?);
+    }
+
+    /// <summary>The Steam ids banned now that tried to sign in: Steam id, attempts, time of the last, most recent first.</summary>
+    public List<(string Steam, long Attempts, long Last)> BanAttempts()
+    {
+        using var con = Open();
+        return [.. con.Rows("SELECT steam_id64, attempts, last_attempt FROM banned_steam WHERE lifted_ts IS NULL AND attempts > 0 ORDER BY last_attempt DESC, steam_id64")
+            .Select(r => ((string)r[0]!, (long)r[1]!, (long)r[2]!))];
     }
 
     // ---- friends (the Friends table)

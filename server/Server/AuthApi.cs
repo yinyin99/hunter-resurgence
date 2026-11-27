@@ -25,6 +25,7 @@ public static class AuthApi
         var auth = new SignIn(state, steam, siteHost: game.Web, claims: app.Services.GetService<Claims>(), discord: (string?)game.Cfg["link_discord"], signupAlert: text => Alerts.Signup(game.Cfg, text))
         {
             DiscordVeteranAt = app.Services.GetService<LinkedRoles>() is null ? null : LinkedRoles.RoleBot.VeteranAtOf(game.Cfg),
+            BanAlert = text => Alerts.Review(game.Cfg, text),
         };
 
         var group = app.MapGroup("/auth").RequireHost(game.Web, game.Signup, game.GameWeb).WithGroupName("game").WithTags("Sign-in (web_host, signup_host, game_web_host)");
