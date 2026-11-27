@@ -362,7 +362,27 @@ public sealed class LiveSiteTests : UiContext
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
         // hunterscore 1000 + 7 + 3 + 0 of 4 rows; animals 1007 of 2000 (a row counts 1000 at most), weapons 3 of 1000; collectables none
-        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
+        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)", "0 / 1000 (0%)"], cut.FindAll("div.ov .bar .tip span:first-of-type").Select(b => b.TextContent.Split(": ")[1])));
+    });
+
+    [Fact]
+    public void TheRanksOverviewHasTheHighestRanksBadgeAndBarsWithoutTextAndFocusableFigures() => InEnglish(() =>
+    {
+        Services.AddSingleton<IProfileService>(RealRanks());
+        Live(true);
+        var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal(4, cut.FindAll("div.ov .bar").Count));
+        Assert.Equal("rank-2", cut.Find("div.overview > .asset-slot").GetAttribute("aria-label"));  // the player's highest rank, on the left
+        foreach (var bar in cut.FindAll("div.ov .bar"))
+        {
+            Assert.Equal("", bar.QuerySelector(".track")!.TextContent);  // the bar itself holds no text
+            Assert.Equal("0", bar.GetAttribute("tabindex"));
+            Assert.NotNull(bar.QuerySelector("small.tip[role=tooltip]"));
+            Assert.Equal(bar.QuerySelector("small.tip")!.Id, bar.GetAttribute("aria-describedby"));
+        }
+        // the hunterscore's tooltip adds its next step, the categories' do not
+        Assert.Contains("Next step: 190 more for 30%", cut.FindAll("div.ov .bar")[0].QuerySelector(".tip")!.TextContent);
+        Assert.DoesNotContain("Next step", cut.FindAll("div.ov .bar")[1].QuerySelector(".tip")!.TextContent);
     });
 
 

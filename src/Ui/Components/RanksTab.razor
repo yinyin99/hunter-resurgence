@@ -3,11 +3,16 @@
 <SubPills Items="subs" Active="@sub" Base="@("/profile/" + Handle + "/ranks")" />
 @if (sub == "")
 {
-    <h4>@L["Prof.Progress"]</h4>
-    <h5>@L["Prof.HunterScore"]</h5>
-    @if (bars.Count > 0) { @Overview(bars[0], "rank-score", true) }
-    <h5>@L["Prof.Categories"]</h5>
-    @foreach (var b in bars.Skip(1)) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", false) }
+    <div class="overview">
+        <AssetSlot Name="@(bars.Count > 0 && bars[0].Id > 0 ? "rank-" + bars[0].Id : "rank-animals")" Width="114" Height="114" Class="top-badge" />
+        <div class="bars">
+            <h4>@L["Prof.Progress"]</h4>
+            <h5>@L["Prof.HunterScore"]</h5>
+            @if (bars.Count > 0) { @Overview(bars[0], "rank-score", 0) }
+            <h5>@L["Prof.Categories"]</h5>
+            @foreach (var (b, i) in bars.Skip(1).Select((b, i) => (b, i + 1))) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", i) }
+        </div>
+    </div>
 }
 else
 {
@@ -28,12 +33,32 @@ else
     [Parameter] public string? Sub { get; set; }
     string sub => subs.Any(s => s.Key == Sub) ? Sub! : "";
 
-    protected override async Task OnParametersSetAsync() => bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
+    Profile? profile;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
+        if (sub == "") profile = await Service.ProfileAsync(Handle);
+    }
 
     int Pct(RankBar b) => b.Total == 0 ? 0 : 100 * b.Done / b.Total;
 
-    RenderFragment Overview(RankBar b, string slot, bool big) => @<div class="ov">
+    // the bars carry no text: the figures show in a tooltip on hover and on focus, as the achievements' steps do; the first bar is the hunterscore's, whose tooltip adds the score and the next step (the next 10 % of the rows)
+    RenderFragment Overview(RankBar b, string slot, int i) => @<div class="ov">
         <AssetSlot Name="@slot" Width="40" Height="40" />
-        <div class="bar @(big ? "big" : "")"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</b> }</div>
+        <div class="bar @(i == 0 ? "big" : "")" style="--c:@F(Pct(b) / 100.0)" tabindex="0" role="img" aria-label="@L.Term(b.Name)" aria-describedby="@($"tip-rk-{i}")">
+            <span class="track"><i style="width:@Pct(b)%"></i></span>
+            <small id="@($"tip-rk-{i}")" role="tooltip" class="tip">
+                @if (i == 0 && profile is not null) { <b>@L["Prof.HunterScore"]: @Fmt.Num(profile.HunterScore, "0")</b> }
+                <span>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</span>
+                @if (i == 0 && Pct(b) < 100)
+                {
+                    var next = (Pct(b) / 10 + 1) * 10;
+                    <span>@string.Format(L["Prof.RanksNext"], Fmt.Num(Math.Max(1, (int)Math.Ceiling(b.Total * next / 100.0) - b.Done), "0"), next)</span>
+                }
+            </small>
+        </div>
     </div>;
+
+    static string F(double d) => d.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 }

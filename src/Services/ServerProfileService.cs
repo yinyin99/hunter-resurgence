@@ -47,11 +47,12 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public async Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind)
     {
         if (await GetRanksAsync(handle) is not { } r) return [];
-        RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
+        RankBar Bar(string name, IEnumerable<ServerRank> rows, long id = 0) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap), id);
         if (kind != "overview")
             return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
                 .Select(x => new RankBar(x.Name, Math.Max(0, x.Value), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
-        return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
+        // the hunterscore bar carries the id of the player's highest rank (the most hunted row), whose badge the overview shows
+        return [Bar("Hunter Score", r.Ranks, r.Ranks.Where(x => x.Value > 0).MaxBy(x => x.Value)?.Id ?? 0), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
                 Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
     }
 

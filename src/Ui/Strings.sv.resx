@@ -980,6 +980,7 @@
   <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategorier</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Upplåst</value></data>
+  <data name="Prof.RanksNext" xml:space="preserve"><value>Nästa steg: {0} till för att nå {1} %</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Utforskande</value></data>
   <data name="Prof.DailyMissions" xml:space="preserve"><value>Dagliga uppdrag</value></data>
   <data name="Prof.Challenges" xml:space="preserve"><value>Utmaningar</value></data>
