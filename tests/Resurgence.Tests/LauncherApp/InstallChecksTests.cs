@@ -595,7 +595,7 @@ public class InstallChecksTests
 
         var (fixedFile, problem) = GameFiles.ReadGraphics(bad);
         Assert.Equal(FileProblem.None, problem);
-        Assert.Equal(new GraphicsSettings { Fullscreen = true, Width = 1360, Height = 768, Hz = 60, Scene = 2, Texture = 1, Shadow = 3, Msaa = 1, Aniso = 2, Vsync = true }, fixedFile);
+        Assert.Equal(new GraphicsSettings { Fullscreen = true, Width = 1360, Height = 768, Hz = 60, Scene = 2, Texture = 1, Shadow = 3, Msaa = 1, Aniso = 2, Vsync = true, ExtendedAudio = 0 }, fixedFile);
         Assert.Equal((fineBefore, windowedBefore), (Files.Bytes(fine), Files.Bytes(windowed)));
         Assert.Equal("ok", (await Check(c, "display")).Level);
     }
