@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Alue</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Pelaajat</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Isäntä</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Maa</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Pelaajat: {1}/{2} - Isäntä: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Pelin tiedot</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Liity peliin</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Oma pelisi</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Käynnistyy…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Päivitetään...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Palvelimen sijainti: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Eurooppa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Pohjois-Amerikka</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Etelä-Amerikka</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Aasia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oseania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Liity tähän peliin napsauttamalla aloituspaikkaa kartalta</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Anna salasana liittyäksesi tähän peliin:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Anna salasana</value></data>
@@ -1680,4 +1673,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Set.BansEmpty" xml:space="preserve"><value>Et ole estänyt yhtään pelaajaa.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Poista esto</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Haluatko varmasti poistaa pelaajan {0} eston peleistäsi?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Kieli</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Kieli:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Vain pelit omalla kielelläni</value></data>
 </root>

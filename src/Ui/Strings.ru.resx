@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Игроков</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Хост</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Страна</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} — игроков: {1}/{2} — хост: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Сведения об игре</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Присоединиться</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ваша игра</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Запускается…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Установка обновления...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Расположение сервера: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Европа</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Северная Америка</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Южная Америка</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Азия</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Океания</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Нажмите на стартовую позицию на карте, чтобы присоединиться к этой игре</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Введите пароль, чтобы присоединиться к этой игре:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Введите пароль</value></data>
@@ -1680,4 +1673,7 @@
   <data name="Set.BansEmpty" xml:space="preserve"><value>Вы никого не заблокировали.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Разблокировать</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Вы действительно хотите разблокировать {0} в своих играх?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Язык:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Только игры на моём языке</value></data>
 </root>

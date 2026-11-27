@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezervat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Igralci</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Gostitelj</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Država</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} – Igralci: {1}/{2} – Gostitelj: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Podrobnosti igre</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Pridruži se</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Tvoja igra</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Zaganja se…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Nameščanje popravkov...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Lokacija strežnika: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severna Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Južna Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Azija</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanija</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klikni začetno lokacijo na zemljevidu, da se pridružiš tej igri</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Vnesi geslo za vstop v to igro:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Vnesi geslo</value></data>
@@ -1680,4 +1673,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Set.BansEmpty" xml:space="preserve"><value>Nobenemu igralcu nisi prepovedal dostopa.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Odpravi prepoved</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Ali res želiš odpraviti prepoved za {0} v tvojih igrah?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Jezik</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Jezik:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Samo igre v mojem jeziku</value></data>
 </root>

@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Jagtområde</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spillere</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Vært</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spillere: {1}/{2} - Vært: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Spiloplysninger</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Deltag i spil</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Dit spil</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Starter…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Opdaterer...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverplacering: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Sydamerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asien</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanien</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klik på et startsted på kortet for at deltage i dette spil</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Angiv adgangskoden for at deltage i dette spil:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Angiv adgangskode</value></data>
@@ -1680,4 +1673,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du har ikke udelukket nogen spillere.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Ophæv udelukkelse</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Er du sikker på, at du vil ophæve udelukkelsen af {0} fra dine spil?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Sprog</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprog:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Kun spil på mit sprog</value></data>
 </root>

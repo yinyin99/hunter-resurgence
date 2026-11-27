@@ -22,6 +22,8 @@ public sealed class Prefs
     public bool GameSettingsSaved { get; set; }
     /// <summary>The game's language (a code of <see cref="GameLanguages"/>, the launch URL's <c>lang</c>); null until the player chooses or switches the launcher's language to one the game has (<see cref="LauncherLanguageSwitcher"/>), then the launcher's language when the game has it (<see cref="GameSettingsService.LanguageAsync"/>).</summary>
     public string? GameLanguage { get; set; }
+    /// <summary>The language the player chose last for the games it hosts, a launcher language code (<c>fr</c>, <c>pt-BR</c>; <see cref="Resurgence.Ui.Languages"/>); null until it has chosen one (the host form then preselects the launcher's language).</summary>
+    public string? HostLanguage { get; set; }
     /// <summary>The Game settings' display mode as stored (<c>borderless</c>, <c>fullscreen</c>, <c>windowed</c>): text, so a value this launcher does not know reads as no choice instead of damaging the whole file.</summary>
     [JsonPropertyName("display_mode")] public string? DisplayModeText { get; set; }
     /// <summary>The Game settings' display mode; null until chosen or until the first start (<see cref="GameSettingsService.Mode"/>). The game's own file only knows fullscreen on or off.</summary>

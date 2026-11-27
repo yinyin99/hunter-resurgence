@@ -271,6 +271,25 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheMissionRowsTakeAClassWhenTheyOpen()
+    {
+        var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.8/client.js");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        const string toggleSet = "toggleSet:function(){c(\".set-missions\",this.$el).toggle()}", toggleDetails = "toggleDetails:function(){c(\".mission-details\",this.$el).toggle()}", route = "l.length&&(l.find(\".set-missions\").toggle(),x())";
+        File.WriteAllText(f, toggleSet + "," + toggleDetails + "," + route);
+        var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
+        Assert.Contains("toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}", text);
+        Assert.Contains("toggleDetails:function(){c(\".mission-details\",this.$el).toggle(),c(\".mission-row\",this.$el).first().toggleClass(\"hr-open\")}", text);
+        Assert.Contains("l.length&&(l.find(\".set-missions\").toggle(),l.find(\".set-row\").toggleClass(\"hr-open\"),x())", text);  // a pack the route opens by its id too
+        // a text that is missing or doubled: the rewrite is skipped altogether (the first such script logs one warning, which a later one does not repeat)
+        foreach (var script in new[] { toggleSet + "," + route, toggleSet + "," + toggleSet + "," + toggleDetails + "," + route })
+        {
+            File.WriteAllText(f, script);
+            Assert.DoesNotContain("hr-open", Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body));
+        }
+    }
+
+    [Fact]
     public async Task TestMissionsAndEditorPagesFillTheWindowInsteadOfAFixedBox()
     {
         var f = Path.Combine(mirror, "game_web.test", "client/index.html");
@@ -286,6 +305,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Single(System.Text.RegularExpressions.Regex.Matches(page, "window\\.game=\\{\\}"));  // the key binding forwarder: once, defined only where the page has none, forwarding to ewcallback at call time
         Assert.Contains("if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}", page);
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
+        Assert.Contains("body#client_missions_page .set-row.hr-open .state-icon-container i,html body#client_missions_page .mission-row.hr-open .state-icon-container i{display:inline-block;transform:rotate(90deg)}", page);  // the arrow of an open pack or mission turns
         Assert.Contains("#lodge-main-view .inventory-item{content-visibility:auto}", page);  // the lodge's items out of view are not painted
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size

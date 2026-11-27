@@ -28,7 +28,7 @@ public class PrefsTests
         var path = Path.Combine(temp.Path, "launcher.json");
         new Prefs { Language = "fr", GameFolder = "x", CloseOnGameStart = true, GameSettingsSaved = true }.Save(path);
         var keys = System.Text.Json.JsonDocument.Parse(File.ReadAllBytes(path)).RootElement.EnumerateObject().Select(p => p.Name);
-        Assert.Equal(["language", "game_folder", "close_on_game_start", "start_with_steam", "game_settings_saved", "game_language", "display_mode", "steam_option_set", "steam_option_before", "steam_option_file", "steam_option_asked", "steam_option_never", "report_consent", "window", "disable_gpu"], keys);
+        Assert.Equal(["language", "game_folder", "close_on_game_start", "start_with_steam", "game_settings_saved", "game_language", "host_language", "display_mode", "steam_option_set", "steam_option_before", "steam_option_file", "steam_option_asked", "steam_option_never", "report_consent", "window", "disable_gpu"], keys);
         Assert.False(File.Exists(path + ".part"));
         File.WriteAllText(path, "null");
         Assert.Equal("", Prefs.Load(path).Language);
