@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} rimasti</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipaggiato</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Altro</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Vendi</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Rivendere {0} al negozio per {1} {2}? L'oggetto viene rimosso dal tuo inventario. L'azione non può essere annullata.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Non è stato possibile rivendere l'oggetto. Riprova.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Esci</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Il tuo HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Il tuo profilo</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtro anisotropico</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Aiuto contestuale</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memoria audio estesa</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Più memoria audio (250 MB invece di 220 MB). Ha effetto al prossimo avvio del gioco.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Bassa</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Media</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Alta</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>giorni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFFERTA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>L'offerta termina {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PACCHETTO</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITATA</value></data>

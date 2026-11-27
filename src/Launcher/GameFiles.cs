@@ -30,6 +30,8 @@ public sealed record GraphicsSettings
     /// <summary>0 Default, 1 Off, 2 2x, 3 4x, 4 8x, 5 16x.</summary>
     public int Aniso { get; set; }
     public bool Vsync { get; set; }
+    /// <summary>The extended audio memory line (11th): the number the file holds, 0 off; null when the line is missing or holds no number.</summary>
+    public int? ExtendedAudio { get; set; }
 }
 
 /// <summary>The integer options of the options file that exist in it. A key whose line is missing is simply absent: lines are never added.</summary>
@@ -147,6 +149,7 @@ public static class GameFiles
         if (ParseGraphics(lines) is null) throw new InvalidDataException("graphics file format");
         int[][] want = [[g.Fullscreen ? 1 : 0], [g.Width, g.Height, g.Hz], [g.Scene], [g.Texture], [g.Shadow], [g.Msaa], [g.Aniso], [g.Vsync ? 1 : 0]];
         for (var i = 0; i < want.Length; i++) lines[i + 1] = SetInts(lines[i + 1], want[i]);
+        if (g.ExtendedAudio is { } audio && lines.Length > 10) lines[10] = SetInts(lines[10], [audio]);
         Save(path, text, string.Join('\n', lines));
     }
 
@@ -156,11 +159,11 @@ public static class GameFiles
         ? new() { Width = w, Height = h, Hz = hz, Scene = 1, Texture = 1, Shadow = 1, Vsync = true }
         : new() { Width = 1280, Height = 720, Hz = 60, Scene = 1, Texture = 1, Shadow = 1, Vsync = true };
 
-    /// <summary>Writes a new graphics file in the game's format: 12 lines, CRLF; the three after vertical sync (contextual help, extended audio memory, one unknown) are 0.
+    /// <summary>Writes a new graphics file in the game's format: 12 lines, CRLF; the three after vertical sync (contextual help, extended audio memory, one unknown) are 0, the audio line holds the switch when the caller has one.
     /// Never replaces a file: one that appeared in the meantime is an IOException.</summary>
     public static void CreateGraphics(string path, GraphicsSettings g)
     {
-        int[] lines = [Marker, g.Fullscreen ? 1 : 0, -1, g.Scene, g.Texture, g.Shadow, g.Msaa, g.Aniso, g.Vsync ? 1 : 0, 0, 0, 0];
+        int[] lines = [Marker, g.Fullscreen ? 1 : 0, -1, g.Scene, g.Texture, g.Shadow, g.Msaa, g.Aniso, g.Vsync ? 1 : 0, 0, g.ExtendedAudio ?? 0, 0];
         var text = string.Concat(lines.Select(v => (v == -1 ? $"{g.Width} {g.Height} {g.Hz}" : v.ToString()) + "\r\n"));
         using var f = new FileStream(path, FileMode.CreateNew, FileAccess.Write);
         f.Write(Latin1.GetBytes(text));
@@ -178,7 +181,7 @@ public static class GameFiles
             Ints(4, 1) is not [var tex] || Ints(5, 1) is not [var shadow] || Ints(6, 1) is not [var msaa] || Ints(7, 1) is not [var aniso] || Ints(8, 1) is not [var vsync])
             return null;
         return fs is 0 or 1 && vsync is 0 or 1 && w > 0 && h > 0 && hz > 0 && scene is >= 0 and <= 3 && tex is >= 0 and <= 2 && shadow is >= 0 and <= 3 && msaa is >= 0 and <= 3 && aniso is >= 0 and <= 5
-            ? new() { Fullscreen = fs == 1, Width = w, Height = h, Hz = hz, Scene = scene, Texture = tex, Shadow = shadow, Msaa = msaa, Aniso = aniso, Vsync = vsync == 1 }
+            ? new() { Fullscreen = fs == 1, Width = w, Height = h, Hz = hz, Scene = scene, Texture = tex, Shadow = shadow, Msaa = msaa, Aniso = aniso, Vsync = vsync == 1, ExtendedAudio = lines.Length > 10 && Ints(10, 1) is [var audio] ? audio : null }
             : null;
     }
 

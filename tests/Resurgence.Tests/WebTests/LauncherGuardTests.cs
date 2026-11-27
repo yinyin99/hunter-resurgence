@@ -27,6 +27,9 @@ public class LauncherGuardTests
     [InlineData("competitions/details/3", true)]
     [InlineData("missions/daily", true)]
     [InlineData("servers", true)]
+    [InlineData("inventory", true)]
+    [InlineData("/Inventory?x=1", true)]
+    [InlineData("inventoryx", false)]
     [InlineData("feed", false)]
     [InlineData("download", false)]
     [InlineData("help/support", false)]
@@ -43,7 +46,7 @@ public class LauncherGuardTests
     [InlineData("/Messages", false)]                 // the server's: the restored messages, read only
     [InlineData("new-message", true)]
     [InlineData("bank/ems", true)]
-    [InlineData("inventory", false)]                 // turned off for everyone (Disabled), not a mock page
+    [InlineData("inventory", false)]                 // the server's: the owner's items, and the sale of those it buys back
     [InlineData("missions", false)]                  // the server's: the owner's missions
     [InlineData("/Missions/group/3", false)]
     [InlineData("missions/daily", false)]            // the server's: the owner's streak
@@ -54,11 +57,4 @@ public class LauncherGuardTests
     [InlineData("profile/x", false)]
     [InlineData("leaderboards", false)]
     public void TheMockOnlyRoutesAreTheSignedInOnesExceptTheServersAndTheCompetitions(string path, bool mock) => Assert.Equal(mock, LauncherGuard.MockOnly(path));
-
-    [Theory]
-    [InlineData("inventory", true)]
-    [InlineData("/Inventory?x=1", true)]
-    [InlineData("inventoryx", false)]
-    [InlineData("store", false)]
-    public void TheInventoryPageIsTurnedOff(string path, bool off) => Assert.Equal(off, LauncherGuard.Disabled(path));
 }

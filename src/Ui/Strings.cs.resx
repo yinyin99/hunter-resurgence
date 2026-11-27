@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>zbývá {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Vybaveno</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Ostatní</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Prodat</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Prodat {0} zpět obchodu za {1} {2}? Předmět bude odebrán z vašeho inventáře. Nelze to vrátit zpět.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Předmět se nepodařilo prodat zpět. Zkuste to znovu.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odhlásit</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropní filtrování</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tipy a triky</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozšířená paměť zvuku</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Více paměti pro zvuk (250 MB místo 220 MB). Projeví se při příštím spuštění hry.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Nízká</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Střední</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Vysoká</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>nebo</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dní</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SLEVA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Sleva končí {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>BALÍČEK</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>Limitovaná edice</value></data>

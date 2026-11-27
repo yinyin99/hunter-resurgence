@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} igjen</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Utstyrt</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Annet</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Selg</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Selge {0} tilbake til butikken for {1} {2}? Gjenstanden fjernes fra inventaret ditt. Dette kan ikke angres.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Gjenstanden kunne ikke selges tilbake. Prøv igjen.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logg ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontekstuell hjelp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Utvidet lydminne</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mer lydminne (250 MB i stedet for 220 MB). Trer i kraft ved neste start av spillet.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Lav</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Middels</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Høy</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dager</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Tilbudet slutter {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKKE</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>BEGRENSET</value></data>

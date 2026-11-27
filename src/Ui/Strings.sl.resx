@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>še {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Opremljeno</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Drugo</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Prodaj</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Prodaš {0} nazaj trgovini za {1} {2}? Predmet bo odstranjen iz tvojega inventarja. Tega ni mogoče razveljaviti.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Predmeta ni bilo mogoče prodati. Poskusi znova.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoj HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropno filtriranje</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontekstna pomoč</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Razširjen zvočni pomnilnik</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Več pomnilnika za zvok (250 MB namesto 220 MB). Začne veljati ob naslednjem zagonu igre.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Nizka</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Srednja</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Visoka</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>ali</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Akcija se konča {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITED</value></data>

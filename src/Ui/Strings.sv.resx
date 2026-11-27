@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} kvar</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Utrustad</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Övrigt</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sälj</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Sälja {0} tillbaka till butiken för {1} {2}? Föremålet tas bort från ditt förråd. Det går inte att ångra.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Föremålet kunde inte säljas tillbaka. Försök igen.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Logga ut</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Sammanhangsberoende hjälp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Utökat ljudminne</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mer ljudminne (250 MB i stället för 220 MB). Gäller vid nästa start av spelet.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Låg</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Medel</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Hög</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagar</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>REA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Rean slutar {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>BEGRÄNSAD</value></data>

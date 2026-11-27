@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} jäljellä</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Varusteena</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Muut</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Myy</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Myydäänkö {0} takaisin kauppaan hintaan {1} {2}? Esine poistetaan varastostasi. Tätä ei voi perua.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Esinettä ei voitu myydä takaisin. Yritä uudelleen.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScoresi</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrooppinen suodatus</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tilannekohtaiset ohjeet</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Laajennettu äänimuisti</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Enemmän äänimuistia (250 Mt 220 Mt:n sijaan). Tulee voimaan pelin seuraavalla käynnistyksellä.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Matala</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Keskitaso</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Korkea</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>tai</value></data>
   <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ALE</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Ale päättyy {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKETTI</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>RAJOITETTU ERÄ</value></data>

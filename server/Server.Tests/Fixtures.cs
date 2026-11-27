@@ -69,11 +69,9 @@ public static class Fixtures
         }
     }
 
-    // 95 % off applies although a 100 % entry listed after it is also active
-    public static JsonArray DISCOUNTS => (JsonArray)JsonNode.Parse("""
-        [{"item_id": 19, "percentage": 95, "start_ts": 0, "end_ts": 1099511627776},
-         {"item_id": 19, "percentage": 100, "start_ts": 0, "end_ts": 1099511627776}]
-        """)!;
+    /// <summary>A `store_sales` list of one fixed sale that runs for ever: `percent` off the em$ price of item `item` (or in `currencies`, a JSON list), as `settings.json` has it.</summary>
+    public static JsonArray SALES(long item, int percent, string currencies = "[\"em\"]") => (JsonArray)JsonNode.Parse(
+        $$"""[{"name": "Test sale", "from": "2020-01-01T00:00:00Z", "until": "2100-01-01T00:00:00Z", "percent": {{percent}}, "currencies": {{currencies}}, "items": [{{item}}]}]""")!;
 
     public static JsonObject LOCALE => O("""
         {"pose_stand": "Standing", "pose_crouch": "Crouching", "pose_prone": "Prone",

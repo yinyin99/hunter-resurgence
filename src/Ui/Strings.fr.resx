@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} restant(s)</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Équipé</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Autres</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Revendre</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Revendre {0} à la boutique pour {1} {2} ? L'objet est retiré de votre inventaire. Cette action est irréversible.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>L'objet n'a pas pu être revendu. Réessayez.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Déconnexion</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Votre HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Votre profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrage anisotrope</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Aide contextuelle</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Mémoire audio étendue</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Plus de mémoire pour le son (250 Mo au lieu de 220 Mo). Prend effet au prochain démarrage du jeu.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Faible</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Moyen</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Élevé</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>ou</value></data>
   <data name="Store.Days" xml:space="preserve"><value>jours</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>PROMO</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>La promo se termine le {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PACK</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITÉ</value></data>

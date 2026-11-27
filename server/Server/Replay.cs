@@ -307,8 +307,8 @@ public static class Replay
 
     /// <summary>Player state on workDir/state.db. Each input is the operator's recording when there is one, else what the
     /// install and the facts file give (Install, Facts): the connect reply, the application catalogue, the locale
-    /// labels, the texture names and the populations of every reserve. Discounts, the avatar list and the player's skill list come from
-    /// recordings only (without them: no discounts, fresh skills). Null when there is neither a recorded connect nor a
+    /// labels, the texture names and the populations of every reserve. The avatar list and the player's skill list come from
+    /// recordings only (without them: fresh skills). The recorded Application/discounts is not read: the store's sales are the operator's (`store_sales`). Null when there is neither a recorded connect nor a
     /// connect sample in the install.</summary>
     public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
     {
@@ -347,7 +347,6 @@ public static class Replay
             locale = (JsonObject)JsonNode.Parse(script.AsSpan(a, Math.Max(b - a, 0)))!;
         }
         var web = Script(p => p.EndsWith(WEB_SCRIPT_SUFFIX, StringComparison.Ordinal));
-        e.TryGetValue(new("GET", apiHost, DISCOUNTS, null), out var discounts);
         var avatars = e.FirstOrDefault(kv => kv.Key.Params is null && kv.Key.Host == apiHost && string.Equals(kv.Key.Path, AVATARS, StringComparison.OrdinalIgnoreCase)).Value;
         var challenges = e.FirstOrDefault(kv => kv.Key.Host == apiHost && string.Equals(kv.Key.Path, CHALLENGES, StringComparison.OrdinalIgnoreCase)).Value;
         var sample = System.IO.Path.Combine(S(cfg, "install_dir"), "game", "json_inventory.json");  // item definitions update 10 sends
@@ -364,7 +363,6 @@ public static class Replay
             $"https://{S(cfg, "game_web_host")}{ProtocolLiterals.IconPath}",
             app != null ? (JsonObject)JsonNode.Parse(app.Body)! : Install.Application(S(cfg, "install_dir"), facts, item), locale,
             web.Length > 0 ? ScorePage.TextureNames(Encoding.UTF8.GetString(web)) : facts.Textures,
-            discounts != null ? (JsonArray)JsonNode.Parse(discounts.Body)! : [],
             File.Exists(sample) ? (JsonArray)JsonNode.Parse(File.ReadAllText(sample, Encoding.UTF8))!["infos"]!.DeepClone() : [],
             reserves,
             skillList != null ? JsonNode.Parse(skillList.Body) : null,
@@ -382,6 +380,7 @@ public static class Replay
             PlaytimeSince = cfg["playtime_since"] is { } since ? Py.L(since) : State.DefaultPlaytimeSince
         };
         state.LoadHarvestGmBonuses(cfg["harvest_gm_bonus"]);
+        foreach (var line in state.LoadStoreSales(cfg["store_sales"])) Console.WriteLine(line);
         state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
         if (!offline) { state.MigrateAvatars(); state.MigrateAvatarGenders(); state.MigrateListedAvatarUrls(); }  // a community server: the pictures its accounts imported before the avatars were served
         return state;

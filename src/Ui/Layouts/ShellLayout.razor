@@ -78,7 +78,7 @@
         if (Mode.Launcher && Nav.Uri != readAt && DiscordOffer.Shown(session, Sessions)) { readAt = Nav.Uri; session = await Sessions.CurrentAsync() ?? session; }
         // launcher-only routes are not served to the public website, nor pages of mock data with a community server: back to the feed
         var path = Nav.ToBaseRelativePath(Nav.Uri);
-        if (LauncherGuard.Disabled(path) || (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || Mode.Live && LauncherGuard.MockOnly(path))) Nav.NavigateTo("/feed", replace: true);
+        if (Mode.Launcher ? Mode.Live && LauncherGuard.MockOnly(path) : LauncherGuard.Blocks(path) || Mode.Live && LauncherGuard.MockOnly(path)) Nav.NavigateTo("/feed", replace: true);
         // a signed-in hunter who has not accepted the current agreements is sent from the feed to the agreements page
         eula = path.Split('?', '#')[0].Trim('/').Equals("eula", StringComparison.OrdinalIgnoreCase);
         if (session is not null && path.Split('?', '#')[0].Trim('/') is "" or "feed" && !await Sessions.LicenseAcceptedAsync()) Nav.NavigateTo("/eula", replace: true);

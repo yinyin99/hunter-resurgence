@@ -29,7 +29,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         var s = await LoadAsync();
         // sales, all and bundles lead (all and bundles open their one sub-link, as the store does); the server's own categories follow, its "all" is the lead one
         List<StoreCategory> categories = [];
-        if (s.Items.Any(i => i.Was is not null)) categories.Add(new("sales", "Sales", []));
+        if (s.Items.Any(i => i.OnSale) || s.Bundles.Any(b => b.Was is not null)) categories.Add(new("sales", "Sales", []));
         categories.Add(new("all", "All Items", [new("all", "All Items", [])]));
         if (s.Bundles.Length > 0) categories.Add(new("bundles", "Bundles", [new("bundles", "Bundles", [])]));
         categories.AddRange(s.Categories.Where(c => c.Key != "all").Select(c => new StoreCategory(c.Key, c.Name, [.. (c.Children ?? []).Select(x => new StoreCategory(x.Key, x.Name, []))])));
@@ -42,7 +42,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         var s = await LoadAsync();
         var own = await OwnAsync();
         var words = search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        var hits = s.Items.Where(i => (view == "all" || (view == "sales" ? i.Was is not null : i.Category == view))
+        var hits = s.Items.Where(i => (view == "all" || (view == "sales" ? i.OnSale : i.Category == view))
             && words.All(w => i.Name.Contains(w, StringComparison.OrdinalIgnoreCase) || i.Variant.Contains(w, StringComparison.OrdinalIgnoreCase))).ToList();
         var pages = Math.Max(1, (hits.Count + PageSize - 1) / PageSize);
         var n = Math.Clamp(page, 1, pages);
@@ -56,7 +56,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         return [.. s.Bundles.Select(b => Bundle(b, s, prices))];
     }
 
-    public async Task<bool> HasSalesAsync() => (await LoadAsync()).Items.Any(i => i.Was is not null);
+    public async Task<bool> HasSalesAsync() => await LoadAsync() is var s && (s.Items.Any(i => i.OnSale) || s.Bundles.Any(b => b.Was is not null));
 
     public async Task<StoreItem?> ItemAsync(int id)
     {
@@ -126,7 +126,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     {
         var (have, counted, expires) = own.GetValueOrDefault(i.Id);
         return new(i.Id, i.Name, i.Variant, i.Category, i.Ems, i.Was, i.Gms, have, i.Buyable, Capacity: 0, i.Description,
-            OwnLimit: counted ? 0 : i.Limit, Counted: counted, Expires: expires, Unlimited: i.Unlimited, Fuel: i.Fuel);
+            OwnLimit: counted ? 0 : i.Limit, Counted: counted, Expires: expires, Unlimited: i.Unlimited, Fuel: i.Fuel, WasGms: i.Gwas, Sale: i.Sale is { } sale ? new(sale.Name, sale.Percent, sale.Until) : null);
     }
 
     // a line is one unit of an item at its full price; the page adds up the lines of one item. The price and what is already owned are the server's offer for this player.
@@ -135,9 +135,10 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         BundleLine[] lines = [.. b.Items.Select(x => s.Items.FirstOrDefault(i => i.Id == x.Id) is { } i
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant, i.Limit)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))];
+        var sale = b.Sale is { } bs ? new StoreSale(bs.Name, bs.Percent, bs.Until) : null;
         return offers.TryGetValue(b.Id, out var o)
-            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of)
-            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines);
+            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of, b.Was, sale)
+            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines, PreSale: b.Was, Sale: sale);
     }
 
     /// <summary>What each bundle costs the player now, by bundle id; none without a session or when the server does not answer (the list prices then stand).</summary>
@@ -162,5 +163,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     }
 
     async Task<ServerStore> LoadAsync() => cookie.Value is null ? Empty
-        : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value) ?? Empty;
+        : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value, FirstSaleEnd) ?? Empty;
+
+    /// <summary>The earliest end of a sale in the catalogue, null for none: the read is kept no longer than that, or a price would show after its sale ended.</summary>
+    public static DateTimeOffset? FirstSaleEnd(ServerStore s) => s.Items.Select(i => i.Sale?.Until).Concat(s.Bundles.Select(b => b.Sale?.Until)).Min();
 }

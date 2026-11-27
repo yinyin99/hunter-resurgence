@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} maradt</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Felszerelve</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Egyéb</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Eladás</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Visszaadod a(z) {0} tárgyat az üzletnek {1} {2} ellenében? A tárgy törlődik a készletedből. Ez nem vonható vissza.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>A tárgyat nem sikerült visszaadni. Próbáld újra.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te HunterScore-od</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotrop szűrés</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Környezetfüggő súgó</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Bővített hangmemória</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Több hangmemória (250 MB a 220 MB helyett). A játék következő indításakor lép életbe.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Alacsony</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Közepes</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Magas</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>vagy</value></data>
   <data name="Store.Days" xml:space="preserve"><value>nap</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIÓ</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Az akció vége: {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>CSOMAG</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PRÉMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>KORLÁTOZOTT</value></data>

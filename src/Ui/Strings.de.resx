@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} übrig</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Ausgerüstet</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Sonstiges</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Verkaufen</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>{0} für {1} {2} an den Shop zurückverkaufen? Der Gegenstand wird aus Ihrem Inventar entfernt. Das kann nicht rückgängig gemacht werden.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Der Gegenstand konnte nicht zurückverkauft werden. Versuchen Sie es erneut.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrope Filterung</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontextbezogene Hilfe</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Erweiterter Audiospeicher</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mehr Soundspeicher (250 MB statt 220 MB). Wirkt beim nächsten Spielstart.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Niedrig</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Mittel</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Hoch</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>oder</value></data>
   <data name="Store.Days" xml:space="preserve"><value>Tage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ANGEBOT</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Angebot endet {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITIERET</value></data>

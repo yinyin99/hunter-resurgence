@@ -6,4 +6,5 @@ namespace Resurgence.Tests;
 sealed class NoItems : IInventoryService
 {
     public Task<IReadOnlyList<InventoryItem>> ItemsAsync() => Task.FromResult<IReadOnlyList<InventoryItem>>([]);
+    public Task<Result> SellAsync(long guid) => Task.FromResult(Result.Fail("Inv.SellFailed"));
 }

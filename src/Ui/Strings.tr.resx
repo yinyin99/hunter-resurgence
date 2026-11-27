@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} kaldı</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Kuşanıldı</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Diğer</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sat</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>{0} mağazaya {1} {2} karşılığında geri satılsın mı? Eşya envanterinizden kaldırılır. Bu geri alınamaz.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Eşya geri satılamadı. Tekrar deneyin.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Oturumu Kapat</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScore'unuz</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiliniz</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropik Filtreleme</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Bağlamsal Yardım</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Genişletilmiş Ses Belleği</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Daha fazla ses belleği (220 MB yerine 250 MB). Oyunun bir sonraki başlatılışında etkili olur.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Düşük</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Orta</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Yüksek</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>veya</value></data>
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>İndirim şu tarihte bitiyor: {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>AYRICALIKLI</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>SINIRLI</value></data>

@@ -548,7 +548,8 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestBuyDeliversWithNextHeartbeat()
     {
-        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
+        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        s.LoadStoreSales(SALES(19, 95));
         var reply = s.BuyReply(ME, "item_id=19&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray());
         Eq("""{"price": 9.0, "success": true}""", Reply(reply));  // 170 at 95 % off
         var updates = HbOf(s);
@@ -563,11 +564,12 @@ public class InventoryTests : StateTestBase
         Eq("19", Items(s)[(string)row["guid"]!]!["item_id"]);
     }
 
-    /// <summary>wallet=SILVER pays the silver price (1900) as the catalogue has it, not the 95 % off of the em$ price (170 to 9), takes gm$ only, and queues the gm$ balance.</summary>
+    /// <summary>wallet=SILVER pays the silver price (1900) as the catalogue has it, not the 95 % em$ sale of the em$ price (170 to 9), takes gm$ only, and queues the gm$ balance.</summary>
     [Fact]
     public void TestBuyWithGmChargesTheSilverPriceAndNothingElse()
     {
-        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
+        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        s.LoadStoreSales(SALES(19, 95));
         using (var con = s.Store.Open(ME)) State.AddCurrency(con, "gm", 4000, "test");  // 33 + 4000
         Eq("""{"price": 3800.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=2&wallet=SILVER"u8.ToArray())));
         Eq("233.0", s.Wallet(ME)["gm"]);
@@ -594,7 +596,8 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestBuyAmountIsOneToAThousand()
     {
-        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS);
+        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES);
+        s.LoadStoreSales(SALES(19, 95));
         using (var con = s.Store.Open(ME)) State.AddCurrency(con, "em", 100000, "test");
         var wallet = s.Wallet(ME)["em"]!.DeepClone();
         var count = Items(s).Count;
@@ -630,7 +633,7 @@ public class InventoryTests : StateTestBase
     [Fact]
     public void TestBuyBetweenHunts()
     {
-        // launcher store, no hunt running, 112 em; item 6's rows in discount-list order (later rows start in the future)
+        // launcher store, no hunt running, 112 em; item 6 at 95 % off
         var connect = CONNECT;
         connect["wallet"]!["em"] = 112.0;
         var app = APP;
@@ -644,13 +647,9 @@ public class InventoryTests : StateTestBase
              "allowedCombinationSlots": [], "type": 1, "image": "test_rifle_two", "variationName": "Walnut",
              "define": "TEST_RIFLE_TWO"}
             """);
-        var discounts = (JsonArray)JsonNode.Parse("""
-            [{"id": 9001, "item_id": 6, "percentage": 95, "start_ts": 0, "end_ts": 1099511627776},
-             {"id": 9002, "item_id": 6, "percentage": 100, "start_ts": 1950000000, "end_ts": 1099511627776},
-             {"id": 9003, "item_id": 6, "percentage": 100, "start_ts": 1950000900, "end_ts": 1099511627776}]
-            """)!;
         var s = new State(Path.Combine(tmp, "buy.db"), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES,  // own db: 112 em
-                          discounts: discounts, sampleInfos: new JsonArray(info.DeepClone()));
+                          sampleInfos: new JsonArray(info.DeepClone()));
+        s.LoadStoreSales(SALES(6, 95));
         Assert.Equal("{\"price\": 37.0, \"success\": true}"u8.ToArray(),
                      s.BuyReply(ME, "item_id=6&oauth_access_token=x&amount=1&wallet=GOLD"u8.ToArray()));  // 730 at 95 % off
         Eq("75.0", s.Wallet(ME)["em"]);  // Me/poll ems
@@ -664,18 +663,6 @@ public class InventoryTests : StateTestBase
         var updates = HbOf(s);
         Eq("""{"amount": 75.0, "type": "em", "update": 15}""", updates[0]);
         Assert.DoesNotContain(updates, u => Py.Eq(u!["update"], 10));
-    }
-
-    [Fact]
-    public void TestDiscountIsTheItemsFirstRow()
-    {
-        // the store script's getPrice reads only the item's first listed row: a later active row is not used
-        var discounts = (JsonArray)JsonNode.Parse("""
-            [{"item_id": 19, "percentage": 50, "start_ts": 1099511627000, "end_ts": 1099511627776},
-             {"item_id": 19, "percentage": 95, "start_ts": 0, "end_ts": 1099511627776}]
-            """)!;
-        var s = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: discounts);
-        Eq("""{"price": 170.0, "success": true}""", Reply(s.BuyReply(ME, "item_id=19&amount=1&wallet=GOLD"u8.ToArray())));
     }
 
     [Fact]

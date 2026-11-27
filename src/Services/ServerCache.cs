@@ -10,18 +10,21 @@ public sealed class ServerCache<T> where T : class
     public static readonly TimeSpan Lifetime = TimeSpan.FromMinutes(5);
     public static readonly TimeSpan Pause = TimeSpan.FromSeconds(10);
 
-    sealed record Held(DateTime At, T Value);
+    sealed record Held(DateTime Expires, T Value);
 
     volatile Held? held;
     long failedAt;  // ticks of the last failure, 0 for none
 
-    public T? Get(DateTime now) => held is { } h && now - h.At < Lifetime ? h.Value : null;
+    public T? Get(DateTime now) => held is { } h && now < h.Expires ? h.Value : null;
 
     public bool Paused(DateTime now) => Volatile.Read(ref failedAt) is var t && t != 0 && now - new DateTime(t, DateTimeKind.Utc) < Pause;
 
-    public void Set(DateTime now, T value)
+    /// <summary>Keeps <paramref name="value"/> for <see cref="Lifetime"/>, or until <paramref name="until"/> when that is sooner (the end of a sale the reply shows: after it the server charges the full price), but at least <see cref="Pause"/>.</summary>
+    public void Set(DateTime now, T value, DateTimeOffset? until = null)
     {
-        held = new Held(now, value);
+        var expires = now + Lifetime;
+        if (until is { } u) expires = new[] { expires, new[] { u.UtcDateTime, now + Pause }.Max() }.Min();
+        held = new Held(expires, value);
         Volatile.Write(ref failedAt, 0);
     }
 
@@ -30,7 +33,7 @@ public sealed class ServerCache<T> where T : class
     /// <summary>The held reply, else GET <paramref name="path"/> with the browser's <c>Host</c> (the server picks its site by it) and its session <paramref name="cookie"/> when given (a reply for
     /// signed-in players: the caller asks only with one). Null when the server does not
     /// answer, answers an error, or sends a reply that is not <paramref name="complete"/> (it would break every page until it expires): the caller shows nothing, never the mock.</summary>
-    public async Task<T?> LoadAsync(HttpClient http, string? host, string path, Func<T, bool> complete, ILogger log, string? cookie = null)
+    public async Task<T?> LoadAsync(HttpClient http, string? host, string path, Func<T, bool> complete, ILogger log, string? cookie = null, Func<T, DateTimeOffset?>? until = null)
     {
         var now = DateTime.UtcNow;
         if (Get(now) is { } value) return value;
@@ -45,7 +48,7 @@ public sealed class ServerCache<T> where T : class
             {
                 if (await response.Content.ReadFromJsonAsync<T>() is { } reply && complete(reply))
                 {
-                    Set(now, reply);
+                    Set(now, reply, until?.Invoke(reply));
                     return reply;
                 }
                 log.LogWarning("The server answered {Path} with an incomplete reply: nothing is shown", path);

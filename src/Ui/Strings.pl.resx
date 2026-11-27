@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>zostało {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Wyposażone</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Inne</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sprzedaj</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Sprzedać {0} z powrotem sklepowi za {1} {2}? Przedmiot zostanie usunięty z ekwipunku. Tego nie można cofnąć.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Nie udało się sprzedać przedmiotu. Spróbuj ponownie.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Wyloguj się</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Twój HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrowanie anizotropowe</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Pomoc kontekstowa</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozszerzona pamięć audio</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Więcej pamięci dźwięku (250 MB zamiast 220 MB). Zadziała przy następnym uruchomieniu gry.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Niska</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Średnia</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Wysoka</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>lub</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>WYPRZEDAŻ</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Wyprzedaż kończy się {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>ZESTAW</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITOWANA</value></data>

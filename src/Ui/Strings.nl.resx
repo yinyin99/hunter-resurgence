@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} over</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Uitgerust</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Overig</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Verkopen</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>{0} terugverkopen aan de winkel voor {1} {2}? Het voorwerp wordt uit je inventaris verwijderd. Dit kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Het voorwerp kon niet worden terugverkocht. Probeer het opnieuw.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Uitloggen</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Jouw HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Jouw profiel</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrope filtering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Contextuele hulp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Uitgebreid audiogeheugen</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Meer geluidsgeheugen (250 MB in plaats van 220 MB). Gaat in bij de volgende start van het spel.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Laag</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Gemiddeld</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Hoog</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>of</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagen</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ACTIE</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Actie eindigt {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>BUNDEL</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>BEPERKT</value></data>

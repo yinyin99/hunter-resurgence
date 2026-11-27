@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills", "harvest_links"];
+         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills", "harvest_links", "purchases"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 44;
+    public const int Version = 46;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -174,6 +174,31 @@ public sealed class Store
             owner INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, kill_id INTEGER NOT NULL);
         CREATE INDEX IF NOT EXISTS harvest_links_account ON harvest_links (account_id, individual);
         CREATE INDEX IF NOT EXISTS harvest_links_owner ON harvest_links (owner);
+        """;
+
+    // schema 45 (#1047): the items a random store sale (settings.json `store_sales`, StoreSales.cs) put on sale in each of its periods and at what percentage, written once per period (State.RecordSalePicks); shared by all players
+    const string StoreSalePicks = """
+        CREATE TABLE IF NOT EXISTS store_sale_picks (
+            sale TEXT NOT NULL, period_start INTEGER NOT NULL, period_end INTEGER NOT NULL, item_id INTEGER NOT NULL, percent REAL NOT NULL,
+            PRIMARY KEY (sale, period_start, item_id)) WITHOUT ROWID;
+        """;
+
+    // schema 46 (#928): the copies State.WebSell can sell back, one row per item copy (`guid`, `item_id`). A copy a store purchase of one item delivered has the `currency` paid (em or gm) and the whole `paid` price of that copy
+    // (the discounted one on a sale); a copy a restore or an archive claim brought has `restored` 1, `currency` gm and `paid` 0: it sells at the catalogue's gm$ price. `ts` is unix seconds. A bundle's items, a grant, a reward and the
+    // start kit have no row: no proof of what they cost, so they are not sold back. Deliver drops the row of a guid it reuses; a restore clears the rows with the items (PlayerRows.ClearModel)
+    const string Purchases = $"""
+        CREATE TABLE IF NOT EXISTS purchases (
+            {A}, guid INTEGER NOT NULL, item_id INTEGER NOT NULL, currency TEXT NOT NULL, paid INTEGER NOT NULL, ts INTEGER NOT NULL, restored INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (account_id, guid)) WITHOUT ROWID;
+        """;
+
+    // once, when the table is made: the copies an account that restored a backup or claimed an archive holds then are marked restored, except those of an item the account also bought here before the table
+    // existed (its wallet_log lists the item id): which copy is which cannot be told, so none of them is. Copies given after the table exists (purchases, grants) are not marked
+    const string RestoredBackfill = """
+        INSERT OR IGNORE INTO purchases (account_id, guid, item_id, currency, paid, ts, restored)
+            SELECT i.account_id, i.guid, i.item_id, 'gm', 0, CAST(strftime('%s', 'now') AS INTEGER), 1 FROM items i
+            WHERE EXISTS (SELECT 1 FROM restore_audit r WHERE r.account_id = i.account_id)
+              AND NOT EXISTS (SELECT 1 FROM wallet_log w, json_each(w.item_ids) j WHERE w.account_id = i.account_id AND w.amount < 0 AND j.value = i.item_id);
         """;
 
     // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
@@ -627,6 +652,12 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = ?", column.Split(' ')[0])! == 0)
                 con.Script($"ALTER TABLE photos ADD COLUMN {column}");
         con.Script("CREATE INDEX IF NOT EXISTS photos_taker ON photos (taker) WHERE taker IS NOT NULL");
+        con.Script(StoreSalePicks);  // schema 45 (#1047), every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
+        if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'purchases'")! == 0)  // schema 46 (#928), every start and guarded by the table (not by the version), like the steps above
+        {
+            con.Script(Purchases);
+            con.Script(RestoredBackfill);
+        }
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

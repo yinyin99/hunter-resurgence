@@ -12,7 +12,7 @@ public static class PlayerRows
     /// messages, pending) and restore_audit stay, and so do the days of daily missions completed here (the calendar and streak are made again).</summary>
     public static void ClearModel(Db con)
     {
-        foreach (var table in new[] { "items", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "missions", "mission_prefs", "challenges" })
+        foreach (var table in new[] { "items", "purchases", "wallet", "skills", "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "missions", "mission_prefs", "challenges" })
             con.Exec($"DELETE FROM {table} WHERE account_id = $a");
         con.Exec("UPDATE daily_missions SET body = json_object('days', json_extract(body, '$.days')) WHERE account_id = $a");
     }
@@ -21,6 +21,10 @@ public static class PlayerRows
     public static void AddItem(Db con, long guid, long itemId, long slot, long? units, JsonObject metadata) =>
         con.Exec("INSERT INTO items (account_id, guid, item_id, slot, metadata, units) VALUES ($a, ?, ?, ?, ?, ?)",
                  guid, itemId, slot, Py.Dumps(metadata), units);
+
+    /// <summary>A restored or claimed copy is sold back at the catalogue's gm$ price (State.WebSell): its mark in `purchases` (Store.Purchases).</summary>
+    public static void MarkRestored(Db con, long guid, long itemId) =>
+        con.Exec("INSERT OR REPLACE INTO purchases (account_id, guid, item_id, currency, paid, ts, restored) VALUES ($a, ?, ?, 'gm', 0, ?, 1)", guid, itemId, (long)Py.Now());
 
     /// <summary>Adds each start item (<paramref name="kit"/>: the rows a new account gets) the account does not own, as a new account gets it: in its slot unless
     /// that is taken, else in the backpack; returns how many. <paramref name="have"/> is the (item id, slot) of the items it owns and <paramref name="guid"/> the highest of their guids.

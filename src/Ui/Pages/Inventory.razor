@@ -2,6 +2,7 @@
 @inject IInventoryService Service
 @inject IStoreService Store
 @inject HostMode Mode
+@inject ModalService Modal
 
 <PageTitle>@L["Inv.Title"]</PageTitle>
 
@@ -22,6 +23,7 @@
                         <span class="variant">@i.Variant</span>
                         @if (i.Units is { } units) { <p class="units">@L["Inv.Units", units]</p> }
                         @if (i.Equipped) { <p class="equipped">@L["Inv.Equipped"]</p> }
+                        @if (i.Sell is { } offer) { <button class="btn btn-inverse sell" @onclick="() => Sell(i, offer)">@L["Inv.Sell"] (@offer.Refund @Currency(offer))</button> }
                     </article>
                 }
             </div>
@@ -33,12 +35,29 @@
     IReadOnlyList<IGrouping<string, InventoryItem>> groups = [];
     bool loaded;
 
+    static string Currency(SellOffer offer) => offer.Currency == "em" ? "em$" : "gm$";
+
     // read again on every open, so an item just bought shows; the groups follow the store's sub-categories, an item of none last
     protected override async Task OnInitializedAsync()
+    {
+        await Load();
+        loaded = true;
+    }
+
+    async Task Load()
     {
         var items = await Service.ItemsAsync();
         var order = (await Store.CategoriesAsync()).SelectMany(c => c.Children).Select(c => c.Key).ToList();
         groups = [.. items.GroupBy(i => i.Category).OrderBy(g => order.IndexOf(g.Key) is var n && n >= 0 ? n : int.MaxValue)];
-        loaded = true;
+    }
+
+    // the server decides what can be sold (docs/server.md#selling-back): the button shows the refund it offers, the confirmation asks once, the list is read again after the answer
+    async Task Sell(InventoryItem item, SellOffer offer)
+    {
+        if (!await Modal.Confirm(L["Inv.SellConfirm", item.Name, offer.Refund, Currency(offer)])) return;
+        var sold = await Service.SellAsync(item.Guid);
+        if (sold.Ok) Modal.BalancesChanged();  // after the answer: the status bar's em$ and gm$ show the refund, not the balance from before the sale
+        else Modal.Alert(L[sold.Error ?? "Inv.SellFailed"]);
+        await Load();
     }
 }

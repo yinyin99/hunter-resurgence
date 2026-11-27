@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>осталось {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Экипировано</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Прочее</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Продать</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Продать {0} обратно в магазин за {1} {2}? Предмет будет удалён из инвентаря. Это нельзя отменить.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Не удалось продать предмет. Попробуйте ещё раз.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Выйти</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ваш HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>
@@ -326,6 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Анизотропная фильтрация</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Контекстные подсказки</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Расширенная аудиопамять</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Больше памяти для звука (250 МБ вместо 220 МБ). Вступит в силу при следующем запуске игры.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Низкое</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Среднее</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Высокое</value></data>
@@ -755,6 +759,7 @@
   <data name="Store.Or" xml:space="preserve"><value>или</value></data>
   <data name="Store.Days" xml:space="preserve"><value>дн.</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>СКИДКА</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>Скидка действует до {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>КОМПЛЕКТ</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>ПРЕМИУМ</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>ОГРАНИЧЕННЫЙ СРОК</value></data>
