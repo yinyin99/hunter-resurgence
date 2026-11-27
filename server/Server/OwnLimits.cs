@@ -88,7 +88,7 @@ public sealed partial class State
 
     /// <summary>What a bundle gives an account and costs it now (<see cref="Offer"/>): the items it gives (each at most up to its limit, an item already owned up to its limit is skipped), the price, and how many of its
     /// <paramref name="Of"/> items are <paramref name="Owned"/> (skipped). A copy a bundle lists beyond the item's limit is neither: it is not given, not paid for, and not counted in <paramref name="Of"/>.</summary>
-    sealed record BundleOffer(long[] Give, long Price, int Owned, int Of);
+    sealed record BundleOffer(long[] Give, long Price, long GmPrice, int Owned, int Of);
 
     /// <summary>The bundle for this account, null when the store does not sell it at all (<see cref="BundleSale"/>). The items a bundle lists more often than their limit allows, and those the account owns up to their limit, are not given;
     /// the price drops by their share: each item's own em$ list price (the catalogue's, whatever sale is on) over the sum of those of the bundle's items, `price × (1 − share)` rounded up to a whole em$, at least 1; `price` is the bundle's
@@ -125,10 +125,13 @@ public sealed partial class State
                 }
             }
         }
-        var price = BundlePrice(b);  // the sale's percentage first, then the share of what the player owns
+        long price = BundlePrice(b), gmPrice = BundlePrice(b, true);  // the sale's percentage first, then the share of what the player owns
         if (skipped > 0 && total > 0 && give.Count > 0)
+        {
             price = Math.Max(1, (price * (total - skipped) + total - 1) / total);
-        return new BundleOffer([.. give], price, owned, of);
+            gmPrice = Math.Max(1, (gmPrice * (total - skipped) + total - 1) / total);
+        }
+        return new BundleOffer([.. give], price, gmPrice, owned, of);
     }
 
     /// <summary>Whether the store leaves a bundle out instead of showing it as not for sale: one made only of ammunition while `unlimited_ammo` is on, or one that lists a fuel while `unlimited_fuel` is.</summary>
@@ -149,7 +152,7 @@ public sealed partial class State
             var offer = Offer(con, b!);
             bundles.Add(new JsonObject
             {
-                ["id"] = C(b!["id"]), ["price"] = offer?.Price ?? BundlePrice(b), ["owned"] = offer?.Owned ?? 0, ["of"] = offer?.Of ?? Arr(b["items"]).Count,
+                ["id"] = C(b!["id"]), ["price"] = offer?.Price ?? BundlePrice(b), ["gms"] = offer?.GmPrice ?? BundlePrice(b, true), ["owned"] = offer?.Owned ?? 0, ["of"] = offer?.Of ?? Arr(b["items"]).Count,
                 ["buyable"] = offer is { Give.Length: > 0 },
             });
         }

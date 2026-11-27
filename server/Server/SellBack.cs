@@ -34,7 +34,7 @@ public sealed partial class State
         {
             if (StartItems().Any(k => Py.L(k!["item_id"]) == itemId)) return (null, "start_kit");
             if (!StoreSells(item, "silver_price")) return (null, "not_sold");
-            paid = Whole(item["silver_price"]);
+            paid = Listed(item, "silver_price");
         }
         if (con.Scalar("SELECT 1 FROM wallet WHERE account_id = $a AND currency = ?", currency) is null) return (null, "no_wallet");
         var refund = paid * SellBackPercent / 100;

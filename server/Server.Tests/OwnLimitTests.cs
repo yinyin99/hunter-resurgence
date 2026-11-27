@@ -217,7 +217,7 @@ public class OwnLimitTests : StateTestBase
         Make(BundleItems(), Bundles(), ammo: true, fuel: true);
         Assert.True(state.GrantItems(ME, A));
         Assert.True(state.GrantItems(ME, B));
-        Eq("""{"id": 9, "price": 40, "owned": 2, "of": 5, "buyable": true}""", Offer(9));
+        Eq("""{"id": 9, "price": 40, "gms": 680, "owned": 2, "of": 5, "buyable": true}""", Offer(9));
         var before = Em();
         Assert.NotNull(state.WebBuy(ME, 9, true, 1));
         Assert.Equal(40, before - Em());
@@ -228,7 +228,7 @@ public class OwnLimitTests : StateTestBase
     public void ABundleWithNothingOwnedCostsItsPriceAndGivesEveryItem()
     {
         Make(BundleItems(), Bundles(), ammo: true, fuel: true);
-        Eq("""{"id": 9, "price": 60, "owned": 0, "of": 5, "buyable": true}""", Offer(9));
+        Eq("""{"id": 9, "price": 60, "gms": 1020, "owned": 0, "of": 5, "buyable": true}""", Offer(9));
         var before = Em();
         Assert.NotNull(state.WebBuy(ME, 9, true, 1));
         Assert.Equal(60, before - Em());
@@ -239,7 +239,7 @@ public class OwnLimitTests : StateTestBase
     public void ABundleThatListsALimitedItemTwiceGivesItOnceAndTheSecondOneIsNotPaidFor()
     {
         Make(BundleItems(), Bundles(), ammo: true, fuel: true);
-        Eq("""{"id": 24, "price": 32, "owned": 0, "of": 3, "buyable": true}""", Offer(24));  // A twice: the second copy is not given, not paid for and not counted; the items are worth 10, 10, 20 and 10 of 50 em$: 4/5 of 40 em$
+        Eq("""{"id": 24, "price": 32, "gms": 544, "owned": 0, "of": 3, "buyable": true}""", Offer(24));  // A twice: the second copy is not given, not paid for and not counted; the items are worth 10, 10, 20 and 10 of 50 em$: 4/5 of 40 em$
         Assert.NotNull(state.WebBuy(ME, 24, true, 1));
         Assert.Equal(new long[] { 1, 1, 1 }, new[] { A, C, D }.Select(id => Owned(id)));
     }
@@ -250,7 +250,7 @@ public class OwnLimitTests : StateTestBase
         Make(BundleItems(), Bundles(), ammo: true, fuel: true);
         Assert.True(state.GrantItems(ME, A));
         Assert.True(state.GrantItems(ME, B));
-        Eq("""{"id": 10, "price": 50, "owned": 2, "of": 2, "buyable": false}""", Offer(10));
+        Eq("""{"id": 10, "price": 50, "gms": 850, "owned": 2, "of": 2, "buyable": false}""", Offer(10));
         var before = Em();
         Assert.Null(state.WebBuy(ME, 10, true, 1));
         Assert.Equal(before, Em());
