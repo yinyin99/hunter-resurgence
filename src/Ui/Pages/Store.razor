@@ -17,8 +17,8 @@
         {
             <div class="card panel hover-tint">
                 @if (i.OnSale && !variantB) { <Ribbon Text="@L.SaleTag(i.Sale)" /> }
-                <a href="/store/item/@i.Id@sq" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
-                <a href="/store/item/@i.Id@sq" class="name">@i.Name</a>
+                <a href="@($"/store/item/{i.Id}{sq}")" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
+                <a href="@($"/store/item/{i.Id}{sq}")" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
                 @if (variantB && i.OnSale) { <SaleCardB Percent="SaleCardB.ItemPct(i)" Prices="SaleCardB.ItemPrices(i)" Sale="i.Sale" /> }
                 else
@@ -45,8 +45,8 @@
         {
             <div class="card panel hover-tint">
                 @if (b.OnSale && !variantB) { <Ribbon Text="@L.SaleTag(b.Sale)" /> } else if (!b.OnSale) { <Ribbon Text="@L["Store.BundleTag"]" Class="blue" /> }
-                <a href="/store/bundle/@b.Id@sq" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
-                <a href="/store/bundle/@b.Id@sq" class="name">@b.Name</a>
+                <a href="@($"/store/bundle/{b.Id}{sq}")" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
+                <a href="@($"/store/bundle/{b.Id}{sq}")" class="name">@b.Name</a>
                 @if (variantB && b.OnSale) { <SaleCardB Percent="SaleCardB.BundlePct(b)" Prices="SaleCardB.BundlePrices(b)" Sale="b.Sale" /> }
                 else
                 {
