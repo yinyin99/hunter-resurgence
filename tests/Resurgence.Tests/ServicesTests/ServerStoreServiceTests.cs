@@ -186,6 +186,7 @@ public class ServerStoreServiceTests
     sealed class Items(params InventoryItem[] items) : IInventoryService
     {
         public Task<IReadOnlyList<InventoryItem>> ItemsAsync() => Task.FromResult<IReadOnlyList<InventoryItem>>(items);
+        public Task<Result> SellAsync(long guid) => Task.FromResult(Result.Fail("Inv.SellFailed"));
     }
 
     // units are summed over a counted item's copies, otherwise the copies are counted; a license carries its end (0 unlimited); an item the player lacks is 0
@@ -253,6 +254,7 @@ public class ServerStoreServiceTests
     {
         public int Reads;
         public Task<IReadOnlyList<InventoryItem>> ItemsAsync() { Reads++; return Task.FromResult<IReadOnlyList<InventoryItem>>([]); }
+        public Task<Result> SellAsync(long guid) => Task.FromResult(Result.Fail("Inv.SellFailed"));
     }
 
     // a search is many reads of the store, not of the inventory: it is read again after a page opens or a purchase

@@ -10,7 +10,9 @@ public sealed class InventoryPageTests : UiContext
 {
     sealed class Items(params InventoryItem[] items) : IInventoryService
     {
-        public Task<IReadOnlyList<InventoryItem>> ItemsAsync() => Task.FromResult<IReadOnlyList<InventoryItem>>(items);
+        public readonly List<long> Sold = [];
+        public Task<IReadOnlyList<InventoryItem>> ItemsAsync() => Task.FromResult<IReadOnlyList<InventoryItem>>([.. items.Where(i => !Sold.Contains(i.Guid))]);
+        public Task<Result> SellAsync(long guid) { Sold.Add(guid); return Task.FromResult(Result.Success); }
     }
 
     [Fact]
@@ -35,5 +37,45 @@ public sealed class InventoryPageTests : UiContext
         var cut = Render<Inventory>();
         Assert.Empty(cut.FindAll(".card"));
         Assert.Single(cut.FindAll(".none"));
+    }
+
+    [Fact]
+    public void OnlyACopyTheServerOffersToBuyBackHasASellButtonAndTheConfirmationNamesTheAmountAndTheCurrency()
+    {
+        var items = new Items(new(1, "Made-up Rifle", "", "4", "Rifles", null, false, Guid: 11, Sell: new("gm", 40)),
+                              new(2, "Made-up Scope", "", "4", "Rifles", null, false, Guid: 12),
+                              new(3, "Made-up Tent", "", "4", "Rifles", null, true, Guid: 13),
+                              new(4, "Made-up Boots", "", "4", "Rifles", null, false, Guid: 14, Sell: new("em", 7)));
+        Services.AddSingleton<IInventoryService>(items);
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<Inventory>();
+
+        Assert.Equal(2, cut.FindAll("button.sell").Count);
+        Assert.Contains("40 gm$", cut.FindAll("button.sell")[0].TextContent);
+        cut.FindAll("button.sell")[1].Click();
+
+        var text = (string)modal.Parameters!["Text"]!;
+        Assert.Contains("Made-up Boots", text);
+        Assert.Contains("7 em$", text);
+        Assert.Empty(items.Sold);  // nothing is sold before the answer
+        ((TaskCompletionSource<bool>)modal.Parameters["Answer"]!).SetResult(true);
+
+        cut.WaitForAssertion(() => Assert.Equal([14L], items.Sold));
+        cut.WaitForAssertion(() => Assert.Single(cut.FindAll("button.sell")));  // read again: the sold copy is gone
+    }
+
+    [Fact]
+    public void ANoToTheConfirmationSellsNothing()
+    {
+        var items = new Items(new(1, "Made-up Rifle", "", "4", "Rifles", null, false, Guid: 11, Sell: new("gm", 40)));
+        Services.AddSingleton<IInventoryService>(items);
+        var modal = Services.GetRequiredService<ModalService>();
+        var cut = Render<Inventory>();
+
+        cut.Find("button.sell").Click();
+        ((TaskCompletionSource<bool>)modal.Parameters!["Answer"]!).SetResult(false);
+
+        Assert.Empty(items.Sold);
+        Assert.Single(cut.FindAll("button.sell"));
     }
 }

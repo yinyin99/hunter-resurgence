@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>restam {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Outros</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Vender</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Vender {0} de volta à loja por {1} {2}? O item será removido do seu inventário. Isso não pode ser desfeito.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Não foi possível vender o item. Tente novamente.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sair</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Seu HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Seu perfil</value></data>

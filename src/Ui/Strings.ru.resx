@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>осталось {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Экипировано</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Прочее</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Продать</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Продать {0} обратно в магазин за {1} {2}? Предмет будет удалён из инвентаря. Это нельзя отменить.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Не удалось продать предмет. Попробуйте ещё раз.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Выйти</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ваш HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ваш профиль</value></data>

@@ -14,6 +14,9 @@ public static class ServerAccountApi
     /// <summary>POST with <c>X-Requested-With</c> and the form <c>id</c>, <c>count</c>, <c>wallet</c> (<c>GOLD</c> or <c>SILVER</c>), <c>bundle=1</c> for a bundle: buys with em$ or gm$ at the store's price; 200 <c>{status, ems}</c>
     /// (<c>gms</c> for gm$), or 409 for something not for sale or a balance too low.</summary>
     public const string Buy = "/account/buy";
+    /// <summary>POST with <c>X-Requested-With</c> and the form <c>guid</c> (<see cref="ServerInventoryItem.Guid"/>): sells the copy back for part of its price (its <see cref="ServerInventoryItem.Sell"/>); 200 <c>{status, currency, refund, balance}</c>,
+    /// or 409 with the reason in <c>status</c> for a copy that cannot be sold.</summary>
+    public const string Sell = "/account/sell";
     /// <summary>GET with the cookie: 200 <see cref="ServerFriends"/> (the friends, the requests and the pending requests of the player); POST with <c>X-Requested-With</c> to
     /// <c>/add</c> (asks, or accepts the other's request) or <c>/remove</c> (declines, cancels or removes) and the form <c>handle</c>: 200, or 404 for a handle that is not another player.</summary>
     public const string Friends = "/account/friends";
@@ -105,8 +108,12 @@ public sealed record ServerEventItem(int Id, string Name);
 /// <summary><see cref="ServerAccountApi.EventPanel"/>: <c>Start</c> and <c>End</c> are unix seconds; <c>Name</c> is null when there is no panel.</summary>
 public sealed record ServerEventPanel(string? Name, string? Title, long Start, long End, ServerCommunityMission[]? Community, ServerContributor[]? Contributors,
     ServerEventMission[]? Missions, ServerEventItem[]? Items);
-/// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>; <c>Expires</c> is unix seconds, 0 for an unlimited license, null for none.</summary>
-public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped, long? Expires = null);
+/// <summary>An item of <see cref="ServerAccountApi.Inventory"/>: <c>Guid</c> names the copy; <c>Units</c> is null for an item that is not counted; <c>Category</c> and <c>CategoryName</c> are the store's sub-category, "" for none; <c>Slot</c> is above 0 when <c>Equipped</c>; <c>Expires</c> is unix seconds, 0 for an unlimited license, null for none;
+/// <c>Sell</c> is what selling the copy back pays now, null when it cannot be sold.</summary>
+public sealed record ServerInventoryItem(int Id, string Name, string Variant, string Category, string CategoryName, int? Units, int Slot, bool Equipped, long? Expires = null, long Guid = 0, ServerSellOffer? Sell = null);
+
+/// <summary>What selling a copy back pays: <c>Currency</c> is <c>em</c> or <c>gm</c>.</summary>
+public sealed record ServerSellOffer(string Currency, long Refund);
 
 public sealed record ServerInventory(ServerInventoryItem[] Items);
 

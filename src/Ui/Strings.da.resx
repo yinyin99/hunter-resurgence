@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} tilbage</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Udstyret</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Andet</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sælg</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Sælg {0} tilbage til butikken for {1} {2}? Genstanden fjernes fra dit inventar. Det kan ikke fortrydes.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Genstanden kunne ikke sælges tilbage. Prøv igen.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Log ud</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Din HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Din profil</value></data>

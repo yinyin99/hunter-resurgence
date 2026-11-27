@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} maradt</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Felszerelve</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Egyéb</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Eladás</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Visszaadod a(z) {0} tárgyat az üzletnek {1} {2} ellenében? A tárgy törlődik a készletedből. Ez nem vonható vissza.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>A tárgyat nem sikerült visszaadni. Próbáld újra.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kijelentkezés</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>A te HunterScore-od</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>A te profilod</value></data>

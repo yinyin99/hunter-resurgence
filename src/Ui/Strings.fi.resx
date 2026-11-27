@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} jäljellä</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Varusteena</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Muut</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Myy</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Myydäänkö {0} takaisin kauppaan hintaan {1} {2}? Esine poistetaan varastostasi. Tätä ei voi perua.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Esinettä ei voitu myydä takaisin. Yritä uudelleen.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Kirjaudu ulos</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>HunterScoresi</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Profiilisi</value></data>
