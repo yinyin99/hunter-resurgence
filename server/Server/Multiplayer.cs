@@ -395,15 +395,15 @@ public sealed partial class State
 
     /// <summary>Whose a harvest (event 3, `eventId` its stored row in `con`'s account, the harvester's) is: null, the harvester's, which is every harvest outside a multiplayer game, one of an animal
     /// nobody hit and one whose last hit is the harvester's own; (shooter, false), the harvest of the member who shot the animal last (another member's newest event 1 on the same `individual`, of the
-    /// same species (a hit names the catalogue number plus one) when it names one, after that member joined, within <see cref="MpHitWindow"/> before this event); (_, true), a second harvest of an animal a member already harvested since its last hit
-    /// (within the same window, so an earlier harvest of another animal that had the same `individual` number does not count), which counts for nobody.</summary>
+    /// same species (a hit names the catalogue number plus one) when it names one, after that member joined, however long before this event, as the original did); (_, true), a second harvest of an animal
+    /// a member already harvested since its last hit, which counts for nobody. When the spawn records (event 7) of that earlier harvest and of this one both exist and differ (<see cref="SameSpawn"/>), the earlier
+    /// one was of another animal that had the same `individual` number: the hits before it were on that animal, so nobody in the session hit this one and it is the harvester's.</summary>
     (long Account, bool Ignore)? CreditOf(Db con, JsonObject e3, long eventId)
     {
         if (con.Account is not { } me || games.SnapshotOf(me) is not { } game)
             return null;
         var (individual, variant) = (e3["individual"], e3["extended_species"]);
-        var at = con.Scalar("SELECT ts FROM events WHERE account_id = $a AND id = ?", eventId) is double ts ? ts : double.MinValue;
-        var members = game.Members.Select(m => (m.Account, Since: Math.Max(m.Joined, at - MpHitWindow), Db: m.Account == me ? con : Con(m.Account))).ToList();
+        var members = game.Members.Select(m => (m.Account, Since: m.Joined, Db: m.Account == me ? con : Con(m.Account))).ToList();
         try
         {
             (long Account, long Id)? last = null;
@@ -417,10 +417,12 @@ public sealed partial class State
                         last = (account, (long)r[0]);
                     break;
                 }
+            JsonObject Spawn(Db db, long before) => db.Rows("SELECT body FROM events WHERE account_id = $a AND event = 7 AND individual = ? AND id < ? ORDER BY id DESC LIMIT 1", individual, before)
+                .FirstOrDefault() is { } row ? Parse(row[0]) : new JsonObject();
             foreach (var (_, since, db) in members)
-                if (db.Scalar("SELECT 1 FROM events WHERE account_id = $a AND event = 3 AND individual = ? AND json_extract(body, '$.extended_species') IS ? AND ts >= ? AND id > ? AND id < ? LIMIT 1",
-                              individual, variant, since, last?.Id ?? 0, eventId) is not null)
-                    return (0, true);
+                if (db.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND individual = ? AND json_extract(body, '$.extended_species') IS ? AND ts >= ? AND id > ? AND id < ?",
+                              individual, variant, since, last?.Id ?? 0, eventId) is long earlier)
+                    return Spawn(db, earlier) is { Count: > 0 } was && Spawn(con, eventId) is { Count: > 0 } mine && !SameSpawn(was, mine) ? null : (0, true);
             return last is { } l && l.Account != me ? (l.Account, false) : null;
         }
         finally
@@ -431,9 +433,14 @@ public sealed partial class State
         }
     }
 
+    /// <summary>What a harvester's score text ends with when the harvest counts for the member who shot the animal (<see cref="TryCredit"/>); the confirm-kill page's Taxidermize button stays disabled for it (<c>TimerFix</c>).</summary>
+    public const string ShootersKill = " (shooter's kill)";
+
     /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
     /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit; the harvester's mission objectives that ask for a harvest follow it, <see cref="HarvesterEvent"/>, their
-    /// updates 15 added to `updates`, the heartbeat's reply, once the write is released). When writing it for the shooter fails, that write is undone (a savepoint) with the harvester's objectives, the failure is logged
+    /// updates 15 added to `updates`, the heartbeat's reply, once the write is released). Once released, the reply also gets the harvester's update 6 for his confirm-kill screen: the shooter's score (score, its text and type,
+    /// trophy shot) on his own `individual`, `css` 0 (his reward) and `kill_id` 0 (no harvest of his to taxidermize), the text ending with <see cref="ShootersKill"/>, and an update 3 that says whose it is.
+    /// When writing it for the shooter fails, that write is undone (a savepoint) with the harvester's objectives, the failure is logged
     /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone; nothing of the undone write reaches the reply.</summary>
     bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters)
     {
@@ -447,12 +454,21 @@ public sealed partial class State
         try
         {
             var theirs = con.Sharing(credit.Account);
-            var shot = CreditHarvest(theirs, e3, e7, e22);
+            var (shot, score) = CreditHarvest(theirs, e3, e7, e22);
             HarvesterEvent(con, theirs, e3, e7, shot, eventId, mine);
             con.Exec("RELEASE credit");
             shooters.Add(credit.Account);
             foreach (var u in mine.OfType<JsonObject>().ToList())
                 Into(updates)(u.DeepClone().AsObject());
+            score["kill_id"] = 0;
+            score["css"] = 0.0;
+            score["score_text"] = Py.Str(score["score_text"]) + ShootersKill;
+            updates.Add(score);
+            updates.Add(new JsonObject
+            {
+                ["text"] = "This harvest counts for the player who shot it.", ["colour"] = COLOUR, ["destination"] = MediaUrl("doc_64.jpg"),
+                ["update"] = 3, ["timer"] = 1000, ["type"] = 100,
+            });
             return true;
         }
         catch (Exception ex)
@@ -465,10 +481,11 @@ public sealed partial class State
     }
 
     /// <summary>A harvest another member made of an animal this account shot last (<see cref="CreditOf"/>) is stored as this account's own: its events (the harvester's trophy measurement and the harvest) join this
-    /// account's, and the kill, page, score, gm$, missions and challenges follow from them as for a harvest of its own hunt. Its updates (6 and 15) come with the account's next heartbeat. `theirs` is the shooter's
+    /// account's, and the kill, page, score, gm$, missions and challenges follow from them as for a harvest of its own hunt. Its gm$ (update 15) come with the account's next heartbeat, but not its update 6: this account's
+    /// game never opened a confirm-kill screen for it, and the update's `kill_id` would become its taxidermy target, so a screen of its own harvest open at that moment would buy for this kill. `theirs` is the shooter's
     /// view (<see cref="Db.Sharing"/>) of the harvester's connection, so the harvest and its credit are one transaction. `e7` stands in for the animal's spawn event when the shooter's own events have none.
-    /// Returns the harvest's event id in this account.</summary>
-    long CreditHarvest(Db theirs, JsonObject e3, JsonObject e7, JsonObject e22)
+    /// Returns the harvest's event id in this account and its update 6 (the score), for the harvester.</summary>
+    (long Id, JsonObject Score) CreditHarvest(Db theirs, JsonObject e3, JsonObject e7, JsonObject e22)
     {
         var now = Clock();
         if (e22.Count > 0)
@@ -476,12 +493,12 @@ public sealed partial class State
         var id = theirs.Insert("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(e3), now);
         void Pending(JsonNode update) => theirs.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
         var gm = GmAt(now);
-        StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, gm.Multiplier, gm.Event, gold => Pending(gold), e7);
+        var score = StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, gm.Multiplier, gm.Event, gold => Pending(gold), e7, queue: false);
         var updates = new JsonArray();
         MissionEvent(theirs, e3, updates);
         ChallengeEvent(theirs, e3);
         foreach (var update in updates)
             Pending(update!);
-        return id;
+        return (id, score);
     }
 }

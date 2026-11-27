@@ -331,11 +331,11 @@ public sealed partial class State
         (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(saved, '$.kill_id') AS INTEGER)), 0) + 1 FROM photos WHERE account_id = $a AND saved IS NOT NULL")!,
     }.Max();
 
-    /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
+    /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`, unless not `queue`; returned) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
     /// `spawn` stands in for the animal's spawn event when the account's own events have none.</summary>
-    static void StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
+    static JsonObject StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                              Func<JsonObject, JsonNode?, JsonNode?, HuntRule, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
-                             Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null)
+                             Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null, bool queue = true)
     {
         var harvest = Py.Dumps(e);
         var killId = NextKillId(con);
@@ -360,7 +360,8 @@ public sealed partial class State
             ["kill_id"] = killId,
             ["css"] = css,
         };
-        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
+        if (queue)
+            con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
         if (Py.RoundInt(css) > 0)
             gold(new JsonObject
             {
@@ -368,6 +369,7 @@ public sealed partial class State
                                          gmMultiplier == 1 ? null : Py.RoundInt(Py.Round(baseCss, 1)), gmMultiplier == 1 ? null : gmEvent),
                 ["type"] = "gm", ["update"] = 15,
             });
+        return update;
     }
 
     /// <summary>The guid of an item event's `item` (a string of digits), else null.</summary>

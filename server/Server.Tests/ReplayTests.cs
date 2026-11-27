@@ -290,6 +290,18 @@ public class ReplayTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestTheTaxidermizeButtonStaysDisabledForAHarvestThatCountsForItsShooter()
+    {
+        var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.8/client.js");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllText(f, "function u(e){h&&(clearTimeout(h),h=null),e.ethical?g(!0,e):g(!1),s(\"#confirm-kill-score\")}");
+        var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
+        Assert.Contains("e.ethical&&String(e.score).indexOf(\"(shooter's kill)\")<0?g(!0,e):g(!1),", text);
+        File.WriteAllText(f, "a.ethical?f(!0,a):f(!1);b.ethical?f(!0,b):f(!1)");  // found twice: left as it is
+        Assert.DoesNotContain("shooter", Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body));
+    }
+
+    [Fact]
     public async Task TestMissionsAndEditorPagesFillTheWindowInsteadOfAFixedBox()
     {
         var f = Path.Combine(mirror, "game_web.test", "client/index.html");
