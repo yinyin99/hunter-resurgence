@@ -19,20 +19,21 @@ public sealed class GameProcess(Func<bool> windowVisible, Func<int?> exitCode, A
 
     /// <summary>
     /// Starts the client; null when Windows does not start it. This process is the launcher's own child, so its exit code is known however fast it quit.
-    /// The known exe is started suspended and gets the goose call patch (<see cref="GooseCall"/>), the rabbit sound patch (<see cref="RabbitSound"/>), the coat table patch (<see cref="CoatTable"/>) and the log lock (<see cref="LogLock"/>) first, each on its own; any other exe starts as it is.
+    /// The known exe is started suspended and gets the goose call patch (<see cref="GooseCall"/>), the rabbit sound patch (<see cref="RabbitSound"/>), the coat table patch (<see cref="CoatTable"/>), the dog answer patch (<see cref="DogAnswer"/>) and the log lock (<see cref="LogLock"/>) first, each on its own; any other exe starts as it is.
     /// </summary>
     public static GameProcess? Start(ProcessStartInfo info, ILogger? log)
     {
         var sha = LogLock.Sha256(info.FileName);
         if (sha != LogLock.Known.ExeSha256)
         {
-            log?.LogInformation("The game's log lock, goose call patch, rabbit sound patch and coat table patch are not applied, the game starts without them: not the known exe ({Sha256})", sha ?? "unreadable");
+            log?.LogInformation("The game's log lock, goose call patch, rabbit sound patch, coat table patch and dog answer patch are not applied, the game starts without them: not the known exe ({Sha256})", sha ?? "unreadable");
             return Start(info);
         }
         if (SuspendedProcess.Create(info) is not { } game) return null;
         GooseCall.Known.ApplyAndLog(game, log);
         RabbitSound.Known.ApplyAndLog(game, log);
         CoatTable.Known.ApplyAndLog(game, log);
+        DogAnswer.Known.ApplyAndLog(game, log);
         if (LogLock.Known.ApplyAndResume(game, log)) return game.Started();
         game.Kill();
         return null;
