@@ -311,7 +311,7 @@ public sealed record CoatTable(string ExeSha256, uint Lookup, uint Layer, uint I
 
 /// <summary>
 /// In a multiplayer game the game asks the host whether a retrieving dog may pick a bird up, and a guest's answer comes over the network, but the guest's game reads the dog's answer field on the next frame and nothing clears it between two retrieves:
-/// a guest's dog acts on the answer to its previous retrieve (after one refusal its next retrieve fails at the bird, and a stale "yes" lets it take a bird the host's dog already holds). The host answers its own dog inside the same call, so it never sees this.
+/// a guest's dog acts on the answer to its previous retrieve (after one refusal its next retrieve fails at the bird, and a stale "yes" lets it take a bird the host's dog already holds). The host's own answer needs no network round trip, so the host never sees this.
 /// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the one call where the game asks that question at a 15-byte routine in a page of the game's memory:
 /// it clears the dog's answer field (the dog is in <c>esi</c>, as the game's own function expects), then jumps to the game's own function, which sees the registers and the stack a direct call would leave.
 /// The dog then waits for the host's real answer. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is. Nothing on disk changes.

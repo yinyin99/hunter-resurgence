@@ -27,7 +27,7 @@ public class DogAnswerTests
     [Fact]
     public void TheRoutineIsTheExpectedBytesAtAnyBase()
     {
-        // mov dword ptr [esi+172], 0; jmp image+2703488 (the rel32 is that minus the end of the routine at the page). Image 4194304 with the page below it, and image 134217728 with the page above it
+        // mov dword ptr [esi+172], 0; jmp image+2703488 (the rel32 is that minus the end of the routine at the page). Image 4194304 with the page above it, and image 134217728 with the page below it
         Assert.Equal("C786AC00000000000000E9714069FC", Convert.ToHexString(DogAnswer.Known.Code(4194304, 67108864)));
         Assert.Equal("C786AC00000000000000E971402904", Convert.ToHexString(DogAnswer.Known.Code(134217728, 67108864)));
         Assert.Equal(DogAnswer.Size, DogAnswer.Known.Code(0, 0).Length);
