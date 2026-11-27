@@ -80,7 +80,8 @@ public class TaxidermyTests : StateTestBase, IAsyncLifetime
     {
         var mine = await server.SendAsync("GET", Current, "/v1/harvest/screen", [("Authorization", "Bearer " + tokenMe)]);
         Assert.Equal((200, "{\"taxidermy\": true}"), (mine.Status, Text(mine)));  // a harvest of his own (no harvest credited to another member); MpHarvestTests has the false answer
-        Assert.DoesNotContain("taxidermy", Text(await server.SendAsync("GET", Current, "/v1/harvest/screen")));  // no token: the expired-token reply (the page then enables the button)
+        var none = await server.SendAsync("GET", Current, "/v1/harvest/screen");  // no token: the expired-token reply, which has no `taxidermy`, so the page enables the button
+        Assert.Equal((200, """{"errorCode": 5, "message": "token expired"}"""), (none.Status, Text(none)));
     }
 
     [Fact]

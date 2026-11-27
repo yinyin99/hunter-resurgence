@@ -435,7 +435,7 @@ public static class Replay
         /// and is enabled unless the answer is `taxidermy: false` (a failed call enables it, as before; the purchase itself is refused for a harvest that is not the player's). Matched by pattern (the script's minified names differ
         /// between versions); not found exactly once: skipped, one warning.</summary>
         static readonly Regex Taxidermy = new(@"(\w)\.ethical\?(\w)\(!0,\1\):\2\(!1\)", RegexOptions.ECMAScript);
-        const string AskTaxidermy = "$1.ethical?($2(!1),Promise.resolve(HUNTER.getAccessToken()).then(function(t){return fetch(\"/v1/harvest/screen\",{headers:{Authorization:\"Bearer \"+t},cache:\"no-store\"})})"
+        const string AskTaxidermy = "$1.ethical?($2(!1),Promise.resolve(" + ProtocolLiterals.PageBridge + ".getAccessToken()).then(function(t){return fetch(\"/v1/harvest/screen\",{headers:{Authorization:\"Bearer \"+t},cache:\"no-store\"})})"
             + ".then(function(r){return r.json()}).then(function(x){x&&x.taxidermy===false||$2(!0,$1)},function(){$2(!0,$1)})):$2(!1)";
         static int warnedRows, warnedTrackers, warned, warnedApp, warnedFrame, warnedPage, warnedTaxidermy;
 

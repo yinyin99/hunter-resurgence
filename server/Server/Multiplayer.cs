@@ -440,17 +440,24 @@ public sealed partial class State
     /// when the screen gets its score and keeps the Taxidermize button disabled until a true answer (<c>TimerFix</c>).</summary>
     public bool HarvestScreenOwn(long account) => !creditedAway.ContainsKey(account);
 
-    /// <summary>A heartbeat of the account brings a harvest: its screen is the new one's, its own until <see cref="TryCredit"/> credits it to the shooter.</summary>
-    void NewHarvestScreen(long account) => creditedAway.TryRemove(account, out _);
+    /// <summary>The account's latest harvest, once its heartbeat is committed: `away`, it counts for the member who shot the animal (<see cref="TryCredit"/>).</summary>
+    void NoteHarvestScreen(long account, bool away)
+    {
+        if (away)
+            creditedAway[account] = 0;
+        else
+            creditedAway.TryRemove(account, out _);
+    }
 
     /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
     /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit; the harvester's mission objectives that ask for a harvest follow it, <see cref="HarvesterEvent"/>, their
     /// updates 15 added to `updates`, the heartbeat's reply, once the write is released). Once released, the reply also gets the harvester's update 6 for his confirm-kill screen: the shooter's score (score, its text and type,
-    /// trophy shot) on his own `individual`, `css` 0 (his reward) and `kill_id` 0 (no harvest of his to taxidermize), and his screen is noted as not his (<see cref="HarvestScreenOwn"/>).
+    /// trophy shot) on his own `individual`, `css` 0 (his reward) and `kill_id` 0 (no harvest of his to taxidermize). `screen` is told, for every harvest, whether it is credited to the shooter (<see cref="NoteHarvestScreen"/>, after the commit).
     /// When writing it for the shooter fails, that write is undone (a savepoint) with the harvester's objectives, the failure is logged
     /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone; nothing of the undone write reaches the reply.</summary>
-    bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters)
+    bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters, Action<bool> screen)
     {
+        screen(false);
         if (CreditOf(con, e3, eventId) is not { } credit)
             return false;
         if (credit.Ignore)
@@ -470,7 +477,7 @@ public sealed partial class State
             score["kill_id"] = 0;
             score["css"] = 0.0;
             updates.Add(score);
-            creditedAway[con.Account!.Value] = 0;
+            screen(true);
             return true;
         }
         catch (Exception ex)

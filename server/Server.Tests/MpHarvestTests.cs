@@ -136,6 +136,12 @@ public class MpHarvestTests : StateTestBase
         Assert.False(state.HarvestScreenOwn(HOST));
         Beat(HOST, Skinned(461, 2));  // his own next harvest (nobody hit it)
         Assert.True(state.HarvestScreenOwn(HOST));
+        Beat(GUEST, Shot(462));
+        Beat(HOST, [.. Skinned(462, 3), .. Skinned(463, 4)]);  // one heartbeat: the guest's harvest, then his own: the screen is the last one's
+        Assert.True(state.HarvestScreenOwn(HOST));
+        Beat(GUEST, Shot(464));
+        Beat(HOST, [.. Skinned(465, 5), .. Skinned(464, 6)]);  // and the other way round
+        Assert.False(state.HarvestScreenOwn(HOST));
     }
 
     [Fact]
@@ -389,7 +395,7 @@ public class MpHarvestTests : StateTestBase
         static JsonNode Seen(int coat) => O($$"""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": {{coat}}}""");
         Beat(GUEST, shooterCoat is { } own ? [Seen(own), Hit(460)] : [Hit(460)]);
         var score = Assert.Single(Beat(HOST, [Seen(harvesterCoat), .. Skinned(460, spawn: false)]), u => Py.Eq(u!["update"], 6))!;  // the harvester's screen shows the shooter's verdict
-        Assert.Equal(disqualified, Py.Str(score["score_text"]).StartsWith("Disqualified ", StringComparison.Ordinal));
+        Assert.Equal(disqualified, Py.Eq(score["score_text"], "Disqualified "));
         Assert.Equal(!disqualified, (bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);  // the page judges it the same
     }
 

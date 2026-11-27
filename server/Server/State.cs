@@ -2300,12 +2300,10 @@ public sealed partial class State
         using var con = Con(account);
         var harvesting = events.OfType<JsonObject>().Any(e => Is(e["event"], 3));
         if (harvesting)
-        {
             Monitor.Enter(harvestGate);  // a harvest's owner is read from the players' stored events: two harvests of one animal at once must not both miss the other
-            NewHarvestScreen(account);
-        }
         JsonArray updates;
         List<long> shooters = [];
+        bool? away = null;  // the latest harvest counts for its shooter: noted once the heartbeat is committed
         try
         {
             var now = Clock();
@@ -2313,7 +2311,9 @@ public sealed partial class State
             updates = Heartbeat(con, now, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                 (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, gm.Multiplier, position, gm.Event,
-                                (c, e, id, u) => TryCredit(c, e, id, u, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
+                                (c, e, id, u) => TryCredit(c, e, id, u, shooters, x => away = x), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
+            if (away is { } latest)
+                NoteHarvestScreen(account, latest);
         }
         finally
         {

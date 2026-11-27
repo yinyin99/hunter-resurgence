@@ -299,7 +299,7 @@ public class ReplayTests : IAsyncLifetime
         {
             File.WriteAllText(f, $"function u(e){{h&&(clearTimeout(h),h=null),{a}.ethical?{g}(!0,{a}):{g}(!1),s(\"#confirm-kill-score\")}}");
             var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
-            Assert.Contains($"{a}.ethical?({g}(!1),Promise.resolve(HUNTER.getAccessToken()).then(function(t){{return fetch(\"/v1/harvest/screen\"", text);  // disabled until the answer
+            Assert.Contains($"{a}.ethical?({g}(!1),Promise.resolve({ProtocolLiterals.PageBridge}.getAccessToken()).then(function(t){{return fetch(\"/v1/harvest/screen\"", text);  // disabled until the answer
             Assert.Contains($".then(function(x){{x&&x.taxidermy===false||{g}(!0,{a})}},function(){{{g}(!0,{a})}})):{g}(!1),s(", text);  // enabled unless the server says no, and when the call fails
         }
         File.WriteAllText(f, "a.ethical?f(!0,a):f(!1);b.ethical?f(!0,b):f(!1)");  // found twice: left as it is

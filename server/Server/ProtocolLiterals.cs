@@ -32,4 +32,7 @@ public static class ProtocolLiterals
 
     /// <summary>Prefix of the place names (`location_name` of event 101) the game sends for some of its places: `PREFIX` then the reserve and the place.</summary>
     public const string LocationPrefix = "HUNTER_GAME_LOCATION_";
+
+    /// <summary>The global the in-game page's script (`client.js`) calls the game's functions through (`getAccessToken` and the like).</summary>
+    public const string PageBridge = "HUNTER";
 }
