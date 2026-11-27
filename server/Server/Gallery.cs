@@ -54,14 +54,34 @@ public sealed partial class State
         }
     }
 
-    /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded camera photo or trophy shot (<see cref="GalleryTypes"/>), or a picture a restore unpacked;
-    /// `animal` is the species of the kill with the photo's individual ("" without one), `label` that kill's score ("" without one); `thumbnail` is the
+    /// <summary>The account's gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}` with the account whose picture it is (`Owner`): its own (<see cref="OwnRows"/>), and the trophy shots
+    /// its game took of other members' kills (`taker`), which are theirs; with `kills` such a row also has `hunter`, the handle of the member whose kill it shows.</summary>
+    List<(long Owner, JsonObject Row)> GalleryRows(long account, string? site = null, bool kills = false)
+    {
+        var rows = OwnRows(account, site, kills).Select(r => (Owner: account, Row: r)).ToList();
+        List<object[]> taken;
+        using (var con = Con(account))
+            taken = con.Rows("SELECT account_id, id FROM photos WHERE taker = $a AND file IS NOT NULL");
+        foreach (var owner in taken.GroupBy(r => (long)r[0], r => (long)r[1]))
+        {
+            var handle = Store.HandleOf(owner.Key);
+            foreach (var row in OwnRows(owner.Key, site, kills).Where(r => owner.Contains((long)r["id"]!)))
+            {
+                if (kills) row["hunter"] = handle;
+                rows.Add((owner.Key, row));
+            }
+        }
+        return [.. rows.OrderByDescending(r => (long)r.Row["id"]!)];
+    }
+
+    /// <summary>The account's own gallery pictures, newest first, each `{id, type, url, thumbnail, label, animal}`: an uploaded camera photo or trophy shot (<see cref="GalleryTypes"/>), or a picture a restore unpacked;
+    /// `animal` is the species of the kill the photo shows (its `kill_id`, a trophy shot another member took of the kill, else the kill with the photo's individual; "" without one), `label` that kill's score ("" without one); `thumbnail` is the
     /// picture's own link when the game sent no thumbnail; with `kills`, `kill` is the id of the kill whose score sheet page the website has (<see cref="PublicSheet"/>), else null. The links are on the game's host, or on `site` (the website's) when given. ponytail: the whole gallery is read and each thumbnail looked up on disk per request; page it in SQL if galleries grow past a few hundred photos.</summary>
-    List<JsonObject> GalleryRows(long account, string? site = null, bool kills = false)
+    List<JsonObject> OwnRows(long account, string? site, bool kills)
     {
         using var con = Con(account);
         return [.. con.Rows("SELECT p.id, p.photo_type, p.file, k.species, json_extract(h.body, '$.score'), p.saved, k.kill_id FROM photos p"
-                            + " LEFT JOIN kills k ON k.account_id = $a AND k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest")
+                            + " LEFT JOIN kills k ON k.account_id = $a AND (k.kill_id = p.kill_id OR k.individual = p.individual AND p.spawn = " + KillSpawn("k.individual", "k.harvest") + ")"
                             + " LEFT JOIN harvests h ON h.account_id = $a AND h.kill_id = k.kill_id"
                             + $" WHERE p.account_id = $a AND p.file IS NOT NULL AND (p.photo_type IN ({GalleryTypes}) OR p.saved IS NOT NULL) GROUP BY p.id ORDER BY p.id DESC")
             .Select(r =>
@@ -94,29 +114,29 @@ public sealed partial class State
                 return null;
             account = other;
         }
-        var all = GalleryRows(account);
+        var all = GalleryRows(account).Select(r => r.Row).ToList();
         var page = all.Skip((int)Math.Min(Number("offset"), int.MaxValue));
         var limit = Number("limit");
         return Py.DumpBytes(new JsonObject { ["total"] = all.Count, ["photos"] = new JsonArray((limit > 0 ? page.Take((int)Math.Min(limit, int.MaxValue)) : page).Cast<JsonNode?>().ToArray()) });
     }
 
-    /// <summary>What a profile page's gallery tab shows of an account to `viewer`: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill, share}]}`; `url` and `thumbnail` are both
-    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original under its opaque name. `share` (the owner's rows only) is its bare link: it shows to a signed-in player.</summary>
+    /// <summary>What a profile page's gallery tab shows of an account to `viewer`: one page of its gallery, `{page, pages, total, rows: [{id, type, url, thumbnail, label, animal, kill, hunter, share}]}`; `url` and `thumbnail` are both
+    /// the viewer's link of the picture (<see cref="ViewLink"/>): the original under its opaque name. `hunter` (a trophy shot of another member's kill only) is that member's handle. `share` (the owner's rows only) is its bare link: it shows to a signed-in player.</summary>
     public JsonObject PublicGallery(long account, int page, string site, long viewer)
     {
         var all = GalleryRows(account, site, kills: true);
         var pages = Math.Max(1, (all.Count + GalleryPageSize - 1) / GalleryPageSize);
         page = Math.Clamp(page, 1, pages);
         var rows = all.Skip((page - 1) * GalleryPageSize).Take(GalleryPageSize).ToList();
-        foreach (var r in rows)  // the game's square crop is not the tile: the page scales the picture, as for a restored one
+        foreach (var (owner, r) in rows)  // the game's square crop is not the tile: the page scales the picture, as for a restored one
         {
             var file = Path.GetFileName((string)r["url"]!);
-            var link = ViewLink(viewer, account, file, site);
+            var link = ViewLink(viewer, owner, file, site);
             r["url"] = link;
             r["thumbnail"] = link;
-            if (viewer == account) r["share"] = PhotoUrl(account, DisplayName(account, file), site);
+            if (viewer == owner) r["share"] = PhotoUrl(owner, DisplayName(owner, file), site);
         }
-        return new JsonObject { ["page"] = page, ["pages"] = pages, ["total"] = all.Count, ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)r)]) };
+        return new JsonObject { ["page"] = page, ["pages"] = pages, ["total"] = all.Count, ["rows"] = new JsonArray([.. rows.Select(r => (JsonNode?)r.Row)]) };
     }
 
     /// <summary>Delete the account's photo (its row and files): true, false for an id that is not one of the account's photos.</summary>
@@ -140,10 +160,10 @@ public sealed partial class State
     {
         using var ms = new MemoryStream();
         using (var zip = new ZipArchive(ms, ZipArchiveMode.Create, true))
-            foreach (var row in GalleryRows(account))
+            foreach (var (owner, row) in GalleryRows(account))
             {
                 var name = Path.GetFileName((string)row["url"]!);
-                if (PhotoFile($"{PHOTO_PREFIX}{account}/{name}") is { } path)
+                if (PhotoFile($"{PHOTO_PREFIX}{owner}/{name}") is { } path)
                     zip.CreateEntryFromFile(path, name, CompressionLevel.NoCompression);  // a JPEG does not compress
             }
         return ms.ToArray();
@@ -201,9 +221,16 @@ public sealed partial class State
         $"(SELECT MAX(s.id) FROM events s WHERE s.account_id = $a AND s.event = 7 AND s.individual = {individual}"
         + $" AND s.id < (SELECT MAX(t.id) FROM events t WHERE t.account_id = $a AND t.event = 3 AND t.body = {harvest}))";
 
-    /// <summary>The link of the picture of a kill: the newest trophy shot among the photos asked for while its animal was the individual; null without one. No other photo type is a kill's picture.</summary>
+    /// <summary>The link of the picture of a kill: the newest trophy shot among the photos asked for while its animal was the individual, or that another member took of the kill (`kill_id`); null without one. No other photo type is a kill's picture.</summary>
     string? KillPhoto(Db con, long account, object? individual, string harvest) =>
-        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND photo_type = {TrophyShot} AND individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
-                   + " ORDER BY id DESC LIMIT 1", individual, harvest) is string file
+        con.Scalar($"SELECT file FROM photos WHERE account_id = $a AND file IS NOT NULL AND photo_type = {TrophyShot} AND (individual = ?1 AND spawn = {KillSpawn("?1", "?2")}"
+                   + " OR kill_id = (SELECT kill_id FROM kills WHERE account_id = $a AND harvest = ?2)) ORDER BY id DESC LIMIT 1", individual, harvest) is string file
             ? PhotoUrl(account, file) : null;
+
+    /// <summary>A harvest <see cref="TryCredit"/> gave the member who shot the animal (`theirs`, after <see cref="CreditHarvest"/> stored his kill `killId` of it) is noted on the harvester's side (`con`), by the animal's
+    /// individual and latest spawn there, so the trophy shot the harvester's game takes of it next (<see cref="Heartbeat"/>, event 4) is that kill's.</summary>
+    static void LinkHarvest(Db con, Db theirs, JsonObject e3, long killId) =>
+        con.Exec("INSERT INTO harvest_links (account_id, individual, spawn, owner, kill_id)"
+                 + " VALUES ($a, ?1, (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1), ?2, ?3)",
+                 e3["individual"], theirs.Account, killId);
 }

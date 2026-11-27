@@ -278,6 +278,9 @@ public static class Restorer
         con.Script("PRAGMA defer_foreign_keys = ON");
         foreach (var table in Store.PlayerTables)
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = $a", to);
+        // the other side of a multiplayer harvest (#1041): the kills of this account a harvester's trophy shot links, and the trophy shots of others' kills this account's game took
+        con.Exec("UPDATE harvest_links SET owner = ? WHERE owner = $a", to);
+        con.Exec("UPDATE photos SET taker = ? WHERE taker = $a", to);
         foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress", "crash_reports", "admin_messages", "discord_links", "discord_rewards" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);

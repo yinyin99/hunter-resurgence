@@ -469,6 +469,7 @@ public sealed partial class State
         {
             var theirs = con.Sharing(credit.Account);
             var (shot, score) = CreditHarvest(theirs, e3, e7, e22);
+            LinkHarvest(con, theirs, e3, Py.L(score["kill_id"]));  // the shooter's kill, before the harvester's copy of the update loses it
             HarvesterEvent(con, theirs, e3, e7, shot, eventId, mine);
             con.Exec("RELEASE credit");
             shooters.Add(credit.Account);

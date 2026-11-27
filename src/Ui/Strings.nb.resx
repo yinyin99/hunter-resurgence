@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Galleriet ditt er klart for nedlasting!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Ikke lukk vinduet</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Er du sikker på at du vil slette dette bildet? Dette kan ikke angres!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Felt av {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Nivå:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Ferdigheter</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Denne hunden har ikke låst opp noen ferdigheter ennå.</value></data>

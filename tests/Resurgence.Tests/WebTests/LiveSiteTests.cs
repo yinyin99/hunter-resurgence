@@ -612,6 +612,21 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal((deletes, deletes, downloads), (cut.FindAll("button.del").Count, cut.FindAll("button.share").Count, cut.FindAll("p.dl a").Count));
     }
 
+    // a trophy shot the player took of another member's kill (#1041) is his: the caption links his kill's sheet and names him, and it has no Share or delete button on the player's own gallery
+    [Fact]
+    public void TheGalleryTabLinksATrophyShotOfAnotherMembersKillToHisKill()
+    {
+        const string page = """{"page":1,"pages":1,"total":1,"rows":[{"id":7,"animal":"Red Deer","label":"88.5","kill":31,"hunter":"Birch","url":"https://game.test/a.jpg","thumbnail":"https://game.test/a.jpg"}]}""";
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Answer(HttpStatusCode.OK, page)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
+        Live(true);
+        var cut = Render<GalleryTab>(p => p.Add(t => t.Handle, "Fox").Add(t => t.Own, true));
+        cut.WaitForAssertion(() => Assert.Equal(["/profile/Birch/score/31"], cut.FindAll("ul.grid li > span a").Select(x => x.GetAttribute("href"))));
+        Assert.StartsWith("Red Deer", cut.Find("ul.grid li > span a").TextContent);
+        Assert.Equal("Kill by Birch", cut.Find("ul.grid li > span small.by").TextContent);
+        Assert.Equal((0, 0), (cut.FindAll("button.del").Count, cut.FindAll("button.share").Count));
+    }
+
     // only your own gallery can be downloaded: another player's download page goes back to his gallery
     [Fact]
     public void AnotherPlayersGalleryDownloadPageGoesBackToTheGallery()

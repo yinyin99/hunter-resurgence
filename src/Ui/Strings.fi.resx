@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Galleriasi on valmis ladattavaksi!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Älä sulje ikkunaa</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Haluatko varmasti poistaa tämän kuvan? Toimintoa ei voi kumota!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Kaatoi {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Taso:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Taidot</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Tämä koira ei ole vielä avannut yhtään taitoa.</value></data>

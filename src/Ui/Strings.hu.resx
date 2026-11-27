@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>A galériád készen áll a letöltésre!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Kérjük, ne zárd be az ablakot</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Biztosan törölni szeretnéd ezt a képet? A művelet nem vonható vissza!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Elejtette: {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Szint:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Készségek</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ez a kutya még nem oldott fel egyetlen készséget sem.</value></data>

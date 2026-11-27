@@ -292,9 +292,17 @@ public sealed partial class State
                 StoreHarvest(con, e, trophy, ammoCheck, harvestPage, gmMultiplier, gmEvent, gold => updates.Add(gold));
             else if (Is(e["event"], 4))
             {
-                var photoId = con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, spawn)"
-                                         + " VALUES ($a, ?, ?, ?, ?, (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?5))",
-                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"], e["individual"]);
+                // a trophy shot of an animal whose harvest went to the member who shot it (TryCredit, harvest_links) is that member's kill's photo: its row is his, and this account's game uploads it (UploadReply)
+                var link = Is(e["photo_type"], TrophyShot)
+                    ? con.Rows("SELECT owner, kill_id FROM harvest_links WHERE account_id = $a AND individual = ?1"
+                               + " AND spawn IS (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?1) ORDER BY id DESC LIMIT 1", e["individual"]).FirstOrDefault()
+                    : null;
+                var photoId = link is null
+                    ? con.Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, spawn)"
+                                 + " VALUES ($a, ?, ?, ?, ?, (SELECT MAX(id) FROM events WHERE account_id = $a AND event = 7 AND individual = ?5))",
+                                 e["hash"], e["photo_type"], e["shot_id"], e["individual"], e["individual"])
+                    : con.Sharing((long)link[0]).Insert("INSERT INTO photos (account_id, hash, photo_type, shot_id, individual, kill_id, taker) VALUES ($a, ?, ?, ?, ?, ?, ?)",
+                                                         e["hash"], e["photo_type"], e["shot_id"], e["individual"], link[1], con.Account);
                 var update = new JsonObject
                 {
                     ["url"] = uploadUrl(photoId, ""), ["photo_type"] = C(e["photo_type"]), ["hash"] = C(e["hash"]), ["update"] = 11,
@@ -2770,20 +2778,27 @@ public sealed partial class State
     string UploadUrl(long photoId, string part) =>
         $"{baseUrl}{UPLOAD_PATH}?uploadType=resumable&upload_id={photoId}" + (part != "" ? $"&part={part}" : "");
 
-    /// <summary>POST of a photo to UploadUrl(): store it, reply like GCS (storage#object), 404 if the id is unknown.</summary>
+    /// <summary>POST of a photo to UploadUrl(): store it, reply like GCS (storage#object), 404 if the id is unknown. A trophy shot this account took of another member's kill (`taker`, Heartbeat's event 4)
+    /// is stored as that member's, in his folder.</summary>
     public (int Status, byte[] Body) UploadReply(long account, string query, byte[] data)
     {
         var q = Py.ParseQs(query);
         var photoId = Form1(q, "upload_id");
         var part = q.TryGetValue("part", out var p) && p is ["thumb"] ? "thumb" : "";
-        string? name;
-        using (var con = Con(account))
-            name = Py.IsDigit(photoId) ? SavePhoto(con, AccountPhotos(account), long.Parse(photoId), data, part) : null;
+        string? name = null;
+        var owner = account;
+        if (Py.IsDigit(photoId))
+        {
+            using (var con = Con(account))
+                owner = con.Scalar("SELECT account_id FROM photos WHERE id = ? AND taker = $a", long.Parse(photoId)) as long? ?? account;
+            using (var con = Con(owner))
+                name = SavePhoto(con, AccountPhotos(owner), long.Parse(photoId), data, part);
+        }
         if (string.IsNullOrEmpty(name))
             return (404, "{\"error\": {\"code\": 404, \"message\": \"No such upload\"}}"u8.ToArray());
         var md5 = Convert.ToBase64String(MD5.HashData(data));
         var now = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
-        var path = $"{PHOTO_PREFIX}{account.ToString(CultureInfo.InvariantCulture)}/{name}";
+        var path = $"{PHOTO_PREFIX}{owner.ToString(CultureInfo.InvariantCulture)}/{name}";
         return (200, Py.DumpBytes(new JsonObject
         {
             ["kind"] = "storage#object", ["id"] = path, ["name"] = name, ["bucket"] = "photos",

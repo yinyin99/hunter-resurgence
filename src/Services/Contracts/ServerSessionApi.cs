@@ -145,7 +145,8 @@ public sealed record ServerGalleryPage(int Page, int Pages, int Total, ServerPho
 
 /// <param name="Kill">The kill the photo shows when <c>/hunters/&lt;handle&gt;/score/&lt;kill&gt;</c> answers; null otherwise.</param>
 /// <param name="Share">On the player's own rows: the bare link of the picture, for the Share window; null otherwise.</param>
-public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail, long? Kill = null, string? Share = null);
+/// <param name="Hunter">On a trophy shot the player took of another member's kill in a multiplayer hunt: that member's handle (the photo and <c>Kill</c> are his); null otherwise.</param>
+public sealed record ServerPhoto(long Id, string Animal, string Label, string Url, string Thumbnail, long? Kill = null, string? Share = null, string? Hunter = null);
 
 /// <summary>A player of <see cref="ServerAccountApi.Friends"/>: <c>Online</c> while a hunt of theirs is open; <c>Avatar</c> the URL of their picture (null for none).</summary>
 public sealed record ServerPlayer(string Handle, bool Online, string? Avatar = null);

@@ -23,9 +23,10 @@ else if (photos is not null)
                     @if (ph.Thumbnail is not null) { <img class="asset-slot has-image" src="@ph.Thumbnail" style="width:210px;height:118px" width="210" height="118" loading="lazy" alt="@Name(ph)" /> }
                     else { <AssetSlot Name="@($"photo-{ph.Id}")" Width="210" Height="118" /> }
                 </a>
-                <span>@if (ph.Kill is { } kill) { <a href="/profile/@Handle/score/@kill">@Caption(ph, " ")</a> } else { @Caption(ph, " ") }</span>
-                @if (Own) { <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Share ?? ph.Url })">@L["Prof.Share"]</button> }
-                @if (Own) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
+                @* a trophy shot of another member's kill (a multiplayer harvest) is his: it links his kill and names him, and only he shares or deletes it *@
+                <span>@if (ph.Kill is { } kill) { <a href="/profile/@(ph.Hunter ?? Handle)/score/@kill">@Caption(ph, " ")</a> } else { @Caption(ph, " ") }@if (ph.Hunter is { } hunter) { <small class="by">@L["Prof.GalleryKillBy", hunter]</small> }</span>
+                @if (Own && ph.Hunter is null) { <button type="button" class="share" @onclick="() => Modal.Show<ShareImageModal>(new Dictionary<string, object?> { [nameof(ShareImageModal.Url)] = ph.Share ?? ph.Url })">@L["Prof.Share"]</button> }
+                @if (Own && ph.Hunter is null) { <button type="button" class="del" title="@L["Prof.Delete"]" aria-label="@L["Prof.Delete"]" @onclick="() => Delete(ph)"><Icon Name="xmark" /></button> }
             </li>
         }
     </ul>

@@ -179,8 +179,9 @@ public static class HuntersApi
                 : state.PublicAccount(handle) is { } id ? Json(200, state.PublicGallery(id, int.TryParse(ctx.Request.Query["page"], out var p) ? p : 1, $"https://{game.Web}", viewer))
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("HunterGallery").WithSummary("One page of a hunter's gallery")
-            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal, kill, share}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
+            .WithDescription($"`{{page, pages, total, rows: [{{id, type, url, thumbnail, label, animal, kill, hunter, share}}]}}`, {State.GalleryPageSize} rows a page, newest first: the photos of `Gallery/list` "
                              + "(`url` the signed-in player's link of the picture (`/photos/...`: the original, on every gallery), `thumbnail` the same link, for the tile, `animal` the species of the kill it shows, `label` that kill's score, `kill` its id when `/hunters/<handle>/score/<kill>` answers, else null; "
+                             + "`hunter`, on a trophy shot the hunter took of another member's kill in a multiplayer hunt only, that member's handle: the photo and `kill` are his; "
                              + "`share`, on the player's own rows only, the bare link of the original, for the Share window). 401 `signed_out` without a session; 404 for a handle that is unknown or banned.")
             .QueryParams(("page", "1 for the first"))
             .Produces(200, contentType: "application/json").Produces(401, contentType: "application/json").Produces(404, contentType: "application/json");
