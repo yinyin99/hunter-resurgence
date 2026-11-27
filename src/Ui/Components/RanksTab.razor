@@ -5,9 +5,9 @@
 {
     <h4>@L["Prof.Progress"]</h4>
     <h5>@L["Prof.HunterScore"]</h5>
-    @if (bars.Count > 0) { @Overview(bars[0], "rank-score", true) }
+    @if (bars.Count > 0) { @Overview(bars[0], "rank-score", 0) }
     <h5>@L["Prof.Categories"]</h5>
-    @foreach (var b in bars.Skip(1)) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", false) }
+    @foreach (var (b, i) in bars.Skip(1).Select((b, i) => (b, i + 1))) { @Overview(b, b.Name == "Animals" ? "rank-animals" : b.Name == "Weapons" ? "rank-weapons" : "rank-collectables", i) }
 }
 else
 {
@@ -32,8 +32,17 @@ else
 
     int Pct(RankBar b) => b.Total == 0 ? 0 : 100 * b.Done / b.Total;
 
-    RenderFragment Overview(RankBar b, string slot, bool big) => @<div class="ov">
+    // the bars carry no text: the figures show in a tooltip on hover and on focus, as the achievements' steps do, the bar's name and "Unlocked: n / total (p%)", as the original's ranks summary does
+    RenderFragment Overview(RankBar b, string slot, int i) => @<div class="ov">
         <AssetSlot Name="@slot" Width="40" Height="40" />
-        <div class="bar @(big ? "big" : "")"><i style="width:@Pct(b)%"></i>@if (b.Done > 0) { <b>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</b> }</div>
+        <div class="bar @(i == 0 ? "big" : "")" style="--c:@F(Pct(b) / 100.0)" tabindex="0" role="img" aria-label="@L.Term(b.Name)" aria-describedby="@($"tip-rk-{i}")">
+            <span class="track"><i style="width:@Pct(b)%"></i></span>
+            <small id="@($"tip-rk-{i}")" role="tooltip" class="tip">
+                <b>@L.Term(b.Name)</b>
+                <span>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</span>
+            </small>
+        </div>
     </div>;
+
+    static string F(double d) => d.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 }

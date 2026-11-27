@@ -247,15 +247,51 @@ public sealed partial class State
         return RestoredProfile(con)?["background"] is { } b && Py.IsStr(b) ? C(b) : null;
     }
 
-    /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
+    /// <summary>The collector ribbon of a share of the achievement points earned (in percent), the original's rule: 90 and more turkey, 75 fox, 50 bear, 25 elk, 5 moose, below 5 none (a file name such as `moose.png`).</summary>
+    public static string? RibbonOf(double percent) =>
+        percent >= 90 ? "turkey.png" : percent >= 75 ? "fox.png" : percent >= 50 ? "bear.png" : percent >= 25 ? "elk.png" : percent >= 5 ? "moose.png" : null;
+
+    /// <summary>How many of all the thresholds of the connect's achievements the account has earned (those with an earn time), and how many there are.</summary>
+    (int Done, int Total) EarnedThresholds(long account)
+    {
+        using var con = Con(account);
+        var times = con.Rows("SELECT id, triggers FROM achievements WHERE account_id = $a").ToDictionary(r => Convert.ToInt64(r[0]), r => Parse(r[1]));
+        int done = 0, total = 0;
+        foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>())
+        {
+            if (!TryKey(def["id"], out var id))
+                continue;
+            foreach (var t in Arr(def["triggers"]).Where(Py.IsNum))
+            {
+                total++;
+                if (times.GetValueOrDefault(id)?[Py.Str(t)] is { } time && Py.IsNum(time) && Py.D(time) > 0)
+                    done++;
+            }
+        }
+        return (done, total);
+    }
+
+    /// <summary>The collector ribbon the profile shows under the picture: <see cref="RibbonOf"/> the account's earned thresholds of all the thresholds of the connect's achievements
+    /// (a string, null below 5 %); with no achievements in the connect the `ribbon` of its restored `/game/user/&lt;id&gt;/profile` reply, null when it has none.</summary>
+    public JsonNode? ProfileRibbon(long account)
+    {
+        var (done, total) = EarnedThresholds(account);
+        if (total > 0)
+            return RibbonOf(100.0 * done / total);
+        using var con = Con(account);
+        return RestoredProfile(con)?["ribbon"] is { } r && Py.IsStr(r) ? C(r) : null;
+    }
+
+    /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` of its restored reply (null without one), `ribbon` of <see cref="ProfileRibbon"/>, its
     /// hunterscore and how many achievement thresholds it has earned (those with an earn time).</summary>
     public byte[] UserProfileReply(long account)
     {
+        var ribbon = ProfileRibbon(account);
         using var con = Con(account);
         var restored = RestoredProfile(con);
         return Py.DumpBytes(new JsonObject
         {
-            ["background"] = C(restored?["background"]), ["ribbon"] = C(restored?["ribbon"]), ["hunterscore"] = C(MeOf(con, account)["hunterscore"]),
+            ["background"] = C(restored?["background"]), ["ribbon"] = ribbon, ["hunterscore"] = C(MeOf(con, account)["hunterscore"]),
             ["earned_achievements"] = (long)con.Scalar("SELECT COUNT(*) FROM achievements, json_each(triggers) WHERE account_id = $a AND json_each.value > 0")!,
         });
     }

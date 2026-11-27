@@ -600,8 +600,8 @@ public static class GameApi
             api.MapGet("/v1/game/user/loadout", loadouts).ExcludeFromDescription();  // the current build's paths of the same calls
             api.MapPut("/v1/game/user/loadout/{id}", loadouts).ExcludeFromDescription();
             apiv2.MapGet("/game/user/{id}/profile", userProfile).WithName("UserProfile").WithSummary("A player's profile page header, by user id")
-                 .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of the player himself or one he may see (his friends, whoever a board shows him), with his token (`background` and `ribbon` "
-                                  + "as its backup had them, else null); 404 without a token, for anyone else and for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
+                 .WithDescription("`{background, ribbon, hunterscore, earned_achievements}` of the player himself or one he may see (his friends, whoever a board shows him), with his token (`background` "
+                                  + "as its backup had it, else null; `ribbon` by the share of the achievements earned, as `GET /hunters/<handle>`); 404 without a token, for anyone else and for a user id that is unknown or banned. Also at `/v1/game/user/<id>/profile` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game_data.user.profile+json").Produces(404, contentType: "application/vnd.goa.error");
             apiv2.MapGet("/game/user/{id}/ranks", userRanks).WithName("UserRanks").WithSummary("A player's ranks, by user id")
                  .WithDescription("`[{id, category_id, value}]`, one per rank row of the facts file (`category_id` 1 animals, 2 weapons, 3 collectables), `value` the ethical kills "

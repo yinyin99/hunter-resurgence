@@ -31,7 +31,8 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                     ? ((await friends.FriendsAsync()).Any(f => string.Equals(f.Handle, h.Handle, StringComparison.OrdinalIgnoreCase)), (await friends.PendingAsync()).Contains(h.Handle, StringComparer.OrdinalIgnoreCase))
                     : (false, false);
                 return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: Avatars.Slot(h.Avatar),
-                    Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null);
+                    Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null,
+                    Ribbon: Path.GetFileNameWithoutExtension(h.Ribbon) is { Length: > 0 } ribbon ? ribbon : null);
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }

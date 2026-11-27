@@ -59,12 +59,12 @@ public static class HuntersApi
                 ? Json(200, new JsonObject
                 {
                     ["handle"] = p["handle"]?.DeepClone(), ["hunterscore"] = p["hunterscore"]?.DeepClone(), ["rank"] = p["rank"]?.DeepClone(),
-                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = state.AvatarUrl(id, site), ["background"] = state.ProfileBackground(id),
+                    ["membership"] = p["membershipTitle"]?.DeepClone() ?? "", ["avatar"] = state.AvatarUrl(id, site), ["background"] = state.ProfileBackground(id), ["ribbon"] = state.ProfileRibbon(id),
                 })
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership, avatar and header picture")
-            .WithDescription("`{handle, hunterscore, rank, membership, avatar, background}` (the handle as the account spells it, the membership's title, \"\" without one, "
-                             + "the avatar's picture URL (docs/server.md#avatars, null for none), the header picture the player chose as the restored profile names it, null without one); 404 for a handle that is unknown or banned.")
+            .WithDescription("`{handle, hunterscore, rank, membership, avatar, background, ribbon}` (the handle as the account spells it, the membership's title, \"\" without one, "
+                             + "the avatar's picture URL (docs/server.md#avatars, null for none), the header picture the player chose as the restored profile names it, null without one, and the collector ribbon (a file name such as `moose.png`) by the share of the achievements earned, null below 5 %); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/statistics", (string handle) => state.PublicAccount(handle) is { } id

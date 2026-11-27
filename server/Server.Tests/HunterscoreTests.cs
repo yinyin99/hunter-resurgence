@@ -628,7 +628,23 @@ public class HunterscoreTests : StateTestBase
             """, state.PublicAchievements(9));
         Eq("""{"categories": [{"name": "Animals", "level": 0, "done": 0, "total": 5}, {"name": "Exploration", "level": 0, "done": 0, "total": 1}], "unlocked": 0, "recent": []}""",
            state.PublicAchievements(B));
+        // the collector ribbon by the share earned: 5 of 6 thresholds is 83 % (fox), none earned is below 5 % (none)
+        Assert.Equal("fox.png", (string?)state.ProfileRibbon(9));
+        Assert.Null(state.ProfileRibbon(B));
     }
+
+    [Theory]
+    [InlineData(0, null)]
+    [InlineData(4.9, null)]
+    [InlineData(5, "moose.png")]
+    [InlineData(24.9, "moose.png")]
+    [InlineData(25, "elk.png")]
+    [InlineData(50, "bear.png")]
+    [InlineData(75, "fox.png")]
+    [InlineData(89.9, "fox.png")]
+    [InlineData(90, "turkey.png")]
+    [InlineData(100, "turkey.png")]
+    public void TestTheCollectorRibbonFollowsTheShareOfAchievementPointsEarned(double percent, string? ribbon) => Assert.Equal(ribbon, State.RibbonOf(percent));
 
     [Fact]
     public void TestTheSchemaOfVersion6RecountsTheClosedHuntsForTheirPickups()

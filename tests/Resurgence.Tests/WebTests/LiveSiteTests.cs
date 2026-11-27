@@ -172,7 +172,7 @@ public sealed class LiveSiteTests : UiContext
     [Fact]
     public void ARealPlayersProfileIsTheServersHeaderWithTheTabsOfAServerSource()
     {
-        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png","background":"exploration_3.png"}""";
+        const string header = """{"handle":"Fox","hunterscore":5,"rank":3,"membership":"Hunter","avatar":"https://web.test/media/avatar/256/1000000.png","background":"exploration_3.png","ribbon":"elk.png"}""";
         const string skills = """{"species":[{"name":"Red Fox","spotting":2.5,"tracking":1.007}],"weapons":[]}""";
         var real = new ServerProfileService(new HttpClient(new Server(header, skills)) { BaseAddress = new Uri("http://server.test") },
             new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance);
@@ -184,6 +184,7 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("avatar-1000000", cut.Find(".polaroid .avatar").GetAttribute("aria-label"));
         Assert.Equal(["polaroid-back", "avatar-1000000", "polaroid-front"], cut.FindAll(".polaroid .asset-slot").Select(s => s.GetAttribute("aria-label")));  // the avatar between the two pictures
         Assert.Equal("profile-bg-exploration_3", cut.Find(".head .banner").GetAttribute("aria-label"));  // the live site draws the header picture the player chose
+        Assert.Equal("ribbon-elk", cut.Find(".head .ribbon").GetAttribute("aria-label"));  // the collector ribbon hangs under the avatar, on whatever tab
         Assert.Equal(["/profile/Fox/ranks", "/profile/Fox/achievements", "/profile/Fox/skills", "/profile/Fox/statistics", "/profile/Fox/gallery", "/profile/Fox/trophies", "/profile/Fox/dogs"], cut.FindAll("ul.tabs a").Select(a => a.GetAttribute("href")));  // ServerProfileService.Tabs: the tabs with a server source; Friends only on the own profile
         cut.WaitForAssertion(() => Assert.Equal("Red Fox", cut.Find("section.card h4").TextContent));
         Assert.Single(cut.FindAll("button.request"));  // the page's session is signed in: the friend request is the server's
@@ -206,6 +207,7 @@ public sealed class LiveSiteTests : UiContext
         var cut = Render<HunterProfile>(p => p.Add(h => h.Handle, "Fox").Add(h => h.Tab, "skills"));
         cut.WaitForAssertion(() => Assert.Equal("Fox", cut.Find("h1").TextContent));
         Assert.Empty(cut.FindAll(".banner"));  // not the mock's "profile-banner" box
+        Assert.Empty(cut.FindAll(".ribbon"));  // no ribbon: nothing under the avatar
     }
 
     [Fact]
@@ -362,7 +364,26 @@ public sealed class LiveSiteTests : UiContext
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
         // hunterscore 1000 + 7 + 3 + 0 of 4 rows; animals 1007 of 2000 (a row counts 1000 at most), weapons 3 of 1000; collectables none
-        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)"], cut.FindAll("div.ov .bar b").Select(b => b.TextContent.Split(": ")[1])));
+        cut.WaitForAssertion(() => Assert.Equal(["1010 / 4000 (25%)", "1007 / 2000 (50%)", "3 / 1000 (0%)", "0 / 1000 (0%)"], cut.FindAll("div.ov .bar .tip span:first-of-type").Select(b => b.TextContent.Split(": ")[1])));
+    });
+
+    [Fact]
+    public void TheRanksOverviewHasBarsWithoutTextAndFocusableFigures() => InEnglish(() =>
+    {
+        Services.AddSingleton<IProfileService>(RealRanks());
+        Live(true);
+        var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
+        cut.WaitForAssertion(() => Assert.Equal(4, cut.FindAll("div.ov .bar").Count));
+        Assert.DoesNotContain(cut.FindAll(".asset-slot"), s => s.GetAttribute("aria-label")!.StartsWith("ribbon-"));  // the ribbon is the header's, not the overview's
+        foreach (var bar in cut.FindAll("div.ov .bar"))
+        {
+            Assert.Equal("", bar.QuerySelector(".track")!.TextContent);  // the bar itself holds no text
+            Assert.Equal("0", bar.GetAttribute("tabindex"));
+            Assert.NotNull(bar.QuerySelector("small.tip[role=tooltip]"));
+            Assert.Equal(bar.QuerySelector("small.tip")!.Id, bar.GetAttribute("aria-describedby"));
+        }
+        // each tooltip names its bar and gives the figures, as the original's ranks summary does
+        Assert.Equal(["Hunter Score", "Animals", "Weapons", "Collectables"], cut.FindAll("div.ov .bar .tip > b").Select(b => b.TextContent));
     });
 
 

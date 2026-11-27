@@ -10,8 +10,8 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
     // friend and request state come from the shared friends mock, so the dropdown, this page and the friends tab agree
     public async Task<Profile?> ProfileAsync(string handle) =>
         handle == Own ? new(handle, 50, 200000, "Hunter", true, true, false)
-        : friends is null ? new(handle, 115000, 1, "Hunter", false, false, handle.Length % 2 == 0)
-        : new(handle, 115000, 1, "Hunter", false, false, (await friends.FriendsAsync()).Any(f => f.Handle == handle), (await friends.PendingAsync()).Contains(handle));
+        : friends is null ? new(handle, 115000, 1, "Hunter", false, false, handle.Length % 2 == 0, Ribbon: "elk")
+        : new(handle, 115000, 1, "Hunter", false, false, (await friends.FriendsAsync()).Any(f => f.Handle == handle), (await friends.PendingAsync()).Contains(handle), Ribbon: "elk");
 
     static readonly string[] WeaponTypes = ["Lever Action Rifles", "Bolt Action Rifles", "Semi-Automatic Rifles", "Air Rifles", "Handguns", "Shotguns", "Bows", "Crossbows", "Muzzleloaders", "Revolvers"];
     static readonly string[] Collectables = ["Common Mushrooms", "Rare Mushrooms", "Treasures", "Feathers", "Fossils", "Pumpkins"];
