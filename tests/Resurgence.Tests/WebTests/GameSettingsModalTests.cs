@@ -75,6 +75,8 @@ public sealed class GameSettingsModalTests : UiContext
         public Task<bool> FirstStartAsync() => inner.FirstStartAsync();
         public Task<string> LanguageAsync() => inner.LanguageAsync();
         public Task SetLanguageAsync(string code) { Saved.Add(code); return inner.SetLanguageAsync(code); }
+        public Task<string?> HostLanguageAsync() => inner.HostLanguageAsync();
+        public Task SetHostLanguageAsync(string code) => inner.SetHostLanguageAsync(code);
     }
 
     [Fact]

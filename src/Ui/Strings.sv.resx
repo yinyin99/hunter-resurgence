@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Jaktområde</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelare</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Värd</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spelare: {1}/{2} - Värd: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Spelinformation</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Gå med i spel</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ditt spel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Startar…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Uppdaterar...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverplats: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Sydamerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asien</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanien</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klicka på en startplats på kartan för att gå med i det här spelet</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Ange lösenord för att gå med i det här spelet:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Ange lösenord</value></data>
@@ -1677,4 +1670,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Set.BansEmpty" xml:space="preserve"><value>Du har inte bannlyst någon spelare.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Häv bannlysning</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Är du säker på att du vill häva bannlysningen av {0} från dina spel?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Språk:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Bara spel på mitt språk</value></data>
 </root>

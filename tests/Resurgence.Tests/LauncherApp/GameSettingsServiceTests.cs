@@ -252,4 +252,22 @@ public class GameSettingsServiceTests
         Assert.Equal("de_DE", Prefs.Load(path).GameLanguage);
         Assert.Null(new Prefs().GameLanguage);
     }
+
+    // #930: the host's last choice of a game language (a launcher language code) is remembered; none before the first choice, and a code the launcher does not have is no choice
+    [Fact]
+    public async Task TheHostLanguageIsNoneUntilChosenThenSavedAndKeptInLauncherJson()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var path = Path.Combine(temp.Path, "launcher.json");
+        var prefs = new Prefs { Language = "fr" };
+        var saves = 0;
+        var svc = new GameSettingsService(Config(), prefs, temp.Path, () => { saves++; prefs.Save(path); });
+        Assert.Null(await svc.HostLanguageAsync());  // the form then opens with the launcher's language
+        await svc.SetHostLanguageAsync("pt-br");  // stored as the launcher spells it
+        Assert.Equal(("pt-BR", 1), (await svc.HostLanguageAsync(), saves));
+        Assert.Contains("\"host_language\": \"pt-BR\"", File.ReadAllText(path));
+        Assert.Equal("pt-BR", await new GameSettingsService(Config(), Prefs.Load(path), temp.Path, () => { }).HostLanguageAsync());  // read back at the next start
+        await svc.SetHostLanguageAsync("xx");
+        Assert.Null(await svc.HostLanguageAsync());
+    }
 }

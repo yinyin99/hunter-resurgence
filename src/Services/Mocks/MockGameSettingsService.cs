@@ -26,4 +26,10 @@ public sealed class MockGameSettingsService(ILogger<MockGameSettingsService> log
     public Task<string> LanguageAsync() => Task.FromResult(language);
 
     public Task SetLanguageAsync(string code) { language = code; return Task.CompletedTask; }
+
+    string? hostLanguage;
+
+    public Task<string?> HostLanguageAsync() => Task.FromResult(hostLanguage);
+
+    public Task SetHostLanguageAsync(string code) { hostLanguage = code; return Task.CompletedTask; }
 }

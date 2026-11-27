@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Reservaat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelers</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spelers: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Speldetails</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Meespelen</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jouw spel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Wordt gestart…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Patchen...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverlocatie: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Noord-Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Zuid-Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Azië</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanië</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klik op een startlocatie op de kaart om aan dit spel deel te nemen</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Voer het wachtwoord in om aan dit spel deel te nemen:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Voer wachtwoord in</value></data>
@@ -1677,4 +1670,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Set.BansEmpty" xml:space="preserve"><value>Je hebt geen spelers verbannen.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Ban opheffen</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Weet je zeker dat je de ban van {0} uit je spellen wilt opheffen?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Taal:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Alleen spellen in mijn taal</value></data>
 </root>

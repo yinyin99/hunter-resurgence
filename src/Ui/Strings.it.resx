@@ -250,7 +250,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Riserva</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Giocatori</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Paese</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Giocatori: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Dettagli partita</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Entra</value></data>
@@ -277,12 +276,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>La tua partita</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Avvio…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aggiornamento...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Posizione server: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>America del Nord</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>America del Sud</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Clicca su un punto di partenza sulla mappa per entrare in questa partita</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Inserisci la password per entrare in questa partita:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Inserisci la password</value></data>
@@ -1677,4 +1670,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Set.BansEmpty" xml:space="preserve"><value>Non hai bannato nessun giocatore.</value></data>
   <data name="Set.BansUnban" xml:space="preserve"><value>Rimuovi ban</value></data>
   <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Vuoi davvero rimuovere il ban di {0} dalle tue partite?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Lingua</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Lingua:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Solo partite nella mia lingua</value></data>
 </root>
