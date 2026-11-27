@@ -1172,25 +1172,27 @@ public sealed partial class State
         [.. rows.GroupBy(r => SkillKey(r.Item), r => r.Xp).Select(g => (g.Key, g.Max())).OrderBy(r => r.Key)];
 
     /// <summary>`admin weapon-skills` (#1068): puts every account's weapon skill rows in the one-per-weapon-type form (<see cref="OneSkillPerWeaponType"/>): a family's rows become one row under its representative with the highest xp
-    /// any of them holds (a skill is never lowered). One line per account and family that changes (before and after, ascending by account, then family), one line per family (accounts that change, accounts where a row rises, the
+    /// any of them holds (a skill is never lowered). One line per account and family that changes (before and after, ascending by account, then family), one line per family (accounts that change, accounts where a row rises and how many of those on an item the Skills tab shows, the
     /// largest and the total rise in xp), then a total. With `apply` each account is one transaction; a second run changes nothing; without `apply` nothing is written. Hits and restores already leave the one-row form.</summary>
     public List<string> MergeWeaponSkills(bool apply, long? only = null)
     {
         static string Show(long key, double xp) => $"{key}={xp.ToString("0.0", CultureInfo.InvariantCulture)} xp (number {Py.Dumps(Skills.Value(xp))})";
-        var (lines, families, accounts) = (new List<string>(), new SortedDictionary<long, (int Accounts, int Raised, double Largest, double Total)>(), 0);
+        var (lines, families, accounts) = (new List<string>(), new SortedDictionary<long, (int Accounts, int Raised, int RaisedShown, double Largest, double Total)>(), 0);
         foreach (var account in (only is { } one ? [one] : Store.AccountIds()).Order())
         {
             using var con = Con(account);
             if (apply)
                 con.Begin();
             var held = con.Rows("SELECT key, xp FROM skills WHERE account_id = $a AND kind = 'weapon' ORDER BY key").Select(r => (Item: Convert.ToInt64(r[0]), Xp: Convert.ToDouble(r[1]))).ToList();
+            var owned = con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a").Select(r => Convert.ToInt64(r[0])).ToHashSet();
             var changed = false;
             foreach (var g in held.GroupBy(r => SkillKey(r.Item)).OrderBy(g => g.Key).Where(g => g.Count() > 1 || g.First().Item != g.Key))
             {
                 var (top, rise) = (g.Max(r => r.Xp), g.Max(r => r.Xp) - g.Min(r => r.Xp));
                 lines.Add($"account {account} family {g.Key} ({ItemName(g.Key)}): before {string.Join(", ", g.Select(r => Show(r.Item, r.Xp)))}; after {Show(g.Key, top)}");
                 var f = families.GetValueOrDefault(g.Key);
-                families[g.Key] = (f.Accounts + 1, f.Raised + (rise > 0 ? 1 : 0), Math.Max(f.Largest, rise), f.Total + rise);
+                var shownRise = g.Any(r => r.Xp < top && (items.ContainsKey(r.Item) || owned.Contains(r.Item)));  // a rise the Skills tab shows (PublicSkills lists only catalogue and owned items)
+                families[g.Key] = (f.Accounts + 1, f.Raised + (rise > 0 ? 1 : 0), f.RaisedShown + (shownRise ? 1 : 0), Math.Max(f.Largest, rise), f.Total + rise);
                 changed = true;
                 if (apply)
                 {
@@ -1204,7 +1206,7 @@ public sealed partial class State
             accounts += changed ? 1 : 0;
         }
         foreach (var (key, f) in families)
-            lines.Add($"family {key} ({ItemName(key)}): {f.Accounts} account(s) change, {f.Raised} with a row that rises, largest rise {f.Largest.ToString("0.0", CultureInfo.InvariantCulture)} xp, total {f.Total.ToString("0.0", CultureInfo.InvariantCulture)} xp");
+            lines.Add($"family {key} ({ItemName(key)}): {f.Accounts} account(s) change, {f.Raised} with a row that rises, {f.RaisedShown} of them on an item the Skills tab shows, largest rise {f.Largest.ToString("0.0", CultureInfo.InvariantCulture)} xp, total {f.Total.ToString("0.0", CultureInfo.InvariantCulture)} xp");
         lines.Add($"{accounts} account(s) {(apply ? "changed" : "to change")}, {families.Count} family(ies){(apply ? "" : ": dry run, nothing written; add --apply to write")}");
         return lines;
     }
@@ -1244,9 +1246,9 @@ public sealed partial class State
     public JsonObject PublicSkills(long account)
     {
         var n = SkillNumbers(account, Skills.Value);
-        List<(long Key, double Xp)> weapons;
+        List<(long Item, double Xp, List<long> Finishes)> weapons;
         using (var con = Con(account))
-            weapons = WeaponSkills(con.Rows("SELECT kind, key, xp FROM skills WHERE account_id = $a AND kind = 'weapon'"));
+            weapons = ShownWeaponSkills(con);
         var spotting = n["spotting"]!.AsArray();
         var tracking = n["tracking"]!.AsArray();
         return new JsonObject
@@ -1256,15 +1258,33 @@ public sealed partial class State
             ["weapons"] = new JsonArray([.. weapons.Select(w =>
             {
                 JsonObject? Item(long id) => items.GetValueOrDefault(id) ?? installItems.GetValueOrDefault(id);
-                var item = Item(w.Key);
-                var finishes = (Weapons.Of(w.Key)?.Members ?? []).Skip(1).Select(m => FinishText(item, Item(m), m));
+                var item = Item(w.Item);
+                var finishes = w.Finishes.Select(m => FinishText(item, Item(m), m));
                 return (JsonNode?)new JsonObject
                 {
-                    ["id"] = w.Key, ["name"] = C(item?["name"]) ?? "#" + w.Key, ["variation"] = C(item?["variationname"]), ["group"] = C(item?["subcat"]?["name"]),
+                    ["id"] = w.Item, ["name"] = C(item?["name"]) ?? "#" + w.Item, ["variation"] = C(item?["variationname"]), ["group"] = C(item?["subcat"]?["name"]),
                     ["value"] = Skills.Value(w.Xp), ["finishes"] = new JsonArray([.. finishes.Select(f => (JsonNode?)f)]),
                 };
             })]),
         };
+    }
+
+    /// <summary>The weapon types the Skills tab lists for the account, ascending by representative: the item that names the row (the representative, else the first shown member), the type's XP and its other shown items.
+    /// A weapon item is shown when the store catalogue lists it or the account owns it (an item row in its inventory); an item that only the game's install data defines and nobody owns is shown nowhere and never names a row.
+    /// A type is listed when one of its stored rows is on a shown item, or on its representative while another member is shown; a type whose only stored rows are on hidden items is not.</summary>
+    List<(long Item, double Xp, List<long> Finishes)> ShownWeaponSkills(Db con)
+    {
+        var owned = con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a").Select(r => Convert.ToInt64(r[0])).ToHashSet();
+        bool Shown(long id) => items.ContainsKey(id) || owned.Contains(id);
+        var rows = con.Rows("SELECT key, xp FROM skills WHERE account_id = $a AND kind = 'weapon'").Select(r => (Item: Convert.ToInt64(r[0]), Xp: Convert.ToDouble(r[1])));
+        var listed = new List<(long, double, List<long>)>();
+        foreach (var g in rows.GroupBy(r => SkillKey(r.Item)).OrderBy(g => g.Key))
+        {
+            var shown = (Weapons.Of(g.Key)?.Members ?? [g.Key]).Where(Shown).ToList();
+            if (shown.Count > 0 && g.Any(r => Shown(r.Item) || r.Item == g.Key))
+                listed.Add((shown[0], g.Max(r => r.Xp), shown[1..]));
+        }
+        return listed;
     }
 
     /// <summary>What the Skills tab lists under a weapon type for one of its other items: the finish alone when the item has the representative's name, else its name and its finish in parentheses.</summary>

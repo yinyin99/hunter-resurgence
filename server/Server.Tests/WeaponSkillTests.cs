@@ -12,7 +12,10 @@ public class WeaponSkillTests : StateTestBase
     const long B = 8;
 
     // 5, 706 and 900 are one family (706: the definitions' chain under another name, 900: the name of 5 in another finish), the representative is 5; 391 is a weapon alone
-    State Make(bool online = false, Facts? facts = null, JsonObject? connect = null)
+    // 950 and 951 exist only in the game's install data (no store item): 950 has the name of 5, 951 has none
+    const string InstallOnly = """[{"id": 950, "define": "TEST_INSTALL_NAMED", "name": "Test Rifle", "variationname": "Install", "cat": "WEAPON"}, {"id": 951, "define": "TEST_INSTALL_NONAME", "cat": "WEAPON"}]""";
+
+    State Make(bool online = false, Facts? facts = null, JsonObject? connect = null, bool installOnly = false)
     {
         var app = APP;
         var items = app["items"]!.AsArray();
@@ -20,7 +23,7 @@ public class WeaponSkillTests : StateTestBase
         items.Add(O("""{"id": 706, "name": "Test Rifle Variant", "variationname": "Winter", "cat": 1}"""));
         items.Add(O("""{"id": 900, "name": "Test Rifle", "variationname": "Camo", "cat": 1}"""));
         items.Add(O("""{"id": 391, "name": "Test Shotgun", "cat": 1}"""));
-        return state = new State(Db, Py.DumpBytes(connect ?? CONNECT), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: ITEM_DEFS, offline: !online, facts: facts);
+        return state = new State(Db, Py.DumpBytes(connect ?? CONNECT), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: installOnly ? new JsonArray([.. ITEM_DEFS.Select(d => d!.DeepClone()), .. JsonNode.Parse(InstallOnly)!.AsArray().Select(d => d!.DeepClone())]) : ITEM_DEFS, offline: !online, facts: facts);
     }
 
     /// <summary>The account's weapon skill rows, `key=xp` ascending by key.</summary>
@@ -141,7 +144,7 @@ public class WeaponSkillTests : StateTestBase
         [
             "account 7 family 5 (Test Rifle): before 5=4.1 xp (number 1.273), 706=12.1 xp (number 1.807); after 5=12.1 xp (number 1.807)",
             "account 8 family 5 (Test Rifle): before 706=7.1 xp (number 1.473), 900=7.1 xp (number 1.473); after 5=7.1 xp (number 1.473)",
-            "family 5 (Test Rifle): 2 account(s) change, 1 with a row that rises, largest rise 8.0 xp, total 8.0 xp",
+            "family 5 (Test Rifle): 2 account(s) change, 1 with a row that rises, 1 of them on an item the Skills tab shows, largest rise 8.0 xp, total 8.0 xp",
             "2 account(s) to change, 1 family(ies): dry run, nothing written; add --apply to write",
         ], dry);
 
@@ -201,5 +204,47 @@ public class WeaponSkillTests : StateTestBase
         Assert.Equal(new[] { ("Rifle", 0L), ("Variant", 1L) }, milestones.Select(m => ((string)m!["title"]!, (long)m["value"]!)));  // the variant's kill is the variant's only
         Assert.Equal(["5=2.1"], Rows(B));  // while its skill is the family's
         Assert.Equal(1.14, (double)state.PublicSkills(B)["weapons"]![0]!["value"]!, 3);
+    }
+
+    [Fact]
+    public void TestAnInstallOnlyMemberIsListedOnlyForAnAccountThatOwnsIt()
+    {
+        Make(installOnly: true);
+        Assert.Equal([5L, 706L, 900L, 950L], state.Weapons.Of(950)!.Members.Order());  // 950 joins the catalogue family by name
+        Put(ME, (950, 1.1), (5, 1.1));
+        var row = state.PublicSkills(ME)["weapons"]!.AsArray().Single()!;
+        Assert.Equal(["Test Rifle", "Test Rifle Variant (Winter)", "Camo"], new[] { (string)row["name"]! }.Concat(row["finishes"]!.AsArray().Select(f => (string)f!)));  // no duplicate finish for 950
+        using (var con = state.Store.Open(ME))
+            PlayerRows.AddItem(con, 700, 950, 0, null, new JsonObject());
+        row = state.PublicSkills(ME)["weapons"]!.AsArray().Single()!;
+        Assert.Equal(["Test Rifle Variant (Winter)", "Camo", "Install"], row["finishes"]!.AsArray().Select(f => (string)f!));  // owned: listed as a finish
+        Assert.Equal(5, (long)row["id"]!);
+    }
+
+    [Fact]
+    public void TestAFamilyWhoseOnlyRowsAreOnHiddenItemsIsNotListedAndANamelessInstallOnlyItemNamesNoRow()
+    {
+        Make(installOnly: true);
+        Put(ME, (950, 1.1), (951, 1.1), (391, 1.1));
+        Assert.Equal(["Test Shotgun"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!));  // 950: a row on a hidden member only; 951: alone, no name
+        Assert.Equal(["1.073", "1.073", "1.073", "1.073"], Numbers(Numbers()["weapon"]!, "5", "706", "900", "950"));  // Skill/list still gives the family's value, hidden item or not
+        using (var con = state.Store.Open(ME))
+            PlayerRows.AddItem(con, 701, 951, 0, null, new JsonObject());
+        Assert.Equal(["#951", "Test Shotgun"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!).Order());  // owned: shown, named by its id
+    }
+
+    [Fact]
+    public void TestTheMergeSummaryCountsApartTheRisesOnItemsTheSkillsTabShows()
+    {
+        Make(online: true, installOnly: true);
+        state.CreateAccount(B, "second");
+        state.CreateAccount(9, "third");
+        Put(ME, (5, 5.1), (950, 1.1));  // the rise is on 950, an install-only item the account does not own: hidden
+        Put(B, (5, 1.1), (950, 5.1));  // the rise is on 5, a catalogue item: shown
+        Put(9, (5, 5.1), (950, 1.1));
+        using (var con = state.Store.Open(9))
+            PlayerRows.AddItem(con, 702, 950, 0, null, new JsonObject());  // owned: shown
+        var lines = state.MergeWeaponSkills(false);
+        Assert.Contains("family 5 (Test Rifle): 3 account(s) change, 3 with a row that rises, 2 of them on an item the Skills tab shows, largest rise 4.0 xp, total 12.0 xp", lines);
     }
 }
