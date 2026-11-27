@@ -10,7 +10,7 @@
     @if (item is not null)
     {
         <article class="item panel">
-            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L.SaleTag(item) : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
+            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L.SaleTag(item.Sale) : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
             <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="270" Height="197" Class="pic" />
             <div class="buy">
                 @* signed out the old page shows only the button *@

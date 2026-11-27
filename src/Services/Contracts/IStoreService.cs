@@ -40,8 +40,15 @@ public sealed record StoreContents(int Count, string Unit);
 /// <summary>A bundle line; <see cref="OwnLimit"/> is 0 for unlimited.</summary>
 public sealed record BundleLine(int ItemId, string Name, int Count, int Owned, int Value, string Variant = "", int OwnLimit = 0);
 
-/// <summary><see cref="Price"/> is what the signed-in player pays now; <see cref="WasPrice"/> the list price when it is higher (the player owns some of the items up to their limit), else 0; <see cref="OwnedItems"/> of its <see cref="OfItems"/> items are not given again (a copy listed beyond an item's limit is not counted).</summary>
-public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines, int WasPrice = 0, int OwnedItems = 0, int OfItems = 0);
+/// <summary><see cref="Price"/> is what the signed-in player pays now; <see cref="WasPrice"/> the list price when it is higher (the player owns some of the items up to their limit), else 0; <see cref="OwnedItems"/> of its <see cref="OfItems"/> items are not given again (a copy listed beyond an item's limit is not counted).
+/// <see cref="PreSale"/> is the list price before the bundle's <see cref="Sale"/> (null when it is not on sale).</summary>
+public sealed record StoreBundle(int Id, string Name, string Description, int Price, bool Buyable, IReadOnlyList<BundleLine> Lines, int WasPrice = 0, int OwnedItems = 0, int OfItems = 0, int? PreSale = null, StoreSale? Sale = null)
+{
+    public bool OnSale => PreSale is not null;
+
+    /// <summary>The price to strike through next to <see cref="Price"/>: what the player's items save, else what the sale took off; 0 for none.</summary>
+    public int StruckPrice => WasPrice > 0 ? WasPrice : PreSale ?? 0;
+}
 
 public interface IStoreService
 {

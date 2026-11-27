@@ -8,14 +8,14 @@ namespace Resurgence.Tests.WebTests;
 /// <summary>An item on sale shows a SALE ribbon with the percent, the old price next to the new one for each price on sale, and when the sale ends; an item that is not on sale looks as before.</summary>
 public sealed class StoreSaleTests : UiContext
 {
-    sealed class One(StoreItem item) : IStoreService
+    sealed class One(StoreItem item, StoreBundle? bundle = null) : IStoreService
     {
         public Task<IReadOnlyList<StoreCategory>> CategoriesAsync() => Task.FromResult<IReadOnlyList<StoreCategory>>([new("all", "All Items", [new("all", "All Items", [])])]);
         public Task<Page<StoreItem>> ItemsAsync(string view, string search, int page) => Task.FromResult(new Page<StoreItem>([item], 1, 1));
-        public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>([]);
+        public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>(bundle is null ? [] : [bundle]);
         public Task<bool> HasSalesAsync() => Task.FromResult(false);
         public Task<StoreItem?> ItemAsync(int id) => Task.FromResult<StoreItem?>(item);
-        public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult<StoreBundle?>(null);
+        public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult(bundle);
         public void RefreshOwned() { }
         public Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1) => Task.FromResult(Result.Success);
     }
@@ -108,5 +108,44 @@ public sealed class StoreSaleTests : UiContext
         Assert.Empty(cut.FindAll(".item .ribbon"));
         Assert.Empty(cut.FindAll(".buy s"));
         Assert.Empty(cut.FindAll(".ends"));
+    }
+
+    static StoreBundle Pack(bool sale) => sale
+        ? new(7, "Made-up Pack", "", 72, true, [new(1, "Made-up Rifle", 1, 0, 90)], PreSale: 90, Sale: Weekend)
+        : new(8, "Made-up Plain Pack", "", 50, true, [new(1, "Made-up Rifle", 1, 0, 50)]);
+
+    static readonly StoreItem Filler = new(6, "Made-up Pistol", "", "0", 80, null, 100, 0, true, 0, "");
+
+    [Fact]
+    public void ABundleOnSaleShowsTheSaleRibbonTheOldPriceAndTheEndOnTheListAndItsPage()
+    {
+        Services.AddSingleton<IStoreService>(new One(Filler, Pack(true)));
+        var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
+        list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
+        Assert.Equal("SALE -25%", list.Find(".card .ribbon").TextContent);
+        Assert.Equal(["90 em$"], Texts(list.FindAll(".price s")));
+        Assert.Equal(["72 em$"], Texts(list.FindAll(".price .sale")));
+        Assert.Equal("Sale ends Nov 30th 07:00 UTC", list.Find(".card .ends").TextContent);
+
+        var page = Render<BundleDetail>(p => p.Add(b => b.Id, 7));
+        Assert.Equal("SALE -25%", page.Find(".item .ribbon").TextContent);
+        Assert.Equal(["90 em$"], Texts(page.FindAll(".buy s")));
+        Assert.Equal("Sale ends Nov 30th 07:00 UTC", page.Find(".ends").TextContent);
+    }
+
+    [Fact]
+    public void ABundleNotOnSaleKeepsTheBundleRibbonAndNothingExtra()
+    {
+        Services.AddSingleton<IStoreService>(new One(Filler, Pack(false)));
+        var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
+        list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
+        Assert.Equal("BUNDLE", list.Find(".card .ribbon").TextContent);
+        Assert.Empty(list.FindAll(".price s"));
+        Assert.Empty(list.FindAll(".card .ends"));
+
+        var page = Render<BundleDetail>(p => p.Add(b => b.Id, 8));
+        Assert.Equal("BUNDLE", page.Find(".item .ribbon").TextContent);
+        Assert.Empty(page.FindAll(".buy s"));
+        Assert.Empty(page.FindAll(".ends"));
     }
 }

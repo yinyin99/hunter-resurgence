@@ -103,7 +103,9 @@ public class ServerStoreServiceTests
 
     // an operator's sale: today's prices, the prices before it (null for a price that is not on sale) and the sale itself; the sales view lists an item whose gm$ price alone is on sale
     const string SaleStore = """
-        {"categories": [], "bundles": [], "items": [
+        {"categories": [], "bundles": [
+           {"id": 9, "name": "Test Pack", "description": "", "price": 72, "was": 90, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}], "sale": {"name": "Test weekend", "percent": 20, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 10, "name": "Test Plain Pack", "description": "", "price": 50, "was": null, "buyable": true, "items": [{"id": 1, "name": "Test Rifle"}], "sale": null}], "items": [
            {"id": 1, "name": "Test Rifle", "variant": "", "description": "", "category": "0", "ems": 75, "was": 100, "gms": 150, "gwas": 200, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
            {"id": 2, "name": "Test Pistol", "variant": "", "description": "", "category": "0", "ems": 80, "was": null, "gms": 90, "gwas": 120, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
            {"id": 3, "name": "Test Scope", "variant": "", "description": "", "category": "0", "ems": 200, "was": null, "gms": 0, "gwas": null, "buyable": true, "sale": null}]}
@@ -125,6 +127,29 @@ public class ServerStoreServiceTests
         Assert.Equal([1, 2], (await service.ItemsAsync("sales", "", 1)).Rows.Select(i => i.Id));
         Assert.True(await service.HasSalesAsync());
         Assert.Contains("sales", (await service.CategoriesAsync()).Select(c => c.Key));
+    }
+
+    [Fact]
+    public async Task ABundlesPriceBeforeItsSaleAndItsEndAreMapped()
+    {
+        var service = Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerAccountApi.Bundles ? Json(HttpStatusCode.NotFound, "{}") : Json(HttpStatusCode.OK, SaleStore)));
+        var pack = (await service.BundleAsync(9))!;
+        Assert.Equal((72, 90, 90), (pack.Price, pack.PreSale, pack.StruckPrice));
+        Assert.Equal(new StoreSale("Test weekend", 20, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)), pack.Sale);
+        Assert.True(pack.OnSale);
+        var plain = (await service.BundleAsync(10))!;
+        Assert.Equal((50, (int?)null, 0), (plain.Price, plain.PreSale, plain.StruckPrice));
+        Assert.Null(plain.Sale);
+        Assert.False(plain.OnSale);
+    }
+
+    // only bundles on sale make a Sales entry
+    [Fact]
+    public async Task ABundleOnSaleMakesTheSalesEntry()
+    {
+        var only = Make(new Fake(_ => Json(HttpStatusCode.OK, """{"categories": [], "items": [], "bundles": [{"id": 9, "name": "Test Pack", "description": "", "price": 72, "was": 90, "buyable": true, "items": []}]}""")));
+        Assert.Contains("sales", (await only.CategoriesAsync()).Select(c => c.Key));
+        Assert.True(await only.HasSalesAsync());
     }
 
     const string Page = """

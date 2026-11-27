@@ -29,7 +29,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         var s = await LoadAsync();
         // sales, all and bundles lead (all and bundles open their one sub-link, as the store does); the server's own categories follow, its "all" is the lead one
         List<StoreCategory> categories = [];
-        if (s.Items.Any(i => i.OnSale)) categories.Add(new("sales", "Sales", []));
+        if (s.Items.Any(i => i.OnSale) || s.Bundles.Any(b => b.Was is not null)) categories.Add(new("sales", "Sales", []));
         categories.Add(new("all", "All Items", [new("all", "All Items", [])]));
         if (s.Bundles.Length > 0) categories.Add(new("bundles", "Bundles", [new("bundles", "Bundles", [])]));
         categories.AddRange(s.Categories.Where(c => c.Key != "all").Select(c => new StoreCategory(c.Key, c.Name, [.. (c.Children ?? []).Select(x => new StoreCategory(x.Key, x.Name, []))])));
@@ -56,7 +56,7 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         return [.. s.Bundles.Select(b => Bundle(b, s, prices))];
     }
 
-    public async Task<bool> HasSalesAsync() => (await LoadAsync()).Items.Any(i => i.OnSale);
+    public async Task<bool> HasSalesAsync() => await LoadAsync() is var s && (s.Items.Any(i => i.OnSale) || s.Bundles.Any(b => b.Was is not null));
 
     public async Task<StoreItem?> ItemAsync(int id)
     {
@@ -135,9 +135,10 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
         BundleLine[] lines = [.. b.Items.Select(x => s.Items.FirstOrDefault(i => i.Id == x.Id) is { } i
             ? new BundleLine(i.Id, i.Name, 1, 0, i.Was ?? i.Ems, i.Variant, i.Limit)
             : new BundleLine(x.Id, x.Name, 1, 0, 0))];
+        var sale = b.Sale is { } bs ? new StoreSale(bs.Name, bs.Percent, bs.Until) : null;
         return offers.TryGetValue(b.Id, out var o)
-            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of)
-            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines);
+            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of, b.Was, sale)
+            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines, PreSale: b.Was, Sale: sale);
     }
 
     /// <summary>What each bundle costs the player now, by bundle id; none without a session or when the server does not answer (the list prices then stand).</summary>
