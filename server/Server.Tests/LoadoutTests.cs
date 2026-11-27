@@ -121,6 +121,28 @@ public class LoadoutTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestASaveAsTheCorrectedPageSendsItIsStoredAndOneWithoutTokenIsDenied()
+    {
+        state.GrantItems(OWNER, 811);
+        var id = Ids(OWNER)[0];
+        var before = await Read(Web, "/v1/game/user/loadout?locale=en_US", owner);
+        var path = $"/v1/game/user/loadout/{id}?locale=en_US";
+        const string body = """{"name":"Deer rifle","color":3,"items":[{"slot_id":3,"item_id":5},{"slot_id":29,"item_id":700,"item_guid":304},{"slot_id":1,"item_id":15}]}""";
+        // as the page's own script sends it: no token at all
+        var denied = await Call("PUT", Web, path, null, body, "application/json; charset=UTF-8");
+        Assert.Equal(("denied", 200), (denied.Source, denied.Status));
+        Assert.Contains("\"errorCode\": 5", Encoding.UTF8.GetString(denied.Body));
+        Eq(before, await Read(Web, "/v1/game/user/loadout?locale=en_US", owner));
+        // as the served (corrected) script sends it: the player's token as a Bearer
+        var reply = await Call("PUT", Web, path, owner, body, "application/json; charset=UTF-8");
+        Assert.Equal(("state", 200), (reply.Source, reply.Status));
+        Assert.Equal("application/json", reply.Headers.Single(h => h.Name.Equals("Content-Type", StringComparison.OrdinalIgnoreCase)).Value);
+        var saved = $$"""{"name": "Deer rifle", "color": 3, "items": [{"slot_id": 3, "item_id": 5, "item_guid": null}, {"slot_id": 29, "item_id": 700, "item_guid": 304}, {"slot_id": 1, "item_id": 15, "item_guid": null}], "id": {{id}}}""";
+        Eq(saved, JsonNode.Parse(reply.Body));
+        Eq($"[{saved}]", await Read(Web, "/v1/game/user/loadout?locale=en_US", owner));
+    }
+
+    [Fact]
     public async Task TestASaveOfAnotherAccountsOrAnUnknownLoadoutIsRefused()
     {
         state.GrantItems(OWNER, 811);
