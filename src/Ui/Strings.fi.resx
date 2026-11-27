@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Omistat {0}/{1} tavarasta</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Omistat jo kaikki tämän paketin tavarat</value></data>
   <data name="Store.Or" xml:space="preserve"><value>tai</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>oli</value></data>
   <data name="Store.Days" xml:space="preserve"><value>päivää</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ALE</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Ale päättyy {0}</value></data>

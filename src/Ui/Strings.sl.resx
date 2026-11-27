@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Lastnik si {0} od {1} artiklov</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Že si lastnik vseh artiklov v tem paketu</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ali</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>prej</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>AKCIJA</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Akcija se konča {0}</value></data>

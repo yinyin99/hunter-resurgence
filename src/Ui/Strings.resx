@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>You own {0} of {1} items</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>You own all the items of this bundle</value></data>
   <data name="Store.Or" xml:space="preserve"><value>or</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>was</value></data>
   <data name="Store.Days" xml:space="preserve"><value>days</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SALE</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Sale ends {0}</value></data>

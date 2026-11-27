@@ -4,9 +4,7 @@
 .buy { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0 0 12px; font-size: 18px; line-height: 40px; color: var(--fg-muted-2); font-variant-numeric: tabular-nums; }
 .buy .gms { font-size: 16px; }
 .buy b { font-size: 20px; font-weight: 400; color: var(--text-2); }
-.buy b.sale { color: #f4503d; }
-.buy s { margin: 0 14px 0 0; text-decoration: none; }
-.buy .gms.sale { color: #f4503d; }
+.buy ::deep .sp { margin-right: 14px; }
 .ends { margin: -8px 0 12px; font-size: 12px; line-height: 16px; text-align: right; color: #f4503d; }
 h1 { margin: 0 0 10px; font-size: 28px; line-height: 38px; font-weight: 400; color: #fff; }
 h3 { margin: 0 0 12px; font-size: 19px; line-height: 28px; font-weight: 300; color: var(--text-3); }

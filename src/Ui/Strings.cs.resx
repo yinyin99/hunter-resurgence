@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Vlastníte {0} z {1} položek</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Vlastníte již všechny položky tohoto balíčku</value></data>
   <data name="Store.Or" xml:space="preserve"><value>nebo</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>bylo</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dní</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>SLEVA</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Sleva končí {0}</value></data>
