@@ -245,7 +245,7 @@ public class ServerStoreServiceTests
             ? Json(HttpStatusCode.OK, """{"bundles": [{"id": 9, "price": 60, "gms": 1020, "owned": 1, "of": 3, "buyable": true}]}""")
             : Json(HttpStatusCode.OK, Store.Replace("\"price\": 90, \"buyable\": true", "\"price\": 90, \"gms\": 1530, \"gwas\": 1700, \"buyable\": true")));
         var bundle = (await Make(fake).BundleAsync(9))!;
-        Assert.Equal((60, 1020, 1700), (bundle.Price, bundle.Gms, bundle.PreSaleGms));
+        Assert.Equal((60, 1020, 1700, 1530), (bundle.Price, bundle.Gms, bundle.PreSaleGms, bundle.WasGms));
     }
 
     [Fact]

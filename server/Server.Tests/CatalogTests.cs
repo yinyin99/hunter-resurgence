@@ -221,6 +221,8 @@ public class CatalogTests : StateTestBase
         Assert.Equal([85L, 70L, 0L, 0L], items.Select(i => i!["silver_price"] is { } p ? p.GetValue<long>() : 0L));
         var array = "[1]"u8.ToArray();
         Assert.Equal(array, State.WithGmPrices(array));
+        var priced = """{"items": [{"id": 1, "price": 5, "silver_price": 2000.5}]}"""u8.ToArray();
+        Assert.Same(priced, State.WithGmPrices(priced));  // a catalogue price is never rewritten (2000.5 stays, not 2001)
     }
 
     [Theory]

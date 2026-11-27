@@ -1813,17 +1813,18 @@ public sealed partial class State
         return key == "silver_price" && listed < 1 && !Py.Truthy(G(item, "notbuyable", null)) && !Is(G(item, "type", null), SERVICE) ? GmPerEm * Math.Max(0, Whole(G(item, "price", null))) : listed;
     }
 
-    /// <summary>An Application/application reply whose items all carry <see cref="Listed"/> as `silver_price`, so the game's store offers gm$ for an item the catalogue sold only in em$; an item with neither price, and anything that is no JSON object, stays as it is.</summary>
+    /// <summary>An Application/application reply whose items carry <see cref="Listed"/> as `silver_price` where the catalogue has none (below 1), so the game's store offers gm$ for an item the catalogue sold only in em$; every other price, an item with neither price and anything that is no JSON object stays as it is (a reply that needs no change is returned as it came).</summary>
     public static byte[] WithGmPrices(byte[] body)
     {
         try
         {
             if (JsonNode.Parse(body) is JsonObject { } reply)
             {
+                var changed = false;
                 foreach (var i in Arr(G(reply, "items", null)))
-                    if (i is JsonObject item && Listed(item, "silver_price") is > 0 and var gm)
-                        item["silver_price"] = gm;
-                return Py.DumpBytes(reply);
+                    if (i is JsonObject item && Whole(G(item, "silver_price", null)) < 1 && Listed(item, "silver_price") is > 0 and var gm)
+                        (item["silver_price"], changed) = (gm, true);
+                return changed ? Py.DumpBytes(reply) : body;
             }
         }
         catch (System.Text.Json.JsonException) { }
@@ -1884,7 +1885,8 @@ public sealed partial class State
         foreach (var b in Arr(G(application, "bundles", null)).Where(x => !LeftOut(x!)))
         {
             var (list, price, glist, gprice) = (Whole(b!["price"]), BundlePrice(b), GmPerEm * Whole(b["price"]), BundlePrice(b, true));
-            var sale = (price < list ? BundleSaleOn(b, Clock()) : null) ?? (gprice < glist ? BundleSaleOn(b, Clock(), "silver_price") : null);
+            SaleHit? emOn = price < list ? BundleSaleOn(b, Clock()) : null, gmOn = gprice < glist ? BundleSaleOn(b, Clock(), "silver_price") : null;
+            var sale = emOn is not null && (gmOn is null || emOn.Percent >= gmOn.Percent) ? emOn : gmOn;  // the larger discount, as for an item
             bundles.Add(new JsonObject
             {
                 ["id"] = C(b["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",

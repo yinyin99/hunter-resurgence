@@ -421,6 +421,21 @@ public class StoreSalesTests : StateTestBase
     }
 
     [Fact]
+    public void AGmSaleComesBeforeTheOwnedShareOfTheGmPriceAndTheLargerSaleNamesTheBundle()
+    {
+        at = Friday;
+        state = Open();
+        Assert.True(state.GrantItems(ME, Id(1)));  // item 9001 may be owned once: 110 of the 360 em$ are owned
+        Sales("""[{"name": "Gm sale", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 25, "currencies": ["gm"], "bundles": [9]},""" +
+              """ {"name": "Em sale", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 10, "currencies": ["em"], "bundles": [9]}]""");
+        Assert.Equal(("Gm sale", 25), ((string)Bundle()["sale"]!["name"]!, (int)Bundle()["sale"]!["percent"]!));  // 25 % beats 10 %, as for an item
+        Assert.Equal(3542L, (long)state.BundleOffers(ME)["bundles"]![0]!["gms"]!);  // 6,800 less 25 % = 5,100, x 250 / 360 rounded up
+        var gm = Gm();
+        Assert.NotNull(state.WebBuy(ME, 9, true, 1, gms: true));
+        Assert.Equal(gm - 3542, Gm());
+    }
+
+    [Fact]
     public void TheWebsiteAndTheLauncherReadTheStoreWhileASaleIsOn()
     {
         at = Friday;
