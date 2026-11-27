@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Posiadasz {0} z {1} przedmiotów</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Posiadasz już wszystkie przedmioty z tego zestawu</value></data>
   <data name="Store.Or" xml:space="preserve"><value>lub</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>wcześniej</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>WYPRZEDAŻ</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Wyprzedaż kończy się {0}</value></data>

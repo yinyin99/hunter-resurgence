@@ -1,0 +1,31 @@
+@* The prices of something on sale: each currency one group, the sale price first and the old one after it (smaller, dimmer, struck); em$ then "or" then gm$. *@
+<span class="sp @(Big ? "big" : "")">
+    @for (var n = 0; n < Prices.Count; n++)
+    {
+        var p = Prices[n];
+        @if (n > 0) { <span class="or">@L["Store.Or"]</span> }
+        <span class="grp">
+            <b class="now @(p.Was is null ? "" : "sale")">@p.Now @p.Cur</b>
+            @if (p.Was is { } was) { <s class="was"><span class="vh">@(L["Store.Was"] + " ")</span>@was @p.Cur</s> }
+        </span>
+    }
+</span>
+
+@code {
+    public sealed record Price(int Now, int? Was, string Cur);
+
+    [Parameter] public IReadOnlyList<Price> Prices { get; set; } = [];
+    /// <summary>The item and bundle pages: a larger price.</summary>
+    [Parameter] public bool Big { get; set; }
+
+    /// <summary>An item's prices (a gm$-only item has no em$ price).</summary>
+    public static IReadOnlyList<Price> Of(StoreItem i)
+    {
+        var l = new List<Price>();
+        if (i.Ems > 0 || i.Gms <= 0) l.Add(new(i.Ems, i.WasEms, "em$"));
+        if (i.Gms > 0) l.Add(new(i.Gms, i.WasGms, "gm$"));
+        return l;
+    }
+
+    public static IReadOnlyList<Price> Of(StoreBundle b) => [new(b.Price, b.StruckPrice > 0 ? b.StruckPrice : null, "em$")];
+}

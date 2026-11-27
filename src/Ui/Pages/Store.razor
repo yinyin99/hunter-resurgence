@@ -20,17 +20,24 @@
                 <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/item/@i.Id" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
-                @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
-                <p class="price">
-                    @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
-                    @if (i.Ems <= 0 && i.Gms > 0) { if (i.WasGms is { } onlyWas) { <b class="sale">@i.Gms gm$</b> <s>@onlyWas gm$</s> } else { <b>@i.Gms gm$</b> } }
-                    else
-                    {
-                        @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
-                        @if (i.Gms > 0 && i.WasGms is { } wasGms) { <span>@L["Store.Or"] <b class="sale">@i.Gms gm$</b> <s>@wasGms gm$</s></span> }
-                        else if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
-                    }
-                </p>
+                @if (i.OnSale)
+                {
+                    <SalePrice Prices="SalePrice.Of(i)" />
+                    @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
+                }
+                else
+                {
+                    <p class="price">
+                        @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
+                        @if (i.Ems <= 0 && i.Gms > 0) { if (i.WasGms is { } onlyWas) { <b class="sale">@i.Gms gm$</b> <s>@onlyWas gm$</s> } else { <b>@i.Gms gm$</b> } }
+                        else
+                        {
+                            @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
+                            @if (i.Gms > 0 && i.WasGms is { } wasGms) { <span>@L["Store.Or"] <b class="sale">@i.Gms gm$</b> <s>@wasGms gm$</s></span> }
+                            else if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
+                        }
+                    </p>
+                }
                 <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" Fuel="i.Fuel" />
                 @if (!signedIn) { <button class="btn" disabled>@L["Store.Login"]</button> }
                 else if (!i.Buyable || i.DisabledByServices || i.LimitReached) { <button class="btn" disabled>@L["Store.NotBuyable"]</button> }
@@ -43,8 +50,15 @@
                 @if (b.OnSale) { <Ribbon Text="@L.SaleTag(b.Sale)" /> } else { <Ribbon Text="@L["Store.BundleTag"]" Class="blue" /> }
                 <a href="/store/bundle/@b.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.BundleSlot(b.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/bundle/@b.Id" class="name">@b.Name</a>
-                @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
-                <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                @if (b.OnSale)
+                {
+                    <SalePrice Prices="SalePrice.Of(b)" />
+                    @if (b.Sale is { } bundleSale) { <p class="ends">@L.SaleEnds(bundleSale)</p> }
+                }
+                else
+                {
+                    <p class="price">@if (b.StruckPrice > 0) { <b class="sale">@b.Price em$</b> <s>@b.StruckPrice em$</s> } else { <b>@b.Price em$</b> }</p>
+                }
                 @if (b.OwnedItems > 0 && b.OwnedItems == b.OfItems) { <p class="own">@L["Store.BundleAllOwned"]</p> }
                 else if (b.OwnedItems > 0) { <p class="own">@(b.WasPrice > b.Price ? L["Store.BundleOwn", b.OwnedItems, b.OfItems, b.Price, b.WasPrice] : L["Store.BundleOwnCount", b.OwnedItems, b.OfItems])</p> }
                 @* a button like BUY on the item cards (same font, centred, upper case); the picture and name stay links *@

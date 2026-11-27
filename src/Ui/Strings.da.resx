@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Du ejer {0} af {1} elementer</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du ejer allerede alle elementerne i denne pakke</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>var</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Tilbuddet slutter {0}</value></data>

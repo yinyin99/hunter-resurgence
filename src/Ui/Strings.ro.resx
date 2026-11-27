@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Deţineţi {0} din {1} obiecte</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Deţineţi deja toate obiectele din acest pachet</value></data>
   <data name="Store.Or" xml:space="preserve"><value>sau</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>înainte</value></data>
   <data name="Store.Days" xml:space="preserve"><value>zile</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTĂ</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Oferta se termină {0}</value></data>

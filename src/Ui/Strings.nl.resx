@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Je bezit {0} van de {1} objecten</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Je bezit al alle objecten van deze bundel</value></data>
   <data name="Store.Or" xml:space="preserve"><value>of</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>voorheen</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagen</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ACTIE</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Actie eindigt {0}</value></data>
