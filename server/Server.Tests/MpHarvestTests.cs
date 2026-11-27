@@ -391,3 +391,101 @@ public class MpHarvestMissionTests : MissionTestBase
         Assert.Equal("2,3", Completed(HOST));  // the deer is reopened; the mallard stays, and so does the fox
     }
 }
+
+/// <summary>A harvest of an animal another member shot also finishes the harvester's objectives worded `Harvest ...`, judged on the shooter's hit (#1041); nothing else of it is the harvester's.</summary>
+public class MpHarvesterObjectiveTests : MissionTestBase
+{
+    const long HOST = 11, GUEST = 12, THIRD = 13;
+    const string Start = "start=101&loctype=LODGE&reserve=2&time=540&loadout_id=0";
+
+    // a CONFIRMKILL challenge on the animal and the shot, one that counts the hunt's harvests, and a KILL one (event 2, which no harvest tries)
+    static JsonArray Challenges() => new([.. new[]
+    {
+        (1, "CONFIRMKILL", "a.species() == c.species.MULE_DEER and a.range('maximum') >= 100000"),
+        (2, "CONFIRMKILL", "a.species() == c.species.MULE_DEER and e.animalCount(300) >= 1"),
+        (3, "KILL", "a.species() == c.species.MULE_DEER"),
+    }.Select(c => (JsonNode?)new JsonObject
+    {
+        ["id"] = c.Item1, ["title"] = $"Challenge {c.Item1}", ["update_message"] = $"Challenge {c.Item1} completed", ["objectives_hash"] = c.Item1.ToString("x32"),
+        ["objectives"] = Py.Dumps(new JsonArray(new JsonObject
+        {
+            ["objective_data"] = new JsonObject { ["id"] = 1, ["conditions"] = c.Item3, ["title"] = $"Harvest {c.Item1}" }, ["event_type"] = c.Item2,
+        })),
+    })]);
+
+    public MpHarvesterObjectiveTests()
+    {
+        state = New("mp.db", Catalogue(["Harvest a Test Deer with the Test Carbine", "Kill a Test Deer"]), challenges: Challenges());
+        foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest"), (THIRD, "third") })
+            state.CreateAccount(id, handle);
+        state.HostGame(HOST, "host-session", Encoding.UTF8.GetBytes($"{Start}&name=Camp&max_players=3"));
+        Beat(HOST, O("""{"event": 29, "port": 32303, "guid": "9007199254740993", "color": "c73378"}"""));
+        var game = (long)Reply(state.NetworkListReply())[0]!["id"]!;
+        Assert.Null(state.JoinGame(GUEST, Encoding.UTF8.GetBytes($"start=101&loctype=LODGE&network_id={game}&loadout_id=0")).Error);
+        foreach (var id in new[] { HOST, GUEST, THIRD })
+            state.MissionCall(id, "activate_all_available", []);
+    }
+
+    JsonArray Beat(long who, params JsonNode[] events) => Reply(state.HeartbeatReply(who, Events(events)))["updates"]!.AsArray();
+
+    object? Scalar(long account, string sql)
+    {
+        using var con = state.Store.Open(account);
+        return con.Scalar(sql);
+    }
+
+    long Kills(long account) => (long)Scalar(account, "SELECT COUNT(*) FROM kills WHERE account_id = $a")!;
+
+    string ChallengesOf(long account)
+    {
+        using var con = state.Store.Open(account);
+        return string.Join(",", con.Rows("SELECT challenge_id FROM challenges WHERE account_id = $a ORDER BY challenge_id").Select(r => (long)r[0]));
+    }
+
+    [Fact]
+    public void TestTheHarvesterGetsItsHarvestObjectiveOnTheShootersHitAndNothingElse()
+    {
+        var (host, guest) = (Gm(account: HOST), Gm(account: GUEST));
+        Beat(GUEST, Shot(1)[..2]);  // the guest shoots the deer with the carbine
+        var updates = Beat(HOST, Shot(1, hits: 0));  // the host, who never fired, skins it
+        Assert.Equal("1", Completed(HOST));  // its harvest objective, on the guest's carbine; not the kill objective
+        Assert.Equal(host + 10, Gm(account: HOST));  // the mission's reward only: no gm$ for the kill
+        Assert.Contains(updates, u => Py.Eq(u!["update"], 15) && Py.D(u["amount"]) == host + 10);
+        Assert.DoesNotContain(updates, u => Py.Eq(u!["update"], 6));
+        Assert.Equal((0L, 0L), (Kills(HOST), (long)Scalar(HOST, "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 3")!));
+        Assert.Equal("[0]", Scalar(HOST, "SELECT kept FROM missions WHERE account_id = $a AND mission_id = 1"));  // no stored harvest of the host meets it
+        Assert.StartsWith("would reopen 0 objectives", state.RollbackMissions(apply: false, only: HOST).Last());
+        Assert.Equal("1", ChallengesOf(HOST));  // the challenge on the guest's shot; not one that counts the host's harvests, nor a kill
+
+        Beat(GUEST);
+        Assert.Equal(("1,2", 1L, "1,2"), (Completed(GUEST), Kills(GUEST), ChallengesOf(GUEST)));  // the shooter's as before
+        Assert.True(Gm(account: GUEST) >= guest + 20);  // both rewards, and the kill's gm$ when it pays any
+    }
+
+    [Fact]
+    public void TestTheHarvestersObjectiveIsJudgedOnTheShootersWeapon()
+    {
+        Beat(GUEST, Shot(1, weapon: 51)[..2]);  // a shotgun
+        Beat(HOST, Shot(1, hits: 0));
+        Assert.Equal(("", "1"), (Completed(HOST), ChallengesOf(HOST)));  // the challenge asks for no weapon
+        Beat(GUEST);
+        Assert.Equal("2", Completed(GUEST));
+    }
+
+    [Fact]
+    public void TestASecondHarvestOfTheAnimalFinishesNothing()
+    {
+        Beat(GUEST, Shot(1));  // the guest shoots and skins it
+        Beat(HOST, Shot(1, hits: 0));  // the host skins it again
+        Assert.Equal(("", ""), (Completed(HOST), ChallengesOf(HOST)));
+        Assert.Equal("1,2", Completed(GUEST));
+    }
+
+    [Fact]
+    public void TestASinglePlayerHarvestFinishesBothObjectives()
+    {
+        state.NoteLaunch(THIRD, Encoding.UTF8.GetBytes(Start));  // in no game
+        Beat(THIRD, Shot(1));
+        Assert.Equal(("1,2", 1L), (Completed(THIRD), Kills(THIRD)));
+    }
+}

@@ -432,9 +432,10 @@ public sealed partial class State
     }
 
     /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
-    /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit). When writing it for the shooter fails, that write is undone (a savepoint), the failure is logged
+    /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit; the harvester's harvest objectives follow it, <see cref="HarvesterEvent"/>, with their updates 15
+    /// in `updates`, the heartbeat's reply). When writing it for the shooter fails, that write is undone (a savepoint), the failure is logged
     /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone.</summary>
-    bool TryCredit(Db con, JsonObject e3, long eventId, List<long> shooters)
+    bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters)
     {
         if (CreditOf(con, e3, eventId) is not { } credit)
             return false;
@@ -444,7 +445,10 @@ public sealed partial class State
         con.Exec("SAVEPOINT credit");
         try
         {
-            CreditHarvest(con.Sharing(credit.Account), e3, e7, e22);
+            var theirs = con.Sharing(credit.Account);
+            CreditHarvest(theirs, e3, e7, e22);
+            HarvesterEvent(con, theirs, e3, e7, eventId, updates);
+            ChallengeEvent(con, e3, theirs);
             con.Exec("RELEASE credit");
             shooters.Add(credit.Account);
             return true;

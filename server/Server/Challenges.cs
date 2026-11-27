@@ -94,14 +94,16 @@ public sealed partial class State
 
     /// <summary>The hunt's event as the challenges see it (called by Heartbeat after each stored event): each challenge not yet completed that has an objective for this
     /// event is evaluated, and one whose condition holds is completed: the row is written (no wallet change) and its announcement (`update 3`) queued for the next heartbeat.
+    /// `shooter`: a harvest credited to the member who shot the animal (#1041; <see cref="TryCredit"/>), the shooter's account, where it is the last event: its harvest (`CONFIRMKILL`) objectives
+    /// are judged on the shooter's hits and animal for this account, the harvester, and a condition that counts the events of the hunt (`e.`) is not met: those are the harvester's own.
     /// ponytail: a challenge completes with its first met objective (every definition has one); several objectives would need a stored progress.</summary>
-    void ChallengeEvent(Db con, JsonObject e)
+    void ChallengeEvent(Db con, JsonObject e, Db? shooter = null)
     {
         var open = challenges.Values.Where(d => d.Rules.Any(r => Is(e["event"], r.Event))).ToList();
         if (open.Count == 0)
             return;
         var done = con.Rows("SELECT challenge_id FROM challenges WHERE account_id = $a").Select(r => (long)r[0]).ToHashSet();
-        var hunt = new Hunt(this, con, e, LastEvent(con), Clock());
+        var hunt = shooter is null ? new Hunt(this, con, e, LastEvent(con), Clock()) : new Hunt(this, shooter, e, LastEvent(shooter), Clock(), animalOnly: true);
         foreach (var d in open.Where(d => !done.Contains(d.Id)))
             foreach (var (_, index, rule) in d.Rules.Where(r => Is(e["event"], r.Event)))
             {
@@ -124,8 +126,8 @@ public sealed partial class State
     sealed record Death(long Id, double Ts, long Species, long? Shot);
 
     /// <summary>What a condition's `a` (the animal of the event) and `e` (the events of the hunt) answer, read from the account's stored events up to the current one.
-    /// Distances are millimetres; a number a call cannot read is -1.</summary>
-    sealed class Hunt(State s, Db con, JsonObject e, long id, double now)
+    /// Distances are millimetres; a number a call cannot read is -1. `animalOnly`: an `e.` call is not read (a FormatException).</summary>
+    sealed class Hunt(State s, Db con, JsonObject e, long id, double now, bool animalOnly = false)
     {
         (JsonObject? Spawn, List<JsonObject> Hits)? own;
         readonly Dictionary<long, List<Death>> deaths = [];
@@ -175,6 +177,8 @@ public sealed partial class State
         public object? Call(string name, object?[] a, Dictionary<string, object?> kw)
         {
             var (_, hits) = Own;
+            if (animalOnly && name.StartsWith("e.", StringComparison.Ordinal))
+                throw new FormatException(name);
             switch (name)
             {
                 case "a.texture": return Number(Own.Spawn?["texture"]);

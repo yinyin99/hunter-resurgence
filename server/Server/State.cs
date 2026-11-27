@@ -184,7 +184,7 @@ public sealed partial class State
                                       Func<Db, JsonObject, JsonObject?, List<JsonObject>> skillUpdates, JsonNode? dogSkills, Func<long, bool> isDog,
                                       Action<Db, JsonObject, JsonArray> mission, Func<JsonObject, bool, (double Score, string Text)> pickupScore, Func<long, long?> box,
                                       double gmMultiplier = 1, (double X, double Z)? standingAt = null, long? gmEvent = null,
-                                      Func<Db, JsonObject, long, bool>? credit = null, Func<long, bool>? isFeeder = null)
+                                      Func<Db, JsonObject, long, JsonArray, bool>? credit = null, Func<long, bool>? isFeeder = null)
     {
         con.Begin();
         // a late heartbeat reopens the hunt a stale close ended at its last heartbeat (every other close ends elsewhere);
@@ -202,7 +202,7 @@ public sealed partial class State
             if (node is not JsonObject e) continue;
             JsonNode? species = null;
             var eventId = con.Insert("INSERT INTO events (account_id, event, body, ts) VALUES ($a, ?, ?, ?)", e["event"], Py.Dumps(e), now);
-            if (Is(e["event"], 3) && credit?.Invoke(con, e, eventId) == true)
+            if (Is(e["event"], 3) && credit?.Invoke(con, e, eventId, updates) == true)
             {
                 con.Exec("DELETE FROM events WHERE account_id = $a AND id = ?", eventId);  // not this account's harvest: nothing of it stays here
                 continue;
@@ -2308,7 +2308,7 @@ public sealed partial class State
             updates = Heartbeat(con, now, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                 (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, gm.Multiplier, position, gm.Event,
-                                (c, e, id) => TryCredit(c, e, id, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
+                                (c, e, id, u) => TryCredit(c, e, id, u, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
         }
         finally
         {

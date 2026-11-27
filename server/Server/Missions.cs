@@ -267,9 +267,9 @@ public sealed partial class State
         missions.Values.Where(m => !rows.ContainsKey(m.Id) && m.Dependencies.All(d => rows.TryGetValue(d, out var r) && r.State == 3)).OrderBy(m => m.Id);
 
     /// <summary>What a row remembers besides its objectives: `Since`, the last event before the mission was activated here (null: not known, the row is older than schema 30);
-    /// `Seen`, the last event the mission's progress is not owed from (the harvests after it are the ones to check); `Kept`, the finished objectives a restore brought
-    /// (a JSON list), or `*` for a mission completed before the restore: those are never checked or reopened, no event of theirs exists; `Earlier`, the objectives finished
-    /// before `Seen` (a JSON list): no harvest after it finished them.</summary>
+    /// `Seen`, the last event the mission's progress is not owed from (the harvests after it are the ones to check); `Kept`, the finished objectives a restore brought, or a harvest of an animal
+    /// another member shot (<see cref="HarvesterEvent"/>) finished (a JSON list), or `*` for a mission completed before the restore: those are never checked or reopened, no event of the account's
+    /// stands behind them; `Earlier`, the objectives finished before `Seen` (a JSON list): no harvest after it finished them.</summary>
     sealed record Mark(long? Since, long Seen, string Kept, string Earlier)
     {
         public bool Restored => Kept == RestoredMark;
@@ -434,14 +434,42 @@ public sealed partial class State
         Advance(con, kind, (rule, after) =>
             kind == Kind.Arrive ? arrival is not null && ArrivesAt(rule, arrival)
             : (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender) && (kill is null || Meets(rule, kill, after)),
-            u =>
-            {
-                // one update 15 per currency in a reply, as the game's server sends: a kill's css and a mission's reward add into the last balance
-                if (updates.OfType<JsonObject>().LastOrDefault(x => Is(x["update"], 15) && Py.Str(x["type"]) == Py.Str(u["type"])) is { } same)
-                    same["amount"] = u["amount"]!.DeepClone();
-                else
-                    updates.Add(u);
-            }, eventId);
+            Into(updates), eventId);
+    }
+
+    /// <summary>One update 15 per currency in a reply, as the game's server sends: a kill's css and a mission's reward add into the last balance.</summary>
+    static Action<JsonObject> Into(JsonArray updates) => u =>
+    {
+        if (updates.OfType<JsonObject>().LastOrDefault(x => Is(x["update"], 15) && Py.Str(x["type"]) == Py.Str(u["type"])) is { } same)
+            same["amount"] = u["amount"]!.DeepClone();
+        else
+            updates.Add(u);
+    };
+
+    /// <summary>Does the objective's title ask for a harvest in words: is its first word, after `Then`, `At any point ...` and the like, `harvest`? A title that asks to kill or to take an
+    /// animal is a harvest objective too (<see cref="Kind.Harvest"/>), and so is any title an operator's rule makes one; only a title that says harvest counts for a member who harvests another's kill (#1041).</summary>
+    static bool AsksHarvest(string title)
+    {
+        var rest = title[OrderedWord.Match(title).Length..];
+        return Normalise(rest[AtAny.Match(rest).Length..]).Split(' ')[0] == "harvest";
+    }
+
+    /// <summary>A harvest the heartbeat credited to the member who shot the animal last (#1041; <see cref="TryCredit"/>): `theirs` is the shooter's account, where it is now the last event,
+    /// `con` the harvester's, where it is still event `eventId`. The harvester's active missions and daily mission get progress on the objectives whose title asks for a harvest
+    /// (<see cref="AsksHarvest"/>), judged as the shooter's are: on the shooter's hits, the animal (the shooter's spawn of it, else the harvester's `e7`) and its score. Not on an objective
+    /// with a sequence (within a time, one after another, the same shot, different animals): it counts the harvester's own harvests, which this is not; and a community mission counted the animal for the shooter already.
+    /// The objectives it finishes are `kept` (<see cref="Mark"/>): the harvester's stored events have no harvest that meets them. update 15 goes into `updates` (this heartbeat's reply), the toasts into `pending`.</summary>
+    void HarvesterEvent(Db con, Db theirs, JsonObject e3, JsonObject e7, long eventId, JsonArray updates)
+    {
+        if (missions.Count == 0 && dailies.Count == 0)
+            return;
+        EnsureMissions(con, eventId - 1);
+        var shot = LastEvent(theirs);
+        var animal = SpawnBefore(theirs, e3["individual"], shot) is { Count: > 0 } seen ? seen : e7;
+        var (animalSpecies, gender) = AnimalOf(animal, e3["extended_species"]);
+        var kill = KillOf(theirs, e3, shot, animal);
+        Advance(con, Kind.Harvest, (rule, after) => (rule.Species is null || rule.Species == animalSpecies) && (rule.Gender is null || rule.Gender == gender)
+            && !(rule.Tests ?? []).Any(t => IsSequence(t.Check)) && Meets(rule, kill, after), Into(updates), eventId, credited: true);
     }
 
     /// <summary>A hunt starts at location `lodge` (Launch/start, inside its transaction): what a single-hunt mission had done is forgotten, then the
@@ -458,14 +486,14 @@ public sealed partial class State
         Advance(con, Kind.Start, (rule, _) => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
     }
 
-    /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (an ordered objective only once every one before it is finished; `after` is the last event the
-    /// progress is not owed from): its id is added to `done`, and it is returned; null when none is met.</summary>
-    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, long, bool> meets, long after = 0)
+    /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (`credited`, a harvest of an animal another member shot: only one whose title asks for a harvest,
+    /// <see cref="AsksHarvest"/>); an ordered objective only once every one before it is finished; `after` is the last event the progress is not owed from: its id is added to `done`, and it is returned; null when none is met.</summary>
+    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, long, bool> meets, long after = 0, bool credited = false)
     {
         for (var i = 0; i < m.Objectives.Length; i++)
         {
             var o = m.Objectives[i];
-            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || !meets(o.Rule, after))
+            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || credited && !AsksHarvest(o.Title) || !meets(o.Rule, after))
                 continue;
             done.Add(o.Id);
             return o;
@@ -474,15 +502,18 @@ public sealed partial class State
     }
 
     /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts; then the same
-    /// for today's daily mission.</summary>
-    void Advance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now, long eventId)
+    /// for today's daily mission, and the community missions count it. `credited`: a harvest of an animal another member shot (<see cref="HarvesterEvent"/>): only objectives whose title asks for a
+    /// harvest, each kept (<see cref="Mark"/>), and no community mission counts it.</summary>
+    void Advance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now, long eventId, bool credited = false)
     {
         var marks = Marks(con);
         foreach (var (id, (state, done)) in MissionRows(con))
         {
-            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets, marks[id].Seen) is not { } o)
+            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets, marks[id].Seen, credited) is not { } o)
                 continue;
             Stamp(con, m, [o]);
+            if (credited)
+                con.Exec("UPDATE missions SET kept = json_insert(kept, '$[#]', ?) WHERE account_id = $a AND mission_id = ?", o.Id, m.Id);
             if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
                 con.Exec("UPDATE missions SET objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(done)), m.Id);
@@ -491,8 +522,9 @@ public sealed partial class State
             else
                 Complete(con, m, now);
         }
-        DailyAdvance(con, kind, meets, now);
-        CommunityCount(con, kind, rule => meets(rule, 0));
+        DailyAdvance(con, kind, meets, now, credited);
+        if (!credited)
+            CommunityCount(con, kind, rule => meets(rule, 0));
     }
 
     /// <summary>The rule the objectives are finished under is kept with the row (`missions.rules`: objective id to <see cref="Fingerprint"/>), for the audit.</summary>
