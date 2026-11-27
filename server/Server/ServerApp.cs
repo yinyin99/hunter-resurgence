@@ -30,8 +30,8 @@ public static class ServerApp
 
     const long AdminMaxBodyBytes = 64 * 1024;
     static readonly Regex NewsPicturePath = new(@"\A/admin/news/\d+/picture\z", RegexOptions.ECMAScript);
-    /// <summary>How often the server closes the hunts nobody has sent a heartbeat for.</summary>
-    static readonly TimeSpan StaleSweep = TimeSpan.FromSeconds(30);
+    /// <summary>How often the server closes the hunts nobody has sent a heartbeat for, and forgets the places of the addresses it looked up that are too old (<see cref="Places.Expire"/>).</summary>
+    static readonly TimeSpan StaleSweep = TimeSpan.FromSeconds(Places.SweepSeconds);
     static readonly string[] ForwardingHeaders = ["X-Forwarded-For", "X-Forwarded-Host", "X-Forwarded-Proto", "Forwarded", "Via", "X-Real-IP"];
     static readonly Regex HostName = new(@"\A[A-Za-z0-9][A-Za-z0-9.\-]*(:\d{1,5})?\z", RegexOptions.ECMAScript);
 
@@ -214,6 +214,7 @@ public static class ServerApp
                     while (await tick.WaitForNextTickAsync(app.Lifetime.ApplicationStopping))
                         try { hunts.CloseStaleHunts(); }
                         catch (Exception e) when (e is Microsoft.Data.Sqlite.SqliteException or IOException) { Console.Error.WriteLine("stale hunts: " + e.Message); }  // retried at the next tick
+                        finally { try { hunts.Places?.Expire(); } catch (Exception) { } }  // an idle server forgets the places too; a failure here never stops the sweep
                 }
                 catch (OperationCanceledException) { }
             }));

@@ -9,6 +9,7 @@ namespace Resurgence.Server.Tests;
 
 /// <summary>Multiplayer sessions through the real HTTP pipeline: Launch/start_mp and Launch/join (and the start page's /auth/launch), Network/list, Map/locations, the connect reply's `network` of a host,
 /// a joiner and a single-player hunt, heartbeat events 29 and 30, and a session that ends with its host. The players are invented.</summary>
+[Collection("ProcessState")]  // a test captures the console
 public class MultiplayerTests : StateTestBase, IAsyncLifetime
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
@@ -288,7 +289,8 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         Assert.True(game.ContainsKey("language") && game["language"] is null);  // hosted without one
         Assert.True(game.ContainsKey("event") && game.ContainsKey("event_differs"));  // the website's list adds the game's event state ...
         Assert.Equal(((string?)null, false), ((string?)game["event"], (bool)game["event_differs"]!));  // (this server has no event)
-        foreach (var name in new[] { "joinable", "why", "language", "event", "event_differs" })
+        Assert.True(game.ContainsKey("distance") && game["distance"] is null);  // ... and its distance bucket (null: this server has no IP database)
+        foreach (var name in new[] { "joinable", "why", "language", "event", "event_differs", "distance" })
             game.Remove(name);
         foreach (var client in game["clients"]!.AsArray())
             foreach (var name in new[] { "mapX", "mapY" })
@@ -299,7 +301,112 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
             foreach (var name in new[] { "x", "y", "z" })
                 client![name] = 0;
         Eq(await List(), listed);  // ... and with those two fields and the ones above removed, it is the game's own list
+        Assert.DoesNotContain("distance", Encoding.UTF8.GetString((await Send("GET", Api, "/v1/Network/list")).Body));
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
+    }
+
+    // invented places of invented addresses: the host's connect came from Paris
+    static readonly Dictionary<string, (double, double)> Where = new()
+    {
+        ["203.0.113.5"] = (48.8566, 2.3522), ["198.51.100.7"] = (52.2297, 21.0122), ["198.51.100.8"] = (40.7128, -74.0060), ["198.51.100.9"] = (-23.5505, -46.6333), ["10.1.2.3"] = (52.2297, 21.0122),
+    };
+
+    /// <summary>A game hosted from 203.0.113.5 (its connect came through a trusted proxy), and a server on the same state that believes `X-Forwarded-For`, like the one behind the reverse proxy.</summary>
+    async Task<Loopback> HostedFromParis(bool databaseLoaded = true, Places? places = null)
+    {
+        state.Places = places ?? (databaseLoaded ? new Places(ip => Where.TryGetValue(ip.ToString(), out var place) ? place : null) : null);
+        var session = await ReadyHost();
+        Settings.TryNetwork("127.0.0.0/8", out var loopback);
+        var proxied = await Loopback.StartAsync(new Replay.Game(new Replay.HarTable(), Cfg, state, tmp), tmp, [loopback]);
+        await proxied.SendAsync("POST", Gs, Replay.CONNECT, [("X-Hun-Session", session), ("X-Forwarded-For", "203.0.113.5")], "{}"u8.ToArray());
+        return proxied;
+    }
+
+    /// <summary>`GET /catalog/games` as `who` asks from `viewerIp` (null: the proxy names none).</summary>
+    async Task<Reply> ListFrom(Loopback proxied, long who, string? viewerIp) =>
+        await proxied.SendAsync("GET", "web.test", "/catalog/games", [("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(who, TimeSpan.FromHours(1))}"), .. viewerIp is null ? Array.Empty<(string, string)>() : [("X-Forwarded-For", viewerIp)]]);
+
+    [Theory]
+    [InlineData("198.51.100.7", "short")]  // Warsaw, 1,400 km from Paris
+    [InlineData("198.51.100.8", "medium")]  // New York, 5,800 km
+    [InlineData("198.51.100.9", "long")]  // Sao Paulo, 9,000 km
+    [InlineData("198.51.100.99", null)]  // an address the database does not have
+    [InlineData("10.1.2.3", null)]  // a private address, even where the database has one
+    [InlineData("2001:db8::7", null)]  // not in the database either
+    [InlineData(null, null)]  // the proxy names no address
+    public async Task TestTheListGivesTheDistanceBucketOfTheViewersAndTheHostsPlace(string? viewer, string? expected)
+    {
+        await using var proxied = await HostedFromParis();
+        var reply = await ListFrom(proxied, THIRD, viewer);
+        Assert.Equal(expected, (string?)Json(reply)[0]!["distance"]);
+    }
+
+    [Fact]
+    public async Task TestTheHostsOwnGameAndANonPlayerHaveNoDistance()
+    {
+        await using var proxied = await HostedFromParis();
+        Assert.Null(Json(await ListFrom(proxied, HOST, "198.51.100.8"))[0]!["distance"]);  // the caller's own game
+        Assert.Equal("medium", (string?)Json(await ListFrom(proxied, GUEST, "198.51.100.8"))[0]!["distance"]);  // another player's
+        var signedOut = await proxied.SendAsync("GET", "web.test", "/catalog/games", [("X-Forwarded-For", "198.51.100.8")]);
+        Assert.Equal(401, signedOut.Status);
+        Assert.DoesNotContain("distance", Encoding.UTF8.GetString(signedOut.Body));
+    }
+
+    [Fact]
+    public async Task TestWithoutADatabaseEveryDistanceIsNull()
+    {
+        await using var proxied = await HostedFromParis(databaseLoaded: false);
+        Assert.Null(Json(await ListFrom(proxied, THIRD, "198.51.100.8"))[0]!["distance"]);
+    }
+
+    [Fact]
+    public async Task TestADamagedDatabaseNeverBreaksTheListItTurnsTheDotsOffOnce()
+    {
+        var path = MmdbFile.Write(tmp, [new("203.0.113.0/24", 48.8566, 2.3522), new("198.51.100.0/24", 40.7128, -74.0060)], corruptData: true);  // opens, every lookup fails
+        var db = new Mmdb(path);
+        var (calls, lines) = (0, new List<string>());
+        await using var proxied = await HostedFromParis(places: new Places(ip => { calls++; return db.Find(ip); }, log: lines.Add));
+        for (var i = 0; i < 3; i++)
+        {
+            var reply = await ListFrom(proxied, THIRD, "198.51.100.8");
+            Assert.Equal(200, reply.Status);
+            Assert.Null(Json(reply)[0]!["distance"]);
+        }
+        Assert.Equal((1, 1), (calls, lines.Count));  // the first lookup failed, said so once and was never repeated
+        Assert.StartsWith("distance dots: off (", lines[0]);
+        Assert.DoesNotContain("198.51.100", lines[0]);
+        Assert.DoesNotContain("203.0.113", lines[0]);
+    }
+
+    [Fact]
+    public async Task TestTheListWritesNoAddressOrPlaceToTheConsoleOrTheRequestLog()
+    {
+        await using var proxied = await HostedFromParis();
+        var (old, output) = (Console.Out, new StringWriter());
+        Console.SetOut(output);
+        try
+        {
+            var reply = await ListFrom(proxied, THIRD, "198.51.100.8");
+            Assert.Equal("medium", (string?)Json(reply)[0]!["distance"]);
+            new RequestLog(console: true, null).Write(new Req("GET", "web.test", "/catalog/games", "", _ => null, [], false, "198.51.100.8"), reply);  // the line the server prints for a request
+        }
+        finally
+        {
+            Console.SetOut(old);
+        }
+        Assert.Contains("/catalog/games", output.ToString());
+        foreach (var leak in new[] { "198.51.100", "203.0.113", "48.85", "2.35", "40.71", "74.00", "medium" })
+            Assert.DoesNotContain(leak, output.ToString());
+    }
+
+    [Fact]
+    public async Task TestTheListSendsOnlyTheWordNeverAnAddressOrAPlace()
+    {
+        await using var proxied = await HostedFromParis();
+        var text = Encoding.UTF8.GetString((await ListFrom(proxied, THIRD, "198.51.100.8")).Body);
+        Assert.Contains("\"distance\": \"medium\"", text);
+        foreach (var leak in new[] { "203.0.113.5", "198.51.100.8", "\"ip\"", "latitude", "longitude", "\"lat\"", "\"lon\"", "country", "continent", "city", "48.85", "2.35", "40.71", "74.00" })
+            Assert.DoesNotContain(leak, text);
     }
 
     [Theory]

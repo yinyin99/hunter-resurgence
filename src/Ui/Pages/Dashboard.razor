@@ -86,7 +86,6 @@
                     @foreach (var g in games)
                     {
                         <li>
-                            <ServerWhere Server="g" />
                             <div class="info">
                                 <div class="name">@g.Name</div>
                                 <div class="meta">@L.Frag("Servers.Summary", reserves.GetValueOrDefault(g.Reserve, ""), Players(g, g.Players), Players(g, g.Max), Host(g.Host))@if (g.Password) { <span data-tip="@L["Servers.Locked"]"><Icon Name="lock" /></span> }</div>

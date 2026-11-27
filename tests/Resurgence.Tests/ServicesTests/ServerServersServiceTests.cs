@@ -294,7 +294,7 @@ public class ServerServersServiceTests
         Assert.Equal([null, null, "hunterscore"], games.Select(g => g.Why));  // the server's reason, none from a server that does not send one
         Assert.Equal([true, false, false], games.Select(g => g.Joinable));  // a game with a password is not one the filter lists
         Assert.Equal([false, false, true], games.Select(g => g.Refused));  // and its Join stays on: it asks for the password
-        Assert.All(games, g => Assert.Null(g.Distance));  // a community server does not say how far a host is
+        Assert.All(games, g => Assert.Null(g.Distance));  // an older server does not say how far a host is: no field, no dot
         Assert.Equal(["pt-BR", "", ""], games.Select(g => g.Language));  // the host's language, none for a game without one (null, or a server that does not send it)
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);
@@ -312,6 +312,21 @@ public class ServerServersServiceTests
         var games = await Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, withEvent) : Answer(r)), new Bridge()).ServersAsync();
 
         Assert.Equal([("halloween_2026", true), ("halloween_2026", false), ((string?)null, true)], games.Select(g => (g.Event, g.EventDiffers)));
+    }
+
+    [Fact]
+    public async Task TheDistanceIsTheServersWordForItAndNoneForAnythingElse()
+    {
+        const string withDistance = """
+            [{"id": 4000000001, "name": "A", "handle": "H1", "password": false, "max_players": 4, "start_ts": 1700000000, "distance": "short", "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000002, "name": "B", "handle": "H2", "password": false, "max_players": 4, "start_ts": 1700000000, "distance": "medium", "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000003, "name": "C", "handle": "H3", "password": false, "max_players": 4, "start_ts": 1700000000, "distance": "long", "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000004, "name": "D", "handle": "H4", "password": false, "max_players": 4, "start_ts": 1700000000, "distance": null, "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000005, "name": "E", "handle": "H5", "password": false, "max_players": 4, "start_ts": 1700000000, "distance": "far", "clients": [], "reserve": {"id": 2}}]
+            """;
+        var games = await Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, withDistance) : Answer(r)), new Bridge()).ServersAsync();
+
+        Assert.Equal([Distance.Short, Distance.Medium, Distance.Long, null, null], games.Select(g => g.Distance));
     }
 
     // signed out there are no games, and the server is not asked

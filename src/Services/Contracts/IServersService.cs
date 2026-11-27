@@ -13,7 +13,7 @@ public sealed record GamePlayer(string Handle, int HunterScore, double? X = 50, 
 public sealed record Loadout(int Id, string Name);
 public enum Distance { Short, Medium, Long }
 /// <param name="Why">The server's reason this player cannot join: <c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player.</param>
-/// <param name="Distance">How far the host is from the player; null when the server does not say (a community server does not: no dots, no legend).</param>
+/// <param name="Distance">How far the host is from the player; null when the server does not say (a community server without an IP database, and an older one, do not: no dots, no legend).</param>
 /// <param name="Language">The language its host chose for the game, a code of the launcher's interface languages (<c>fr</c>, <c>pt-BR</c>); empty for none (a game hosted without one).</param>
 /// <param name="Event">The id of the seasonal event the game runs (the host's setting decides it for every player in the game); null for none, and from a server that does not say.</param>
 /// <param name="EventDiffers">The game's event state differs from what the player's own hunt on that reserve gets now; false from a server that does not say.</param>

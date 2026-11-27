@@ -18,6 +18,7 @@
     { "address": "127.0.0.1", "port": 443, "cert": "data/leaf.pem", "key": "data/leaf.key", "admin": true },
     { "address": "127.0.0.1", "port": 80, "admin": true }
   ],
+  "geoip_file": null,
   "trusted_proxies": [],
   "host_header": "X-Game-Host",
   "max_body_bytes": 16777216,

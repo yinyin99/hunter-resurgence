@@ -1449,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Přihlašovací cookies a herní tokeny, uložené jako hashe, které nelze přečíst zpět.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Jen pokud propojíte Discord: vaše ID na Discordu a tokeny, které Discord předal serveru k aktualizaci vašich rolí, uložené v zašifrované podobě. Nic dalšího z vašeho profilu na Discordu se neukládá. Server posílá Discordu vaši přezdívku a HunterScore pro vaše role.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Jen pokud propojíte Discord: záznam, že odměna 5000 gm$ a 250 em$ byla vyplacena za vaše ID na Discordu, uložený jako klíčovaný otisk (hash), který nelze převést zpět na ID.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Aby bylo možné zobrazit, jak daleko je hostitel hry s ostatními, server zjistí přibližnou polohu (zhruba město) adresy vašeho připojení. Ostatní hráči vidí jen krátkou, střední nebo dlouhou vzdálenost. Poloha se uchovává v paměti serveru nejvýše hodinu a nikdy se nezapisuje na disk ani nesdílí.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Co účty neobsahují</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Vaši e-mailovou adresu, skutečné jméno, poštovní adresu ani telefonní číslo: nevyžadují se a v účtu se neukládají. Pokud záloha takové pole obsahuje, neobnoví se.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Smazání vašich údajů</value></data>
