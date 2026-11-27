@@ -64,7 +64,7 @@ public static class HuntersApi
                 : Json(404, new JsonObject { ["error"] = "not found" }))
             .WithName("Hunter").WithSummary("A hunter's profile header: hunterscore, place on the board, membership, avatar and header picture")
             .WithDescription("`{handle, hunterscore, rank, membership, avatar, background, ribbon}` (the handle as the account spells it, the membership's title, \"\" without one, "
-                             + "the avatar's picture URL (docs/server.md#avatars, null for none), the header picture the player chose and the collector ribbon (a file name such as `moose.png`) as the restored profile names them, null without one); 404 for a handle that is unknown or banned.")
+                             + "the avatar's picture URL (docs/server.md#avatars, null for none), the header picture the player chose as the restored profile names it, null without one, and the collector ribbon (a file name such as `moose.png`) by the share of the achievements earned, null below 5 %); 404 for a handle that is unknown or banned.")
             .Produces(200, contentType: "application/json").Produces(404, contentType: "application/json");
 
         group.MapGet("/{handle}/statistics", (string handle) => state.PublicAccount(handle) is { } id
