@@ -127,3 +127,77 @@ export function firstTime(name) {
 export function copy(text) {
     return navigator.clipboard.writeText(text);
 }
+
+// Pan and zoom of a map with the zoom buttons (MapPlaceholder): drag (mouse, pen, one finger), wheel around the cursor, arrow keys and +/- while the map has focus.
+// The view lives in map.dataset (s: scale 1..max, x/y: pan in percent of the map, applied before the scale; the picture's edge can't pass the map's edge)
+// and the plane is moved at once; ref.View(s, x, y) tells the component where a gesture ended (a round trip per pointer move would lag on the website).
+export function panZoom(map, ref, max) {
+    const plane = map.querySelector('.plane');
+    let down, moved, wait;
+    const get = () => ({ s: +map.dataset.s, x: +map.dataset.x, y: +map.dataset.y });
+    const set = (s, x, y) => {
+        s = Math.min(max, Math.max(1, s));
+        const limit = 50 * (s - 1) / s;
+        x = Math.min(limit, Math.max(-limit, x));
+        y = Math.min(limit, Math.max(-limit, y));
+        Object.assign(map.dataset, { s, x, y });
+        plane.style.transform = `scale(${s}) translate(${x}%, ${y}%)`;
+    };
+    const sync = (delay) => {
+        clearTimeout(wait);
+        wait = setTimeout(() => { const v = get(); ref.invokeMethodAsync('View', v.s, v.x, v.y).catch(() => { }); }, delay);
+    };
+
+    // A press that moves less than 4 px stays a click (a marker is picked). Past that the map takes the pointer, and the click that ends the drag is swallowed.
+    map.addEventListener('pointerdown', (e) => {
+        moved = false;
+        down = e.isPrimary && !e.button && !e.target.closest('.zoom') ? { id: e.pointerId, x: e.clientX, y: e.clientY, drag: false } : null;
+    });
+    map.addEventListener('pointermove', (e) => {
+        if (!down || e.pointerId !== down.id) return;
+        if (!down.drag) {
+            if (Math.hypot(e.clientX - down.x, e.clientY - down.y) < 4) return;
+            down.drag = moved = true;
+            map.setPointerCapture(e.pointerId);
+            map.classList.add('dragging');
+        }
+        const r = map.getBoundingClientRect(), v = get();
+        set(v.s, v.x + (e.clientX - down.x) / (r.width * v.s) * 100, v.y + (e.clientY - down.y) / (r.height * v.s) * 100);
+        down.x = e.clientX;
+        down.y = e.clientY;
+    });
+    const end = (e) => {
+        if (!down || e.pointerId !== down.id) return;
+        const dragged = down.drag;
+        down = null;
+        map.classList.remove('dragging');
+        if (dragged) sync(0);
+    };
+    map.addEventListener('pointerup', end);
+    map.addEventListener('pointercancel', end);
+    map.addEventListener('click', (e) => { if (moved) { moved = false; e.stopPropagation(); e.preventDefault(); } }, true);
+    map.addEventListener('dragstart', (e) => e.preventDefault()); // a marker's picture is not dragged away with the pointer
+
+    // Not passive: the page must not scroll while the wheel is on the map.
+    map.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const r = map.getBoundingClientRect(), v = get();
+        const dy = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1);
+        const s = Math.min(max, Math.max(1, v.s * Math.exp(-dy * .002)));
+        const px = ((e.clientX - r.left) / r.width - .5) * 100, py = ((e.clientY - r.top) / r.height - .5) * 100;
+        // the point under the cursor stays under it: its screen place is 50 + s * (its place on the plane - 50 + pan)
+        set(s, v.x + px * (1 / s - 1 / v.s), v.y + py * (1 / s - 1 / v.s));
+        sync(150);
+    }, { passive: false });
+
+    map.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.altKey || e.metaKey) return;
+        const v = get(), step = 10 / v.s;
+        const pan = { ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] }[e.key];
+        const zoom = { '+': .5, '=': .5, '-': -.5, '_': -.5 }[e.key];
+        if (!pan && !zoom) return;
+        e.preventDefault();
+        set(v.s + (zoom ?? 0), v.x + (pan?.[0] ?? 0), v.y + (pan?.[1] ?? 0));
+        sync(150);
+    });
+}

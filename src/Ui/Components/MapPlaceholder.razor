@@ -1,8 +1,10 @@
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 @inject AssetImages Images
 @inject NavigationManager Nav
-<div class="map" style="height:@(Height)px">
-    @* the picture sits on the plane, so it zooms and pans with the markers *@
-    <div class="plane" style="transform:scale(@(1 + zoomLevel * .5)) @Pan;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
+<div @ref="map" class="@(Zoom ? "map zoomable" : "map")" tabindex="@(Zoom ? 0 : null)" data-s="@Fmt.Num(scale, "0.####")" data-x="@Pc(panX)" data-y="@Pc(panY)" style="height:@(Height)px">
+    @* the picture sits on the plane, so it zooms and pans with the markers and the layer over the map (the start label) *@
+    <div class="plane" style="transform:@Transform;@(Bg is { } u ? $"background:url('{u}') center / 100% 100% no-repeat" : "")">
         @foreach (var m in Markers)
         {
             var pickable = !m.Only && m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
@@ -24,21 +26,25 @@
         {
             <span class="popup" style="left:@Pc(at.X)%;top:@Pc(at.Y)%">@at.Name</span>
         }
+        @ChildContent
     </div>
     @if (Bg is null) { <span class="slot">@BgKey</span> }
     @if (Zoom)
     {
     <div class="zoom">
-        <button type="button" data-tip="@L["Launch.ZoomIn"]" aria-label="@L["Launch.ZoomIn"]" disabled="@(zoomLevel == 2)" @onclick="() => zoomLevel++"><Icon Name="plus" /></button>
-        <button type="button" data-tip="@L["Launch.ZoomOut"]" aria-label="@L["Launch.ZoomOut"]" disabled="@(zoomLevel == 0)" @onclick="() => zoomLevel--"><Icon Name="minus" /></button>
+        <button type="button" data-tip="@L["Launch.ZoomIn"]" aria-label="@L["Launch.ZoomIn"]" disabled="@(scale >= MaxScale)" @onclick="() => SetView(scale + Step, panX, panY)"><Icon Name="plus" /></button>
+        <button type="button" data-tip="@L["Launch.ZoomOut"]" aria-label="@L["Launch.ZoomOut"]" disabled="@(scale <= 1)" @onclick="() => SetView(scale - Step, panX, panY)"><Icon Name="minus" /></button>
     </div>
     }
-    @ChildContent
 </div>
 
 @code {
-    int zoomLevel;
-    int? centred;
+    const double MaxScale = 2, Step = .5;
+    double scale = 1, panX, panY;
+    int? centred, shown;
+    ElementReference map;
+    IJSObjectReference? module;
+    DotNetObjectReference<MapPlaceholder>? self;
 
     /// <summary>Stand-in for the Leaflet map of a reserve: markers sit at fixed percent positions, zoom scales them.</summary>
     [Parameter, EditorRequired] public IReadOnlyList<MapMarker> Markers { get; set; } = [];
@@ -61,16 +67,47 @@
     /// <summary>The reserve whose map picture is drawn (<c>map-&lt;NN&gt;</c>); none: <c>map-bg</c>.</summary>
     [Parameter] public int? Reserve { get; set; }
 
-    string Pan => Markers.FirstOrDefault(m => m.Id == Centre) is { } m ? $"translate({Pc(50 - m.X)}%, {Pc(50 - m.Y)}%)" : "";
+    string Transform => $"scale({Fmt.Num(scale, "0.####")}) translate({Pc(panX)}%, {Pc(panY)}%)";
     string BgKey => Reserve is { } r ? $"map-{r:00}" : "map-bg";
     string? Bg => Images.Url(BgKey);
 
     protected override void OnParametersSet()
     {
         if (Bg is null) Images.NoteMissing(BgKey, new Uri(Nav.Uri).AbsolutePath);
-        if (Centre is null || Centre == centred) return;
+        if (Reserve != shown) (shown, centred, panX, panY) = (Reserve, null, 0, 0);
+        if (!Zoom || Centre is null || Centre == centred || Markers.FirstOrDefault(m => m.Id == Centre) is not { } m) return;
         centred = Centre;
-        if (Zoom && zoomLevel == 0) zoomLevel = 1;
+        SetView(scale == 1 ? 1.5 : scale, 50 - m.X, 50 - m.Y);
+    }
+
+    /// <summary>The view, applied as the plane's <c>scale</c> then <c>translate</c>: the pan is a percent of the map before the scale. The picture's edge can't pass the map's edge: |pan| ≤ 50·(scale−1)/scale.</summary>
+    void SetView(double s, double x, double y)
+    {
+        scale = Math.Clamp(s, 1, MaxScale);
+        var limit = 50 * (scale - 1) / scale;
+        (panX, panY) = (Math.Clamp(x, 0 - limit, limit), Math.Clamp(y, 0 - limit, limit));
+    }
+
+    /// <summary>Called by shell.js (panZoom) where a drag, the wheel or a key left the view: the gestures move the plane themselves, a round trip per pointer move would lag.</summary>
+    [JSInvokable]
+    public void View(double s, double x, double y)
+    {
+        SetView(s, x, y);
+        InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || !Zoom) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+        await module.InvokeVoidAsync("panZoom", map, self = DotNetObjectReference.Create(this), MaxScale);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        self?.Dispose();
+        try { if (module is not null) await module.DisposeAsync(); }
+        catch (JSDisconnectedException) { } // the tab closed: the module is gone with its circuit
     }
 
     const int MarkerSize = 24;
