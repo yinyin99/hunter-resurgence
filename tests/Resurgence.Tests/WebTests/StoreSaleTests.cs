@@ -47,6 +47,7 @@ public sealed class StoreSaleTests : UiContext
         Assert.Equal(["100 em$", "200 gm$"], Texts(cut.FindAll(".price s")));
         Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".price .sale")));
         Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".card .ends").TextContent);
+        Assert.Contains("or 150 gm$", cut.Find(".price").TextContent);   // a space between the word and the sale price
     }
 
     [Fact]

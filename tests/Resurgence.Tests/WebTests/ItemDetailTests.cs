@@ -118,4 +118,16 @@ public sealed class ItemDetailTests : UiContext
         Assert.Contains(present, markup);
         Assert.DoesNotContain(absent, markup);
     }
+
+    // the mock's first item (1227) is on a 20 % sale in em$ and gm$: the page of the store's own item route shows the ribbon, both old prices, higher than the sale prices, and the end
+    [Fact]
+    public void TheMocksItemOnSaleShowsTheSaleOnItsPage()
+    {
+        var cut = Render<ItemDetail>(p => p.Add(i => i.Id, 1227));
+
+        Assert.Equal("SALE -20%", cut.Find(".item .ribbon").TextContent);
+        Assert.Equal(["100 gm$", "3 em$"], cut.FindAll(".buy s").Select(s => s.TextContent.Trim()));
+        Assert.Equal(["or 80 gm$", "2 em$"], cut.FindAll(".buy .sale").Select(s => s.TextContent.Trim()));
+        Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".ends").TextContent);
+    }
 }

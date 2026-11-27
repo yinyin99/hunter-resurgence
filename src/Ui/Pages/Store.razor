@@ -27,7 +27,8 @@
                     else
                     {
                         @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
-                        @if (i.Gms > 0) { <span>@L["Store.Or"] @if (i.WasGms is { } wasGms) { <b class="sale">@i.Gms gm$</b> <s>@wasGms gm$</s> } else { <text>@i.Gms gm$</text> }</span> }
+                        @if (i.Gms > 0 && i.WasGms is { } wasGms) { <span>@L["Store.Or"] <b class="sale">@i.Gms gm$</b> <s>@wasGms gm$</s></span> }
+                        else if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
                     }
                 </p>
                 <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" Fuel="i.Fuel" />
