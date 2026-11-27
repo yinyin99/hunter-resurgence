@@ -2,6 +2,7 @@ using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Resurgence.Services;
 using Resurgence.Ui;
+using Resurgence.Ui.Modals;
 using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
@@ -67,7 +68,7 @@ public sealed class InventoryPageTests : UiContext
     [Fact]
     public void ANoToTheConfirmationSellsNothing()
     {
-        var items = new Items(new(1, "Made-up Rifle", "", "4", "Rifles", null, false, Guid: 11, Sell: new("gm", 40)));
+        var items = new Items(new InventoryItem(1, "Made-up Rifle", "", "4", "Rifles", null, false, Guid: 11, Sell: new("gm", 40)));
         Services.AddSingleton<IInventoryService>(items);
         var modal = Services.GetRequiredService<ModalService>();
         var cut = Render<Inventory>();
