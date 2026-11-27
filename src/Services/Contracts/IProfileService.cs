@@ -71,7 +71,8 @@ public sealed record PersonalBest(string Status, IReadOnlyList<BestRow> Rows);
 /// <param name="Thumbnail">The address of the picture the gallery grid shows, scaled to the tile (the server sends the full picture's address); without one the picture is the old interface's slot <c>photo-&lt;id&gt;</c>.</param>
 /// <param name="Kill">The id of the kill the photo shows when the profile has its score sheet page (<c>/profile/&lt;handle&gt;/score/&lt;kill&gt;</c>); null otherwise.</param>
 /// <param name="Share">The link the Share window hands out (the owner's own photos: the bare link, shown to signed-in players only); null: <see cref="Url"/>.</param>
-public sealed record Photo(long Id, string Animal, double Score, string Url, string? Thumbnail = null, long? Kill = null, string? Share = null);
+/// <param name="Hunter">The handle of the hunter whose kill the photo shows when it is not the profile's own (a trophy shot of another member's kill in a multiplayer hunt): the photo is his, <see cref="Kill"/> is on his profile.</param>
+public sealed record Photo(long Id, string Animal, double Score, string Url, string? Thumbnail = null, long? Kill = null, string? Share = null, string? Hunter = null);
 /// <param name="CompetitionId">Set when the trophy was won in a competition.</param>
 /// <param name="Image">The picture's file name without its extension, which names the slot <c>trophy-&lt;image&gt;</c> (null: the mock's, by <see cref="Name"/>).</param>
 public sealed record Trophy(string Name, DateOnly Date, long? CompetitionId, string? Competition, string? Image = null);

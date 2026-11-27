@@ -14,10 +14,10 @@ public sealed class Store
     public static readonly string[] PlayerTables =
         ["items", "wallet", "skills", "kills", "harvests", "expeditions", "events", "pending", "photos", "messages",
          "profile", "statistics", "achievements", "trophies", "lodges", "extras", "loadouts", "restore_audit", "uploads", "upload_results", "wallet_log",
-         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills"];
+         "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills", "harvest_links"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 43;
+    public const int Version = 44;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -164,6 +164,16 @@ public sealed class Store
             {A}, kill_id INTEGER NOT NULL, kind TEXT NOT NULL, species INTEGER, coat INTEGER, reason TEXT NOT NULL, ammo INTEGER, basis TEXT, if_normal TEXT, if_possessed TEXT,
             taxidermied INTEGER NOT NULL DEFAULT 0, lodge INTEGER, slot INTEGER, lost_score REAL NOT NULL DEFAULT 0, ts INTEGER NOT NULL,
             PRIMARY KEY (account_id, kill_id));
+        """;
+
+    // schema 44 (#1041): a multiplayer harvest State.TryCredit gave the member who shot the animal last (`owner`, its kill `kill_id`), noted on the harvester's side (account_id) by the animal as the
+    // harvester's game knows it (`individual`, `spawn` its latest event 7 then), so the trophy shot the harvester takes of it afterwards is that kill's (State.Heartbeat, event 4). Restorer.Adopt moves both ids
+    const string HarvestLinks = $"""
+        CREATE TABLE IF NOT EXISTS harvest_links (
+            id INTEGER PRIMARY KEY, {A}, individual INTEGER, spawn INTEGER,
+            owner INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, kill_id INTEGER NOT NULL);
+        CREATE INDEX IF NOT EXISTS harvest_links_account ON harvest_links (account_id, individual);
+        CREATE INDEX IF NOT EXISTS harvest_links_owner ON harvest_links (owner);
         """;
 
     // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
@@ -610,6 +620,13 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('banned_steam') WHERE name = ?", column.Split(' ')[0])! == 0)
                 con.Script($"ALTER TABLE banned_steam ADD COLUMN {column}");
         con.Script(HostBans);  // schema 42 (#937), every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
+        // schema 44 (#1041), every start and guarded by the table and the columns (not by the version): a trophy shot of another member's kill is that kill's photo (`photos.kill_id`, in the shooter's
+        // account), and `taker` is the account whose game took and uploads it (its gallery links it)
+        con.Script(HarvestLinks);
+        foreach (var column in (string[])["taker INTEGER REFERENCES accounts (id) ON DELETE SET NULL", "kill_id INTEGER"])
+            if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = ?", column.Split(' ')[0])! == 0)
+                con.Script($"ALTER TABLE photos ADD COLUMN {column}");
+        con.Script("CREATE INDEX IF NOT EXISTS photos_taker ON photos (taker) WHERE taker IS NOT NULL");
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

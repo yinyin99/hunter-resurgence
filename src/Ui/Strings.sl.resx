@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Tvoja galerija je pripravljena za prenos!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Ne zapiraj okna</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Ali res želiš izbrisati to sliko? Tega dejanja ni mogoče razveljaviti!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Uplenil {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Raven:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Spretnosti</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Ta pes še ni odklenil nobene spretnosti.</value></data>

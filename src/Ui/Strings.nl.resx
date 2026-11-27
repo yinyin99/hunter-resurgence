@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>Je galerij staat klaar om te downloaden!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Sluit het venster niet</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Weet je zeker dat je deze afbeelding wilt verwijderen? Dit kan niet ongedaan worden gemaakt!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Geschoten door {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Niv.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Vaardigheden</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Deze hond heeft nog geen vaardigheden ontgrendeld.</value></data>

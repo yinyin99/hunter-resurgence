@@ -1052,6 +1052,7 @@
   <data name="Prof.GalleryReady" xml:space="preserve"><value>La tua galleria è pronta per essere scaricata!</value></data>
   <data name="Prof.GalleryKeepOpen" xml:space="preserve"><value>Non chiudere la finestra</value></data>
   <data name="Prof.GalleryDelete" xml:space="preserve"><value>Vuoi davvero eliminare questa immagine? Questa azione non può essere annullata!</value></data>
+  <data name="Prof.GalleryKillBy" xml:space="preserve"><value>Abbattuto da {0}</value></data>
   <data name="Prof.DogLvl" xml:space="preserve"><value>Liv.:</value></data>
   <data name="Prof.DogSkills" xml:space="preserve"><value>Abilità</value></data>
   <data name="Prof.DogNoSkills" xml:space="preserve"><value>Questo cane non ha ancora sbloccato nessuna abilità.</value></data>

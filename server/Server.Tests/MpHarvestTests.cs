@@ -567,6 +567,7 @@ public class MpHarvesterObjectiveTests : MissionTestBase
             shared.Exec($"CREATE TRIGGER boom BEFORE INSERT ON pending WHEN NEW.account_id = {HOST} AND NEW.body LIKE '%Carbine%' BEGIN SELECT RAISE(ABORT, 'boom'); END");
         var updates = Beat(HOST, Shot(1, hits: 0));
         Assert.Equal((1L, 0L), (Kills(HOST), Kills(GUEST)));  // the harvest stays the harvester's, as when the shooter's write fails
+        Assert.Equal(0L, Scalar(HOST, "SELECT COUNT(*) FROM harvest_links WHERE account_id = $a"));  // its trophy-shot link was undone with it
         Assert.DoesNotContain(updates, u => Py.Eq(u!["update"], 15));  // not the undone reward's balance
         Assert.Equal(host, Gm(account: HOST));
         Assert.Equal(("2,3,4,5,6,7", "[]"), (Completed(HOST), Scalar(HOST, "SELECT kept FROM missions WHERE account_id = $a AND mission_id = 1")));

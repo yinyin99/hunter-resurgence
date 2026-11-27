@@ -70,10 +70,11 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
         return new(all.Skip((n - 1) * size).Take(size).ToList(), n, pages);
     }
 
-    // the own gallery starts empty (as captured), with the hook "profile:photos" it has 30 pictures; deleting changes the list
+    // the own gallery starts empty (as captured), with the hook "profile:photos" it has 30 pictures; deleting changes the list. The second is a trophy shot of another member's kill (#1041): his, linked to his kill
     readonly List<Photo> own = mock == "profile:photos" ? [.. Photos()] : [];
 
-    static IEnumerable<Photo> Photos() => Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, i switch { 1 => "Mule Deer (Typical)", 2 => "Mule Deer (Non-Typical)", _ => Names.Species[i * 3 % Names.Species.Length].Name }, 10.5 + i * 1.25, $"https://example.test/gallery/{5000000 + i}.jpg"));
+    static IEnumerable<Photo> Photos() => Enumerable.Range(0, 30).Select(i => new Photo(5000000 + i, i switch { 1 => "Mule Deer (Typical)", 2 => "Mule Deer (Non-Typical)", _ => Names.Species[i * 3 % Names.Species.Length].Name }, 10.5 + i * 1.25, $"https://example.test/gallery/{5000000 + i}.jpg",
+        Kill: i == 1 ? 1107254527 : null, Hunter: i == 1 ? "Hunter02" : null));
 
     public Task<Page<Photo>> GalleryAsync(string handle, int page) => Task.FromResult(Slice<Photo>(handle == Own ? own : [.. Photos()], page, 24));
 
