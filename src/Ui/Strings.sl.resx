@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>še {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Opremljeno</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Drugo</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Prodaj</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Prodaš {0} nazaj trgovini za {1} {2}? Predmet bo odstranjen iz tvojega inventarja. Tega ni mogoče razveljaviti.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Predmeta ni bilo mogoče prodati. Poskusi znova.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odjava</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tvoj HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tvoj profil</value></data>

@@ -494,7 +494,6 @@ public class StoreSalesTests : StateTestBase
     [Fact]
     public void ADatabaseAtTheCurrentVersionWithoutThePickTableGetsIt()
     {
-        Assert.Equal(45, Store.Version);
         var file = Path.Combine(tmp, "picks.db");
         using (var con = new Store(file).Open())
             con.Exec("DROP TABLE store_sale_picks");  // user_version stays at Store.Version

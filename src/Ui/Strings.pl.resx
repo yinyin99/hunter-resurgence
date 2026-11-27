@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>zostało {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Wyposażone</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Inne</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sprzedaj</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Sprzedać {0} z powrotem sklepowi za {1} {2}? Przedmiot zostanie usunięty z ekwipunku. Tego nie można cofnąć.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Nie udało się sprzedać przedmiotu. Spróbuj ponownie.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Wyloguj się</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Twój HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Twój profil</value></data>

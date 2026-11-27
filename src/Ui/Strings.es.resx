@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>quedan {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipado</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Otros</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Vender</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>¿Vender {0} de vuelta a la tienda por {1} {2}? El objeto se elimina de tu inventario. No se puede deshacer.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>No se pudo vender el objeto. Inténtalo de nuevo.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Cerrar la sesión</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Tu HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Tu perfil</value></data>

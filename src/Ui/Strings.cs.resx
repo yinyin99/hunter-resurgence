@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>zbývá {0}</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Vybaveno</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Ostatní</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Prodat</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Prodat {0} zpět obchodu za {1} {2}? Předmět bude odebrán z vašeho inventáře. Nelze to vrátit zpět.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Předmět se nepodařilo prodat zpět. Zkuste to znovu.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Odhlásit</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Vaše HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Váš profil</value></data>

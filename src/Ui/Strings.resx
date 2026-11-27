@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} left</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Equipped</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Other</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Sell</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>Sell {0} back to the store for {1} {2}? The item is removed from your inventory. This cannot be undone.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>The item could not be sold back. Try again.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Sign Out</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Your HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Your profile</value></data>

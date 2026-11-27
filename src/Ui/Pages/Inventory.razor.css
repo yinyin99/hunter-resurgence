@@ -7,3 +7,4 @@
 .variant { display: block; font-size: 12px; line-height: 16px; color: var(--fg-muted-2); }
 .units, .equipped { margin: 6px 0 0; font-size: 12px; line-height: 16px; color: var(--text-3); }
 .none { margin: 0; padding: 10px; background: var(--surface-3); font-size: 14px; color: var(--text-3); }
+.sell { margin-top: 8px; }

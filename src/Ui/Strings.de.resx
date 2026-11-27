@@ -52,6 +52,9 @@
   <data name="Inv.Units" xml:space="preserve"><value>{0} übrig</value></data>
   <data name="Inv.Equipped" xml:space="preserve"><value>Ausgerüstet</value></data>
   <data name="Inv.Other" xml:space="preserve"><value>Sonstiges</value></data>
+  <data name="Inv.Sell" xml:space="preserve"><value>Verkaufen</value></data>
+  <data name="Inv.SellConfirm" xml:space="preserve"><value>{0} für {1} {2} an den Shop zurückverkaufen? Der Gegenstand wird aus Ihrem Inventar entfernt. Das kann nicht rückgängig gemacht werden.</value></data>
+  <data name="Inv.SellFailed" xml:space="preserve"><value>Der Gegenstand konnte nicht zurückverkauft werden. Versuchen Sie es erneut.</value></data>
   <data name="Tip.SignOut" xml:space="preserve"><value>Abmelden</value></data>
   <data name="Tip.HunterScore" xml:space="preserve"><value>Ihr HunterScore</value></data>
   <data name="Tip.Profile" xml:space="preserve"><value>Ihr Profil</value></data>
