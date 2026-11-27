@@ -4,7 +4,7 @@
 @if (sub == "")
 {
     <div class="overview">
-        <AssetSlot Name="@(bars.Count > 0 && bars[0].Id > 0 ? "rank-" + bars[0].Id : "rank-animals")" Width="114" Height="114" Class="top-badge" />
+        <AssetSlot Name="@(bars.Count > 0 && bars[0].Id > 0 ? "rank-" + bars[0].Id : "rank-" + "animals")" Width="114" Height="114" Class="top-badge" />
         <div class="bars">
             <h4>@L["Prof.Progress"]</h4>
             <h5>@L["Prof.HunterScore"]</h5>
