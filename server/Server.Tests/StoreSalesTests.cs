@@ -79,7 +79,7 @@ public class StoreSalesTests : StateTestBase
     List<(long Id, double Percent, long Was, long Ems)> OnSale(double t, State? s = null)
     {
         at = t;
-        return [.. Shop(s).Where(i => i!["sale"] is not null).Select(i => ((long)i!["id"]!, (double)i["sale"]!["percent"]!, i["was"] is { } w ? (long)w : 0, (long)i["ems"]!))];
+        return [.. Shop(s).Where(i => i!["sale"] is not null).Select(i => ((long)i!["id"]!, (double)(int)i["sale"]!["percent"]!, i["was"] is { } w ? (long)w : 0, (long)i["ems"]!))];
     }
 
     static string Set(IEnumerable<(long Id, double Percent, long Was, long Ems)> sale) => string.Join(",", sale.OrderBy(x => x.Id).Select(x => $"{x.Id}:{x.Percent}"));
@@ -119,7 +119,7 @@ public class StoreSalesTests : StateTestBase
         at = Friday;
         Assert.Equal((98L, 773L), Prices(3));  // 25 % off 130 and 1030, rounded half up
         var sale = Item(3)["sale"]!;
-        Assert.Equal(("Black Friday", 25.0, "2026-11-30T07:00:00Z"), ((string)sale["name"]!, (double)sale["percent"]!, (string)sale["until"]!));
+        Assert.Equal(("Black Friday", 25, "2026-11-30T07:00:00Z"), ((string)sale["name"]!, (int)sale["percent"]!, (string)sale["until"]!));
         Assert.Equal((130L, 1030L), ((long)Item(3)["was"]!, (long)Item(3)["gwas"]!));
         Assert.Equal((105L, 780L), Prices(4));
         Assert.Null(Item(5)["sale"]);
@@ -206,7 +206,7 @@ public class StoreSalesTests : StateTestBase
         var onSale = OnSale(Friday);
         // sights (the top category's title) up to 330 em$: 9021 to 9023, fewer than the count; gm$ only, on two rifles of 1100 gm$ and more
         Assert.Equal(new[] { Id(21), Id(22), Id(23) }, onSale.Where(x => x.Percent == 20).Select(x => x.Id).Order());
-        var gmOnly = Shop().Where(i => (double?)i!["sale"]?["percent"] == 5).ToList();
+        var gmOnly = Shop().Where(i => (int?)i!["sale"]?["percent"] == 5).ToList();
         Assert.Equal(2, gmOnly.Count);
         Assert.All(gmOnly, i =>
         {
@@ -287,7 +287,7 @@ public class StoreSalesTests : StateTestBase
         at = T("2026-11-28T12:00:00Z");
         Assert.Equal((91L, 721L), Prices(3));  // B: 30 % off the list price, not 30 % off A's price
         Assert.Equal("B", (string)Item(3)["sale"]!["name"]!);
-        Assert.Equal(30.0, (double)Item(3)["sale"]!["percent"]!);
+        Assert.Equal(30, (int)Item(3)["sale"]!["percent"]!);
         Assert.Equal("2026-11-29T00:00:00Z", (string)Item(3)["sale"]!["until"]!);
         Assert.Equal(112, Prices(4).Ems);  // only A lists item 4
         Assert.Equal(91, Buy(3));
@@ -370,7 +370,7 @@ public class StoreSalesTests : StateTestBase
         at = Friday;
         var bundle = Bundle();
         Assert.Equal((320L, 400L), ((long)bundle["price"]!, (long)bundle["was"]!));
-        Assert.Equal(("Pack sale", 20.0, "2026-11-30T07:00:00Z"), ((string)bundle["sale"]!["name"]!, (double)bundle["sale"]!["percent"]!, (string)bundle["sale"]!["until"]!));
+        Assert.Equal(("Pack sale", 20, "2026-11-30T07:00:00Z"), ((string)bundle["sale"]!["name"]!, (int)bundle["sale"]!["percent"]!, (string)bundle["sale"]!["until"]!));
         Assert.Equal(320L, OfferPrice());
         var em = Em();
         Assert.NotNull(state.WebBuy(ME, 9, true, 1));
@@ -392,6 +392,18 @@ public class StoreSalesTests : StateTestBase
         em = Em();
         Assert.NotNull(state.WebBuy(ME, 9, true, 1));
         Assert.Equal(em - 278, Em());
+    }
+
+    [Fact]
+    public void TheWebsiteAndTheLauncherReadTheStoreWhileASaleIsOn()
+    {
+        at = Friday;
+        state = Open();
+        Sales($"[{BlackFriday.Replace("\"items\": [9003, 9004]", "\"items\": [9003], \"bundles\": [9]")}]");
+        // what GET /catalog/store sends, read as the website and the launcher read it (ServerCache: ReadFromJsonAsync, web defaults)
+        var store = System.Text.Json.JsonSerializer.Deserialize<Resurgence.Services.ServerStore>(Py.DumpBytes(state.StoreCatalogue()), System.Text.Json.JsonSerializerOptions.Web)!;
+        Assert.Equal(25, store.Items.Single(i => i.Id == Id(3)).Sale!.Percent);
+        Assert.Equal(25, store.Bundles.Single(b => b.Id == 9).Sale!.Percent);
     }
 
     [Fact]
