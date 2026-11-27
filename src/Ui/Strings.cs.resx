@@ -1585,6 +1585,8 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="DiscordLink.Role" xml:space="preserve"><value>Vaše role na Discordu: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Ještě {0} do role {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Zpět na Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Aby se váš HunterScore zobrazoval na vašem profilu Discord, udělejte jednou na serveru Discord: název serveru → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Propojené role (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Opravdu chcete zavřít launcher i hru?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcher potřebuje Microsoft Edge WebView2, který na tomto počítači chybí nebo nefunguje. Nainstalovat jej nyní? Ano otevře stránku ke stažení od Microsoftu a zavře launcher: po instalaci WebView2 jej spusťte znovu. Ne launcher zavře.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Prohlížeč launcheru (Microsoft Edge WebView2) se nepodařilo spustit. Restartovat launcher bez hardwarové akcelerace? Launcher si tuto volbu pamatuje. Ano jej restartuje, Ne jej zavře.</value></data>

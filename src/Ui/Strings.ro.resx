@@ -1585,6 +1585,8 @@ Numele:</value></data>
   <data name="DiscordLink.Role" xml:space="preserve"><value>Rolul dvs. pe Discord: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Încă {0} până la {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Înapoi la Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Pentru ca HunterScore-ul dvs. să apară pe profilul Discord, faceți asta o singură dată pe serverul Discord: numele serverului → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Roluri asociate (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Sigur doriți să închideți launcherul și jocul?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcherul are nevoie de Microsoft Edge WebView2, care lipsește sau nu funcționează pe acest PC. Îl instalați acum? Da deschide pagina de descărcare Microsoft și închide launcherul: porniți-l din nou după ce WebView2 este instalat. Nu închide launcherul.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Browserul launcherului (Microsoft Edge WebView2) nu a putut porni. Reporniți launcherul fără accelerare hardware? Launcherul reține această alegere. Da îl repornește, Nu îl închide.</value></data>

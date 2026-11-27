@@ -1585,6 +1585,8 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="DiscordLink.Role" xml:space="preserve"><value>Je rol op Discord: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Nog {0} tot {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Terug naar Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Om je HunterScore op je Discord-profiel te tonen, doe je dit één keer op de Discord-server: servernaam → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Gekoppelde rol (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Weet je zeker dat je de launcher en de game wilt sluiten?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>De launcher heeft Microsoft Edge WebView2 nodig, dat op deze pc ontbreekt of niet werkt. Nu installeren? Ja opent de downloadpagina van Microsoft en sluit de launcher: start hem opnieuw zodra WebView2 is geïnstalleerd. Nee sluit de launcher.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>De browser van de launcher (Microsoft Edge WebView2) kon niet starten. De launcher opnieuw starten zonder hardwareversnelling? De launcher onthoudt deze keuze. Ja start hem opnieuw, Nee sluit hem.</value></data>

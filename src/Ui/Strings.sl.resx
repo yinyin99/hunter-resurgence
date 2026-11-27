@@ -1585,6 +1585,8 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="DiscordLink.Role" xml:space="preserve"><value>Vaša vloga na Discordu: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Še {0} do vloge {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Nazaj na Discord</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Da bo vaš HunterScore viden na vašem profilu Discord, enkrat na strežniku Discord izberite: ime strežnika → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Linked Roles</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Ali res želiš zapreti launcher in igro?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcher potrebuje Microsoft Edge WebView2, ki na tem računalniku manjka ali ne deluje. Ga želiš namestiti zdaj? Da odpre Microsoftovo stran za prenos in zapre launcher: ponovno ga zaženi, ko bo WebView2 nameščen. Ne zapre launcher.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Brskalnika launcherja (Microsoft Edge WebView2) ni bilo mogoče zagnati. Želiš ponovno zagnati launcher brez strojnega pospeševanja? Launcher si bo to izbiro zapomnil. Da ga ponovno zažene, Ne ga zapre.</value></data>

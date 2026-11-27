@@ -1585,6 +1585,8 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="DiscordLink.Role" xml:space="preserve"><value>Twoja rola na Discordzie: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Jeszcze {0} do roli {1} ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Wróć do Discorda</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Aby pokazać swój HunterScore na profilu Discord, zrób to raz na serwerze Discord: nazwa serwera → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Połączone role (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Czy na pewno chcesz zamknąć launcher i grę?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>Launcher potrzebuje Microsoft Edge WebView2, którego na tym komputerze brakuje lub który nie działa. Zainstalować go teraz? Tak otwiera stronę pobierania Microsoftu i zamyka launcher: uruchom go ponownie po zainstalowaniu WebView2. Nie zamyka launcher.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>Przeglądarka launchera (Microsoft Edge WebView2) nie mogła się uruchomić. Uruchomić launcher ponownie bez akceleracji sprzętowej? Launcher zapamięta ten wybór. Tak uruchamia go ponownie, Nie zamyka go.</value></data>

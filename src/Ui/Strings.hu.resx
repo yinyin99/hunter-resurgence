@@ -1585,6 +1585,8 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="DiscordLink.Role" xml:space="preserve"><value>A szerepköröd a Discordon: {0}</value></data>
   <data name="DiscordLink.More" xml:space="preserve"><value>Még {0} a {1} szerepkörig ({2})</value></data>
   <data name="DiscordLink.Back" xml:space="preserve"><value>Vissza a Discordra</value></data>
+  <data name="DiscordLink.Claim" xml:space="preserve"><value>Hogy a HunterScore-od megjelenjen a Discord-profilodon, tedd ezt meg egyszer a Discord-szerveren: a szerver neve → {0} → {1}.</value></data>
+  <data name="DiscordLink.LinkedRoles" xml:space="preserve"><value>Összekapcsolt rangok (Linked Roles)</value></data>
   <data name="Launcher.CloseQuestion" xml:space="preserve"><value>Biztosan bezárod az indítót és a játékot?</value></data>
   <data name="WebView.Install" xml:space="preserve"><value>A launchernek szüksége van a Microsoft Edge WebView2-re, amely hiányzik vagy nem működik ezen a gépen. Telepíted most? Az Igen megnyitja a Microsoft letöltőoldalát és bezárja a launchert: a WebView2 telepítése után indítsd újra. A Nem bezárja a launchert.</value></data>
   <data name="WebView.StartFailed" xml:space="preserve"><value>A launcher böngészője (Microsoft Edge WebView2) nem indult el. Újraindítod a launchert hardveres gyorsítás nélkül? A launcher megjegyzi a választást. Az Igen újraindítja, a Nem bezárja.</value></data>
