@@ -329,7 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtragem anisotrópica</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ajuda contextual</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memória de áudio alargada</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mais memória de som (250 MB em vez de 220 MB). Aplica-se no próximo arranque do jogo.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mais memória de som (250 MB em vez de 220 MB): o jogo usa mais cerca de 30 MB de memória. Aplica-se no próximo arranque do jogo.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Baixo</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Médio</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Alto</value></data>

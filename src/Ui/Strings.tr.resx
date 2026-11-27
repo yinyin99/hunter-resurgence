@@ -329,7 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropik Filtreleme</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Bağlamsal Yardım</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Genişletilmiş Ses Belleği</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Daha fazla ses belleği (220 MB yerine 250 MB). Oyunun bir sonraki başlatılışında etkili olur.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Daha fazla ses belleği (220 MB yerine 250 MB): oyun yaklaşık 30 MB daha fazla bellek kullanır. Oyunun bir sonraki başlatılışında etkili olur.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Düşük</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Orta</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Yüksek</value></data>

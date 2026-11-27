@@ -329,7 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontekstuel hjælp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Udvidet lydhukommelse</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mere lydhukommelse (250 MB i stedet for 220 MB). Træder i kraft ved næste start af spillet.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mere lydhukommelse (250 MB i stedet for 220 MB): spillet bruger omkring 30 MB mere hukommelse. Træder i kraft ved næste start af spillet.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Lav</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Mellem</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Høj</value></data>

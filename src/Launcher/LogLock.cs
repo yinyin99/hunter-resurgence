@@ -438,7 +438,7 @@ sealed class SuspendedProcess : ISuspendedGame
         CloseHandle(thread);
         var (h, id) = (process, pid);
         int? code() => GetExitCodeProcess(h, out var c) && c != StillActive ? unchecked((int)c) : null;
-        return new(() => code() is null && GameProcess.HasVisibleWindow(id), code, () => CloseHandle(h)) { Id = (int)id };
+        return new(() => code() is null && GameProcess.HasVisibleWindow(id), code, () => CloseHandle(h)) { Id = (int)id, Memory = () => GameMemory.Read(h) };
     }
 
     /// <summary>Ends a game that could not be resumed.</summary>

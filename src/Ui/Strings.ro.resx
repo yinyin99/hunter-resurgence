@@ -329,7 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrare anisotropică</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ajutor contextual</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memorie audio extinsă</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mai multă memorie audio (250 MB în loc de 220 MB). Se aplică la următoarea pornire a jocului.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mai multă memorie audio (250 MB în loc de 220 MB): jocul folosește cu aproximativ 30 MB mai multă memorie. Se aplică la următoarea pornire a jocului.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Redusă</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Medie</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Ridicată</value></data>

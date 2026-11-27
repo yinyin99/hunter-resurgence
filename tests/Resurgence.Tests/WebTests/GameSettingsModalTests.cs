@@ -98,6 +98,7 @@ public sealed class GameSettingsModalTests : UiContext
         var cut = Render<GameSettingsModal>();  // the mock has the switch
         Assert.Single(cut.FindAll("#extended_audio"));
         Assert.Contains("250 MB", cut.Find("#extended_audio_note").TextContent);
+        Assert.Contains("30 MB", cut.Find("#extended_audio_note").TextContent);
     }
 
     [Fact]

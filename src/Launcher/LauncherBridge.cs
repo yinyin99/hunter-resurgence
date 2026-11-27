@@ -22,12 +22,13 @@ namespace Resurgence.Launcher;
 /// <param name="bringToFront">Shows a client window over the others.</param>
 /// <param name="stopClient">Closes the client and stops it when it stays (<see cref="GameFiles.StopClientAsync"/>); null: nothing is closed.</param>
 /// <param name="startWithSteam">The Game settings' box "Start the game using Steam"; false: every start goes without Steam. Null: checked.</param>
+/// <param name="memoryEvery">How often the watch logs the running game's memory (<see cref="GameMemory"/>); 30 s when null.</param>
 /// <param name="display">Before a start (<c>/steam</c> or not): writes the graphics file for the display mode (<see cref="GameSettingsService.PrepareStart"/>); true when the game's window is to be made borderless.</param>
 public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge rest, Func<string, bool> isRunning, Func<ProcessStartInfo, GameProcess?> start, SteamProbes steam, string? steamAppId, Func<bool>? restart = null, TimeSpan? poll = null, TimeSpan? appearWithin = null,
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
     Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null,
-    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null, Func<bool>? startWithSteam = null) : ILauncherBridge
+    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null, Func<bool>? startWithSteam = null, TimeSpan? memoryEvery = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -304,14 +305,21 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         var (at, ran, mode, retried) = held is null ? (DateTimeOffset.Now, Stopwatch.StartNew(), lastStartMode, false) : (held.At, held.Ran, held.Mode, held.Retried);
         var game = held?.Game;
         var window = false;
+        var sinceMemory = Stopwatch.StartNew();
         try
         {
             do
             {
                 game ??= find?.Invoke(g.ClientExe);
                 window |= game?.WindowVisible() == true;
+                if (game is not null && sinceMemory.Elapsed >= (memoryEvery ?? MemoryEvery))
+                {
+                    sinceMemory.Restart();
+                    LogMemory(game, false);
+                }
                 // the run ends when the process held has exited; without one, when the exe is gone or the process found has exited (a process that is still listed after its exit, or a second one started at once, must not keep the watch going)
             } while ((held is not null || isRunning(g.ClientExe)) && game?.ExitCode() is null && await Delay(step));
+            if (game is not null) LogMemory(game, true);
             var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
             var run = LastRun = new GameRun(at, elapsed, code, window, mode);
             history?.Add(run);
@@ -324,6 +332,16 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             return new GameExit(code ?? 0, (int)elapsed.TotalSeconds, mode ?? "", early, cause, ahead, cause is "closed" or "crash" && ahead is null ? warned : null);
         }
         finally { game?.Dispose(); }
+    }
+
+    /// <summary>How often the watch logs the running game's memory.</summary>
+    internal static readonly TimeSpan MemoryEvery = TimeSpan.FromSeconds(30);
+
+    /// <summary>One line of the game's memory (<see cref="GameMemory.Line"/>); nothing when the process is gone for good or Windows does not tell. Never throws: the watch must outlive a process that has just ended.</summary>
+    void LogMemory(GameProcess game, bool exited)
+    {
+        try { if (game.Memory?.Invoke() is { } m) log?.LogInformation("{Line}", m.Line(exited)); }
+        catch (Exception e) when (e is InvalidOperationException or System.ComponentModel.Win32Exception or ObjectDisposedException) { }
     }
 
     /// <summary>The cause of a game that closed right away: steam (16010 of the no-Steam retry after a start with Steam that quit with 16010 too: both were tried), blocked (app control), runtime (a DLL not found), dll (a function a game file imports is missing: a file replaced), closed (exit 0), crash (anything else).</summary>

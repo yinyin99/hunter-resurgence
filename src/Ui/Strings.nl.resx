@@ -329,7 +329,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrope filtering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Contextuele hulp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Uitgebreid audiogeheugen</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Meer geluidsgeheugen (250 MB in plaats van 220 MB). Gaat in bij de volgende start van het spel.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Meer geluidsgeheugen (250 MB in plaats van 220 MB): het spel gebruikt ongeveer 30 MB meer geheugen. Gaat in bij de volgende start van het spel.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Laag</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Gemiddeld</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Hoog</value></data>
