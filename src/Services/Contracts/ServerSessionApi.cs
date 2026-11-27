@@ -94,7 +94,7 @@ public sealed record ServerSkills(ServerSpeciesSkill[] Species, ServerWeaponSkil
 
 public sealed record ServerSpeciesSkill(string Name, double Spotting, double? Tracking, string? Image = null);
 
-public sealed record ServerWeaponSkill(string Name, string? Group, double Value, long? Id = null, string? Variation = null);
+public sealed record ServerWeaponSkill(string Name, string? Group, double Value, long? Id = null, string? Variation = null, string[]? Finishes = null);
 
 /// <summary>One page of a hunter's trophies of <see cref="ServerSessionApi.TrophiesSuffix"/>.</summary>
 public sealed record ServerTrophies(int Page, int Pages, int Total, ServerTrophy[] Rows);
