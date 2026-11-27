@@ -101,6 +101,32 @@ public class ServerStoreServiceTests
         Assert.Null(await Ok().ItemAsync(404));
     }
 
+    // an operator's sale: today's prices, the prices before it (null for a price that is not on sale) and the sale itself; the sales view lists an item whose gm$ price alone is on sale
+    const string SaleStore = """
+        {"categories": [], "bundles": [], "items": [
+           {"id": 1, "name": "Test Rifle", "variant": "", "description": "", "category": "0", "ems": 75, "was": 100, "gms": 150, "gwas": 200, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 2, "name": "Test Pistol", "variant": "", "description": "", "category": "0", "ems": 80, "was": null, "gms": 90, "gwas": 120, "buyable": true, "sale": {"name": "Test weekend", "percent": 25, "until": "2026-11-30T07:00:00Z"}},
+           {"id": 3, "name": "Test Scope", "variant": "", "description": "", "category": "0", "ems": 200, "was": null, "gms": 0, "gwas": null, "buyable": true, "sale": null}]}
+        """;
+
+    [Fact]
+    public async Task ASalesPricesBeforeItAndItsEndAreMapped()
+    {
+        var service = Make(new Fake(_ => Json(HttpStatusCode.OK, SaleStore)));
+        var rifle = (await service.ItemAsync(1))!;
+        Assert.Equal((75, 100, 150, 200), (rifle.Ems, rifle.WasEms, rifle.Gms, rifle.WasGms));
+        Assert.Equal(new StoreSale("Test weekend", 25, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)), rifle.Sale);
+        var pistol = (await service.ItemAsync(2))!;
+        Assert.Equal((80, (int?)null, 90, (int?)120), (pistol.Ems, pistol.WasEms, pistol.Gms, pistol.WasGms));
+        var scope = (await service.ItemAsync(3))!;
+        Assert.Equal((200, (int?)null, 0, (int?)null), (scope.Ems, scope.WasEms, scope.Gms, scope.WasGms));
+        Assert.Null(scope.Sale);
+        Assert.False(scope.OnSale);
+        Assert.Equal([1, 2], (await service.ItemsAsync("sales", "", 1)).Rows.Select(i => i.Id));
+        Assert.True(await service.HasSalesAsync());
+        Assert.Contains("sales", (await service.CategoriesAsync()).Select(c => c.Key));
+    }
+
     const string Page = """
         {"capacity": 0.45, "contents": {"count": 10, "name": "cartridges"},
          "fits": [{"title": "Weapons", "key": "0", "items": [{"id": 1, "name": "Test Rifle", "variant": "Blue"}]}],

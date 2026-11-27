@@ -16,17 +16,18 @@
         @foreach (var i in rows)
         {
             <div class="card panel hover-tint">
-                @if (i.WasEms is not null) { <Ribbon Text="@L["Store.SaleTag"]" /> }
+                @if (i.OnSale) { <Ribbon Text="@L.SaleTag(i)" /> }
                 <a href="/store/item/@i.Id" title="@L["Store.ClickMore"]"><AssetSlot Name="@Mode.ItemSlot(i.Id)" Width="150" Height="110" Class="pic" /></a>
                 <a href="/store/item/@i.Id" class="name">@i.Name</a>
                 <span class="variant">@i.Variant</span>
+                @if (i.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
                 <p class="price">
                     @* an item sold for gm$ alone (the server's catalogue) has no em$ price to show *@
-                    @if (i.Ems <= 0 && i.Gms > 0) { <b>@i.Gms gm$</b> }
+                    @if (i.Ems <= 0 && i.Gms > 0) { if (i.WasGms is { } onlyWas) { <b class="sale">@i.Gms gm$</b> <s>@onlyWas gm$</s> } else { <b>@i.Gms gm$</b> } }
                     else
                     {
                         @if (i.WasEms is { } was) { <b class="sale">@i.Ems em$</b> <s>@was em$</s> } else { <b>@i.Ems em$</b> }
-                        @if (i.Gms > 0) { <span>@L["Store.Or"] @i.Gms gm$</span> }
+                        @if (i.Gms > 0) { <span>@L["Store.Or"] @if (i.WasGms is { } wasGms) { <b class="sale">@i.Gms gm$</b> <s>@wasGms gm$</s> } else { <text>@i.Gms gm$</text> }</span> }
                     }
                 </p>
                 <OwnedLine Owned="i.Owned" Counted="i.Counted" Expires="i.Expires" DaysLeft="i.DaysLeft" Unlimited="i.Unlimited" Fuel="i.Fuel" />

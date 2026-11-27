@@ -755,6 +755,7 @@
   <data name="Store.Or" xml:space="preserve"><value>veya</value></data>
   <data name="Store.Days" xml:space="preserve"><value>gün</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>İNDİRİM</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>İndirim şu tarihte bitiyor: {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAKET</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>AYRICALIKLI</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>SINIRLI</value></data>

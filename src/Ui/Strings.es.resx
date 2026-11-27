@@ -755,6 +755,7 @@
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
   <data name="Store.Days" xml:space="preserve"><value>días</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTA</value></data>
+  <data name="Store.SaleEnds" xml:space="preserve"><value>La oferta termina {0}</value></data>
   <data name="Store.BundleTag" xml:space="preserve"><value>PAQUETE</value></data>
   <data name="Store.Banner.premium" xml:space="preserve"><value>PREMIUM</value></data>
   <data name="Store.Banner.limited" xml:space="preserve"><value>LIMITADA</value></data>

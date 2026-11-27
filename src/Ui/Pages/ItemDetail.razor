@@ -10,13 +10,13 @@
     @if (item is not null)
     {
         <article class="item panel">
-            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L["Store.SaleTag"] : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
+            @if (banner is { } b) { <Ribbon Text="@(b == "sale" ? L.SaleTag(item) : L["Store.Banner." + b])" Class="@(b == "sale" ? null : b)" /> }
             <AssetSlot Name="@Mode.ItemSlot(item.Id)" Width="270" Height="197" Class="pic" />
             <div class="buy">
                 @* signed out the old page shows only the button *@
                 @if (signedIn)
                 {
-                    @if (item.Gms > 0) { <span class="gms">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> }
+                    @if (item.Gms > 0) { <span class="gms @(item.WasGms is null ? "" : "sale")">@(item.Ems > 0 ? L["Store.Or"] + " " : "")@item.Gms gm$</span> @if (item.WasGms is { } wasGms) { <s>@wasGms gm$</s> } }
                     @* an item sold for gm$ alone has no em$ price to show *@
                     @if (item.Ems > 0 || item.Gms <= 0)
                     {
@@ -28,6 +28,7 @@
                 else if (!item.Buyable || item.DisabledByServices || item.LimitReached) { <button class="btn btn-tall" disabled>@L["Store.NotBuyable"]</button> }
                 else { <button id="buy-item" class="btn btn-tall btn-primary" @onclick="Buy">@L["Store.Buy"]</button> }
             </div>
+            @if (signedIn && item.Sale is { } sale) { <p class="ends">@L.SaleEnds(sale)</p> }
             <h1>@item.Name</h1>
             <h3>@item.Variant</h3>
             @if (item.Capacity > 0 || item.Contents is not null)
@@ -94,7 +95,7 @@
     bool loaded, signedIn;
 
     // the corner banner: premium, then sale, then limited, new or community
-    string? banner => item is null ? null : item.Banner == "premium" ? "premium" : item.WasEms is not null ? "sale" : item.Banner;
+    string? banner => item is null ? null : item.Banner == "premium" ? "premium" : item.OnSale ? "sale" : item.Banner;
 
     // the texts of the store's own categories, as StoreFrame has them; an unknown one keeps the catalogue's title
     string Title(ItemFit f) => L["Store.Cat." + f.Key] is { ResourceNotFound: false } s ? s.Value : f.Title;

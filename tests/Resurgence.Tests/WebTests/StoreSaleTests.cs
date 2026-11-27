@@ -1,0 +1,112 @@
+using Bunit;
+using Microsoft.Extensions.DependencyInjection;
+using Resurgence.Services;
+using Resurgence.Ui.Pages;
+
+namespace Resurgence.Tests.WebTests;
+
+/// <summary>An item on sale shows a SALE ribbon with the percent, the old price next to the new one for each price on sale, and when the sale ends; an item that is not on sale looks as before.</summary>
+public sealed class StoreSaleTests : UiContext
+{
+    sealed class One(StoreItem item) : IStoreService
+    {
+        public Task<IReadOnlyList<StoreCategory>> CategoriesAsync() => Task.FromResult<IReadOnlyList<StoreCategory>>([new("all", "All Items", [new("all", "All Items", [])])]);
+        public Task<Page<StoreItem>> ItemsAsync(string view, string search, int page) => Task.FromResult(new Page<StoreItem>([item], 1, 1));
+        public Task<IReadOnlyList<StoreBundle>> BundlesAsync() => Task.FromResult<IReadOnlyList<StoreBundle>>([]);
+        public Task<bool> HasSalesAsync() => Task.FromResult(false);
+        public Task<StoreItem?> ItemAsync(int id) => Task.FromResult<StoreItem?>(item);
+        public Task<StoreBundle?> BundleAsync(int id) => Task.FromResult<StoreBundle?>(null);
+        public void RefreshOwned() { }
+        public Task<Result> BuyAsync(int id, bool bundle, bool gms, int count = 1) => Task.FromResult(Result.Success);
+    }
+
+    static readonly StoreSale Weekend = new("Made-up weekend", 25, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero));
+
+    IRenderedComponent<Store> List(StoreItem item)
+    {
+        Services.AddSingleton<IStoreService>(new One(item));
+        var cut = Render<Store>(p => p.Add(s => s.Key, "all"));
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".card")));
+        return cut;
+    }
+
+    IRenderedComponent<ItemDetail> Page(StoreItem item)
+    {
+        Services.AddSingleton<IStoreService>(new One(item));
+        return Render<ItemDetail>(p => p.Add(i => i.Id, item.Id));
+    }
+
+    static string[] Texts(IEnumerable<AngleSharp.Dom.IElement> elements) => [.. elements.Select(e => e.TextContent.Trim())];
+
+    [Fact]
+    public void ASaleItemOnTheListShowsTheRibbonBothOldPricesAndTheEnd()
+    {
+        var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
+
+        Assert.Equal("SALE -25%", cut.Find(".card .ribbon").TextContent);
+        Assert.Equal(["100 em$", "200 gm$"], Texts(cut.FindAll(".price s")));
+        Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".price .sale")));
+        Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".card .ends").TextContent);
+    }
+
+    [Fact]
+    public void AGmOnlySaleStrikesTheGmPriceAlone()
+    {
+        var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, null, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
+
+        Assert.Equal("SALE -25%", cut.Find(".card .ribbon").TextContent);
+        Assert.Equal(["200 gm$"], Texts(cut.FindAll(".price s")));
+        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".price .sale")));
+    }
+
+    [Fact]
+    public void AnItemSoldForGmAloneShowsItsOldGmPrice()
+    {
+        var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 0, null, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
+
+        Assert.Equal(["200 gm$"], Texts(cut.FindAll(".price s")));
+        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".price .sale")));
+    }
+
+    [Fact]
+    public void AnItemWithoutASaleShowsNoRibbonOldPriceOrEnd()
+    {
+        var cut = List(new StoreItem(6, "Made-up Pistol", "", "0", 80, null, 100, 0, true, 0, ""));
+
+        Assert.Empty(cut.FindAll(".card .ribbon"));
+        Assert.Empty(cut.FindAll(".price s"));
+        Assert.Empty(cut.FindAll(".price .sale"));
+        Assert.Empty(cut.FindAll(".card .ends"));
+    }
+
+    // a discount of the day has no named sale: the ribbon says SALE and no end is shown
+    [Fact]
+    public void AnEmDiscountWithoutASaleRecordKeepsTheOldLook()
+    {
+        var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 0, 0, true, 0, ""));
+
+        Assert.Equal("SALE", cut.Find(".card .ribbon").TextContent);
+        Assert.Equal(["100 em$"], Texts(cut.FindAll(".price s")));
+        Assert.Empty(cut.FindAll(".card .ends"));
+    }
+
+    [Fact]
+    public void ASaleItemsPageShowsTheRibbonBothOldPricesAndTheEnd()
+    {
+        var cut = Page(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
+
+        Assert.Equal("SALE -25%", cut.Find(".item .ribbon").TextContent);
+        Assert.Equal(["200 gm$", "100 em$"], Texts(cut.FindAll(".buy s")));
+        Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".ends").TextContent);
+    }
+
+    [Fact]
+    public void AnItemsPageWithoutASaleShowsNothingExtra()
+    {
+        var cut = Page(new StoreItem(6, "Made-up Pistol", "", "0", 80, null, 100, 0, true, 0, ""));
+
+        Assert.Empty(cut.FindAll(".item .ribbon"));
+        Assert.Empty(cut.FindAll(".buy s"));
+        Assert.Empty(cut.FindAll(".ends"));
+    }
+}

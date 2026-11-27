@@ -35,10 +35,12 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
         var (key, name) = Leaves[i % Leaves.Length];
         var ems = 2 + i * 7 % 60;
         var sale = i % 11 != 10;
-        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : i is 6 or 7 ? 1 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
+        var (deal, pct) = (i < 3, 20 + 5 * i); // the first three are on the operator's sale, in em$ and gm$: the others have a plain struck-through em$ price
+        return new StoreItem(1227 - i, $"{name} {(char)('A' + i / Leaves.Length)}", Variants[i % Variants.Length], key, sale ? ems : ems + 25, sale ? deal ? (int)Math.Round(ems / (1 - pct / 100.0)) : ems + 25 : null, (sale ? ems : ems + 25) * 40, i % 9 == 4 ? 3 : i is 6 or 7 ? 1 : 0, i % 7 != 5, key switch { "573" => 7, "0" => 5, "10" => 1, _ => 0 },
             "Two-man item suitable for extremely cold conditions. Not recommended for use in warm reserves however.\n\nCharacteristics:\n* Establish a new permanent spawn point\n* Access your inventory\n* Up to 10 can be erected in each reserve at the same time\n* Can be dismantled and moved",
             DaysLeft: i switch { 9 => 12, 25 => 0.5, 41 => 0, _ => null }, Expires: i switch { 6 => 1798761600, 7 => 0, _ => null }, OwnLimit: i % 18 == 4 ? 3 : 0, DisabledByServices: i == 41,
-            Banner: i switch { 3 or 43 => "premium", 10 => "limited", 21 => "new", 32 => "community", _ => null }, MultiBuy: key == "10");
+            Banner: i switch { 3 or 43 => "premium", 10 => "limited", 21 => "new", 32 => "community", _ => null }, MultiBuy: key == "10",
+            WasGms: deal ? (int)Math.Round(ems * 40 / (1 - pct / 100.0)) : null, Sale: deal ? new("Harvest weekend", pct, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero)) : null);
     }).ToArray();
 
     static readonly StoreItem[] Sights = Items.Where(i => i.Category is "50" or "51").Take(3).ToArray();
@@ -71,6 +73,8 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
             Owned = i.Owned + bought,
             DaysLeft = i.DaysLeft is { } d ? d + 30 * bought : null,
             WasEms = mock == "store:nosales" ? null : i.WasEms,
+            WasGms = mock == "store:nosales" ? null : i.WasGms,
+            Sale = mock == "store:nosales" ? null : i.Sale,
         };
     }
 
@@ -86,7 +90,7 @@ public sealed class MockStoreService(MockWalletState state, string? mock = null)
     {
         var words = search.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         var inView = Categories.FirstOrDefault(c => c.Key == view)?.Children.Select(c => c.Key).Append(view).ToArray() ?? [view];
-        var hits = Items.Select(Live).Where(i => (view == "all" || (view == "sales" ? i.WasEms is not null : inView.Contains(i.Category)))
+        var hits = Items.Select(Live).Where(i => (view == "all" || (view == "sales" ? i.OnSale : inView.Contains(i.Category)))
             && words.All(w => i.Name.Contains(w, StringComparison.OrdinalIgnoreCase) || i.Variant.Contains(w, StringComparison.OrdinalIgnoreCase))).ToList();
         var pages = Math.Max(1, (hits.Count + PageSize - 1) / PageSize);
         var n = Math.Clamp(page, 1, pages);

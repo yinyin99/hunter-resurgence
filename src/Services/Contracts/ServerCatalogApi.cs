@@ -72,8 +72,15 @@ public sealed record ServerStore(ServerCategory[] Categories, ServerItem[] Items
 
 public sealed record ServerCategory(string Key, string Name, ServerCategory[]? Children = null);
 
-/// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (the discount of the day taken off), <see cref="Was"/> the em$ price before an active discount (null without one); <see cref="Category"/> the key of its sub-category; <see cref="Unlimited"/> an ammunition every player has all of (not sold); <see cref="Fuel"/> a vehicle fuel while the server gives every player unlimited fuel (not sold); <see cref="Limit"/> the most copies a player owns, 0 for no limit.</summary>
-public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable, bool Unlimited = false, bool Fuel = false, int Limit = 0);
+/// <summary><see cref="Ems"/> and <see cref="Gms"/> are today's prices (an operator's sale or a daily deal taken off), <see cref="Was"/> the em$ price and <see cref="Gwas"/> the gm$ price before it (null when that price is not on sale), <see cref="Sale"/> the sale that applies (null without one); <see cref="Category"/> the key of its sub-category; <see cref="Unlimited"/> an ammunition every player has all of (not sold); <see cref="Fuel"/> a vehicle fuel while the server gives every player unlimited fuel (not sold); <see cref="Limit"/> the most copies a player owns, 0 for no limit.</summary>
+public sealed record ServerItem(int Id, string Name, string Variant, string Description, string Category, int Ems, int? Was, int Gms, bool Buyable, bool Unlimited = false, bool Fuel = false, int Limit = 0, int? Gwas = null, ServerSale? Sale = null)
+{
+    /// <summary>One of its prices is on sale.</summary>
+    public bool OnSale => Was is not null || Gwas is not null;
+}
+
+/// <summary>The sale an item is on: its <see cref="Name"/>, the <see cref="Percent"/> off and the end of the sale period (<see cref="Until"/>: the earlier of the sale's end, its event's end and the end of the random period).</summary>
+public sealed record ServerSale(string Name, int Percent, DateTimeOffset Until);
 
 /// <summary><see cref="Buyable"/>: the server sells it (a price of at least 1, only items of its catalogue).</summary>
 public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items);

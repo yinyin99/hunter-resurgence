@@ -36,6 +36,12 @@ public static class Fmt
     /// <summary>Oct 21st 07:00 UTC</summary>
     public static string Utc(DateTime d) => $"{MonthDay(d)} {d:HH:mm} UTC";
 
+    /// <summary>The corner ribbon of an item on sale: SALE, with the discount when the item has a sale: SALE -25%.</summary>
+    public static string SaleTag(this IStringLocalizer l, StoreItem i) => i.Sale is { } s ? $"{l["Store.SaleTag"]} -{s.Percent}%" : l["Store.SaleTag"];
+
+    /// <summary>Sale ends Nov 30th 07:00 UTC</summary>
+    public static string SaleEnds(this IStringLocalizer l, StoreSale s) => l["Store.SaleEnds", Utc(s.Until.UtcDateTime)];
+
     /// <summary>Oct 21st 2026, 07:00 UTC</summary>
     public static string UtcLong(DateTime d) => $"{MonthDay(d)} {d.Year}, {d:HH:mm} UTC";
 
