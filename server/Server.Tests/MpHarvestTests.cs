@@ -12,7 +12,7 @@ public class MpHarvestTests : StateTestBase
 {
     const long HOST = 11, GUEST = 12, THIRD = 13;
     const string Start = "start=101&loctype=LODGE&reserve=2&time=540&loadout_id=0";
-    readonly double now = 1_000_000;
+    double now = 1_000_000;
 
     public MpHarvestTests()
     {
@@ -33,8 +33,19 @@ public class MpHarvestTests : StateTestBase
             Assert.Null(state.JoinGame(guest, Encoding.UTF8.GetBytes($"start=101&loctype=LODGE&network_id={id}&loadout_id=0")).Error);
     }
 
-    static JsonNode Spawn(int individual) =>
-        O($$"""{"event": 7, "individual": {{individual}}, "species": 1, "gender": 0, "weight_grams": 98120, "texture": 1}""");
+    /// <summary>`minutes` pass, HOST and GUEST sending a heartbeat every minute, so their game goes on.</summary>
+    void Pass(int minutes)
+    {
+        for (var i = 0; i < minutes; i++)
+        {
+            now += 60;
+            Beat(HOST);
+            Beat(GUEST);
+        }
+    }
+
+    static JsonNode Spawn(int individual, int weight = 98120) =>
+        O($$"""{"event": 7, "individual": {{individual}}, "species": 1, "gender": 0, "weight_grams": {{weight}}, "texture": 1}""");
 
     static JsonNode Hit(int individual, int distance = 8250, int species = 2) =>
         O($$"""{"event": 1, "individual": {{individual}}, "species": {{species}}, "distance_cms": {{distance}}, "organ1": 17, "organ2": 8388610, "weapon_id": 5, "ammunition_id": 10, "animal_state": 3}""");
@@ -51,13 +62,13 @@ public class MpHarvestTests : StateTestBase
     static JsonNode[] Shot(int individual, int distance = 8250) => [Spawn(individual), Hit(individual, distance)];
 
     /// <summary>What the player who skins the buck sends: its spawn (unless he sent it with his shot), its trophy measurement and the harvest (the seed makes each event 3 unique, as a real one is).</summary>
-    static JsonNode[] Skinned(int individual, int seed = 1, bool spawn = true)
+    static JsonNode[] Skinned(int individual, int seed = 1, bool spawn = true, int weight = 98120)
     {
         var trophy = O($$"""{"event": 22, "individual": {{individual}}, "greatest_spread": 640, "tip_to_tip_spread": 600, "inside_spread_of_main_beams": 560}""");
         trophy["right_antler"] = MuleAntler(750, [125, 125, 100, 100], [125, 500, 375, 250]);
         trophy["left_antler"] = MuleAntler(800, [150, 125, 125, 100], [125, 450, 375, 250]);
         var harvest = O($$"""{"event": 3, "individual": {{individual}}, "extended_species": 1, "trophy_integrity": 100000, "antlers_seed": {{seed}}}""");
-        return spawn ? [Spawn(individual), trophy, harvest] : [trophy, harvest];
+        return spawn ? [Spawn(individual, weight), trophy, harvest] : [trophy, harvest];
     }
 
     long Count(long account, string table, string where = "1")
@@ -79,14 +90,18 @@ public class MpHarvestTests : StateTestBase
         Beat(GUEST, Shot(460));
         var mine = Beat(HOST, Skinned(460));
         Assert.DoesNotContain(mine, u => Py.Eq(u!["update"], 15));
-        Assert.Empty(Beat(HOST));  // no update 6 either
+        var screen = Assert.Single(mine, u => Py.Eq(u!["update"], 6))!;  // the harvester's confirm-kill screen shows the shooter's score, pays nothing and has nothing to taxidermize
+        Eq("""[460, 1, 168.8186, "Score: 168.8186", 0.0, 0]""", T(screen["individual"], screen["trophy_shot"], screen["score"], screen["score_text"], screen["css"], screen["kill_id"]));
+        Assert.DoesNotContain(mine, u => Py.Eq(u!["update"], 3));  // no notice
+        Assert.False(state.HarvestScreenOwn(HOST));  // the page keeps Taxidermize disabled
+        Assert.Equal(404, state.Taxidermize(HOST, 0, State.TAXIDERMY, "em").Status);
+        Assert.Empty(Beat(HOST));  // nothing more is queued for him
         Assert.Equal((0L, 0L, 33.0), (Count(HOST, "kills"), Count(HOST, "harvests"), Gm(HOST)));
         Assert.Equal(0L, Count(HOST, "events", "event = 3"));  // not in the harvester's events: no statistic, no mission replay
         Assert.Null(state.HarvestReply(HOST, 1));
 
-        var next = Beat(GUEST);  // the shooter's running hunt gets the score and the gold with its next heartbeat
-        var score = Assert.Single(next, u => Py.Eq(u!["update"], 6))!;
-        Eq("""[1, 168.8186, 66.4]""", T(score["trophy_shot"], score["score"], score["css"]));
+        var next = Beat(GUEST);  // the shooter's running hunt gets the gold with its next heartbeat, but no update 6: its game never opened a confirm-kill screen for it
+        Assert.DoesNotContain(next, u => Py.Eq(u!["update"], 6));
         Assert.True(Paid(next, 99));
         Assert.Equal((1L, 1L, 99.0), (Count(GUEST, "kills"), Count(GUEST, "harvests"), Gm(GUEST)));
         Eq("168.8186", Reply(state.HarvestReply(GUEST, 1)!)["score"]);
@@ -105,6 +120,28 @@ public class MpHarvestTests : StateTestBase
         Assert.True(Paid(updates, 99));
         Assert.Equal((1L, 99.0, 0L, 33.0), (Count(HOST, "kills"), Gm(HOST), Count(GUEST, "kills"), Gm(GUEST)));
         Assert.Equal(50000.0, Py.D(Assert.Single(KillsOf(HOST)[0]!["hits"]!.AsArray())!["distance"]));
+        Assert.True(state.HarvestScreenOwn(HOST));
+    }
+
+    [Fact]
+    public void TestTheTaxidermyAnswerFollowsTheLatestHarvest()
+    {
+        Game(GUEST);
+        Assert.True(state.HarvestScreenOwn(HOST));  // no harvest yet
+        Beat(GUEST, Shot(460));
+        Beat(HOST, Skinned(460));  // the guest's
+        Assert.False(state.HarvestScreenOwn(HOST));
+        Assert.True(state.HarvestScreenOwn(GUEST));  // the shooter's own screen is not touched
+        Beat(HOST);  // a heartbeat with no harvest keeps the answer
+        Assert.False(state.HarvestScreenOwn(HOST));
+        Beat(HOST, Skinned(461, 2));  // his own next harvest (nobody hit it)
+        Assert.True(state.HarvestScreenOwn(HOST));
+        Beat(GUEST, Shot(462));
+        Beat(HOST, [.. Skinned(462, 3), .. Skinned(463, 4)]);  // one heartbeat: the guest's harvest, then his own: the screen is the last one's
+        Assert.True(state.HarvestScreenOwn(HOST));
+        Beat(GUEST, Shot(464));
+        Beat(HOST, [.. Skinned(465, 5), .. Skinned(464, 6)]);  // and the other way round
+        Assert.False(state.HarvestScreenOwn(HOST));
     }
 
     [Fact]
@@ -129,7 +166,7 @@ public class MpHarvestTests : StateTestBase
         var third = Beat(GUEST, Skinned(460, 3));  // and the guest too
         Assert.Equal((1L, 99.0, 1L, 1L), (Count(GUEST, "kills"), Gm(GUEST), Count(GUEST, "events", "event = 3"), Count(GUEST, "harvests")));
         Assert.Equal((0L, 33.0, 0L), (Count(HOST, "kills"), Gm(HOST), Count(HOST, "events", "event = 3")));
-        Assert.Equal(1, third.Count(u => Py.Eq(u!["update"], 6)));  // the moved harvest's, delivered once
+        Assert.DoesNotContain(third, u => Py.Eq(u!["update"], 6));  // the moved harvest's score is the harvester's screen's only, and the dropped harvest has none
         // a new animal is a new harvest
         Beat(GUEST, Shot(461));
         Beat(HOST, Skinned(461, 4));
@@ -149,17 +186,41 @@ public class MpHarvestTests : StateTestBase
     }
 
     [Fact]
-    public void TestTwoDifferentAnimalsWithOneNumberTwentyMinutesApartBothCountForTheHarvester()
+    public void TestTwoDifferentAnimalsWithOneNumberBothCountForTheHarvester()
     {
-        var clock = now;
-        state.Clock = () => clock;
         Game(GUEST);
         Beat(HOST, Skinned(460, 1));  // nobody hit it: the host's
-        clock += 1200;
-        Beat(GUEST, Spawn(460));  // the number is used by another animal, found dead again
-        Beat(HOST, Skinned(460, 2));
+        Pass(20);
+        Beat(GUEST, Spawn(460, 75400));  // the number is used by another animal (its spawn record differs), found dead again
+        Beat(HOST, Skinned(460, 2, weight: 75400));
         Assert.Equal((2L, 0L, 2L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(HOST, "events", "event = 3")));
         Assert.Equal(33.0 + 66 * 2, Gm(HOST));
+    }
+
+    [Fact]
+    public void TestAHarvestLongAfterTheHitStillCountsForTheShooter()
+    {
+        Game(GUEST);
+        Beat(GUEST, Shot(460));
+        Pass(36);  // no time limit, as in the original
+        var mine = Beat(HOST, Skinned(460));
+        Assert.Equal((0L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills")));
+        Assert.Single(mine, u => Py.Eq(u!["update"], 6));
+    }
+
+    [Fact]
+    public void TestAnAnimalThatReusesTheNumberAfterAnEarlierHarvestIsTheHarvesters()
+    {
+        Game(GUEST);
+        Beat(GUEST, Shot(460));
+        Beat(HOST, Skinned(460, 1));  // the guest's
+        Pass(40);
+        Beat(GUEST, Spawn(460, 75400));  // another animal with that number, which nobody in the game hit: the guest's hit was on the first one
+        Beat(HOST, Skinned(460, 2, weight: 75400));
+        Assert.Equal((1L, 1L, 1L), (Count(HOST, "kills"), Count(GUEST, "kills"), Count(HOST, "events", "event = 3")));
+        Beat(GUEST, Spawn(460, 60100), Hit(460));  // a third one, which the guest shoots: its hit is newer than the harvests of the number, so the harvest is the guest's
+        Beat(HOST, Skinned(460, 3, weight: 60100));
+        Assert.Equal((1L, 2L), (Count(HOST, "kills"), Count(GUEST, "kills")));
     }
 
     [Fact]
@@ -333,8 +394,7 @@ public class MpHarvestTests : StateTestBase
         Game(GUEST);
         static JsonNode Seen(int coat) => O($$"""{"event": 7, "individual": 460, "species": 1, "gender": 0, "weight_grams": 98120, "texture": {{coat}}}""");
         Beat(GUEST, shooterCoat is { } own ? [Seen(own), Hit(460)] : [Hit(460)]);
-        Beat(HOST, [Seen(harvesterCoat), .. Skinned(460, spawn: false)]);
-        var score = Assert.Single(Beat(GUEST), u => Py.Eq(u!["update"], 6))!;
+        var score = Assert.Single(Beat(HOST, [Seen(harvesterCoat), .. Skinned(460, spawn: false)]), u => Py.Eq(u!["update"], 6))!;  // the harvester's screen shows the shooter's verdict
         Assert.Equal(disqualified, Py.Eq(score["score_text"], "Disqualified "));
         Assert.Equal(!disqualified, (bool)Assert.Single(KillsOf(GUEST))!["kill"]!["ethical"]!);  // the page judges it the same
     }
@@ -452,12 +512,12 @@ public class MpHarvesterObjectiveTests : MissionTestBase
         Assert.Equal(host + 40, Gm(account: HOST));  // the four missions' rewards only: no gm$ for the kill, no daily mission
         Assert.Equal(host + 40, Py.D(Assert.Single(updates, u => Py.Eq(u!["update"], 15))!["amount"]));
         Assert.False(Daily17(updates));
-        Assert.DoesNotContain(updates, u => Py.Eq(u!["update"], 6));
+        Assert.Equal(0.0, Py.D(Assert.Single(updates, u => Py.Eq(u!["update"], 6))!["css"]));  // the shooter's score on the host's screen, with no reward
         Assert.Equal((0L, 0L, 0.0), (Kills(HOST), (long)Scalar(HOST, "SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 3")!, KillGm(HOST)));
         Assert.Equal("[0]", Scalar(HOST, "SELECT kept FROM missions WHERE account_id = $a AND mission_id = 1"));  // no stored harvest of the host meets it
         Assert.StartsWith("would reopen 0 objectives", state.RollbackMissions(apply: false, only: HOST).Last());
 
-        Assert.Single(Beat(GUEST), u => Py.Eq(u!["update"], 6));  // the kill's score goes to the shooter's hunt
+        Assert.DoesNotContain(Beat(GUEST), u => Py.Eq(u!["update"], 6));  // the shooter's game never opened a screen for it
         Assert.Equal(("1,2,3,4,5,6", 1L), (Completed(GUEST), Kills(GUEST)));  // the shooter's as before
         Assert.Equal(guest + 60 + KillGm(GUEST), Gm(account: GUEST));  // six rewards, and the kill's gm$ (this deer's css rounds to none)
     }

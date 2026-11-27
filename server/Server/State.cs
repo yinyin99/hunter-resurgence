@@ -331,11 +331,11 @@ public sealed partial class State
         (long)con.Scalar("SELECT COALESCE(MAX(CAST(json_extract(saved, '$.kill_id') AS INTEGER)), 0) + 1 FROM photos WHERE account_id = $a AND saved IS NOT NULL")!,
     }.Max();
 
-    /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
+    /// <summary>A harvest (event 3, already stored as the account's last event) is scored and its kill, page, update 6 (into `pending`, unless not `queue`; returned) and gm$ are written; `gold` gets the update 15 of the gm$ paid.
     /// `spawn` stands in for the animal's spawn event when the account's own events have none.</summary>
-    static void StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
+    static JsonObject StoreHarvest(Db con, JsonObject e, Func<JsonObject, JsonObject, JsonObject, JsonObject?, (JsonNode? Score, string? Type, double Css)> trophy,
                              Func<JsonObject, JsonNode?, JsonNode?, HuntRule, (JsonObject Toast, string Message, Unethical Why)?> ammoCheck,
-                             Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null)
+                             Func<JsonObject, JsonObject, JsonNode?, JsonNode?, JsonNode?, string?, JsonObject> harvestPage, double gmMultiplier, long? gmEvent, Action<JsonObject> gold, JsonObject? spawn = null, bool queue = true)
     {
         var harvest = Py.Dumps(e);
         var killId = NextKillId(con);
@@ -360,7 +360,8 @@ public sealed partial class State
             ["kill_id"] = killId,
             ["css"] = css,
         };
-        con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
+        if (queue)
+            con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
         if (Py.RoundInt(css) > 0)
             gold(new JsonObject
             {
@@ -368,6 +369,7 @@ public sealed partial class State
                                          gmMultiplier == 1 ? null : Py.RoundInt(Py.Round(baseCss, 1)), gmMultiplier == 1 ? null : gmEvent),
                 ["type"] = "gm", ["update"] = 15,
             });
+        return update;
     }
 
     /// <summary>The guid of an item event's `item` (a string of digits), else null.</summary>
@@ -2301,6 +2303,7 @@ public sealed partial class State
             Monitor.Enter(harvestGate);  // a harvest's owner is read from the players' stored events: two harvests of one animal at once must not both miss the other
         JsonArray updates;
         List<long> shooters = [];
+        bool? away = null;  // the latest harvest counts for its shooter: noted once the heartbeat is committed
         try
         {
             var now = Clock();
@@ -2308,7 +2311,9 @@ public sealed partial class State
             updates = Heartbeat(con, now, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
                                 (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, gm.Multiplier, position, gm.Event,
-                                (c, e, id, u) => TryCredit(c, e, id, u, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
+                                (c, e, id, u) => TryCredit(c, e, id, u, shooters, x => away = x), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
+            if (away is { } latest)
+                NoteHarvestScreen(account, latest);
         }
         finally
         {
