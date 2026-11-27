@@ -163,5 +163,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
     }
 
     async Task<ServerStore> LoadAsync() => cookie.Value is null ? Empty
-        : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value) ?? Empty;
+        : await cache.LoadAsync(http, cookie.Host, ServerCatalogApi.Store, s => s is { Categories: not null, Items: not null, Bundles: not null }, log, cookie.Value, FirstSaleEnd) ?? Empty;
+
+    /// <summary>The earliest end of a sale in the catalogue, null for none: the read is kept no longer than that, or a price would show after its sale ended.</summary>
+    public static DateTimeOffset? FirstSaleEnd(ServerStore s) => s.Items.Select(i => i.Sale?.Until).Concat(s.Bundles.Select(b => b.Sale?.Until)).Min();
 }

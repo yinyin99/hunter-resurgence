@@ -352,6 +352,42 @@ public class ServerStoreServiceTests
         Assert.False(cache.Paused(start));
     }
 
+    // after a sale ends the server charges the full price: a read that shows a sale is not kept past its earliest end (but at least the pause, so a clock that is off does not ask on every call)
+    [Fact]
+    public void TheCacheDropsAStoreWhenTheFirstSaleEnds()
+    {
+        var start = new DateTime(2026, 11, 28, 12, 0, 0, DateTimeKind.Utc);
+        var store = new ServerStore([], [], []);
+
+        var soon = new ServerCache<ServerStore>();
+        soon.Set(start, store, new DateTimeOffset(start.AddMinutes(2), TimeSpan.Zero));
+        Assert.Same(store, soon.Get(start.AddMinutes(2).AddTicks(-1)));
+        Assert.Null(soon.Get(start.AddMinutes(2)));
+
+        var later = new ServerCache<ServerStore>();   // a sale that ends after the usual five minutes changes nothing
+        later.Set(start, store, new DateTimeOffset(start.AddHours(3), TimeSpan.Zero));
+        Assert.Same(store, later.Get(start.AddMinutes(4).AddSeconds(59)));
+        Assert.Null(later.Get(start.AddMinutes(5)));
+
+        var over = new ServerCache<ServerStore>();    // an end already past is kept for the pause only
+        over.Set(start, store, new DateTimeOffset(start.AddHours(-1), TimeSpan.Zero));
+        Assert.Same(store, over.Get(start.AddSeconds(9)));
+        Assert.Null(over.Get(start.AddSeconds(10)));
+    }
+
+    [Fact]
+    public void TheFirstSaleEndIsTheEarliestOfItemsAndBundlesAndNoneWithoutASale()
+    {
+        var early = new ServerSale("A", 10, new(2026, 11, 29, 7, 0, 0, TimeSpan.Zero));
+        var late = new ServerSale("B", 10, new(2026, 11, 30, 7, 0, 0, TimeSpan.Zero));
+        ServerItem Item(ServerSale? sale) => new(1, "Test Rifle", "", "", "0", 10, null, 0, true, Sale: sale);
+        ServerBundle Bundle(ServerSale? sale) => new(9, "Test Pack", "", 10, true, [], Sale: sale);
+
+        Assert.Equal(early.Until, ServerStoreService.FirstSaleEnd(new([], [Item(late), Item(null)], [Bundle(early)])));
+        Assert.Equal(early.Until, ServerStoreService.FirstSaleEnd(new([], [Item(early)], [Bundle(late)])));
+        Assert.Null(ServerStoreService.FirstSaleEnd(new([], [Item(null)], [Bundle(null)])));
+    }
+
     // a purchase is the player's: it carries the session cookie, the header a cross-site form cannot set, and the form the server reads
     [Fact]
     public async Task BuyingPostsTheFormWithTheSessionCookie()
