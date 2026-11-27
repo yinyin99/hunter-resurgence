@@ -148,4 +148,20 @@ public sealed class StoreSaleTests : UiContext
         Assert.Empty(page.FindAll(".buy s"));
         Assert.Empty(page.FindAll(".ends"));
     }
+
+    // on sale and partly owned: the struck price is the one before both reductions, never the sale price
+    [Fact]
+    public void ASaleBundleThePlayerPartlyOwnsStrikesTheListPriceBeforeTheSale()
+    {
+        var pack = new StoreBundle(7, "Made-up Pack", "", 36, true, [new(1, "Made-up Rifle", 1, 1, 90)], WasPrice: 72, OwnedItems: 1, OfItems: 2, PreSale: 90, Sale: Weekend);
+        Assert.Equal(90, pack.StruckPrice);
+        Services.AddSingleton<IStoreService>(new One(Filler, pack));
+        var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
+        list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
+        Assert.Equal(["90 em$"], Texts(list.FindAll(".price s")));
+        Assert.Equal(["36 em$"], Texts(list.FindAll(".price .sale")));
+
+        var page = Render<BundleDetail>(p => p.Add(b => b.Id, 7));
+        Assert.Equal(["90 em$"], Texts(page.FindAll(".buy s")));
+    }
 }

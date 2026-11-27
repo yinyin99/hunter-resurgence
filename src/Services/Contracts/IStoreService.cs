@@ -46,8 +46,8 @@ public sealed record StoreBundle(int Id, string Name, string Description, int Pr
 {
     public bool OnSale => PreSale is not null;
 
-    /// <summary>The price to strike through next to <see cref="Price"/>: what the player's items save, else what the sale took off; 0 for none.</summary>
-    public int StruckPrice => WasPrice > 0 ? WasPrice : PreSale ?? 0;
+    /// <summary>The price to strike through next to <see cref="Price"/>: the list price before the sale when it is on sale (before the player's own items save anything too), else what the player's items save; 0 for none.</summary>
+    public int StruckPrice => PreSale ?? WasPrice;
 }
 
 public interface IStoreService
