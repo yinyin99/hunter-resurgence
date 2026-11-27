@@ -222,7 +222,7 @@ public class ReplayTests : IAsyncLifetime
         Same(("a({timer:e[4]});b({timer:e[4]});b({timer:e[2]});"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.7/client.js"));
         Same(("unrelated script"u8.ToArray(), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
         var page = await R("GET", "game_web.test", "/client");
-        Assert.Contains("client.js?t=timer5", Encoding.UTF8.GetString(page.Body));
+        Assert.Contains("client.js?t=timer6", Encoding.UTF8.GetString(page.Body));
     }
 
     [Fact]
@@ -248,7 +248,7 @@ public class ReplayTests : IAsyncLifetime
         var page = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/client")).Body);
         Assert.Contains("\"google_tag_manager_id\": \"\"", page);
         Assert.Contains("\"google_analytics_id\": \"\"", page);
-        Assert.Contains("client.js?t=timer5", page);
+        Assert.Contains("client.js?t=timer6", page);
     }
 
     [Fact]
@@ -268,6 +268,26 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("w=r.v1(\"POST\",\"/v1/mission/update_favourite\",{group_id:t,is_favourite:a}" + required, text);
         Assert.Contains("own=r.v1(\"POST\",\"/v1/mission/activate\",{mission_id:t,oauth_access_token:k},{});", text);  // a write with its own token and an unrelated update_ call stay as they are
         Assert.Contains("other=r.v1(\"POST\",\"/v1/mission/update_other\",{a:1},{});", text);
+    }
+
+    [Fact]
+    public async Task TestTheLoadoutSavesCarryThePlayersToken()
+    {
+        const string icon = "a=P.v1(\"PUT\",\"/game/user/loadout/\"+this.model.get(\"id\"),{name:this.model.get(\"name\"),color:this.model.get(\"color\"),items:this.model.get(\"items\")})",
+            dialog = "b=P.v1(\"PUT\",\"/game/user/loadout/\"+e,{name:t.get(\"name\"),color:t.get(\"color\"),items:t.get(\"items\")})",
+            list = "c=P.v1(\"GET\",\"/game/user/loadout\",void 0,{authMode:P.AUTH_MODE_REQUIRED});", lodge = "d=P.v1(\"PUT\",\"/game/user/lodges/\"+t.id+\"/settings\",{name:t.name},{headers:{}})";
+        const string required = ",{authMode:\"required\"})";
+        var f = Path.Combine(mirror, "game_web.test", "static/app/9.9.8/client.js");
+        Directory.CreateDirectory(Path.GetDirectoryName(f)!);
+        File.WriteAllText(f, icon + ",this.close();" + dialog + "}};" + list + lodge);
+        var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
+        Assert.Equal(icon[..^1] + required + ",this.close();" + dialog[..^1] + required + "}};" + list + lodge, text);  // only the two saves, each once
+        // a script already corrected, and one without the saves, are served as they are
+        foreach (var script in new[] { text, list + lodge })
+        {
+            File.WriteAllText(f, script);
+            Same((Encoding.UTF8.GetBytes(script), "mirror"), await R("GET", "game_web.test", "/static/app/9.9.8/client.js"));
+        }
     }
 
     [Fact]
