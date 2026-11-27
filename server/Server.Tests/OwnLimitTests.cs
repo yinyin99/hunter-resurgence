@@ -363,7 +363,7 @@ public class OwnLimitTests : StateTestBase
     [Fact]
     public void ADatabaseAtTheCurrentVersionWithoutTheRemovalsTableGetsIt()
     {
-        Assert.Equal(41, Store.Version);
+        Assert.Equal(43, Store.Version);
         var file = Path.Combine(tmp, "current.db");
         using (var con = new Store(file).Open())
             con.Exec("DROP TABLE own_limit_removals");  // user_version stays at Store.Version

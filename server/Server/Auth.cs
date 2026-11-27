@@ -141,6 +141,12 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>The Veteran threshold (`discord_veteran_at`) while Linked Roles are on (the Discord settings are set): <c>/auth/me</c> then says it and whether the account has linked; null: Linked Roles are off,
     /// <c>/auth/me</c> says null for both, and the pages offer no link.</summary>
     public long? DiscordVeteranAt { get; init; }
+
+    /// <summary>The server log (a test swaps it): one line per sign-in attempt of a banned Steam id.</summary>
+    public Action<string> Log { get; init; } = Console.WriteLine;
+
+    /// <summary>Called with the text of an operator alert (the review channel) for the first attempt of a banned Steam id and for the first after an hour without one; the log line and the count on its ban row are for every attempt.</summary>
+    public Action<string>? BanAlert { get; init; }
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
@@ -231,7 +237,22 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         login.Steam = steamId;
         login.Banned = why ?? "";
         logins[login.Id] = login;
+        NoteBanAttempt(login, steamId);
         return Problem(r, "banned");
+    }
+
+    /// <summary>One log line for every sign-in attempt of a banned Steam id (time, Steam id, account if any, route; never the reason), the count on its ban row, and the operator alert (<see cref="BanAlert"/>) when
+    /// it is the first attempt or the previous one is an hour old, so a player who retries gets one alert per burst. The backup tool signs in through the same app route as the launcher, so the two read alike. An account flagged banned without a ban row has no count to keep: every attempt alerts.</summary>
+    void NoteBanAttempt(Login login, string steamId)
+    {
+        var at = now().ToUnixTimeSeconds();
+        var route = login.App is not null ? "app" : login.Link is not null ? "launcher link" : "web";
+        var account = Store.AccountBySteam(steamId);
+        var counted = Store.BanAttempt(steamId, at);
+        Log($"banned sign-in {DateTimeOffset.FromUnixTimeSeconds(at):u} steam {steamId} account {account?.ToString() ?? "none"} route {route}" + (counted is { } c ? $" attempt {c.Attempts}" : ""));
+        if (counted is { Previous: { } previous } && at - previous < 3600) return;
+        BanAlert?.Invoke(Alerts.Text("\U0001F6AB", "Banned Steam id tried to sign in", null, ("steam id", $"`{steamId}`"), ("steam", Alerts.Steam(steamId)), ("account", account),
+            ("route", route), ("attempts", counted?.Attempts), ("time", $"{DateTimeOffset.FromUnixTimeSeconds(at):u}")));
     }
 
     static Reply Redirect(string to, params string[] cookies) =>

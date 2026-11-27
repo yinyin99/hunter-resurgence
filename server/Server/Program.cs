@@ -79,6 +79,7 @@ const string ReviewUsage = """
     --account <account id> (zips only): refuse, and change nothing, when the waiting zip belongs to another account: copy it from the alert or from list.
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, "backup restored" when the account restored its own backup, note; then, when the claiming Steam id was banned before and the ban lifted, "steam id banned before: <ban date>, lifted <date>".
+    A banned line: banned, Steam id, account (none: it has no account), the number of sign-in attempts and the time of the last, for a Steam id banned now that tried to sign in (nothing to approve: `admin unban` lifts the ban).
     A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
     approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
     its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
@@ -603,7 +604,10 @@ void Review(string[] a)
             foreach (var c in waiting)
                 Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{(c.BackupRestored ? "backup restored\t" : "")}{c.Note}"
                                   + (c.EarlierBan is { } earlier ? $"\tsteam id banned before: {earlier}" : ""));
-            if (kept.Count + waiting.Count + refusedZips.Count == 0) Console.WriteLine("nothing waits for review");
+            var banTries = state.Store.BanAttempts();
+            foreach (var (steam, attempts, last) in banTries)
+                Console.WriteLine($"banned\tsteam id {steam}\taccount {state.Store.AccountBySteam(steam)?.ToString() ?? "none"}\t{attempts} sign-in attempts\tlast {DateTimeOffset.FromUnixTimeSeconds(last):u}");
+            if (kept.Count + waiting.Count + refusedZips.Count + banTries.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":
             if (refusedId is not null) Die("a refused zip cannot be approved: reject it to delete it");
