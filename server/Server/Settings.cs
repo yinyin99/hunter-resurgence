@@ -184,11 +184,13 @@ public sealed class Settings
     static JsonObject Read(string path)
     {
         path = Path.GetFullPath(path);
-        try { return JsonNode.Parse(File.ReadAllText(path)) as JsonObject ?? throw new InvalidDataException("not a JSON object"); }
-        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException or InvalidDataException)
+        JsonNode? parsed;
+        try { parsed = JsonNode.Parse(File.ReadAllText(path)); }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException)
         {
-            throw new InvalidDataException($"{path}: {e.Message}", e);  // the cause stays: GmBonusWatch retries a read that failed, not a file that is wrong
+            throw new InvalidDataException($"{path}: {e.Message}", e);  // the cause stays: GmBonusWatch retries a read that failed (an IOException), not a file that is wrong
         }
+        return parsed as JsonObject ?? throw new InvalidDataException($"{path}: not a JSON object");  // valid JSON that is no object (`[]`, `2`, `null`) is a wrong file too
     }
 
     /// <summary>Only `harvest_gm_bonus` of the file, checked as <see cref="Load"/> does, `now` (Unix seconds) being when it is read: what <see cref="GmBonusWatch"/> applies when the file changes.</summary>

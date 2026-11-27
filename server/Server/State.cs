@@ -173,7 +173,7 @@ public sealed partial class State
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
-    /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
+    /// gmMultiplier (the multiplier of <see cref="GmAt"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
     /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).
     /// credit (<see cref="TryCredit"/>) is asked for each harvest (event 3) with the connection and the event's stored row: true when the harvest is not this account's (the shooter's, written in this transaction, or a second one of the animal) and is dropped here;
     /// false (also when the shooter's write failed and was undone) leaves it the account's. isFeeder(item id) is true for a feeder, the items whose event 23 `bait_amount` is a refill.</summary>

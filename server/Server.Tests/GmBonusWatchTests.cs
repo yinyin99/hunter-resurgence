@@ -95,6 +95,32 @@ public class GmBonusWatchTests : StateTestBase
         Assert.Equal(1, Events());
     }
 
+    // a failure that persists is logged once, not at every look; a refused file is not read again until it changes
+    [Fact]
+    public void APersistingFailureIsLoggedOnceAndAFileThatIsNoObjectIsRefused()
+    {
+        var watch = Start(T("2026-11-27T15:00:00Z") - 3600);
+        Write($$"""{"harvest_gm_bonus": [{{Weekend}}]}""");
+        using (new FileStream(SettingsFile, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            watch.Check();
+            watch.Check();
+            watch.Check();
+        }
+        Assert.Single(log);
+        foreach (var json in new[] { "[]", "2", "null" })
+        {
+            log.Clear();
+            Write(json);
+            watch.Check();
+            watch.Check();  // refused: not read again, not logged again
+            Assert.Single(log);
+            Assert.Contains("not a JSON object", log[0]);
+            Assert.Contains("the bonuses in force stay", log[0]);
+            Assert.DoesNotContain("tried again", log[0]);
+        }
+    }
+
     // an edit made between the start's read of the file and the watch's first look is not missed: the first look reads the file whatever its stamp
     [Fact]
     public void AnEditMadeBeforeTheFirstLookIsApplied()

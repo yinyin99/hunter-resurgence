@@ -14,6 +14,7 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded)
 
     (DateTime Time, long Length)? seen;  // none yet: the first look reads the file, so an edit made during the start is not missed
     string? applied = loaded?.ToJsonString();
+    string? lastError;
 
     static (DateTime, long)? Stamp(string file) => new FileInfo(file) is { Exists: true } f ? (f.LastWriteTimeUtc, f.Length) : null;
 
@@ -26,10 +27,13 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded)
             if (Stamp(file) is not { } stamp || stamp == seen) return;  // gone for a moment (an editor replacing it), or unchanged
             seen = stamp;
             var read = Settings.ReadHarvestGmBonus(file, (long)state.Clock());
-            if (read?.ToJsonString() == applied) return;  // another setting changed
-            state.LoadHarvestGmBonuses(read);
-            applied = read?.ToJsonString();
-            Log($"harvest_gm_bonus: {read?.Count ?? 0} read from {file}");
+            if (read?.ToJsonString() != applied)  // else another setting changed
+            {
+                state.LoadHarvestGmBonuses(read);
+                applied = read?.ToJsonString();
+                Log($"harvest_gm_bonus: {read?.Count ?? 0} read from {file}");
+            }
+            lastError = null;
         }
         catch (InvalidDataException e) when (e.InnerException is null or JsonException)
         {
@@ -38,7 +42,9 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded)
         catch (Exception e)
         {
             seen = null;  // not the file's fault (a read that failed, the database): the next look tries again
-            Log($"harvest_gm_bonus: not applied, the bonuses in force stay, tried again at the next look: {e.GetType().Name}: {e.Message}");
+            var line = $"harvest_gm_bonus: not applied, the bonuses in force stay, tried again at the next look: {e.GetType().Name}: {e.Message}";
+            if (line != lastError) Log(line);  // a failure that persists is said once, not at every look
+            lastError = line;
         }
     }
 
