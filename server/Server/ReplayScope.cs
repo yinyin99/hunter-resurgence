@@ -37,7 +37,7 @@ public static class ReplayScope
     public static readonly IReadOnlyList<Rule> Rules =
     [
         // ---- GLOBAL: the same reply for every player
-        Global("api", "/v1/Application/(application|discounts|client_application)"),  // the catalogue (the in-game pages' share of it) and the discounts
+        Global("api", "/v1/Application/(application|client_application)"),  // the catalogue (the in-game pages' share of it)
         Global("api", "/v1/Store/products2"),
         Global("api", "/v1/Splash/(list_active|feed_data)"),  // the splash list and the launcher news (the server's notice is put first)
         Global("api", "/v1/(Campaign|Community_Campaign)/get_active_stylesheet"),
@@ -67,6 +67,7 @@ public static class ReplayScope
         Own("Public_user/getByHostname", "null"),
         Own("Inventory/list", "[]"),
         Own("Inventory/dict", "{}"),
+        Own("Application/discounts", "[]"),  // the operator's sales (State.DiscountsReply); the recorded reply is never used
         Own("Inventory/refillBarrel", """{"success": false}"""),
         Own("Skill/list", """{"weapon": {}, "tracking": [], "spotting": []}"""),
         Own("Statistics/total", Stats),

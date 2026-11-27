@@ -24,7 +24,7 @@ public class NewBuildTests : StateTestBase, IAsyncLifetime
     async Task StartAsync(bool offline)
     {
         if (server is not null) await server.DisposeAsync();
-        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: Fixtures.DISCOUNTS, offline: offline);
+        state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: offline);
         if (!offline) state.CreateAccount(Account, "tester");
         game = new Game(new HarTable(), Cfg, state, tmp);
         server = await Loopback.StartAsync(game, tmp, steamHttp: new HttpClient(fake));

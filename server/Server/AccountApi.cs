@@ -241,7 +241,7 @@ public static class AccountApi
                     : Refuse(409, "refused", $"This is not for sale, you do not have enough {(gms.Value ? "gm$" : "em$")}, or you own as many as allowed.");
             })
             .WithName("AccountBuy").WithSummary("Buy from the store with em$ or gm$ (form `id`, `count`, `wallet`, `bundle=1` for a bundle)")
-            .WithDescription("The item or bundle of `GET /catalog/store` at its price: `wallet` `GOLD` (the default) pays the em$ price, `SILVER` the gm$ price (items only, never discounted). "
+            .WithDescription("The item or bundle of `GET /catalog/store` at its price (the sale price while a `store_sales` sale applies): `wallet` `GOLD` (the default) pays the em$ price, `SILVER` the gm$ price (items only). "
                              + "Answers `{status: bought, ems}` or `{status: bought, gms}` (the new balance of the wallet paid), 400 `invalid` for another wallet, "
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");

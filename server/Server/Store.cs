@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills", "harvest_links"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 44;
+    public const int Version = 45;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -174,6 +174,13 @@ public sealed class Store
             owner INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, kill_id INTEGER NOT NULL);
         CREATE INDEX IF NOT EXISTS harvest_links_account ON harvest_links (account_id, individual);
         CREATE INDEX IF NOT EXISTS harvest_links_owner ON harvest_links (owner);
+        """;
+
+    // schema 45 (#1047): the items a random store sale (settings.json `store_sales`, StoreSales.cs) put on sale in each of its periods and at what percentage, written once per period (State.RecordSalePicks); shared by all players
+    const string StoreSalePicks = """
+        CREATE TABLE IF NOT EXISTS store_sale_picks (
+            sale TEXT NOT NULL, period_start INTEGER NOT NULL, period_end INTEGER NOT NULL, item_id INTEGER NOT NULL, percent REAL NOT NULL,
+            PRIMARY KEY (sale, period_start, item_id)) WITHOUT ROWID;
         """;
 
     // the claims of the operator's archive (docs/server.md#archive-claims): one row per account, ever (state waiting, restored or rejected); several accounts may
@@ -627,6 +634,7 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = ?", column.Split(' ')[0])! == 0)
                 con.Script($"ALTER TABLE photos ADD COLUMN {column}");
         con.Script("CREATE INDEX IF NOT EXISTS photos_taker ON photos (taker) WHERE taker IS NOT NULL");
+        con.Script(StoreSalePicks);  // schema 45 (#1047), every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         // every start: the edges that name the old user id of a restored zip or claim are moved to the account that holds it (a claim or restore made before the edges were resolved left them so);
         // driven by those ids, not by a scan of the friends table; no schema step, it is idempotent
         foreach (var row in con.Rows("SELECT user_id FROM restored_ids UNION SELECT archived_uid FROM claims WHERE state = 'restored'"))

@@ -241,7 +241,8 @@ public class AccountIsolationTests : StateTestBase
     {
         var connect = CONNECT;
         connect["skills"] = LEVELS;
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS, skillList: NUMBERS, itemDefs: ITEM_DEFS);
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
+        state.LoadStoreSales(SALES(19, 95));
         state.CreateAccount(B, "second");
     }
 
@@ -252,7 +253,8 @@ public class AccountIsolationTests : StateTestBase
         app["items"]!.AsArray().Single(i => (long)i!["id"]! == 10)!["cat"] = 3;
         var connect = CONNECT;
         connect["skills"] = LEVELS;
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, discounts: DISCOUNTS, skillList: NUMBERS, itemDefs: ITEM_DEFS) { UnlimitedAmmo = true };
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS) { UnlimitedAmmo = true };
+        state.LoadStoreSales(SALES(19, 95));
     }
 
     JsonArray Hb(long account, params JsonNode[] events) => Reply(state.HeartbeatReply(account, Events(events)))["updates"]!.AsArray();
@@ -489,7 +491,8 @@ public class AccountRequestTests : StateTestBase, IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, discounts: DISCOUNTS, offline: false);
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
+        state.LoadStoreSales(SALES(19, 95));
         state.CreateAccount(8, "second");
         (tokenA, tokenB) = (state.Store.CreateToken(ME), state.Store.CreateToken(8));
         var table = new Replay.HarTable();

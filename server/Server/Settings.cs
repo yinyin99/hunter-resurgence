@@ -85,6 +85,7 @@ public sealed class Settings
         };
         // scheduled gm$ multipliers for harvests (docs/server.md#harvest-gm-bonus): a list of periods, stored as Unix seconds
         cfg["harvest_gm_bonus"] = ParseHarvestGmBonus(root["harvest_gm_bonus"], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        cfg["store_sales"] = ParseStoreSales(root["store_sales"]);  // the store's sales (docs/server.md#store-sales), read again by State.LoadStoreSales and when the file changes
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch
@@ -180,8 +181,8 @@ public sealed class Settings
         };
     }
 
-    /// <summary>The file as an object; InvalidDataException says what is wrong.</summary>
-    static JsonObject Read(string path)
+    /// <summary>The file as an object (what <see cref="GmBonusWatch"/> reads when it changes); InvalidDataException says what is wrong.</summary>
+    public static JsonObject Read(string path)
     {
         path = Path.GetFullPath(path);
         JsonNode? parsed;
@@ -193,8 +194,12 @@ public sealed class Settings
         return parsed as JsonObject ?? throw new InvalidDataException($"{path}: not a JSON object");  // valid JSON that is no object (`[]`, `2`, `null`) is a wrong file too
     }
 
-    /// <summary>Only `harvest_gm_bonus` of the file, checked as <see cref="Load"/> does, `now` (Unix seconds) being when it is read: what <see cref="GmBonusWatch"/> applies when the file changes.</summary>
-    public static JsonArray? ReadHarvestGmBonus(string path, long now) => ParseHarvestGmBonus(Read(path)["harvest_gm_bonus"], now);
+    /// <summary>`store_sales`: checked as <see cref="StoreSale.Parse"/> does (InvalidDataException says what is wrong); returns the setting as it is, absent: null.</summary>
+    public static JsonNode? ParseStoreSales(JsonNode? node)
+    {
+        StoreSale.Parse(node);
+        return node?.DeepClone();
+    }
 
     /// <summary>`harvest_gm_bonus`: a list of `{"multiplier": above 0, "from": an ISO time, "until": an ISO time after it, "name": optional}`, or one such object (today's form). `from` left out:
     /// the period starts when the setting is read, `now` (<see cref="State.LoadHarvestGmBonuses"/>), so `{multiplier, until}` keeps working; one whose `until` is already past is over and is not checked against the others.
