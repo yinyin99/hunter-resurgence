@@ -803,6 +803,10 @@ public sealed partial class State
     /// <summary>settings.json `default_inventory_capacity`, in grams: what every account carries; the Increased Capacity item adds 10000 more.</summary>
     public long InventoryCapacity { get; init; } = DefaultInventoryCapacity;
     readonly OrderedDictionary<long, long> family = new();
+    /// <summary>The weapon families: every weapon item of the catalogue is in exactly one, its weapon type (docs/server.md, "Weapon families"). The skill family above is this for a weapon.</summary>
+    public WeaponFamilies Weapons { get; }
+    /// <summary>An item's name as the mission reader compares names: lower case, no accents or apostrophes, `12GA` as `12 GA`.</summary>
+    internal static string NameWords(string name) => Reader.Words(name);
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
 
@@ -914,6 +918,10 @@ public sealed partial class State
         foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
             if (!items.ContainsKey(Py.L(i!["id"])))
                 installItems[Py.L(i["id"])] = i.AsObject();
+        Weapons = WeaponFamilies.Build(items.Values.Concat(installItems.Values), itemDefs);
+        foreach (var f in Weapons.All)  // the weapons that share a skill are the weapon families (the definitions' chain, the same names, the descriptions' pairs), not the chain alone
+            foreach (var m in f.Members)
+                family[m] = f.Representative;
         // The game looks an item's name up in `items_locale` when it creates a placed item and closes when the id is missing: a placed
         // event tent closes the game on entering its reserve. The sample (and a recording from before an event) lists no item newer than itself, so every catalogue item is added.
         if (connect["items_locale"] is JsonArray names)
