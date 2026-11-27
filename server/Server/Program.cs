@@ -21,6 +21,8 @@ const string AdminUsage = """
     a harvest payment inside a bonus's period gets base = paid / multiplier and that event, every other payment base = amount, and the events are written. Without --apply nothing is written (a line per event and the counts); a second run changes nothing. Run it with the server stopped, after `backup`.
     admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
     it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
+    admin ammo-fit [--apply] [--account <id or handle>] lists the ammunition stacks that sit in an equipped ammunition slot beside a weapon the catalogue says they do not fit (one line per stack: account, slot, weapon, ammunition, stack) and a total line; with --apply it moves each stack, whole, to the lodge (nothing is lost, the player can equip it under a weapon it fits).
+    A second run lists nothing; without --apply nothing is written. Run it once, with the server stopped, after `backup`.
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any. The player reads the reason on the sign-in page: write it for him.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
@@ -79,6 +81,7 @@ const string ReviewUsage = """
     --account <account id> (zips only): refuse, and change nothing, when the waiting zip belongs to another account: copy it from the alert or from list.
     list shows each kept zip: id, account, the zip's user id and handle, time and note; "steam id matches" is information, not proof.
     A claim line: c<id>, claim, account, archived user id, archived handle, hunterscore, time, "backup restored" when the account restored its own backup, note; then, when the claiming Steam id was banned before and the ban lifted, "steam id banned before: <ban date>, lifted <date>".
+    A banned line: banned, Steam id, account (none: it has no account), the number of sign-in attempts and the time of the last, for a Steam id banned now that tried to sign in (nothing to approve: `admin unban` lifts the ban).
     A refused line: r<account>-<8 hex>, refused, account, handle, time, size, reason. Those are zips the reader could not read; they stay until you reject them.
     approve restores a zip by the community rules (once per game user id, never a user id another account holds; an account that has played keeps
     its own user id) and prints the report or the refusal (the refusal is also the zip's note, which the player sees);
@@ -347,6 +350,19 @@ void Admin(string[] a)
         Console.WriteLine(apply ? "applied" : "dry run: nothing written; add --apply to write");
         return;
     }
+    if (a.Length > 0 && a[0] == "ammo-fit")
+    {
+        var apply = a.Contains("--apply");
+        var rest = a[1..].Where(x => x != "--apply").ToArray();
+        if (rest is not ([] or ["--account", _])) Die(AdminUsage);
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
+        foreach (var line in loaded.MoveMisfitAmmo(apply, only)) Console.WriteLine(line);
+        return;
+    }
     if (a.Length > 0 && a[0] == "missions-rollback")
     {
         var apply = a.Contains("--apply");
@@ -603,7 +619,10 @@ void Review(string[] a)
             foreach (var c in waiting)
                 Console.WriteLine($"c{c.Id}\tclaim\taccount {c.Account}\tarchived {c.Uid}\thandle {c.Handle}\thunterscore {c.Hunterscore}\t{DateTimeOffset.FromUnixTimeSeconds(c.Ts):u}\t{(c.BackupRestored ? "backup restored\t" : "")}{c.Note}"
                                   + (c.EarlierBan is { } earlier ? $"\tsteam id banned before: {earlier}" : ""));
-            if (kept.Count + waiting.Count + refusedZips.Count == 0) Console.WriteLine("nothing waits for review");
+            var banTries = state.Store.BanAttempts();
+            foreach (var (steam, attempts, last) in banTries)
+                Console.WriteLine($"banned\tsteam id {steam}\taccount {state.Store.AccountBySteam(steam)?.ToString() ?? "none"}\t{attempts} sign-in attempts\tlast {DateTimeOffset.FromUnixTimeSeconds(last):u}");
+            if (kept.Count + waiting.Count + refusedZips.Count + banTries.Count == 0) Console.WriteLine("nothing waits for review");
             break;
         case "approve":
             if (refusedId is not null) Die("a refused zip cannot be approved: reject it to delete it");
@@ -792,6 +811,11 @@ async Task Serve()
         // the leaderboards are computed in the background at the start and again before they expire: no request waits for a cold board
         if (state is { Online: true })
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => state.KeepBoardsWarm(State.BoardRefresh, app.Lifetime.ApplicationStopping)));
+        if (state is not null)
+        {
+            var bonuses = new GmBonusWatch(state, settingsFile, settings.Cfg["harvest_gm_bonus"]);
+            app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => bonuses.Run(app.Lifetime.ApplicationStopping)));
+        }
         await app.RunAsync();
     }
     finally

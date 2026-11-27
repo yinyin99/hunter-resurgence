@@ -1674,4 +1674,10 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Join.EventWith" xml:space="preserve"><value>Este jogo é jogado com o evento sazonal.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Este jogo é jogado sem o evento sazonal.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>No multiplayer, vale o ajuste do anfitrião.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banido pelo anfitrião</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Você não pode entrar neste jogo: o anfitrião baniu você dos jogos dele.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Os jogadores que você bane com o botão Banir da página de jogadores do jogo não podem entrar nos seus jogos multiplayer até você remover o banimento.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Você não baniu nenhum jogador.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Remover banimento</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Tem certeza de que deseja remover o banimento de {0} dos seus jogos?</value></data>
 </root>

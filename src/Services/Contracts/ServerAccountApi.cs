@@ -19,6 +19,9 @@ public static class ServerAccountApi
     public const string Friends = "/account/friends";
     /// <summary>GET with the cookie and <c>?text=</c>: 200 <see cref="ServerPlayers"/>, the players whose handle contains the text.</summary>
     public const string FriendSearch = "/account/friends/search";
+    /// <summary>GET with the cookie: 200 <see cref="ServerGameBans"/>, the players the player banned from their multiplayer games, the latest first; POST with <c>X-Requested-With</c> to <c>/unban</c> and the form <c>handle</c>:
+    /// 200 once lifted, or 404 for a handle the player has not banned.</summary>
+    public const string Bans = "/account/bans";
     /// <summary>GET with the cookie: 200 the player's missions (<see cref="ServerMissions"/>), or 404 for a server without missions; POST with <c>X-Requested-With</c> to <c>/&lt;call&gt;</c>
     /// (<c>activate</c> and <c>mission_id</c>, <c>activate_all_available</c>, <c>update_automatic_activation</c> and <c>auto_mission_activate</c>, <c>update_activate_only_favourite</c> and
     /// <c>activate_only_favourite</c>, <c>update_hide_completed_favourite</c> and <c>hide_completed_favourite</c> as <c>true</c> or <c>false</c>, <c>update_favourite</c> with <c>group_id</c> and <c>is_favourite</c>): 200, or 409 for a mission that is not available.</summary>
@@ -145,3 +148,8 @@ public sealed record ServerAvatars(string? Current, long[]? Ids, ServerLockedAva
 
 /// <summary>A store avatar the player cannot choose yet: its id, the store <c>Item</c> that unlocks it and its name.</summary>
 public sealed record ServerLockedAvatar(long Id, long? Item, string? Name);
+
+/// <summary>A ban of <see cref="ServerAccountApi.Bans"/>: the banned player's <c>Handle</c>, <c>Avatar</c> link (null for none) and <c>Ts</c> unix seconds.</summary>
+public sealed record ServerGameBan(string Handle, string? Avatar, long Ts);
+
+public sealed record ServerGameBans(ServerGameBan[] Bans);

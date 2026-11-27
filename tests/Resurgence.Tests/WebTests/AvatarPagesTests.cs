@@ -98,7 +98,7 @@ public sealed class AvatarPagesTests : UiContext
         Services.GetRequiredService<HostMode>().Live = true;
         var cut = Render<Settings>();
         cut.WaitForAssertion(() => Assert.Equal(3, cut.FindAll("button.pick").Count));
-        Assert.Equal(["Avatar"], cut.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));
+        Assert.Equal(["Avatar", "Multiplayer bans"], cut.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));
         Assert.Equal(Imported, cut.Find(".cur img").GetAttribute("src"));
         Assert.Equal(["pick", "pick", "pick on"], cut.FindAll("button.pick").Select(b => b.ClassName!.Trim()));  // the current one is marked
 

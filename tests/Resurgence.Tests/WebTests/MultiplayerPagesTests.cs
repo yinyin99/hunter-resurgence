@@ -72,20 +72,20 @@ public sealed class MultiplayerPagesTests : UiContext
     public void TheFilterListsOnlyGamesThePlayerMayJoinAndTheOthersShowTheirReasonAndNoJoin()
     {
         Services.AddSingleton<IPatchService>(new Resurgence.Services.Mocks.MockPatchService("patch:done"));  // the Join button is off while patching
-        GameServer[] games = [Open, Locked, .. new[] { "friends", "hunterscore", "full", "own", "starting" }.Select((why, i) => Open with { Id = i + 1, Name = $"Game {why}", Why = why })];
+        GameServer[] games = [Open, Locked, .. new[] { "friends", "hunterscore", "full", "own", "starting", "banned" }.Select((why, i) => Open with { Id = i + 1, Name = $"Game {why}", Why = why })];
         Services.AddSingleton<IServersService>(new Fake { Games = games });
         var cut = Render<Servers>();
 
-        cut.WaitForAssertion(() => Assert.Equal(7, cut.FindAll("table.tbl tbody tr").Count));
+        cut.WaitForAssertion(() => Assert.Equal(8, cut.FindAll("table.tbl tbody tr").Count));
         string[] reasons = [.. cut.FindAll("table.tbl tbody tr").Select(r => string.Join("", r.QuerySelectorAll(".why").Select(w => w.TextContent)))];
-        Assert.Equal(["", "", "Friends only", "HunterScore 100–2000", "Full", "Your game", "Starting…"], reasons);  // a game with a password has its lock, not a reason
+        Assert.Equal(["", "", "Friends only", "HunterScore 100–2000", "Full", "Your game", "Starting…", "Banned by the host"], reasons);  // a game with a password has its lock, not a reason
 
         string Join(int row)
         {
             cut.FindAll("table.tbl tbody tr")[row].Click();
             return cut.Find("aside.preview .btn-block").GetAttribute("disabled") is null ? "on" : "off";
         }
-        Assert.Equal(["on", "on", "off", "off", "off", "off", "off"], Enumerable.Range(0, 7).Select(Join));  // a password game asks for its password: its Join stays on
+        Assert.Equal(["on", "on", "off", "off", "off", "off", "off", "off"], Enumerable.Range(0, 8).Select(Join));  // a password game asks for its password: its Join stays on
         cut.Find("aside.preview .refusal");  // the details say it too
 
         cut.Find(".tools input.tick").Change(true);

@@ -1674,4 +1674,10 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Join.EventWith" xml:space="preserve"><value>Dit spel wordt gespeeld met het seizoensevenement.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Dit spel wordt gespeeld zonder het seizoensevenement.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer geldt de instelling van de host.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Verbannen door de host</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: de host heeft je uit zijn spellen verbannen.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spelers die je verbant met de knop Verbannen op de spelerspagina in het spel, kunnen niet meedoen aan je multiplayerspellen totdat je de ban opheft.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Je hebt geen spelers verbannen.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Ban opheffen</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Weet je zeker dat je de ban van {0} uit je spellen wilt opheffen?</value></data>
 </root>

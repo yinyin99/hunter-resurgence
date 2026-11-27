@@ -26,10 +26,30 @@ public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, M
 
     public Task<Result> SetAvatarAsync(string id) => PostAsync(ServerAccountApi.SetAvatar, "id", Avatars.IdOf(id) ?? "imported");
 
+    public async Task<IReadOnlyList<GameBan>> GameBansAsync()
+    {
+        if (cookie.Value is null) return [];
+        try
+        {
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.Bans);
+            using var response = await http.SendAsync(request);
+            if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerGameBans>() is { Bans: { } bans })
+                return [.. bans.Select(b => new GameBan(b.Handle, DateOnly.FromDateTime(DateTimeOffset.FromUnixTimeSeconds(b.Ts).UtcDateTime), Avatars.Slot(b.Avatar)))];
+            log.LogWarning("The server answered {Path} with {Status}: no bans", ServerAccountApi.Bans, (int)response.StatusCode);
+        }
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        {
+            log.LogWarning("The server did not answer {Path} ({Reason}): no bans", ServerAccountApi.Bans, e.Message);
+        }
+        return [];
+    }
+
+    public Task<Result> UnbanAsync(string handle) => PostAsync($"{ServerAccountApi.Bans}/unban", "handle", handle, announce: false);
+
     public Task<Result> SetImperialAsync(bool imperial) => PostAsync(ServerAccountApi.Settings, "use_imperial", imperial ? "1" : "0");
 
     /// <summary>A one-field form to the server as the signed-in player; <see cref="Changed"/> after it was accepted (the bar and the pages take the new avatar or units).</summary>
-    async Task<Result> PostAsync(string path, string field, string value)
+    async Task<Result> PostAsync(string path, string field, string value, bool announce = true)
     {
         if (cookie.Value is null) return Result.Fail("Store.Oops");
         try
@@ -40,7 +60,7 @@ public sealed class ServerAccountService(HttpClient http, ServerCookie cookie, M
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Changed?.Invoke();
+                if (announce) Changed?.Invoke();
                 return Result.Success;
             }
             log.LogWarning("The server refused {Path} ({Status})", path, (int)response.StatusCode);

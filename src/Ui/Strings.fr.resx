@@ -644,7 +644,7 @@
   <data name="Mis.All" xml:space="preserve"><value>Toutes</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Favorites</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Actives</value></data>
-  <data name="Mis.Packs" xml:space="preserve"><value>Mission Packs</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Packs de missions</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Espèces</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
@@ -1674,4 +1674,10 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Join.EventWith" xml:space="preserve"><value>Cette partie se joue avec l'événement saisonnier.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Cette partie se joue sans l'événement saisonnier.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, le paramètre de l'hôte s'applique.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banni par l'hôte</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Vous ne pouvez pas rejoindre cette partie : l'hôte vous a banni de ses parties.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Les joueurs que vous bannissez avec le bouton Bannir de la page des joueurs du jeu ne peuvent pas rejoindre vos parties multijoueur tant que vous ne levez pas le bannissement.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Vous n'avez banni aucun joueur.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Lever le bannissement</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Voulez-vous vraiment lever le bannissement de {0} de vos parties ?</value></data>
 </root>

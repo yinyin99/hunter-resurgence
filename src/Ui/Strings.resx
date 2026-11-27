@@ -1674,4 +1674,10 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Join.EventWith" xml:space="preserve"><value>This game is played with the seasonal event.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>This game is played without the seasonal event.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer, the host's setting applies.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banned by the host</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>You cannot join this game: the host banned you from their games.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Players you ban with the Ban button of the in-game players page cannot join your multiplayer games until you unban them.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>You have not banned any player.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Unban</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Are you sure that you want to unban {0} from your games?</value></data>
 </root>

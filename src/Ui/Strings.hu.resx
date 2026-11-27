@@ -1674,4 +1674,10 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Join.EventWith" xml:space="preserve"><value>Ez a játék a szezonális eseménnyel zajlik.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Ez a játék szezonális esemény nélkül zajlik.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>Többjátékos módban a házigazda beállítása érvényes.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>A házigazda kitiltotta</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: a házigazda kitiltott a játékaiból.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Azok a játékosok, akiket a játék játékosoldalán a Kitiltás gombbal kitiltasz, nem csatlakozhatnak a többjátékos játékaidhoz, amíg fel nem oldod a kitiltást.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Még nem tiltottál ki senkit.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Kitiltás feloldása</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Biztosan fel akarod oldani {0} kitiltását a játékaidból?</value></data>
 </root>

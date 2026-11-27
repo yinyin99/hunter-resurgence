@@ -1674,4 +1674,10 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Join.EventWith" xml:space="preserve"><value>Tato hra se hraje se sezónní událostí.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Tato hra se hraje bez sezónní události.</value></data>
   <data name="Join.EventHost" xml:space="preserve"><value>Ve hře pro více hráčů platí nastavení hostitele.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Zablokován hostitelem</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Do této hry se nemůžeš připojit: hostitel ti zablokoval přístup do svých her.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Hráči, které zablokuješ tlačítkem Blokovat na stránce hráčů ve hře, se nemohou připojit k tvým hrám pro více hráčů, dokud blokaci nezrušíš.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Nezablokoval jsi žádného hráče.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Odblokovat</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Opravdu chceš odblokovat hráče {0} z tvých her?</value></data>
 </root>

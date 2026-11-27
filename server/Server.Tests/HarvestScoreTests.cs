@@ -105,12 +105,12 @@ public class HarvestScoreTests : StateTestBase
         var start = gm;
         var normal = Py.D(Harvest(0, 0).Update["css"]);
         Assert.Equal(Py.RoundInt(normal), gm - start);
-        state.HarvestGmBonus = (2, state.Clock() + 3600);
+        state.SetHarvestGmBonuses([new(2, 0, state.Clock() + 3600)]);
         start = gm;
         var doubled = Py.D(Harvest(0, 0).Update["css"]);
         Assert.Equal(Py.Round(normal * 2, 1), doubled);
         Assert.Equal(Py.RoundInt(doubled), gm - start);
-        state.HarvestGmBonus = (2, state.Clock() - 1);
+        state.SetHarvestGmBonuses([new(2, 0, state.Clock() - 1)]);
         start = gm;
         Assert.Equal(normal, Py.D(Harvest(0, 0).Update["css"]));
         Assert.Equal(Py.RoundInt(normal), gm - start);
@@ -131,14 +131,14 @@ public class HarvestScoreTests : StateTestBase
         var (plain, plainBase, plainEvent) = LastReward();
         Assert.Equal(plain, plainBase);
         Assert.Null(plainEvent);
-        state.HarvestGmBonus = (2, state.Clock() + 3600);
+        state.SetHarvestGmBonuses([new(2, 0, state.Clock() + 3600)]);
         Harvest(0, 0);
         var (doubled, doubledBase, doubledEvent) = LastReward();
         Assert.Equal(plain, doubledBase);
         Assert.InRange(doubled, 2 * plain - 1, 2 * plain + 1);  // the shown css is rounded to a decimal first, so a small amount can be off by one
         using (var con = state.Store.Open())
             Assert.Equal(doubledEvent, con.Scalar("SELECT id FROM events_log WHERE kind = 'gm_bonus' AND applies_to = 'harvest_gm' AND multiplier = 2") as long?);
-        state.HarvestGmBonus = (2, state.Clock() - 1);
+        state.SetHarvestGmBonuses([new(2, 0, state.Clock() - 1)]);
         Harvest(0, 0);
         var (after, afterBase, afterEvent) = LastReward();
         Assert.Equal((plain, (double?)plain, (long?)null), (after, afterBase, afterEvent));

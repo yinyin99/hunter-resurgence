@@ -162,6 +162,7 @@ public class ServerServersServiceTests
     [InlineData("hunterscore", "Join.NotAllowed")]
     [InlineData("starting", "Join.HostNotReady")]
     [InlineData("network", "Join.HostNetwork")]
+    [InlineData("banned", "Join.Banned")]
     [InlineData("own", "Launch.Failed")]
     public async Task AGameThatShowsNoMapGivesTheMessageOfItsOwnReason(string why, string key)
     {
@@ -367,6 +368,7 @@ public class ServerServersServiceTests
     [InlineData("not_allowed", "Join.NotAllowed")]
     [InlineData("host_not_ready", "Join.HostNotReady")]
     [InlineData("host_network", "Join.HostNetwork")]
+    [InlineData("banned", "Join.Banned")]
     [InlineData("gone", "Launch.Failed")]
     [InlineData("something else", "Launch.Failed")]
     public async Task ARefusedJoinFailsWithTheMessageOfItsReasonAndTheGameIsNotStarted(string why, string key)

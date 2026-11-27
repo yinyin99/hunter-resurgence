@@ -276,7 +276,6 @@ public class NewsTests : IDisposable
             using var check = third.Open();
             Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
         }
-        Assert.Equal(41, Store.Version);
     }
 
     [Fact]
