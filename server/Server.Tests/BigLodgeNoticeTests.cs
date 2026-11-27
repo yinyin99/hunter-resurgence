@@ -104,4 +104,72 @@ public class BigLodgeNoticeTests : StateTestBase
         state.BackfillLodges();
         Assert.Equal(120, Reply(state.LodgeReply(OWNER, 3)!)["animal_slots"]!.AsArray().Count);
     }
+
+    /// <summary>A restored lodge whose slots hold an object and an array as `trophy_id`, next to `mounted` plain ones.</summary>
+    void AddOddLodge(long account, int id, string name, int mounted)
+    {
+        using var con = state.Store.Open(account);
+        con.Begin();
+        const string odd = """{"slot_id": 500, "trophy_id": {"x": 1}}, {"slot_id": 501, "trophy_id": [1, 2]}, {"slot_id": 502, "trophy_id": true}""";
+        var plain = string.Join(",", Enumerable.Range(0, mounted).Select(i => $$"""{"slot_id": {{i}}, "trophy_id": {{2000 + i}}}"""));
+        var lodge = JsonNode.Parse($$"""{"id": {{id}}, "name": "{{name}}", "animal_slots": [{{odd}}{{(mounted > 0 ? "," + plain : "")}}], "weapon_slots": []}""")!;
+        PlayerRows.AddLodge(con, "/game/user/lodges", id.ToString(), new JsonObject { ["id"] = id, ["name"] = name });
+        PlayerRows.AddLodge(con, "/game/user/lodge", id.ToString(), lodge);
+        con.Commit();
+    }
+
+    [Fact]
+    public void AnOddTrophyIdIsNoTrophyAndTheCountIgnoresIt()
+    {
+        AddOddLodge(OWNER, 3, "Odd", 74);
+        state.BackfillLodges();
+        Assert.Empty(Notices(OWNER));  // 74 plain ones; the object, the array and the boolean are not counted
+        AddOddLodge(OTHER, 3, "Odd", 75);
+        state.BackfillLodges();
+        Assert.Equal(["Your trophy lodge Odd holds 75" + Expected], Notices(OTHER));
+    }
+
+    [Fact]
+    public void AnOddSlotInOneLodgeDoesNotFailTheSaveOfAnotherAndTheNoticeStillGoes()
+    {
+        AddOddLodge(OWNER, 3, "Odd", 0);
+        AddLodge(OWNER, 4, "Normal", 10);
+        Assert.Equal(200, state.SaveLodge(OWNER, 4, Encoding.UTF8.GetBytes($$"""{"name": "renamed", "animal_slots": {{Slots(80)}}}""")));
+        using (var con = state.Store.Open(OWNER))  // read from the rows: the page reads of an odd slot are not this change's business
+        {
+            var stored = JsonNode.Parse((string)con.Scalar("SELECT node FROM lodges WHERE account_id = $a AND source = '/game/user/lodge' AND id = '4'")!)!;
+            Assert.Equal(("renamed", 80), (stored["name"]!.GetValue<string>(), stored["animal_slots"]!.AsArray().Count));
+        }
+        Assert.Equal(["Your trophy lodge renamed holds 80" + Expected], Notices(OWNER));
+    }
+
+    [Fact]
+    public void AnOddSlotInOneLodgeDoesNotStopTheStartsFixesOfAnotherLodge()
+    {
+        AddOddLodge(OWNER, 3, "Odd", 0);
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            var lodge = JsonNode.Parse("""{"id": 5, "name": "five", "lodge_engine_id": 3, "animal_slots": [{"slot_id": 2, "trophy_id": 21}], "weapon_slots": []}""")!;
+            PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge.DeepClone());
+            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge);
+            con.Commit();
+        }
+        state.BackfillLodges();
+        using var read = state.Store.Open(OWNER);
+        var slot = JsonNode.Parse((string)read.Scalar("SELECT node FROM lodges WHERE account_id = $a AND source = '/game/user/lodge' AND id = '5'")!)!["animal_slots"]![0]!;
+        Assert.NotNull(slot["is_full_body"]);  // the fit of lodge 5 was kept, not rolled back
+    }
+
+    [Fact]
+    public void AVeryLongNameIsCutWithAnEllipsis()
+    {
+        var name = new string('x', 90);
+        AddLodge(OWNER, 3, name, 75);
+        state.BackfillLodges();
+        Assert.Equal(["Your trophy lodge " + new string('x', 60) + "… holds 75" + Expected], Notices(OWNER));
+        AddLodge(OTHER, 3, new string('y', 60), 75);
+        state.BackfillLodges();
+        Assert.StartsWith("Your trophy lodge " + new string('y', 60) + " holds 75", Notices(OTHER).Single());  // a name of 60 is kept whole
+    }
 }

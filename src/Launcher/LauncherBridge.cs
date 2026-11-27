@@ -312,7 +312,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             {
                 game ??= find?.Invoke(g.ClientExe);
                 window |= game?.WindowVisible() == true;
-                if (game is not null && sinceMemory.Elapsed >= (memoryEvery ?? TimeSpan.FromSeconds(30)))
+                if (game is not null && sinceMemory.Elapsed >= (memoryEvery ?? MemoryEvery))
                 {
                     sinceMemory.Restart();
                     LogMemory(game, false);
@@ -333,6 +333,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         }
         finally { game?.Dispose(); }
     }
+
+    /// <summary>How often the watch logs the running game's memory.</summary>
+    internal static readonly TimeSpan MemoryEvery = TimeSpan.FromSeconds(30);
 
     /// <summary>One line of the game's memory (<see cref="GameMemory.Line"/>); nothing when the process is gone for good or Windows does not tell. Never throws: the watch must outlive a process that has just ended.</summary>
     void LogMemory(GameProcess game, bool exited)

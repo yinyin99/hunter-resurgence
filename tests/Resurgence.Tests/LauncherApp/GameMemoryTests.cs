@@ -52,12 +52,13 @@ public class GameMemoryTests
     }
 
     /// <summary>A game that runs for <paramref name="ticks"/> memory readings and then exits (the exit code is known after them).</summary>
-    static (LauncherBridge Bridge, GooseCallTests.Lines Log, Func<int> Reads) Watch(Func<GameMemory?> memory, int ticks)
+    static (LauncherBridge Bridge, GooseCallTests.Lines Log, Func<int> Reads) Watch(Func<GameMemory?> memory, int ticks, TimeSpan? every = null, Action? dispose = null)
     {
         var log = new GooseCallTests.Lines();
         var reads = 0;
-        var game = new GameProcess(() => true, () => reads > ticks ? 0 : null) { Memory = () => { reads++; return memory(); } };
-        var b = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => true, _ => game, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1), find: _ => game, log: log, memoryEvery: TimeSpan.FromMilliseconds(5));
+        var polls = 0;
+        var game = new GameProcess(() => true, () => reads > ticks || every is not null && ++polls > ticks ? 0 : null, dispose) { Memory = () => { reads++; return memory(); } };
+        var b = new LauncherBridge(() => new("dir", "client.exe"), Rest, _ => true, _ => game, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1), find: _ => game, log: log, memoryEvery: every ?? TimeSpan.FromMilliseconds(5));
         return (b, log, () => reads);
     }
 
@@ -98,5 +99,65 @@ public class GameMemoryTests
         var (silent, quiet, _) = Watch(() => null, 3);
         Assert.NotNull(await silent.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10)));
         Assert.DoesNotContain(quiet.Seen, l => l.StartsWith("Game memory"));
+    }
+
+    [Fact]
+    public async Task TheCadenceIs30SecondsAndNothingIsLoggedBeforeItIsUp()
+    {
+        Assert.Equal(TimeSpan.FromSeconds(30), LauncherBridge.MemoryEvery);
+        var (b, log, reads) = Watch(() => new GameMemory(Mb, Mb, Mb, Mb), 20, every: TimeSpan.FromHours(1));
+        await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal(["Game memory at exit: peak virtual 1 MB, peak private 1 MB"], log.Seen.Where(l => l.StartsWith("Game memory")));  // 20 ticks, no running line
+    }
+
+    [Fact]
+    public async Task TheExitLineIsReadBeforeTheProcessIsDisposed()
+    {
+        var disposed = false;
+        var (b, log, _) = Watch(() => disposed ? null : new GameMemory(Mb, Mb, Mb, Mb), 2, every: TimeSpan.FromHours(1), dispose: () => disposed = true);
+        await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Contains("Game memory at exit: peak virtual 1 MB, peak private 1 MB", log.Seen);
+    }
+
+    /// <summary>A copy of cmd.exe under a name of its own that waits a few seconds: a process <see cref="GameProcess"/> can look up by name.</summary>
+    sealed class Probe : IDisposable
+    {
+        readonly string dir = Directory.CreateTempSubdirectory("resurgence-test-").FullName;
+        public readonly string Exe, Name = "memprobe" + Environment.ProcessId + Random.Shared.Next(1000);
+        public Probe()
+        {
+            Exe = Path.Combine(dir, Name + ".exe");
+            File.Copy(Path.Combine(Environment.SystemDirectory, "cmd.exe"), Exe);
+        }
+        public ProcessStartInfo Info => new(Exe, "/c ping -n 30 127.0.0.1 >nul") { UseShellExecute = false, CreateNoWindow = true };
+        public void Dispose()
+        {
+            foreach (var p in Process.GetProcessesByName(Name)) { try { p.Kill(); p.WaitForExit(5000); } catch (Exception e) when (e is InvalidOperationException or System.ComponentModel.Win32Exception) { } p.Dispose(); }
+            try { Directory.Delete(dir, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+    }
+
+    static void AssertReadsMemory(GameProcess game)
+    {
+        Assert.NotNull(game.Memory);
+        var m = game.Memory!()!.Value;
+        Assert.True(m.Virtual > 0 && m.Private > 0 && m.PeakVirtual >= m.Virtual);
+    }
+
+    [Fact]
+    public void EveryFactoryOfTheRealGameProcessSetsTheMemoryReader()
+    {
+        using var probe = new Probe();
+        // GameProcess.Start for an exe that is not the known one (Process.Start), and GameProcess.Find (the handle opened by id)
+        using (var started = GameProcess.Start(probe.Info, null)!)
+        {
+            AssertReadsMemory(started);
+            using var found = GameProcess.Find(probe.Exe)!;
+            AssertReadsMemory(found);
+        }
+        // the suspended start of the known exe, whose handle the running game owns (SuspendedProcess.Started)
+        var suspended = SuspendedProcess.Create(probe.Info)!;
+        using var game = suspended.Started();
+        AssertReadsMemory(game);
     }
 }

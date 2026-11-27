@@ -89,7 +89,9 @@ public sealed partial class State
 
     /// <summary>A lodge with this many mounted trophies or more gets its owner the inbox message of <see cref="NoticeBigLodge"/> (#974).</summary>
     internal const int BigLodge = 75;
+    /// <summary>The message's opening words are the once-only marker (<see cref="NoticeBigLodge"/> looks for them in the notice sender's messages): never reword them, or every qualifying owner gets the message again. Words after them may change.</summary>
     const string BigLodgeNoticeStart = "Your trophy lodge ";
+    const int NoticeNameChars = 60;
 
     /// <summary>
     /// The account owns a lodge with <see cref="BigLodge"/> mounted trophies or more: one inbox message from the notice sender, naming its largest such lodge (the lowest id on a tie). The game keeps a lodge's trophies in memory after the player
@@ -98,23 +100,32 @@ public sealed partial class State
     /// </summary>
     static void NoticeBigLodge(Db con)
     {
-        if (con.Scalar("SELECT 1 FROM messages WHERE account_id = $a AND sender = ? AND content LIKE ?", SYSTEM_SENDER, BigLodgeNoticeStart + "%") is not null) return;
-        var mounted = new Dictionary<long, HashSet<string>>();  // lodge id (as the allocator reads it) -> the trophy ids its slots hold
-        var names = new Dictionary<long, string>();
-        foreach (var r in con.Rows("SELECT CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC, n", LodgeOne, LodgeList, LodgeOne))
+        // a notice is a courtesy: whatever its reading of restored rows throws, it is logged and the caller's work (a lodge save, the start's lodge pass) goes on
+        try
         {
-            if (JsonNode.Parse((string)r[1]) is not JsonObject node) continue;
-            var id = (long)r[0];
-            if (Py.IsStr(node["name"])) names.TryAdd(id, ((string)node["name"]!).Trim());
-            if (!mounted.TryGetValue(id, out var held)) mounted[id] = held = [];
-            foreach (var slot in (node["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-                if (slot["trophy_id"] is { } trophy) held.Add(Py.Str(trophy));
+            if (con.Scalar("SELECT 1 FROM messages WHERE account_id = $a AND sender = ? AND content LIKE ?", SYSTEM_SENDER, BigLodgeNoticeStart + "%") is not null) return;
+            var mounted = new Dictionary<long, HashSet<string>>();  // lodge id (as the allocator reads it) -> the trophy ids its slots hold
+            var names = new Dictionary<long, string>();
+            foreach (var r in con.Rows("SELECT CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC, n", LodgeOne, LodgeList, LodgeOne))
+            {
+                if (JsonNode.Parse((string)r[1]) is not JsonObject node) continue;
+                var id = (long)r[0];
+                if (Py.IsStr(node["name"])) names.TryAdd(id, ((string)node["name"]!).Trim());
+                if (!mounted.TryGetValue(id, out var held)) mounted[id] = held = [];
+                foreach (var slot in (node["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+                    if (slot["trophy_id"] is { } trophy && (Py.IsNum(trophy) || Py.IsStr(trophy))) held.Add(Py.Str(trophy));  // only a plain id: an object or an array in a restored slot is no trophy
+            }
+            var (largest, count) = mounted.OrderByDescending(m => m.Value.Count).ThenBy(m => m.Key).Select(m => (m.Key, m.Value.Count)).FirstOrDefault();
+            if (count < BigLodge) return;
+            var name = names.GetValueOrDefault(largest) is { Length: > 0 } n ? n : $"#{largest}";
+            if (name.Length > NoticeNameChars) name = name[..(char.IsHighSurrogate(name[NoticeNameChars - 1]) ? NoticeNameChars - 1 : NoticeNameChars)] + "…";
+            Uploads.Notify(con, $"{BigLodgeNoticeStart}{name} holds {count} trophies. The game keeps a lodge's trophies in memory after you leave it, and with about 100 or more it can close during the next hunt. "
+                + "To avoid it: keep a lodge under about 60 trophies (move some to another lodge), or restart the game after visiting it before you hunt.");
         }
-        var (largest, count) = mounted.OrderByDescending(m => m.Value.Count).ThenBy(m => m.Key).Select(m => (m.Key, m.Value.Count)).FirstOrDefault();
-        if (count < BigLodge) return;
-        var name = names.GetValueOrDefault(largest) is { Length: > 0 } n ? n : $"#{largest}";
-        Uploads.Notify(con, $"{BigLodgeNoticeStart}{name} holds {count} trophies. The game keeps a lodge's trophies in memory after you leave it, and with about 100 or more it can close during the next hunt. "
-            + "To avoid it: keep a lodge under about 60 trophies (move some to another lodge), or restart the game after visiting it before you hunt.");
+        catch (Exception e)
+        {
+            Console.WriteLine($"lodges: no big lodge notice ({e.Message})");
+        }
     }
 
     /// <summary>The saved `lodge_contents` of a section save that was restored before it was read as lodges: kept whole in `extras` under this name.</summary>
