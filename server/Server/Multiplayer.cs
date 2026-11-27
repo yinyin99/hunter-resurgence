@@ -432,21 +432,27 @@ public sealed partial class State
     }
 
     /// <summary>One harvest of a heartbeat, in its transaction (<see cref="Heartbeat"/>'s `credit`): true when it is not the harvester's, so the heartbeat drops it: a second harvest of an animal (counts for nobody), or the shooter's
-    /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit). When writing it for the shooter fails, that write is undone (a savepoint), the failure is logged
-    /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone.</summary>
-    bool TryCredit(Db con, JsonObject e3, long eventId, List<long> shooters)
+    /// (<see cref="CreditHarvest"/> wrote it, and the shooter is added to `shooters`: its hunterscore follows after the commit; the harvester's mission objectives that ask for a harvest follow it, <see cref="HarvesterEvent"/>, their
+    /// updates 15 added to `updates`, the heartbeat's reply, once the write is released). When writing it for the shooter fails, that write is undone (a savepoint) with the harvester's objectives, the failure is logged
+    /// and the harvest stays the harvester's (false): it is never lost, and nothing else of the heartbeat, the harvester's queued updates included, is undone; nothing of the undone write reaches the reply.</summary>
+    bool TryCredit(Db con, JsonObject e3, long eventId, JsonArray updates, List<long> shooters)
     {
         if (CreditOf(con, e3, eventId) is not { } credit)
             return false;
         if (credit.Ignore)
             return true;
         var (e7, e22) = KillEvents(con, e3["individual"], Py.Dumps(e3));
+        var mine = new JsonArray();
         con.Exec("SAVEPOINT credit");
         try
         {
-            CreditHarvest(con.Sharing(credit.Account), e3, e7, e22);
+            var theirs = con.Sharing(credit.Account);
+            var shot = CreditHarvest(theirs, e3, e7, e22);
+            HarvesterEvent(con, theirs, e3, e7, shot, eventId, mine);
             con.Exec("RELEASE credit");
             shooters.Add(credit.Account);
+            foreach (var u in mine.OfType<JsonObject>().ToList())
+                Into(updates)(u.DeepClone().AsObject());
             return true;
         }
         catch (Exception ex)
@@ -460,13 +466,14 @@ public sealed partial class State
 
     /// <summary>A harvest another member made of an animal this account shot last (<see cref="CreditOf"/>) is stored as this account's own: its events (the harvester's trophy measurement and the harvest) join this
     /// account's, and the kill, page, score, gm$, missions and challenges follow from them as for a harvest of its own hunt. Its updates (6 and 15) come with the account's next heartbeat. `theirs` is the shooter's
-    /// view (<see cref="Db.Sharing"/>) of the harvester's connection, so the harvest and its credit are one transaction. `e7` stands in for the animal's spawn event when the shooter's own events have none.</summary>
-    void CreditHarvest(Db theirs, JsonObject e3, JsonObject e7, JsonObject e22)
+    /// view (<see cref="Db.Sharing"/>) of the harvester's connection, so the harvest and its credit are one transaction. `e7` stands in for the animal's spawn event when the shooter's own events have none.
+    /// Returns the harvest's event id in this account.</summary>
+    long CreditHarvest(Db theirs, JsonObject e3, JsonObject e7, JsonObject e22)
     {
         var now = Clock();
         if (e22.Count > 0)
             theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 22, ?, ?)", Py.Dumps(e22), now);
-        theirs.Exec("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(e3), now);
+        var id = theirs.Insert("INSERT INTO events (account_id, event, body, ts) VALUES ($a, 3, ?, ?)", Py.Dumps(e3), now);
         void Pending(JsonNode update) => theirs.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(update));
         var gm = GmAt(now);
         StoreHarvest(theirs, e3, Trophy, AmmoCheck, HarvestPage, gm.Multiplier, gm.Event, gold => Pending(gold), e7);
@@ -475,5 +482,6 @@ public sealed partial class State
         ChallengeEvent(theirs, e3);
         foreach (var update in updates)
             Pending(update!);
+        return id;
     }
 }

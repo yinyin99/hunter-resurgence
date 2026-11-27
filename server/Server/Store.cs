@@ -51,7 +51,7 @@ public sealed class Store
     // order they were finished (JSON); a mission without a row is not started. Ids may have no definition (a restored account's).
     // mission_prefs is the page's switches and favourite mission packs (JSON), one row per account once it has used missions.
     // since: the last event before the mission was activated here (NULL: not known, a row from before schema 30); seen: the events after it are the ones the mission's
-    // progress is checked against (State.Mark); kept: the finished objectives a restore brought (JSON), `*` for a mission completed before the restore; earlier: the
+    // progress is checked against (State.Mark); kept: the finished objectives a restore brought or a harvest of another player's kill finished (JSON; State.HarvesterEvent), `*` for a mission completed before the restore; earlier: the
     // objectives finished before `seen` (JSON): no harvest after it finished them; rules (schema 35): the fingerprint of the rule each finished objective was finished under
     // (JSON object: objective id to fingerprint, `{}` for none; State.Fingerprint), which the audit compares with today's rule.
     const string NoRules = "{}";  // the `rules` of a mission row that has finished no objective since schema 35 (a raw interpolated string has no literal braces)
