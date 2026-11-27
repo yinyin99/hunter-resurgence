@@ -22,6 +22,7 @@ public class SellBackTests : StateTestBase
            {"id": 11, "name": "Test Event", "subcat": {"id": 0}, "price": 50, "silver_price": 100, "notbuyable": 1, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 12, "name": "Test Cheap", "subcat": {"id": 0}, "price": 2, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 13, "name": "Test Odd", "subcat": {"id": 0}, "price": 7, "hidden": 0, "inventory": {}, "fit": {}},
+           {"id": 811, "name": "Test Loadout Slot", "subcat": {"id": 0}, "price": 20, "silver_price": 400, "hidden": 0, "inventory": {}, "fit": {}},
            {"id": 512, "name": "Test Start", "subcat": {"id": 0}, "price": 100, "silver_price": 2000, "hidden": 0, "inventory": {}, "fit": {}}],
          "categories": [{"id": 1, "title": "Weapons", "subcategories": [{"id": 0, "title": "Rifles"}], "default": 0}],
          "bundles": [{"id": 21, "name": "Test Pack", "price": 60.0, "items": [13]}]}
@@ -133,6 +134,45 @@ public class SellBackTests : StateTestBase
         using (var con = state.Store.Open(ME))
             con.Exec("UPDATE expeditions SET end_ts = ? WHERE account_id = $a", now);
         Assert.NotNull(state.WebSell(ME, hunted).Offer);
+    }
+
+    /// <summary>The Inventory Loadout slot (811) made a loadouts row when it was delivered: its copy, bought or restored, is not sold back.</summary>
+    [Fact]
+    public void TheLoadoutSlotItemIsRefusedAsAServiceBoughtOrRestored()
+    {
+        Refused(Bought(811), "service");
+        Assert.True(state.GrantItems(ME, 811));
+        var restored = LastGuid();
+        using (var con = state.Store.Open(ME))
+            PlayerRows.MarkRestored(con, restored, 811);
+        Refused(restored, "service");
+    }
+
+    /// <summary>A weapon on a rack of one of the account's lodges is in use: refused as placed, whether the game's `weapon_id` names the copy's guid or its item id; the copy beside it sells.</summary>
+    [Fact]
+    public void AWeaponOnALodgeRackIsRefusedAsPlaced()
+    {
+        var (mounted, spare) = (Bought(7), Bought(13));
+        void Rack(long weaponId)
+        {
+            using var con = state.Store.Open(ME);
+            con.Exec("DELETE FROM lodges WHERE account_id = $a");
+            PlayerRows.AddLodge(con, "/game/user/lodge", "1", new JsonObject { ["id"] = 1, ["animal_slots"] = new JsonArray(), ["weapon_slots"] = new JsonArray(new JsonObject { ["slot_id"] = 0, ["weapon_id"] = weaponId, ["rotation"] = 0 }) });
+        }
+        Rack(mounted);
+        Refused(mounted, "placed");
+        Assert.NotNull(state.WebSell(ME, spare).Offer);
+        Rack(7);  // read as an item id
+        Refused(mounted, "placed");
+    }
+
+    [Fact]
+    public void AnOfferNeedsTheWalletOfItsCurrencyAndSaysSoInsteadOfUnknown()
+    {
+        var guid = Bought(7);
+        using (var con = state.Store.Open(ME))
+            con.Exec("DELETE FROM wallet WHERE account_id = $a AND currency = 'em'");
+        Refused(guid, "no_wallet");
     }
 
     [Fact]

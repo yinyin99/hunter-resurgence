@@ -49,6 +49,8 @@ public sealed class InventoryPageTests : UiContext
                               new(4, "Made-up Boots", "", "4", "Rifles", null, false, Guid: 14, Sell: new("em", 7)));
         Services.AddSingleton<IInventoryService>(items);
         var modal = Services.GetRequiredService<ModalService>();
+        var raised = 0;
+        modal.Changed += () => raised++;
         var cut = Render<Inventory>();
 
         Assert.Equal(2, cut.FindAll("button.sell").Count);
@@ -62,6 +64,7 @@ public sealed class InventoryPageTests : UiContext
         ((TaskCompletionSource<bool>)modal.Parameters["Answer"]!).SetResult(true);
 
         cut.WaitForAssertion(() => Assert.Equal([14L], items.Sold));
+        cut.WaitForAssertion(() => Assert.Equal(2, raised));  // the confirmation opened, then the balances changed after the answer
         cut.WaitForAssertion(() => Assert.Single(cut.FindAll("button.sell")));  // read again: the sold copy is gone
     }
 

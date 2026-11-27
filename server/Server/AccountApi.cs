@@ -261,7 +261,7 @@ public static class AccountApi
             .WithName("AccountSell").WithSummary("Sell an unused item back to the store (form `guid`)")
             .WithDescription("The copy `guid` of `GET /account/inventory`, in the lodge and bought here or restored (docs/server.md#selling-back): it is removed and 40 % of the price paid (rounded down) is paid in the currency paid, "
                              + "with the wallet row `Sold: <item>`. Answers `{status: sold, currency: em|gm, refund, balance}`, 409 with `status` the reason (`unknown`, `hunting`, `equipped`, `placed`, `ammunition`, `consumable`, `license`, "
-                             + "`lodge`, `start_kit`, `not_sold`, `no_proof`, `too_cheap`; nothing changes), 401 `signed_out`, or 400 `invalid`. The game gets the balance with its next heartbeat and the inventory at its next connect.")
+                             + "`lodge`, `service`, `start_kit`, `not_sold`, `no_proof`, `no_wallet`, `too_cheap`; nothing changes), 401 `signed_out`, or 400 `invalid`. The game gets the balance with its next heartbeat and the inventory at its next connect.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/harvests/{kill}/taxidermize", async (HttpContext ctx, string kill) =>

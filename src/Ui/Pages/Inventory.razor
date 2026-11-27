@@ -55,7 +55,9 @@
     async Task Sell(InventoryItem item, SellOffer offer)
     {
         if (!await Modal.Confirm(L["Inv.SellConfirm", item.Name, offer.Refund, Currency(offer)])) return;
-        if (await Service.SellAsync(item.Guid) is { Ok: false } failed) Modal.Alert(L[failed.Error ?? "Inv.SellFailed"]);
+        var sold = await Service.SellAsync(item.Guid);
+        if (sold.Ok) Modal.BalancesChanged();  // after the answer: the status bar's em$ and gm$ show the refund, not the balance from before the sale
+        else Modal.Alert(L[sold.Error ?? "Inv.SellFailed"]);
         await Load();
     }
 }

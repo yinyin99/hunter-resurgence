@@ -34,6 +34,9 @@ public sealed class ModalService
         Changed?.Invoke();
     }
 
+    /// <summary>A page changed the wallet after its dialog had closed (a sale back, <c>Inventory</c>): raises <see cref="Changed"/> so the status bar reads the balances again now.</summary>
+    public void BalancesChanged() => Changed?.Invoke();
+
     // there is one slot: a dialog that is replaced or dismissed answers "no" to whoever waits for it (Confirm, the first-start setup)
     void Release()
     {
