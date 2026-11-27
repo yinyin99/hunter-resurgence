@@ -382,9 +382,8 @@ public sealed class LiveSiteTests : UiContext
             Assert.NotNull(bar.QuerySelector("small.tip[role=tooltip]"));
             Assert.Equal(bar.QuerySelector("small.tip")!.Id, bar.GetAttribute("aria-describedby"));
         }
-        // the hunterscore's tooltip adds its next step, the categories' do not
-        Assert.Contains("Next step: 190 more for 30%", cut.FindAll("div.ov .bar")[0].QuerySelector(".tip")!.TextContent);
-        Assert.DoesNotContain("Next step", cut.FindAll("div.ov .bar")[1].QuerySelector(".tip")!.TextContent);
+        // each tooltip names its bar and gives the figures, as the original's ranks summary does
+        Assert.Equal(["Hunter Score", "Animals", "Weapons", "Collectables"], cut.FindAll("div.ov .bar .tip > b").Select(b => b.TextContent));
     });
 
 

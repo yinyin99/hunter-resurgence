@@ -28,29 +28,18 @@ else
     [Parameter] public string? Sub { get; set; }
     string sub => subs.Any(s => s.Key == Sub) ? Sub! : "";
 
-    Profile? profile;
-
-    protected override async Task OnParametersSetAsync()
-    {
-        bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
-        if (sub == "") profile = await Service.ProfileAsync(Handle);
-    }
+    protected override async Task OnParametersSetAsync() => bars = await Service.RanksAsync(Handle, sub == "" ? "overview" : sub);
 
     int Pct(RankBar b) => b.Total == 0 ? 0 : 100 * b.Done / b.Total;
 
-    // the bars carry no text: the figures show in a tooltip on hover and on focus, as the achievements' steps do; the first bar is the hunterscore's, whose tooltip adds the score and the next step (the next 10 % of the rows)
+    // the bars carry no text: the figures show in a tooltip on hover and on focus, as the achievements' steps do, the bar's name and "Unlocked: n / total (p%)", as the original's ranks summary does
     RenderFragment Overview(RankBar b, string slot, int i) => @<div class="ov">
         <AssetSlot Name="@slot" Width="40" Height="40" />
         <div class="bar @(i == 0 ? "big" : "")" style="--c:@F(Pct(b) / 100.0)" tabindex="0" role="img" aria-label="@L.Term(b.Name)" aria-describedby="@($"tip-rk-{i}")">
             <span class="track"><i style="width:@Pct(b)%"></i></span>
             <small id="@($"tip-rk-{i}")" role="tooltip" class="tip">
-                @if (i == 0 && profile is not null) { <b>@L["Prof.HunterScore"]: @Fmt.Num(profile.HunterScore, "0")</b> }
+                <b>@L.Term(b.Name)</b>
                 <span>@L["Prof.Unlocked"]: @Fmt.Num(b.Done, "0") / @Fmt.Num(b.Total, "0") (@Pct(b)%)</span>
-                @if (i == 0 && Pct(b) < 100)
-                {
-                    var next = (Pct(b) / 10 + 1) * 10;
-                    <span>@string.Format(L["Prof.RanksNext"], Fmt.Num(Math.Max(1, (int)Math.Ceiling(b.Total * next / 100.0) - b.Done), "0"), next)</span>
-                }
             </small>
         </div>
     </div>;

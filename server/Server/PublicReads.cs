@@ -251,14 +251,33 @@ public sealed partial class State
     public static string? RibbonOf(double percent) =>
         percent >= 90 ? "turkey.png" : percent >= 75 ? "fox.png" : percent >= 50 ? "bear.png" : percent >= 25 ? "elk.png" : percent >= 5 ? "moose.png" : null;
 
+    /// <summary>How many of all the thresholds of the connect's achievements the account has earned (those with an earn time), and how many there are.</summary>
+    (int Done, int Total) EarnedThresholds(long account)
+    {
+        using var con = Con(account);
+        var times = con.Rows("SELECT id, triggers FROM achievements WHERE account_id = $a").ToDictionary(r => Convert.ToInt64(r[0]), r => Parse(r[1]));
+        int done = 0, total = 0;
+        foreach (var def in Arr(G(connect, "achievements", null)).OfType<JsonObject>())
+        {
+            if (!TryKey(def["id"], out var id))
+                continue;
+            foreach (var t in Arr(def["triggers"]).Where(Py.IsNum))
+            {
+                total++;
+                if (times.GetValueOrDefault(id)?[Py.Str(t)] is { } time && Py.IsNum(time) && Py.D(time) > 0)
+                    done++;
+            }
+        }
+        return (done, total);
+    }
+
     /// <summary>The collector ribbon the profile shows under the picture: <see cref="RibbonOf"/> the account's earned thresholds of all the thresholds of the connect's achievements
     /// (a string, null below 5 %); with no achievements in the connect the `ribbon` of its restored `/game/user/&lt;id&gt;/profile` reply, null when it has none.</summary>
     public JsonNode? ProfileRibbon(long account)
     {
-        var categories = PublicAchievements(account)["categories"]!.AsArray().Select(c => (Done: (int)c!["done"]!, Total: (int)c["total"]!)).ToList();
-        var total = categories.Sum(c => c.Total);
+        var (done, total) = EarnedThresholds(account);
         if (total > 0)
-            return RibbonOf(100.0 * categories.Sum(c => c.Done) / total);
+            return RibbonOf(100.0 * done / total);
         using var con = Con(account);
         return RestoredProfile(con)?["ribbon"] is { } r && Py.IsStr(r) ? C(r) : null;
     }

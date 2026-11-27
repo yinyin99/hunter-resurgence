@@ -980,7 +980,6 @@
   <data name="Prof.HunterScore" xml:space="preserve"><value>HunterScore</value></data>
   <data name="Prof.Categories" xml:space="preserve"><value>Kategóriák</value></data>
   <data name="Prof.Unlocked" xml:space="preserve"><value>Elért</value></data>
-  <data name="Prof.RanksNext" xml:space="preserve"><value>Következő lépés: még {0} a(z) {1} %-hoz</value></data>
   <data name="Prof.Exploration" xml:space="preserve"><value>Felfedezés</value></data>
   <data name="Prof.DailyMissions" xml:space="preserve"><value>Napi küldetések</value></data>
   <data name="Prof.Challenges" xml:space="preserve"><value>Kihívások</value></data>
