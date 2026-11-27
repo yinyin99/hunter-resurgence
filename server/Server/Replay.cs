@@ -428,7 +428,7 @@ public static class Replay
         static readonly (string From, string To)[] Rows =
             [("toggleSet:function(){c(\".set-missions\",this.$el).toggle()}", "toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}"),
              ("toggleDetails:function(){c(\".mission-details\",this.$el).toggle()}", "toggleDetails:function(){c(\".mission-details\",this.$el).toggle(),c(\".mission-row\",this.$el).first().toggleClass(\"hr-open\")}"),
-             ("l.find(\".set-missions\").toggle()", "l.find(\".set-missions\").toggle(),l.find(\".set-row\").first().toggleClass(\"hr-open\")")];
+             ("l.find(\".set-missions\").toggle()", "l.find(\".set-missions\").toggle(),l.find(\".set-row\").toggleClass(\"hr-open\")")];
         static int warnedRows, warnedTrackers, warned, warnedApp, warnedFrame, warnedPage;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>

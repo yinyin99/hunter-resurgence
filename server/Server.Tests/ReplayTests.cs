@@ -280,7 +280,7 @@ public class ReplayTests : IAsyncLifetime
         var text = Encoding.UTF8.GetString((await R("GET", "game_web.test", "/static/app/9.9.8/client.js")).Body);
         Assert.Contains("toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}", text);
         Assert.Contains("toggleDetails:function(){c(\".mission-details\",this.$el).toggle(),c(\".mission-row\",this.$el).first().toggleClass(\"hr-open\")}", text);
-        Assert.Contains("l.length&&(l.find(\".set-missions\").toggle(),l.find(\".set-row\").first().toggleClass(\"hr-open\"),x())", text);  // a pack the route opens by its id too
+        Assert.Contains("l.length&&(l.find(\".set-missions\").toggle(),l.find(\".set-row\").toggleClass(\"hr-open\"),x())", text);  // a pack the route opens by its id too
         // a text that is missing or doubled: the rewrite is skipped altogether (the first such script logs one warning, which a later one does not repeat)
         foreach (var script in new[] { toggleSet + "," + route, toggleSet + "," + toggleSet + "," + toggleDetails + "," + route })
         {
