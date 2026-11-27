@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Du har inga tält i det här jaktområdet. Tält som du placerar ut i ett jaktområde fungerar som bärbara startpunkter och åtkomstpunkter till ditt förråd. Skaffa tält i {0}butiken{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zooma in</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zooma ut</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Karta: dra för att flytta, använd mushjulet eller + / − för att zooma, piltangenterna flyttar kartan</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start vid {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spelinfo och startpunkt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spelnamn:</value></data>

@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>У вас нет палаток на этом охотугодье. Палатки, которые вы ставите на охотугодье, служат переносными точками возрождения и доступа к инвентарю. Палатки можно приобрести в {0}магазине{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Приблизить</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Отдалить</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Карта: перетаскивайте, чтобы сдвинуть; колесо мыши или + / − меняют масштаб; стрелки сдвигают карту</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Старт: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Информация об игре и стартовая позиция</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Имя игры:</value></data>

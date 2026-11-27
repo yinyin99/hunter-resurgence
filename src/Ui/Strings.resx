@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>You don't have any tents in this reserve. Tents that you place in a reserve act as portable spawn points and inventory access points. Get your tents at the {0}store{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom in</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom out</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Map: drag to move, mouse wheel or + / − to zoom, arrow keys to move</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Starting at {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Game info &amp; Starting point</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Game name:</value></data>

@@ -19,3 +19,8 @@
 .hunter.c0, .hunter-label.c0 { background: #c0396b; }
 .hunter.c1, .hunter-label.c1 { background: #8e87d6; }
 .hunter-label { display: flex; align-items: center; gap: 6px; margin-top: -40px; color: #fff; font-weight: 500; }
+/* drag to pan (shell.js panZoom): a finger drags the map, not the page; the ring sits inside, the map clips what is outside */
+.map.zoomable { touch-action: none; user-select: none; cursor: grab; }
+.map.zoomable:focus-visible { outline-offset: -3px; }
+.map.dragging, .map.dragging .marker { cursor: grabbing; }
+.map.dragging .plane { transition: none; }

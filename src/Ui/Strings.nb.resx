@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Du har ingen telt i dette reservatet. Telt du setter opp i et reservat, fungerer som flyttbare startpunkter og tilgangspunkter til inventaret. Skaff deg telt i {0}butikken{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom inn</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom ut</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Kart: dra for å flytte, bruk musehjulet eller + / − for å zoome, piltastene flytter kartet</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start ved {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spillinfo og startpunkt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spillnavn:</value></data>

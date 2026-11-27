@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Sinulla ei ole telttoja tällä alueella. Alueelle pystyttämäsi teltat toimivat siirrettävinä aloituspisteinä ja varusteiden käyttöpisteinä. Hanki teltat {0}kaupasta{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Lähennä</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Loitonna</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Kartta: siirrä vetämällä, zoomaa hiiren rullalla tai + / −, nuolinäppäimet siirtävät karttaa</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Lähtöpaikka: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Pelitiedot ja lähtöpaikka</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Pelin nimi:</value></data>

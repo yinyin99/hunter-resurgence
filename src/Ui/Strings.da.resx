@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Du har ingen telte i dette jagtområde. Telte, som du sætter op i et jagtområde, fungerer som flytbare spawn-punkter og adgangspunkter til dit inventar. Køb dine telte i {0}butikken{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom ind</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom ud</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Kort: træk for at flytte, brug musehjulet eller + / − til at zoome, piletasterne flytter kortet</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Starter ved {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spilinfo og startpunkt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spillets navn:</value></data>

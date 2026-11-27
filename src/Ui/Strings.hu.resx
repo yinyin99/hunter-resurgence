@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Nincs sátrad ezen a vadászterületen. A vadászterületen felállított sátrak hordozható kezdőpontként és készlethozzáférési pontként szolgálnak. Sátrakat az {0}áruházban{1} szerezhetsz.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Nagyítás</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Kicsinyítés</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Térkép: húzással mozgathatja, az egérgörgővel vagy a + / − gombokkal nagyíthat, a nyílbillentyűk mozgatják</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Kezdőpont: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Játékinfo és kezdőpont</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Játék neve:</value></data>
