@@ -380,7 +380,7 @@ public static class Replay
             PlaytimeSince = cfg["playtime_since"] is { } since ? Py.L(since) : State.DefaultPlaytimeSince
         };
         state.LoadHarvestGmBonuses(cfg["harvest_gm_bonus"]);
-        state.LoadStoreSales(cfg["store_sales"]);
+        foreach (var line in state.LoadStoreSales(cfg["store_sales"])) Console.WriteLine(line);
         state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
         if (!offline) { state.MigrateAvatars(); state.MigrateAvatarGenders(); state.MigrateListedAvatarUrls(); }  // a community server: the pictures its accounts imported before the avatars were served
         return state;

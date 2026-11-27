@@ -225,6 +225,21 @@ public class StoreSalesTests : StateTestBase
     }
 
     [Fact]
+    public void ASaleWhoseEventIsUnknownIsLoggedOncePerLoadAndNeverRuns()
+    {
+        at = Friday;
+        state = Open(season: SeasonalEvent.Parse(Json("""{"name": "halloween_2026", "define": "HALLOWEEN", "reserves": [], "start": "2026-10-22T00:00:00Z", "end": "2026-11-02T00:00:00Z"}""")));
+        state.SetHarvestGmBonuses([new State.GmBonus(2, Friday, Monday, "Weekend")]);
+        var lines = state.LoadStoreSales(Json("""
+            [{"name": "Known", "event": "halloween_2026", "percent": 30, "items": [9003]},
+             {"name": "Bonus", "event": "weekend", "percent": 30, "items": [9003]},
+             {"name": "Typo", "event": "haloween_2026", "percent": 30, "items": [9004]}]
+            """));
+        Assert.Equal(new[] { "store_sales: Typo: event haloween_2026 unknown, the sale never runs" }, lines);
+        Assert.Equal(140, Prices(4).Ems);
+    }
+
+    [Fact]
     public void ASaleTiedToAnEventRunsOnlyWhileTheEventRunsInsideItsOwnTimes()
     {
         at = T("2026-10-21T00:00:00Z");
@@ -444,6 +459,7 @@ public class StoreSalesTests : StateTestBase
 
     [Theory]
     [InlineData("""{"name": "x", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 0, "items": [1]}""")]
+    [InlineData("""{"name": "x", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 12.5, "items": [1]}""")]
     [InlineData("""{"name": "x", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 100, "items": [1]}""")]
     [InlineData("""{"from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 10, "items": [1]}""")]
     [InlineData("""{"name": "x", "from": "2026-11-30T07:00:00Z", "until": "2026-11-27T15:00:00Z", "percent": 10, "items": [1]}""")]

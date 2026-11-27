@@ -28,7 +28,7 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded, Jso
             seen = stamp;
             var root = Settings.Read(file);
             Apply("harvest_gm_bonus", "bonuses", () => Settings.ParseHarvestGmBonus(root["harvest_gm_bonus"], (long)state.Clock()), state.LoadHarvestGmBonuses, ref applied);
-            Apply("store_sales", "sales", () => Settings.ParseStoreSales(root["store_sales"]), state.LoadStoreSales, ref appliedSales);
+            Apply("store_sales", "sales", () => Settings.ParseStoreSales(root["store_sales"]), n => { foreach (var line in state.LoadStoreSales(n)) Log(line); }, ref appliedSales);
             lastError = null;
         }
         catch (InvalidDataException e) when (e.InnerException is null or JsonException)

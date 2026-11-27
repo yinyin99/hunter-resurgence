@@ -116,7 +116,7 @@ public sealed record StoreSale(string Name, long? From, long? Until, string? Eve
         Text(o, key, where) is { } t ? RewardEvents.ParseTime(t) ?? throw new InvalidDataException($"{where}.{key}: an ISO time such as \"2026-11-27T15:00:00Z\"") : null;
 
     static double Pct(JsonNode? n, string where) =>
-        n is JsonValue v && v.TryGetValue<double>(out var p) && p > 0 && p < 100 ? p : throw new InvalidDataException($"{where}: a number above 0 and below 100");
+        n is JsonValue v && v.TryGetValue<double>(out var p) && p > 0 && p < 100 && p == Math.Floor(p) ? p : throw new InvalidDataException($"{where}: a whole number above 0 and below 100");
 
     static long[] Ids(JsonNode? n, string where) =>
         n is JsonArray a && a.All(x => x is JsonValue v && v.TryGetValue<long>(out _)) ? [.. a.Select(x => x!.GetValue<long>())] : throw new InvalidDataException($"{where}: a list of item ids");
@@ -141,8 +141,14 @@ public sealed partial class State
 
     volatile SaleSet sales = new([]);
 
-    /// <summary>Sets the sales from the settings' `store_sales` (Settings.cs, checked there); none: no sale. The list is swapped whole.</summary>
-    public void LoadStoreSales(JsonNode? cfg) => sales = new(StoreSale.Parse(cfg));
+    /// <summary>Sets the sales from the settings' `store_sales` (Settings.cs, checked there); none: no sale. The list is swapped whole. Returns one line for each sale whose `event` is neither the settings' seasonal event
+    /// nor a harvest bonus now in force (it never runs until one is): the caller logs them, once per (re)load.</summary>
+    public string[] LoadStoreSales(JsonNode? cfg)
+    {
+        var set = new SaleSet(StoreSale.Parse(cfg));
+        sales = set;
+        return [.. set.Sales.Where(s => s.Event is { } e && !EventWindows(e).Any()).Select(s => $"store_sales: {s.Name}: event {s.Event} unknown, the sale never runs")];
+    }
 
     /// <summary>The windows of the event `name`: the seasonal event of the settings and the harvest gm$ bonuses of that name.</summary>
     IEnumerable<(long Start, long End)> EventWindows(string name)
@@ -223,7 +229,7 @@ public sealed partial class State
     }
 
     /// <summary>Writes the picks of the current and the next period of every random sale to `store_sale_picks` (once each; one already there is left as it was), so the history of what was on sale stays readable.
-    /// The running server does it at every look of <see cref="GmBonusWatch"/>: a period that starts is recorded before it is priced.</summary>
+    /// The running server does it at every look of <see cref="GmBonusWatch"/>, so a period is on record within 5 seconds of its start (prices are worked out from the same pick at once, whether or not it is recorded yet).</summary>
     public void RecordSalePicks()
     {
         var set = sales;
