@@ -102,28 +102,4 @@ public sealed partial class State
                          NextId(con, "items", "guid"), itemId, slot, Box(itemId));
         }
     }
-
-    /// <summary>`admin ammo-fit` (#1009): one line per ammunition stack that sits in an equipped ammunition slot beside a weapon it does not fit (<see cref="Misfits"/>), for every account (or `only`); with `apply` each is
-    /// moved to the lodge (slot 0), whole, one transaction per account. A second run finds none. Then a total line. Without `apply` nothing is written.</summary>
-    public List<string> MoveMisfitAmmo(bool apply, long? only = null)
-    {
-        var (lines, total) = (new List<string>(), 0);
-        foreach (var account in only is { } one ? [one] : Store.AccountIds())
-        {
-            using var con = Con(account);
-            con.Begin();
-            foreach (var (guid, ammo, weapon, slot) in Misfits(con))
-            {
-                lines.Add($"account {account} slot {slot}: weapon {weapon} ({ItemName(weapon)}), ammunition {ammo} ({ItemName(ammo)}) stack {guid}: {(apply ? "moved" : "would move")} to the lodge");
-                total++;
-            }
-            if (apply)
-            {
-                LodgeMisfits(con);
-                con.Commit();
-            }
-        }
-        lines.Add($"{total} stack(s) {(apply ? "moved" : "to move")}{(apply ? "" : ": dry run, nothing written; add --apply to write")}");
-        return lines;
-    }
 }

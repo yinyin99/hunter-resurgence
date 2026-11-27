@@ -58,11 +58,34 @@ public class AmmoFitTests : StateTestBase
 
     // ---- restore
 
+    static string Rows(Db con, string where) => string.Join(" ", con.Rows($"SELECT guid, slot FROM items WHERE account_id = $a AND {where} ORDER BY guid").Select(r => $"{r[0]}:{r[1]}"));
+
     [Fact]
-    public void TestARestoreOfTwoInventoryRepliesLeavesFittingPairsInTheEquippedSlots()
+    public void TestARestoreOfAnOlderAndALaterReplyWithAnotherWeaponInTheSameSlotLeavesOneFittingPair()
     {
         Make();
-        // the older list: the bow in slot 2 with its arrows beside it; the later dict: the bow put away, a rifle in slot 3 with its slugs, and slugs bought for the bow's slot in between
+        // the older list: the bow (1) in slot 2 and its arrows (2) in slot 8; the later reply: another weapon, the rifle (3), in slot 2 as well and its slugs (4) in slot 8
+        var zip = TestZip.Own()
+            .Replace("Inventory_dict.json", """
+                {"702": [{"id": 3, "slot": 2, "units": null, "metadata": {}, "location": null}],
+                 "712": [{"id": 4, "slot": 8, "units": null, "metadata": {}, "location": null}]}
+                """)
+            .Reply("Inventory_list.json", "/v1/Inventory/list", """
+                [{"item": {"id": 701}, "own": [{"id": 1, "slot": 2, "units": null, "metadata": {}, "location": null}]},
+                 {"item": {"id": 711}, "own": [{"id": 2, "slot": 8, "units": null, "metadata": {}, "location": null}]}]
+                """, ("user_id", "1001"));
+        var result = Restorer.Import(state, zip.Write(tmp), null, tmp);
+        using var con = state.Store.Open(1001);
+        Assert.Equal("1:0 2:0 3:2 4:8", Rows(con, "guid <= 4"));  // the later weapon and its ammunition are equipped, the other pair is in the lodge
+        Assert.Contains("put in the lodge: 2", result.Report);  // each once: the bow and the arrows
+        Assert.Empty(state.Misfits(con));
+    }
+
+    [Fact]
+    public void TestARestoreOfTwoInventoryRepliesKeepsTheAmmunitionThatFitsTheWeaponBesideIt()
+    {
+        Make();
+        // the bow (1) in slot 2 with its arrows (2); the rifle (3) in slot 3 with slugs (4) and slugs (5) bought for the bow's slot
         var zip = TestZip.Own()
             .Replace("Inventory_dict.json", """
                 {"701": [{"id": 1, "slot": 0, "units": null, "metadata": {}, "location": null}],
@@ -76,8 +99,8 @@ public class AmmoFitTests : StateTestBase
                 """, ("user_id", "1001"));
         var result = Restorer.Import(state, zip.Write(tmp), null, tmp);
         using var con = state.Store.Open(1001);
-        Assert.Equal("1:2 2:8 3:3 4:9 5:0", string.Join(" ", con.Rows("SELECT guid, slot FROM items WHERE account_id = $a AND guid <= 5 ORDER BY guid").Select(r => $"{r[0]}:{r[1]}")));  // the slugs 5 are in the lodge
-        Assert.Contains("ammunition not fitting the weapon beside it, put in the lodge: 1", result.Report);
+        Assert.Equal("1:2 2:8 3:3 4:9 5:0", Rows(con, "guid <= 5"));  // the slugs 5 are in the lodge
+        Assert.Contains("put in the lodge: 1", result.Report);
         Assert.Empty(state.Misfits(con));
     }
 
@@ -95,20 +118,35 @@ public class AmmoFitTests : StateTestBase
     }
 
     [Fact]
-    public void TestAddMissingStartJudgesAnAmmunitionByTheWeaponBesideItWhicheverComesFirstInTheKit()
+    public void TestARestoredAmmunitionUnderAnEmptySlotIsJudgedByTheWeaponTheStartKitPutsThere()
     {
-        Make();
+        Make(Start((Bow, 2)));
+        var zip = TestZip.Own().Replace("Inventory_dict.json", """
+            {"712": [{"id": 1, "slot": 8, "units": null, "metadata": {}, "location": null}]}
+            """);
+        Restorer.Import(state, zip.Write(tmp), null, tmp);
+        using var con = state.Store.Open(1001);
+        Assert.Equal("1:0", Rows(con, "item_id = 712"));  // the slugs do not fit the bow the kit gave slot 2
+        Assert.Equal(2, (long)con.Scalar("SELECT slot FROM items WHERE account_id = $a AND item_id = 701")!);
+        Assert.Empty(state.Misfits(con));
+    }
+
+    [Fact]
+    public void TestTheStartUpKitTopUpJudgesTheEquippedSlotsAfterAddingTheKit()
+    {
+        var start = Start((Bow, 2));
+        Make(start);
         state.CreateAccount(8, "other");
-        // the kit lists each ammunition before the weapon it sits under: the arrows fit the bow, the slugs do not
-        foreach (var (account, ammo) in new[] { (ME, Arrows), (8L, Slugs) })
+        using (var con = state.Store.Open(8))
         {
-            using var con = state.Store.Open(account);
             con.Begin();
-            Assert.Equal(2, PlayerRows.AddMissingStart(con, [O($$"""{"item_id": {{ammo}}, "slot": 8}"""), O("""{"item_id": 701, "slot": 2}""")], [], 900, state.Suits));
+            con.Exec("DELETE FROM items WHERE account_id = $a");
+            PlayerRows.AddItem(con, 900, Slugs, 8, null, []);  // under the slot 2 the kit is about to fill
+            con.Exec("UPDATE accounts SET start_kit = 0 WHERE id = 8");
             con.Commit();
         }
-        Assert.Equal("901:8 902:2", Slots());
-        Assert.Equal("901:0 902:2", Slots(8));  // the slugs go to the lodge
+        Make(start);  // a start: the account's kit is older than the facts file's
+        Assert.Equal("900:0 901:2", Slots(8));
     }
 
     // ---- loadout
@@ -154,23 +192,27 @@ public class AmmoFitTests : StateTestBase
     {
         Make();
         state.CreateAccount(8, "other");
-        Give(ME, (901, Bow, 2), (902, Slugs, 8), (903, Rifle, 3), (904, Slugs, 9), (905, Arrows, 10));  // 902 is the one: slot 10 has no weapon beside it
+        state.CreateAccount(9, "third");
+        Give(ME, (901, Bow, 2), (902, Slugs, 8), (903, Rifle, 3), (904, Slugs, 9), (905, Arrows, 10));  // 902 is the one: the slugs do not fit the bow beside them; 905 has no weapon beside it, so no verdict
         Give(8, (901, Bow, 2), (902, Arrows, 8), (903, Rifle, 4), (904, Arrows, 10));  // 904 under the rifle (slot 4)
-        var before = Slots() + " | " + Slots(8);
+        Give(9, (901, Bow, 2), (902, Rifle, 2), (903, Arrows, 8));  // two weapons in slot 2 (a restore's merge): the arrows fit one of them and are listed and moved once
+        var before = Slots() + " | " + Slots(8) + " | " + Slots(9);
 
         var dry = state.MoveMisfitAmmo(apply: false);
-        Assert.Equal(2, dry.Count - 1);
+        Assert.Equal(3, dry.Count - 1);
         Assert.Contains("account 7 slot 8: weapon 701", dry[0]);
         Assert.Contains("ammunition 712", dry[0]);
         Assert.Contains("account 8 slot 10: weapon 702", dry[1]);
-        Assert.Equal("2 stack(s) to move: dry run, nothing written; add --apply to write", dry[^1]);
-        Assert.Equal(before, Slots() + " | " + Slots(8));  // nothing written
+        Assert.Contains("account 9 slot 8: weapon 702", dry[2]);
+        Assert.Equal("3 stack(s) to move: dry run, nothing written; add --apply to write", dry[^1]);
+        Assert.Equal(before, Slots() + " | " + Slots(8) + " | " + Slots(9));  // nothing written
 
         var applied = state.MoveMisfitAmmo(apply: true);
-        Assert.Equal(2, applied.Count - 1);
-        Assert.Equal("2 stack(s) moved", applied[^1]);
+        Assert.Equal(3, applied.Count - 1);
+        Assert.Equal("3 stack(s) moved", applied[^1]);
         Assert.Equal("901:2 902:0 903:3 904:9 905:10", Slots());
         Assert.Equal("901:2 902:8 903:4 904:0", Slots(8));  // the stacks are whole, in the lodge (slot 0)
+        Assert.Equal("901:2 902:2 903:0", Slots(9));
         Assert.Equal(new[] { "0 stack(s) moved" }, state.MoveMisfitAmmo(apply: true));
         Assert.Equal(new[] { "0 stack(s) to move: dry run, nothing written; add --apply to write" }, state.MoveMisfitAmmo(apply: false));
     }
