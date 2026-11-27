@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Złożoność sceny</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Złożoność sceny określa gęstość roślinności i zasięg renderowania. Przy zasięgu renderowania niskie ustawienie zapewnia maksymalnie 220 m widoczności poziomej, średnie – 270 m, a wysokie/bardzo wysokie – 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Jakość tekstur</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Tekstury wysokiej jakości wymagają 512 MB pamięci karty graficznej w grze jednoosobowej i 768 MB w trybie wieloosobowym.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Pamięć karty graficznej: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Jakość cieni</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Wygładzanie krawędzi (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrowanie anizotropowe</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Pomoc kontekstowa</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozszerzona pamięć audio</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Więcej pamięci dźwięku (250 MB zamiast 220 MB). Zadziała przy następnym uruchomieniu gry.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Więcej pamięci dźwięku (250 MB zamiast 220 MB): gra zużywa około 30 MB więcej pamięci. Zadziała przy następnym uruchomieniu gry.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Niska</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Średnia</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Wysoka</value></data>

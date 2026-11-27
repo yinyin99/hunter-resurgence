@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Maiseman monimutkaisuus</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Maiseman monimutkaisuus määrää kasvillisuuden tiheyden ja piirtoetäisyyden. Piirtoetäisyyden osalta Matala-asetus antaa enintään 220 m vaakasuuntaisen näkyvyyden, Keskitaso 270 m ja Korkea/Erittäin korkea 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Tekstuurien laatu</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Korkealaatuiset tekstuurit vaativat 512 MB:n näytönohjaimen muistin yksinpelissä ja 768 MB:n moninpelissä.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Näytönohjaimen muistia: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Varjojen laatu</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample-pehmennys</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrooppinen suodatus</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tilannekohtaiset ohjeet</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Laajennettu äänimuisti</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Enemmän äänimuistia (250 Mt 220 Mt:n sijaan). Tulee voimaan pelin seuraavalla käynnistyksellä.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Enemmän äänimuistia (250 Mt 220 Mt:n sijaan): peli käyttää noin 30 Mt enemmän muistia. Tulee voimaan pelin seuraavalla käynnistyksellä.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Matala</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Keskitaso</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Korkea</value></data>

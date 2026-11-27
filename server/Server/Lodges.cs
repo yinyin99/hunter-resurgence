@@ -65,6 +65,7 @@ public sealed partial class State
                     for (var missing = (long)r[1] - have.GetValueOrDefault((long)r[0]); missing > 0; missing--)
                         GrantLodge(con, (long)r[0], type);
             FitStored(con);
+            NoticeBigLodge(con);
             con.Commit();
         }
         catch (Exception e)  // restored rows are player uploads: whatever shape throws, only that account is skipped
@@ -84,6 +85,36 @@ public sealed partial class State
         foreach (var r in rows)
             if (Fit(r.Node!, engines.GetValueOrDefault(r.Id)))
                 con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(r.Node!), r.N);
+    }
+
+    /// <summary>A lodge with this many mounted trophies or more gets its owner the inbox message of <see cref="NoticeBigLodge"/> (#974).</summary>
+    internal const int BigLodge = 75;
+    const string BigLodgeNoticeStart = "Your trophy lodge ";
+
+    /// <summary>
+    /// The account owns a lodge with <see cref="BigLodge"/> mounted trophies or more: one inbox message from the notice sender, naming its largest such lodge (the lowest id on a tie). The game keeps a lodge's trophies in memory after the player
+    /// leaves it, and with about 100 or more a hunt can run out of the 32-bit game's memory (docs/server.md, "Lodges and trophy visibility"). Once per account, ever: the message is its own marker (a restore keeps messages), so a later start, restore or save finds it and sends none.
+    /// A mounted trophy is an animal slot with a `trophy_id`, counted once per id over the lodge's two rows. Nothing is limited or hidden: the lodge is sent whole. Inside the caller's transaction (start, restore, a lodge save).
+    /// </summary>
+    static void NoticeBigLodge(Db con)
+    {
+        if (con.Scalar("SELECT 1 FROM messages WHERE account_id = $a AND sender = ? AND content LIKE ?", SYSTEM_SENDER, BigLodgeNoticeStart + "%") is not null) return;
+        var mounted = new Dictionary<long, HashSet<string>>();  // lodge id (as the allocator reads it) -> the trophy ids its slots hold
+        var names = new Dictionary<long, string>();
+        foreach (var r in con.Rows("SELECT CAST(id AS INTEGER), node FROM lodges WHERE account_id = $a AND source IN (?, ?) ORDER BY source = ? DESC, n", LodgeOne, LodgeList, LodgeOne))
+        {
+            if (JsonNode.Parse((string)r[1]) is not JsonObject node) continue;
+            var id = (long)r[0];
+            if (Py.IsStr(node["name"])) names.TryAdd(id, ((string)node["name"]!).Trim());
+            if (!mounted.TryGetValue(id, out var held)) mounted[id] = held = [];
+            foreach (var slot in (node["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+                if (slot["trophy_id"] is { } trophy) held.Add(Py.Str(trophy));
+        }
+        var (largest, count) = mounted.OrderByDescending(m => m.Value.Count).ThenBy(m => m.Key).Select(m => (m.Key, m.Value.Count)).FirstOrDefault();
+        if (count < BigLodge) return;
+        var name = names.GetValueOrDefault(largest) is { Length: > 0 } n ? n : $"#{largest}";
+        Uploads.Notify(con, $"{BigLodgeNoticeStart}{name} holds {count} trophies. The game keeps a lodge's trophies in memory after you leave it, and with about 100 or more it can close during the next hunt. "
+            + "To avoid it: keep a lodge under about 60 trophies (move some to another lodge), or restart the game after visiting it before you hunt.");
     }
 
     /// <summary>The saved `lodge_contents` of a section save that was restored before it was read as lodges: kept whole in `extras` under this name.</summary>
@@ -282,6 +313,7 @@ public sealed partial class State
                 Fit(node, engine);
                 con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND n = ?", Py.Dumps(node), r[0]);
             }
+        NoticeBigLodge(con);
         con.Commit();
         return rows.Count > 0 ? 200 : 404;
     }

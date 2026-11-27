@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Táj összetettsége</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>A táj összetettsége a növényzet sűrűségét és a látótávolságot szabályozza. Alacsony beállításnál a vízszintes látótávolság legfeljebb 220 m, közepesnél 270 m, magas/nagyon magas beállításnál 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Textúra minősége</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>A magas minőségű textúrákhoz egyjátékos módban 512 MB, többjátékos módban 768 MB videokártya-memória szükséges.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Videomemória: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Árnyékok minősége</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Többmintás élsimítás (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotrop szűrés</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Környezetfüggő súgó</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Bővített hangmemória</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Több hangmemória (250 MB a 220 MB helyett). A játék következő indításakor lép életbe.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Több hangmemória (250 MB a 220 MB helyett): a játék nagyjából 30 MB-tal több memóriát használ. A játék következő indításakor lép életbe.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Alacsony</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Közepes</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Magas</value></data>

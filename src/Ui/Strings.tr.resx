@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Çevre Karmaşıklığı</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Çevre karmaşıklığı bitki örtüsü yoğunluğunu ve görüş mesafesini belirler. Görüş mesafesi için Düşük ayar en fazla 220 m yatay görüş sağlar. Orta ayar 270 m, Yüksek/Çok Yüksek ayar ise 320 m sağlar.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Doku Kalitesi</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Yüksek kaliteli dokular tekli oyunda 512 MB, çoklu oyunda 768 MB ekran kartı belleği gerektirir.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Ekran kartı belleğiniz: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Gölge Kalitesi</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Çoklu Örneklemeli Kenar Yumuşatma</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropik Filtreleme</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Bağlamsal Yardım</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Genişletilmiş Ses Belleği</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Daha fazla ses belleği (220 MB yerine 250 MB). Oyunun bir sonraki başlatılışında etkili olur.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Daha fazla ses belleği (220 MB yerine 250 MB): oyun yaklaşık 30 MB daha fazla bellek kullanır. Oyunun bir sonraki başlatılışında etkili olur.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Düşük</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Orta</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Yüksek</value></data>

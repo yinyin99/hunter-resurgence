@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scenkomplexitet</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scenkomplexiteten styr vegetationstäthet och siktavstånd. För siktavståndet ger låga inställningar högst 220 m horisontell sikt, medelhöga 270 m och höga/mycket höga 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texturkvalitet</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Högkvalitativa texturer kräver 512 MB grafikminne i enspelarläge och 768 MB i flerspelarläge.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Du har {0} MB grafikminne</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Skuggkvalitet</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample-kantutjämning</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Sammanhangsberoende hjälp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Utökat ljudminne</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mer ljudminne (250 MB i stället för 220 MB). Gäller vid nästa start av spelet.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mer ljudminne (250 MB i stället för 220 MB): spelet använder cirka 30 MB mer minne. Gäller vid nästa start av spelet.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Låg</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Medel</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Hög</value></data>

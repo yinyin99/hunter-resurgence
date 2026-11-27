@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Složitost scény</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Složitost scény určuje hustotu vegetace a vykreslovací vzdálenost. Při nízkém nastavení je maximální vodorovný dohled 220 m, při středním 270 m a při vysokém či velmi vysokém 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Kvalita textur</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Textury ve vysoké kvalitě vyžadují 512 MB paměti grafické karty ve hře pro jednoho a 768 MB ve hře s ostatními.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Paměť grafické karty: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Kvalita stínů</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropní filtrování</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tipy a triky</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozšířená paměť zvuku</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Více paměti pro zvuk (250 MB místo 220 MB). Projeví se při příštím spuštění hry.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Více paměti pro zvuk (250 MB místo 220 MB): hra využije asi o 30 MB více paměti. Projeví se při příštím spuštění hry.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Nízká</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Střední</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Vysoká</value></data>

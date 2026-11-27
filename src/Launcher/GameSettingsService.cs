@@ -1,4 +1,3 @@
-using Microsoft.Win32;
 using Resurgence.Services;
 
 namespace Resurgence.Launcher;
@@ -22,13 +21,13 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
     {
         var modes = GameFiles.DisplayModes().Select(m => new Resolution(m.W, m.H, m.Hz)).ToList();
         var paths = GraphicsPaths(prefs.StartWithSteam).ToList();
-        if (paths.Count == 0) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.NotConfigured"));
+        if (paths.Count == 0) return Task.FromResult(new GameSettings(None, modes, "GameSettings.NotConfigured"));
         GraphicsSettings? g = null;
         foreach (var gp in paths)
         {
             // with two files the first that exists is shown (Save writes both)
             var (read, problem) = GameFiles.ReadGraphics(gp);
-            if (read is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, 0, "GameSettings.BadFormat"));
+            if (read is null && problem != FileProblem.Missing) return Task.FromResult(new GameSettings(None, modes, "GameSettings.BadFormat"));
             if ((g = read) is not null) break;
         }
         // before the player's choice a file that says fullscreen shows Borderless: the exclusive full screen only by choice
@@ -38,7 +37,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         var o = OptionsPath is { } op ? GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value : null;
         var options = Native(ToOptions(g, o, mode)) with { StartWithSteam = prefs.StartWithSteam };
         if (!modes.Contains(options.Resolution)) modes = [.. modes.Append(options.Resolution).OrderBy(m => (m.Width, m.Height, m.Hz))];
-        return Task.FromResult(new GameSettings(options, modes, VideoMemoryMb()));
+        return Task.FromResult(new GameSettings(options, modes));
     }
 
     /// <summary>The player's choice; before one, Windowed for a file that says windowed, else Borderless (no file yet, or a file that says fullscreen).</summary>
@@ -146,21 +145,4 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         // only a real on/off change is written: a file holding 2 keeps 2 while the switch stays on
         ExtendedAudio = o.ExtendedAudio is { } on && g.ExtendedAudio is { } a && (a != 0) != on ? (on ? 1 : 0) : g.ExtendedAudio,
     };
-
-    /// <summary>Dedicated video memory of the biggest display adapter, from the display driver's registry entries; 0 when unknown.</summary>
-    static int VideoMemoryMb()
-    {
-        long best = 0;
-        try
-        {
-            using var cls = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}");
-            foreach (var name in cls?.GetSubKeyNames() ?? [])
-            {
-                using var key = cls!.OpenSubKey(name);
-                best = Math.Max(best, key?.GetValue("HardwareInformation.qwMemorySize") switch { long l => l, byte[] { Length: 8 } b => BitConverter.ToInt64(b), _ => 0 });
-            }
-        }
-        catch (Exception e) when (e is System.Security.SecurityException or UnauthorizedAccessException or IOException) { }
-        return (int)(best / (1024 * 1024));
-    }
 }

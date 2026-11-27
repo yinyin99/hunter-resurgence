@@ -322,14 +322,12 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Complexidade do Cenário</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>A complexidade do cenário controla a densidade da vegetação e a distância de renderização. Na distância de renderização, a configuração Baixo oferece no máximo 220 m de visão horizontal, Médio oferece 270 m e Alto/Muito Alto oferecem 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Qualidade das Texturas</value></data>
-  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Texturas de alta qualidade exigem 512 MB de memória de vídeo no modo single player e 768 MB no multiplayer.</value></data>
-  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Você tem {0} MB de memória de vídeo</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Qualidade das Sombras</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Suavização de Serrilhado (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtragem Anisotrópica</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Ajuda Contextual</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Memória Estendida de Áudio</value></data>
-  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mais memória de som (250 MB em vez de 220 MB). Vale a partir da próxima inicialização do jogo.</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mais memória de som (250 MB em vez de 220 MB): o jogo usa cerca de 30 MB a mais de memória. Vale a partir da próxima inicialização do jogo.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Baixo</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Médio</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Alto</value></data>
