@@ -91,4 +91,31 @@ public sealed class GameSettingsModalTests : UiContext
         Services.AddSingleton<ISessionService>(session);
         Assert.Empty(Render<GameSettingsModal>().FindAll("#units"));
     }
+
+    [Fact]
+    public void TheExtendedAudioRowShowsWithItsNoteWhenTheFileHasTheLine()
+    {
+        var cut = Render<GameSettingsModal>();  // the mock has the switch
+        Assert.Single(cut.FindAll("#extended_audio"));
+        Assert.Contains("250 MB", cut.Find("#extended_audio_note").TextContent);
+    }
+
+    [Fact]
+    public async Task TheExtendedAudioRowIsHiddenWithoutTheLine()
+    {
+        var inner = new Resurgence.Services.Mocks.MockGameSettingsService(Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.Mocks.MockGameSettingsService>.Instance);
+        Services.AddSingleton<IGameSettingsService>(new NoAudio(inner, await inner.ReadAsync()));
+        Assert.Empty(Render<GameSettingsModal>().FindAll("#extended_audio"));
+    }
+
+    sealed class NoAudio(IGameSettingsService inner, GameSettings read) : IGameSettingsService
+    {
+        public Task<GameSettings> ReadAsync() => Task.FromResult(read with { Options = read.Options with { ExtendedAudio = null } });
+        public Task<Result> SaveAsync(GameOptions options) => inner.SaveAsync(options);
+        public Task<bool> FirstStartAsync() => inner.FirstStartAsync();
+        public Task<string> LanguageAsync() => inner.LanguageAsync();
+        public Task SetLanguageAsync(string code) => inner.SetLanguageAsync(code);
+        public Task<string?> HostLanguageAsync() => inner.HostLanguageAsync();
+        public Task SetHostLanguageAsync(string code) => inner.SetHostLanguageAsync(code);
+    }
 }

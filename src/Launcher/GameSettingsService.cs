@@ -88,7 +88,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
             var read = paths.Select(gp => (gp, GameFiles.ReadGraphics(gp))).ToList();
             if (read.Any(r => r.Item2.Value is null && r.Item2.Problem != FileProblem.Missing)) return Task.FromResult(Result.Fail("GameSettings.BadFormat"));
             foreach (var (gp, (g, _)) in read)
-                if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics(), options));
+                if (g is null) GameFiles.CreateGraphics(gp, ToGraphics(GameFiles.DefaultGraphics() with { ExtendedAudio = 0 }, options));
                 else GameFiles.WriteGraphics(gp, ToGraphics(g, options));
             if (OptionsPath is { } op && GameFiles.ReadOptions(op, settings.OptionsKeyPrefix!).Value is { } o && options.ContextualHelp is { } help && o.Has("ContextualHelp"))
             {
@@ -128,7 +128,7 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
 
     // the file's anisotropic filtering has Default before Off: the dialog has no Default, it shows Off
     public static GameOptions ToOptions(GraphicsSettings g, OptionsSettings? o, DisplayMode display) =>
-        new(display, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, null);
+        new(display, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, g.ExtendedAudio is { } a ? a != 0 : null);
 
     /// <summary>Only Fullscreen writes the file's fullscreen flag; Borderless runs windowed. Untouched anisotropic filtering stays as the file has it (Default is not turned into Off).</summary>
     public static GraphicsSettings ToGraphics(GraphicsSettings g, GameOptions o) => g with
@@ -143,6 +143,8 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         Shadow = o.Shadow,
         Msaa = o.Msaa,
         Aniso = o.Aniso == Math.Max(g.Aniso - 1, 0) ? g.Aniso : o.Aniso + 1,
+        // only a real on/off change is written: a file holding 2 keeps 2 while the switch stays on
+        ExtendedAudio = o.ExtendedAudio is { } on && g.ExtendedAudio is { } a && (a != 0) != on ? (on ? 1 : 0) : g.ExtendedAudio,
     };
 
     /// <summary>Dedicated video memory of the biggest display adapter, from the display driver's registry entries; 0 when unknown.</summary>

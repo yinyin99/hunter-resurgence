@@ -326,6 +326,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropní filtrování</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Tipy a triky</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Rozšířená paměť zvuku</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Více paměti pro zvuk (250 MB místo 220 MB). Projeví se při příštím spuštění hry.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Nízká</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Střední</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Vysoká</value></data>

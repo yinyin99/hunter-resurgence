@@ -326,6 +326,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontekstuell hjelp</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Utvidet lydminne</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Mer lydminne (250 MB i stedet for 220 MB). Trer i kraft ved neste start av spillet.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Lav</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Middels</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Høy</value></data>

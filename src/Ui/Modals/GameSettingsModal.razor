@@ -56,7 +56,7 @@
             <label class="row"><span>@L["GameSettings.Msaa"]</span><select class="field-sel" id="msaa" @bind="msaa">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")</select></label>
             <label class="row"><span>@L["GameSettings.Aniso"]</span><select class="field-sel" id="anisotropic_filtering" @bind="aniso">@Option(0, "Off")@Option(1, "X2")@Option(2, "X4")@Option(3, "X8")@Option(4, "X16")</select></label>
             @if (contextual is not null) { <label class="row"><span>@L["GameSettings.ContextHelp"]</span><input class="tick" type="checkbox" id="contextual_help" @bind="contextual" /></label> }
-            @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input class="tick" type="checkbox" id="extended_audio" @bind="audio" /></label> }
+            @if (audio is not null) { <label class="row"><span>@L["GameSettings.AudioMemory"]</span><input class="tick" type="checkbox" id="extended_audio" @bind="audio" /><small id="extended_audio_note">@L["GameSettings.AudioHelp"]</small></label> }
         </div>
         @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
         <div class="buttons">
