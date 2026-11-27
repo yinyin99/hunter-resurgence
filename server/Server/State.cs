@@ -919,9 +919,10 @@ public sealed partial class State
                 using (var con = Store.Open(id))
                 {
                     con.Begin();
-                    PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
-                                               (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
-                    SettleEquipped(con);
+                    var added = PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
+                                                           (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
+                    if (added > 0 && SettleEquipped(con) is var moved and > 0)
+                        Console.WriteLine($"start kit of account {id}: {added} item(s) added, {moved} equipped item(s) that did not fit put in the lodge");
                     con.Exec("UPDATE accounts SET start_kit = ? WHERE id = ?", kit, id);
                     con.Commit();
                 }
@@ -2410,9 +2411,9 @@ public sealed partial class State
         [.. con.Rows("SELECT a.guid, a.item_id, w.item_id, a.slot FROM items a JOIN items w ON w.account_id = $a AND w.slot = a.slot - 6 WHERE a.account_id = $a AND a.slot BETWEEN 8 AND 10 ORDER BY a.slot, a.guid, w.guid")
             .Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]), Convert.ToInt64(r[2]), Convert.ToInt64(r[3]))).Where(m => !Suits(m.Item3, m.Item2)).GroupBy(m => m.Item1).Select(g => g.First())];
 
-    /// <summary>Puts the equipped slots of the account in order (#1009), inside its transaction, and returns how many stacks and weapons it moved to the lodge (slot 0), each once. One weapon to a weapon slot (2 to 4): the one with the highest guid,
-    /// the item the player got last (the two replies of a backup can each hold one); one ammunition stack to an ammunition slot (8 to 10): of those that fit the weapon in the slot 6 below, the highest guid (all of them when it has none); then every
-    /// stack that does not fit that weapon (<see cref="Misfits"/>). A moved item stays whole in the lodge.</summary>
+    /// <summary>Puts the equipped slots of the account in order (#1009), inside its transaction, and returns how many items it moved to the lodge (slot 0), each once. One weapon to a weapon slot (2 to 4): the one with the highest guid,
+    /// the item the player got last (the two replies of a backup can each hold one); every ammunition stack in an ammunition slot (8 to 10) stays when it fits the weapon in the slot 6 below, or when that has no weapon, and
+    /// only the stacks that do not fit it (<see cref="Misfits"/>) move. A moved item stays whole in the lodge.</summary>
     internal int SettleEquipped(Db con)
     {
         var rows = con.Rows("SELECT guid, item_id, slot FROM items WHERE account_id = $a AND slot IN (2, 3, 4, 8, 9, 10) ORDER BY guid DESC")
@@ -2425,10 +2426,8 @@ public sealed partial class State
             moved.AddRange(group.Skip(1).Select(r => r.Guid));
         }
         foreach (var group in rows.Where(r => r.Slot >= 8).GroupBy(r => r.Slot))
-        {
-            var fits = group.Where(r => !weapons.TryGetValue(group.Key - 6, out var weapon) || Suits(weapon, r.Item)).Select(r => r.Guid).ToList();
-            moved.AddRange(group.Select(r => r.Guid).Where(g => g != fits.FirstOrDefault()));
-        }
+            if (weapons.TryGetValue(group.Key - 6, out var weapon))
+                moved.AddRange(group.Where(r => !Suits(weapon, r.Item)).Select(r => r.Guid));
         foreach (var guid in moved)
             con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = ?", guid);
         return moved.Count;

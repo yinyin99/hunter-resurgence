@@ -105,6 +105,22 @@ public class AmmoFitTests : StateTestBase
     }
 
     [Fact]
+    public void TestEveryFittingStackOfAnAmmunitionSlotStaysInIt()
+    {
+        Make();
+        // the bow (1) in slot 2 with two stacks of its arrows (2, 3) in slot 8, and slugs (4) that do not fit
+        var zip = TestZip.Own().Replace("Inventory_dict.json", """
+            {"701": [{"id": 1, "slot": 2, "units": null, "metadata": {}, "location": null}],
+             "711": [{"id": 2, "slot": 8, "units": null, "metadata": {}, "location": null}, {"id": 3, "slot": 8, "units": null, "metadata": {}, "location": null}],
+             "712": [{"id": 4, "slot": 8, "units": null, "metadata": {}, "location": null}]}
+            """);
+        var result = Restorer.Import(state, zip.Write(tmp), null, tmp);
+        using var con = state.Store.Open(1001);
+        Assert.Equal("1:2 2:8 3:8 4:0", Rows(con, "guid <= 4"));  // both stacks of arrows stay, only the slugs go
+        Assert.Contains("put in the lodge: 1", result.Report);
+    }
+
+    [Fact]
     public void TestTheStartKitAddedByARestoreNeverPutsAnAmmunitionUnderAWeaponItDoesNotFit()
     {
         Make(Start((Slugs, 8), (Arrows, 9)));  // the kit's ammunition is in the ammunition slots of the bow (slot 2) and the rifle (slot 3), the other's
