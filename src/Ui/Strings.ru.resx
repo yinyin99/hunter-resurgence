@@ -200,7 +200,7 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Просмотреть предстоящие соревнования</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>СОЗДАТЬ ОДИНОЧНУЮ ИГРУ</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>СОЗДАТЬ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на охотничьи домики (их значки), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на значки охотничьих домиков, чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Одни из самых великолепных уголков природы и 45 видов животных ждут вас. Удачной охоты!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Время начала:</value></data>
   <data name="Launch.EventTime" xml:space="preserve"><value>Задано событием: {0}</value></data>
@@ -644,7 +644,7 @@
   <data name="Mis.All" xml:space="preserve"><value>Все</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Избранное</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Активные</value></data>
-  <data name="Mis.Packs" xml:space="preserve"><value>Серии миссий</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Наборы миссий</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Доступные</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Виды</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Оружие</value></data>
@@ -1341,7 +1341,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Ваши данные</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Восстановить резервную копию</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Загрузите zip-архив, созданный инструментом резервного копирования. Оператор проверит его вручную и, если всё в порядке, восстановит на этом сервере ваш инвентарь, кошелёк, навыки, статистику, достижения и трофеи.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Загрузка резервной копии заменяет ваш профиль на этом сервере: предметы, кошелёк, навыки, статистику, достижения, трофеи и домики. Охоты, сыгранные здесь, остаются.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Загрузка резервной копии заменяет ваш профиль на этом сервере: предметы, кошелёк, навыки, статистику, достижения, трофеи и залы трофеев. Охоты, сыгранные здесь, остаются.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Используйте резервную копию, созданную в режиме «Мой аккаунт». Оператор видит, создана ли она для аккаунта Steam, с которым вы вошли; это подсказка, а не доказательство.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Резервную копию можно восстановить один раз. Если вы ещё не играли на этом сервере, ваш аккаунт получит ID пользователя и имя из резервной копии.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Каждый zip-архив сохраняется, чтобы оператор проверил его вручную. Ничего не восстанавливается автоматически, поэтому это может занять некоторое время.</value></data>
@@ -1426,12 +1426,12 @@
   <data name="Claim.Find.limit" xml:space="preserve"><value>Сегодня слишком много поисков, попробуйте завтра.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Сервер не ответил.</value></data>
   <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
-  <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, домики: {2}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, залы трофеев: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Навыки: {0}, статистика: {1}, достижения: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>да</value></data>
   <data name="Claim.No" xml:space="preserve"><value>нет</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Использовать моё старое имя</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и домики на этом сервере старым профилем. Если вы уже восстановили собственную резервную копию, ничего из неё не заменяется: заявка лишь добавляет то, чего в копии нет. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и залы трофеев на этом сервере старым профилем. Если вы уже восстановили собственную резервную копию, ничего из неё не заменяется: заявка лишь добавляет то, чего в копии нет. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Вернуть этот профиль</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Ваша заявка на {0} (подана {1}) ждёт оператора.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Ваш старый профиль {0} восстановлен ({1}).</value></data>
@@ -1558,7 +1558,7 @@
   <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>От 3 до 30 букв, цифр, - или _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Я здесь новичок</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Я играл раньше: восстановить то, что сохранилось от моего старого профиля</value></data>
-  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, домики, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, залы трофеев, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Оставьте пустым, чтобы использовать старое имя, если оно свободно.</value></data>
   <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Имя содержит от 3 до 30 букв, цифр, - или _ и начинается с буквы или цифры.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
