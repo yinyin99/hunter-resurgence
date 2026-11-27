@@ -270,4 +270,47 @@ public class GameSettingsServiceTests
         await svc.SetHostLanguageAsync("xx");
         Assert.Null(await svc.HostLanguageAsync());
     }
+
+    // #934: the 11th line of the graphics file is the extended audio memory switch: 0 off, any other number on, no number or no line hides it
+    [Theory]
+    [InlineData("0\n", false)]
+    [InlineData("1\n", true)]
+    [InlineData("2\n", true)]
+    [InlineData("x\n", null)]
+    [InlineData("", null)]
+    public void TheExtendedAudioLineIsRead(string line, bool? expected)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        Write(g, Gfx + "0\n" + line);
+        Assert.Equal(expected, GameSettingsService.ToOptions(GameFiles.ReadGraphics(g).Value!, null, DisplayMode.Windowed).ExtendedAudio);
+    }
+
+    [Theory]
+    [InlineData("0", true, "1")]
+    [InlineData("1", false, "0")]
+    [InlineData("2", true, "2")]
+    [InlineData("2", false, "0")]
+    [InlineData("0", false, "0")]
+    public async Task TheExtendedAudioLineIsWrittenOnlyOnARealChange(string before, bool on, string after)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        Write(g, Gfx + "0\n" + before + "\n0\n");
+        var (svc, _, _, o) = Make(temp.Path, Config());
+        Assert.True((await svc.SaveAsync(o with { ExtendedAudio = on })).Ok);
+        Assert.Equal(Gfx + "0\n" + after + "\n0\n", Bytes(g));
+    }
+
+    [Fact]
+    public async Task AFileWithoutTheExtendedAudioLineIsLeftAlone()
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var g = Path.Combine(temp.Path, "g.cfg");
+        Write(g, Gfx + "0\n");
+        var (svc, _, _, o) = Make(temp.Path, Config());
+        Assert.Null(o.ExtendedAudio);
+        Assert.True((await svc.SaveAsync(o with { ExtendedAudio = true })).Ok);
+        Assert.Equal(Gfx + "0\n", Bytes(g));
+    }
 }

@@ -326,6 +326,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotrop szűrés</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Környezetfüggő súgó</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Bővített hangmemória</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Több hangmemória (250 MB a 220 MB helyett). A játék következő indításakor lép életbe.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Alacsony</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Közepes</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Magas</value></data>

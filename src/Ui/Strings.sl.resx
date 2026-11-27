@@ -326,6 +326,7 @@
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropno filtriranje</value></data>
   <data name="GameSettings.ContextHelp" xml:space="preserve"><value>Kontekstna pomoč</value></data>
   <data name="GameSettings.AudioMemory" xml:space="preserve"><value>Razširjen zvočni pomnilnik</value></data>
+  <data name="GameSettings.AudioHelp" xml:space="preserve"><value>Več pomnilnika za zvok (250 MB namesto 220 MB). Začne veljati ob naslednjem zagonu igre.</value></data>
   <data name="GameSettings.Low" xml:space="preserve"><value>Nizka</value></data>
   <data name="GameSettings.Medium" xml:space="preserve"><value>Srednja</value></data>
   <data name="GameSettings.High" xml:space="preserve"><value>Visoka</value></data>
