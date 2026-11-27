@@ -432,10 +432,10 @@ public sealed class MultiplayerPagesTests : UiContext
         var cut = ListInLanguages();
 
         cut.Find("th.lang a").Click();
-        Assert.Equal(["Unknown game", "German game", "English game", "French game", "Brazil game"], Names(cut));  // none first, then Deutsch, English, Français, Português
+        Assert.Equal(["German game", "English game", "French game", "Brazil game", "Unknown game"], Names(cut));  // Deutsch, English, Français, Português, none last
         Assert.Equal("ascending", cut.Find("th.lang").GetAttribute("aria-sort"));
         cut.Find("th.lang a").Click();
-        Assert.Equal(["Brazil game", "French game", "English game", "German game", "Unknown game"], Names(cut));
+        Assert.Equal(["Brazil game", "French game", "English game", "German game", "Unknown game"], Names(cut));  // none last again
     }
 
     [Fact]

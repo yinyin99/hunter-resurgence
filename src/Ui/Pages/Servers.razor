@@ -153,7 +153,9 @@
                 // the old list starts with the games of the nearest continent
                 _ => g => (int)(g.Distance ?? Distance.Short),
             };
-            return (descending ? rows.OrderByDescending(key) : rows.OrderBy(key)).ToList();
+            var sorted = (descending ? rows.OrderByDescending(key) : rows.OrderBy(key)).ToList();
+            // a game without a language comes last either way (it has no name to sort by)
+            return sortBy == "language" ? [.. sorted.Where(g => Languages.Find(g.Language) is not null), .. sorted.Where(g => Languages.Find(g.Language) is null)] : sorted;
         }
     }
 

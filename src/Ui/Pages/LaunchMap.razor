@@ -29,7 +29,7 @@ else
             <h3>@L["Launch.Info"]</h3>
             <label for="game-name" class="muted">@L["Launch.GameName"]</label>
             <input class="field" id="game-name" name="name" maxlength="25" @bind="name" />
-            <label class="muted">@L["Servers.LanguageLabel"]</label>
+            <label for="game-language" class="muted">@L["Servers.LanguageLabel"]</label>
             <Select Id="game-language" Width="240" Options="languageNames" Value="@Languages.Find(language)!.Name" ValueChanged="v => language = Languages.All.First(l => l.Name == v).Code" Flag="n => Languages.All.First(l => l.Name == n).Flag" />
             <textarea class="field" name="description" maxlength="255" placeholder="@L["Launch.Description"]" @bind="description"></textarea>
         </div>
