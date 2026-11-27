@@ -31,7 +31,8 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
                     ? ((await friends.FriendsAsync()).Any(f => string.Equals(f.Handle, h.Handle, StringComparison.OrdinalIgnoreCase)), (await friends.PendingAsync()).Contains(h.Handle, StringComparer.OrdinalIgnoreCase))
                     : (false, false);
                 return new(h.Handle, h.Hunterscore, h.Rank, h.Membership ?? "", Online: false, own, friend, pending, Tabs: Tabs, Avatar: Avatars.Slot(h.Avatar),
-                    Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null);
+                    Background: Path.GetFileNameWithoutExtension(h.Background) is { Length: > 0 } background ? background : null,
+                    Ribbon: Path.GetFileNameWithoutExtension(h.Ribbon) is { Length: > 0 } ribbon ? ribbon : null);
             }
             log.LogWarning("The server answered {Path} with {Status}: no profile", ServerSessionApi.Hunters, (int)response.StatusCode);
         }
@@ -47,12 +48,11 @@ public sealed class ServerProfileService(HttpClient http, ServerCookie cookie, I
     public async Task<IReadOnlyList<RankBar>> RanksAsync(string handle, string kind)
     {
         if (await GetRanksAsync(handle) is not { } r) return [];
-        RankBar Bar(string name, IEnumerable<ServerRank> rows, long id = 0) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap), id);
+        RankBar Bar(string name, IEnumerable<ServerRank> rows) => new(name, 0, Count(rows.Sum(x => Math.Min(x.Value, r.Cap))), Count(rows.Count() * r.Cap));
         if (kind != "overview")
             return [.. r.Ranks.Where(x => x.Category == kind).OrderBy(x => x.Name, StringComparer.Ordinal)
                 .Select(x => new RankBar(x.Name, Math.Max(0, x.Value), Count(Math.Min(x.Value, r.Cap)), Count(r.Cap), x.Id))];
-        // the hunterscore bar carries the id of the player's highest rank (the most hunted row), whose badge the overview shows
-        return [Bar("Hunter Score", r.Ranks, r.Ranks.Where(x => x.Value > 0).MaxBy(x => x.Value)?.Id ?? 0), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
+        return [Bar("Hunter Score", r.Ranks), Bar("Animals", r.Ranks.Where(x => x.Category == "animals")),
                 Bar("Weapons", r.Ranks.Where(x => x.Category == "weapons")), Bar("Collectables", r.Ranks.Where(x => x.Category == "collectables"))];
     }
 

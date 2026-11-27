@@ -54,8 +54,8 @@ public sealed record ServerAccount(long UserId, string Handle, int Hunterscore =
 public sealed record ServerHunter(int Rank, string Handle, int Hunterscore, string? Avatar = null);
 
 /// <summary>A hunter's profile header of <see cref="ServerSessionApi.Hunters"/>: <c>membership</c> is its title ("" without one), <c>avatar</c> the URL of its picture,
-/// <c>background</c> the file name of the header picture the player chose (null without one).</summary>
-public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, string? Membership, string? Avatar, string? Background = null);
+/// <c>background</c> the file name of the header picture the player chose, <c>ribbon</c> that of the collector ribbon (null without one).</summary>
+public sealed record ServerProfile(string Handle, int Hunterscore, int Rank, string? Membership, string? Avatar, string? Background = null, string? Ribbon = null);
 
 /// <summary>One page of the top 100 of the hunterscore board of <see cref="ServerSessionApi.Hunters"/>; <c>Around</c> the player's own place and the 50 above and below it that are past the top 100.</summary>
 public sealed record ServerBoard(int Page, int Pages, ServerHunter[] Rows, ServerHunter[]? Around = null);

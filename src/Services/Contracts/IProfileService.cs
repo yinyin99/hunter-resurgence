@@ -2,9 +2,10 @@ namespace Resurgence.Services;
 
 /// <summary>The profile header; <see cref="Own"/> is the signed-in player, <see cref="Friend"/> a friend of theirs, <see cref="RequestPending"/> a friend request of the signed-in player that is not answered yet.
 /// <see cref="Tabs"/> are the tabs the page shows (null: all of them, the mock's); <see cref="Avatar"/> is the slot of the player's picture (null: the default one);
-/// <see cref="Background"/> is the header picture the player chose on the live site, without its extension (null: none).</summary>
+/// <see cref="Background"/> is the header picture the player chose on the live site, without its extension (null: none); <see cref="Ribbon"/> is the collector ribbon (moose, elk, bear, fox or turkey, by the share of
+/// the achievement points reached) the ranks overview shows as its large badge, without its extension (null: none).</summary>
 public sealed record Profile(string Handle, int HunterScore, int Rank, string Membership, bool Online, bool Own, bool Friend, bool RequestPending = false,
-    IReadOnlySet<string>? Tabs = null, string? Avatar = null, string? Background = null);
+    IReadOnlySet<string>? Tabs = null, string? Avatar = null, string? Background = null, string? Ribbon = null);
 /// <summary>A progress bar of the ranks tab: <see cref="Level"/> is the rank reached, or on the live site the whole count (past the cap too), <see cref="Done"/> of <see cref="Total"/> the way to the next one;
 /// <see cref="Id"/> is the rank's game id, which names its picture (0: none, the mock's).</summary>
 public sealed record RankBar(string Name, long Level, int Done, int Total, long Id = 0);

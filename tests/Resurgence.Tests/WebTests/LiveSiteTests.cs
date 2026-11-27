@@ -366,13 +366,14 @@ public sealed class LiveSiteTests : UiContext
     });
 
     [Fact]
-    public void TheRanksOverviewHasTheHighestRanksBadgeAndBarsWithoutTextAndFocusableFigures() => InEnglish(() =>
+    public void TheRanksOverviewHasTheProfilesRibbonBadgeAndBarsWithoutTextAndFocusableFigures() => InEnglish(() =>
     {
-        Services.AddSingleton<IProfileService>(RealRanks());
+        Services.AddSingleton<IProfileService>(new ServerProfileService(new HttpClient(new Server("""{"handle":"Fox","hunterscore":5,"rank":3,"ribbon":"elk.png"}""", "{}", ranks: Ranks)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie(), new MockSessionService(() => null), new MockProfileService(), NullLogger<ServerProfileService>.Instance));
         Live(true);
         var cut = Render<RanksTab>(p => p.Add(r => r.Handle, "Fox"));
         cut.WaitForAssertion(() => Assert.Equal(4, cut.FindAll("div.ov .bar").Count));
-        Assert.Equal("rank-2", cut.Find("div.overview > .asset-slot").GetAttribute("aria-label"));  // the player's highest rank, on the left
+        Assert.Equal("ribbon-elk", cut.Find("div.overview > .asset-slot").GetAttribute("aria-label"));  // the profile's collector ribbon, on the left
         foreach (var bar in cut.FindAll("div.ov .bar"))
         {
             Assert.Equal("", bar.QuerySelector(".track")!.TextContent);  // the bar itself holds no text

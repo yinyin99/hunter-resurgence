@@ -234,6 +234,7 @@ public class PerPlayerTests : StateTestBase, IAsyncLifetime
             con.Commit();
         }
         Assert.Equal("exploration_3.png", (string?)await Background());
+        Assert.Equal("moose.png", (string?)JsonNode.Parse((await Send(community, "GET", "web.test", "/hunters/second", null)).Body)!["ribbon"]);
     }
 
     [Fact]

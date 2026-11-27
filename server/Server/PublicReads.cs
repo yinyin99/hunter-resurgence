@@ -247,6 +247,13 @@ public sealed partial class State
         return RestoredProfile(con)?["background"] is { } b && Py.IsStr(b) ? C(b) : null;
     }
 
+    /// <summary>The `ribbon` of an account's restored `/game/user/&lt;id&gt;/profile` reply, the collector ribbon the profile shows under the picture (a file name such as `moose.png`): a string, null when it has none.</summary>
+    public JsonNode? ProfileRibbon(long account)
+    {
+        using var con = Con(account);
+        return RestoredProfile(con)?["ribbon"] is { } r && Py.IsStr(r) ? C(r) : null;
+    }
+
     /// <summary>/game/user/&lt;id&gt;/profile of an account: `background` and `ribbon` of its restored reply (null without one), its
     /// hunterscore and how many achievement thresholds it has earned (those with an earn time).</summary>
     public byte[] UserProfileReply(long account)
