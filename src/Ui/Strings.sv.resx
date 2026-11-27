@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Du äger {0} av {1} föremål</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du äger redan alla föremål i det här paketet</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>var</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagar</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>REA</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Rean slutar {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inloggningscookies och speltokens, som hashvärden som inte kan läsas tillbaka.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Bara om du länkar Discord: ditt Discord-id och de token som Discord gav servern för att uppdatera dina roller, lagrade krypterade. Inget annat från din Discord-profil lagras. Servern skickar ditt handle och din HunterScore till Discord för dina roller.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bara om du länkar Discord: en post om att belöningen på 5000 gm$ och 250 em$ har betalats ut för ditt Discord-id, lagrad som en nyckelhash som inte kan göras om till id:t.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>För att visa hur långt bort värden för ett flerspelarspel är slår servern upp den ungefärliga platsen (ungefär staden) för adressen till din anslutning. Andra spelare ser bara ett kort, medellångt eller långt avstånd. Platsen sparas i serverns minne i högst en timme och skrivs aldrig till disk eller delas.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Vad konton inte innehåller</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-postadress, ditt riktiga namn, din postadress eller ditt telefonnummer: de efterfrågas inte och sparas inte i ditt konto. Om en säkerhetskopia innehåller ett sådant fält återställs det inte.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>

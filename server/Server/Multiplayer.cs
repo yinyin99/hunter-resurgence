@@ -305,6 +305,9 @@ public sealed partial class State
         });
     }
 
+    /// <summary>The offline IP database's places, from the `geoip_file` setting; null without one: every `distance` of the website's list is null.</summary>
+    public Places? Places { get; set; }
+
     long HunterScore(long account) => Store.AccountJson(account)["hunterscore"] is { } h && Py.IsNum(h) ? Py.L(h) : 0;
 
     /// <summary>Network/list: the open sessions, oldest first, as the original lists them (no country or continent). With a `caller` (the website's list) each session also has `language` (its host's, null for none), `joinable` and `why`, the refusal
@@ -312,9 +315,11 @@ public sealed partial class State
     /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
     /// session of a caller who may not join (`why` is not null: friends only, hunterscore, password, full ...) and is not in it shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
     /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet. With <paramref name="website"/> (`GET /catalog/games`, for the website and the launcher; the game's own list never has it) every session also has `event`
-    /// (the id of the seasonal event it runs, null for none: its host's decision, <see cref="HostEvent"/>) and `event_differs` (the event state differs from what the caller's own single-player hunt on that reserve would get now: <see cref="OwnEvent"/>; false without a caller).</summary>
-    public byte[] NetworkListReply(long? caller = null, bool website = false)
+    /// (the id of the seasonal event it runs, null for none: its host's decision, <see cref="HostEvent"/>) and `event_differs` (the event state differs from what the caller's own single-player hunt on that reserve would get now: <see cref="OwnEvent"/>; false without a caller), and `distance` (<see cref="HostDistance.Bucket"/> of the places of the
+    /// `viewerIp` and the host's connect address: `short`, `medium` or `long`; null when either place is unknown, for the caller's own game and without a caller; the places themselves never leave).</summary>
+    public byte[] NetworkListReply(long? caller = null, bool website = false, string? viewerIp = null)
     {
+        var viewerPlace = new Lazy<(double Lat, double Lon)?>(() => Places?.Locate(viewerIp));  // once for the list, and not at all without a database
         var score = caller is { } me ? HunterScore(me) : 0;
         var friends = caller is { } you ? Store.FriendsOf(you, LocalAccount).Friends : [];
         var callerPlays = website && caller is { } viewer && Store.PlaysEvents(viewer);  // read once for the list, not once per game
@@ -356,6 +361,7 @@ public sealed partial class State
                 var gameEvent = HostEvent(g.Host, gameReserve);
                 list["event"] = gameEvent;
                 list["event_differs"] = caller is not null && OwnEvent(callerPlays, gameReserve) != gameEvent;
+                list["distance"] = caller is null || g.Host == caller || Places is null ? null : HostDistance.Bucket(viewerPlace.Value, Places.Locate(g.Members[0].Ip));
             }
             if (caller is not null)
             {

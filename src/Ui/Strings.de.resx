@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Sie besitzen {0} von {1} Artikeln</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Sie besitzen alle Artikel dieses Pakets</value></data>
   <data name="Store.Or" xml:space="preserve"><value>oder</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>vorher</value></data>
   <data name="Store.Days" xml:space="preserve"><value>Tage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ANGEBOT</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Angebot endet {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Anmelde-Cookies und Spiel-Tokens, als Hashes, die sich nicht zurücklesen lassen.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Nur wenn Sie Discord verknüpfen: Ihre Discord-ID und die Token, die Discord dem Server zum Aktualisieren Ihrer Rollen gegeben hat, verschlüsselt gespeichert. Sonst wird nichts von Ihrem Discord-Profil gespeichert. Der Server sendet Ihr Handle und Ihren HunterScore für Ihre Rollen an Discord.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Nur wenn Sie Discord verknüpfen: ein Vermerk, dass die Belohnung von 5000 gm$ und 250 em$ für Ihre Discord-ID ausgezahlt wurde, gespeichert als Hash mit Schlüssel, der sich nicht in die ID zurückrechnen lässt.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Um anzuzeigen, wie weit der Host eines Multiplayer-Spiels entfernt ist, ermittelt der Server den ungefähren Standort (etwa die Stadt) der Adresse Ihrer Verbindung. Andere Spieler sehen nur eine kurze, mittlere oder lange Distanz. Der Standort wird höchstens eine Stunde im Arbeitsspeicher des Servers gehalten und nie auf die Festplatte geschrieben oder weitergegeben.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Was Konten nicht enthalten</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ihre E-Mail-Adresse, Ihr echter Name, Ihre Postanschrift oder Telefonnummer: Diese Angaben werden nicht abgefragt und nicht in Ihrem Konto gespeichert. Enthält ein Backup ein solches Feld, wird es nicht wiederhergestellt.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ihre Daten löschen</value></data>

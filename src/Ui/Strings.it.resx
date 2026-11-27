@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Possiedi {0} oggetti su {1}</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Possiedi già tutti gli oggetti di questo pacchetto</value></data>
   <data name="Store.Or" xml:space="preserve"><value>o</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>prima</value></data>
   <data name="Store.Days" xml:space="preserve"><value>giorni</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFFERTA</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>L'offerta termina {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookie di accesso e token di gioco, come hash che non possono essere riletti.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Solo se colleghi Discord: il tuo id Discord e i token che Discord ha dato al server per aggiornare i tuoi ruoli, conservati cifrati. Nient'altro del tuo profilo Discord viene conservato. Il server invia a Discord il tuo nome utente e il tuo HunterScore per i tuoi ruoli.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Solo se colleghi Discord: una registrazione che la ricompensa di 5000 gm$ e 250 em$ è stata pagata per il tuo id Discord, conservata come hash con chiave che non può essere riconvertito nell'id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Per mostrare a che distanza si trova l’host di una partita multiplayer, il server individua la posizione approssimativa (più o meno la città) dell’indirizzo della tua connessione. Gli altri giocatori vedono solo una distanza breve, media o lunga. La posizione resta nella memoria del server per al massimo un’ora e non viene mai scritta su disco né condivisa.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Cosa non contengono gli account</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Il tuo indirizzo email, nome reale, indirizzo postale o numero di telefono: non vengono richiesti né conservati nel tuo account. Se un backup contiene un campo del genere, non viene ripristinato.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminare i tuoi dati</value></data>

@@ -2,21 +2,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents). The games always include the three event cases: Ranger_Test's game runs the seasonal event and differs from the player's own, Hunter15's runs it and does not differ, Hunter14's runs none and differs.</param>
+/// <param name="mock">Development states: "servers:none" (no games), "servers:nodots" (the games without a distance: an older server's list), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents). The games always include the three event cases: Ranger_Test's game runs the seasonal event and differs from the player's own, Hunter15's runs it and does not differ, Hunter14's runs none and differs.</param>
 public sealed class MockServersService(ILogger<MockServersService> log, ILauncherBridge bridge, string? mock = null) : IServersService
 {
-    static readonly (string Host, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
+    static readonly (string Host, Distance? Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
     [
         ("Hunter05", Distance.Short, 2, 1, 3, false), ("Ranger_Test", Distance.Short, 11, 1, 8, false), ("Moss_Walker", Distance.Short, 4, 1, 8, false),
         ("Hunter08", Distance.Short, 4, 1, 8, false), ("Hunter09", Distance.Short, 1, 1, 8, false), ("Pine_Walker", Distance.Short, 10, 1, 8, false),
         ("River_Test", Distance.Short, 4, 1, 8, true), ("Hunter12", Distance.Medium, 12, 2, 3, false), ("Hunter13", Distance.Medium, 10, 1, 8, true),
         ("Hunter14", Distance.Medium, 6, 2, 8, false), ("Hunter15", Distance.Medium, 5, 1, 4, false), ("Hunter16", Distance.Medium, 9, 1, 8, false),
         ("Hunter17", Distance.Medium, 1, 1, 8, false), ("Hunter18", Distance.Medium, 6, 1, 2, false), ("Hunter19", Distance.Medium, 12, 1, 8, false),
-        ("Hunter20", Distance.Long, 10, 1, 8, false),
+        ("Hunter20", Distance.Long, 10, 1, 8, false), ("Hunter21", null, 8, 1, 8, false),  // the server does not know where the last one is
     ];
 
     /// <summary>The language of each game of <see cref="Rows"/> (a code of the launcher's languages); the eighth has none, as a game hosted by an older launcher.</summary>
-    static readonly string[] Languages = ["en", "fr", "de", "es", "pt-BR", "ru", "it", "", "en", "pt-BR", "nl", "pl", "sv", "fr", "de", "en"];
+    static readonly string[] Languages = ["en", "fr", "de", "es", "pt-BR", "ru", "it", "", "en", "pt-BR", "nl", "pl", "sv", "fr", "de", "en", "es"];
 
     static readonly IReadOnlyList<GameServer> Servers = Rows.Select((r, i) => new GameServer(i + 1, $"{r.Host}'s game", i == 0 ? "Placeholder description of the game. The host writes a short text here for the other players." : "",
         r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
@@ -58,7 +58,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         : game.Password && password != Secret ? new(null, "Join.WrongPassword")
         : new([.. (await MarkersAsync(reserve)).Where(m => m.Kind != MarkerKind.Tent), new(-21, MarkerKind.Tent, "Host's tent", 40, 36), new(-22, MarkerKind.TreeStand, "Host's stand", 36, 30, true)]);
 
-    public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>(mock == "servers:none" ? [] : Servers);
+    public Task<IReadOnlyList<GameServer>> ServersAsync() => Task.FromResult<IReadOnlyList<GameServer>>(mock switch { "servers:none" => [], "servers:nodots" => [.. Servers.Select(s => s with { Distance = null })], _ => Servers });
     public Task<IReadOnlyList<Tutorial>> TutorialsAsync() => Task.FromResult<IReadOnlyList<Tutorial>>(Tutorials);
 
     public Task<IReadOnlyList<Loadout>> LoadoutsAsync() =>

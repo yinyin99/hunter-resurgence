@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Deţineţi {0} din {1} obiecte</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Deţineţi deja toate obiectele din acest pachet</value></data>
   <data name="Store.Or" xml:space="preserve"><value>sau</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>înainte</value></data>
   <data name="Store.Days" xml:space="preserve"><value>zile</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>OFERTĂ</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Oferta se termină {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookie-uri de conectare și token-uri de joc, sub formă de hash-uri care nu pot fi citite înapoi.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Doar dacă conectați Discord: ID-ul dvs. Discord și tokenurile pe care Discord le-a dat serverului pentru a vă actualiza rolurile, păstrate criptat. Nimic altceva din profilul dvs. Discord nu este păstrat. Serverul trimite pseudonimul dvs. și HunterScore-ul dvs. către Discord pentru rolurile dvs.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Doar dacă conectați Discord: o înregistrare că recompensa de 5000 gm$ și 250 em$ a fost plătită pentru ID-ul dvs. Discord, păstrată ca amprentă cu cheie (hash) care nu poate fi transformată înapoi în ID.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Pentru a afișa cât de departe se află gazda unui joc multiplayer, serverul determină locația aproximativă (cam cât un oraș) a adresei conexiunii dvs. Ceilalți jucători văd doar o distanță scurtă, medie sau lungă. Locația este păstrată în memoria serverului cel mult o oră și nu este scrisă niciodată pe disc și nici partajată.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce nu conțin conturile</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Adresa dvs. de e-mail, numele real, adresa poștală sau numărul de telefon: nu sunt solicitate și nu sunt păstrate în contul dvs. Dacă un backup conține un astfel de câmp, acesta nu este restaurat.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Ștergerea datelor dvs.</value></data>

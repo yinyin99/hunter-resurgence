@@ -61,6 +61,7 @@
             <h5 class="info-title">@L["Servers.InfoTitle"]</h5>
             <p class="info">@L["Servers.Info"] <ExternalLink Key="support_connections">@L["Servers.InfoLink"]</ExternalLink></p>
             <p class="legend"><i class="dot short"></i> = @L["Servers.Short"] <i class="dot medium"></i> = @L["Servers.Medium"] <i class="dot long"></i> = @L["Servers.Long"]</p>
+            <p class="attribution"><a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a></p>
         }
     </div>
     @if (active is { } s)
@@ -108,8 +109,8 @@
     // "patching" ends when the launcher reports its ready state, which PatchWatcher keeps current
     bool ready => Status.State is PatchState.Ready or PatchState.Done;
 
-    /// <summary>A community server does not say how far a game is: then the list has no dots and no text about them (an empty list keeps the text).</summary>
-    bool located => all.Count == 0 || all.Any(g => g.Distance is not null);
+    /// <summary>A server that does not say how far any game is (an older one, or one without its IP database) has no dots, no text about them and no attribution of the database.</summary>
+    bool located => all.Any(g => g.Distance is not null);
 
     /// <summary>The preview follows the list: a game that is filtered away gives way to the first one, an empty list closes it.</summary>
     GameServer? active => shown.FirstOrDefault(g => g == selected) ?? shown.FirstOrDefault();
@@ -151,8 +152,8 @@
                 "players" => g => g.Players,
                 "host" => g => g.Host.ToLowerInvariant(),
                 "language" => g => Languages.Find(g.Language)?.Name.ToLowerInvariant() ?? "",
-                // the old list starts with the games of the nearest continent
-                _ => g => (int)(g.Distance ?? Distance.Short),
+                // the nearest games first, those without a distance after the rest
+                _ => g => g.Distance is { } d ? (int)d : int.MaxValue,
             };
             var sorted = (descending ? rows.OrderByDescending(key) : rows.OrderBy(key)).ToList();
             // a game without a language comes last either way (it has no name to sort by)

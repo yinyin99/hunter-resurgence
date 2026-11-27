@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Je bezit {0} van de {1} objecten</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Je bezit al alle objecten van deze bundel</value></data>
   <data name="Store.Or" xml:space="preserve"><value>of</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>voorheen</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dagen</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>ACTIE</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Actie eindigt {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inlogcookies en spelsleutels, als hashes die niet kunnen worden teruggelezen.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Alleen als je Discord koppelt: je Discord-id en de tokens die Discord aan de server gaf om je rollen bij te werken, versleuteld bewaard. Verder wordt niets van je Discord-profiel bewaard. De server stuurt je gebruikersnaam en je HunterScore naar Discord voor je rollen.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Alleen als je Discord koppelt: een vermelding dat de beloning van 5000 gm$ en 250 em$ is uitbetaald voor je Discord-id, bewaard als hash met sleutel die niet terug te rekenen is naar het id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Om te tonen hoe ver de host van een multiplayerspel weg is, zoekt de server de globale locatie (ongeveer de stad) van het adres van je verbinding op. Andere spelers zien alleen een korte, middellange of lange afstand. De locatie blijft maximaal een uur in het geheugen van de server en wordt nooit naar schijf geschreven of gedeeld.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Wat accounts niet bevatten</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Je e-mailadres, echte naam, postadres of telefoonnummer: daar wordt niet om gevraagd en ze worden niet in je account bewaard. Als een back-up zo'n veld bevat, wordt het niet hersteld.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>

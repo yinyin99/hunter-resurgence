@@ -309,7 +309,62 @@ public sealed record CoatTable(string ExeSha256, uint Lookup, uint Layer, uint I
     }
 }
 
-/// <summary>The game started suspended, as the log lock, the goose call patch, the rabbit sound patch and the coat table patch read and write it: the seam a test replaces with a byte array.</summary>
+/// <summary>
+/// In a multiplayer game the game asks the host whether a retrieving dog may pick a bird up, and a guest's answer comes over the network, but the guest's game reads the dog's answer field on the next frame and nothing clears it between two retrieves:
+/// a guest's dog acts on the answer to its previous retrieve (after one refusal its next retrieve fails at the bird, and a stale "yes" lets it take a bird the host's dog already holds). The host's own answer needs no network round trip, so the host never sees this.
+/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the one call where the game asks that question at a 15-byte routine in a page of the game's memory:
+/// it clears the dog's answer field (the dog is in <c>esi</c>, as the game's own function expects), then jumps to the game's own function, which sees the registers and the stack a direct call would leave.
+/// The dog then waits for the host's real answer. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is. Nothing on disk changes.
+/// </summary>
+/// <param name="ExeSha256">The SHA-256 of the exe this applies to (lowercase hex).</param>
+/// <param name="Site">Offset from the image base of the call to the game's function that sends the question: only its 4-byte target is changed.</param>
+/// <param name="Target">Offset of that function, which the routine jumps to.</param>
+/// <param name="Checks">The places checked before anything is written, in order: the offset from the image base and the expected bytes as hex. The first ends with the call after the instructions around it, the second is the start of the function, the third is the game's setup of the dog that proves the field's offset.</param>
+public sealed record DogAnswer(string ExeSha256, uint Site, uint Target, (uint At, string Expected)[] Checks)
+{
+    /// <summary>The same exe as the log lock.</summary>
+    public static readonly DogAnswer Known = new(LogLock.Known.ExeSha256, Site: 3764403, Target: 2703488, Checks: [
+        // the dog owner's push of the population id, the dog getter, the bird's index to edx, the dog from the getter to esi, the call (to the function), and the retrieve state 5 set after it
+        (3764387, "50 51 8B CB E8 B4 64 EC FF 8B D6 83 C4 04 8B F0 E8 C8 CF EF FF C7 87 9C 00 00 00 05 00 00 00"),
+        // the function: its first instructions take the dog from esi
+        (2703488, "83 EC 18 85 F6 74 05 8D 4E 14"),
+        // the dog's setup, which writes the query id at +168 and the answer at +172, the field the routine clears
+        (2691708, "89 BE A8 00 00 00 89 9E AC 00 00 00"),
+    ]);
+
+    /// <summary>The routine's size.</summary>
+    public const int Size = 15;
+
+    /// <summary>The routine for an image loaded at <paramref name="image"/>, written at <paramref name="page"/>: mov dword ptr [esi+172], 0; jmp the function.</summary>
+    public byte[] Code(uint image, uint page) => [.. H("C786AC000000 00000000 E9"), .. D(unchecked(image + Target - (page + Size)))];
+
+    /// <summary>Checks every place, then writes the routine and points the call at it; nothing is written unless every check passed. Null when applied, else why not.</summary>
+    public string? Apply(ISuspendedGame game)
+    {
+        var image = game.Image;
+        if (image == 0) return "the game's memory could not be read";
+        for (var i = 0; i < Checks.Length; i++)
+        {
+            var expected = H(Checks[i].Expected);
+            if (game.Read(image + Checks[i].At, expected.Length) is not { } found) return $"check {i + 1} could not be read";
+            if (!found.AsSpan().SequenceEqual(expected)) return $"check {i + 1} holds other values";
+        }
+        var page = game.Allocate(Size);
+        if (page == 0) return "no memory could be allocated in the game";
+        if (!game.Write(page, Code(image, page))) return "the routine could not be written";
+        // only the call's 4-byte target changes, after the opcode: until this write lands no code points at the routine
+        return game.Write(image + Site + 1, D(unchecked(page - (image + Site + 5)))) ? null : "the call could not be written";
+    }
+
+    /// <summary>Applies the patch to a game started suspended and logs the outcome; the game is resumed by <see cref="LogLock.ApplyAndResume"/>.</summary>
+    public void ApplyAndLog(ISuspendedGame game, ILogger? log)
+    {
+        if (Apply(game) is { } why) log?.LogWarning("The game's dog answer patch is not applied, the game starts without it: {Why}", why);
+        else log?.LogInformation("The game's dog answer patch is applied");
+    }
+}
+
+/// <summary>The game started suspended, as the log lock, the goose call patch, the rabbit sound patch, the coat table patch and the dog answer patch read and write it: the seam a test replaces with a byte array.</summary>
 public interface ISuspendedGame
 {
     /// <summary>Where the exe is loaded; 0 when not known.</summary>

@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Você tem {0} de {1} itens</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Você já tem todos os itens deste pacote</value></data>
   <data name="Store.Or" xml:space="preserve"><value>ou</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>antes</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dias</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>PROMOÇÃO</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>A promoção termina em {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de início de sessão e tokens do jogo, como hashes que não podem ser revertidos.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Apenas se associar o Discord: o seu id do Discord e os tokens que o Discord deu ao servidor para atualizar os seus cargos, guardados cifrados. Nada mais do seu perfil do Discord é guardado. O servidor envia o seu nome de caçador e o seu HunterScore ao Discord para os seus cargos.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Apenas se associar o Discord: um registo de que a recompensa de 5000 gm$ e 250 em$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Para mostrar a que distância está o anfitrião de um jogo multijogador, o servidor consulta a localização aproximada (mais ou menos a cidade) do endereço da sua ligação. Os outros jogadores veem apenas uma distância curta, média ou longa. A localização fica na memória do servidor no máximo uma hora e nunca é gravada em disco nem partilhada.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não contêm</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>O seu endereço de e-mail, nome verdadeiro, morada ou número de telefone: não são pedidos nem guardados na sua conta. Se uma cópia de segurança contiver um campo desse tipo, este não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar os seus dados</value></data>

@@ -5,7 +5,7 @@ using Resurgence.Ui.Pages;
 
 namespace Resurgence.Tests.WebTests;
 
-/// <summary>An item on sale shows a SALE ribbon with the percent, the old price next to the new one for each price on sale, and when the sale ends; an item that is not on sale looks as before.</summary>
+/// <summary>An item on sale shows a SALE ribbon with the percent, each currency one group, the sale price first and the old one ("was N") after it, for each price on sale, and when the sale ends; an item that is not on sale looks as before.</summary>
 public sealed class StoreSaleTests : UiContext
 {
     sealed class One(StoreItem item, StoreBundle? bundle = null) : IStoreService
@@ -44,10 +44,12 @@ public sealed class StoreSaleTests : UiContext
         var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
 
         Assert.Equal("SALE -25%", cut.Find(".card .ribbon").TextContent);
-        Assert.Equal(["100 em$", "200 gm$"], Texts(cut.FindAll(".price s")));
-        Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".price .sale")));
+        Assert.Equal(["was 100 em$", "was 200 gm$"], Texts(cut.FindAll(".sp .was")));
+        Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".sp .sale")));
         Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".card .ends").TextContent);
-        Assert.Contains("or 150 gm$", cut.Find(".price").TextContent);   // a space between the word and the sale price
+        Assert.NotNull(cut.Find(".card .sp + .ends"));   // the end comes after the prices
+        Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".sp .now")));   // em$ first
+        Assert.Equal("or", cut.Find(".sp .or").TextContent);
     }
 
     [Fact]
@@ -56,8 +58,8 @@ public sealed class StoreSaleTests : UiContext
         var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, null, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
 
         Assert.Equal("SALE -25%", cut.Find(".card .ribbon").TextContent);
-        Assert.Equal(["200 gm$"], Texts(cut.FindAll(".price s")));
-        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".price .sale")));
+        Assert.Equal(["was 200 gm$"], Texts(cut.FindAll(".sp .was")));
+        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".sp .sale")));
     }
 
     [Fact]
@@ -65,8 +67,8 @@ public sealed class StoreSaleTests : UiContext
     {
         var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 0, null, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
 
-        Assert.Equal(["200 gm$"], Texts(cut.FindAll(".price s")));
-        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".price .sale")));
+        Assert.Equal(["was 200 gm$"], Texts(cut.FindAll(".sp .was")));
+        Assert.Equal(["150 gm$"], Texts(cut.FindAll(".sp .sale")));
     }
 
     [Fact]
@@ -75,6 +77,7 @@ public sealed class StoreSaleTests : UiContext
         var cut = List(new StoreItem(6, "Made-up Pistol", "", "0", 80, null, 100, 0, true, 0, ""));
 
         Assert.Empty(cut.FindAll(".card .ribbon"));
+        Assert.Equal(["80 em$", "or 100 gm$"], Texts(cut.Find(".price").Children));
         Assert.Empty(cut.FindAll(".price s"));
         Assert.Empty(cut.FindAll(".price .sale"));
         Assert.Empty(cut.FindAll(".card .ends"));
@@ -87,7 +90,7 @@ public sealed class StoreSaleTests : UiContext
         var cut = List(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 0, 0, true, 0, ""));
 
         Assert.Equal("SALE", cut.Find(".card .ribbon").TextContent);
-        Assert.Equal(["100 em$"], Texts(cut.FindAll(".price s")));
+        Assert.Equal(["was 100 em$"], Texts(cut.FindAll(".sp .was")));
         Assert.Empty(cut.FindAll(".card .ends"));
     }
 
@@ -97,7 +100,8 @@ public sealed class StoreSaleTests : UiContext
         var cut = Page(new StoreItem(5, "Made-up Rifle", "", "0", 75, 100, 150, 0, true, 0, "", WasGms: 200, Sale: Weekend));
 
         Assert.Equal("SALE -25%", cut.Find(".item .ribbon").TextContent);
-        Assert.Equal(["200 gm$", "100 em$"], Texts(cut.FindAll(".buy s")));
+        Assert.Equal(["was 100 em$", "was 200 gm$"], Texts(cut.FindAll(".buy .was")));
+        Assert.Equal(["75 em$", "150 gm$"], Texts(cut.FindAll(".buy .now")));   // em$ first
         Assert.Equal("Sale ends Nov 30th 07:00 UTC", cut.Find(".ends").TextContent);
     }
 
@@ -107,6 +111,7 @@ public sealed class StoreSaleTests : UiContext
         var cut = Page(new StoreItem(6, "Made-up Pistol", "", "0", 80, null, 100, 0, true, 0, ""));
 
         Assert.Empty(cut.FindAll(".item .ribbon"));
+        Assert.Equal(["80 em$"], Texts(cut.FindAll(".buy b")));
         Assert.Empty(cut.FindAll(".buy s"));
         Assert.Empty(cut.FindAll(".ends"));
     }
@@ -124,13 +129,13 @@ public sealed class StoreSaleTests : UiContext
         var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
         list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
         Assert.Equal("SALE -25%", list.Find(".card .ribbon").TextContent);
-        Assert.Equal(["90 em$"], Texts(list.FindAll(".price s")));
-        Assert.Equal(["72 em$"], Texts(list.FindAll(".price .sale")));
+        Assert.Equal(["was 90 em$"], Texts(list.FindAll(".sp .was")));
+        Assert.Equal(["72 em$"], Texts(list.FindAll(".sp .sale")));
         Assert.Equal("Sale ends Nov 30th 07:00 UTC", list.Find(".card .ends").TextContent);
 
         var page = Render<BundleDetail>(p => p.Add(b => b.Id, 7));
         Assert.Equal("SALE -25%", page.Find(".item .ribbon").TextContent);
-        Assert.Equal(["90 em$"], Texts(page.FindAll(".buy s")));
+        Assert.Equal(["was 90 em$"], Texts(page.FindAll(".buy .was")));
         Assert.Equal("Sale ends Nov 30th 07:00 UTC", page.Find(".ends").TextContent);
     }
 
@@ -141,11 +146,13 @@ public sealed class StoreSaleTests : UiContext
         var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
         list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
         Assert.Equal("BUNDLE", list.Find(".card .ribbon").TextContent);
+        Assert.Equal(["50 em$"], Texts(list.FindAll(".price b")));
         Assert.Empty(list.FindAll(".price s"));
         Assert.Empty(list.FindAll(".card .ends"));
 
         var page = Render<BundleDetail>(p => p.Add(b => b.Id, 8));
         Assert.Equal("BUNDLE", page.Find(".item .ribbon").TextContent);
+        Assert.Equal(["50 em$"], Texts(page.FindAll(".buy b")));
         Assert.Empty(page.FindAll(".buy s"));
         Assert.Empty(page.FindAll(".ends"));
     }
@@ -159,10 +166,10 @@ public sealed class StoreSaleTests : UiContext
         Services.AddSingleton<IStoreService>(new One(Filler, pack));
         var list = Render<Store>(p => p.Add(s => s.Key, "bundles"));
         list.WaitForAssertion(() => Assert.NotEmpty(list.FindAll(".card")));
-        Assert.Equal(["90 em$"], Texts(list.FindAll(".price s")));
-        Assert.Equal(["36 em$"], Texts(list.FindAll(".price .sale")));
+        Assert.Equal(["was 90 em$"], Texts(list.FindAll(".sp .was")));
+        Assert.Equal(["36 em$"], Texts(list.FindAll(".sp .sale")));
 
         var page = Render<BundleDetail>(p => p.Add(b => b.Id, 7));
-        Assert.Equal(["90 em$"], Texts(page.FindAll(".buy s")));
+        Assert.Equal(["was 90 em$"], Texts(page.FindAll(".buy .was")));
     }
 }

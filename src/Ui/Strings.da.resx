@@ -757,6 +757,7 @@
   <data name="Store.BundleOwnCount" xml:space="preserve"><value>Du ejer {0} af {1} elementer</value></data>
   <data name="Store.BundleAllOwned" xml:space="preserve"><value>Du ejer allerede alle elementerne i denne pakke</value></data>
   <data name="Store.Or" xml:space="preserve"><value>eller</value></data>
+  <data name="Store.Was" xml:space="preserve"><value>var</value></data>
   <data name="Store.Days" xml:space="preserve"><value>dage</value></data>
   <data name="Store.SaleTag" xml:space="preserve"><value>TILBUD</value></data>
   <data name="Store.SaleEnds" xml:space="preserve"><value>Tilbuddet slutter {0}</value></data>
@@ -1448,6 +1449,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Login-cookies og spiltokens, som hashes, der ikke kan læses tilbage.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Kun hvis du forbinder Discord: dit Discord-id og de tokens, Discord gav serveren til at opdatere dine roller, gemt krypteret. Intet andet fra din Discord-profil gemmes. Serveren sender dit handle og din HunterScore til Discord til dine roller.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Kun hvis du forbinder Discord: en registrering af, at belønningen på 5000 gm$ og 250 em$ er udbetalt for dit Discord-id, gemt som en nøglet hash, der ikke kan omdannes tilbage til id'et.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>For at vise, hvor langt væk værten for et multiplayer-spil er, slår serveren den omtrentlige placering (cirka en by) af din forbindelses adresse op. Andre spillere ser kun en kort, mellemlang eller lang afstand. Placeringen gemmes i serverens hukommelse i højst en time og skrives aldrig til disk eller deles.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Hvad konti ikke indeholder</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-mailadresse, dit rigtige navn, din postadresse eller dit telefonnummer: der spørges ikke efter dem, og de gemmes ikke på din konto. Hvis en backup indeholder et sådant felt, gendannes det ikke.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Sletning af dine data</value></data>
