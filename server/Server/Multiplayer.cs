@@ -236,6 +236,36 @@ public sealed partial class State
         };
     }
 
+    /// <summary>What the event adds on the game's reserve number <paramref name="reserve"/> (<see cref="Facts.Event"/>): null when the event does not cover that reserve or the facts have nothing for it.</summary>
+    (long[] Ammo, JsonObject[] Populations)? ContentOf(SeasonalEvent e, int reserve) => e.Covers(reserve) ? facts.Event(e.Name, reserve) : null;
+
+    /// <summary>The event a single-player hunt of <paramref name="account"/> on the game's reserve number <paramref name="reserve"/> would record at its first connect now (its setting, the event's window and the reserve); null for none.</summary>
+    string? OwnEvent(long account, int reserve) =>
+        Seasonal is { } e && e.Running(Clock()) && Store.PlaysEvents(account) && ContentOf(e, reserve) is not null ? e.Name : null;
+
+    /// <summary>The event a multiplayer game runs (#996): the one its host's hunt recorded at its first connect (`expeditions.event`, null for none), and while the host has not connected, the one the server would decide for him
+    /// (<see cref="OwnEvent"/>). A game has one event whoever joins it: the host's.</summary>
+    string? HostEvent(long host, int reserve)
+    {
+        using var con = Con(host);
+        return con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND end_ts IS NULL ORDER BY id DESC LIMIT 1") is string decided
+            ? decided == "" ? null : decided
+            : OwnEvent(host, reserve);
+    }
+
+    /// <summary>The event of a joiner's hunt <paramref name="expedition"/> (the connect reply's `reply`, <see cref="ConnectReply"/>): the host's (<see cref="HostEvent"/>), never the joiner's own setting; null for none. A hunt that already has
+    /// its decision keeps it. The event's `ingame_event` and content go into `reply` when it is the configured event, also after its window ended: the game of the host's hunt runs it.</summary>
+    string? JoinerEvent(JsonObject reply, long account, JsonNode? expedition, long host, int reserve)
+    {
+        string? kept;
+        using (var con = Con(account))
+            kept = con.Scalar("SELECT event FROM expeditions WHERE account_id = $a AND id = ?", expedition) as string;
+        var name = kept ?? HostEvent(host, reserve);
+        if (name is not null && Seasonal is { } configured && configured.Name == name)
+            AddSeasonal(reply, configured, reserve);
+        return name == "" ? null : name;
+    }
+
     /// <summary>What a heartbeat tells of the session: event 29 `{port, guid, color}` stores the player's port, network id and colour; event 30 `{guid}` (the connection to the host failed)
     /// drops a joiner when the guid is the host's; the host's `player_positions` give where each player is. Every heartbeat keeps its player alive.</summary>
     void NoteNetwork(long account, JsonArray events, JsonNode? positions)
@@ -262,8 +292,9 @@ public sealed partial class State
     /// <see cref="Games.Why"/> gives that player (null and true when it may join; a password session is never joinable, its `why` is `password`), and each client `mapX` and `mapY`: its position as percent of the
     /// reserve's map picture, with the box and <see cref="Percent"/> of <see cref="LaunchCatalogue"/> (world x to the right, z down) kept within 0 to 100, null before the host's heartbeat gave one. The friends-only or password
     /// session of a caller who may not join (`why` is not null: friends only, hunterscore, password, full ...) and is not in it shows no position at all: `mapX`, `mapY`, `x`, `y` and `z` are null. Without a `caller` (the game's own list, which cannot name the player: it takes no token and no cookie) the
-    /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet.</summary>
-    public byte[] NetworkListReply(long? caller = null)
+    /// friends-only and password sessions send `x`, `y` and `z` as 0, the value of a player with no position yet. With <paramref name="website"/> (`GET /catalog/games`, for the website and the launcher; the game's own list never has it) every session also has `event`
+    /// (the id of the seasonal event it runs, null for none: its host's decision, <see cref="HostEvent"/>) and `event_differs` (the event state differs from what the caller's own single-player hunt on that reserve would get now: <see cref="OwnEvent"/>; false without a caller).</summary>
+    public byte[] NetworkListReply(long? caller = null, bool website = false)
     {
         var score = caller is { } me ? HunterScore(me) : 0;
         var friends = caller is { } you ? Store.FriendsOf(you, LocalAccount).Friends : [];
@@ -298,6 +329,13 @@ public sealed partial class State
                     ["id"] = g.Reserve, ["define"] = C(reserve?["define"]) ?? "", ["name"] = C(reserve?["name"]) ?? "", ["species"] = new JsonArray(), ["border"] = new JsonArray(),
                 },
             };
+            if (website)
+            {
+                var gameReserve = (int)g.Reserve - 1;  // the game's own reserve number, as the lodge's / 100
+                var gameEvent = HostEvent(g.Host, gameReserve);
+                list["event"] = gameEvent;
+                list["event_differs"] = caller is { } asker && OwnEvent(asker, gameReserve) != gameEvent;
+            }
             if (caller is not null)
             {
                 list["joinable"] = why is null;

@@ -285,7 +285,9 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         var game = listed[0]!.AsObject();
         Assert.Equal((false, "starting"), ((bool)game["joinable"]!, (string?)game["why"]));  // the host's game has not reported its port yet
         Assert.Null(game["clients"]![0]!["mapX"]);  // no position yet
-        foreach (var name in new[] { "joinable", "why" })
+        Assert.True(game.ContainsKey("event") && game.ContainsKey("event_differs"));  // the website's list adds the game's event state ...
+        Assert.Equal(((string?)null, false), ((string?)game["event"], (bool)game["event_differs"]!));  // (this server has no event)
+        foreach (var name in new[] { "joinable", "why", "event", "event_differs" })
             game.Remove(name);
         foreach (var client in game["clients"]!.AsArray())
             foreach (var name in new[] { "mapX", "mapY" })
@@ -295,7 +297,7 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
         foreach (var client in game["clients"]!.AsArray())
             foreach (var name in new[] { "x", "y", "z" })
                 client![name] = 0;
-        Eq(await List(), listed);  // the game's own list has none of them
+        Eq(await List(), listed);  // ... and with those two fields and the ones above removed, it is the game's own list
         Assert.Equal("Test Camp", (string)listed[0]!["name"]!);
     }
 

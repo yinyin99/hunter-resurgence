@@ -1580,7 +1580,8 @@ public sealed partial class State
             }
         }
         // a player of a multiplayer session: who the host is and how to reach it
-        if (Online && session is not null && games.Connect(Clock(), session, ip) is { } mp)
+        var mpSession = Online && session is not null ? games.Connect(Clock(), session, ip) : null;
+        if (mpSession is { } mp)
             reply["network"] = Network(mp.Game, mp.Me, Store.HandleOf(mp.Me.Account), Store.HandleOf(mp.Game.Host));
         // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the reserve's ammo is the ethical list's, an event's only below
         reply["ingame_event"] = null;
@@ -1594,11 +1595,14 @@ public sealed partial class State
                 for (var i = present.Count - 1; i >= 0; i--)
                     if (present[i] is JsonObject row && Py.L(row["index"]) == index && Py.Str(row["animal"]) == animal)
                         present.RemoveAt(i);
-        var eventHere = tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
+        // a joiner's hunt has the event of its game's host (<see cref="JoinerEvent"/>), whatever the joiner's own setting is; any other hunt the player's own
+        var eventHere = tutorial is not null ? null
+            : mpSession is { } game && game.Game.Host != account ? JoinerEvent(reply, account, expeditionId, game.Game.Host, clientReserve)
+            : Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
         // the hunt's event, the fallback of its kills whose coat proves nothing (KindOf, HuntEvent): decided once, by its first connect ('' for none), and kept to the hunt's end whatever the event's
         // window or the player's setting do meanwhile; a later connect of the hunt changes nothing. This reply's `ethical` carries that event's list (silver) for the species it names, its possessed
         // versions and its creatures, until a tutorial ends the hunt's judging by it; the coyote and the blacktail deer keep their normal list, and without the event no species but the creatures
-        // (`species_rules`) gets silver. So the game's hints agree with the fallback of its animals for the whole hunt
+        // (`species_rules`) gets silver. So the game's hints agree with the fallback of its animals for the whole hunt. A joiner's first connect takes his host's decision (JoinerEvent)
         if (tutorial is null)
         {
             using var con = Con(account);
@@ -1626,7 +1630,7 @@ public sealed partial class State
     bool AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
     {
         reply["ingame_event"] = seasonal.Json();
-        if (!seasonal.Covers(reserve) || facts.Event(seasonal.Name, reserve) is not { } content)
+        if (ContentOf(seasonal, reserve) is not { } content)
             return false;
         static string At(DateTimeOffset t) => t.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
         if (reply["populations"] is JsonArray populations)
