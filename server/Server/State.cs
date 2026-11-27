@@ -2405,7 +2405,7 @@ public sealed partial class State
 
     /// <summary>The account's ammunition stacks in an ammunition slot beside a weapon they do not fit (<see cref="Suits"/>), as (guid, ammunition, weapon, slot) by slot; inside the account's transaction.</summary>
     public List<(long Guid, long Ammo, long Weapon, long Slot)> Misfits(Db con) =>
-        [.. con.Rows("SELECT a.guid, a.item_id, w.item_id, a.slot FROM items a JOIN items w ON w.account_id = a.account_id AND w.slot = a.slot - 6 WHERE a.account_id = $a AND a.slot BETWEEN 8 AND 10 ORDER BY a.slot, a.guid")
+        [.. con.Rows("SELECT a.guid, a.item_id, w.item_id, a.slot FROM items a JOIN items w ON w.account_id = $a AND w.slot = a.slot - 6 WHERE a.account_id = $a AND a.slot BETWEEN 8 AND 10 ORDER BY a.slot, a.guid")
             .Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]), Convert.ToInt64(r[2]), Convert.ToInt64(r[3]))).Where(m => !Suits(m.Item3, m.Item2))];
 
     /// <summary>Moves every <see cref="Misfits"/> stack to the lodge (slot 0), whole: the player can equip it under a weapon it fits; returns how many.</summary>
