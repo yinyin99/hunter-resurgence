@@ -246,6 +246,24 @@ public static class AccountApi
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
 
+        group.MapPost("/sell", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                var form = Py.ParseQs(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync());
+                if (!form.TryGetValue("guid", out var guids) || !long.TryParse(guids[0], NumberStyles.None, CultureInfo.InvariantCulture, out var guid))
+                    return Refuse(400, "invalid", "Selling needs the number guid of a copy.");
+                var (offer, balance, why) = state.WebSell(account, guid);
+                return offer is null
+                    ? Refuse(409, why, "This copy cannot be sold back.")
+                    : Json(200, new JsonObject { ["status"] = "sold", ["currency"] = offer.Currency, ["refund"] = offer.Refund, ["balance"] = balance });
+            })
+            .WithName("AccountSell").WithSummary("Sell an unused item back to the store (form `guid`)")
+            .WithDescription("The copy `guid` of `GET /account/inventory`, in the lodge and bought here or restored (docs/server.md#selling-back): it is removed and 40 % of the price paid (rounded down) is paid in the currency paid, "
+                             + "with the wallet row `Sold: <item>`. Answers `{status: sold, currency: em|gm, refund, balance}`, 409 with `status` the reason (`unknown`, `hunting`, `equipped`, `placed`, `ammunition`, `consumable`, `license`, "
+                             + "`lodge`, `start_kit`, `not_sold`, `no_proof`, `too_cheap`; nothing changes), 401 `signed_out`, or 400 `invalid`. The game gets the balance with its next heartbeat and the inventory at its next connect.")
+            .Produces(200, contentType: "application/json");
+
         group.MapPost("/harvests/{kill}/taxidermize", async (HttpContext ctx, string kill) =>
             {
                 if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");

@@ -431,6 +431,7 @@ public static class Restorer
                 metadata.Remove(State.RESERVE);
                 if (i.WebReserve is { } reserve) metadata[State.RESERVE] = reserve;
                 PlayerRows.AddItem(con, i.Guid, i.ItemId, i.Slot, i.Units, metadata);
+                PlayerRows.MarkRestored(con, i.Guid, i.ItemId);
             }
 
             // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)

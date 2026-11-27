@@ -10,14 +10,15 @@ public sealed partial class State
     internal const string LodgeList = "/game/user/lodges", LodgeOne = "/game/user/lodge";
     const int MaxText = 100, MaxSlots = 200;  // generous (the largest lodge has 163 animal slots): other players download the whole lodge
 
-    /// <summary>Deliver the items (<see cref="Deliver"/>), and a lodge for each unit of a lodge item of the facts file (inside the caller's transaction).</summary>
-    void Give(Db con, IEnumerable<long> itemIds)
+    /// <summary>Deliver the items (<see cref="Deliver"/>), and a lodge for each unit of a lodge item of the facts file (inside the caller's transaction); the new rows' guids.</summary>
+    long[] Give(Db con, IEnumerable<long> itemIds)
     {
         long[] ids = [.. itemIds];
-        Deliver(con, ids, ItemInfo);
+        var guids = Deliver(con, ids, ItemInfo);
         foreach (var id in ids)
             if (facts.LodgeOfItem(id) is { } type)
                 GrantLodge(con, id, type);
+        return guids;
     }
 
     /// <summary>One new lodge of the layout, named for it, unlocked, empty, style 0: the two rows of a lodge (the list's and the single's) under the account's next lodge id.</summary>
