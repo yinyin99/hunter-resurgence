@@ -37,14 +37,18 @@ public sealed record ServerPlacedRefusal(string? Why);
 
 /// <summary>A game of <see cref="ServerCatalogApi.Games"/>, in the shape of the game's own list (more fields are not read): <c>Id</c> is the network id the join takes, <c>Max</c> the game's size,
 /// <c>Min</c> and <c>MaxScore</c> the Hunter Score range (null without one; a host can set any number, so they are wide), <c>Why</c> the server's reason the signed-in player cannot join
-/// (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player; missing on an older server), <c>Language</c> the host's language code (<c>fr</c>, <c>pt-BR</c>; null for none and on an older server).</summary>
+/// (<c>own</c>, <c>friends</c>, <c>hunterscore</c>, <c>starting</c>, <c>password</c>, <c>full</c>; null when nothing stops the player; missing on an older server), <c>Language</c> the host's language code (<c>fr</c>, <c>pt-BR</c>; null for none and on an older server),
+/// <c>Event</c> the id of the seasonal event the game runs (the host's setting decides it for everyone in the game; null for none) and <c>EventDiffers</c> whether that differs from what the signed-in player's own hunt on that reserve gets now (false when signed out).
+/// An older server sends neither of these two: no event, no difference.</summary>
 public sealed record ServerGame(
     long Id, string? Name, string? Handle, string? Description, bool Password,
     [property: System.Text.Json.Serialization.JsonPropertyName("hs_min")] long? Min,
     [property: System.Text.Json.Serialization.JsonPropertyName("hs_max")] long? MaxScore,
     [property: System.Text.Json.Serialization.JsonPropertyName("max_players")] long Max,
     [property: System.Text.Json.Serialization.JsonPropertyName("start_ts")] long Started,
-    ServerGamePlayer[]? Clients, ServerGameReserve? Reserve, string? Why = null, string? Language = null);
+    ServerGamePlayer[]? Clients, ServerGameReserve? Reserve, string? Why = null, string? Language = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("event")] string? Event = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("event_differs")] bool EventDiffers = false);
 
 /// <param name="MapX">The player's place as percent of the reserve's map picture from the left (<c>mapX</c>), <paramref name="MapY"/> from the top; null before the host's heartbeat gave a position, and for a game the player may not join.</param>
 public sealed record ServerGamePlayer(string? Handle, long Hunterscore, string? Avatar, double? MapX = null, double? MapY = null);

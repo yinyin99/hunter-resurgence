@@ -70,7 +70,8 @@ public static class GameApi
                                + "(opened here after a direct launch); `populations` and `species_ammo` of the last launched "
                                + "reserve (from the `ethical` list), and `ingame_event` null, except for a player who plays the seasonal event "
                                + "that runs now (settings `event`), whose reply carries it with its content on its reserves; the `ethical` of a hunt whose first connect had that content "
-                               + "carries the event's permitted ammunition (facts `events.<name>.ethical`) to the hunt's end, also after the event ends, and its kills are judged by it. Queues the server notice toast.")
+                               + "carries the event's permitted ammunition (facts `events.<name>.ethical`) to the hunt's end, also after the event ends, and its kills are judged by it. "
+                               + "A player who joined a multiplayer game gets the event of the game's host instead (his own setting does not count): the event content of his reply and his hunt's event follow the host's hunt. Queues the server notice toast.")
               .Body<ConnectRequest>("application/json").Produces(200, contentType: "application/json");
             gs.MapExactPost(game, State.UPLOAD_PATH, r => Own(game, r, a =>
                 {

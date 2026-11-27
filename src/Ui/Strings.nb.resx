@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Butikkvarer for arrangementet</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belønning til hver bidragsyter: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål fullført</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>I begivenhetens reservater er dyrene besatt: de angriper deg, og vanlig ammunisjon bare skraper dem. Bruk begivenhetens sølvammunisjon. Der gjør ett eneste treff med annen ammunisjon fellingen uetisk (diskvalifisert), selv om sølv gjør det av med dyret, og det gjelder alle besatte dyr, også småvilt. Prærieulven og svarthalehjorten er ikke besatt: de krever vanlig ammunisjon, og sølv på dem er uetisk. Slå av «Spill sesongbegivenheter» for å jakte på de vanlige dyrene fra neste jakt.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>I begivenhetens reservater er dyrene besatt: de angriper deg, og vanlig ammunisjon bare skraper dem. Bruk begivenhetens sølvammunisjon. Der gjør ett eneste treff med annen ammunisjon fellingen uetisk (diskvalifisert), selv om sølv gjør det av med dyret, og det gjelder alle besatte dyr, også småvilt. Prærieulven og svarthalehjorten er ikke besatt: de krever vanlig ammunisjon, og sølv på dem er uetisk. Slå av «Spill sesongbegivenheter» for å jakte på de vanlige dyrene fra neste jakt. I flerspiller gjelder vertens innstilling.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Hendelse pågår: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservater</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sesonghendelse</value></data>
@@ -1665,6 +1665,9 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Join.Hidden" xml:space="preserve"><value>Kartet og vertens utstyr vises bare for spillere som kan bli med i dette spillet.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonuser er utelatt.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushendelser i perioden:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dette spillet spilles med sesongbegivenheten.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dette spillet spilles uten sesongbegivenheten.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspiller gjelder vertens innstilling.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Utestengt av verten</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: verten har utestengt deg fra spillene sine.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spillere du utestenger med Utesteng-knappen på spillersiden i spillet, kan ikke bli med i flerspillerspillene dine før du opphever utestengelsen.</value></data>

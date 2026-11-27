@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Товары события в магазине</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Награда каждому участнику: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Выполнено целей: {0} из {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>В угодьях события животные одержимы: они бросаются на вас, а обычные боеприпасы их лишь царапают. Используйте серебряные боеприпасы события. Там одно попадание другими боеприпасами делает добычу неэтичной (дисквалифицированной), даже если её добивает серебро, и это касается всех одержимых животных, включая мелкую дичь. Койот и чернохвостый олень не одержимы: им нужны обычные боеприпасы, а серебро на них неэтично. Отключите «Участвовать в сезонных событиях», чтобы со следующей охоты охотиться на обычных животных.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>В угодьях события животные одержимы: они бросаются на вас, а обычные боеприпасы их лишь царапают. Используйте серебряные боеприпасы события. Там одно попадание другими боеприпасами делает добычу неэтичной (дисквалифицированной), даже если её добивает серебро, и это касается всех одержимых животных, включая мелкую дичь. Койот и чернохвостый олень не одержимы: им нужны обычные боеприпасы, а серебро на них неэтично. Отключите «Участвовать в сезонных событиях», чтобы со следующей охоты охотиться на обычных животных. В мультиплеере действует настройка хозяина.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Идёт событие: {0}. Угодья: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>все</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Сезонное событие</value></data>
@@ -1665,6 +1665,9 @@
   <data name="Join.Hidden" xml:space="preserve"><value>Карту и снаряжение хозяина видят только игроки, которые могут присоединиться к этой игре.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ по обычной ставке, без бонусов.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>В эту игру играют с сезонным событием.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>В эту игру играют без сезонного события.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере действует настройка хозяина.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Заблокирован хостом</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: хост заблокировал вас в своих играх.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Игроки, которых вы блокируете кнопкой «Заблокировать» на странице игроков в игре, не смогут присоединяться к вашим многопользовательским играм, пока вы не снимете блокировку.</value></data>

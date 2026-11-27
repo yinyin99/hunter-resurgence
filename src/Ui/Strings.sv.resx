@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Eventets butiksartiklar</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belöning till varje bidragsgivare: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål klara</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>I händelsens reservat är djuren besatta: de anfaller dig, och vanlig ammunition skrapar dem bara. Använd händelsens silverammunition. Där gör en enda träff med annan ammunition fällningen oetisk (diskvalificerad), även om silvret avslutar den, och det gäller alla besatta djur, även småvilt. Prärievargen och svartsvanshjorten är inte besatta: de kräver sin vanliga ammunition, och silver på dem är oetiskt. Stäng av ”Spela säsongshändelser” för att jaga de vanliga djuren från din nästa jakt.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>I händelsens reservat är djuren besatta: de anfaller dig, och vanlig ammunition skrapar dem bara. Använd händelsens silverammunition. Där gör en enda träff med annan ammunition fällningen oetisk (diskvalificerad), även om silvret avslutar den, och det gäller alla besatta djur, även småvilt. Prärievargen och svartsvanshjorten är inte besatta: de kräver sin vanliga ammunition, och silver på dem är oetiskt. Stäng av ”Spela säsongshändelser” för att jaga de vanliga djuren från din nästa jakt. I flerspelarläge gäller värdens inställning.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Händelse pågår: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alla reservat</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Säsongshändelse</value></data>
@@ -1665,6 +1665,9 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Join.Hidden" xml:space="preserve"><value>Kartan och värdens utrustning visas bara för spelare som får gå med i det här spelet.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ till normal taxa, bonusar ej inräknade.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Det här spelet spelas med säsongshändelsen.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Det här spelet spelas utan säsongshändelsen.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspelarläge gäller värdens inställning.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannlyst av värden</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värden har bannlyst dig från sina spel.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spelare du bannlyser med knappen Bannlys på spelarsidan i spelet kan inte gå med i dina flerspelarspel förrän du hävt bannlysningen.</value></data>

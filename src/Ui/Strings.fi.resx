@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Tapahtuman kauppatuotteet</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Palkkio jokaiselle osallistujalle: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0}/{1} tavoitetta suoritettu</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Tapahtuman alueilla eläimet ovat riivattuja: ne hyökkäävät kimppuusi, ja tavallinen ammus vain raapaisee niitä. Käytä tapahtuman hopea-ammuksia. Siellä yksikin osuma muulla ammuksella tekee saaliista epäeettisen (hylätty), vaikka hopea lopettaisi sen, ja tämä koskee kaikkia riivattuja eläimiä, myös pienriistaa. Kojootti ja mustahäntäpeura eivät ole riivattuja: ne vaativat tavallisen ammuksensa, ja hopea niihin on epäeettistä. Poista ”Pelaa kausitapahtumia” käytöstä, niin metsästät tavallisia eläimiä seuraavasta metsästyksestäsi alkaen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Tapahtuman alueilla eläimet ovat riivattuja: ne hyökkäävät kimppuusi, ja tavallinen ammus vain raapaisee niitä. Käytä tapahtuman hopea-ammuksia. Siellä yksikin osuma muulla ammuksella tekee saaliista epäeettisen (hylätty), vaikka hopea lopettaisi sen, ja tämä koskee kaikkia riivattuja eläimiä, myös pienriistaa. Kojootti ja mustahäntäpeura eivät ole riivattuja: ne vaativat tavallisen ammuksensa, ja hopea niihin on epäeettistä. Poista ”Pelaa kausitapahtumia” käytöstä, niin metsästät tavallisia eläimiä seuraavasta metsästyksestäsi alkaen. Moninpelissä isännän asetus on voimassa.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Tapahtuma käynnissä: {0}. Alueet: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>kaikki</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Kausitapahtuma</value></data>
@@ -1665,6 +1665,9 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Join.Hidden" xml:space="preserve"><value>Kartta ja isännän varusteet näytetään vain pelaajille, jotka saavat liittyä tähän peliin.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ perustasolla, bonukset jätetty pois.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Tätä peliä pelataan kausitapahtuman kanssa.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Tätä peliä pelataan ilman kausitapahtumaa.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä isännän asetus on voimassa.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Isäntä on estänyt</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Et voi liittyä tähän peliin: isäntä on estänyt sinut peleistään.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Pelaajat, jotka estät pelin pelaajasivun Estä-painikkeella, eivät voi liittyä moninpelipeleihisi, ennen kuin poistat eston.</value></data>

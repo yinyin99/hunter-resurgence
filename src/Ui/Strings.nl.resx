@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Winkelitems van het evenement</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Beloning voor elke bijdrager: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} van {1} doelen voltooid</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>In de reservaten van het evenement zijn de dieren bezeten: ze vallen je aan en gewone munitie schampt ze alleen. Gebruik de zilveren munitie van het evenement. Daar maakt één treffer met andere munitie het afschot onethisch (gediskwalificeerd), ook als zilver het dier afmaakt, en dat geldt voor elk bezeten dier, ook klein wild. De coyote en het zwartstaarthert zijn niet bezeten: ze vragen om hun gewone munitie, en zilver op hen is onethisch. Zet "Seizoensevenementen spelen" uit om vanaf je volgende jacht op de gewone dieren te jagen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In de reservaten van het evenement zijn de dieren bezeten: ze vallen je aan en gewone munitie schampt ze alleen. Gebruik de zilveren munitie van het evenement. Daar maakt één treffer met andere munitie het afschot onethisch (gediskwalificeerd), ook als zilver het dier afmaakt, en dat geldt voor elk bezeten dier, ook klein wild. De coyote en het zwartstaarthert zijn niet bezeten: ze vragen om hun gewone munitie, en zilver op hen is onethisch. Zet "Seizoensevenementen spelen" uit om vanaf je volgende jacht op de gewone dieren te jagen. In multiplayer geldt de instelling van de host.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evenement bezig: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservaten</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Seizoensevenement</value></data>
@@ -1665,6 +1665,9 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Join.Hidden" xml:space="preserve"><value>De kaart en de uitrusting van de host zijn alleen te zien voor spelers die aan dit spel mogen meedoen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ tegen het normale tarief, zonder bonussen.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusevenementen in deze periode:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dit spel wordt gespeeld met het seizoensevenement.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dit spel wordt gespeeld zonder het seizoensevenement.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer geldt de instelling van de host.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Verbannen door de host</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: de host heeft je uit zijn spellen verbannen.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spelers die je verbant met de knop Verbannen op de spelerspagina in het spel, kunnen niet meedoen aan je multiplayerspellen totdat je de ban opheft.</value></data>

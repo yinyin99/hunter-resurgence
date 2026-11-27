@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Předměty události v obchodě</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Odměna pro každého přispěvatele: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Splněno cílů: {0} z {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>V revírech události jsou zvířata posedlá: útočí na vás a běžná munice je jen škrábne. Použijte stříbrnou munici události. Jediný zásah jinou municí tam z úlovku udělá neetický (diskvalifikovaný), i když ho stříbro dorazí, a to platí pro všechna posedlá zvířata, i pro drobnou zvěř. Kojot a jelenec černoocasý nejsou posedlí: potřebují svou obvyklou munici a stříbro na nich je neetické. Chcete-li lovit běžná zvířata, vypněte „Hrát sezónní události“; platí to od vašeho příštího lovu.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>V revírech události jsou zvířata posedlá: útočí na vás a běžná munice je jen škrábne. Použijte stříbrnou munici události. Jediný zásah jinou municí tam z úlovku udělá neetický (diskvalifikovaný), i když ho stříbro dorazí, a to platí pro všechna posedlá zvířata, i pro drobnou zvěř. Kojot a jelenec černoocasý nejsou posedlí: potřebují svou obvyklou munici a stříbro na nich je neetické. Chcete-li lovit běžná zvířata, vypněte „Hrát sezónní události“; platí to od vašeho příštího lovu. Ve hře pro více hráčů platí nastavení hostitele.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Probíhá událost: {0}, na: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>všechny revíry</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sezónní událost</value></data>
@@ -1665,6 +1665,9 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Join.Hidden" xml:space="preserve"><value>Mapu a vybavení hostitele vidí jen hráči, kteří se k této hře mohou připojit.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ za běžnou sazbu, bez bonusů.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusové události v tomto období:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Tato hra se hraje se sezónní událostí.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Tato hra se hraje bez sezónní události.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Ve hře pro více hráčů platí nastavení hostitele.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Zablokován hostitelem</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Do této hry se nemůžeš připojit: hostitel ti zablokoval přístup do svých her.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Hráči, které zablokuješ tlačítkem Blokovat na stránce hráčů ve hře, se nemohou připojit k tvým hrám pro více hráčů, dokud blokaci nezrušíš.</value></data>

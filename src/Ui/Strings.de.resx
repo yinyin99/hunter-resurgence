@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Event-Artikel im Shop</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belohnung für jeden Beitragenden: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} von {1} Zielen erledigt</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes besessene Tier, auch für Niederwild. Kojote und Schwarzwedelhirsch sind nicht besessen: Sie brauchen ihre übliche Munition, und Silber auf sie ist unethisch. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes besessene Tier, auch für Niederwild. Kojote und Schwarzwedelhirsch sind nicht besessen: Sie brauchen ihre übliche Munition, und Silber auf sie ist unethisch. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen. Im Multiplayer gilt die Einstellung des Gastgebers.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Ereignis läuft: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>allen Revieren</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Saisonales Ereignis</value></data>
@@ -1665,6 +1665,9 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Join.Hidden" xml:space="preserve"><value>Die Karte und die Ausrüstung des Gastgebers sehen nur Spieler, die diesem Spiel beitreten dürfen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ zum normalen Satz, Boni nicht eingerechnet.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus-Ereignisse in diesem Zeitraum:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dieses Spiel wird mit dem saisonalen Event gespielt.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dieses Spiel wird ohne das saisonale Event gespielt.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Im Multiplayer gilt die Einstellung des Gastgebers.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Vom Gastgeber gebannt</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Der Gastgeber hat dich von seinen Spielen gebannt.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spieler, die du mit der Schaltfläche „Bannen“ auf der Spielerseite im Spiel bannst, können deinen Multiplayer-Spielen nicht beitreten, bis du den Bann aufhebst.</value></data>

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents).</param>
+/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents). The games always include the three event cases: Ranger_Test's game runs the seasonal event and differs from the player's own, Hunter15's runs it and does not differ, Hunter14's runs none and differs.</param>
 public sealed class MockServersService(ILogger<MockServersService> log, ILauncherBridge bridge, string? mock = null) : IServersService
 {
     static readonly (string Host, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
@@ -23,7 +23,8 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons
-        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null }, Languages[i])).ToList();
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null }, Languages[i],
+        i switch { 1 or 10 => "halloween_2026", _ => null }, i is 1 or 9)).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",

@@ -30,6 +30,11 @@
             <p class="line">@L["Servers.MaxScore"] @Server.MaxScore</p>
         }
         @if (Server.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
+        @* the host's event setting is the game's for every player: says which it is, and why the player's own setting does not decide it when it differs *@
+        @if (Server.Event is not null || Server.EventDiffers)
+        {
+            <p class="event">@(Server.Event is null ? L["Join.EventWithout"].Value : L["Join.EventWith"].Value)@if (Server.EventDiffers) { <small>@L["Join.EventHost"]</small> }</p>
+        }
         <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="join-loadout" />
         <h5 class="players-title">@L["Servers.PlayerList", Server.Players, Server.Max]</h5>
         @foreach (var (p, i) in Server.Roster.Select((p, i) => (p, i)))

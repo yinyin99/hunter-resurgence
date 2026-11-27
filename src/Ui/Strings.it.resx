@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Oggetti dell'evento nel negozio</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Ricompensa per ogni collaboratore: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} obiettivi su {1} completati</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale posseduto, selvaggina minuta compresa. Il coyote e il cervo dalla coda nera non sono posseduti: richiedono le munizioni di sempre, e l'argento su di loro non è etico. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale posseduto, selvaggina minuta compresa. Il coyote e il cervo dalla coda nera non sono posseduti: richiedono le munizioni di sempre, e l'argento su di loro non è etico. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta. In multiplayer vale l'impostazione dell'host.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>
@@ -1665,6 +1665,9 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Questa partita si gioca con l'evento stagionale.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Questa partita si gioca senza l'evento stagionale.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer vale l'impostazione dell'host.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannato dall'host</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Non puoi unirti a questa partita: l'host ti ha bannato dalle sue partite.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>I giocatori che banni con il pulsante Banna nella pagina dei giocatori del gioco non possono unirsi alle tue partite multiplayer finché non rimuovi il ban.</value></data>

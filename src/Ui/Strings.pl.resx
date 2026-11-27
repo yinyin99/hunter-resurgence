@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Przedmioty wydarzenia w sklepie</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Nagroda dla każdego uczestnika: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Ukończone cele: {0} z {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>W rezerwatach wydarzenia zwierzęta są opętane: szarżują na ciebie, a zwykła amunicja tylko je drasnie. Używaj srebrnej amunicji wydarzenia. Tam jedno trafienie inną amunicją czyni odstrzał nieetycznym (zdyskwalifikowanym), nawet jeśli srebro go dobije, i dotyczy to każdego opętanego zwierzęcia, także drobnej zwierzyny. Kojot i jeleń czarnoogonowy nie są opętani: wymagają zwykłej amunicji, a srebro na nich jest nieetyczne. Wyłącz „Graj w wydarzenia sezonowe”, aby od następnego polowania polować na zwykłe zwierzęta.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>W rezerwatach wydarzenia zwierzęta są opętane: szarżują na ciebie, a zwykła amunicja tylko je drasnie. Używaj srebrnej amunicji wydarzenia. Tam jedno trafienie inną amunicją czyni odstrzał nieetycznym (zdyskwalifikowanym), nawet jeśli srebro go dobije, i dotyczy to każdego opętanego zwierzęcia, także drobnej zwierzyny. Kojot i jeleń czarnoogonowy nie są opętani: wymagają zwykłej amunicji, a srebro na nich jest nieetyczne. Wyłącz „Graj w wydarzenia sezonowe”, aby od następnego polowania polować na zwykłe zwierzęta. W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Trwa wydarzenie: {0}, w: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>wszystkie rezerwaty</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Wydarzenie sezonowe</value></data>
@@ -1665,6 +1665,9 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Join.Hidden" xml:space="preserve"><value>Mapa i wyposażenie gospodarza są widoczne tylko dla graczy, którzy mogą dołączyć do tej gry.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ według zwykłej stawki, bez premii.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>W tę grę gra się z wydarzeniem sezonowym.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>W tę grę gra się bez wydarzenia sezonowego.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Zbanowany przez gospodarza</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: gospodarz zbanował cię w swoich grach.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Gracze, których zbanujesz przyciskiem Zbanuj na stronie graczy w grze, nie mogą dołączać do twoich gier wieloosobowych, dopóki nie zdejmiesz bana.</value></data>
