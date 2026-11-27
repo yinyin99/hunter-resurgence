@@ -1744,7 +1744,8 @@ public sealed partial class State
                 ["description"] = C(G(item, "description", null)) ?? "", ["category"] = key,
                 ["ems"] = ems, ["was"] = ems < full ? full : null,
                 ["gms"] = gms, ["gwas"] = gms < gfull ? gfull : null,
-                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
+                // a whole number (StoreSales.Pct): the website and launcher read it as an int, and 30.0 failed the whole store
+                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = (int)sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
                 ["buyable"] = !IsUnlimitedAmmo(item) && !IsUnlimitedFuel(Py.L(item["id"])) && (StoreSells(item, "price") || StoreSells(item, "silver_price")),
                 ["unlimited"] = IsUnlimitedAmmo(item), ["fuel"] = IsUnlimitedFuel(Py.L(item["id"])), ["limit"] = LimitOf(item) ?? 0,
             });
@@ -1766,7 +1767,7 @@ public sealed partial class State
             {
                 ["id"] = C(b["id"]), ["name"] = C(b["name"]), ["description"] = C(G(b.AsObject(), "description", null)) ?? "",
                 ["price"] = price, ["was"] = price < list ? list : null, ["buyable"] = BundleSale(b) is not null,
-                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
+                ["sale"] = sale is null ? null : new JsonObject { ["name"] = sale.Sale.Name, ["percent"] = (int)sale.Percent, ["until"] = RewardEvents.Iso(sale.Until) },
                 ["items"] = new JsonArray([.. Arr(b["items"]).Select(id => (JsonNode?)new JsonObject { ["id"] = C(id), ["name"] = names.TryGetValue(Py.L(id), out var n) ? C(n) : "" })]),
             });
         }
