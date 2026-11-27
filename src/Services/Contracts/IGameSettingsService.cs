@@ -10,8 +10,9 @@ public enum DisplayMode { Borderless, Fullscreen, Windowed }
 public sealed record GameOptions(DisplayMode Display, bool Vsync, Resolution Resolution, int Scene, int Texture, int Shadow, int Msaa, int Aniso, bool? ContextualHelp, bool? ExtendedAudio, bool StartWithSteam = true);
 
 /// <param name="Resolutions">What the display offers.</param>
+/// <param name="VideoMemoryMb">0 when unknown.</param>
 /// <param name="Error">Localisation key when the settings cannot be read; the other values are then unusable.</param>
-public sealed record GameSettings(GameOptions Options, IReadOnlyList<Resolution> Resolutions, string? Error = null);
+public sealed record GameSettings(GameOptions Options, IReadOnlyList<Resolution> Resolutions, int VideoMemoryMb, string? Error = null);
 
 /// <summary>The 22 languages the game ships (its localization file), by the code of the launch URL's <c>lang</c> segment and the language's own name; the server accepts the same codes (<c>GameTokens.GameLanguages</c>).</summary>
 public static class GameLanguages

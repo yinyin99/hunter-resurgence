@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Złożoność sceny</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Złożoność sceny określa gęstość roślinności i zasięg renderowania. Przy zasięgu renderowania niskie ustawienie zapewnia maksymalnie 220 m widoczności poziomej, średnie – 270 m, a wysokie/bardzo wysokie – 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Jakość tekstur</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Tekstury wysokiej jakości wymagają 512 MB pamięci karty graficznej w grze jednoosobowej i 768 MB w trybie wieloosobowym.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Pamięć karty graficznej: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Jakość cieni</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Wygładzanie krawędzi (MSAA)</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrowanie anizotropowe</value></data>

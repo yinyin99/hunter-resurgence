@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Сложность ландшафта</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Сложность ландшафта определяет плотность растительности и дальность прорисовки. При низких настройках максимальная дальность видимости по горизонтали составит 220 м, при средних — 270 м, при высоких и очень высоких — 320 м.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Качество текстур</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Для текстур высокого качества нужно 512 МБ видеопамяти в одиночной игре и 768 МБ в мультиплеере.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Объём вашей видеопамяти: {0} МБ</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Качество теней</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Множественное сглаживание</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Анизотропная фильтрация</value></data>

@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scene Complexity</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scene complexity handles vegetation density and render distance. For render distance, Low settings will grant 220m maximum horizontal vision. Medium settings will grant 270m. High/Very High will grant 320m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texture Quality</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>High quality textures require 512 MB video card memory in single player and 768 MB in multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>You have {0} MB of video memory</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Shadow Quality</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropic Filtering</value></data>

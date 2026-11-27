@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Kompleksnost scene</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Kompleksnost scene določa gostoto rastlinja in vidno razdaljo. Pri nizki nastavitvi je največja vodoravna vidna razdalja 220 m, pri srednji 270 m, pri visoki/zelo visoki pa 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Kakovost tekstur</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Teksture visoke kakovosti zahtevajo 512 MB pomnilnika grafične kartice pri samostojnem lovu in 768 MB pri skupinskem.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Video pomnilnik: {0} MB</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Kakovost senc</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample glajenje</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anizotropno filtriranje</value></data>

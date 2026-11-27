@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Détails de l’environnement</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Les détails de l’environnement gèrent la densité de la végétation et la distance d’affichage. Pour la distance d’affichage, le réglage Faible offre une vision horizontale maximale de 220 m, Moyen de 270 m et Élevé/Très élevé de 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Détails des textures</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Les textures haute qualité nécessitent une carte graphique dotée de 512 Mo de mémoire vidéo pour le mode simple joueur ou 768 Mo pour le mode multijoueur.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Vous disposez de {0} Mo de mémoire vidéo</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Qualité des ombres</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multi-échantillonnage</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrage anisotrope</value></data>

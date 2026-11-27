@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Omgevingscomplexiteit</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Omgevingscomplexiteit bepaalt de vegetatiedichtheid en de tekenafstand. Bij de tekenafstand geeft Laag een maximaal horizontaal zicht van 220 m. Gemiddeld geeft 270 m. Hoog/Zeer hoog geeft 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Kwaliteit textures</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Textures van hoge kwaliteit vereisen 512 MB videogeheugen in singleplayer en 768 MB in multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Je hebt {0} MB videogeheugen</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Kwaliteit schaduwen</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample anti-aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrope filtering</value></data>

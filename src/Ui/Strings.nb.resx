@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Landskapskompleksitet</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Landskapskompleksitet styrer vegetasjonstetthet og tegneavstand. For tegneavstand gir Lav maksimalt 220 m horisontal sikt, Middels gir 270 m, og Høy/Svært høy gir 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Teksturkvalitet</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Teksturer med høy kvalitet krever 512 MB skjermkortminne i enspillermodus og 768 MB i flerspillermodus.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Du har {0} MB skjermkortminne</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Skyggekvalitet</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample-kantutjevning</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>

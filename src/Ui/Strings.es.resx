@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Complejidad de la escena</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>La complejidad de la escena controla la densidad de la vegetación y la distancia de renderizado. En cuanto a la distancia de renderizado, el ajuste Bajo ofrece una visión horizontal máxima de 220 m, el Medio de 270 m y el Alto/Muy alto de 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Calidad de texturas</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Las texturas de calidad alta requieren 512 MB de memoria de la tarjeta gráfica en el modo de un jugador y 768 MB en multijugador.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Tienes {0} MB de memoria de vídeo</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Calidad de sombras</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Antialiasing multimuestra</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Filtrado anisotrópico</value></data>

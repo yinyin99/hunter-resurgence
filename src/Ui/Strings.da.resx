@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Scenekompleksitet</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Scenekompleksitet styrer tætheden af vegetation og tegneafstanden. Hvad angår tegneafstand, giver lav indstilling en maksimal horisontal sigtbarhed på 220 m, mellem giver 270 m, og høj/meget høj giver 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Teksturkvalitet</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Teksturer i høj kvalitet kræver 512 MB grafikkortshukommelse i singleplayer og 768 MB i multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Du har {0} MB videohukommelse</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Skyggekvalitet</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisample Anti-Aliasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotropisk filtrering</value></data>

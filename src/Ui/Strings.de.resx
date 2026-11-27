@@ -322,6 +322,8 @@
   <data name="GameSettings.Scene" xml:space="preserve"><value>Szenerie-Komplexität</value></data>
   <data name="GameSettings.SceneHelp" xml:space="preserve"><value>Die Szenerie-Komplexität steuert Vegetationsdichte und Sichtweite. Bei der Sichtweite gewähren niedrige Einstellungen maximal 220 m horizontale Sicht, mittlere 270 m, hohe und sehr hohe 320 m.</value></data>
   <data name="GameSettings.Texture" xml:space="preserve"><value>Texturqualität</value></data>
+  <data name="GameSettings.TextureHelp" xml:space="preserve"><value>Hochwertige Texturen benötigen 512 MB Grafikspeicher im Einzelspielermodus und 768 MB im Multiplayer.</value></data>
+  <data name="GameSettings.TextureMemory" xml:space="preserve"><value>Sie haben {0} MB Grafikspeicher</value></data>
   <data name="GameSettings.Shadow" xml:space="preserve"><value>Schattenqualität</value></data>
   <data name="GameSettings.Msaa" xml:space="preserve"><value>Multisampling-Antialiasing</value></data>
   <data name="GameSettings.Aniso" xml:space="preserve"><value>Anisotrope Filterung</value></data>
