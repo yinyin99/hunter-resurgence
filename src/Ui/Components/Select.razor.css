@@ -4,3 +4,5 @@
 .arrow ::deep .icon { transition: transform var(--t-base) var(--ease); }
 .field:has(+ .pop:popover-open) .arrow ::deep .icon { transform: rotate(180deg); }
 .pop { box-shadow: var(--shadow-dropdown); }
+.pop.flagged { max-height: 300px; }
+.flag { width: 22px; height: 16px; margin-right: 8px; vertical-align: middle; }

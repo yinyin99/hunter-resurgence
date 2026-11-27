@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Objets de l'événement en boutique</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Récompense pour chaque contributeur : {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} objectifs sur {1} accomplis</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Sur les réserves de l'événement, les animaux sont possédés : ils vous chargent et les munitions normales ne font que les égratigner. Utilisez les munitions en argent de l'événement. Là-bas, un seul impact d'une autre munition rend le prélèvement non éthique (disqualifié), même si l'argent l'achève, et cela vaut pour tous les animaux possédés, petit gibier compris. Le coyote et le cerf à queue noire ne sont pas possédés : ils demandent leurs munitions habituelles, et l'argent sur eux n'est pas éthique. Désactivez « Jouer les événements saisonniers » pour chasser les animaux normaux à partir de votre prochaine chasse.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Sur les réserves de l'événement, les animaux sont possédés : ils vous chargent et les munitions normales ne font que les égratigner. Utilisez les munitions en argent de l'événement. Là-bas, un seul impact d'une autre munition rend le prélèvement non éthique (disqualifié), même si l'argent l'achève, et cela vaut pour tous les animaux possédés, petit gibier compris. Le coyote et le cerf à queue noire ne sont pas possédés : ils demandent leurs munitions habituelles, et l'argent sur eux n'est pas éthique. Désactivez « Jouer les événements saisonniers » pour chasser les animaux normaux à partir de votre prochaine chasse. En multijoueur, le paramètre de l'hôte s'applique.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Événement en cours : {0}, dans {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>toutes les réserves</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Événement saisonnier</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Vous ne possédez aucune tente dans cette réserve. Les tentes que vous placez dans une réserve servent de points de départ mobiles et d’accès à votre inventaire. Obtenez vos tentes à la {0}boutique{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zoom avant</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zoom arrière</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Carte : faites glisser pour la déplacer, molette de la souris ou + / − pour zoomer, les flèches la déplacent</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Départ : {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Infos &amp; point de départ</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nom de la partie :</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Réserve</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Joueurs</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Hôte</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Pays</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Joueurs : {1}/{2} - Hôte : {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Détails de la partie</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Rejoindre</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Votre partie</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Démarrage…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Mise à jour…</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Emplacement du serveur : {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europe</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Amérique du Nord</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Amérique du Sud</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asie</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Océanie</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Cliquez sur un point de départ sur la carte pour rejoindre cette partie</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Entrez le mot de passe pour rejoindre cette partie :</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Entrez le mot de passe</value></data>
@@ -644,7 +638,7 @@
   <data name="Mis.All" xml:space="preserve"><value>Toutes</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Favorites</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Actives</value></data>
-  <data name="Mis.Packs" xml:space="preserve"><value>Mission Packs</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Packs de missions</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Disponibles</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Espèces</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Armes</value></data>
@@ -1671,4 +1665,16 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Join.Hidden" xml:space="preserve"><value>La carte et l'installation de l'hôte ne sont montrées qu'aux joueurs qui peuvent rejoindre cette partie.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ au tarif normal, bonus exclus.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Événements bonus de la période :</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Cette partie se joue avec l'événement saisonnier.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Cette partie se joue sans l'événement saisonnier.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, le paramètre de l'hôte s'applique.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banni par l'hôte</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Vous ne pouvez pas rejoindre cette partie : l'hôte vous a banni de ses parties.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Les joueurs que vous bannissez avec le bouton Bannir de la page des joueurs du jeu ne peuvent pas rejoindre vos parties multijoueur tant que vous ne levez pas le bannissement.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Vous n'avez banni aucun joueur.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Lever le bannissement</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Voulez-vous vraiment lever le bannissement de {0} de vos parties ?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Langue</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Langue :</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Uniquement les parties dans ma langue</value></data>
 </root>

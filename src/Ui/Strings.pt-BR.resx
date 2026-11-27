@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Itens do evento na loja</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Recompensa para cada colaborador: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} de {1} objetivos concluídos</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Nas reservas do evento os animais estão possuídos: eles investem contra você, e a munição normal só os arranha. Use a munição de prata do evento. Lá, um único acerto com outra munição torna o abate antiético (desclassificado), mesmo que a prata o finalize, e isso vale para todos os animais possuídos, inclusive a caça miúda. O coiote e o cervo-de-cauda-preta não são possuídos: eles exigem a munição habitual, e a prata neles é antiética. Desative "Jogar eventos sazonais" para caçar os animais normais a partir da sua próxima caçada.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Nas reservas do evento os animais estão possuídos: eles investem contra você, e a munição normal só os arranha. Use a munição de prata do evento. Lá, um único acerto com outra munição torna o abate antiético (desclassificado), mesmo que a prata o finalize, e isso vale para todos os animais possuídos, inclusive a caça miúda. O coiote e o cervo-de-cauda-preta não são possuídos: eles exigem a munição habitual, e a prata neles é antiética. Desative "Jogar eventos sazonais" para caçar os animais normais a partir da sua próxima caçada. No multiplayer, vale o ajuste do anfitrião.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento em andamento: {0}, em {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>todas as reservas</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento sazonal</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Você não tem nenhuma tenda nesta reserva. As tendas que você coloca em uma reserva funcionam como pontos de partida portáteis e de acesso ao inventário. Compre suas tendas na {0}loja{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Aproximar</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Afastar</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mapa: arraste para mover, use a roda do mouse ou + / − para dar zoom, as setas movem o mapa</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Início em {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informações do jogo e ponto de partida</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nome do jogo:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Reserva</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Jogadores</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Servidor</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>País</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jogadores: {1}/{2} - Servidor: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Detalhes do jogo</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Entrar no jogo</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Seu jogo</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Iniciando…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aplicando atualização...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Localização do servidor: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>América do Norte</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>América do Sul</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Ásia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Clique em um ponto de partida no mapa para entrar neste jogo</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Digite a senha para entrar neste jogo:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Digite a senha</value></data>
@@ -1671,4 +1665,16 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só aparecem para jogadores que podem entrar nesta partida.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ na taxa normal, sem bônus.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bônus no período:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Este jogo é jogado com o evento sazonal.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Este jogo é jogado sem o evento sazonal.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>No multiplayer, vale o ajuste do anfitrião.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Banido pelo anfitrião</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Você não pode entrar neste jogo: o anfitrião baniu você dos jogos dele.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Os jogadores que você bane com o botão Banir da página de jogadores do jogo não podem entrar nos seus jogos multiplayer até você remover o banimento.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Você não baniu nenhum jogador.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Remover banimento</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Tem certeza de que deseja remover o banimento de {0} dos seus jogos?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Idioma</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Idioma:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Apenas jogos no meu idioma</value></data>
 </root>

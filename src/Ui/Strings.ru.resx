@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Товары события в магазине</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Награда каждому участнику: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Выполнено целей: {0} из {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>В угодьях события животные одержимы: они бросаются на вас, а обычные боеприпасы их лишь царапают. Используйте серебряные боеприпасы события. Там одно попадание другими боеприпасами делает добычу неэтичной (дисквалифицированной), даже если её добивает серебро, и это касается всех одержимых животных, включая мелкую дичь. Койот и чернохвостый олень не одержимы: им нужны обычные боеприпасы, а серебро на них неэтично. Отключите «Участвовать в сезонных событиях», чтобы со следующей охоты охотиться на обычных животных.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>В угодьях события животные одержимы: они бросаются на вас, а обычные боеприпасы их лишь царапают. Используйте серебряные боеприпасы события. Там одно попадание другими боеприпасами делает добычу неэтичной (дисквалифицированной), даже если её добивает серебро, и это касается всех одержимых животных, включая мелкую дичь. Койот и чернохвостый олень не одержимы: им нужны обычные боеприпасы, а серебро на них неэтично. Отключите «Участвовать в сезонных событиях», чтобы со следующей охоты охотиться на обычных животных. В мультиплеере действует настройка хозяина.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Идёт событие: {0}. Угодья: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>все</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Сезонное событие</value></data>
@@ -200,17 +200,18 @@
   <data name="Hunt.ViewCompetitions" xml:space="preserve"><value>Просмотреть предстоящие соревнования</value></data>
   <data name="Launch.TitleSingle" xml:space="preserve"><value>СОЗДАТЬ ОДИНОЧНУЮ ИГРУ</value></data>
   <data name="Launch.TitleMulti" xml:space="preserve"><value>СОЗДАТЬ МНОГОПОЛЬЗОВАТЕЛЬСКУЮ ИГРУ</value></data>
-  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на стоянки (значки домиков), чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
+  <data name="Launch.Intro1" xml:space="preserve"><value>Выберите, откуда начать охоту. Нажмите на один из 12 логотипов охотугодий внизу, чтобы увидеть карту выбранного охотугодья, а затем на значки охотничьих домиков, чтобы узнать, какие виды животных там обитают. Карту мира можно перемещать, перетаскивая мышью, и масштабировать колесом мыши.</value></data>
   <data name="Launch.Intro2" xml:space="preserve"><value>Одни из самых великолепных уголков природы и 45 видов животных ждут вас. Удачной охоты!</value></data>
   <data name="Launch.StartTime" xml:space="preserve"><value>Время начала:</value></data>
   <data name="Launch.EventTime" xml:space="preserve"><value>Задано событием: {0}</value></data>
   <data name="Launch.StartGame" xml:space="preserve"><value>Начать игру</value></data>
   <data name="Launch.Patching" xml:space="preserve"><value>Обновление</value></data>
-  <data name="Launch.Lodges" xml:space="preserve"><value>Стоянки:</value></data>
+  <data name="Launch.Lodges" xml:space="preserve"><value>Охотничьи домики:</value></data>
   <data name="Launch.Tents" xml:space="preserve"><value>Палатки:</value></data>
   <data name="Launch.NoTents" xml:space="preserve"><value>У вас нет палаток на этом охотугодье. Палатки, которые вы ставите на охотугодье, служат переносными точками возрождения и доступа к инвентарю. Палатки можно приобрести в {0}магазине{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Приблизить</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Отдалить</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Карта: перетаскивайте, чтобы сдвинуть; колесо мыши или + / − меняют масштаб; стрелки сдвигают карту</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Старт: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Информация об игре и стартовая позиция</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Имя игры:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Игроков</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Хост</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Страна</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} — игроков: {1}/{2} — хост: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Сведения об игре</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Присоединиться</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ваша игра</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Запускается…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Установка обновления...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Расположение сервера: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Европа</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Северная Америка</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Южная Америка</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Азия</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Океания</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Нажмите на стартовую позицию на карте, чтобы присоединиться к этой игре</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Введите пароль, чтобы присоединиться к этой игре:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Введите пароль</value></data>
@@ -644,7 +638,7 @@
   <data name="Mis.All" xml:space="preserve"><value>Все</value></data>
   <data name="Mis.Favourite" xml:space="preserve"><value>Избранное</value></data>
   <data name="Mis.Active" xml:space="preserve"><value>Активные</value></data>
-  <data name="Mis.Packs" xml:space="preserve"><value>Серии миссий</value></data>
+  <data name="Mis.Packs" xml:space="preserve"><value>Наборы миссий</value></data>
   <data name="Mis.Available" xml:space="preserve"><value>Доступные</value></data>
   <data name="Mis.Species" xml:space="preserve"><value>Виды</value></data>
   <data name="Mis.Weapons" xml:space="preserve"><value>Оружие</value></data>
@@ -1029,7 +1023,7 @@
   <data name="Stat.Start" xml:space="preserve"><value>Старт</value></data>
   <data name="Stat.Dur" xml:space="preserve"><value>Длительность</value></data>
   <data name="Stat.Reserve" xml:space="preserve"><value>Охотугодье</value></data>
-  <data name="Stat.Lodge" xml:space="preserve"><value>Стоянка</value></data>
+  <data name="Stat.Lodge" xml:space="preserve"><value>Охотничий домик</value></data>
   <data name="Stat.CollectablesCol" xml:space="preserve"><value>Предметы для сбора</value></data>
   <data name="Stat.KillsCol" xml:space="preserve"><value>Убийств</value></data>
   <data name="Stat.AllTime" xml:space="preserve"><value>За всё время</value></data>
@@ -1341,7 +1335,7 @@
   <data name="Footer.YourData" xml:space="preserve"><value>Ваши данные</value></data>
   <data name="Restore.Title" xml:space="preserve"><value>Восстановить резервную копию</value></data>
   <data name="Restore.Intro" xml:space="preserve"><value>Загрузите zip-архив, созданный инструментом резервного копирования. Оператор проверит его вручную и, если всё в порядке, восстановит на этом сервере ваш инвентарь, кошелёк, навыки, статистику, достижения и трофеи.</value></data>
-  <data name="Restore.Hint" xml:space="preserve"><value>Загрузка резервной копии заменяет ваш профиль на этом сервере: предметы, кошелёк, навыки, статистику, достижения, трофеи и домики. Охоты, сыгранные здесь, остаются.</value></data>
+  <data name="Restore.Hint" xml:space="preserve"><value>Загрузка резервной копии заменяет ваш профиль на этом сервере: предметы, кошелёк, навыки, статистику, достижения, трофеи и залы трофеев. Охоты, сыгранные здесь, остаются.</value></data>
   <data name="Restore.Rule1" xml:space="preserve"><value>Используйте резервную копию, созданную в режиме «Мой аккаунт». Оператор видит, создана ли она для аккаунта Steam, с которым вы вошли; это подсказка, а не доказательство.</value></data>
   <data name="Restore.Rule2" xml:space="preserve"><value>Резервную копию можно восстановить один раз. Если вы ещё не играли на этом сервере, ваш аккаунт получит ID пользователя и имя из резервной копии.</value></data>
   <data name="Restore.Rule3" xml:space="preserve"><value>Каждый zip-архив сохраняется, чтобы оператор проверил его вручную. Ничего не восстанавливается автоматически, поэтому это может занять некоторое время.</value></data>
@@ -1426,12 +1420,12 @@
   <data name="Claim.Find.limit" xml:space="preserve"><value>Сегодня слишком много поисков, попробуйте завтра.</value></data>
   <data name="Claim.Find.unavailable" xml:space="preserve"><value>Сервер не ответил.</value></data>
   <data name="Claim.Score" xml:space="preserve"><value>HunterScore: {0}</value></data>
-  <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, домики: {2}</value></data>
+  <data name="Claim.Counts" xml:space="preserve"><value>Предметы: {0}, трофеи: {1}, залы трофеев: {2}</value></data>
   <data name="Claim.Flags" xml:space="preserve"><value>Навыки: {0}, статистика: {1}, достижения: {2}</value></data>
   <data name="Claim.Yes" xml:space="preserve"><value>да</value></data>
   <data name="Claim.No" xml:space="preserve"><value>нет</value></data>
   <data name="Claim.UseName" xml:space="preserve"><value>Использовать моё старое имя</value></data>
-  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и домики на этом сервере старым профилем. Если вы уже восстановили собственную резервную копию, ничего из неё не заменяется: заявка лишь добавляет то, чего в копии нет. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
+  <data name="Claim.Warning" xml:space="preserve"><value>Это заменит ваши предметы, навыки, достижения, трофеи и залы трофеев на этом сервере старым профилем. Если вы уже восстановили собственную резервную копию, ничего из неё не заменяется: заявка лишь добавляет то, чего в копии нет. Охоты, добытые животные и фото, сделанные здесь, останутся. Вернуть можно только один профиль.</value></data>
   <data name="Claim.Button" xml:space="preserve"><value>Вернуть этот профиль</value></data>
   <data name="Claim.State.waiting" xml:space="preserve"><value>Ваша заявка на {0} (подана {1}) ждёт оператора.</value></data>
   <data name="Claim.State.restored" xml:space="preserve"><value>Ваш старый профиль {0} восстановлен ({1}).</value></data>
@@ -1558,7 +1552,7 @@
   <data name="SignInPage.Handle.Rule" xml:space="preserve"><value>От 3 до 30 букв, цифр, - или _.</value></data>
   <data name="SignInPage.Handle.New" xml:space="preserve"><value>Я здесь новичок</value></data>
   <data name="SignInPage.Handle.Old" xml:space="preserve"><value>Я играл раньше: восстановить то, что сохранилось от моего старого профиля</value></data>
-  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, домики, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
+  <data name="SignInPage.Handle.OldNote" xml:space="preserve"><value>Мы сохранили часть публичных профилей: предметы, трофеи, залы трофеев, навыки, статистику и достижения. Охоты, фотографии и деньги сохранены не были. Профили с высоким счётом сначала проверяет оператор.</value></data>
   <data name="SignInPage.Handle.OldEmpty" xml:space="preserve"><value>Оставьте пустым, чтобы использовать старое имя, если оно свободно.</value></data>
   <data name="SignInPage.Handle.Invalid" xml:space="preserve"><value>Имя содержит от 3 до 30 букв, цифр, - или _ и начинается с буквы или цифры.</value></data>
   <data name="SignInPage.Handle.Taken" xml:space="preserve"><value>Это имя занято.</value></data>
@@ -1629,9 +1623,9 @@
   <data name="Taxidermy.HoursLeft" xml:space="preserve"><value>осталось {0} ч</value></data>
   <data name="Taxidermy.MinutesLeft" xml:space="preserve"><value>осталось {0} мин</value></data>
   <data name="Taxidermy.Skull" xml:space="preserve"><value>Установленный череп</value></data>
-  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Вы можете сделать чучело животного для своей стоянки*</value></data>
-  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Вы можете сделать чучело животного или установить череп для своей стоянки*</value></data>
-  <data name="Taxidermy.Note" xml:space="preserve"><value>* Для показа нужна стоянка, но если её у вас ещё нет, они сохраняются</value></data>
+  <data name="Taxidermy.MessageNoSkull" xml:space="preserve"><value>Вы можете сделать чучело животного для своего зала трофеев*</value></data>
+  <data name="Taxidermy.MessageSkull" xml:space="preserve"><value>Вы можете сделать чучело животного или установить череп для своего зала трофеев*</value></data>
+  <data name="Taxidermy.Note" xml:space="preserve"><value>* Для показа нужен зал трофеев, но если его у вас ещё нет, они сохраняются</value></data>
   <data name="Taxidermy.Done" xml:space="preserve"><value>Чучело готово. Чучело животного отправлено в менеджер трофеев.</value></data>
   <data name="Taxidermy.SkullDone" xml:space="preserve"><value>Череп успешно установлен. Установленный череп отправлен в менеджер трофеев.</value></data>
   <data name="Taxidermy.Badge" xml:space="preserve"><value>Чучело готово</value></data>
@@ -1671,4 +1665,16 @@
   <data name="Join.Hidden" xml:space="preserve"><value>Карту и снаряжение хозяина видят только игроки, которые могут присоединиться к этой игре.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ по обычной ставке, без бонусов.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>В эту игру играют с сезонным событием.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>В эту игру играют без сезонного события.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере действует настройка хозяина.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Заблокирован хостом</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: хост заблокировал вас в своих играх.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Игроки, которых вы блокируете кнопкой «Заблокировать» на странице игроков в игре, не смогут присоединяться к вашим многопользовательским играм, пока вы не снимете блокировку.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Вы никого не заблокировали.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Разблокировать</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Вы действительно хотите разблокировать {0} в своих играх?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Язык</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Язык:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Только игры на моём языке</value></data>
 </root>

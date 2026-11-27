@@ -117,6 +117,15 @@ public sealed class GameSettingsService(Settings settings, Prefs prefs, string a
         return Task.CompletedTask;
     }
 
+    public Task<string?> HostLanguageAsync() => Task.FromResult(Resurgence.Ui.Languages.Find(prefs.HostLanguage)?.Code);
+
+    public Task SetHostLanguageAsync(string code)
+    {
+        prefs.HostLanguage = Resurgence.Ui.Languages.Find(code)?.Code;
+        savePrefs();
+        return Task.CompletedTask;
+    }
+
     // the file's anisotropic filtering has Default before Off: the dialog has no Default, it shows Off
     public static GameOptions ToOptions(GraphicsSettings g, OptionsSettings? o, DisplayMode display) =>
         new(display, g.Vsync, new(g.Width, g.Height, g.Hz), g.Scene, g.Texture, g.Shadow, g.Msaa, Math.Max(g.Aniso - 1, 0), o?.Has("ContextualHelp") == true ? o.Get("ContextualHelp") != 0 : null, null);

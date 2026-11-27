@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Winkelitems van het evenement</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Beloning voor elke bijdrager: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} van {1} doelen voltooid</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>In de reservaten van het evenement zijn de dieren bezeten: ze vallen je aan en gewone munitie schampt ze alleen. Gebruik de zilveren munitie van het evenement. Daar maakt één treffer met andere munitie het afschot onethisch (gediskwalificeerd), ook als zilver het dier afmaakt, en dat geldt voor elk bezeten dier, ook klein wild. De coyote en het zwartstaarthert zijn niet bezeten: ze vragen om hun gewone munitie, en zilver op hen is onethisch. Zet "Seizoensevenementen spelen" uit om vanaf je volgende jacht op de gewone dieren te jagen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In de reservaten van het evenement zijn de dieren bezeten: ze vallen je aan en gewone munitie schampt ze alleen. Gebruik de zilveren munitie van het evenement. Daar maakt één treffer met andere munitie het afschot onethisch (gediskwalificeerd), ook als zilver het dier afmaakt, en dat geldt voor elk bezeten dier, ook klein wild. De coyote en het zwartstaarthert zijn niet bezeten: ze vragen om hun gewone munitie, en zilver op hen is onethisch. Zet "Seizoensevenementen spelen" uit om vanaf je volgende jacht op de gewone dieren te jagen. In multiplayer geldt de instelling van de host.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evenement bezig: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alle reservaten</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Seizoensevenement</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Je hebt geen tenten in dit reservaat. Tenten die je in een reservaat plaatst, fungeren als draagbare spawnpunten en toegangspunten tot je inventaris. Koop je tenten in de {0}winkel{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Inzoomen</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Uitzoomen</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Kaart: sleep om te verplaatsen, zoom met het muiswiel of + / −, de pijltoetsen verplaatsen de kaart</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start bij {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spelinfo en startpunt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spelnaam:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Reservaat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelers</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spelers: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Speldetails</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Meespelen</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jouw spel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Wordt gestart…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Patchen...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverlocatie: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Noord-Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Zuid-Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Azië</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanië</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klik op een startlocatie op de kaart om aan dit spel deel te nemen</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Voer het wachtwoord in om aan dit spel deel te nemen:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Voer wachtwoord in</value></data>
@@ -1671,4 +1665,16 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Join.Hidden" xml:space="preserve"><value>De kaart en de uitrusting van de host zijn alleen te zien voor spelers die aan dit spel mogen meedoen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ tegen het normale tarief, zonder bonussen.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusevenementen in deze periode:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dit spel wordt gespeeld met het seizoensevenement.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dit spel wordt gespeeld zonder het seizoensevenement.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer geldt de instelling van de host.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Verbannen door de host</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Je mag niet meedoen aan dit spel: de host heeft je uit zijn spellen verbannen.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spelers die je verbant met de knop Verbannen op de spelerspagina in het spel, kunnen niet meedoen aan je multiplayerspellen totdat je de ban opheft.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Je hebt geen spelers verbannen.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Ban opheffen</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Weet je zeker dat je de ban van {0} uit je spellen wilt opheffen?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Taal:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Alleen spellen in mijn taal</value></data>
 </root>

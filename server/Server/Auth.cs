@@ -141,6 +141,12 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <summary>The Veteran threshold (`discord_veteran_at`) while Linked Roles are on (the Discord settings are set): <c>/auth/me</c> then says it and whether the account has linked; null: Linked Roles are off,
     /// <c>/auth/me</c> says null for both, and the pages offer no link.</summary>
     public long? DiscordVeteranAt { get; init; }
+
+    /// <summary>The server log (a test swaps it): one line per sign-in attempt of a banned Steam id.</summary>
+    public Action<string> Log { get; init; } = Console.WriteLine;
+
+    /// <summary>Called with the text of an operator alert (the review channel) for the first attempt of a banned Steam id and for the first after an hour without one; the log line and the count on its ban row are for every attempt.</summary>
+    public Action<string>? BanAlert { get; init; }
     const string LoginCookie = "hr_login";
 
     /// <summary>One sign-in in progress in one browser. Steam: set when Steam confirmed the id. Account: set when the
@@ -231,7 +237,22 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
         login.Steam = steamId;
         login.Banned = why ?? "";
         logins[login.Id] = login;
+        NoteBanAttempt(login, steamId);
         return Problem(r, "banned");
+    }
+
+    /// <summary>One log line for every sign-in attempt of a banned Steam id (time, Steam id, account if any, route; never the reason), the count on its ban row, and the operator alert (<see cref="BanAlert"/>) when
+    /// it is the first attempt or the previous one is an hour old, so a player who retries gets one alert per burst. The backup tool signs in through the same app route as the launcher, so the two read alike. An account flagged banned without a ban row has no count to keep: every attempt alerts.</summary>
+    void NoteBanAttempt(Login login, string steamId)
+    {
+        var at = now().ToUnixTimeSeconds();
+        var route = login.App is not null ? "app" : login.Link is not null ? "launcher link" : "web";
+        var account = Store.AccountBySteam(steamId);
+        var counted = Store.BanAttempt(steamId, at);
+        Log($"banned sign-in {DateTimeOffset.FromUnixTimeSeconds(at):u} steam {steamId} account {account?.ToString() ?? "none"} route {route}" + (counted is { } c ? $" attempt {c.Attempts}" : ""));
+        if (counted is { Previous: { } previous } && at - previous < 3600) return;
+        BanAlert?.Invoke(Alerts.Text("\U0001F6AB", "Banned Steam id tried to sign in", null, ("steam id", $"`{steamId}`"), ("steam", Alerts.Steam(steamId)), ("account", account),
+            ("route", route), ("attempts", counted?.Attempts), ("time", $"{DateTimeOffset.FromUnixTimeSeconds(at):u}")));
     }
 
     static Reply Redirect(string to, params string[] cookies) =>
@@ -544,8 +565,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     /// <summary>POST /auth/launch: a launch URL with fresh tokens for the signed-in player, for the start page. A form with `reserve` and `lodge` or `tent` (the guid of one of the
     /// player's placed tents in that reserve), and `time` in minutes and `loadout`, a number each, first opens the hunt there as start_single_player does; with `mp=host` it also
-    /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
-    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "host_not_ready" | "host_network" | "bad_start" | "gone"}` (`bad_start`: `host_tent` 1 with a `tent` that is not a tent of the game's host on its reserve); with `host_tent` 1 the `tent` is one of the host's;
+    /// opens a multiplayer session (<see cref="State.HostGame"/>: `name`, `description`, `language`, `public_game`, `free_players`, `hs_min`, `hs_max`, `password`, `max_players`); with `mp=join`
+    /// and `network_id` (no `reserve`, no `time`) it joins one (<see cref="State.JoinGame"/>, `password`), refused with 400 `{"error": "password" | "full" | "not_allowed" | "own_game" | "banned" | "host_not_ready" | "host_network" | "bad_start" | "gone"}` (`bad_start`: `host_tent` 1 with a `tent` that is not a tent of the game's host on its reserve); with `host_tent` 1 the `tent` is one of the host's;
     /// a form with `tutorial` opens that tutorial's session instead; 400 for anything else, and for a tent that is not the player's or not in that reserve. Any of them may carry `lang`, one of
     /// <see cref="GameTokens.GameLanguages"/>, the language the game starts in (the launch URL's `lang` segment; en_US when missing or unknown).</summary>
     public Reply Launch(Req r, GameTokens tokens)
@@ -579,7 +600,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             state.NoteLaunch(account, Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={f.Item2}"))));
             return Url();
         }
-        foreach (var key in join ? new[] { "network_id", "password", "host_tent" } : ["reserve", "name", "description", "public_game", "free_players", "hs_min", "hs_max", "password", "max_players"])
+        foreach (var key in join ? new[] { "network_id", "password", "host_tent" } : ["reserve", "name", "description", "language", "public_game", "free_players", "hs_min", "hs_max", "password", "max_players"])
             fields.Add((key, F(key)));
         var body = Encoding.UTF8.GetBytes(string.Join("&", fields.Select(f => $"{f.Item1}={Uri.EscapeDataString(f.Item2)}")));
         if (!join)

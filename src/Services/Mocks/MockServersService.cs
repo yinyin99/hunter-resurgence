@@ -2,25 +2,29 @@ using Microsoft.Extensions.Logging;
 
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents).</param>
+/// <param name="mock">Development states: "servers:none" (no games), "loadouts" (three saved loadouts; the player has none otherwise, as in the capture), "tents" (the player has tents). The games always include the three event cases: Ranger_Test's game runs the seasonal event and differs from the player's own, Hunter15's runs it and does not differ, Hunter14's runs none and differs.</param>
 public sealed class MockServersService(ILogger<MockServersService> log, ILauncherBridge bridge, string? mock = null) : IServersService
 {
-    static readonly (string Host, string Country, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
+    static readonly (string Host, Distance Distance, int Reserve, int Players, int Max, bool Password)[] Rows =
     [
-        ("Hunter05", "se", Distance.Short, 2, 1, 3, false), ("Ranger_Test", "ca", Distance.Short, 11, 1, 8, false), ("Moss_Walker", "us", Distance.Short, 4, 1, 8, false),
-        ("Hunter08", "de", Distance.Short, 4, 1, 8, false), ("Hunter09", "us", Distance.Short, 1, 1, 8, false), ("Pine_Walker", "de", Distance.Short, 10, 1, 8, false),
-        ("River_Test", "us", Distance.Short, 4, 1, 8, true), ("Hunter12", "br", Distance.Medium, 12, 2, 3, false), ("Hunter13", "au", Distance.Medium, 10, 1, 8, true),
-        ("Hunter14", "br", Distance.Medium, 6, 2, 8, false), ("Hunter15", "br", Distance.Medium, 5, 1, 4, false), ("Hunter16", "ca", Distance.Medium, 9, 1, 8, false),
-        ("Hunter17", "se", Distance.Medium, 1, 1, 8, false), ("Hunter18", "us", Distance.Medium, 6, 1, 2, false), ("Hunter19", "de", Distance.Medium, 12, 1, 8, false),
-        ("Hunter20", "au", Distance.Long, 10, 1, 8, false),
+        ("Hunter05", Distance.Short, 2, 1, 3, false), ("Ranger_Test", Distance.Short, 11, 1, 8, false), ("Moss_Walker", Distance.Short, 4, 1, 8, false),
+        ("Hunter08", Distance.Short, 4, 1, 8, false), ("Hunter09", Distance.Short, 1, 1, 8, false), ("Pine_Walker", Distance.Short, 10, 1, 8, false),
+        ("River_Test", Distance.Short, 4, 1, 8, true), ("Hunter12", Distance.Medium, 12, 2, 3, false), ("Hunter13", Distance.Medium, 10, 1, 8, true),
+        ("Hunter14", Distance.Medium, 6, 2, 8, false), ("Hunter15", Distance.Medium, 5, 1, 4, false), ("Hunter16", Distance.Medium, 9, 1, 8, false),
+        ("Hunter17", Distance.Medium, 1, 1, 8, false), ("Hunter18", Distance.Medium, 6, 1, 2, false), ("Hunter19", Distance.Medium, 12, 1, 8, false),
+        ("Hunter20", Distance.Long, 10, 1, 8, false),
     ];
 
+    /// <summary>The language of each game of <see cref="Rows"/> (a code of the launcher's languages); the eighth has none, as a game hosted by an older launcher.</summary>
+    static readonly string[] Languages = ["en", "fr", "de", "es", "pt-BR", "ru", "it", "", "en", "pt-BR", "nl", "pl", "sv", "fr", "de", "en"];
+
     static readonly IReadOnlyList<GameServer> Servers = Rows.Select((r, i) => new GameServer(i + 1, $"{r.Host}'s game", i == 0 ? "Placeholder description of the game. The host writes a short text here for the other players." : "",
-        r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Country, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
+        r.Reserve, r.Players, r.Max, r.Host, r.Password, r.Distance, 1299 + i * 61, i == 0 ? 1000 : 0, 99999,
         // the hunters stand at fixed spots of the reserve map: the host near a lodge, the others further out
         Enumerable.Range(0, r.Players).Select(p => new GamePlayer(p == 0 ? r.Host : $"Hunter{40 + p}", 15300 - p * 4200, p == 0 ? 56 + i % 5 : 30 + p * 17, p == 0 ? 58 : 44 + p * 9)).ToList(),
         // a few games the player cannot join, to see the reasons
-        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", _ => null })).ToList();
+        i switch { 2 => "friends", 3 => "starting", 4 => "own", 5 => "network", 7 => "banned", _ => null }, Languages[i],
+        i switch { 1 or 10 => "halloween_2026", _ => null }, i is 1 or 9)).ToList();
 
     static readonly Tutorial[] Tutorials = Enumerable.Range(1, 5).Select(i => new Tutorial(i, new[] { "The Basics", "Using Towers", "Bow/Xbow + Tree Stands Usage", "Waterfowling + Retriever Dogs", "Pheasants + Pointer Dogs" }[i - 1],
         new[] { "Join the warden on your very first hunting expedition and learn the basics of {game}.", "Make good use of hunting towers. Use a scent spray to bring an animal right up to the tower for a prime shot.",
@@ -48,6 +52,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
     public async Task<JoinMap> JoinMarkersAsync(long server, int reserve, string? password) =>
         Servers.FirstOrDefault(s => s.Id == server) is not { } game ? new(null, "Launch.Failed")
         : game.Why is "friends" or "hunterscore" ? new(null, "Join.NotAllowed")
+        : game.Why is "banned" ? new(null, "Join.Banned")
         : game.Why is "starting" ? new(null, "Join.HostNotReady")
         : game.Refused ? new(null, "Launch.Failed")
         : game.Password && password != Secret ? new(null, "Join.WrongPassword")
@@ -60,7 +65,7 @@ public sealed class MockServersService(ILogger<MockServersService> log, ILaunche
         Task.FromResult<IReadOnlyList<Loadout>>(mock == "loadouts" ? [new(1, "Loadout 1"), new(2, "Loadout 2"), new(3, "Loadout 3")] : []);
 
     public Task<Result> StartSingleAsync(int reserve, int marker, int minutes, int loadout) => Launch($"single reserve {reserve} marker {marker} at {minutes} min, loadout {loadout}");
-    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Launch($"multiplayer \"{game.Name}\" reserve {reserve} marker {marker} at {minutes} min, max {game.MaxPlayers}, loadout {loadout}");
+    public Task<Result> CreateAsync(NewGame game, int reserve, int marker, int minutes, int loadout) => Launch($"multiplayer \"{game.Name}\" reserve {reserve} marker {marker} at {minutes} min, max {game.MaxPlayers}, language {game.Language}, loadout {loadout}");
 
     /// <summary>The password of every protected game of the mock is <see cref="Secret"/>; anything else is turned down like the server does.</summary>
     public const string Secret = "letmein";

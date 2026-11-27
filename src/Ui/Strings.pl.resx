@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Przedmioty wydarzenia w sklepie</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Nagroda dla każdego uczestnika: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Ukończone cele: {0} z {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>W rezerwatach wydarzenia zwierzęta są opętane: szarżują na ciebie, a zwykła amunicja tylko je drasnie. Używaj srebrnej amunicji wydarzenia. Tam jedno trafienie inną amunicją czyni odstrzał nieetycznym (zdyskwalifikowanym), nawet jeśli srebro go dobije, i dotyczy to każdego opętanego zwierzęcia, także drobnej zwierzyny. Kojot i jeleń czarnoogonowy nie są opętani: wymagają zwykłej amunicji, a srebro na nich jest nieetyczne. Wyłącz „Graj w wydarzenia sezonowe”, aby od następnego polowania polować na zwykłe zwierzęta.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>W rezerwatach wydarzenia zwierzęta są opętane: szarżują na ciebie, a zwykła amunicja tylko je drasnie. Używaj srebrnej amunicji wydarzenia. Tam jedno trafienie inną amunicją czyni odstrzał nieetycznym (zdyskwalifikowanym), nawet jeśli srebro go dobije, i dotyczy to każdego opętanego zwierzęcia, także drobnej zwierzyny. Kojot i jeleń czarnoogonowy nie są opętani: wymagają zwykłej amunicji, a srebro na nich jest nieetyczne. Wyłącz „Graj w wydarzenia sezonowe”, aby od następnego polowania polować na zwykłe zwierzęta. W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Trwa wydarzenie: {0}, w: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>wszystkie rezerwaty</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Wydarzenie sezonowe</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Nie masz żadnych namiotów w tym rezerwacie. Namioty rozstawione w rezerwacie działają jak przenośne punkty startowe i punkty dostępu do ekwipunku. Namioty kupisz w {0}sklepie{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Przybliż</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Oddal</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mapa: przeciągnij, aby ją przesunąć, kółko myszy lub + / − przybliża i oddala, strzałki przesuwają mapę</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informacje o grze i punkt startowy</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nazwa gry:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezerwat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Gracze</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Kraj</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Gracze: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Szczegóły gry</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Dołącz do gry</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Twoja gra</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Uruchamianie…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aktualizowanie...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Lokalizacja serwera: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Ameryka Północna</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Ameryka Południowa</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Azja</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Kliknij miejsce startu na mapie, aby dołączyć do tej gry</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Wpisz hasło, aby dołączyć do tej gry:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Wpisz hasło</value></data>
@@ -1671,4 +1665,16 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Join.Hidden" xml:space="preserve"><value>Mapa i wyposażenie gospodarza są widoczne tylko dla graczy, którzy mogą dołączyć do tej gry.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ według zwykłej stawki, bez premii.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>W tę grę gra się z wydarzeniem sezonowym.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>W tę grę gra się bez wydarzenia sezonowego.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Zbanowany przez gospodarza</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: gospodarz zbanował cię w swoich grach.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Gracze, których zbanujesz przyciskiem Zbanuj na stronie graczy w grze, nie mogą dołączać do twoich gier wieloosobowych, dopóki nie zdejmiesz bana.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Nie zbanowałeś żadnego gracza.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Zdejmij bana</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Czy na pewno chcesz zdjąć bana z gracza {0} w twoich grach?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Język</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Język:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Tylko gry w moim języku</value></data>
 </root>

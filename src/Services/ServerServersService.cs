@@ -48,7 +48,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     /// <summary>The 403's reasons (<see cref="ServerPlacedRefusal"/>) and the message each has, the join's own where it has one.</summary>
     static readonly Dictionary<string, string> PlacedRefusals = new()
     {
-        ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["friends"] = "Join.NotAllowed", ["hunterscore"] = "Join.NotAllowed", ["starting"] = "Join.HostNotReady", ["network"] = "Join.HostNetwork",
+        ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["friends"] = "Join.NotAllowed", ["hunterscore"] = "Join.NotAllowed", ["starting"] = "Join.HostNotReady", ["network"] = "Join.HostNetwork", ["banned"] = "Join.Banned",
     };
 
     /// <summary>The open games of the server (<see cref="ServerCatalogApi.Games"/>, for a signed-in player: the browser's host and the session cookie); none when signed out (the server is not asked) or when it does not answer. A player is placed on the map where the server says (<c>mapX</c>, <c>mapY</c>), and not when it does not.</summary>
@@ -74,9 +74,9 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     }
 
     /// <summary>The host is the game's own handle; the game's age is the time since it was created. A host can set any Hunter Score limit: it is kept within 0 to 99999, and no limit is that whole range, as the list shows it. A player's place is the server's percent of the map, as sent.</summary>
-    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", Whole(g.Reserve!.Id), g.Clients?.Length ?? 0, Whole(g.Max), g.Handle ?? "", g.Password, g.Country ?? "", Distance.Short,
+    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", Whole(g.Reserve!.Id), g.Clients?.Length ?? 0, Whole(g.Max), g.Handle ?? "", g.Password, null,
         Whole(now - g.Started), Whole(g.Min ?? 0, 99999), Whole(g.MaxScore ?? 99999, 99999),
-        [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", Whole(c.Hunterscore), c.MapX, c.MapY, Avatars.Slot(c.Avatar)))], g.Why);
+        [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", Whole(c.Hunterscore), c.MapX, c.MapY, Avatars.Slot(c.Avatar)))], g.Why, g.Language ?? "", g.Event, g.EventDiffers);
 
     static int Whole(long n, int max = int.MaxValue) => (int)Math.Clamp(n, 0, max);
 
@@ -141,6 +141,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
     {
         List<(string, string)> form = [("mp", "host"), ("reserve", $"{reserve}"), Start(marker), ("time", $"{minutes}"), ("loadout", $"{loadout}"),
             ("name", game.Name), ("description", game.Description), ("public_game", game.FriendsOnly ? "0" : "1"), ("free_players", "1"), ("max_players", $"{game.MaxPlayers}")];
+        if (game.Language.Length > 0) form.Add(("language", game.Language));
         if (game.MinScore is { } min && game.MaxScore is { } max) form.AddRange([("hs_min", $"{min}"), ("hs_max", $"{max}")]);
         if (game.Password is { Length: > 0 } password) form.Add(("password", password));
         return LaunchAsync([.. form]);
@@ -155,7 +156,7 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return LaunchAsync([.. form]);
     }
 
-    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady", ["host_network"] = "Join.HostNetwork" };
+    static readonly Dictionary<string, string> Refusals = new() { ["password"] = "Join.WrongPassword", ["full"] = "Join.Full", ["not_allowed"] = "Join.NotAllowed", ["host_not_ready"] = "Join.HostNotReady", ["host_network"] = "Join.HostNetwork", ["banned"] = "Join.Banned" };
 
     /// <summary>A placed tent's marker id is its negated guid (<see cref="Placed"/>).</summary>
     static (string, string) Start(int marker) => marker < 0 ? ("tent", $"{-marker}") : ("lodge", $"{marker}");

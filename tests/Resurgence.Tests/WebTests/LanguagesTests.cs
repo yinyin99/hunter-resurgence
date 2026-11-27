@@ -23,4 +23,14 @@ public class LanguagesTests
     [Fact]
     public void EveryLanguageHasItsFlagFile() =>
         Assert.All(Languages.All, l => Assert.True(File.Exists(Repo.Path("src", "Ui", "wwwroot", "flags", l.Flag + ".svg")), l.Code));
+
+    // #930: the server lists the launcher's languages for a game's language (`Games.Languages`); the server project is not visible here, so its source is read
+    [Fact]
+    public void TheServersGameLanguagesAreTheLaunchersLanguages()
+    {
+        var source = File.ReadAllText(Repo.Path("server", "Server", "Multiplayer.cs"));
+        var list = System.Text.RegularExpressions.Regex.Match(source, @"public static readonly string\[\] Languages =\s*\[(.*?)\];", System.Text.RegularExpressions.RegexOptions.Singleline).Groups[1].Value;
+        var codes = System.Text.RegularExpressions.Regex.Matches(list, "\"([^\"]+)\"").Select(m => m.Groups[1].Value);
+        Assert.Equal(Languages.All.Select(l => l.Code).Order(StringComparer.Ordinal), codes.Order(StringComparer.Ordinal));
+    }
 }

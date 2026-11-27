@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Eventets butiksartiklar</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belöning till varje bidragsgivare: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} av {1} mål klara</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>I händelsens reservat är djuren besatta: de anfaller dig, och vanlig ammunition skrapar dem bara. Använd händelsens silverammunition. Där gör en enda träff med annan ammunition fällningen oetisk (diskvalificerad), även om silvret avslutar den, och det gäller alla besatta djur, även småvilt. Prärievargen och svartsvanshjorten är inte besatta: de kräver sin vanliga ammunition, och silver på dem är oetiskt. Stäng av ”Spela säsongshändelser” för att jaga de vanliga djuren från din nästa jakt.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>I händelsens reservat är djuren besatta: de anfaller dig, och vanlig ammunition skrapar dem bara. Använd händelsens silverammunition. Där gör en enda träff med annan ammunition fällningen oetisk (diskvalificerad), även om silvret avslutar den, och det gäller alla besatta djur, även småvilt. Prärievargen och svartsvanshjorten är inte besatta: de kräver sin vanliga ammunition, och silver på dem är oetiskt. Stäng av ”Spela säsongshändelser” för att jaga de vanliga djuren från din nästa jakt. I flerspelarläge gäller värdens inställning.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Händelse pågår: {0}, i {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>alla reservat</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Säsongshändelse</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Du har inga tält i det här jaktområdet. Tält som du placerar ut i ett jaktområde fungerar som bärbara startpunkter och åtkomstpunkter till ditt förråd. Skaffa tält i {0}butiken{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Zooma in</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Zooma ut</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Karta: dra för att flytta, använd mushjulet eller + / − för att zooma, piltangenterna flyttar kartan</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start vid {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spelinfo och startpunkt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spelnamn:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Jaktområde</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spelare</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Värd</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spelare: {1}/{2} - Värd: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Spelinformation</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Gå med i spel</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Ditt spel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Startar…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Uppdaterar...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverplats: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Sydamerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asien</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanien</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klicka på en startplats på kartan för att gå med i det här spelet</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Ange lösenord för att gå med i det här spelet:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Ange lösenord</value></data>
@@ -1671,4 +1665,16 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Join.Hidden" xml:space="preserve"><value>Kartan och värdens utrustning visas bara för spelare som får gå med i det här spelet.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ till normal taxa, bonusar ej inräknade.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Det här spelet spelas med säsongshändelsen.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Det här spelet spelas utan säsongshändelsen.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspelarläge gäller värdens inställning.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannlyst av värden</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värden har bannlyst dig från sina spel.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spelare du bannlyser med knappen Bannlys på spelarsidan i spelet kan inte gå med i dina flerspelarspel förrän du hävt bannlysningen.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Du har inte bannlyst någon spelare.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Häv bannlysning</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Är du säker på att du vill häva bannlysningen av {0} från dina spel?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Språk</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Språk:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Bara spel på mitt språk</value></data>
 </root>

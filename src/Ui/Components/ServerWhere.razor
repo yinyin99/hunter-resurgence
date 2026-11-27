@@ -1,18 +1,9 @@
-@if (Server.Country.Length > 0)
+@if (Server.Distance is { } distance)
 {
-    <i class="dot @Server.Distance.ToString().ToLowerInvariant()" data-tip="@tip"></i><img class="flag" src="_content/Resurgence.Ui/flags/@(Server.Country).svg" alt="" data-tip="@tip" />
+    <i class="dot @distance.ToString().ToLowerInvariant()" data-tip="@L["Servers." + distance]"></i>
 }
 
 @code {
-    /// <summary>The coloured distance dot and the country flag of a game; both show "Server location: ..." as a tip.</summary>
+    /// <summary>The coloured distance dot of a game (short, medium or long, as the legend says); none when the server does not say how far the host is.</summary>
     [Parameter, EditorRequired] public GameServer Server { get; set; } = null!;
-
-    string tip => L["Servers.Location", L[Server.Country switch
-    {
-        "us" or "ca" => "Servers.NorthAmerica",
-        "br" => "Servers.SouthAmerica",
-        "au" => "Servers.Oceania",
-        "jp" or "cn" => "Servers.Asia",
-        _ => "Servers.Europe",
-    }].Value].Value;
 }

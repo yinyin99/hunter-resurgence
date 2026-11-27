@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Oggetti dell'evento nel negozio</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Ricompensa per ogni collaboratore: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} obiettivi su {1} completati</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale posseduto, selvaggina minuta compresa. Il coyote e il cervo dalla coda nera non sono posseduti: richiedono le munizioni di sempre, e l'argento su di loro non è etico. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Nelle riserve dell'evento gli animali sono posseduti: ti caricano e le munizioni normali li scalfiscono appena. Usa le munizioni d'argento dell'evento. Lì basta un colpo con un'altra munizione per rendere l'abbattimento non etico (squalificato), anche se l'argento lo finisce, e vale per ogni animale posseduto, selvaggina minuta compresa. Il coyote e il cervo dalla coda nera non sono posseduti: richiedono le munizioni di sempre, e l'argento su di loro non è etico. Disattiva «Partecipa agli eventi stagionali» per cacciare gli animali normali dalla tua prossima battuta. In multiplayer vale l'impostazione dell'host.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Evento in corso: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>tutte le riserve</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Evento stagionale</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Non hai nessuna tenda in questa riserva. Le tende che posizioni in una riserva fungono da punti di spawn portatili e da punti di accesso all’inventario. Acquista le tue tende nel {0}negozio{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Ingrandisci</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Riduci</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Mappa: trascina per spostarla, rotella del mouse o + / − per lo zoom, i tasti freccia la spostano</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Partenza: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Info sulla partita e punto di partenza</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Nome partita:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Riserva</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Giocatori</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Paese</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Giocatori: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Dettagli partita</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Entra</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>La tua partita</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Avvio…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Aggiornamento...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Posizione server: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>America del Nord</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>America del Sud</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Clicca su un punto di partenza sulla mappa per entrare in questa partita</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Inserisci la password per entrare in questa partita:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Inserisci la password</value></data>
@@ -1671,4 +1665,16 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Questa partita si gioca con l'evento stagionale.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Questa partita si gioca senza l'evento stagionale.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer vale l'impostazione dell'host.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannato dall'host</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Non puoi unirti a questa partita: l'host ti ha bannato dalle sue partite.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>I giocatori che banni con il pulsante Banna nella pagina dei giocatori del gioco non possono unirsi alle tue partite multiplayer finché non rimuovi il ban.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Non hai bannato nessun giocatore.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Rimuovi ban</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Vuoi davvero rimuovere il ban di {0} dalle tue partite?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Lingua</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Lingua:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Solo partite nella mia lingua</value></data>
 </root>

@@ -16,6 +16,13 @@ public sealed class MockAccountService : IAccountService
     // the mock session (MockSessionService) is metric: only the call and the change event are the real ones
     public Task<Result> SetImperialAsync(bool imperial) { Changed?.Invoke(); return Task.FromResult(Result.Success); }
 
+    // two bans to lift; the list is the visitor's own, as the avatar is
+    readonly List<GameBan> bans = [new("Hunter04", new(2026, 11, 20), "avatar-12"), new("Hunter02", new(2026, 11, 3), "avatar-31")];
+
+    public Task<IReadOnlyList<GameBan>> GameBansAsync() => Task.FromResult<IReadOnlyList<GameBan>>([.. bans]);
+
+    public Task<Result> UnbanAsync(string handle) => Task.FromResult(bans.RemoveAll(b => b.Handle == handle) > 0 ? Result.Success : Result.Fail("Store.Oops"));
+
     static RewardItem I(string text, int id) => new(text, id);
     static RewardItem Em(int n) => new($"{n} Em$", null);
 

@@ -37,9 +37,9 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     // 10-digit ids: a network id does not fit an int
-    static readonly GameServer Open = new(4000000001, "Test game", "Come and hunt.", 2, 2, 4, "HostOne", false, "", Distance.Short, 600, 100, 2000,
+    static readonly GameServer Open = new(4000000001, "Test game", "Come and hunt.", 2, 2, 4, "HostOne", false, null, 600, 100, 2000,
         [new("HostOne", 1500, null, null), new("Guest", 300, null, null)]);
-    static readonly GameServer Locked = new(4000000002, "Locked game", "", 4, 1, 8, "HostTwo", true, "", Distance.Short, 60, 0, 99999, [new("HostTwo", 900, null, null)]);
+    static readonly GameServer Locked = new(4000000002, "Locked game", "", 4, 1, 8, "HostTwo", true, null, 60, 0, 99999, [new("HostTwo", 900, null, null)]);
 
     [Fact]
     public void TheListShowsEachGamesNameHostReservePlayersLockAndScoreRange()
@@ -52,7 +52,7 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Equal(["Test game", "Test Reserve", "2/4", "HostOne"], rows[0].QuerySelectorAll("td").Take(4).Select(td => td.TextContent.Trim()));
         Assert.Empty(rows[0].QuerySelectorAll(".lock"));
         Assert.NotEmpty(rows[1].QuerySelectorAll(".lock"));
-        // the games have no country: no location column, no dots, no text about them
+        // the games have no distance: no dots, no text about them (and no country column: the language column is there)
         Assert.DoesNotContain("Country", cut.Find("table.tbl thead").TextContent);
         Assert.Empty(cut.FindAll("i.dot"));
         Assert.Empty(cut.FindAll("p.legend"));
@@ -72,20 +72,20 @@ public sealed class MultiplayerPagesTests : UiContext
     public void TheFilterListsOnlyGamesThePlayerMayJoinAndTheOthersShowTheirReasonAndNoJoin()
     {
         Services.AddSingleton<IPatchService>(new Resurgence.Services.Mocks.MockPatchService("patch:done"));  // the Join button is off while patching
-        GameServer[] games = [Open, Locked, .. new[] { "friends", "hunterscore", "full", "own", "starting" }.Select((why, i) => Open with { Id = i + 1, Name = $"Game {why}", Why = why })];
+        GameServer[] games = [Open, Locked, .. new[] { "friends", "hunterscore", "full", "own", "starting", "banned" }.Select((why, i) => Open with { Id = i + 1, Name = $"Game {why}", Why = why })];
         Services.AddSingleton<IServersService>(new Fake { Games = games });
         var cut = Render<Servers>();
 
-        cut.WaitForAssertion(() => Assert.Equal(7, cut.FindAll("table.tbl tbody tr").Count));
+        cut.WaitForAssertion(() => Assert.Equal(8, cut.FindAll("table.tbl tbody tr").Count));
         string[] reasons = [.. cut.FindAll("table.tbl tbody tr").Select(r => string.Join("", r.QuerySelectorAll(".why").Select(w => w.TextContent)))];
-        Assert.Equal(["", "", "Friends only", "HunterScore 100–2000", "Full", "Your game", "Starting…"], reasons);  // a game with a password has its lock, not a reason
+        Assert.Equal(["", "", "Friends only", "HunterScore 100–2000", "Full", "Your game", "Starting…", "Banned by the host"], reasons);  // a game with a password has its lock, not a reason
 
         string Join(int row)
         {
             cut.FindAll("table.tbl tbody tr")[row].Click();
             return cut.Find("aside.preview .btn-block").GetAttribute("disabled") is null ? "on" : "off";
         }
-        Assert.Equal(["on", "on", "off", "off", "off", "off", "off"], Enumerable.Range(0, 7).Select(Join));  // a password game asks for its password: its Join stays on
+        Assert.Equal(["on", "on", "off", "off", "off", "off", "off", "off"], Enumerable.Range(0, 8).Select(Join));  // a password game asks for its password: its Join stays on
         cut.Find("aside.preview .refusal");  // the details say it too
 
         cut.Find(".tools input.tick").Change(true);
@@ -136,6 +136,7 @@ public sealed class MultiplayerPagesTests : UiContext
     [Fact]
     public void TheHostFormSendsWhatWasFilledInWithTheStartOfTheMap()
     {
+        using var _ = new Culture("fr");
         var fake = new Fake();
         Services.AddSingleton<IServersService>(fake);
         var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 2));
@@ -152,7 +153,7 @@ public sealed class MultiplayerPagesTests : UiContext
 
         cut.WaitForAssertion(() => Assert.NotNull(fake.Hosted));
         var (game, reserve, marker, minutes) = fake.Hosted!.Value;
-        Assert.Equal(new NewGame("Test hunt", "Quiet morning", true, "letmein", 8, 100, 2000), game);
+        Assert.Equal(new NewGame("Test hunt", "Quiet morning", true, "letmein", 8, 100, 2000, "fr"), game);  // the launcher's language, set for this test, is the game's
         Assert.Equal((2, 101, 540), (reserve, marker, minutes));
     }
 
@@ -274,6 +275,44 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     [Fact]
+    public void OnlyAGameThatRunsTheSeasonalEventShowsItsBadgeInTheListAndItsDetails()
+    {
+        // the first game's server sent no event fields (an older server): it renders as before
+        Services.AddSingleton<IServersService>(new Fake { Games = [Open, Locked with { Event = "halloween_2026", EventDiffers = true }] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("table.tbl tbody tr").Count));
+        var rows = cut.FindAll("table.tbl tbody tr");
+        Assert.Empty(rows[0].QuerySelectorAll("small.event"));
+        Assert.Equal("Test game", rows[0].QuerySelector("td.name")!.TextContent.Trim());
+        Assert.Contains("Seasonal event", rows[1].QuerySelector("td.name small.event")!.TextContent);
+        Assert.DoesNotContain("Seasonal event", cut.Find("aside.preview").TextContent);
+        cut.FindAll("table.tbl tbody tr")[1].Click();
+        Assert.Contains("Seasonal event", cut.Find("aside.preview").TextContent);
+    }
+
+    [Theory]
+    [InlineData("halloween_2026", true, "This game is played with the seasonal event.", true)]
+    [InlineData("halloween_2026", false, "This game is played with the seasonal event.", false)]
+    [InlineData(null, true, "This game is played without the seasonal event.", true)]
+    [InlineData(null, false, null, false)]
+    public void TheJoinDialogSaysWhetherTheGameRunsTheSeasonalEventAndThatTheHostsSettingAppliesOnlyWhenItDiffers(string? gameEvent, bool differs, string? sentence, bool hostNote)
+    {
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Open with { Event = gameEvent, EventDiffers = differs }));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
+        if (sentence is null) Assert.Empty(cut.FindAll("p.event"));  // no event and no difference (an older server too): nothing is said
+        else Assert.StartsWith(sentence, cut.Find("p.event").TextContent);
+        string[] note = hostNote ? ["In multiplayer, the host's setting applies."] : [];
+        Assert.Equal(note, cut.FindAll("p.event small").Select(s => s.TextContent));
+        // no refusal and no extra click: a start of the map still joins
+        cut.Find("button.marker").Click();
+        cut.WaitForAssertion(() => Assert.NotNull(fake.Joined));
+    }
+
+    [Fact]
     public void ThePreviewOfAGameThePlayerMayNotJoinDrawsNoPlayersOnAMap()
     {
         GamePlayer[] placed = [new("HostOne", 1500, 25.5, 75)];
@@ -322,5 +361,149 @@ public sealed class MultiplayerPagesTests : UiContext
         fake.Pending = null;
         cut.Find("button.marker").Click();
         cut.WaitForAssertion(() => Assert.Equal(2, fake.Launches));
+    }
+
+    /// <summary>The launcher's current language for the length of a test: the pages read the thread's UI culture, so a test never depends on the PC's.</summary>
+    sealed class Culture : IDisposable
+    {
+        readonly System.Globalization.CultureInfo old = System.Globalization.CultureInfo.CurrentUICulture;
+        public Culture(string tag) => System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(tag);
+        public void Dispose() => System.Globalization.CultureInfo.CurrentUICulture = old;
+    }
+
+    /// <summary>Opens the host form and hosts at once: the language the list shows, and the code the start sent.</summary>
+    (string Shown, string Sent) HostWith(Fake fake)
+    {
+        fake.Hosted = null;
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 2));
+        cut.WaitForAssertion(() => Assert.Null(cut.Find(".start button.btn-primary").GetAttribute("disabled")));
+        var shown = cut.Find("#game-language").TextContent.Trim();
+        cut.Find(".start button.btn-primary").Click();
+        cut.WaitForAssertion(() => Assert.NotNull(fake.Hosted));
+        return (shown, fake.Hosted!.Value.Game.Language);
+    }
+
+    // #930: the first time the host form opens with the launcher's language selected (a region or a language the launcher lacks falls to its nearest or English)
+    [Theory]
+    [InlineData("fr", "Français", "fr")]
+    [InlineData("pt-BR", "Português (Brasil)", "pt-BR")]
+    [InlineData("de-AT", "Deutsch", "de")]
+    [InlineData("ja", "English", "en")]
+    public void TheHostFormOpensWithTheLaunchersLanguage(string culture, string shown, string code)
+    {
+        using var _ = new Culture(culture);
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        Assert.Equal((shown, code), HostWith(fake));
+    }
+
+    [Fact]
+    public async Task TheHostFormTheNextTimeOpensWithTheLanguageChosenLastAndTheListOffersTheNineteen()
+    {
+        using var _ = new Culture("fr");
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<LaunchMap>(p => p.Add(m => m.Kind, 2));
+        cut.WaitForAssertion(() => Assert.Null(cut.Find(".start button.btn-primary").GetAttribute("disabled")));
+        Assert.Equal(Languages.All.Select(l => l.Name), cut.FindAll("#game-language + ul li button").Select(b => b.TextContent.Trim()));
+        Assert.Equal(19, cut.FindAll("#game-language + ul li button img.flag").Count);
+        cut.FindAll("#game-language + ul li button").Single(b => b.TextContent.Trim() == "Deutsch").Click();  // not the launcher's language
+        Assert.Equal("Deutsch", cut.Find("#game-language").TextContent.Trim());
+        cut.Find(".start button.btn-primary").Click();
+        cut.WaitForAssertion(() => Assert.NotNull(fake.Hosted));
+        Assert.Equal("de", fake.Hosted!.Value.Game.Language);
+        Assert.Equal("de", await Services.GetRequiredService<IGameSettingsService>().HostLanguageAsync());  // saved with the start
+
+        // the next form: the saved choice, whatever the launcher's language is
+        Assert.Equal(("Deutsch", "de"), HostWith(fake));
+    }
+
+    [Fact]
+    public async Task AHostFormOpensWithTheSavedChoiceOverTheLaunchersLanguageAndAnUnknownCodeIsNoChoice()
+    {
+        using var _ = new Culture("fr");
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var settings = Services.GetRequiredService<IGameSettingsService>();
+        await settings.SetHostLanguageAsync("sv");
+        Assert.Equal(("Svenska", "sv"), HostWith(fake));
+        await settings.SetHostLanguageAsync("xx");  // not one of the 19: the launcher's language again
+        Assert.Equal(("Français", "fr"), HostWith(fake));
+    }
+
+    static readonly GameServer[] InLanguages =
+    [
+        Open with { Id = 11, Name = "French game", Language = "fr" }, Open with { Id = 12, Name = "German game", Language = "de" }, Open with { Id = 13, Name = "Unknown game" },
+        Open with { Id = 14, Name = "Brazil game", Language = "pt-BR" }, Open with { Id = 15, Name = "English game", Language = "en" },
+    ];
+
+    IRenderedComponent<Servers> ListInLanguages()
+    {
+        Services.AddSingleton<IServersService>(new Fake { Games = InLanguages });
+        var cut = Render<Servers>();
+        cut.WaitForAssertion(() => Assert.Equal(5, cut.FindAll("table.tbl tbody tr").Count));
+        return cut;
+    }
+
+    static string[] Names(IRenderedComponent<Servers> cut) => [.. cut.FindAll("table.tbl tbody tr td.name").Select(td => td.TextContent.Trim())];
+
+    // #930: a column with the host's flag and its name as the tip (none for a game without a language), and the details say "Language: <name>"
+    [Fact]
+    public void TheListShowsEachGamesLanguageAsAFlagWithItsNameAndTheDetailsNameIt()
+    {
+        using var _ = new Culture("en");
+        var cut = ListInLanguages();
+
+        Assert.Equal(["Language"], cut.FindAll("th.lang").Select(th => th.TextContent.Trim()));
+        var cells = cut.FindAll("table.tbl tbody tr td.lang");
+        Assert.Equal(["fr", "de", null, "br", "en"], cells.Select(td => td.QuerySelector("img.flag")?.GetAttribute("src")?.Split('/').Last().Replace(".svg", "")));
+        Assert.Equal(["Français", "Deutsch", null, "Português (Brasil)", "English"], cells.Select(td => td.QuerySelector("img.flag")?.GetAttribute("data-tip")));
+        Assert.Contains("Language: Français", cut.Find("aside.preview").TextContent);  // the first game is selected
+        cut.FindAll("table.tbl tbody tr")[2].Click();  // a game without one says nothing of it
+        Assert.DoesNotContain("Language:", cut.Find("aside.preview").TextContent);
+    }
+
+    [Fact]
+    public void TheListSortsByLanguageName()
+    {
+        using var _ = new Culture("en");
+        var cut = ListInLanguages();
+
+        cut.Find("th.lang a").Click();
+        Assert.Equal(["German game", "English game", "French game", "Brazil game", "Unknown game"], Names(cut));  // Deutsch, English, Français, Português, none last
+        Assert.Equal("ascending", cut.Find("th.lang").GetAttribute("aria-sort"));
+        cut.Find("th.lang a").Click();
+        Assert.Equal(["Brazil game", "French game", "English game", "German game", "Unknown game"], Names(cut));  // none last again
+    }
+
+    [Fact]
+    public void TheSearchMatchesTheLanguageNameAndCode()
+    {
+        using var _ = new Culture("en");
+        var cut = ListInLanguages();
+
+        cut.Find("input[type=search]").Input("deutsch");
+        Assert.Equal(["German game"], Names(cut));
+        cut.Find("input[type=search]").Input("pt-br");  // the code, though the name is Português (Brasil)
+        Assert.Equal(["Brazil game"], Names(cut));
+        cut.Find("input[type=search]").Input("french fr");  // every word: the name of the game and the code
+        Assert.Equal(["French game"], Names(cut));
+    }
+
+    // #930: "only games in my language" keeps the games of the launcher's current language (a game without one is not known to be)
+    [Theory]
+    [InlineData("fr", "French game")]
+    [InlineData("pt-BR", "Brazil game")]
+    [InlineData("de-AT", "German game")]
+    [InlineData("ja", "English game")]  // a language the launcher lacks reads as English
+    public void TheFilterKeepsOnlyTheGamesInTheLaunchersLanguage(string culture, string expected)
+    {
+        using var _ = new Culture(culture);
+        var cut = ListInLanguages();
+
+        cut.Find("#onlyMyLanguage").Change(true);
+        Assert.Equal([expected], Names(cut));
+        cut.Find("#onlyMyLanguage").Change(false);
+        Assert.Equal(5, Names(cut).Length);
     }
 }

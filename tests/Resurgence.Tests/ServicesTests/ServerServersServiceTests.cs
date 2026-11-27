@@ -162,6 +162,7 @@ public class ServerServersServiceTests
     [InlineData("hunterscore", "Join.NotAllowed")]
     [InlineData("starting", "Join.HostNotReady")]
     [InlineData("network", "Join.HostNetwork")]
+    [InlineData("banned", "Join.Banned")]
     [InlineData("own", "Launch.Failed")]
     public async Task AGameThatShowsNoMapGivesTheMessageOfItsOwnReason(string why, string key)
     {
@@ -265,11 +266,11 @@ public class ServerServersServiceTests
     // The third game was hosted with limits outside the game's own range: they are kept within 0 to 99999 and do not break the list
     const string Games = """
         [{"id": 4000000001, "name": "Test game", "handle": "HostOne", "host": 7, "description": "Come and hunt.", "password": false, "public": true, "singleplayer": false, "freeplayers": true,
-          "hs_min": 100, "hs_max": 2000, "max_players": 4, "start_ts": 1700000000, "clients_len": 2,
+          "hs_min": 100, "hs_max": 2000, "max_players": 4, "start_ts": 1700000000, "clients_len": 2, "language": "pt-BR",
           "clients": [{"user_id": 7, "handle": "HostOne", "guid": "1", "color": 1, "avatar": "https://site.test/images/avatars/12.png", "x": 1.5, "y": 2, "z": 3, "mapX": 25.5, "mapY": 75, "hunterscore": 1500},
                       {"user_id": 8, "handle": "Guest", "guid": "2", "color": 2, "avatar": null, "x": 4, "y": 5, "z": 6, "mapX": null, "mapY": null, "hunterscore": 300}],
           "reserve": {"id": 2, "name": "Test Reserve"}},
-         {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800,
+         {"id": 4000000002, "name": "Locked game", "handle": "HostTwo", "description": null, "password": true, "hs_min": null, "hs_max": null, "max_players": 8, "start_ts": 4102444800, "language": null,
           "clients": [{"user_id": 9, "handle": "HostTwo", "guid": "3", "hunterscore": 900}], "reserve": {"id": 4}},
          {"id": 4000000003, "name": "Wide game", "handle": "HostThree", "password": false, "hs_min": -5, "hs_max": 99999999999, "max_players": 8, "start_ts": 1700000000, "joinable": false, "why": "hunterscore",
           "clients": [{"user_id": 10, "handle": "HostThree", "guid": "4", "hunterscore": 99999999999}], "reserve": {"id": 4}}]
@@ -293,9 +294,24 @@ public class ServerServersServiceTests
         Assert.Equal([null, null, "hunterscore"], games.Select(g => g.Why));  // the server's reason, none from a server that does not send one
         Assert.Equal([true, false, false], games.Select(g => g.Joinable));  // a game with a password is not one the filter lists
         Assert.Equal([false, false, true], games.Select(g => g.Refused));  // and its Join stays on: it asks for the password
-        Assert.All(games, g => Assert.Equal("", g.Country));
+        Assert.All(games, g => Assert.Null(g.Distance));  // a community server does not say how far a host is
+        Assert.Equal(["pt-BR", "", ""], games.Select(g => g.Language));  // the host's language, none for a game without one (null, or a server that does not send it)
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);
+        Assert.All(games, g => Assert.Equal(((string?)null, false), (g.Event, g.EventDiffers)));  // an older server sends neither field: no event, no difference
+    }
+
+    [Fact]
+    public async Task TheGamesEventAndWhetherItDiffersFromThePlayersOwnAreRead()
+    {
+        const string withEvent = """
+            [{"id": 4000000001, "name": "A", "handle": "HostOne", "password": false, "max_players": 4, "start_ts": 1700000000, "event": "halloween_2026", "event_differs": true, "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000002, "name": "B", "handle": "HostTwo", "password": false, "max_players": 4, "start_ts": 1700000000, "event": "halloween_2026", "event_differs": false, "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000003, "name": "C", "handle": "HostThree", "password": false, "max_players": 4, "start_ts": 1700000000, "event": null, "event_differs": true, "clients": [], "reserve": {"id": 2}}]
+            """;
+        var games = await Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, withEvent) : Answer(r)), new Bridge()).ServersAsync();
+
+        Assert.Equal([("halloween_2026", true), ("halloween_2026", false), ((string?)null, true)], games.Select(g => (g.Event, g.EventDiffers)));
     }
 
     // signed out there are no games, and the server is not asked
@@ -319,11 +335,11 @@ public class ServerServersServiceTests
     {
         var fake = new Fake(Answer);
         var bridge = new Bridge();
-        Assert.True((await Make(fake, bridge).CreateAsync(new("Test game", "Come & hunt", true, "letmein", 4, 100, 2000), 2, 101, 480, 4)).Ok);
+        Assert.True((await Make(fake, bridge).CreateAsync(new("Test game", "Come & hunt", true, "letmein", 4, 100, 2000, "pt-BR"), 2, 101, 480, 4)).Ok);
         Assert.Equal(["game://play.test/session"], bridge.Started);
         var post = Assert.Single(fake.Seen);
         Assert.Equal((HttpMethod.Post, ServerLaunchApi.Launch, "hr_session=secret",
-            "mp=host&reserve=2&lodge=101&time=480&loadout=4&name=Test+game&description=Come+%26+hunt&public_game=0&free_players=1&max_players=4&hs_min=100&hs_max=2000&password=letmein&lang=en_US"),
+            "mp=host&reserve=2&lodge=101&time=480&loadout=4&name=Test+game&description=Come+%26+hunt&public_game=0&free_players=1&max_players=4&language=pt-BR&hs_min=100&hs_max=2000&password=letmein&lang=en_US"),
             (post.Method, post.Path, post.Cookie, post.Body));
     }
 
@@ -353,6 +369,7 @@ public class ServerServersServiceTests
     [InlineData("not_allowed", "Join.NotAllowed")]
     [InlineData("host_not_ready", "Join.HostNotReady")]
     [InlineData("host_network", "Join.HostNetwork")]
+    [InlineData("banned", "Join.Banned")]
     [InlineData("gone", "Launch.Failed")]
     [InlineData("something else", "Launch.Failed")]
     public async Task ARefusedJoinFailsWithTheMessageOfItsReasonAndTheGameIsNotStarted(string why, string key)

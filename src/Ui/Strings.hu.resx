@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Az esemény bolti tárgyai</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Jutalom minden közreműködőnek: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} cél teljesítve</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Az esemény vadászterületein az állatok megszállottak: rád rontanak, és a normál lőszer csak megkarcolja őket. Használd az esemény ezüst lőszerét. Ott egyetlen találat más lőszerrel is etikátlanná (kizárttá) teszi az elejtést, még ha az ezüst végez is vele, és ez minden megszállott állatra vonatkozik, az apróvadra is. A prérifarkas és a feketefarkú szarvas nem megszállott: rájuk a szokásos lőszer kell, az ezüst rajtuk etikátlan. Ha a normál állatokra szeretnél vadászni, kapcsold ki a „Szezonális események játszása” beállítást; a következő vadászatodtól érvényes.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Az esemény vadászterületein az állatok megszállottak: rád rontanak, és a normál lőszer csak megkarcolja őket. Használd az esemény ezüst lőszerét. Ott egyetlen találat más lőszerrel is etikátlanná (kizárttá) teszi az elejtést, még ha az ezüst végez is vele, és ez minden megszállott állatra vonatkozik, az apróvadra is. A prérifarkas és a feketefarkú szarvas nem megszállott: rájuk a szokásos lőszer kell, az ezüst rajtuk etikátlan. Ha a normál állatokra szeretnél vadászni, kapcsold ki a „Szezonális események játszása” beállítást; a következő vadászatodtól érvényes. Többjátékos módban a házigazda beállítása érvényes.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Esemény fut: {0}, itt: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>minden vadászterület</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Szezonális esemény</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Nincs sátrad ezen a vadászterületen. A vadászterületen felállított sátrak hordozható kezdőpontként és készlethozzáférési pontként szolgálnak. Sátrakat az {0}áruházban{1} szerezhetsz.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Nagyítás</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Kicsinyítés</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Térkép: húzással mozgathatja, az egérgörgővel vagy a + / − gombokkal nagyíthat, a nyílbillentyűk mozgatják</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Kezdőpont: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Játékinfo és kezdőpont</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Játék neve:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Vadászterület</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Játékosok</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Házigazda</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Ország</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Játékosok: {1}/{2} - Házigazda: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Játék részletei</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Csatlakozás</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>A te játékod</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Indul…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Frissítés...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Szerver helye: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Európa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Észak-Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Dél-Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Ázsia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Óceánia</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>A játékhoz való csatlakozáshoz kattints egy kezdőpontra a térképen</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Add meg a jelszót a játékhoz való csatlakozáshoz:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Jelszó megadása</value></data>
@@ -1671,4 +1665,16 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Join.Hidden" xml:space="preserve"><value>A térképet és a házigazda felszerelését csak azok a játékosok látják, akik csatlakozhatnak ehhez a játékhoz.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a normál díjszabással, a bónuszok nélkül.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bónuszesemények az időszakban:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Ez a játék a szezonális eseménnyel zajlik.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Ez a játék szezonális esemény nélkül zajlik.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Többjátékos módban a házigazda beállítása érvényes.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>A házigazda kitiltotta</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nem csatlakozhatsz ehhez a játékhoz: a házigazda kitiltott a játékaiból.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Azok a játékosok, akiket a játék játékosoldalán a Kitiltás gombbal kitiltasz, nem csatlakozhatnak a többjátékos játékaidhoz, amíg fel nem oldod a kitiltást.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Még nem tiltottál ki senkit.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Kitiltás feloldása</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Biztosan fel akarod oldani {0} kitiltását a játékaidból?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Nyelv</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Nyelv:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Csak a saját nyelvemen futó játékok</value></data>
 </root>

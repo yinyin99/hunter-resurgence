@@ -43,6 +43,7 @@ public static class Replay
     public const string POLL = "/v1/Me/poll";
     public const string ME_FRIENDS = "/v1/Me/friends";
     public const string FRIENDS_LIST = "/v1/User/friendslist";
+    public const string BAN_PLAYER = "/v1/User/ban_player";
     public const string FRIEND_ADD = "/v1/Friend/add";
     public const string FRIEND_REMOVE = "/v1/Friend/remove";
     public const string CHAT_CONVERSATIONS = "/v1/Chat/conversations";
@@ -378,9 +379,9 @@ public static class Replay
             CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
             UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, UnlimitedFuel = (bool?)cfg["unlimited_fuel"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
             Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],
-            HarvestGmBonus = cfg["harvest_gm_bonus"] is JsonObject bonus ? (Py.D(bonus["multiplier"]), Py.D(bonus["until"])) : null,
             PlaytimeSince = cfg["playtime_since"] is { } since ? Py.L(since) : State.DefaultPlaytimeSince
         };
+        state.LoadHarvestGmBonuses(cfg["harvest_gm_bonus"]);
         state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
         if (!offline) { state.MigrateAvatars(); state.MigrateAvatarGenders(); state.MigrateListedAvatarUrls(); }  // a community server: the pictures its accounts imported before the avatars were served
         return state;
@@ -424,7 +425,12 @@ public static class Replay
         /// server answers token expired (the list call passes `oauth_access_token`, so it loaded). Each of the six calls (empty options, no token of its own) is given the helper's own `authMode:"required"` option: the helper then waits
         /// for the game's token and sends it as `Authorization: Bearer`, which the server already accepts.</summary>
         static readonly Regex MissionWrite = new(@"\br\.v1\(""POST"",""/v1/mission/(activate|activate_all_available|update_favourite|update_automatic_activation|update_activate_only_favourite|update_hide_completed_favourite)"",(\{(?:(?!oauth_access_token)[^{}])*\}),\{\}\)", RegexOptions.ECMAScript);
-        static int warnedTrackers, warned, warnedApp, warnedFrame, warnedPage;
+        /// <summary>The missions panel opens a mission pack (`toggleSet`), a mission (`toggleDetails`) and, when the route names a pack id, that pack (`l.find(".set-missions").toggle()`) by showing a hidden list, and changes nothing on the row, so the arrow in front of it (`icon-caret-right`) never turned. Each now also toggles the class `hr-open` on its row, which <see cref="ClientStyle"/> turns the arrow by. The Packs, Active and Available headlines already swap their own caret class.</summary>
+        static readonly (string From, string To)[] Rows =
+            [("toggleSet:function(){c(\".set-missions\",this.$el).toggle()}", "toggleSet:function(){c(\".set-missions\",this.$el).toggle(),c(\".set-row\",this.$el).first().toggleClass(\"hr-open\")}"),
+             ("toggleDetails:function(){c(\".mission-details\",this.$el).toggle()}", "toggleDetails:function(){c(\".mission-details\",this.$el).toggle(),c(\".mission-row\",this.$el).first().toggleClass(\"hr-open\")}"),
+             ("l.find(\".set-missions\").toggle()", "l.find(\".set-missions\").toggle(),l.find(\".set-row\").toggleClass(\"hr-open\")")];
+        static int warnedRows, warnedTrackers, warned, warnedApp, warnedFrame, warnedPage;
 
         /// <summary>The trophy lodge editor builds its server addresses from the game's built-in domain (`api.`, `apiv2.` and `static.` names the player's PC does not send here); rewritten, each is this host's own origin, where `/v1/...` and `/static/...` are answered. Its frame page replaces the script tag by <see cref="FrameScript"/>, which loads the script under a new `?t=` token once the game's bridge is ready for it.</summary>
         static readonly Regex AppScript = new(@"\A/dist/main\.js\z", RegexOptions.ECMAScript), AppFrame = new(@"\A/static/app/[^/]+/webgui/index\.html\z", RegexOptions.ECMAScript);
@@ -467,8 +473,8 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
 """;
         const string AppScriptTag = "<script src=\"/dist/main.js\"></script>";
         static readonly (string From, string To)[] AppFrameSrc = [(AppScriptTag, FrameScript)];
-        /// <summary>The in-game page's missions and lodge editor pages, whose boxes are fixed in the page's own style (the missions page's 940 px wide, 800 px high with its own scrollbar and an empty rest under it; the editor's frame cut off below, see <see cref="FrameScript"/>): the body is a column of the tab bar and `#main`, which takes the rest of the height, and the missions page's box takes the width up to 75rem and all the height, its list scrolling inside it. The filters' labels (half the width of their row in the page's own style, so a control only wrapped under its label while the box was narrow) are always above their control, except the checkbox's. The rules name the body's id (set by the page's script) and are as specific as the page's own, so they win over it, and no other page is touched.</summary>
-        const string ClientStyle = "<style>html body#lodge_edit,html body#client_missions_page{display:flex;flex-direction:column}html body#lodge_edit .tab-bar,html body#client_missions_page .tab-bar{flex:none}html body#lodge_edit #main,html body#client_missions_page #main{flex:1 1 0;min-height:0;height:auto}html body#client_missions_page #main #page_container{box-sizing:border-box;width:100%;height:100%}html body#client_missions_page #main #page_body{box-sizing:border-box;width:100%;max-width:75rem;height:100%;margin:0 auto;display:flex;flex-direction:column}html body#client_missions_page #main #page_body #ajax_content{flex:1 1 0;min-height:0;max-height:none}html body#client_missions_page .mission-filters-form fieldset label:not([for=\"hide-completed\"]){display:block;width:auto}</style></head>";
+        /// <summary>The in-game page's missions and lodge editor pages, whose boxes are fixed in the page's own style (the missions page's 940 px wide, 800 px high with its own scrollbar and an empty rest under it; the editor's frame cut off below, see <see cref="FrameScript"/>): the body is a column of the tab bar and `#main`, which takes the rest of the height, and the missions page's box takes the width up to 75rem and all the height, its list scrolling inside it. The filters' labels (half the width of their row in the page's own style, so a control only wrapped under its label while the box was narrow) are always above their control, except the checkbox's. The rules name the body's id (set by the page's script) and are as specific as the page's own, so they win over it, and no other page is touched. The arrow before a mission pack or a mission (`.set-row`, `.mission-row`) turns 90° while its row has the class `hr-open`, which the rewrite of the page's script (<see cref="Rows"/>) sets as the row opens.</summary>
+        const string ClientStyle = "<style>html body#lodge_edit,html body#client_missions_page{display:flex;flex-direction:column}html body#lodge_edit .tab-bar,html body#client_missions_page .tab-bar{flex:none}html body#lodge_edit #main,html body#client_missions_page #main{flex:1 1 0;min-height:0;height:auto}html body#client_missions_page #main #page_container{box-sizing:border-box;width:100%;height:100%}html body#client_missions_page #main #page_body{box-sizing:border-box;width:100%;max-width:75rem;height:100%;margin:0 auto;display:flex;flex-direction:column}html body#client_missions_page #main #page_body #ajax_content{flex:1 1 0;min-height:0;max-height:none}html body#client_missions_page .mission-filters-form fieldset label:not([for=\"hide-completed\"]){display:block;width:auto}html body#client_missions_page .set-row.hr-open .state-icon-container i,html body#client_missions_page .mission-row.hr-open .state-icon-container i{display:inline-block;transform:rotate(90deg)}</style></head>";
         /// <summary>After capturing a key the game calls `game.updateKeybinding(...)` or `game.overrideKeybinding(...)` on the in-game page, which only defines them on `window.ewcallback` (set later by the page's own script), so
         /// the options page never saw the key and never saved. The script defines both on `window.game` (an existing `game` and any member already set is kept) and forwards every argument to `window.ewcallback` when the call is made.</summary>
         const string KeybindingScript = "<script>(function(){var g=window.game||(window.game={});['updateKeybinding','overrideKeybinding'].forEach(function(n){if(g[n]===undefined)g[n]=function(){var c=window.ewcallback;if(c&&typeof c[n]==='function')return c[n].apply(c,arguments)}})})()</script>";
@@ -510,7 +516,8 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             if (!Script.IsMatch(r.Path)) return reply;
             var src = Encoding.Latin1.GetString(reply.Body);
             var t = ReplaceOnce(src, Trackers, ref warnedTrackers, "the in-game page's picture preload or error reporting") ?? src;
-            var script = MissionWrite.Replace(ReplaceOnce(t, Reads, ref warned, "the in-game page's round timer read") ?? t, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
+            var rows = ReplaceOnce(t, Rows, ref warnedRows, "the in-game missions panel's pack and mission rows") ?? t;
+            var script = MissionWrite.Replace(ReplaceOnce(rows, Reads, ref warned, "the in-game page's round timer read") ?? rows, "r.v1(\"POST\",\"/v1/mission/$1\",$2,{authMode:\"required\"})");
             return script == src ? reply : NoCache(reply, Encoding.Latin1.GetBytes(script));
         }
 

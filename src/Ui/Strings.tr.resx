@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Etkinliğin mağaza ürünleri</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Her katkıda bulunana ödül: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} / {1} hedef tamamlandı</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>Etkinliğin av alanlarında hayvanlar ele geçirilmiştir: üzerine saldırırlar ve normal mühimmat onları yalnızca sıyırır. Etkinliğin gümüş mühimmatını kullan. Orada başka bir mühimmatla tek bir isabet bile, gümüş işini bitirse de avı etik dışı (diskalifiye) yapar ve bu, küçük av dahil her ele geçirilmiş hayvan için geçerlidir. Koyot ve kara kuyruklu geyik ele geçirilmemiştir: olağan mühimmatları gerekir ve üzerlerinde gümüş kullanmak etik dışıdır. Normal hayvanları bir sonraki avından itibaren avlamak için "Sezonluk etkinlikleri oyna" seçeneğini kapat.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>Etkinliğin av alanlarında hayvanlar ele geçirilmiştir: üzerine saldırırlar ve normal mühimmat onları yalnızca sıyırır. Etkinliğin gümüş mühimmatını kullan. Orada başka bir mühimmatla tek bir isabet bile, gümüş işini bitirse de avı etik dışı (diskalifiye) yapar ve bu, küçük av dahil her ele geçirilmiş hayvan için geçerlidir. Koyot ve kara kuyruklu geyik ele geçirilmemiştir: olağan mühimmatları gerekir ve üzerlerinde gümüş kullanmak etik dışıdır. Normal hayvanları bir sonraki avından itibaren avlamak için "Sezonluk etkinlikleri oyna" seçeneğini kapat. Çok oyunculu modda ev sahibinin ayarı geçerlidir.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Etkinlik sürüyor: {0}, şurada: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>tüm av alanları</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sezonluk etkinlik</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Bu rezervde hiç çadırınız yok. Bir rezerve kurduğunuz çadırlar taşınabilir doğuş noktası ve envanter erişim noktası görevi görür. Çadırlarınızı {0}mağazadan{1} edinin.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Yakınlaştır</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Uzaklaştır</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Harita: taşımak için sürükleyin, yakınlaştırmak için fare tekerleği veya + / − kullanın, ok tuşları haritayı kaydırır</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Başlangıç: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Oyun bilgisi ve başlangıç noktası</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Oyun adı:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezerv</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Oyuncular</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Kurucu</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Ülke</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Oyuncular: {1}/{2} - Kurucu: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Oyun detayları</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Oyuna Katıl</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Senin oyunun</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Başlıyor…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Yama uygulanıyor...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Sunucu konumu: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Avrupa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Kuzey Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Güney Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asya</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Okyanusya</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Bu oyuna katılmak için haritada bir başlangıç konumuna tıklayın</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Bu oyuna katılmak için şifreyi girin:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Şifre girin</value></data>
@@ -1671,4 +1665,16 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Join.Hidden" xml:space="preserve"><value>Harita ve ev sahibinin ekipmanı yalnızca bu oyuna katılabilecek oyunculara gösterilir.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Bu oyun sezonluk etkinlikle oynanır.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Bu oyun sezonluk etkinlik olmadan oynanır.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Çok oyunculu modda ev sahibinin ayarı geçerlidir.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Ev sahibi tarafından yasaklandı</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Bu oyuna katılamazsın: ev sahibi seni oyunlarından yasakladı.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Oyun içi oyuncular sayfasındaki Yasakla düğmesiyle yasakladığın oyuncular, yasağı kaldırana kadar çok oyunculu oyunlarına katılamaz.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Hiçbir oyuncuyu yasaklamadın.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Yasağı kaldır</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>{0} adlı oyuncunun oyunlarından yasağını kaldırmak istediğinden emin misin?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Dil</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Dil:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Yalnızca benim dilimdeki oyunlar</value></data>
 </root>

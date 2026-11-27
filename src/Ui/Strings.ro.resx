@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Articole din magazin ale evenimentului</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Recompensă pentru fiecare contribuitor: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} din {1} obiective îndeplinite</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>În rezervațiile evenimentului animalele sunt posedate: te atacă, iar muniția normală doar le zgârie. Folosește muniția de argint a evenimentului. Acolo, o singură lovitură cu altă muniție face vânătoarea neetică (descalificată), chiar dacă argintul o termină, și asta e valabil pentru orice animal posedat, inclusiv vânatul mic. Coiotul și cerbul cu coadă neagră nu sunt posedați: cer muniția lor obișnuită, iar argintul pe ei este neetic. Dezactivează „Joacă evenimente sezoniere” ca să vânezi animalele normale de la următoarea ta vânătoare.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>În rezervațiile evenimentului animalele sunt posedate: te atacă, iar muniția normală doar le zgârie. Folosește muniția de argint a evenimentului. Acolo, o singură lovitură cu altă muniție face vânătoarea neetică (descalificată), chiar dacă argintul o termină, și asta e valabil pentru orice animal posedat, inclusiv vânatul mic. Coiotul și cerbul cu coadă neagră nu sunt posedați: cer muniția lor obișnuită, iar argintul pe ei este neetic. Dezactivează „Joacă evenimente sezoniere” ca să vânezi animalele normale de la următoarea ta vânătoare. În multiplayer se aplică setarea gazdei.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Eveniment în desfășurare: {0}, în {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>toate rezervațiile</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Eveniment sezonier</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Nu aveți niciun cort în această rezervație. Corturile pe care le amplasați într-o rezervație funcționează ca puncte portabile de apariție și de acces la inventar. Cumpărați corturi din {0}magazin{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Măriți</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Micșorați</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Hartă: trageți pentru a o muta, rotița mouse-ului sau + / − pentru zoom, săgețile o mută</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start la {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Informații despre joc și punctul de start</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Numele jocului:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezervație</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Jucători</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Gazdă</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Țară</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Jucători: {1}/{2} - Gazdă: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Detaliile jocului</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Alăturați-vă jocului</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Jocul tău</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Se pornește…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Se aplică patch-ul...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Locația serverului: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>America de Nord</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>America de Sud</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asia</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceania</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Faceți clic pe un punct de start de pe hartă pentru a vă alătura acestui joc</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Introduceți parola pentru a vă alătura acestui joc:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Introduceți parola</value></data>
@@ -1671,4 +1665,16 @@ Numele:</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Harta și echipamentul gazdei sunt afișate doar jucătorilor care se pot alătura acestui joc.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ la tariful normal, fără bonusuri.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Evenimente bonus în această perioadă:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Acest joc se joacă cu evenimentul sezonier.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Acest joc se joacă fără evenimentul sezonier.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>În multiplayer se aplică setarea gazdei.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Blocat de gazdă</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Nu te poți alătura acestui joc: gazda te-a blocat din jocurile sale.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Jucătorii pe care îi blochezi cu butonul Blochează din pagina jucătorilor din joc nu se pot alătura jocurilor tale multiplayer până când nu le ridici blocarea.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Nu ai blocat niciun jucător.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Deblochează</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Sigur vrei să deblochezi jucătorul {0} din jocurile tale?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Limba</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Limba:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Doar jocurile în limba mea</value></data>
 </root>

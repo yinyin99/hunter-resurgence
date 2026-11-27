@@ -173,7 +173,7 @@ public sealed partial class State
     /// placement and units: an item placed (event 25 position and direction, then event 8 slot 23), picked up (event 8 with
     /// another slot) and units moved between stacks (event 33); see <see cref="MoveUnits"/>. mission(con, event, updates) runs after each event
     /// (<see cref="MissionEvent"/>): it finishes the objectives the event meets, and the update 15 of a finished mission goes into `updates`.
-    /// gmMultiplier (<see cref="GmMultiplier"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
+    /// gmMultiplier (the multiplier of <see cref="GmAt"/>) multiplies a harvest's css before it is sent (update 6, which the game shows as the reward) and paid.
     /// standingAt (<see cref="Position"/>) is where the player stands; the hunt adds the walk from its last position (<see cref="Walk"/>).
     /// credit (<see cref="TryCredit"/>) is asked for each harvest (event 3) with the connection and the event's stored row: true when the harvest is not this account's (the shooter's, written in this transaction, or a second one of the animal) and is dropped here;
     /// false (also when the shooter's write failed and was undone) leaves it the account's. isFeeder(item id) is true for a feeder, the items whose event 23 `bait_amount` is a refill.</summary>
@@ -748,32 +748,34 @@ public sealed partial class State
     /// <summary>settings.json `unlimited_ammo`: the connect carries the game's unlimited-ammo service, every hunt starts with every owned ammunition stack full
     /// (<see cref="RefillAmmo"/>), and no ammunition is sold (<see cref="OverOwnLimit"/>). Off: ammunition is an item like any other.</summary>
     public bool UnlimitedAmmo { get; init; }
-    /// <summary>settings.json `harvest_gm_bonus`: harvests pay `Multiplier` times their gm$ until `Until` (Unix seconds); null: no bonus. Setting one that has not ended
-    /// records it in the events log (<see cref="RewardEvents"/>), once per distinct bonus, so the payments made under it name it.</summary>
-    public (double Multiplier, double Until)? HarvestGmBonus
+    /// <summary>A harvest gm$ bonus: harvests made from `From` (Unix seconds, included) until `Until` (excluded) pay `Multiplier` times their gm$. `Name` null: `Harvest gm$ x` and the multiplier.</summary>
+    public sealed record GmBonus(double Multiplier, double From, double Until, string? Name = null);
+
+    sealed record ScheduledBonus(GmBonus Bonus, long? Event);
+
+    /// <summary>settings.json `harvest_gm_bonus`, periods that do not overlap. Setting them (at the start, and again by <see cref="GmBonusWatch"/> when the file changes) records each one that has not ended
+    /// in the events log (<see cref="RewardEvents"/>) as soon as it is known, a coming one too, once per distinct bonus, so the payments made under it name it. The list is swapped whole.</summary>
+    public void SetHarvestGmBonuses(IEnumerable<GmBonus> bonuses)
     {
-        get => harvestGmBonus;
-        set
-        {
-            harvestGmBonus = value;
-            harvestGmEvent = null;
-            if (value is { } b && b.Until > Clock() && b.Multiplier != 1)
-            {
-                using var con = Store.Open();
-                harvestGmEvent = RewardEvents.Record(con, $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
-                                                     (long)Clock(), (long)b.Until, b.Multiplier, RewardEvents.HarvestGm);
-            }
-        }
+        using var con = Store.Open();
+        scheduled = [.. bonuses.Select(b => new ScheduledBonus(b, b.Multiplier != 1 && b.Until > Clock()
+            ? RewardEvents.Record(con, b.Name ?? $"Harvest gm$ x{b.Multiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}", RewardEvents.GmBonus,
+                                  (long)b.From, (long)b.Until, b.Multiplier, RewardEvents.HarvestGm) : null))];
     }
 
-    (double Multiplier, double Until)? harvestGmBonus;
-    long? harvestGmEvent;
+    volatile ScheduledBonus[] scheduled = [];
 
-    /// <summary>The harvest gm$ multiplier at `now`: the bonus's while it runs, else 1.</summary>
-    public double GmMultiplier(double now) => HarvestGmBonus is { } b && now < b.Until ? b.Multiplier : 1;
+    /// <summary>Sets the bonuses from the settings' `harvest_gm_bonus` (Settings.cs); a period with no `from` starts now.</summary>
+    public void LoadHarvestGmBonuses(JsonNode? cfg) =>
+        SetHarvestGmBonuses([.. (cfg as JsonArray ?? []).Select(n => new GmBonus(Py.D(n!["multiplier"]), n["from"] is { } start ? Py.D(start) : Clock(), Py.D(n["until"]), (string?)n["name"]))]);
 
-    /// <summary>The events_log id of the harvest bonus running at `now`; null when none (or one that multiplies by 1).</summary>
-    public long? GmEvent(double now) => GmMultiplier(now) != 1 ? harvestGmEvent : null;
+    /// <summary>The harvest gm$ bonus at `now`, from ONE lookup: the multiplier of the bonus whose period holds it (1 when none) and that bonus's events_log id (null when none, or one that multiplies by 1).
+    /// A harvest takes `now` once and both values from here, so a boundary or a reload between two lookups cannot pay one bonus and log another.</summary>
+    public (double Multiplier, long? Event) GmAt(double now)
+    {
+        var running = Array.Find(scheduled, s => s.Bonus.From <= now && now < s.Bonus.Until);
+        return (running?.Bonus.Multiplier ?? 1, running?.Event);
+    }
 
     /// <summary>The original's default backpack capacity in grams is 10000; this community server gives everyone 20000.</summary>
     public const long DefaultInventoryCapacity = 20000;
@@ -919,8 +921,10 @@ public sealed partial class State
                 using (var con = Store.Open(id))
                 {
                     con.Begin();
-                    PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
-                                               (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
+                    var added = PlayerRows.AddMissingStart(con, StartItems(), con.Rows("SELECT item_id, slot FROM items WHERE account_id = $a").Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]))),
+                                                           (long)con.Scalar("SELECT COALESCE(MAX(guid), 0) FROM items WHERE account_id = $a")!);
+                    if (added > 0 && SettleEquipped(con) is var moved and > 0)
+                        Console.WriteLine($"start kit of account {id}: {added} item(s) added, {moved} equipped item(s) that did not fit put in the lodge");
                     con.Exec("UPDATE accounts SET start_kit = ? WHERE id = ?", kit, id);
                     con.Commit();
                 }
@@ -1580,7 +1584,8 @@ public sealed partial class State
             }
         }
         // a player of a multiplayer session: who the host is and how to reach it
-        if (Online && session is not null && games.Connect(Clock(), session, ip) is { } mp)
+        var mpSession = Online && session is not null ? games.Connect(Clock(), session, ip) : null;
+        if (mpSession is { } mp)
             reply["network"] = Network(mp.Game, mp.Me, Store.HandleOf(mp.Me.Account), Store.HandleOf(mp.Game.Host));
         // no seasonal event unless one runs for this player, whatever the sample or a recording carries: the reserve's ammo is the ethical list's, an event's only below
         reply["ingame_event"] = null;
@@ -1594,11 +1599,14 @@ public sealed partial class State
                 for (var i = present.Count - 1; i >= 0; i--)
                     if (present[i] is JsonObject row && Py.L(row["index"]) == index && Py.Str(row["animal"]) == animal)
                         present.RemoveAt(i);
-        var eventHere = tutorial is null && Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
+        // a joiner's hunt has the event of its game's host (<see cref="JoinerEvent"/>), whatever the joiner's own setting is; any other hunt the player's own
+        var eventHere = tutorial is not null ? null
+            : mpSession is { } game && game.Game.Host != account ? JoinerEvent(reply, account, expeditionId, game.Game.Host, clientReserve)
+            : Seasonal is { } seasonal && seasonal.Running(Clock()) && Store.PlaysEvents(account) && AddSeasonal(reply, seasonal, clientReserve) ? seasonal.Name : null;
         // the hunt's event, the fallback of its kills whose coat proves nothing (KindOf, HuntEvent): decided once, by its first connect ('' for none), and kept to the hunt's end whatever the event's
         // window or the player's setting do meanwhile; a later connect of the hunt changes nothing. This reply's `ethical` carries that event's list (silver) for the species it names, its possessed
         // versions and its creatures, until a tutorial ends the hunt's judging by it; the coyote and the blacktail deer keep their normal list, and without the event no species but the creatures
-        // (`species_rules`) gets silver. So the game's hints agree with the fallback of its animals for the whole hunt
+        // (`species_rules`) gets silver. So the game's hints agree with the fallback of its animals for the whole hunt. A joiner's first connect takes his host's decision (JoinerEvent)
         if (tutorial is null)
         {
             using var con = Con(account);
@@ -1626,7 +1634,7 @@ public sealed partial class State
     bool AddSeasonal(JsonObject reply, SeasonalEvent seasonal, int reserve)
     {
         reply["ingame_event"] = seasonal.Json();
-        if (!seasonal.Covers(reserve) || facts.Event(seasonal.Name, reserve) is not { } content)
+        if (ContentOf(seasonal, reserve) is not { } content)
             return false;
         static string At(DateTimeOffset t) => t.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss", CultureInfo.InvariantCulture);
         if (reply["populations"] is JsonArray populations)
@@ -2295,9 +2303,11 @@ public sealed partial class State
         List<long> shooters = [];
         try
         {
-            updates = Heartbeat(con, Clock(), events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
+            var now = Clock();
+            var gm = GmAt(now);
+            updates = Heartbeat(con, now, events, UploadUrl, HarvestPage, Trophy, AmmoCheck, SkillUpdates, G(connect, "dog_skills", null),
                                 id => items.GetValueOrDefault(id) is { } item && Is(G(item, "cat", null), DogCategory) && Is(G(item, "type", null), DogType),
-                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, GmMultiplier(Clock()), position, GmEvent(Clock()),
+                                (c, e, u) => { MissionEvent(c, e, u); ChallengeEvent(c, e); }, PickupScore, Box, gm.Multiplier, position, gm.Event,
                                 (c, e, id) => TryCredit(c, e, id, shooters), id => items.GetValueOrDefault(id)?["bait_item"] is not null);
         }
         finally
@@ -2398,6 +2408,62 @@ public sealed partial class State
     /// <summary>The ammunition ids that fit a weapon, in order: the catalogue's `fit` list of the ammunition category, else (a server without the recorded catalogue) the ammunition among the install's attachments of the weapon.</summary>
     long[] AmmoFor(long weapon) => Arr((items.GetValueOrDefault(weapon) ?? installItems.GetValueOrDefault(weapon))?["fit"]?["3"]) is { Count: > 0 } fit
         ? [.. fit.Select(f => Py.L(f!["id"]))] : installFit.GetValueOrDefault(weapon) ?? [];
+
+    /// <summary>Whether <paramref name="item"/> may sit in the ammunition slot (8 to 10) of <paramref name="weapon"/>, the item in the slot 6 below (#1009): an ammunition the catalogue's fit list of the weapon lacks may not
+    /// (the game fires whatever sits there, with no check of its own); a weapon with no fit list, and an item that is no ammunition, are left alone.</summary>
+    bool Suits(long weapon, long item) => !IsAmmo(item) || AmmoFor(weapon) is not { Length: > 0 } fit || fit.Contains(item);
+
+    /// <summary>The account's ammunition stacks in an ammunition slot beside a weapon they do not fit (<see cref="Suits"/>), as (guid, ammunition, weapon, slot) by slot, each stack once (with two weapons in a weapon slot, one that refuses it is enough);
+    /// inside the account's transaction.</summary>
+    public List<(long Guid, long Ammo, long Weapon, long Slot)> Misfits(Db con) =>
+        [.. con.Rows("SELECT a.guid, a.item_id, w.item_id, a.slot FROM items a JOIN items w ON w.account_id = $a AND w.slot = a.slot - 6 WHERE a.account_id = $a AND a.slot BETWEEN 8 AND 10 ORDER BY a.slot, a.guid, w.guid")
+            .Select(r => (Convert.ToInt64(r[0]), Convert.ToInt64(r[1]), Convert.ToInt64(r[2]), Convert.ToInt64(r[3]))).Where(m => !Suits(m.Item3, m.Item2)).GroupBy(m => m.Item1).Select(g => g.First())];
+
+    /// <summary>Puts the equipped slots of the account in order (#1009), inside its transaction, and returns how many items it moved to the lodge (slot 0), each once. One weapon to a weapon slot (2 to 4): the one with the highest guid,
+    /// the item the player got last (the two replies of a backup can each hold one); every ammunition stack in an ammunition slot (8 to 10) stays when it fits the weapon in the slot 6 below, or when that has no weapon, and
+    /// only the stacks that do not fit it (<see cref="Misfits"/>) move. A moved item stays whole in the lodge.</summary>
+    internal int SettleEquipped(Db con)
+    {
+        var rows = con.Rows("SELECT guid, item_id, slot FROM items WHERE account_id = $a AND slot IN (2, 3, 4, 8, 9, 10) ORDER BY guid DESC")
+            .Select(r => (Guid: Convert.ToInt64(r[0]), Item: Convert.ToInt64(r[1]), Slot: Convert.ToInt64(r[2]))).ToList();
+        var moved = new List<long>();
+        var weapons = new Dictionary<long, long>();  // weapon slot -> the item kept there
+        foreach (var group in rows.Where(r => r.Slot <= 4).GroupBy(r => r.Slot))
+        {
+            weapons[group.Key] = group.First().Item;
+            moved.AddRange(group.Skip(1).Select(r => r.Guid));
+        }
+        foreach (var group in rows.Where(r => r.Slot >= 8).GroupBy(r => r.Slot))
+            if (weapons.TryGetValue(group.Key - 6, out var weapon))
+                moved.AddRange(group.Where(r => !Suits(weapon, r.Item)).Select(r => r.Guid));
+        foreach (var guid in moved)
+            con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = ?", guid);
+        return moved.Count;
+    }
+
+    /// <summary>`admin ammo-fit` (#1009): one line per ammunition stack that sits in an equipped ammunition slot beside a weapon it does not fit (<see cref="Misfits"/>), for every account (or `only`); with `apply` each is
+    /// moved to the lodge (slot 0), whole, one transaction per account. A second run finds none. Then a total line. Without `apply` nothing is written.</summary>
+    public List<string> MoveMisfitAmmo(bool apply, long? only = null)
+    {
+        var (lines, total) = (new List<string>(), 0);
+        foreach (var account in only is { } one ? [one] : Store.AccountIds())
+        {
+            using var con = Con(account);
+            con.Begin();
+            var misfits = Misfits(con);
+            foreach (var (guid, ammo, weapon, slot) in misfits)
+                lines.Add($"account {account} slot {slot}: weapon {weapon} ({ItemName(weapon)}), ammunition {ammo} ({ItemName(ammo)}) stack {guid}: {(apply ? "moved" : "would move")} to the lodge");
+            total += misfits.Count;
+            if (apply)
+            {
+                foreach (var m in misfits)
+                    con.Exec("UPDATE items SET slot = 0 WHERE account_id = $a AND guid = ?", m.Guid);
+                con.Commit();
+            }
+        }
+        lines.Add($"{total} stack(s) {(apply ? "moved" : "to move")}{(apply ? "" : ": dry run, nothing written; add --apply to write")}");
+        return lines;
+    }
 
     /// <summary>With unlimited ammunition, at a launch, inside its transaction: the account owns a full box of every ammunition that fits a weapon it owns (a weapon with none could not be equipped, and ammunition is not sold),
     /// as a row of its own that the connect that follows lists; only an ammunition the game has a definition for (a recorded one or the install's ballistics, as a restore needs). An equipped weapon (slots 2 to 4) whose ammunition slot

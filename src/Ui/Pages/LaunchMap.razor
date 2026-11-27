@@ -29,6 +29,8 @@ else
             <h3>@L["Launch.Info"]</h3>
             <label for="game-name" class="muted">@L["Launch.GameName"]</label>
             <input class="field" id="game-name" name="name" maxlength="25" @bind="name" />
+            <label for="game-language" class="muted">@L["Servers.LanguageLabel"]</label>
+            <Select Id="game-language" Width="240" Options="languageNames" Value="@Languages.Find(language)!.Name" ValueChanged="v => language = Languages.All.First(l => l.Name == v).Code" Flag="n => Languages.All.First(l => l.Name == n).Flag" />
             <textarea class="field" name="description" maxlength="255" placeholder="@L["Launch.Description"]" @bind="description"></textarea>
         </div>
         <div class="col who">
@@ -82,7 +84,7 @@ else
         <div class="strip">
             @foreach (var m in markers.Where(m => strips.Contains(m.Kind)).OrderBy(m => m.Kind))
             {
-                <button type="button" class="hover-tint" data-tip="@m.Name" aria-label="@m.Name" @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null" @onclick="() => centre = m.Id"><Icon Name="@MapPlaceholder.IconFor(m.Kind)" /></button>
+                <button type="button" class="hover-tint" data-tip="@m.Name" aria-label="@m.Name" @onmouseenter="() => hover = m.Id" @onmouseleave="() => hover = null" @onclick="() => mapView?.CentreOn(m.Id)"><Icon Name="@MapPlaceholder.IconFor(m.Kind)" /></button>
             }
         </div>
         <p class="legend"><Icon Name="house" /> @L["Launch.Lodges"]</p>
@@ -91,7 +93,7 @@ else
         @if (markers.Any(m => m.Kind == MarkerKind.Tent)) { @Starts(MarkerKind.Tent) }
         else { <p class="no-tents">@L.Html("Launch.NoTents", "<a href=\"/store?category=8&amp;type=30\">", "</a>")</p> }
     </div>
-    <MapPlaceholder Markers="markers" Reserve="reserve" Height="750" Selected="marker" Hover="hover" Centre="centre" OnPick="m => marker = m.Id">
+    <MapPlaceholder @ref="mapView" Markers="markers" Reserve="reserve" Height="750" Selected="marker" Hover="hover" OnPick="m => marker = m.Id">
         @if (markers.FirstOrDefault(m => m.Id == marker) is { } at)
         {
             <span class="start-label" style="left:@MapPlaceholder.Pc(at.X)%;top:@MapPlaceholder.Pc(at.Y)%">@L["Launch.StartingAt", at.Name]</span>
@@ -102,14 +104,17 @@ else
 @code {
     static readonly IReadOnlyList<string> hours = Enumerable.Range(5, 14).Select(h => $"{h:00}:00").ToList();
     static readonly IReadOnlyList<string> playerCounts = Enumerable.Range(2, 7).Select(n => n.ToString()).ToList();
+    static readonly IReadOnlyList<string> languageNames = Languages.All.Select(l => l.Name).ToList();
 
     IReadOnlyList<Reserve> reserves = [];
     IReadOnlyList<MapMarker> markers = [];
     // the last start is remembered by the old page in a cookie; the defaults are its first values
     int reserve = 2, marker = 1, hour = 9, maxPlayers = 8;
     string name = "", description = "", password = "", hsMin = "0", hsMax = "99999";
+    string language = "en";  // a code of Languages: the host's last choice, else the launcher's language
     bool friendsOnly, limit, member;
-    int? hover, centre;
+    int? hover;
+    MapPlaceholder? mapView;
     IReadOnlyList<Loadout> loadouts = [];
     int loadout;
     SeasonalEvents seasonal = new(true, null, []);
@@ -149,6 +154,7 @@ else
         if (markers.FirstOrDefault(m => m.Kind == MarkerKind.Lodge) is { } lodge) marker = lodge.Id;
         loadouts = await Service.LoadoutsAsync();
         seasonal = await Events.GetAsync();
+        language = Languages.ForHosting(await GameSettings.HostLanguageAsync()).Code;
     }
 
     /// <summary>The reserve's badge: the event's picture while the event runs on that reserve for a player who plays events and the operator has it, else the normal one (docs/images.md).</summary>
@@ -162,7 +168,7 @@ else
 
     async Task Choose(int id)
     {
-        (reserve, hover, centre) = (id, null, null);
+        (reserve, hover) = (id, null);
         markers = await Service.MarkersAsync(id);
         if (markers.FirstOrDefault(m => m.Kind == MarkerKind.Lodge) is { } lodge) marker = lodge.Id;
     }
@@ -186,7 +192,8 @@ else
             var result = single
                 ? await Service.StartSingleAsync(reserve, marker, hour * 60, loadout)
                 : await Service.CreateAsync(new(name, description, friendsOnly, password.Length > 0 ? password : null, maxPlayers,
-                    limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null), reserve, marker, hour * 60, loadout);
+                    limit ? int.Parse(hsMin) : null, limit ? int.Parse(hsMax) : null, language), reserve, marker, hour * 60, loadout);
+            if (!single && result.Ok) await GameSettings.SetHostLanguageAsync(language);  // the next game's form opens with it
             if (result.Ok) Modal.GameStarted(Bridge); else Modal.StartFailed(result);
         }
         finally { starting = false; }

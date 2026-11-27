@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Event-Artikel im Shop</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Belohnung für jeden Beitragenden: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>{0} von {1} Zielen erledigt</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes besessene Tier, auch für Niederwild. Kojote und Schwarzwedelhirsch sind nicht besessen: Sie brauchen ihre übliche Munition, und Silber auf sie ist unethisch. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>In den Revieren des Events sind die Tiere besessen: Sie greifen dich an, und normale Munition streift sie nur. Nimm die Silbermunition des Events. Dort macht schon ein Treffer mit anderer Munition den Abschuss unethisch (disqualifiziert), auch wenn Silber ihn beendet, und das gilt für jedes besessene Tier, auch für Niederwild. Kojote und Schwarzwedelhirsch sind nicht besessen: Sie brauchen ihre übliche Munition, und Silber auf sie ist unethisch. Schalte „Saisonale Events spielen“ aus, um ab deiner nächsten Jagd die normalen Tiere zu jagen. Im Multiplayer gilt die Einstellung des Gastgebers.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Ereignis läuft: {0}, in {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>allen Revieren</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Saisonales Ereignis</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>Sie haben keine Zelte in diesem Revier. Zelte, die Sie in einem Revier aufstellen, dienen als mobile Startpunkte und Zugriffspunkte auf Ihr Inventar. Zelte erhalten Sie im {0}Shop{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Vergrößern</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Verkleinern</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Karte: zum Verschieben ziehen, mit dem Mausrad oder + / − zoomen, Pfeiltasten verschieben die Karte</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Start bei {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Spielinfo &amp; Ausgangspunkt</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Spielname:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Revier</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Spieler</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Host</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Land</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} - Spieler: {1}/{2} - Host: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Spieldetails</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Beitreten</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Eigenes Spiel</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Startet…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Wird gepatcht…</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Serverstandort: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Europa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Nordamerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Südamerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Asien</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Ozeanien</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klicken Sie auf der Karte auf einen Startpunkt, um diesem Spiel beizutreten</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Geben Sie das Passwort ein, um diesem Spiel beizutreten:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Passwort eingeben</value></data>
@@ -1671,4 +1665,16 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Join.Hidden" xml:space="preserve"><value>Die Karte und die Ausrüstung des Gastgebers sehen nur Spieler, die diesem Spiel beitreten dürfen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ zum normalen Satz, Boni nicht eingerechnet.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus-Ereignisse in diesem Zeitraum:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dieses Spiel wird mit dem saisonalen Event gespielt.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dieses Spiel wird ohne das saisonale Event gespielt.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Im Multiplayer gilt die Einstellung des Gastgebers.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Vom Gastgeber gebannt</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Der Gastgeber hat dich von seinen Spielen gebannt.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Spieler, die du mit der Schaltfläche „Bannen“ auf der Spielerseite im Spiel bannst, können deinen Multiplayer-Spielen nicht beitreten, bis du den Bann aufhebst.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Du hast keinen Spieler gebannt.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Bann aufheben</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Möchtest du den Bann von {0} aus deinen Spielen wirklich aufheben?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprache:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Nur Spiele in meiner Sprache</value></data>
 </root>

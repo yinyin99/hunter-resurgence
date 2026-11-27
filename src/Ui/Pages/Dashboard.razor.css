@@ -35,8 +35,7 @@ li::before { content: ""; position: absolute; inset: 2px 0; z-index: -1; border-
 li::after { content: ""; position: absolute; inset: 2px 0; border-radius: var(--r-3); background: transparent; pointer-events: none; transition: background-color var(--t-fast) var(--ease); }
 li:hover { z-index: 1; }
 li:hover::after { background: var(--tint-2); }
-li ::deep .dot { position: absolute; left: 7px; top: 11px; }
-li ::deep .flag { margin: 0 10px 0 27px; flex: none; }
+li ::deep .dot { flex: none; margin: 0 10px 0 7px; }
 .info { flex: 1; min-width: 0; }
 .name { font-size: 15px; line-height: 22px; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .meta { font-size: 12.5px; line-height: 18px; color: var(--fg-muted); white-space: nowrap; }

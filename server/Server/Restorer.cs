@@ -273,7 +273,7 @@ public static class Restorer
 
     /// <summary>Give the account (and its rows, tokens, sessions and claimed user ids) another user id, inside the caller's
     /// transaction: the foreign keys are checked at its end, when every row has moved.</summary>
-    static void Adopt(Db con, long from, long to)
+    public static void Adopt(Db con, long from, long to)
     {
         con.Script("PRAGMA defer_foreign_keys = ON");
         foreach (var table in Store.PlayerTables)
@@ -284,6 +284,9 @@ public static class Restorer
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
             con.Exec($"UPDATE OR IGNORE friends SET {column} = ? WHERE {column} = ?", to, from);
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", from);
+        foreach (var column in new[] { "host_id", "banned_id" })  // the host bans (no foreign keys either)
+            con.Exec($"UPDATE OR IGNORE host_bans SET {column} = ? WHERE {column} = ?", to, from);
+        con.Exec("DELETE FROM host_bans WHERE host_id = ?1 OR banned_id = ?1", from);
     }
 
     /// <summary>The friend edges of the restored `User_friendslist` and `Me_friends` replies: a friend, an incoming request (`requests`),
@@ -430,6 +433,10 @@ public static class Restorer
             // every restore leaves at least the starting kit: each start item id the model lacks is added as a new account gets it (its slot unless taken, else the backpack)
             var added = PlayerRows.AddMissingStart(con, kit, m.Items.Select(i => ((long)i.ItemId, (long)i.Slot)), m.Items.Select(i => i.Guid).DefaultIfEmpty(0).Max());
             if (added > 0) lines.Add($"start items added: {added}");
+
+            // one weapon to a weapon slot and one fitting ammunition to its ammunition slot (the zip's two inventory replies can each hold one): the others go to the lodge (#1009)
+            var lodged = state.SettleEquipped(con);
+            if (lodged > 0) lines.Add($"weapons and ammunition not fitting the equipped slots, put in the lodge: {lodged}");
         }
 
         var skills = 0;

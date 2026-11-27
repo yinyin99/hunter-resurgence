@@ -101,7 +101,7 @@
   <data name="Events.Items" xml:space="preserve"><value>Predmeti dogodka v trgovini</value></data>
   <data name="Events.Pay" xml:space="preserve"><value>Nagrada za vsakega sodelujočega: {0}</value></data>
   <data name="Events.Objectives" xml:space="preserve"><value>Izpolnjenih ciljev: {0} od {1}</value></data>
-  <data name="Events.Ammo" xml:space="preserve"><value>V revirjih dogodka so živali obsedene: napadajo vas, običajno strelivo pa jih le oprasne. Uporabite srebrno strelivo dogodka. Tam en sam zadetek z drugim strelivom naredi uplenitev neetično (diskvalificirano), tudi če jo srebro dokonča, in to velja za vse obsedene živali, tudi za malo divjad. Kojot in črnorepi jelen nista obsedena: zahtevata svoje običajno strelivo, srebro na njiju pa je neetično. Če želite loviti običajne živali, izklopite »Igraj sezonske dogodke«; to velja od vašega naslednjega lova.</value></data>
+  <data name="Events.Ammo" xml:space="preserve"><value>V revirjih dogodka so živali obsedene: napadajo vas, običajno strelivo pa jih le oprasne. Uporabite srebrno strelivo dogodka. Tam en sam zadetek z drugim strelivom naredi uplenitev neetično (diskvalificirano), tudi če jo srebro dokonča, in to velja za vse obsedene živali, tudi za malo divjad. Kojot in črnorepi jelen nista obsedena: zahtevata svoje običajno strelivo, srebro na njiju pa je neetično. Če želite loviti običajne živali, izklopite »Igraj sezonske dogodke«; to velja od vašega naslednjega lova. V skupinskem lovu velja nastavitev gostitelja.</value></data>
   <data name="Event.Line" xml:space="preserve"><value>Dogodek poteka: {0}, v: {1}.</value></data>
   <data name="Event.AllReserves" xml:space="preserve"><value>vseh revirjih</value></data>
   <data name="Event.Mark" xml:space="preserve"><value>Sezonski dogodek</value></data>
@@ -211,6 +211,7 @@
   <data name="Launch.NoTents" xml:space="preserve"><value>V tem rezervatu nimaš šotorov. Šotori, ki jih postaviš v rezervatu, služijo kot prenosne začetne točke in dostop do inventarja. Šotore dobiš v {0}trgovini{1}.</value></data>
   <data name="Launch.ZoomIn" xml:space="preserve"><value>Približaj</value></data>
   <data name="Launch.ZoomOut" xml:space="preserve"><value>Oddalji</value></data>
+  <data name="Map.Label" xml:space="preserve"><value>Zemljevid: povlecite za premik, kolesce miške ali + / − za povečavo, puščice premikajo zemljevid</value></data>
   <data name="Launch.StartingAt" xml:space="preserve"><value>Začetek: {0}</value></data>
   <data name="Launch.Info" xml:space="preserve"><value>Podatki o igri in začetna točka</value></data>
   <data name="Launch.GameName" xml:space="preserve"><value>Ime igre:</value></data>
@@ -250,7 +251,6 @@
   <data name="Servers.Reserve" xml:space="preserve"><value>Rezervat</value></data>
   <data name="Servers.Players" xml:space="preserve"><value>Igralci</value></data>
   <data name="Servers.Host" xml:space="preserve"><value>Gostitelj</value></data>
-  <data name="Servers.Country" xml:space="preserve"><value>Država</value></data>
   <data name="Servers.Summary" xml:space="preserve"><value>{0} – Igralci: {1}/{2} – Gostitelj: {3}</value></data>
   <data name="Servers.Details" xml:space="preserve"><value>Podrobnosti igre</value></data>
   <data name="Servers.Join" xml:space="preserve"><value>Pridruži se</value></data>
@@ -277,12 +277,6 @@
   <data name="Servers.WhyOwn" xml:space="preserve"><value>Tvoja igra</value></data>
   <data name="Servers.WhyStarting" xml:space="preserve"><value>Zaganja se…</value></data>
   <data name="Servers.Patching" xml:space="preserve"><value>Nameščanje popravkov...</value></data>
-  <data name="Servers.Location" xml:space="preserve"><value>Lokacija strežnika: {0}</value></data>
-  <data name="Servers.Europe" xml:space="preserve"><value>Evropa</value></data>
-  <data name="Servers.NorthAmerica" xml:space="preserve"><value>Severna Amerika</value></data>
-  <data name="Servers.SouthAmerica" xml:space="preserve"><value>Južna Amerika</value></data>
-  <data name="Servers.Asia" xml:space="preserve"><value>Azija</value></data>
-  <data name="Servers.Oceania" xml:space="preserve"><value>Oceanija</value></data>
   <data name="Join.Hint" xml:space="preserve"><value>Klikni začetno lokacijo na zemljevidu, da se pridružiš tej igri</value></data>
   <data name="Join.Password" xml:space="preserve"><value>Vnesi geslo za vstop v to igro:</value></data>
   <data name="Join.PasswordPlaceholder" xml:space="preserve"><value>Vnesi geslo</value></data>
@@ -1671,4 +1665,16 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Join.Hidden" xml:space="preserve"><value>Zemljevid in opremo gostitelja vidijo samo igralci, ki se smejo pridružiti tej igri.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ po običajni stopnji, brez bonusov.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus dogodki v obdobju:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Ta igra poteka s sezonskim dogodkom.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Ta igra poteka brez sezonskega dogodka.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>V skupinskem lovu velja nastavitev gostitelja.</value></data>
+  <data name="Servers.WhyBanned" xml:space="preserve"><value>Prepovedano s strani gostitelja</value></data>
+  <data name="Join.Banned" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: gostitelj ti je prepovedal dostop do svojih iger.</value></data>
+  <data name="Set.BansInfo" xml:space="preserve"><value>Igralci, ki jim prepoveš dostop z gumbom Prepoved na strani igralcev v igri, se ne morejo pridružiti tvojim večigralskim igram, dokler prepovedi ne odpraviš.</value></data>
+  <data name="Set.BansEmpty" xml:space="preserve"><value>Nobenemu igralcu nisi prepovedal dostopa.</value></data>
+  <data name="Set.BansUnban" xml:space="preserve"><value>Odpravi prepoved</value></data>
+  <data name="Set.BansUnbanConfirm" xml:space="preserve"><value>Ali res želiš odpraviti prepoved za {0} v tvojih igrah?</value></data>
+  <data name="Servers.Language" xml:space="preserve"><value>Jezik</value></data>
+  <data name="Servers.LanguageLabel" xml:space="preserve"><value>Jezik:</value></data>
+  <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Samo igre v mojem jeziku</value></data>
 </root>
