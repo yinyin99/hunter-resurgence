@@ -1671,4 +1671,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Join.Hidden" xml:space="preserve"><value>Kartet og vertens utstyr vises bare for spillere som kan bli med i dette spillet.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ til normal sats, bonuser er utelatt.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushendelser i perioden:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dette spillet spilles med sesongbegivenheten.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dette spillet spilles uten sesongbegivenheten.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspiller gjelder vertens innstilling.</value></data>
 </root>

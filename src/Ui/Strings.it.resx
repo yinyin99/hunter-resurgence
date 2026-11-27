@@ -1671,4 +1671,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Join.Hidden" xml:space="preserve"><value>La mappa e l'attrezzatura dell'host sono visibili solo ai giocatori che possono unirsi a questa partita.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ alla tariffa normale, bonus esclusi.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Questa partita si gioca con l'evento stagionale.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Questa partita si gioca senza l'evento stagionale.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer vale l'impostazione dell'host.</value></data>
 </root>

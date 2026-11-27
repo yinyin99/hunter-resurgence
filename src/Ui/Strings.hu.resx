@@ -1671,4 +1671,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Join.Hidden" xml:space="preserve"><value>A térképet és a házigazda felszerelését csak azok a játékosok látják, akik csatlakozhatnak ehhez a játékhoz.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a normál díjszabással, a bónuszok nélkül.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bónuszesemények az időszakban:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Ez a játék a szezonális eseménnyel zajlik.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Ez a játék szezonális esemény nélkül zajlik.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Többjátékos módban a házigazda beállítása érvényes.</value></data>
 </root>

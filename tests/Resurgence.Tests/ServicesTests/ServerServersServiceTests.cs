@@ -296,6 +296,20 @@ public class ServerServersServiceTests
         Assert.All(games, g => Assert.Equal("", g.Country));
         Assert.True(games[0].Seconds > 0);
         Assert.Equal(0, games[1].Seconds);
+        Assert.All(games, g => Assert.Equal(((string?)null, false), (g.Event, g.EventDiffers)));  // an older server sends neither field: no event, no difference
+    }
+
+    [Fact]
+    public async Task TheGamesEventAndWhetherItDiffersFromThePlayersOwnAreRead()
+    {
+        const string withEvent = """
+            [{"id": 4000000001, "name": "A", "handle": "HostOne", "password": false, "max_players": 4, "start_ts": 1700000000, "event": "halloween_2026", "event_differs": true, "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000002, "name": "B", "handle": "HostTwo", "password": false, "max_players": 4, "start_ts": 1700000000, "event": "halloween_2026", "event_differs": false, "clients": [], "reserve": {"id": 2}},
+             {"id": 4000000003, "name": "C", "handle": "HostThree", "password": false, "max_players": 4, "start_ts": 1700000000, "event": null, "event_differs": true, "clients": [], "reserve": {"id": 2}}]
+            """;
+        var games = await Make(new Fake(r => r.RequestUri!.AbsolutePath == ServerCatalogApi.Games ? Json(HttpStatusCode.OK, withEvent) : Answer(r)), new Bridge()).ServersAsync();
+
+        Assert.Equal([("halloween_2026", true), ("halloween_2026", false), ((string?)null, true)], games.Select(g => (g.Event, g.EventDiffers)));
     }
 
     // signed out there are no games, and the server is not asked

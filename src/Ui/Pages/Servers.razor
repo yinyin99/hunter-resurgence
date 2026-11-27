@@ -35,7 +35,7 @@
                     @foreach (var g in shown)
                     {
                         <tr class="@(g == active ? "selected" : "")" @onclick="() => selected = g">
-                            <td class="name">@g.Name@if (Reason(g) is { } why) { <small class="why">@why</small> }</td>
+                            <td class="name">@g.Name@if (Reason(g) is { } why) { <small class="why">@why</small> }@if (g.Event is not null) { <small class="event"><span aria-hidden="true">★</span> @L["Event.Mark"]</small> }</td>
                             <td>@reserves.GetValueOrDefault(g.Reserve)</td>
                             <td class="players">@g.Players/@g.Max</td>
                             <td class="host"><a href="/profile/@g.Host" @onclick:stopPropagation>@g.Host</a></td>
@@ -78,6 +78,7 @@
                 <p class="line">@L["Servers.MaxScore"] @s.MaxScore</p>
             }
             @if (s.Password) { <p class="line gap"><Icon Name="lock" /> @L["Servers.PasswordRequired"]</p> }
+            @if (s.Event is not null) { <p class="line gap"><span aria-hidden="true">★</span> @L["Event.Mark"]</p> }
             <LoadoutPicker Loadouts="loadouts" @bind-Value="loadout" Id="preview-loadout" Width="282" />
             @* a game the player may not join shows no map, and one with a password none until the password is entered in the join dialog *@
             @if (s.Joinable && s.Roster.Any(p => p.X is not null && p.Y is not null))

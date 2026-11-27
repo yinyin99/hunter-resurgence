@@ -1671,4 +1671,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Join.Hidden" xml:space="preserve"><value>De kaart en de uitrusting van de host zijn alleen te zien voor spelers die aan dit spel mogen meedoen.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ tegen het normale tarief, zonder bonussen.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusevenementen in deze periode:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Dit spel wordt gespeeld met het seizoensevenement.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Dit spel wordt gespeeld zonder het seizoensevenement.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer geldt de instelling van de host.</value></data>
 </root>

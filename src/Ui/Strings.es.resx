@@ -1671,4 +1671,7 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Join.Hidden" xml:space="preserve"><value>El mapa y el equipo del anfitrión solo se muestran a los jugadores que pueden unirse a esta partida.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ a la tarifa normal, sin bonificaciones.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bonificación en este periodo:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Esta partida se juega con el evento de temporada.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Esta partida se juega sin el evento de temporada.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>En multijugador se aplica la configuración del anfitrión.</value></data>
 </root>

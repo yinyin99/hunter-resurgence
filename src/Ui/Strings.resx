@@ -1671,4 +1671,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Join.Hidden" xml:space="preserve"><value>The map and the host's setup are only shown to players who may join this game.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ at the normal rate, bonuses left out.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus events in this period:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>This game is played with the seasonal event.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>This game is played without the seasonal event.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer, the host's setting applies.</value></data>
 </root>

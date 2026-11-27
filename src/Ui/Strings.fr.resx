@@ -1671,4 +1671,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Join.Hidden" xml:space="preserve"><value>La carte et l'installation de l'hôte ne sont montrées qu'aux joueurs qui peuvent rejoindre cette partie.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ au tarif normal, bonus exclus.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Événements bonus de la période :</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Cette partie se joue avec l'événement saisonnier.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Cette partie se joue sans l'événement saisonnier.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, le paramètre de l'hôte s'applique.</value></data>
 </root>

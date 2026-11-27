@@ -1671,4 +1671,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Join.Hidden" xml:space="preserve"><value>Zemljevid in opremo gostitelja vidijo samo igralci, ki se smejo pridružiti tej igri.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ po običajni stopnji, brez bonusov.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus dogodki v obdobju:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Ta igra poteka s sezonskim dogodkom.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Ta igra poteka brez sezonskega dogodka.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>V skupinskem lovu velja nastavitev gostitelja.</value></data>
 </root>

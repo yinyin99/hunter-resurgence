@@ -16,6 +16,8 @@ h5 { margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--line-3
 .password input { box-sizing: border-box; width: 100%; margin-bottom: 10px; padding: 6px 10px; border: 1px solid var(--field-bd); background: var(--field-bg); color: var(--text-2); font: inherit; }
 .backdrop { position: fixed; inset: 0; }
 .line.gap { margin-top: 8px; }
+.event { margin: 8px 0 0; font-size: 13px; line-height: 18px; font-weight: 500; color: #fff; }
+.event small { display: block; margin-top: 4px; font-size: 12px; line-height: 16px; font-weight: 400; color: var(--fg-muted); }
 .line ::deep .icon { width: 12px; margin-right: 4px; }
 .nomap { display: flex; align-items: center; justify-content: center; width: 704px; flex: none; text-align: center; color: var(--fg-muted); }
 .nomap p { max-width: 420px; margin: 0; font-size: 16px; line-height: 24px; }

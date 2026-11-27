@@ -1671,4 +1671,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Join.Hidden" xml:space="preserve"><value>Mapa i wyposażenie gospodarza są widoczne tylko dla graczy, którzy mogą dołączyć do tej gry.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ według zwykłej stawki, bez premii.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>W tę grę gra się z wydarzeniem sezonowym.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>W tę grę gra się bez wydarzenia sezonowego.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
 </root>

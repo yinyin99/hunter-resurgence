@@ -1671,4 +1671,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Join.Hidden" xml:space="preserve"><value>Kartta ja isännän varusteet näytetään vain pelaajille, jotka saavat liittyä tähän peliin.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ perustasolla, bonukset jätetty pois.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Tätä peliä pelataan kausitapahtuman kanssa.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Tätä peliä pelataan ilman kausitapahtumaa.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä isännän asetus on voimassa.</value></data>
 </root>

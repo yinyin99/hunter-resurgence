@@ -1671,4 +1671,7 @@ Numele:</value></data>
   <data name="Join.Hidden" xml:space="preserve"><value>Harta și echipamentul gazdei sunt afișate doar jucătorilor care se pot alătura acestui joc.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ la tariful normal, fără bonusuri.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Evenimente bonus în această perioadă:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Acest joc se joacă cu evenimentul sezonier.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Acest joc se joacă fără evenimentul sezonier.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>În multiplayer se aplică setarea gazdei.</value></data>
 </root>

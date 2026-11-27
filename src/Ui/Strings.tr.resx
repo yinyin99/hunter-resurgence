@@ -1671,4 +1671,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Join.Hidden" xml:space="preserve"><value>Harita ve ev sahibinin ekipmanı yalnızca bu oyuna katılabilecek oyunculara gösterilir.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>normal oranla gm$, bonuslar hariç.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bu dönemdeki bonus etkinlikleri:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Bu oyun sezonluk etkinlikle oynanır.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Bu oyun sezonluk etkinlik olmadan oynanır.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Çok oyunculu modda ev sahibinin ayarı geçerlidir.</value></data>
 </root>

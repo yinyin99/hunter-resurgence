@@ -274,6 +274,44 @@ public sealed class MultiplayerPagesTests : UiContext
     }
 
     [Fact]
+    public void OnlyAGameThatRunsTheSeasonalEventShowsItsBadgeInTheListAndItsDetails()
+    {
+        // the first game's server sent no event fields (an older server): it renders as before
+        Services.AddSingleton<IServersService>(new Fake { Games = [Open, Locked with { Event = "halloween_2026", EventDiffers = true }] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.Equal(2, cut.FindAll("table.tbl tbody tr").Count));
+        var rows = cut.FindAll("table.tbl tbody tr");
+        Assert.Empty(rows[0].QuerySelectorAll("small.event"));
+        Assert.Equal("Test game", rows[0].QuerySelector("td.name")!.TextContent.Trim());
+        Assert.Contains("Seasonal event", rows[1].QuerySelector("td.name small.event")!.TextContent);
+        Assert.DoesNotContain("Seasonal event", cut.Find("aside.preview").TextContent);
+        cut.FindAll("table.tbl tbody tr")[1].Click();
+        Assert.Contains("Seasonal event", cut.Find("aside.preview").TextContent);
+    }
+
+    [Theory]
+    [InlineData("halloween_2026", true, "This game is played with the seasonal event.", true)]
+    [InlineData("halloween_2026", false, "This game is played with the seasonal event.", false)]
+    [InlineData(null, true, "This game is played without the seasonal event.", true)]
+    [InlineData(null, false, null, false)]
+    public void TheJoinDialogSaysWhetherTheGameRunsTheSeasonalEventAndThatTheHostsSettingAppliesOnlyWhenItDiffers(string? gameEvent, bool differs, string? sentence, bool hostNote)
+    {
+        var fake = new Fake();
+        Services.AddSingleton<IServersService>(fake);
+        var cut = Render<JoinMapModal>(p => p.Add(m => m.Server, Open with { Event = gameEvent, EventDiffers = differs }));
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
+        if (sentence is null) Assert.Empty(cut.FindAll("p.event"));  // no event and no difference (an older server too): nothing is said
+        else Assert.StartsWith(sentence, cut.Find("p.event").TextContent);
+        string[] note = hostNote ? ["In multiplayer, the host's setting applies."] : [];
+        Assert.Equal(note, cut.FindAll("p.event small").Select(s => s.TextContent));
+        // no refusal and no extra click: a start of the map still joins
+        cut.Find("button.marker").Click();
+        cut.WaitForAssertion(() => Assert.NotNull(fake.Joined));
+    }
+
+    [Fact]
     public void ThePreviewOfAGameThePlayerMayNotJoinDrawsNoPlayersOnAMap()
     {
         GamePlayer[] placed = [new("HostOne", 1500, 25.5, 75)];

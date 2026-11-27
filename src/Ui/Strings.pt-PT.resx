@@ -1671,4 +1671,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Join.Hidden" xml:space="preserve"><value>O mapa e o equipamento do anfitrião só são mostrados a jogadores que podem entrar neste jogo.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ à taxa normal, sem bónus.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventos de bónus no período:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>Este jogo é jogado com o evento sazonal.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>Este jogo é jogado sem o evento sazonal.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>No multijogador, aplica-se a definição do anfitrião.</value></data>
 </root>

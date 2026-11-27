@@ -1671,4 +1671,7 @@
   <data name="Join.Hidden" xml:space="preserve"><value>Карту и снаряжение хозяина видят только игроки, которые могут присоединиться к этой игре.</value></data>
   <data name="Board.HuntingBase" xml:space="preserve"><value>gm$ по обычной ставке, без бонусов.</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
+  <data name="Join.EventWith" xml:space="preserve"><value>В эту игру играют с сезонным событием.</value></data>
+  <data name="Join.EventWithout" xml:space="preserve"><value>В эту игру играют без сезонного события.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>В многопользовательской игре действует настройка хозяина.</value></data>
 </root>
