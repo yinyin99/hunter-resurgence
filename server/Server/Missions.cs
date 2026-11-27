@@ -454,17 +454,17 @@ public sealed partial class State
         return Normalise(rest[AtAny.Match(rest).Length..]).Split(' ')[0] == "harvest";
     }
 
-    /// <summary>A harvest the heartbeat credited to the member who shot the animal last (#1041; <see cref="TryCredit"/>): `theirs` is the shooter's account, where it is now the last event,
-    /// `con` the harvester's, where it is still event `eventId`. The harvester's active missions and daily mission get progress on the objectives whose title asks for a harvest
-    /// (<see cref="AsksHarvest"/>), judged as the shooter's are: on the shooter's hits, the animal (the shooter's spawn of it, else the harvester's `e7`) and its score. Not on an objective
-    /// with a sequence (within a time, one after another, the same shot, different animals): it counts the harvester's own harvests, which this is not; and a community mission counted the animal for the shooter already.
-    /// The objectives it finishes are `kept` (<see cref="Mark"/>): the harvester's stored events have no harvest that meets them. update 15 goes into `updates` (this heartbeat's reply), the toasts into `pending`.</summary>
-    void HarvesterEvent(Db con, Db theirs, JsonObject e3, JsonObject e7, long eventId, JsonArray updates)
+    /// <summary>A harvest the heartbeat credited to the member who shot the animal last (#1041; <see cref="TryCredit"/>): `theirs` is the shooter's account, where it is event `shot`,
+    /// `con` the harvester's, where it is still event `eventId`. The harvester's active missions (not the daily mission, the community missions or the challenges) get progress on the objectives
+    /// whose title asks for a harvest (<see cref="AsksHarvest"/>), judged on the shooter's hits and the animal's score as the shooter's are. The animal is the shooter's spawn of it, else, when the
+    /// shooter's events have none, the harvester's `e7` (the shooter's own missions then know no gender, coat or weight; the harvester's do). Not on an objective with a sequence (within a time, one
+    /// after another, the same shot, different animals): it counts the harvester's own harvests, which this is not. The objectives it finishes are `kept` (<see cref="Mark"/>): the harvester's stored
+    /// events have no harvest that meets them. update 15 goes into `updates`, the toasts into `pending`.</summary>
+    void HarvesterEvent(Db con, Db theirs, JsonObject e3, JsonObject e7, long shot, long eventId, JsonArray updates)
     {
-        if (missions.Count == 0 && dailies.Count == 0)
+        if (missions.Count == 0)
             return;
         EnsureMissions(con, eventId - 1);
-        var shot = LastEvent(theirs);
         var animal = SpawnBefore(theirs, e3["individual"], shot) is { Count: > 0 } seen ? seen : e7;
         var (animalSpecies, gender) = AnimalOf(animal, e3["extended_species"]);
         var kill = KillOf(theirs, e3, shot, animal);
@@ -502,8 +502,8 @@ public sealed partial class State
     }
 
     /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts; then the same
-    /// for today's daily mission, and the community missions count it. `credited`: a harvest of an animal another member shot (<see cref="HarvesterEvent"/>): only objectives whose title asks for a
-    /// harvest, each kept (<see cref="Mark"/>), and no community mission counts it.</summary>
+    /// for today's daily mission, and the community missions count it. `credited`: a harvest of an animal another member shot (<see cref="HarvesterEvent"/>): only the missions, only objectives whose title
+    /// asks for a harvest, each kept (<see cref="Mark"/>).</summary>
     void Advance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now, long eventId, bool credited = false)
     {
         var marks = Marks(con);
@@ -522,9 +522,10 @@ public sealed partial class State
             else
                 Complete(con, m, now);
         }
-        DailyAdvance(con, kind, meets, now, credited);
-        if (!credited)
-            CommunityCount(con, kind, rule => meets(rule, 0));
+        if (credited)
+            return;
+        DailyAdvance(con, kind, meets, now);
+        CommunityCount(con, kind, rule => meets(rule, 0));
     }
 
     /// <summary>The rule the objectives are finished under is kept with the row (`missions.rules`: objective id to <see cref="Fingerprint"/>), for the audit.</summary>
