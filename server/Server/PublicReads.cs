@@ -223,6 +223,7 @@ public sealed partial class State
         var other = PublicAccount(id) is { } o && InSessionWith(account, o) ? o : SeenAccount(account, id);
         if (other is not { } known) return """{"errorCode": 400}"""u8.ToArray();
         Store.BanFromGames(account, known);
+        games.Kick(account, known);  // the game's own kick follows, but the server must not keep counting him
         return "true"u8.ToArray();
     }
 

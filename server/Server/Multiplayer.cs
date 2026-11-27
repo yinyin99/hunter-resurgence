@@ -79,6 +79,13 @@ public sealed class Games
         lock (gate) LeaveLocked(account);
     }
 
+    /// <summary>The host's ban: `banned` leaves the session of `host`, if it is in it (it stops counting toward the players and its session token no longer connects).</summary>
+    public void Kick(long host, long banned)
+    {
+        lock (gate)
+            if (Of(banned) is { } g && g.Host == host && banned != host) g.Members.RemoveAll(m => m.Account == banned);
+    }
+
     /// <summary>A new session with its host (`g.Host`) as the only member; the network id is made here.</summary>
     public void Create(double now, Game g, string session)
     {

@@ -273,7 +273,7 @@ public static class Restorer
 
     /// <summary>Give the account (and its rows, tokens, sessions and claimed user ids) another user id, inside the caller's
     /// transaction: the foreign keys are checked at its end, when every row has moved.</summary>
-    static void Adopt(Db con, long from, long to)
+    public static void Adopt(Db con, long from, long to)
     {
         con.Script("PRAGMA defer_foreign_keys = ON");
         foreach (var table in Store.PlayerTables)

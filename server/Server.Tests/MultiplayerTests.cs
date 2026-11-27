@@ -616,6 +616,19 @@ public class MultiplayerTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestABanDropsTheBannedPlayerFromTheRunningSessionAndNobodyElse()
+    {
+        var hostSession = await ReadyHost();
+        var guestSession = Joined(await Join(GUEST));
+        Joined(await Join(THIRD));
+        Assert.Equal(3L, (long)(await List())[0]!["clients_len"]!);
+        Assert.Equal("true", await Ban(HOST, GUEST));  // no disconnect of the guest's own game is needed
+        Assert.Equal([HOST, THIRD], (await List())[0]!["clients"]!.AsArray().Select(c => (long)c!["user_id"]!));  // he no longer counts toward full
+        Assert.True((bool)(await Connect(guestSession, GUEST))["network"]!["singleplayer"]!);  // his session token no longer connects him to the game
+        Assert.False((bool)(await Connect(hostSession, HOST))["network"]!["singleplayer"]!);
+    }
+
+    [Fact]
     public void TestWhyIsTheFirstRefusalInTheOrderJoinChecksThem()
     {
         var host = new Games.Member(HOST, "s", 0);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Resurgence.Services;
 using Resurgence.Services.Mocks;
 using Resurgence.Ui;
+using Resurgence.Ui.Modals;
 using Resurgence.Ui.Components;
 using Resurgence.Ui.Pages;
 using Resurgence.Ui.Shell;
@@ -126,6 +127,28 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal(["Unban", "Unban"], page.FindAll("ul.list li button").Select(b => b.TextContent.Trim()));
         Assert.Empty(page.FindAll("p.empty"));
         Assert.Empty(page.FindAll(".avatars"));  // not the avatar page
+    }
+
+    [Fact]
+    public void UnbanningAsksFirstAndTheLastOneLeavesTheEmptyText()
+    {
+        var modal = Services.GetRequiredService<ModalService>();
+        var page = Render<Settings>(p => p.Add(s => s.Tab, "bans"));
+        void Answer(bool yes)
+        {
+            page.Find("ul.list li button").Click();
+            var wait = Assert.IsType<TaskCompletionSource<bool>>(modal.Parameters!["Answer"]);
+            Assert.Contains("Hunter04", (string)modal.Parameters["Text"]!);
+            wait.SetResult(yes);
+        }
+        Answer(false);  // the player says no: nothing changes
+        page.WaitForAssertion(() => Assert.Equal(["Hunter04", "Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim())));
+        Answer(true);
+        page.WaitForAssertion(() => Assert.Equal(["Hunter02"], page.FindAll("ul.list li a.handle").Select(a => a.TextContent.Trim())));
+        page.Find("ul.list li button").Click();
+        Assert.IsType<TaskCompletionSource<bool>>(modal.Parameters!["Answer"]).SetResult(true);
+        page.WaitForAssertion(() => Assert.Equal("You have not banned any player.", page.Find("p.empty").TextContent.Trim()));
+        Assert.Empty(page.FindAll("ul.list"));
     }
 
     [Theory]
