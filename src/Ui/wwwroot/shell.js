@@ -145,6 +145,7 @@ export function panZoom(map, ref, max) {
     };
     const sync = (delay) => {
         clearTimeout(wait);
+        if (down?.drag) return; // the drag reports the view where it ends
         wait = setTimeout(() => { const v = get(); ref.invokeMethodAsync('View', v.s, v.x, v.y).catch(() => { }); }, delay);
     };
 
@@ -158,6 +159,7 @@ export function panZoom(map, ref, max) {
         if (!down.drag) {
             if (Math.hypot(e.clientX - down.x, e.clientY - down.y) < 4) return;
             down.drag = moved = true;
+            clearTimeout(wait);
             map.setPointerCapture(e.pointerId);
             map.classList.add('dragging');
         }
@@ -171,7 +173,9 @@ export function panZoom(map, ref, max) {
         const dragged = down.drag;
         down = null;
         map.classList.remove('dragging');
-        if (dragged) sync(0);
+        if (!dragged) return;
+        sync(0);
+        setTimeout(() => { moved = false; }, 0); // a drag that ends without a click must not swallow the next one (a key press on a marker)
     };
     map.addEventListener('pointerup', end);
     map.addEventListener('pointercancel', end);

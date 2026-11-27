@@ -9,7 +9,7 @@
         {
             var pickable = !m.Only && m.Kind is MarkerKind.Lodge or MarkerKind.Tent;
             var slot = SlotOf(m);
-            <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => Pick(m)">
+            <button type="button" class="marker k-@Name(m.Kind) @(slot is null ? "" : "pic") @(m.Id == Selected ? "selected" : "") @(m.Id == Hover ? "hover" : "")" style="left:@Pc(m.X)%;top:@Pc(m.Y)%" data-tip="@m.Name" disabled="@(!pickable)" aria-label="@m.Name" @onclick="() => OnPick.InvokeAsync(m)">
                 @if (slot is not null) { <AssetSlot Name="@slot" Width="@MarkerSize" Height="@MarkerSize" /> }
                 else { <Icon Name="@IconOf(m.Kind)" /> }
             </button>
@@ -83,12 +83,6 @@
         StateHasChanged();
     }
 
-    Task Pick(MapMarker m)
-    {
-        CentreOn(m.Id);
-        return OnPick.InvokeAsync(m);
-    }
-
     /// <summary>The view, applied as the plane's <c>scale</c> then <c>translate</c>: the pan is a percent of the map before the scale. The picture's edge can't pass the map's edge: |pan| ≤ 50·(scale−1)/scale.</summary>
     void SetView(double s, double x, double y)
     {
@@ -117,6 +111,7 @@
         self?.Dispose();
         try { if (module is not null) await module.DisposeAsync(); }
         catch (JSDisconnectedException) { } // the tab closed: the module is gone with its circuit
+        catch (JSException) { } // launcher: after a reload the JS runtime talks to the new page, where this module instance does not exist
     }
 
     const int MarkerSize = 24;

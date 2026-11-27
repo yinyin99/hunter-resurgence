@@ -93,9 +93,9 @@ public sealed class MapPlaceholderTests : UiContext
     }
 
     // a marker is brought to the middle (zooming in once from ×1) while the picture still reaches the edges; a later drag is not undone by a render,
-    // and picking the same marker again (its strip button or a click on it) after a drag centres it again
+    // and CentreOn (the strip buttons) centres again after a drag
     [Fact]
-    public async Task CentringAMarkerZoomsInOnceAndEveryPickCentresAgainAfterADrag()
+    public async Task CentringAMarkerZoomsInOnceAndEveryCentreOnCentresAgainAfterADragAndAClickOnlySelects()
     {
         MapMarker[] markers = [new(1, MarkerKind.Lodge, "Near", 45, 55), new(2, MarkerKind.Lodge, "Edge", 5, 5)];
         MapMarker? picked = null;
@@ -110,9 +110,10 @@ public sealed class MapPlaceholderTests : UiContext
         await cut.InvokeAsync(() => cut.Instance.CentreOn(1));
         Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
 
+        // a click on a marker only selects it: the view stays where the player put it
         await cut.InvokeAsync(() => cut.Instance.View(1.5, -10, 10));
         cut.Find("button.k-lodge").Click();
-        Assert.Equal("transform:scale(1.5) translate(5%, -5%)", Plane(cut));
+        Assert.Equal("transform:scale(1.5) translate(-10%, 10%)", Plane(cut));
         Assert.Equal(1, picked?.Id);
 
         await cut.InvokeAsync(() => cut.Instance.CentreOn(2));
