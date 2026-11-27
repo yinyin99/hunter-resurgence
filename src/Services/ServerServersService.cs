@@ -73,8 +73,8 @@ public sealed class ServerServersService(HttpClient http, ServerCookie cookie, S
         return [];
     }
 
-    /// <summary>The host is the game's own handle; the game's age is the time since it was created. A host can set any Hunter Score limit: it is kept within 0 to 99999, and no limit is that whole range, as the list shows it. A player's place is the server's percent of the map, as sent.</summary>
-    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", Whole(g.Reserve!.Id), g.Clients?.Length ?? 0, Whole(g.Max), g.Handle ?? "", g.Password, null,
+    /// <summary>The host is the game's own handle; the game's age is the time since it was created. A host can set any Hunter Score limit: it is kept within 0 to 99999, and no limit is that whole range, as the list shows it. A player's place is the server's percent of the map, as sent. The distance is the server's word for it (<c>short</c>, <c>medium</c>, <c>long</c>), none for anything else or no field.</summary>
+    static GameServer Game(ServerGame g, long now) => new(g.Id, g.Name ?? "", g.Description ?? "", Whole(g.Reserve!.Id), g.Clients?.Length ?? 0, Whole(g.Max), g.Handle ?? "", g.Password, g.Distance switch { "short" => Distance.Short, "medium" => Distance.Medium, "long" => Distance.Long, _ => null },
         Whole(now - g.Started), Whole(g.Min ?? 0, 99999), Whole(g.MaxScore ?? 99999, 99999),
         [.. (g.Clients ?? []).Select(c => new GamePlayer(c.Handle ?? "", Whole(c.Hunterscore), c.MapX, c.MapY, Avatars.Slot(c.Avatar)))], g.Why, g.Language ?? "", g.Event, g.EventDiffers);
 

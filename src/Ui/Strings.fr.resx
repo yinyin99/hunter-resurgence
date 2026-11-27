@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de connexion et jetons de jeu, sous forme de hachages impossibles à relire.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Seulement si vous liez Discord : votre identifiant Discord et les jetons que Discord a donnés au serveur pour mettre à jour vos rôles, conservés chiffrés. Rien d'autre de votre profil Discord n'est conservé. Le serveur envoie votre pseudo et votre HunterScore à Discord pour vos rôles.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Seulement si vous liez Discord : une trace que la récompense de 5000 gm$ et 250 em$ a été versée pour votre identifiant Discord, conservée sous forme d'empreinte à clé qui ne permet pas de retrouver l'identifiant.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Pour afficher la distance jusqu’à l’hôte d’une partie multijoueur, le serveur cherche l’emplacement approximatif de l’adresse de votre connexion ; rien n’est conservé ni partagé.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Ce que les comptes ne contiennent pas</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Votre adresse email, votre vrai nom, votre adresse postale ou votre numéro de téléphone : ils ne sont ni demandés ni conservés dans votre compte. Si une sauvegarde contient un tel champ, il n’est pas restauré.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Supprimer vos données</value></data>

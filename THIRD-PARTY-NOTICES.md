@@ -31,6 +31,8 @@ Bundled with the server (`server/Server`; NuGet packages, direct and transitive;
 
 The punch-through server's image (`server/natpt`) is built from RakNet (commit `44ec8ec` of the public repository, one line of its message numbers changed at build time), copyright Oculus VR, LLC and its contributors, under the BSD 2-clause licence; RakNet's source is cloned during the build and is not in this repository.
 
+The multiplayer list's distance dots use an offline IP database the operator supplies (the server's `geoip_file`; [DB-IP](https://db-ip.com) "IP to City Lite", CC BY 4.0). It is not in this repository, not bundled and not downloaded by the server; the Servers page credits it with the link its licence asks for, and the server reads the MMDB format with its own small reader, so no package is added.
+
 The server's tests also use `xunit.v3` (Apache-2.0) and `Microsoft.NET.Test.Sdk` (MIT); they are not shipped.
 
 Font Awesome Free 6.7.2 by [@fontawesome](https://fontawesome.com), copyright 2024 Fonticons, Inc.; the icons are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); they were cut out of the SVG files unchanged except for being merged into one sprite, except `paw-regular`, which is the solid paw redrawn as an outline.

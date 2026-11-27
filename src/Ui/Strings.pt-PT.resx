@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Cookies de início de sessão e tokens do jogo, como hashes que não podem ser revertidos.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Apenas se associar o Discord: o seu id do Discord e os tokens que o Discord deu ao servidor para atualizar os seus cargos, guardados cifrados. Nada mais do seu perfil do Discord é guardado. O servidor envia o seu nome de caçador e o seu HunterScore ao Discord para os seus cargos.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Apenas se associar o Discord: um registo de que a recompensa de 5000 gm$ e 250 em$ foi paga pelo seu id do Discord, guardado como um hash com chave que não pode ser convertido de volta no id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Para mostrar a distância até ao anfitrião de um jogo multijogador, o servidor consulta o lugar aproximado do endereço da sua ligação; nada é guardado nem partilhado.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>O que as contas não contêm</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>O seu endereço de e-mail, nome verdadeiro, morada ou número de telefone: não são pedidos nem guardados na sua conta. Se uma cópia de segurança contiver um campo desse tipo, este não é restaurado.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Eliminar os seus dados</value></data>

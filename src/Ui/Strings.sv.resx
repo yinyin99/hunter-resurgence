@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inloggningscookies och speltokens, som hashvärden som inte kan läsas tillbaka.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Bara om du länkar Discord: ditt Discord-id och de token som Discord gav servern för att uppdatera dina roller, lagrade krypterade. Inget annat från din Discord-profil lagras. Servern skickar ditt handle och din HunterScore till Discord för dina roller.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Bara om du länkar Discord: en post om att belöningen på 5000 gm$ och 250 em$ har betalats ut för ditt Discord-id, lagrad som en nyckelhash som inte kan göras om till id:t.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>För att visa avståndet till värden för ett flerspelarspel slår servern upp den ungefärliga platsen för adressen till din anslutning; inget sparas eller delas.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Vad konton inte innehåller</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Din e-postadress, ditt riktiga namn, din postadress eller ditt telefonnummer: de efterfrågas inte och sparas inte i ditt konto. Om en säkerhetskopia innehåller ett sådant fält återställs det inte.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Radera dina uppgifter</value></data>

@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Sign-in cookies and game tokens, as hashes that cannot be read back.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Only if you link Discord: your Discord id and the tokens Discord gave the server to update your roles, kept encrypted. Nothing else of your Discord profile is kept. The server sends your handle and HunterScore to Discord for your roles.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Only if you link Discord: a record that the 5000 gm$ and 250 em$ reward was paid for your Discord id, kept as a keyed hash that cannot be turned back into the id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>To show the distance to a multiplayer game's host, the server looks up the approximate place of your connection's address; nothing is stored or shared.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>What accounts do not hold</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Your e-mail address, real name, postal address or phone number: they are not asked for and not kept in your account. If a backup holds a field like that, it is not restored.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Deleting your data</value></data>

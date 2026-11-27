@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Inlogcookies en spelsleutels, als hashes die niet kunnen worden teruggelezen.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Alleen als je Discord koppelt: je Discord-id en de tokens die Discord aan de server gaf om je rollen bij te werken, versleuteld bewaard. Verder wordt niets van je Discord-profiel bewaard. De server stuurt je gebruikersnaam en je HunterScore naar Discord voor je rollen.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Alleen als je Discord koppelt: een vermelding dat de beloning van 5000 gm$ en 250 em$ is uitbetaald voor je Discord-id, bewaard als hash met sleutel die niet terug te rekenen is naar het id.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Om de afstand tot de host van een multiplayerspel te tonen, zoekt de server de geschatte plaats van het adres van je verbinding op; er wordt niets bewaard of gedeeld.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Wat accounts niet bevatten</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Je e-mailadres, echte naam, postadres of telefoonnummer: daar wordt niet om gevraagd en ze worden niet in je account bewaard. Als een back-up zo'n veld bevat, wordt het niet hersteld.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Je gegevens verwijderen</value></data>

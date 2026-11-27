@@ -1448,6 +1448,7 @@
   <data name="Data.Stored.Sessions" xml:space="preserve"><value>Файлы cookie для входа и игровые токены в виде хэшей, которые невозможно прочитать обратно.</value></data>
   <data name="Data.Stored.Discord" xml:space="preserve"><value>Только если вы свяжете Discord: ваш идентификатор Discord и токены, которые Discord передал серверу для обновления ваших ролей, в зашифрованном виде. Больше ничего из вашего профиля Discord не хранится. Сервер отправляет в Discord ваш ник и HunterScore для ваших ролей.</value></data>
   <data name="Data.Stored.DiscordReward" xml:space="preserve"><value>Только если вы свяжете Discord: запись о том, что награда 5000 gm$ и 250 em$ выплачена за ваш идентификатор Discord, в виде хеша с ключом, который нельзя превратить обратно в идентификатор.</value></data>
+  <data name="Data.Place" xml:space="preserve"><value>Чтобы показать расстояние до хоста многопользовательской игры, сервер определяет примерное местоположение адреса вашего соединения; ничего не хранится и не передаётся.</value></data>
   <data name="Data.Never.Title" xml:space="preserve"><value>Чего нет в аккаунтах</value></data>
   <data name="Data.Never.Text" xml:space="preserve"><value>Ваш адрес электронной почты, настоящее имя, почтовый адрес или номер телефона: их не запрашивают и не хранят в вашем аккаунте. Если резервная копия содержит такое поле, оно не восстанавливается.</value></data>
   <data name="Data.Delete.Title" xml:space="preserve"><value>Удаление ваших данных</value></data>

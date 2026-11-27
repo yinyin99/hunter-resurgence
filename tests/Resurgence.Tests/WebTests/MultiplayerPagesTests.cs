@@ -41,6 +41,37 @@ public sealed class MultiplayerPagesTests : UiContext
         [new("HostOne", 1500, null, null), new("Guest", 300, null, null)]);
     static readonly GameServer Locked = new(4000000002, "Locked game", "", 4, 1, 8, "HostTwo", true, null, 60, 0, 99999, [new("HostTwo", 900, null, null)]);
 
+    static GameServer At(GameServer g, string name, Distance? distance) => g with { Name = name, Distance = distance };
+
+    [Fact]
+    public void TheDotsTheLegendAndTheCreditShowWhenAGameHasADistanceAndUnknownOnesComeLast()
+    {
+        // the server's order is oldest first; the default order is the nearest first, the games it cannot place after the rest
+        Services.AddSingleton<IServersService>(new Fake { Games = [At(Open, "Unknown", null), At(Open, "Far", Distance.Long), At(Open, "Near", Distance.Short), At(Open, "Middle", Distance.Medium), At(Open, "Unknown too", null)] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.Equal(5, cut.FindAll("table.tbl tbody tr").Count));
+        var rows = cut.FindAll("table.tbl tbody tr");
+        Assert.Equal(["Near", "Middle", "Far", "Unknown", "Unknown too"], rows.Select(r => r.QuerySelector("td.name")!.TextContent.Trim()));
+        Assert.Equal(["short", "medium", "long", "", ""], rows.Select(r => string.Join(" ", r.QuerySelectorAll("i.dot").Select(d => d.ClassName!.Replace("dot", "").Trim()))));
+        Assert.Single(cut.FindAll("p.legend"));
+        Assert.Equal(3, cut.Find("p.legend").QuerySelectorAll("i.dot").Length);
+        var credit = cut.Find("p.attribution a");
+        Assert.Equal(("IP Geolocation by DB-IP", "https://db-ip.com"), (credit.TextContent, credit.GetAttribute("href")));
+        Assert.Contains("legend", cut.Markup.Substring(0, cut.Markup.IndexOf("attribution", StringComparison.Ordinal)));  // the credit is under the legend
+    }
+
+    [Fact]
+    public void AnEmptyListHasNoLegendAndNoCredit()
+    {
+        Services.AddSingleton<IServersService>(new Fake { Games = [] });
+        var cut = Render<Servers>();
+
+        cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll(".empty")));
+        Assert.Empty(cut.FindAll("p.legend"));
+        Assert.Empty(cut.FindAll("p.attribution"));
+    }
+
     [Fact]
     public void TheListShowsEachGamesNameHostReservePlayersLockAndScoreRange()
     {
@@ -56,6 +87,7 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.DoesNotContain("Country", cut.Find("table.tbl thead").TextContent);
         Assert.Empty(cut.FindAll("i.dot"));
         Assert.Empty(cut.FindAll("p.legend"));
+        Assert.Empty(cut.FindAll("p.attribution"));  // and no credit for a database that was not used
         // the first game's details: its HunterScore range and its players
         var preview = cut.Find("aside.preview").TextContent;
         Assert.Contains("Min HunterScore: 100", preview);

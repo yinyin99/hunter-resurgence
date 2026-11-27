@@ -250,6 +250,15 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheIpDatabaseIsOptionalAndItsPathIsRelativeToTheFile()
+    {
+        Assert.Null(Load(Minimal()).Cfg["geoip_file"]);
+        var o = Minimal();
+        o["geoip_file"] = "geoip.mmdb";
+        Assert.Equal(Path.Combine(tmp, "geoip.mmdb"), (string)Load(o).Cfg["geoip_file"]!);
+    }
+
+    [Fact]
     public void OnlyTheTwoWebHostsAreRequiredAndTheOthersAreNamesNoClientAsks()
     {
         var o = Minimal();
