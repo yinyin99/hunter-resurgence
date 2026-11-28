@@ -122,7 +122,7 @@ public sealed class RequestLog(bool console, string? missesPath, string? telemet
         lock (gate)
         {
             if (show)
-                Console.WriteLine($"{reply.Source,-6} {reply.Status} {r.Method} {r.Host}{r.Path}");
+                Console.WriteLine($"{reply.Source,-6} {reply.Status} {r.Method} {r.Host}{r.Path}" + (r.Path == Replay.CONNECT ? $" {reply.Body.Length} bytes" : ""));  // a connect's size: the game that cannot read its reply says so only as a parse failure (#1052)
             if (line != null)  // text mode: OS line ending
                 File.AppendAllText(missesPath!, Py.Dumps(line) + Environment.NewLine, new UTF8Encoding(false));
             if (tele != null)

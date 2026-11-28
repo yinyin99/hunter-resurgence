@@ -67,7 +67,7 @@ public sealed class LauncherKit(Uri? server, ILogger? log = null) : IKitService
 
     async Task Run(KitSettings s)
     {
-        app = Forwarder.Build(s.ServerUrl, leaf!, 443, 80);
+        app = Forwarder.Build(s.ServerUrl, leaf!, 443, 80, log);
         try { await app.StartAsync(); }
         catch (IOException e)
         {

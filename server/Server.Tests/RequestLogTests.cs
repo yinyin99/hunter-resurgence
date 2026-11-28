@@ -60,4 +60,11 @@ public class RequestLogTests : IDisposable
         Assert.Single(ConsoleOf(R(200, """{"status":"ok"}"""), "/auth/link/abc").Split('\n', StringSplitOptions.RemoveEmptyEntries));
         Assert.Single(ConsoleOf(R(404, """{"status":"expired"}"""), "/auth/link/abc").Split('\n', StringSplitOptions.RemoveEmptyEntries));
     }
+
+    [Fact]
+    public void TestAConnectLineSaysHowManyBytesItsReplyHas()
+    {
+        Assert.Equal($"state  200 GET signup.test{Replay.CONNECT} 1234 bytes", ConsoleOf(R(200, new string('x', 1234)), Replay.CONNECT).TrimEnd());
+        Assert.Equal("state  200 GET signup.test/v1/heartbeat", ConsoleOf(R(200, "{}"), "/v1/heartbeat").TrimEnd());
+    }
 }

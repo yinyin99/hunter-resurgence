@@ -26,8 +26,8 @@ static class Forwarder
     static readonly HashSet<string> Hop = new(StringComparer.OrdinalIgnoreCase)
         { "Connection", "Keep-Alive", "Proxy-Connection", "Proxy-Authenticate", "Proxy-Authorization", "TE", "Trailer", "Transfer-Encoding", "Upgrade", "Host", "Alt-Svc" };
 
-    /// <summary>Not started. <paramref name="tls"/> null: no HTTPS listener. A port of 0 lets Windows choose (the tests).</summary>
-    public static WebApplication Build(Uri server, X509Certificate2? tls, int httpsPort, int httpPort)
+    /// <summary>Not started. <paramref name="tls"/> null: no HTTPS listener. A port of 0 lets Windows choose (the tests). <paramref name="log"/> (launcher.log): what the game's connect was answered (<see cref="FirstBytes"/>) and every request that could not be relayed.</summary>
+    public static WebApplication Build(Uri server, X509Certificate2? tls, int httpsPort, int httpPort, ILogger? log = null)
     {
         var builder = WebApplication.CreateSlimBuilder();
         builder.Logging.ClearProviders();
@@ -75,15 +75,29 @@ static class Forwarder
                 foreach (var h in resp.Headers.Concat(resp.Content.Headers))
                     if (!Hop.Contains(h.Key) && (head || !h.Key.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))) ctx.Response.Headers.Append(h.Key, h.Value.ToArray());
                 if (!head && ctx.Response.StatusCode is not (204 or 304)) ctx.Response.ContentLength = body.Length;
+                // before the write: a problem report must hold what the game was about to get (a connect it cannot read ends the start with 16002, #1052); only the length and the first bytes, never the body
+                if (IsConnect(req.Path)) log?.LogInformation("connect reply to the game: status {Status}, {Length} bytes, starts {Start}", ctx.Response.StatusCode, body.Length, FirstBytes(body));
                 if (body.Length > 0) await ctx.Response.Body.WriteAsync(body, ctx.RequestAborted); // a 204 or 304 has none, and writing even an empty body to one throws
             }
             catch (Exception e) when (e is HttpRequestException or TaskCanceledException or IOException)
             {
                 if (!ctx.Response.HasStarted) ctx.Response.StatusCode = 502;
-                if (!ctx.RequestAborted.IsCancellationRequested) Console.WriteLine($"{req.Method} {req.Headers.Host}{raw}: {e.Message}"); // the game going away is not an error
+                if (!ctx.RequestAborted.IsCancellationRequested) log?.LogWarning("{Method} {Host}{Path} not relayed ({Status}): {Error}", req.Method, req.Headers.Host.ToString(), req.Path.Value, ctx.Response.StatusCode, e.Message); // the game going away is not an error
             }
         });
         return app;
+    }
+
+    /// <summary>The game's connect call: no other call of the game ends in <c>/connect</c> (<c>/disconnect</c> does not match, the slash is part of the suffix).</summary>
+    static bool IsConnect(PathString path) => path.Value?.EndsWith("/connect", StringComparison.Ordinal) == true;
+
+    /// <summary>The first 32 bytes of a body as one line of text: printable ASCII as it is, a backslash, CR, LF and tab as <c>\\ \r \n \t</c>, any other byte (a control character, a byte of a multi-byte character, a gzip header) as <c>\xNN</c>. Nothing of the rest.</summary>
+    internal static string FirstBytes(byte[] body)
+    {
+        var text = new StringBuilder();
+        foreach (var b in body.AsSpan(0, Math.Min(body.Length, 32)))
+            text.Append(b switch { (byte)'\\' => @"\\", (byte)'\r' => @"\r", (byte)'\n' => @"\n", (byte)'\t' => @"\t", >= 0x20 and < 0x7F => ((char)b).ToString(), _ => $@"\x{b:x2}" });
+        return text.ToString();
     }
 
     /// <summary>A TCP connection to the server, over IPv4 first: the server records the address a connect came from and gives it to the players who join that host, and the game's networking cannot use an IPv6 one.
