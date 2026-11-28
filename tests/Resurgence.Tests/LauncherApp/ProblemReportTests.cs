@@ -405,7 +405,9 @@ public class ProblemReportTests
     public async Task TheWatcherReadsTheGameLogOnlyForAShortCleanExit(int code, bool window, bool? expected)
     {
         using var temp = new TempDir("resurgence-test-");
-        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateRun::OnEnter()\nWM_CLOSE\n");
+        var netlog = Path.Combine(temp.Path, "1.netlog");
+        File.WriteAllText(netlog, "CGameStateRun::OnEnter()\nWM_CLOSE\n");
+        File.SetLastWriteTimeUtc(netlog, DateTime.UtcNow.AddMinutes(1)); // the game writes its log while the run lasts: newer than the run's start
         var rest = new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance);
         var b = new LauncherBridge(() => new(temp.Path, Path.Combine(temp.Path, "client.exe")), rest, _ => true, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1),
             find: _ => new GameProcess(() => window, () => code));
