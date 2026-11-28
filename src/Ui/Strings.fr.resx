@@ -1677,7 +1677,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Événements bonus de la période :</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Cette partie se joue avec l'événement saisonnier.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Cette partie se joue sans l'événement saisonnier.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, le paramètre de l'hôte s'applique.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, la partie suit la chasse de l'hôte, quels que soient votre paramètre ou les dates de l'événement.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Banni par l'hôte</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Vous ne pouvez pas rejoindre cette partie : l'hôte vous a banni de ses parties.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Les joueurs que vous bannissez avec le bouton Bannir de la page des joueurs du jeu ne peuvent pas rejoindre vos parties multijoueur tant que vous ne levez pas le bannissement.</value></data>

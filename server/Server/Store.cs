@@ -17,7 +17,7 @@ public sealed class Store
          "missions", "mission_prefs", "mission_rollbacks", "challenges", "daily_missions", "own_limit_removals", "unethical_kills", "harvest_links", "purchases"];
 
     /// <summary>PRAGMA user_version of the schema below. A change adds a step to Migrate and raises this.</summary>
-    public const int Version = 46;
+    public const int Version = 51;
 
     const string A = "account_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE";
 
@@ -652,6 +652,10 @@ public sealed class Store
             if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('photos') WHERE name = ?", column.Split(' ')[0])! == 0)
                 con.Script($"ALTER TABLE photos ADD COLUMN {column}");
         con.Script("CREATE INDEX IF NOT EXISTS photos_taker ON photos (taker) WHERE taker IS NOT NULL");
+        // schema 51 (#1032), guarded by the column and not by the version (every start): the event the hunt's first connect sent as `ingame_event` ('' none; NULL: decided before this column, then it is `event`'s), so that
+        // every later connect of the hunt sends the same; `event` stays the event whose content was sent
+        if ((long)con.Scalar("SELECT COUNT(*) FROM pragma_table_info('expeditions') WHERE name = 'event_sent'")! == 0)
+            con.Script("ALTER TABLE expeditions ADD COLUMN event_sent TEXT");
         con.Script(StoreSalePicks);  // schema 45 (#1047), every start and guarded by its own IF NOT EXISTS (not by the version), like the steps above
         if ((long)con.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name = 'purchases'")! == 0)  // schema 46 (#928), every start and guarded by the table (not by the version), like the steps above
         {

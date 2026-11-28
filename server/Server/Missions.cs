@@ -525,7 +525,7 @@ public sealed partial class State
         if (credited)
             return;
         DailyAdvance(con, kind, meets, now);
-        CommunityCount(con, kind, rule => meets(rule, 0));
+        CommunityCount(con, kind, rule => meets(rule, 0), eventId);
     }
 
     /// <summary>The rule the objectives are finished under is kept with the row (`missions.rules`: objective id to <see cref="Fingerprint"/>), for the audit.</summary>

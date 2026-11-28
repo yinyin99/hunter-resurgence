@@ -148,4 +148,46 @@ public class CommunityMissionTests : StateTestBase
         Assert.Null(state.EventPanel(ME));
         Assert.Equal(20, state.CommunityDivisor);  // the default
     }
+
+    long Counted(long account)
+    {
+        using var con = state.Store.Open();
+        return (long)con.Scalar("SELECT COALESCE(SUM(count), 0) FROM community_progress WHERE account_id = ?", account)!;
+    }
+
+    [Fact]
+    public void TestAKillCountsAsTheHuntsRecordedEventSaysWhateverThePlayersSettingIsNow()
+    {
+        state = New();
+        foreach (var (who, plays) in new[] { (ME, true), (B, false) })
+        {
+            state.Store.SetPlaysEvents(who, plays);
+            state.NoteLaunch(who, "start=100&reserve=2"u8.ToArray());
+            state.ConnectReply(who);  // the hunt records whether the event ran for it
+        }
+        state.Store.SetPlaysEvents(ME, false);  // each changes his setting inside the hunt
+        state.Store.SetPlaysEvents(B, true);
+        Hb(ME, Kill(1));
+        Hb(B, Kill(2));
+        Assert.Equal((1L, 0L), (Counted(ME), Counted(B)));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestAGuestsKillsCountAsTheHostsHuntRecordedNotAsTheGuestsSetting(bool hostPlays)
+    {
+        state = New();
+        state.Store.SetPlaysEvents(ME, hostPlays);
+        state.Store.SetPlaysEvents(B, !hostPlays);
+        state.HostGame(ME, "host-session", "start=100&loctype=LODGE&reserve=2&time=540&loadout_id=0&name=Camp"u8.ToArray());
+        state.ConnectReply(ME, "host-session", "203.0.113.1");
+        state.HeartbeatReply(ME, Events(O("""{"event": 29, "port": 32303, "guid": "9007199254740993", "color": "c73378"}""")));
+        var id = (long)Reply(state.NetworkListReply())[0]!["id"]!;
+        var (error, session) = state.JoinGame(B, System.Text.Encoding.UTF8.GetBytes($"start=100&loctype=LODGE&network_id={id}&loadout_id=0"));
+        Assert.Null(error);
+        state.ConnectReply(B, session, "203.0.113.2");
+        Hb(B, Kill(2));
+        Assert.Equal(hostPlays ? 1L : 0L, Counted(B));
+    }
 }
