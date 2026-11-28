@@ -3,7 +3,7 @@ namespace Resurgence.Launcher;
 /// <summary>Reads the game's newest <c>*.netlog</c> (the client logs <c>CGameStateRun::OnEnter()</c> when it reaches a hunt or the main page, <c>CGameStatePause::OnEnter()</c> for the pause) to tell a quit from a failure.</summary>
 static class GameLog
 {
-    /// <summary>True: the run reached <c>CGameStateRun</c> or <c>CGameStatePause</c> and closed on <c>WM_CLOSE</c>/<c>WM_DESTROY</c>; false: it did not; null: no log written since <paramref name="since"/>, or it cannot be read.</summary>
+    /// <summary>True: the run reached <c>CGameStateRun</c> or <c>CGameStatePause</c> and closed on <c>WM_CLOSE</c>/<c>WM_DESTROY</c>; false: it did not; null: no folder, no log written since <paramref name="since"/>, or it cannot be read.</summary>
     public static bool? QuitCleanly(string folder, DateTimeOffset since)
     {
         try
@@ -19,6 +19,6 @@ static class GameLog
             }
             return reached && closed;
         }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException) { return null; }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { return null; } // an empty, missing or invalid folder: unknown, never a throw into the exit path
     }
 }

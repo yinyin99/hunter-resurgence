@@ -376,6 +376,8 @@ public class ProblemReportTests
         using var temp = new TempDir("resurgence-test-");
         var since = DateTimeOffset.UtcNow.AddMinutes(-1);
         Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // no log
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly("", since)); // no game folder
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(Path.Combine(temp.Path, "gone"), since));
         File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateRun::OnEnter()\nWM_CLOSE\n");
         Assert.True(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since));
         File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateLoad::OnEnter()\nWM_CLOSE\n");
