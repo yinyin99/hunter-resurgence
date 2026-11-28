@@ -60,7 +60,8 @@ public sealed class MockProfileService(string? mock = null, IFriendsService? fri
     ]);
 
     public Task<IReadOnlyList<Skill>> SkillsAsync(string handle, string kind) => Task.FromResult<IReadOnlyList<Skill>>(kind == "weapons"
-        ? Enumerable.Range(0, 30).Select(i => new Skill($"Weapon {(char)('A' + i % 26)}{i / 26 + 1} (Standard)", WeaponTypes[i / 3], [new("Shooting", 1, 0)])).ToList()
+        ? Enumerable.Range(0, 30).Select(i => new Skill($"Weapon {(char)('A' + i % 26)}{i / 26 + 1} (Standard)", WeaponTypes[i / 3], [new("Shooting", 1, 0)],
+            Finishes: i == 0 ? ["Winter", "Engraved", "Weapon Falcon (Camo)", "Weapon Ember (Oriental)", "Black Walnut", "Gilded", "Midnight", "Dune Camo", "Hunter Orange", "Glacier"] : i % 3 == 0 ? ["Winter", "Engraved", "Weapon Falcon (Camo)", "Weapon Ember (Oriental)", "Black Walnut"] : i % 3 == 1 ? ["Winter"] : null)).ToList()
         : Names.Species.Select(s => new Skill(s.Name, null, [new("Spotting", 1, 0), new("Tracking", 1, 0)])).ToList());
 
     static Page<T> Slice<T>(IReadOnlyList<T> all, int page, int size)

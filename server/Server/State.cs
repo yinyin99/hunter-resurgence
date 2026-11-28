@@ -53,9 +53,12 @@ public sealed partial class State
                      long.Parse(Py.Str(i!["guid"])), i["item_id"], i["slot"], Py.Dumps(i["metadata"]), i["units"]);
         foreach (var (currency, amount) in src["wallet"] as JsonObject ?? new JsonObject())
             con.Exec("INSERT INTO wallet (account_id, currency, amount) VALUES ($a, ?, ?)", currency, amount);
-        foreach (var (kind, key, xp) in SeedSkills(Py.Truthy(src["skills"]) ? src["skills"]!.AsObject() : new JsonObject(),
-                                                   Py.Truthy(list) ? list!.AsObject() : new JsonObject()))
+        var seeded = SeedSkills(Py.Truthy(src["skills"]) ? src["skills"]!.AsObject() : new JsonObject(),
+                                Py.Truthy(list) ? list!.AsObject() : new JsonObject());
+        foreach (var (kind, key, xp) in seeded.Where(r => r.Kind != "weapon"))
             con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", kind, key, xp);
+        foreach (var (key, xp) in OneSkillPerWeaponType(seeded.Where(r => r.Kind == "weapon").Select(r => (r.Key, r.Xp))))
+            con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, ?, ?, ?)", "weapon", key, xp);
     }
 
     /// <summary>The next id of a table keyed (account_id, id): ids are per account, and restored rows keep the zip's.
@@ -802,7 +805,10 @@ public sealed partial class State
     const long BackpackItem = 92;
     /// <summary>settings.json `default_inventory_capacity`, in grams: what every account carries; the Increased Capacity item adds 10000 more.</summary>
     public long InventoryCapacity { get; init; } = DefaultInventoryCapacity;
-    readonly OrderedDictionary<long, long> family = new();
+    /// <summary>The weapon families: every weapon item of the catalogue is in exactly one, its weapon type (docs/server.md, "Weapon families"). A weapon type has one shooting skill.</summary>
+    public WeaponFamilies Weapons { get; }
+    /// <summary>An item's name as the mission reader compares names: lower case, no accents or apostrophes, `12GA` as `12 GA`.</summary>
+    internal static string NameWords(string name) => Reader.Words(name);
     readonly Dictionary<string, long> speciesIds = new(), itemIds = new();  // species and item ids by define (achievement paths)
     readonly Facts facts;
 
@@ -890,22 +896,10 @@ public sealed partial class State
                     ["unlock_item_id"] = a.Item, ["name"] = a.Name, ["unlocked"] = false, ["url"] = $"{avatarBase}/256/{a.Id}.png",
                     ["gender"] = a.Gender, ["id"] = a.Id, ["define"] = items[a.Item]["define"]?.DeepClone(),
                 }.ToJsonString()));
-        var byDefine = new Dictionary<string, JsonObject>();
+        foreach (var d in Arr(itemDefs))
+            itemIds[(string)d!["define"]!] = Py.L(d["id"]);
         foreach (var d in Arr(itemDefs))
         {
-            byDefine[(string)d!["define"]!] = d.AsObject();
-            itemIds[(string)d["define"]!] = Py.L(d["id"]);
-        }
-
-        long Root(JsonObject d)
-        {
-            while (d["parent"] is JsonNode p && Py.IsStr(p) && byDefine.TryGetValue((string)p!, out var parent))
-                d = parent;
-            return Py.L(d["id"]);
-        }
-        foreach (var d in Arr(itemDefs))
-        {
-            family[Py.L(d!["id"])] = Root(d.AsObject());
             if (d["extra"]?["ammo"] is JsonObject ammo)
                 ballistics[Py.L(d["id"])] = ammo;
             if (d["extra"]?["weapon"]?["attachments"] is JsonArray att)
@@ -914,6 +908,7 @@ public sealed partial class State
         foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
             if (!items.ContainsKey(Py.L(i!["id"])))
                 installItems[Py.L(i["id"])] = i.AsObject();
+        Weapons = WeaponFamilies.Build(items.Values.Concat(installItems.Values), itemDefs);
         // The game looks an item's name up in `items_locale` when it creates a placed item and closes when the id is missing: a placed
         // event tent closes the game on entering its reserve. The sample (and a recording from before an event) lists no item newer than itself, so every catalogue item is added.
         if (connect["items_locale"] is JsonArray names)
@@ -1129,38 +1124,41 @@ public sealed partial class State
     {
         var sp = sighting?["species"];
         string kind;
-        List<object?> keys;
         double gain;
-        string? name;
         if (Is(e["event"], 11) && sp is not null)
-            (kind, keys, gain, name) = ("spotting", [sp], Skills.SPOT_XP, SpeciesName(sp));
+            (kind, gain) = ("spotting", Skills.SPOT_XP);
         else if (Is(e["event"], 12) && sp is not null)
         {
             // the n-th clue on this animal since the latest hunt's first event (this one is already stored)
             var n = (long)con.Scalar("SELECT COUNT(*) FROM events WHERE account_id = $a AND event = 12 AND individual = ?"
                                      + " AND id > COALESCE((SELECT first_event FROM expeditions WHERE account_id = $a ORDER BY id DESC LIMIT 1), 0)",
                                      e["individual"])!;
-            (kind, keys, gain, name) = ("tracking", [sp], Skills.TrackXp(n), SpeciesName(sp));
+            (kind, gain) = ("tracking", Skills.TrackXp(n));
         }
         else if (Is(e["event"], 1) && AmmoCheck(e, sp, sighting?["texture"], HuntEvent(con)) is null)
         {
-            var weapon = e["weapon_id"];
-            var fam = TryKey(weapon, out var w) && family.TryGetValue(w, out var root) ? JsonValue.Create(root) : weapon;
-            kind = "weapon";
+            if (!TryKey(e["weapon_id"], out var weapon))
+                return [];
+            // one skill per weapon type: the hit adds to the highest value any item of the family holds, kept once under the representative
+            var held = $"account_id = $a AND kind = 'weapon' AND key IN ({string.Join(",", Weapons.Of(weapon)?.Members ?? [weapon])})";
+            var was = con.Scalar($"SELECT MAX(xp) FROM skills WHERE {held}") is { } top and not DBNull ? Convert.ToDouble(top) : Skills.FRESH_XP;
             gain = Skills.HitXp(sp is null ? -1 : Py.L(sp), e["animal_state"]);
-            name = Lookup(items, weapon)?["name"] is { } n ? Py.Str(n) : null;
-            keys = [weapon, .. family.Where(kv => Py.Eq(JsonValue.Create(kv.Value), fam) && !Py.Eq(JsonValue.Create(kv.Key), weapon))
-                                     .Select(kv => (object?)kv.Key)];
-            con.Exec("INSERT OR IGNORE INTO skills (account_id, kind, key, xp) VALUES ($a, 'weapon', ?, ?)", weapon, Skills.FRESH_XP);
+            con.Exec($"DELETE FROM skills WHERE {held}");
+            con.Exec("INSERT INTO skills (account_id, kind, key, xp) VALUES ($a, 'weapon', ?, ROUND(? + ?, 1))", SkillKey(weapon), was, gain);
+            return LevelUp("weapon", Lookup(items, e["weapon_id"])?["name"] is { } n ? Py.Str(n) : null, was, gain);
         }
         else
             return [];
-        var row = con.Rows("SELECT xp FROM skills WHERE account_id = $a AND kind = ? AND key = ?", kind, keys[0]).FirstOrDefault();
+        var row = con.Rows("SELECT xp FROM skills WHERE account_id = $a AND kind = ? AND key = ?", kind, sp).FirstOrDefault();
         if (row is null)  // a species outside the 59 skill slots
             return [];
-        foreach (var k in keys)
-            con.Exec("UPDATE skills SET xp = ROUND(xp + ?, 1) WHERE account_id = $a AND kind = ? AND key = ?", gain, kind, k);
-        var xp = Convert.ToDouble(row[0]);
+        con.Exec("UPDATE skills SET xp = ROUND(xp + ?, 1) WHERE account_id = $a AND kind = ? AND key = ?", gain, kind, sp);
+        return LevelUp(kind, SpeciesName(sp), Convert.ToDouble(row[0]), gain);
+    }
+
+    /// <summary>The level-up toast of a skill that went from <paramref name="xp"/> to <paramref name="xp"/> + <paramref name="gain"/>, none when the level stays.</summary>
+    List<JsonObject> LevelUp(string kind, string? name, double xp, double gain)
+    {
         var level = Py.L(Skills.Value(xp + gain));
         if (level <= Py.L(Skills.Value(xp)))
             return [];
@@ -1171,19 +1169,73 @@ public sealed partial class State
         }];
     }
 
+    /// <summary>The skills key of a weapon item: its family's representative, so a weapon type keeps one row; an item of no family (not in the catalogue) is its own key.</summary>
+    long SkillKey(long item) => Weapons.Of(item)?.Representative ?? item;
+
+    /// <summary>One (key, xp) per weapon type from weapon skill rows (item id, xp): the highest xp any item of the family holds, under the representative, ascending by key.
+    /// Rows saved per item (before the family rule, or a restore, or a seed) fold to that, so a player's skill is never lowered.</summary>
+    public List<(long Key, double Xp)> OneSkillPerWeaponType(IEnumerable<(long Item, double Xp)> rows) =>
+        [.. rows.GroupBy(r => SkillKey(r.Item), r => r.Xp).Select(g => (g.Key, g.Max())).OrderBy(r => r.Key)];
+
+    /// <summary>`admin weapon-skills` (#1068): puts every account's weapon skill rows in the one-per-weapon-type form (<see cref="OneSkillPerWeaponType"/>): a family's rows become one row under its representative with the highest xp
+    /// any of them holds (a skill is never lowered). One line per account and family that changes (before and after, ascending by account, then family), one line per family (accounts that change, accounts where a row rises and how many of those on an item the Skills tab shows, the
+    /// largest and the total rise in xp), then a total. With `apply` each account is one transaction; a second run changes nothing; without `apply` nothing is written. Hits and restores already leave the one-row form.</summary>
+    public IEnumerable<string> MergeWeaponSkills(bool apply, long? only = null)
+    {
+        static string Show(long key, double xp) => $"{key}={xp.ToString("0.0", CultureInfo.InvariantCulture)} xp (number {Py.Dumps(Skills.Value(xp))})";
+        var (families, accounts) = (new SortedDictionary<long, (int Accounts, int Raised, int RaisedShown, double Largest, double Total)>(), 0);
+        var lines = new List<string>();
+        foreach (var account in (only is { } one ? [one] : Store.AccountIds()).Order())
+        {
+            using var con = Con(account);
+            if (apply)
+                con.Begin();
+            var held = con.Rows("SELECT key, xp FROM skills WHERE account_id = $a AND kind = 'weapon' ORDER BY key").Select(r => (Item: Convert.ToInt64(r[0]), Xp: Convert.ToDouble(r[1]))).ToList();
+            var owned = con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a").Select(r => Convert.ToInt64(r[0])).ToHashSet();
+            var changed = false;
+            lines.Clear();
+            foreach (var g in held.GroupBy(r => SkillKey(r.Item)).OrderBy(g => g.Key).Where(g => g.Count() > 1 || g.First().Item != g.Key))
+            {
+                var (top, rise) = (g.Max(r => r.Xp), g.Max(r => r.Xp) - g.Min(r => r.Xp));
+                lines.Add($"account {account} family {g.Key} ({ItemName(g.Key)}): before {string.Join(", ", g.Select(r => Show(r.Item, r.Xp)))}; after {Show(g.Key, top)}");
+                var f = families.GetValueOrDefault(g.Key);
+                var shownRise = g.Any(r => r.Xp < top && (items.ContainsKey(r.Item) || owned.Contains(r.Item)));  // a rise the Skills tab shows (PublicSkills lists only catalogue and owned items)
+                families[g.Key] = (f.Accounts + 1, f.Raised + (rise > 0 ? 1 : 0), f.RaisedShown + (shownRise ? 1 : 0), Math.Max(f.Largest, rise), f.Total + rise);
+                changed = true;
+                if (apply)
+                {
+                    foreach (var r in g)
+                        con.Exec("DELETE FROM skills WHERE account_id = $a AND kind = 'weapon' AND key = ?", r.Item);
+                    PlayerRows.SetSkill(con, "weapon", g.Key, top);
+                }
+            }
+            if (apply)
+                con.Commit();
+            accounts += changed ? 1 : 0;
+            foreach (var line in lines)  // each account's lines leave as it commits, so an interrupted apply still shows where it stopped
+                yield return line;
+        }
+        foreach (var (key, f) in families)
+            yield return $"family {key} ({ItemName(key)}): {f.Accounts} account(s) change, {f.Raised} with a row that rises, {f.RaisedShown} of them on an item the Skills tab shows, largest rise {f.Largest.ToString("0.0", CultureInfo.InvariantCulture)} xp, total {f.Total.ToString("0.0", CultureInfo.InvariantCulture)} xp";
+        yield return $"{accounts} account(s) {(apply ? "changed" : "to change")}, {families.Count} family(ies){(apply ? "" : ": dry run, nothing written; add --apply to write")}";
+    }
+
     /// <summary>{weapon: {id: n}, tracking: [n], spotting: [n]} with n = number(xp): the shape of Skill/list
-    /// (Skills.Value) and of the connect's `skills` (levels).</summary>
+    /// (Skills.Value) and of the connect's `skills` (levels). A weapon type's number is on every item of its family.</summary>
     JsonObject SkillNumbers(long account, Func<double, JsonNode> number)
     {
         List<object[]> rows;
         using (var con = Con(account))
             rows = con.Rows("SELECT kind, key, xp FROM skills WHERE account_id = $a ORDER BY kind, key");
         var weapon = new JsonObject();
-        foreach (var r in rows.Where(r => (string)r[0] == "weapon"))
-            weapon[Py.Str(Py.FromSql(r[1]))] = number(Convert.ToDouble(r[2]));
+        foreach (var (item, xp) in WeaponSkills(rows).SelectMany(w => (Weapons.Of(w.Key)?.Members ?? [w.Key]).Select(m => (Item: m, w.Xp))).OrderBy(w => w.Item))
+            weapon[item.ToString()] = number(xp);
         JsonArray Of(string kind) => new(rows.Where(r => (string)r[0] == kind).Select(r => (JsonNode?)number(Convert.ToDouble(r[2]))).ToArray());
         return new JsonObject { ["weapon"] = weapon, ["tracking"] = Of("tracking"), ["spotting"] = Of("spotting") };
     }
+
+    List<(long Key, double Xp)> WeaponSkills(IEnumerable<object[]> rows) =>
+        OneSkillPerWeaponType(rows.Where(r => (string)r[0] == "weapon").Select(r => (Convert.ToInt64(r[1]), Convert.ToDouble(r[2]))));
 
     /// <summary>Skill/list for the user_id: the player's own, and on a community server another account's the player may see
     /// (<see cref="SeenAccount"/>); null for anyone else (a local server replays their recorded reply, a community
@@ -1198,23 +1250,58 @@ public sealed partial class State
 
     /// <summary>What a profile page's skills tab shows of an account: `species` [{name, image, spotting, tracking}] (the numbers of
     /// Skill/list, one per species of the connect's list; `image` is the species' define in lower case, null without one; the dog species
-    /// and species 56 are left out, as the original website did) and `weapons` [{id, name, variation, group, value}] (the item's id, its name, its variation name and its
-    /// sub-category's name, null without one).</summary>
+    /// and species 56 are left out, as the original website did) and `weapons` [{id, name, variation, group, value, finishes}], one per weapon type: the representative's id, name, variation name and
+    /// sub-category's name (null without one), the type's skill number and the other items of its family as `finishes`, one text each: the finish's name, or its name and finish when the name is not the representative's.</summary>
     public JsonObject PublicSkills(long account)
     {
         var n = SkillNumbers(account, Skills.Value);
+        List<(long Item, double Xp, List<long> Finishes)> weapons;
+        using (var con = Con(account))
+            weapons = ShownWeaponSkills(con);
         var spotting = n["spotting"]!.AsArray();
         var tracking = n["tracking"]!.AsArray();
         return new JsonObject
         {
             ["species"] = new JsonArray([.. species.OrderBy(s => s.Key).Where(s => s.Key < spotting.Count && s.Key != 56 && !(Py.IsStr(s.Value["define"]) && (string)s.Value["define"]! is "DOG" or "DOG_02" or "DOG_03")).Select(s => (JsonNode?)new JsonObject
                 { ["name"] = C(s.Value["name"]), ["image"] = Py.IsStr(s.Value["define"]) ? ((string)s.Value["define"]!).ToLowerInvariant() : null, ["spotting"] = C(spotting[(int)s.Key]), ["tracking"] = s.Key < tracking.Count ? C(tracking[(int)s.Key]) : null })]),
-            ["weapons"] = new JsonArray([.. n["weapon"]!.AsObject().Select(w =>
+            ["weapons"] = new JsonArray([.. weapons.Select(w =>
             {
-                var item = items.GetValueOrDefault(long.Parse(w.Key));
-                return (JsonNode?)new JsonObject { ["id"] = long.Parse(w.Key), ["name"] = C(item?["name"]) ?? "#" + w.Key, ["variation"] = C(item?["variationname"]), ["group"] = C(item?["subcat"]?["name"]), ["value"] = C(w.Value) };
+                JsonObject? Item(long id) => items.GetValueOrDefault(id) ?? installItems.GetValueOrDefault(id);
+                var item = Item(w.Item);
+                var finishes = w.Finishes.Select(m => FinishText(item, Item(m), m));
+                return (JsonNode?)new JsonObject
+                {
+                    ["id"] = w.Item, ["name"] = C(item?["name"]) ?? "#" + w.Item, ["variation"] = C(item?["variationname"]), ["group"] = C(item?["subcat"]?["name"]),
+                    ["value"] = Skills.Value(w.Xp), ["finishes"] = new JsonArray([.. finishes.Select(f => (JsonNode?)f)]),
+                };
             })]),
         };
+    }
+
+    /// <summary>The weapon types the Skills tab lists for the account, ascending by representative: the item that names the row (the representative, else the first shown member), the type's XP and its other shown items.
+    /// A weapon item is shown when the store catalogue lists it or the account owns it (an item row in its inventory); an item that only the game's install data defines and nobody owns is shown nowhere and never names a row.
+    /// A type with a stored row is listed when one of its members is shown, wherever the row is stored (per item before the merge, under the representative after it): the visibility rule decides, the storage form does not.</summary>
+    List<(long Item, double Xp, List<long> Finishes)> ShownWeaponSkills(Db con)
+    {
+        var owned = con.Rows("SELECT DISTINCT item_id FROM items WHERE account_id = $a").Select(r => Convert.ToInt64(r[0])).ToHashSet();
+        bool Shown(long id) => items.ContainsKey(id) || owned.Contains(id);
+        var rows = con.Rows("SELECT key, xp FROM skills WHERE account_id = $a AND kind = 'weapon'").Select(r => (Item: Convert.ToInt64(r[0]), Xp: Convert.ToDouble(r[1])));
+        var listed = new List<(long, double, List<long>)>();
+        foreach (var g in rows.GroupBy(r => SkillKey(r.Item)).OrderBy(g => g.Key))
+        {
+            var shown = (Weapons.Of(g.Key)?.Members ?? [g.Key]).Where(Shown).ToList();
+            if (shown.Count > 0)
+                listed.Add((shown[0], g.Max(r => r.Xp), shown[1..]));
+        }
+        return listed;
+    }
+
+    /// <summary>What the Skills tab lists under a weapon type for one of its other items: the finish alone when the item has the representative's name, else its name and its finish in parentheses.</summary>
+    static string FinishText(JsonObject? representative, JsonObject? item, long id)
+    {
+        var (name, finish) = (item?["name"] is { } n && Py.IsStr(n) ? (string)n! : "#" + id, item?["variationname"] is { } v && Py.IsStr(v) ? (string)v! : null);
+        var same = representative?["name"] is { } r && Py.IsStr(r) && NameWords((string)r!) == NameWords(name);
+        return same ? finish ?? name : finish is null ? name : $"{name} ({finish})";
     }
 
     const long DogCategory = 12, DogType = 25;  // the catalogue's DOGS category and DOG type (the collars, vests and treats are other types)

@@ -8,7 +8,8 @@ public sealed partial class State
 {
     /// <summary>The store item "Inventory Loadout": every unit an account owns is one loadout, so a delivery adds a default loadout per unit.
     /// A placed item is no part of a loadout (<see cref="PLACED_SLOT"/>); weapons are the catalogue's category 1 and ammunition its category 3.</summary>
-    const long LoadoutItem = 811, WeaponCategory = 1, AmmoCategory = 3;
+    const long LoadoutItem = 811, AmmoCategory = 3;
+    internal const long WeaponCategory = 1;
     const int MinName = 2, MaxName = 50, MaxColor = 11, MaxItems = 200;  // the limits of the page's rename box, its 12 colours, and a loadout's items
 
     static JsonObject Loadout(long id, string name, JsonNode? color, JsonNode items) => new() { ["name"] = name, ["color"] = color, ["items"] = items, ["id"] = id };

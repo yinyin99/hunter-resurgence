@@ -456,6 +456,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         state.CreateAccount(10, "banned");
         using (var con = state.Store.Open(9))
         {  // the fixture's connect has no skills: a new account has the rows its hunts earn (species 0 and 1)
+            PlayerRows.AddItem(con, 900, 99, 0, null, new JsonObject());  // the player owns the item the catalogue lacks: only then is its row shown
             foreach (var weapon in new[] { 5, 99 })
                 con.Exec("INSERT OR REPLACE INTO skills (account_id, kind, key, xp) VALUES ($a, 'weapon', ?, ?)", weapon, Skills.Xp(1.14));
             foreach (var kind in new[] { "spotting", "tracking" })
@@ -467,7 +468,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var third = JsonNode.Parse((await Get("web.test", "/hunters/third/skills")).Body)!;
         Assert.Contains(third["species"]!.AsArray(), s => (double)s!["spotting"]! == 3 && (double)s["tracking"]! > 1);
         Assert.Equal(["mule_deer", "cottontail_rabbit"], third["species"]!.AsArray().Select(s => (string)s!["image"]!));  // the dog species and species 56 are left out
-        Assert.Equal("""[{"id": 5, "name": "Test Rifle", "variation": null, "group": null, "value": 1.14}, {"id": 99, "name": "#99", "variation": null, "group": null, "value": 1.14}]""", Py.Dumps(third["weapons"]));  // an item the catalogue lacks is named by its id
+        Assert.Equal("""[{"id": 5, "name": "Test Rifle", "variation": null, "group": null, "value": 1.14, "finishes": []}, {"id": 99, "name": "#99", "variation": null, "group": null, "value": 1.14, "finishes": []}]""", Py.Dumps(third["weapons"]));  // an owned item the catalogue lacks is named by its id
         Assert.Equal(404, (await Get("web.test", "/hunters/nobody/skills")).Status);
         Assert.Equal(404, (await Get("web.test", "/hunters/banned/skills")).Status);
         // Skill/list of another account's user id: its numbers, not the empty reply

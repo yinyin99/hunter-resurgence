@@ -874,7 +874,12 @@ public class SkillTests : StateTestBase
     {
         var connect = CONNECT;
         connect["skills"] = LEVELS;
-        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, APP, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
+        var app = APP;  // the weapons are catalogue items (category 1): 5 and its variant 706 are one weapon family, the shotgun 391 is its own
+        var items = app["items"]!.AsArray();
+        items.First(i => (long)i!["id"]! == 5)!["cat"] = 1;
+        items.Add(O("""{"id": 706, "name": "Test Rifle Variant", "cat": 1}"""));
+        items.Add(O("""{"id": 391, "name": "Test Shotgun", "cat": 1}"""));
+        state = new State(Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, skillList: NUMBERS, itemDefs: ITEM_DEFS);
     }
 
     JsonNode Numbers() => Reply(state.SkillListReply(ME, "user_id=7"u8.ToArray())!);
