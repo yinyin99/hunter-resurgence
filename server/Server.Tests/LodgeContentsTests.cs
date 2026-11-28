@@ -13,7 +13,7 @@ public class LodgeContentsTests : StateTestBase
 
     public LodgeContentsTests() => state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false);
 
-    string Save()
+    string Save(string contents = Contents)
     {
         var path = Path.Combine(tmp, "section-save.zip");
         using var z = ZipFile.Open(path, ZipArchiveMode.Create);
@@ -24,7 +24,7 @@ public class LodgeContentsTests : StateTestBase
         Put("json_hunt_details.json", """{"9100":{"stats":null,"kills":[],"expedition":{"id":9100,"reserve":2}}}""");
         Put("json_gallery.json", """{"total":0,"photos":[]}""");
         Put("json_v2_lodges.json", """[{"id":61,"lodge_type_id":780,"name":"Lodge"},{"id":62,"lodge_type_id":790,"name":"Cabin"}]""");
-        Put("json_lodge_contents.json", Contents);
+        Put("json_lodge_contents.json", contents);
         return path;
     }
 
@@ -58,6 +58,39 @@ public class LodgeContentsTests : StateTestBase
         Assert.Equal(3L, (long)lodge["weapon_slots"]![0]!["weapon_id"]!);
         Assert.NotNull(state.LodgeReply(account, 62));
         Assert.Null(state.LodgeReply(account, 63));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ARestoredLodgeStoresOnlyTheTrophyIdsTheGameCanReadAsANewLodgeAndInPlaceOfTheEmptyOne(bool replacesTheEmptyLodge)
+    {
+        const string odd = """{"61": {"id": 61, "lodge_type_id": 780, "animal_slots": [{"slot_id": 1, "trophy_id": {"a": 1}}, {"slot_id": 2, "trophy_id": "abc"}, {"slot_id": 3, "trophy_id": "123"}, {"slot_id": 4, "trophy_id": 4294967296}]}}""";
+        var uploads = new Uploads(state, tmp) { MinFreeBytes = 0 };
+        var player = state.Store.NextServerId();
+        state.CreateAccount(player, "player", "76561190000000001");
+        using (var con = state.Store.Open(player))
+        {
+            PlayerRows.AddAudit(con, "archive:1001", "public", "claim");  // a claim's account takes the save as a merge
+            if (replacesTheEmptyLodge)  // the empty lodge the server gave for a lodge item of the type: the saved lodge takes its place
+                foreach (var source in new[] { "/game/user/lodges", "/game/user/lodge" })
+                    PlayerRows.AddLodge(con, source, "7", JsonNode.Parse("""{"id": 7, "lodge_type_id": 780, "animal_slots": [], "weapon_slots": []}"""));
+        }
+        var id = uploads.Start(player)!;
+        uploads.Part(player, id, 0, new MemoryStream(File.ReadAllBytes(Save(odd)))).GetAwaiter().GetResult();
+        Assert.Equal("review", uploads.Finish(player, id).GetAwaiter().GetResult().Kind);
+        long row;
+        using (var con = state.Store.Open(player)) row = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+        Assert.Equal("restored", uploads.Approve(row).Kind);
+
+        using var stored = state.Store.Open(player);
+        var lodge = JsonNode.Parse((string)stored.Scalar("SELECT node FROM lodges WHERE account_id = $a AND source = '/game/user/lodge' AND id = ?", replacesTheEmptyLodge ? "7" : "61")!)!;
+        var slots = lodge["animal_slots"]!.AsArray();  // the stored row itself, not a reply
+        Assert.Equal(4, slots.Count);
+        Assert.Null(slots[0]!["trophy_id"]);
+        Assert.Null(slots[1]!["trophy_id"]);
+        Assert.Equal(123L, (long)slots[2]!["trophy_id"]!);
+        Assert.Null(slots[3]!["trophy_id"]);
     }
 
     [Fact]

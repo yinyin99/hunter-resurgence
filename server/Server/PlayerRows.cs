@@ -72,8 +72,11 @@ public static class PlayerRows
     public static void AddTrophy(Db con, string source, string id, JsonNode? node) =>
         con.Exec("INSERT INTO trophies (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
 
-    public static void AddLodge(Db con, string source, string id, JsonNode? node) =>
+    public static void AddLodge(Db con, string source, string id, JsonNode? node)
+    {
+        State.ReadableTrophyIds(node);  // only an id the game can read, else an empty slot
         con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
+    }
 
     /// <summary>A saved reply with no typed home, keyed by its path in the zip.</summary>
     public static void SetExtra(Db con, string path, JsonNode? body) =>

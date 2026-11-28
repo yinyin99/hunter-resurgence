@@ -163,7 +163,7 @@ public sealed partial class State
         con.Exec("UPDATE events SET account_id = ?1 WHERE account_id = $a AND id IN (?2, ?3)", to, h.EventId, e22 ?? h.EventId);  // the trophy measurement goes with the harvest
         foreach (var l in con.Rows("SELECT n, node FROM lodges WHERE account_id = $a"))  // a mounted trophy is taken down
             if (JsonNode.Parse((string)l[1]) is JsonObject node && node["animal_slots"] is JsonArray slots
-                && slots.Where(s => s is JsonObject o && Py.Str(o["trophy_id"]) == h.Kill.ToString()).ToList() is { Count: > 0 } mounted)
+                && slots.Where(s => s is JsonObject o && TrophyId(o["trophy_id"]) is { } tid && Py.Str(tid) == h.Kill.ToString()).ToList() is { Count: > 0 } mounted)
             {
                 foreach (var slot in mounted)
                     slots.Remove(slot);

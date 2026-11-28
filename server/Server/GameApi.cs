@@ -539,7 +539,7 @@ public static class GameApi
             api.MapGet("/v1/game/user/trophies", restored).ExcludeFromDescription();
             apiv2.MapGet("/game/user/{id}/lodges", restored).WithName("Lodges").WithSummary("The lodges of a player, with their slots' trophies")
                  .WithDescription("The lodge rows of a restore, as edited since; each animal slot with a `trophy_id` also has its `trophy_details` (the trophy's row of "
-                                  + "`/game/user/trophies`). `locked` is kept: the game hides those lodges from other players. Needs a player's token: his own, or a player he may see (his friends, whoever a board shows him); "
+                                  + "`/game/user/trophies`). A `trophy_id` the game cannot read (not an integer up to 4294967295) is sent as `null`, an empty slot. `locked` is kept: the game hides those lodges from other players. Needs a player's token: his own, or a player he may see (his friends, whoever a board shows him); "
                                   + "anyone else, an unknown or banned user id gets the empty reply. Also at `/v1/game/user/<id>/lodges` (the current build).")
                  .PathParams(("id", "user id")).Produces(200, contentType: "application/vnd.game.user.trophy_lodge.lodge+json; type=collection");
             apiv2.MapGet("/game/user/{id}/lodges/{lodge}", restored).WithName("Lodge").WithSummary("One lodge of a player")
