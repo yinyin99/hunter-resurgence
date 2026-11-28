@@ -41,7 +41,7 @@ public sealed partial class State
     static readonly Regex AfterVisiting = new(@"\A\s*after\s+(?:visiting|arriving at|reaching)\s+(?<p>[^,:]+)[,:]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     static readonly Regex SameHuntLead = new(@"\A\s*(?:(?:then|finally|first|lastly)\b[\s,:-]*)?at any (?:point|time)\s+during\s+(?:the\s+|a\s+)?(?:same|one|single)\s+hunt\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
-    /// <summary>`Harvest a Puma first.` ends the objective before: the next one is ordered after it. `After visiting X, harvest ...` waits for the arrive objective before it that names X only, not for every objective
+    /// <summary>`Harvest a Test Deer first.` ends the objective before: the next one is ordered after it. `After visiting X, harvest ...` waits for the arrive objective before it that names X only, not for every objective
     /// before it (<see cref="Rule.After"/>). `At any point during the same hunt, ...` in a travel mission waits for its `Start at ...` objective: the hunt that started at the lodge.</summary>
     static Rule Order(Rule rule, string title, Objective[] before)
     {

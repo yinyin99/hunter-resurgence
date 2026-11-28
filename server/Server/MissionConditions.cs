@@ -132,7 +132,7 @@ public sealed partial class State
             Check.NotCoat => NumOf(k.E7, "texture") is { } coat && !t.Ids!.Contains((long)coat),  // an animal with no spawn has no coat: it is no other coat either
             Check.Within or Check.Each or Check.SameShot or Check.Different => rule is not null && Sequenced(t, k, after, rule) >= t.Min,
             // a clue of footprints of each of the species, each within the radius of the point, in the mission (since `after`); the clue met now is one of them
-            Check.EachSpecies => t.Ids!.Any(s => FootprintNear(k, s, t)) && t.Ids.All(s => k.Steps(after, true).Any(st => FootprintNear(st.Kill, s, t))),
+            Check.EachSpecies => t.Ids!.Any(s => FootprintNear(k, s, t)) && t.Ids!.All(s => k.Steps(after, true).Any(st => FootprintNear(st.Kill, s, t))),
             _ => false,
         };
     }
@@ -582,7 +582,7 @@ public sealed partial class State
             catalogued = [.. weapons.Select(w => w.Id)];
             weaponNames = ByName(weapons);
             // a name whose words all lie, in order, in a longer name (`.30 Revolver`, `.30 Magnum Revolver`): the title naming the shorter one also accepts the longer. A weapon with a family of its own (more than
-            // one item) takes no other family's weapon whose name only has its words in between (`6.5x55 Maker Z9 Bolt Action Rifle` for `6.5x55 Bolt Action Rifle`); a name that holds it whole (`Heavy Test Bow`) stays
+            // one item) takes no other family's weapon whose name only has its words in between (`.99 Maker Z9 Bolt Action Rifle` for `.99 Bolt Action Rifle`); a name that holds it whole (`Heavy Test Bow`) stays
             longer = weaponNames.ToDictionary(n => n.Name, n =>
             {
                 var ownFamily = n.Ids.Any(i => families?.Of(i) is { Members.Count: > 1 });
