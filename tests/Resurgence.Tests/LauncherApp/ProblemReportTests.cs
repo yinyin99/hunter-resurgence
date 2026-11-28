@@ -364,6 +364,28 @@ public class ProblemReportTests
     }
 
     [Fact]
+    public void AShortRunThatQuitAfterTheMenuIsNormal()
+    {
+        var start = DateTimeOffset.UnixEpoch;
+        var shortRun = TimeSpan.FromSeconds(20);
+        Assert.Null(new GameRun(start, shortRun, 0, true, null, true).Trigger);
+        Assert.Equal("short", new GameRun(start, shortRun, 0, true, null, false).Trigger);
+        Assert.Equal("short", new GameRun(start, shortRun, 0, true, null, null).Trigger);
+        Assert.Equal("exitcode", new GameRun(start, shortRun, 3, true, null, true).Trigger);
+
+        using var temp = new TempDir("resurgence-test-");
+        var since = DateTimeOffset.UtcNow.AddMinutes(-1);
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // no log
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateRun::OnEnter()\nWM_CLOSE\n");
+        Assert.True(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since));
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateLoad::OnEnter()\nWM_CLOSE\n");
+        Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // never reached the menu
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateRun::OnEnter()\n");
+        Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // no WM_CLOSE
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, DateTimeOffset.UtcNow.AddMinutes(1))); // log is older than the run
+    }
+
+    [Fact]
     public async Task TheWatcherRecordsTheRunAndKeepsTheLastTen()
     {
         using var temp = new TempDir("resurgence-test-");

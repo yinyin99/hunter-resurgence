@@ -272,7 +272,7 @@ When the game fails on a player's PC (it closes, never shows a window), one zip 
 |---|---|
 | `nowindow` | no visible game window was ever seen |
 | `exitcode` | the exit code is not 0 |
-| `short` | the game ran less than 60 seconds |
+| `short` | the game ran less than 60 seconds, unless its newest `*.netlog` shows it reached a hunt or the main page (`CGameStateRun::OnEnter` or `CGameStatePause::OnEnter`) and closed on `WM_CLOSE`/`WM_DESTROY` (a normal quit); a log that cannot be read leaves it `short` |
 | `manual` | not a run: the player pressed Report a problem |
 
 A normal run has none. After a failed start the launcher sends the report by itself when the player agreed (`report_consent` is `auto`, set by the first-launch dialog and Settings); without that agreement (`unset` or `ask`) the "Done hunting for now?" window offers Save and Send, and Settings, Report a problem works at any time. Nothing is built or sent before one of these.
