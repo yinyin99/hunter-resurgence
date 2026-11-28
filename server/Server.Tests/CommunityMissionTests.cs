@@ -190,4 +190,21 @@ public class CommunityMissionTests : StateTestBase
         Hb(B, Kill(2));
         Assert.Equal(hostPlays ? 1L : 0L, Counted(B));
     }
+
+    [Theory]
+    [InlineData(true)]   // the hunt recorded the event
+    [InlineData(false)]  // the hunt recorded none and the player turns events on before the tutorial
+    public void TestAKillInATutorialAfterTheHuntCountsNothingWhateverTheHuntRecorded(bool recorded)
+    {
+        state = New();
+        state.Store.SetPlaysEvents(ME, recorded);
+        state.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        state.ConnectReply(ME);
+        state.Store.SetPlaysEvents(ME, true);
+        Hb(ME, Kill(1));
+        Assert.Equal(recorded ? 1L : 0L, Counted(ME));  // the hunt's own kill follows its record
+        state.NoteTutorial(ME, "tutorial-session", 1);
+        Hb(ME, Kill(2));
+        Assert.Equal(recorded ? 1L : 0L, Counted(ME));  // the tutorial's: none, as the kills' judging reads the hunt's event
+    }
 }

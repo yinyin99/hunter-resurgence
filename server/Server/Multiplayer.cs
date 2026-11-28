@@ -353,9 +353,9 @@ public sealed partial class State
             if (website)
             {
                 var gameReserve = (int)g.Reserve - 1;  // the game's own reserve number, as the lodge's / 100
-                var gameEvent = HostDecision(g.Host, gameReserve).Event;
+                var gameEvent = HostDecision(g.Host, gameReserve).Sent;  // the event the host's game sends: the event itself, with or without content on this reserve
                 list["event"] = gameEvent == "" ? null : gameEvent;
-                list["event_differs"] = caller is not null && Decide(callerPlays, gameReserve).Event != gameEvent;
+                list["event_differs"] = caller is not null && Decide(callerPlays, gameReserve).Sent != gameEvent;
                 list["distance"] = caller is null || g.Host == caller || Places is null ? null : HostDistance.Bucket(viewerPlace.Value, Places.Locate(g.Members[0].Ip));
             }
             if (caller is not null)

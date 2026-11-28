@@ -1100,6 +1100,12 @@ public sealed partial class State
                  + " FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId).FirstOrDefault() is { } r
             ? new(r[0] as string, r[1] as string) : default;
 
+    /// <summary>The event that ran for the hunt the event row <paramref name="eventId"/> belongs to, as its first connect recorded it (`event_sent`, else `event`: the event's name, '' for none), with `event_until` applied as
+    /// <see cref="HuntEvent"/> does (none for a row after a tutorial started); null when the hunt has no record (no connect yet) or there is no hunt.</summary>
+    public static string? HuntEventSent(Db con, long eventId) =>
+        con.Scalar("SELECT CASE WHEN event IS NULL THEN NULL WHEN ?1 <= COALESCE(event_until, ?1) THEN COALESCE(event_sent, event) ELSE '' END"
+                   + " FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ?1 ORDER BY id DESC LIMIT 1", eventId) as string;
+
     /// <summary>The <see cref="HuntEvent"/> of a harvest by its stored event 3 JSON (the latest row of it); none when it has none.</summary>
     public static HuntRule HarvestEvent(Db con, string harvest) =>
         con.Scalar("SELECT MAX(id) FROM events WHERE account_id = $a AND event = 3 AND body = ?", harvest) is long harvested ? HuntEvent(con, harvested) : default;

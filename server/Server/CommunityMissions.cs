@@ -34,13 +34,13 @@ public sealed partial class State
         (long)con.Scalar("SELECT COALESCE(SUM(count), 0) FROM community_progress WHERE event = ? AND mission_id = ?", eventName, c.Id)!;
 
     /// <summary>A hunt's event (from <see cref="MissionEvent"/>, inside the heartbeat's transaction) counts 1 for each community mission of the running event it meets
-    /// that is not done yet, when the hunt of the event row <paramref name="eventId"/> recorded that the event ran for it (`Sent` of its <see cref="EventDecision"/>: the host's for a multiplayer hunt, whatever the player's own setting is); a hunt with no
+    /// that is not done yet, when the hunt of the event row <paramref name="eventId"/> recorded that the event ran for it (`Sent` of its <see cref="EventDecision"/>: the host's for a multiplayer hunt, whatever the player's own setting is; <see cref="State.HuntEventSent"/>, so a tutorial's events, which the hunt's event does not judge, count nothing); a hunt with no
     /// record (no connect) counts for a player who plays events.</summary>
     void CommunityCount(Db con, Kind kind, Func<Rule, bool> meets, long eventId)
     {
         if (community.Count == 0 || Seasonal is not { } e || !e.Running(Clock()))
             return;
-        if (con.Scalar("SELECT COALESCE(event_sent, event) FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) < ? ORDER BY id DESC LIMIT 1", eventId) is string recorded
+        if (HuntEventSent(con, eventId) is { } recorded
                 ? recorded != e.Name : con.Scalar("SELECT seasonal_events FROM accounts WHERE id = ?", con.Account) is 0L)
             return;
         foreach (var c in community.Where(c => c.Rule.Kind == kind && meets(c.Rule)).ToList())

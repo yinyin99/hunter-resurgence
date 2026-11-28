@@ -368,6 +368,7 @@ public class SeasonalEventGameTests : StateTestBase
         Assert.Equal(Content(host), Content(GuestConnects(s)));
         var restarted = Server(Db, future);
         Assert.Equal(Content(host), Content(Reply(restarted.ConnectReply(GUEST))));
-        Assert.Null(Reply(s.NetworkListReply(THIRD, website: true))[0]!["event"]);  // no content, no event in the list
+        var listed = Reply(s.NetworkListReply(THIRD, website: true))[0]!;  // the list says what the guests get: the event itself
+        Assert.Equal(hostPlays ? "future_2031" : null, (string?)listed["event"]);
     }
 }
