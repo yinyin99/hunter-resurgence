@@ -738,9 +738,6 @@ public sealed partial class State
     }
 
     readonly string photosDir, baseUrl, iconUrl, avatarBase;
-
-    /// <summary>settings `static_host`: the host whose mirror folder holds the static pictures (a corrected trophy picture is served from it, <see cref="Facts.FixTrophyYear"/>); "" when unknown.</summary>
-    public string StaticHost { get; init; } = "";
     readonly JsonObject application;
     readonly JsonArray avatars;  // the recorded Avatar/getAvatars list: [{id, url, ...}]
     readonly JsonNode? skillList;
