@@ -1677,7 +1677,7 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonusbegivenheder i perioden:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Dette spil spilles med sæsonbegivenheden.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Dette spil spilles uden sæsonbegivenheden.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>I multiplayer gælder værtens indstilling.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I multiplayer følger spillet værtens jagt, uanset din egen indstilling eller begivenhedens datoer.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Udelukket af værten</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du kan ikke deltage i dette spil: værten har udelukket dig fra sine spil.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spillere, du udelukker med knappen Udeluk på spillerlisten i spillet, kan ikke deltage i dine multiplayer-spil, før du ophæver udelukkelsen.</value></data>

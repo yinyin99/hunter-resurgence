@@ -348,7 +348,7 @@ public sealed class MultiplayerPagesTests : UiContext
         cut.WaitForAssertion(() => Assert.NotEmpty(cut.FindAll("button.marker")));
         if (sentence is null) Assert.Empty(cut.FindAll("p.event"));  // no event and no difference (an older server too): nothing is said
         else Assert.StartsWith(sentence, cut.Find("p.event").TextContent);
-        string[] note = hostNote ? ["In multiplayer, the host's setting applies."] : [];
+        string[] note = hostNote ? ["In multiplayer, the game follows its host's hunt, whatever your own setting or the event's dates."] : [];
         Assert.Equal(note, cut.FindAll("p.event small").Select(s => s.TextContent));
         // no refusal and no extra click: a start of the map still joins
         cut.Find("button.marker").Click();

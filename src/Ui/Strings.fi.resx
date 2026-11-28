@@ -1677,7 +1677,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Tätä peliä pelataan kausitapahtuman kanssa.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Tätä peliä pelataan ilman kausitapahtumaa.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä isännän asetus on voimassa.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä peli seuraa isännän metsästystä riippumatta omasta asetuksestasi tai tapahtuman päivämääristä.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Isäntä on estänyt</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Et voi liittyä tähän peliin: isäntä on estänyt sinut peleistään.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Pelaajat, jotka estät pelin pelaajasivun Estä-painikkeella, eivät voi liittyä moninpelipeleihisi, ennen kuin poistat eston.</value></data>

@@ -1677,7 +1677,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushendelser i perioden:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Dette spillet spilles med sesongbegivenheten.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Dette spillet spilles uten sesongbegivenheten.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>I flerspiller gjelder vertens innstilling.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspiller følger spillet vertens jakt, uansett din egen innstilling eller datoene for begivenheten.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Utestengt av verten</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du kan ikke bli med i dette spillet: verten har utestengt deg fra spillene sine.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spillere du utestenger med Utesteng-knappen på spillersiden i spillet, kan ikke bli med i flerspillerspillene dine før du opphever utestengelsen.</value></data>
