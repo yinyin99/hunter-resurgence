@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>завтра</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Описание</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Задачи</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Подходящее оружие:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Чтобы разблокировать миссию {0}, нужно выполнить следующие миссии:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Охотугодья</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Награды</value></data>

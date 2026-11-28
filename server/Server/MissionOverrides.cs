@@ -17,7 +17,8 @@ public sealed partial class State
     /// <summary>How many objectives have their rule from the operator's file.</summary>
     public int OverriddenObjectives => overridden.Count;
 
-    static readonly Regex NamedNear = new(@"\Anamed animal near \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\) m\z", RegexOptions.CultureInvariant);
+    static readonly Regex NamedNear = new(@"\Anamed animal near \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\) m(?:, (?<n>\d+) animals)?(?:, otherwise place (?<p>[A-Z0-9_]+))?\z", RegexOptions.CultureInvariant);
+    static readonly Regex EachFootprint = new(@"\Afootprints of each of (?<s>.+) within (?<r>\d+) m of \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\)\z", RegexOptions.CultureInvariant);
     // a place the game names when the player enters it (event 101 `location_name`): no catalogue lists them all, so only its form is checked
     static readonly Regex PlaceDefine = new(@"\A[A-Z0-9_]+\z", RegexOptions.CultureInvariant);
     // `in the hunt: <n>[ within <m> min]`, `<n>, each within <m> min of the one before`, `<n> killed by one shot`, `<n> different animals[ within <m> min]` (<see cref="Describe"/>)
@@ -58,7 +59,9 @@ public sealed partial class State
                     throw new InvalidDataException($"mission {mission} has no objective {objective}");
                 if (value is not JsonValue v || !v.TryGetValue<string>(out var words))
                     throw new InvalidDataException("a rule is a string of words, as coverage --rules prints them");
-                m.Objectives[i] = m.Objectives[i] with { Rule = RuleIn(words) };
+                var stated = RuleIn(words);  // an arrive rule is met at its place, or near the title's coordinates when it has some (the game's area may be smaller or larger than 200 m)
+                var kept = m.Objectives[i].Rule.After;  // `At any point during the same hunt` and `After visiting X` order the objective whatever the file says of the rest
+                m.Objectives[i] = m.Objectives[i] with { Rule = (stated.Kind == Kind.Arrive && m.Objectives[i].Rule.Zone is { Point: not null } zone ? stated with { Zone = zone with { Places = [] } } : stated) with { After = kept, Ordered = stated.Ordered || kept is not null } };
                 overridden.Add((mission, objective));
             }
             catch (InvalidDataException e)
@@ -96,6 +99,7 @@ public sealed partial class State
         foreach (var part in parts[1..].OrderBy(p => !p.StartsWith("species: ", StringComparison.Ordinal)))  // the species first: a coat word may be the species' own
             if (part is "male" or "female") gender = part == "male" ? 0 : 1;
             else if (part == "ordered") ordered = true;
+            else if (part == "together") { }  // one kill finishes every objective of the mission with this rule (read below)
             else if (part.StartsWith("species: ", StringComparison.Ordinal))
             {
                 var ids = SpeciesIn(part["species: ".Length..]);
@@ -106,15 +110,15 @@ public sealed partial class State
         // what an event of the kind carries: a spot has no weapon, hit or harvest; a clue has its kind and its animal
         Check[]? only = kind switch
         {
-            Kind.Spot => [Check.Stand, Check.Reserve, Check.Place, Check.Named, Check.Species, Check.Coat, Check.NotCoat],
-            Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
+            Kind.Spot => [Check.Stand, Check.Reserve, Check.Place, Check.Named, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
+            Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different, Check.EachSpecies],
             _ => null,
         };
         if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different : !only.Contains(t.Check)) is { } wrong)
             throw new InvalidDataException($"a {parts[0]} rule cannot check \"{Describe(wrong)}\"");
         if (kind == Kind.Track && tests.Count(t => t.Check == Check.Clue) != 1)
             throw new InvalidDataException("a track rule has one clues condition");
-        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests.OrderBy(t => IsSequence(t.Check))]);  // a sequence last, as the reader puts it
+        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests.OrderBy(t => IsSequence(t.Check))], Together: parts.Contains("together"));  // a sequence last, as the reader puts it
     }
 
     /// <summary>One condition in the words of <see cref="Describe"/>.</summary>
@@ -130,8 +134,12 @@ public sealed partial class State
             "any sight" when value == "" => new(Check.Scope),
             "named animal, no place" when value == "" => new(Check.Named),
             _ when NamedNear.Match(part) is { Success: true } near =>
-                new(Check.Named, double.Parse(near.Groups["x"].Value, CultureInfo.InvariantCulture), double.Parse(near.Groups["z"].Value, CultureInfo.InvariantCulture)),
-            "weapon" => new(Check.Weapon, Ids: ItemsIn(value, 1, "weapon")),
+                new(Check.Named, double.Parse(near.Groups["x"].Value, CultureInfo.InvariantCulture), double.Parse(near.Groups["z"].Value, CultureInfo.InvariantCulture),
+                    Place: near.Groups["p"].Success ? near.Groups["p"].Value : null, Count: near.Groups["n"].Success ? long.Parse(near.Groups["n"].Value, CultureInfo.InvariantCulture) : 1),
+            _ when EachFootprint.Match(part) is { Success: true } each =>
+                new(Check.EachSpecies, double.Parse(each.Groups["x"].Value, CultureInfo.InvariantCulture), double.Parse(each.Groups["z"].Value, CultureInfo.InvariantCulture),
+                    Ids: [.. SpeciesIn(each.Groups["s"].Value)], Count: long.Parse(each.Groups["r"].Value, CultureInfo.InvariantCulture)),
+            "weapon" => WeaponsIn(value),
             "ammunition" => new(Check.Ammo, Ids: ItemsIn(value, 3, "ammunition")),
             "not ammunition" => new(Check.NotAmmo, Ids: ItemsIn(value, 3, "ammunition")),
             "sight" => new(Check.Scope, Ids: ItemsIn(value, 2, "sight")),
@@ -148,7 +156,7 @@ public sealed partial class State
             "tusks" => Bounded(Check.Tusks, value, " mm"),
             "place" => PlaceDefine.IsMatch(value) ? new(Check.Place, Place: value) : throw new InvalidDataException($"\"{value}\" is no name of a place: capital letters, digits and _"),
             "state" or "first state" => new(name == "state" ? Check.State : Check.FirstState,
-                Ids: Reader.States.FirstOrDefault(s => s.Label == value && s.First == (name == "first state")) is { Label: not null } st ? [.. st.States]
+                Ids: Reader.States.FirstOrDefault(s => s.Label == value && (name != "first state" || s.First)) is { Label: not null } st ? [.. st.States]
                     : throw new InvalidDataException($"\"{value}\" is no {name}")),
             "not state" => new(Check.NotState, Ids: [.. List(value).SelectMany(s => s switch
             {
@@ -181,11 +189,20 @@ public sealed partial class State
         return ids;
     }
 
-    // the catalogue's items of a `cat` (1 weapons, 2 sights, 3 ammunition) by name: items of one name (skins, variants) are all of them
-    // `Crossbow Pistol (Wolfsbane)` is the one variant of items that share a name; the name alone is all of them
+    // the catalogue's items of a `cat` (2 sights, 3 ammunition) by name: items of one name (skins, variants) are all of them
+    // `Crossbow Pistol (Wolfsbane)` is the one variant of items that share a name; the name alone is all of them (a weapon is <see cref="WeaponsIn"/>)
     HashSet<long> ItemsIn(string value, long cat, string what) =>
         NamesIn(value, items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == cat)
             .SelectMany(i => Py.IsStr(i.Value["variationname"]) ? new[] { (i.Key, ItemName(i.Key)), (i.Key, $"{ItemName(i.Key)} ({(string)i.Value["variationname"]!})") } : [(i.Key, ItemName(i.Key))]), what);
+
+    // a `weapon:` condition: a weapon's name is its whole weapon family (docs/server.md, "Weapon families"), `Name (Finish)` is that one item only
+    Test WeaponsIn(string value)
+    {
+        var finishes = items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == State.WeaponCategory && Py.IsStr(i.Value["variationname"])).Select(i => (i.Key, $"{ItemName(i.Key)} ({(string)i.Value["variationname"]!})")).ToList();
+        var names = items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == State.WeaponCategory).SelectMany(i => FamilyInCatalogue(i.Key).Select(m => (m, ItemName(i.Key))));
+        var exact = List(value).Any(n => finishes.Any(f => f.Item2.Equals(n, StringComparison.OrdinalIgnoreCase)));
+        return new(Check.Weapon, Ids: NamesIn(value, finishes.Concat(names), "weapon"), Basis: exact ? WeaponBasis.Finish : WeaponBasis.Name);
+    }
 
     // the species of `species: <names>` or `species: any species except <names>` (0 to 99, as printed)
     long[] SpeciesIn(string value)

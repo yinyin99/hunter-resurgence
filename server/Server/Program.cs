@@ -24,6 +24,8 @@ const string AdminUsage = """
     it prints one line per account and lodge (would add / added, N slots); a lodge that has contents is never touched, a second run adds nothing, and without --apply nothing is written.
     admin ammo-fit [--apply] [--account <id or handle>] lists the ammunition stacks that sit in an equipped ammunition slot beside a weapon the catalogue says they do not fit (one line per stack: account, slot, weapon, ammunition, stack) and a total line; with --apply it moves each stack, whole, to the lodge (nothing is lost, the player can equip it under a weapon it fits).
     A second run lists nothing; without --apply nothing is written. Run it once, with the server stopped, after `backup`.
+    admin weapon-families prints the table of every weapon item of the catalogue (Markdown, ascending by id): id, name, finish, the family (its representative's id) and why the item is in it (name, chain, shares, alone), then a count line. It writes nothing and the same catalogue prints the same bytes (docs/server.md#weapon-families).
+    admin mission-weapons <folder> writes the two audit tables of the weapons the mission objectives accept into the folder: mission-objectives.md (every objective, its weapon condition and the accepted weapons) and weapon-missions.md (every weapon and the objectives that accept it). A community server's catalogue only; the same catalogue gives the same bytes (docs/server.md#weapons-of-a-mission).
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any. The player reads the reason on the sign-in page: write it for him.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
@@ -370,6 +372,42 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.MoveMisfitAmmo(apply, only)) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "weapon-families")
+    {
+        if (a.Length != 1) Die(AdminUsage);
+        var scratch = Directory.CreateTempSubdirectory("weapon-families").FullName;
+        try
+        {
+            var loaded = Replay.LoadState(settings.Cfg, Table(out _), scratch);
+            if (loaded == null) { Die("no recorded connect: no catalogue"); return; }
+            foreach (var line in loaded.Weapons.Table()) Console.WriteLine(line);
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            Directory.Delete(scratch, true);
+        }
+        return;
+    }
+    if (a.Length > 0 && a[0] == "mission-weapons")
+    {
+        if (a.Length != 2) Die(AdminUsage);
+        var scratch = Directory.CreateTempSubdirectory("mission-weapons").FullName;
+        try
+        {
+            var loaded = Replay.LoadState(settings.Cfg, Table(out _), scratch);
+            if (loaded == null || !loaded.HasMissions) { Die("no missions: they need a recorded catalogue and offline_mode false"); return; }
+            Directory.CreateDirectory(a[1]);
+            foreach (var (file, lines) in loaded.MissionWeaponTables())
+                File.WriteAllText(Path.Combine(a[1], file), string.Join('\n', lines) + "\n");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            Directory.Delete(scratch, true);
+        }
         return;
     }
     if (a.Length > 0 && a[0] == "missions-rollback")

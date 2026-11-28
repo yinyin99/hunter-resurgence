@@ -93,6 +93,22 @@ public class NamedAnimalTests : MissionTestBase
     }
 
     [Fact]
+    public void TestAPlacedGroupHasTheOperatorsCountAndOnlyItsAnimalsMeetTheObjectiveWhereverTheyAreShot()
+    {
+        var rule = O("""{"1/0": "harvest; species: Test Deer; reserve: Test Reserve; named animal near (-1200, 3400) m, 3 animals, otherwise place TEST_LAKE"}""");
+        state = Make("group.db", Catalogue(["Harvest a Test Deer from the herd by the lake"], OnTest), rules: rule);
+        state.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
+        Hunt(state);
+        var entry = Assert.Single(Spawn(state.ConnectReply(ME)))!;
+        Assert.Equal(3, (long)entry["group"]![1]!["male_count"]!);  // the herd: three animals in one population
+        Hb(KillOf(1, population: null));  // an ordinary deer at the lake
+        Assert.Equal("", Completed());
+        Hb(KillOf(2, population: 160, x: 0, z: 0));  // one of the herd, 3.6 km away
+        Assert.Equal("1", Completed());
+        Assert.Empty(Spawn(Make("group-off.db", Catalogue(["Harvest a Test Deer from the herd by the lake"], OnTest), on: false, rules: rule).ConnectReply(ME)));  // off: nothing is placed, the place stands
+    }
+
+    [Fact]
     public void TestAnObjectiveThatFinishedGetsNoEntryAndAnOrderedOneOnlyOnceTheOnesBeforeItAre()
     {
         var two = "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [], \"species\": [1], \"reserves\": [2], \"objectives\": ["

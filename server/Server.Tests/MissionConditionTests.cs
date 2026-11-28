@@ -260,7 +260,7 @@ public class MissionConditionTests : MissionTestBase
     }
 
     [Fact]
-    public void TestABirdInTheAirIsSpookedWithState6AndCalmWithState11AtItsFirstHit()
+    public void TestABirdInTheAirIsSpookedWithState6AtItsKillingShotAndCalmWithState11AtItsFirstHit()
     {
         state = New("birds.db", Catalogue(["Harvest a spooked airborne Test Mallard", "Harvest an unspooked airborne Test Mallard", "Harvest a fleeing Test Mallard",  // 1, 2, 3
                                            "Harvest a spooked airborne Spring Pintail", "Harvest an unspooked airborne Spring Pintail",                              // 4, 5
@@ -277,7 +277,7 @@ public class MissionConditionTests : MissionTestBase
             """);
         Hb(O("""{"event": 7, "individual": 3, "species": 6, "gender": 0, "weight_grams": 900, "texture": 0, "special": 0}"""), Hit(11), Hit(6),
            O("""{"event": 3, "individual": 3, "extended_species": 6, "harvest_value": 100000, "trophy_integrity": 100000}"""));
-        Assert.Equal("1,2,3,5,6", Completed());  // calm at its first hit, which is the one that tells: the second finds it flushed by the first
+        Assert.Equal("1,2,3,4,5,6", Completed());  // calm at its first hit (unspooked), spooked at its killing shot (the second hit)
     }
 
     [Fact]

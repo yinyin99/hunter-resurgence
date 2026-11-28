@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>i morgen</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivelse</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Våpen som teller:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Du må fullføre følgende oppdrag for å låse opp {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Reservat</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Belønninger</value></data>

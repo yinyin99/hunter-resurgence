@@ -22,7 +22,8 @@ public sealed class MockMissionsService(string? mock = null) : IMissionsService
 
     readonly List<Mission> missions =
     [
-        Make(1, "Active Mission 01", "active", 0) with { Objectives = [new("Harvest a Test Deer", true), new("Harvest a second Test Deer", true), new("Harvest a third Test Deer", false)] },
+        Make(1, "Active Mission 01", "active", 0) with { Objectives = [new("Harvest a Test Deer", true), new("Harvest a second Test Deer", true), new("Harvest a third Test Deer", false),
+            new("Harvest a Test Deer with the Compound Bow \"Test Falcon\"", false, ["Compound Bow \"Test Ember\"", "Compound Bow \"Test Falcon\"", "Test Orion Rifle (Camo, Engraved, Wood)", "Test Vega Carbine", "Test Hollow Pistol (Plain, Wolfsbane)", "Test Pump Shotgun (Carbon, Winter Camo, Wood)", "Test Elk Rifle", "Test Elk Rifle II (Camo, Wood)", "Test Duck Gun (Plain, Royal)", "Test Recurve Bow"])] },
         .. Enumerable.Range(1, 19).Select(n => Make(10 + n, $"Available Mission {n:00}", "available", n)),
     ];
 

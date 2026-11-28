@@ -1,0 +1,9 @@
+{
+ "6/0": "harvest; species: Test Turkey; beard: >=76.2 mm",
+ "6/1": "harvest; species: Test Turkey; male; spurs: >=12.7 mm",
+ "12/0": "arrive; place: TEST_PASS",
+ "14/0": "harvest; species: Test Bear; coat: blonde; named animal near (-1000, -2000) m; reserve: Test Reserve",
+ "17/0": "harvest; species: Test Boar; tusks: >=101.6 mm; weapon: Test Bolt Rifle",
+ "33/0": "arrive; place: TEST_CHUTE_AREA",
+ "57/0": "track; clues: footprints x1; footprints of each of Test Deer, Test Fox within 300 m of (7000, 8000)"
+}

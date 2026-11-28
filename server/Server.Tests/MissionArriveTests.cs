@@ -132,15 +132,79 @@ public class MissionArriveTests : MissionTestBase
     }
 
     [Fact]
-    public void TestAnOverriddenArriveStaysExactAndTheCoverageListsTheArriveObjectivesNoLocationMeets()
+    public void TestAnOverriddenArriveStaysExactAndTheCoverageReportsTheArriveObjectivesNoCataloguePlaceMeetsAsNotUnderstood()
     {
         state = New("coverage-arrive.db", Catalogue(["Arrive at the Test Lodge", "Arrive at the Mystery Spot", "Arrive at the Mystery Spot (x 5000, y 6000)", "Info message when you are south of the Test Pond"]),
             rules: new JsonObject { ["4/0"] = "arrive; place: TEST_RESERVE_SOUTH_OF_POND2" });
-        var report = state.MissionCoverage().ToList();
-        Assert.Contains("arrive objectives with no coordinates that no known location's name meets: 1", report);
-        Assert.Equal(["arrive not matched: mission 2 objective 0: Arrive at the Mystery Spot"], report.Where(l => l.StartsWith("arrive not matched:", StringComparison.Ordinal)));
+        var report = state.MissionCoverage(rules: true).ToList();
+        Assert.Contains("understood: 3, not understood: 1 (never met until a version reads them)", report);
+        Assert.Contains("mission 2 objective 0: Arrive at the Mystery Spot (no place of the catalogue matches it)", report);
+        Assert.Contains("mission 2 objective 0: Arrive at the Mystery Spot => arrive; not understood, left over: arrive at the mystery spot", report);
+        Assert.Contains("mission 1 objective 0: Arrive at the Test Lodge => arrive; places: TEST_RESERVE_LODGE", report);
         ActivateAll();
         Hb(Enter("TEST_RESERVE_SOUTH_OF_POND2_EXTRA"), Enter(ProtocolLiterals.LocationPrefix + "TEST_RESERVE_SOUTH_OF_POND2"));
         Assert.Equal("", Completed());  // an operator's place is met by that name only
+    }
+
+    [Theory]
+    [InlineData("Then arrive at the Inland Campsite", "TEST_RESERVE_CAMPSITE_0", true)]
+    [InlineData("Then arrive at the Inland Campsite", "TEST_RESERVE_CAMPSITE_1", false)]  // the shorter name is not named by the longer one
+    [InlineData("Visit the Campsite.", "TEST_RESERVE_CAMPSITE_1", true)]
+    [InlineData("Visit the Campsite.", "TEST_RESERVE_CAMPSITE_0", false)]
+    [InlineData("Visit the Campsite.", "TEST_SECOND_CAMPSITE_0", false)]  // the second reserve's: the mission lists the first
+    [InlineData("Arrive at Grimulfr's Rune", "TEST_RESERVE_RUNE_2", true)]  // the catalogue's name has an accent
+    [InlineData("Arrive at the Brauhutte", "TEST_RESERVE_BRAUHUETTE", true)]
+    [InlineData("Arrive at the Brauhütte Lodge", "TEST_RESERVE_BRAUHUETTE", true)]
+    [InlineData("Arrive at the Rune", "TEST_RESERVE_RUNE_2", false)]  // only part of the name
+    [InlineData("Arrive at the Inland Campsite (x 5000, y 6000)", "TEST_RESERVE_CAMPSITE_0", false)]  // a title with coordinates is met near them, not by a name
+    public void TestAPlaceTheTitleNamesByItsEnglishNameIsMetByTheDefineTheGameSends(string title, string define, bool met)
+    {
+        state = New($"named-{Math.Abs((title + define).GetHashCode())}.db", Catalogue([title], ", \"reserves\": [2]"));
+        ActivateAll();
+        Hb(Enter(define));  // the fixture's position is far from any point: the name decides
+        Assert.Equal(met ? "1" : "", Completed());
+    }
+
+    [Fact]
+    public void TestACampsiteOfAnotherReserveIsMetWhenTheMissionListsThatReserveOrNone()
+    {
+        state = New("campsites.db", Catalogue(["Visit the Campsite."], ", \"reserves\": [3]"));
+        ActivateAll();
+        Hb(Enter("TEST_RESERVE_CAMPSITE_1"));
+        Assert.Equal("", Completed());
+        Hb(Enter("TEST_SECOND_CAMPSITE_0"));
+        Assert.Equal("1", Completed());
+        state = New("campsites-any.db", Catalogue(["Visit the Campsite."]));  // no reserve listed: the campsite of any reserve
+        ActivateAll();
+        Hb(Enter("TEST_SECOND_CAMPSITE_0"));
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
+    public void TestAnOverriddenArriveWithCoordinatesIsMetAtItsPlaceOrNearThem()
+    {
+        var rules = new JsonObject { ["1/0"] = "arrive; place: ALASKA_FROZEN_CHUTE" };
+        state = New("override-point.db", Catalogue([Chute]), rules: rules);
+        ActivateAll();
+        Hb(EnterAt("ALASKA_FROZEN_CHUTE_EDGE", -1000, -2000));
+        Assert.Equal("", Completed());  // another place, far from the point
+        Hb(EnterAt("ALASKA_UNRELATED_PLACE", -4600, -11100));
+        Assert.Equal("1", Completed());  // near the point, whatever the name
+        state = New("override-place.db", Catalogue([Chute]), rules: rules);
+        ActivateAll();
+        Hb(EnterAt("ALASKA_FROZEN_CHUTE", -4000, -11500));  // the game's area, entered 700 m from the point
+        Assert.Equal("1", Completed());
+    }
+
+    [Theory]
+    [InlineData("Start at Brauhutte in Test Reserve", 103, true)]  // the title drops the umlaut the catalogue's name has
+    [InlineData("Start at Brauhütte in Test Reserve", 103, true)]
+    [InlineData("Start at Brauhutte in Test Reserve", 101, false)]
+    public void TestAStartIsMetByALodgeNameWithOrWithoutItsAccents(string title, int lodge, bool met)
+    {
+        state = New($"start-{Math.Abs(title.GetHashCode())}-{lodge}.db", Catalogue([title]));
+        ActivateAll();
+        state.NoteLaunch(ME, System.Text.Encoding.ASCII.GetBytes($"start={lodge}&reserve=2"));
+        Assert.Equal(met ? "1" : "", Completed());
     }
 }

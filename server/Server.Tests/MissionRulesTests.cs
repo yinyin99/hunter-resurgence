@@ -31,7 +31,7 @@ public class MissionRulesTests : MissionTestBase
             "mission 1 objective 0: Harvest a Test Deer using Test Round ammunition in Test Reserve with one shot => harvest; species: Test Deer; ammunition: Test Round; one shot; reserve: Test Reserve",
             "mission 2 objective 0: Then harvest a male Test Deer with the Test Carbine from over 100 meters => harvest; species: Test Deer; male; ordered; distance: >100 m; weapon: Test Carbine",
             "mission 3 objective 0: Harvest a Test Deer while whistling => harvest; not understood, left over: whistling; species: Test Deer",
-            "mission 4 objective 0: Arrive at the Test Lodge => arrive",
+            "mission 4 objective 0: Arrive at the Test Lodge => arrive; places: TEST_RESERVE_LODGE",
         ], lines);
         Assert.Equal(lines, New("rules2.db", missions).MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1));
         Assert.DoesNotContain("rules:", New("norules.db", missions).MissionCoverage());

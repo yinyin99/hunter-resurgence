@@ -7,12 +7,12 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    // the bit of a hit's `organ2` and the name of the organ it stands for (see Reader.Bits)
-    static readonly (int Bit, string Name)[] OrganBits =
+    // the bit of a hit's `organ2` and the name of the organ it stands for (see Reader.Bits); public, with the stand, pose and coat names, for the mission cases' harness (docs/mission-cases.md)
+    public static readonly (int Bit, string Name)[] OrganBits =
         [(0, "heart"), (1, "right lung"), (2, "left lung"), (3, "liver"), (4, "brain"), (5, "intestines"), (10, "spine"), (21, "spine"), (22, "spine"), (23, "shoulder blade"),
          (24, "neck bones"), (25, "neck bones"), (26, "neck bones"), (28, "skull"), (29, "hip bone")];
 
-    static readonly string[] StandNames = ["no stand", "hunting tower", "tree stand", "ground blind", "tripod", "waterfowl blind", "tripod rifle rest"], PoseNames = ["standing", "crouching", "prone"];
+    public static readonly string[] StandNames = ["no stand", "hunting tower", "tree stand", "ground blind", "tripod", "waterfowl blind", "tripod rifle rest"], PoseNames = ["standing", "crouching", "prone"];
 
     static string Num(double d) => Math.Round(d, 9).ToString("0.#########", CultureInfo.InvariantCulture);
 
@@ -26,7 +26,10 @@ public sealed partial class State
     static string Mask(long mask) => mask == Reader.Organs ? "soft organs" : mask == Reader.Bits(10, 21, 22, 23, 24, 25, 26, 28, 29) ? "bones"
         : string.Join('+', OrganBits.Where(o => (mask & 1L << o.Bit) != 0).Select(o => o.Name).Distinct().Concat(Enumerable.Range(0, 63).Where(b => (mask & 1L << b) != 0 && OrganBits.All(o => o.Bit != b)).Select(b => "bit " + b)));
 
-    string ItemName(long id) => items.TryGetValue(id, out var item) && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
+    /// <summary>An item of the catalogue, else of the install's definitions the catalogue lacks.</summary>
+    JsonObject? ItemOf(long id) => items.TryGetValue(id, out var item) ? item : installItems.GetValueOrDefault(id);
+
+    string ItemName(long id) => ItemOf(id) is { } item && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
 
     /// <summary>The items of a condition by name. A name is printed bare only when the set holds every item of that name and category; otherwise each held item that has a variant is
     /// `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>), so the printed words read back to the same set.</summary>
@@ -63,13 +66,13 @@ public sealed partial class State
         var ids = t.Ids!;
         if (t.Check == Check.NotState)
             return Names((ids.Contains(9) ? new[] { "charging" } : []).Concat(ids.Contains(5) ? new[] { "running away" } : []).Concat(ids.Except([9, .. Reader.RunningAway]).Select(i => "state " + i)));
-        return Reader.States.FirstOrDefault(s => s.First == (t.Check == Check.FirstState) && ids.SetEquals(s.States)).Label ?? "states " + string.Join(',', ids.Order());
+        return Reader.States.FirstOrDefault(s => (t.Check != Check.FirstState || s.First) && ids.SetEquals(s.States)).Label ?? "states " + string.Join(',', ids.Order());
     }
 
     /// <summary>One condition in words, with names instead of ids.</summary>
     string Describe(Test t) => t.Check switch
     {
-        Check.Weapon => "weapon: " + ItemNames(t.Ids!),
+        Check.Weapon => "weapon: " + WeaponNames(t.Ids!),
         Check.Ammo => "ammunition: " + ItemNames(t.Ids!),
         Check.NotAmmo => "not ammunition: " + ItemNames(t.Ids!),
         Check.Scope => t.Ids is null ? "any sight" : "sight: " + ItemNames(t.Ids),
@@ -93,7 +96,8 @@ public sealed partial class State
         Check.Pose => "pose: " + Names(t.Ids!.Select(i => i is >= 0 and < 3 ? PoseNames[i] : "pose " + i)),
         Check.Stand => "stand: " + Names(t.Ids!.Select(i => i is >= 0 and < 7 ? StandNames[i] : "stand " + i)),
         Check.Reserve => "reserve: " + Names(t.Ids!.Select(i => reserves.GetValueOrDefault(i) ?? "reserve " + i)),
-        Check.Named => double.IsInfinity(t.Min) ? "named animal, no place" : $"named animal near ({Num(t.Min)}, {Num(t.Max)}) m",
+        Check.Named => double.IsInfinity(t.Min) ? "named animal, no place" : $"named animal near ({Num(t.Min)}, {Num(t.Max)}) m" + (t.Count > 1 ? $", {t.Count} animals" : "") + (t.Place is not null ? ", otherwise place " + t.Place : ""),
+        Check.EachSpecies => $"footprints of each of {SpeciesNames(t.Ids!)} within {t.Count} m of ({Num(t.Min)}, {Num(t.Max)})",
         Check.Species => "species: " + SpeciesNames(t.Ids!),
         Check.Clue => "clues: " + (t.Ids!.Count == 0 ? "any" : Names(t.Ids.Select(i => ((ClueKind)i).ToString().ToLowerInvariant()))) + " x" + Num(Math.Max(t.Min, 1)),
         Check.Coat => "coat: " + Names(t.Ids!.Select(CoatName)),
@@ -105,7 +109,7 @@ public sealed partial class State
         _ => t.Check.ToString().ToLowerInvariant(),
     };
 
-    static string CoatName(long id) => id >= 0 && id < Reader.CoatNames.Length ? Reader.CoatNames[id] : "coat " + id;
+    public static string CoatName(long id) => id >= 0 && id < Reader.CoatNames.Length ? Reader.CoatNames[id] : "coat " + id;
 
     /// <summary>The rule of every objective in words, one line each, sorted by mission and objective: `mission 1 objective 0: <title> => <kind>; <species>; <gender>; ordered; <conditions>`, the
     /// conditions sorted; an objective not understood has `not understood, left over: <words>` before the conditions it did read; an overridden one (`mission_rules.json`, whose entries are
@@ -116,13 +120,16 @@ public sealed partial class State
     {
         var r = o.Rule;
         var parts = new List<string> { r.Kind.ToString().ToLowerInvariant() };
-        if (r.Unknown || r.Kind == Kind.Other)
-            parts.Add("not understood, left over: " + (r.Kind == Kind.Other ? r.Text : r.Left));
+        if (r.Unknown || r.Kind == Kind.Other || NoPlaceMeets(r))
+            parts.Add("not understood, left over: " + (r.Kind is Kind.Other or Kind.Arrive ? r.Text : r.Left));
         if (r.Species is { } s && r.Kind is Kind.Harvest or Kind.Spot or Kind.Track) parts.Add("species: " + SpeciesName(s));
         if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
-        if (r.Ordered) parts.Add("ordered");
+        if (r.After is { } after) parts.Add($"after objective {after}");
+        else if (r.Ordered) parts.Add("ordered");
+        if (r.Together) parts.Add("together");
         parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
         if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");
+        if (r.Zone is { Places.Length: > 0 } zone) parts.Add("places: " + string.Join(", ", zone.Places.Order(StringComparer.Ordinal)));
         return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
     }
 

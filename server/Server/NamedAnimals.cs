@@ -12,7 +12,7 @@ public sealed partial class State
     const int NamedFirst = 60, NamedSlots = 20;
 
     /// <summary>What a named animal is: the reserve (the catalogue's number), its species, gender (0 male, 1 female), the coat to force (null: any) and where it is (x, z in metres).</summary>
-    sealed record NamedAnimal(long Reserve, long Species, long Gender, long? Coat, double X, double Z);
+    sealed record NamedAnimal(long Reserve, long Species, long Gender, long? Coat, double X, double Z, long Count = 1);
 
     readonly bool placesNamedAnimals;  // the setting `spawn_named_animals`
     readonly Dictionary<NamedAnimal, long> namedPopulations = [];  // each named animal's population id; objectives that name the same animal share it
@@ -32,7 +32,7 @@ public sealed partial class State
             return null;
         var (x, z) = (Math.Round(named[0].Min), Math.Round(named[0].Max));
         return Math.Abs(x) > Spawner.Limit || Math.Abs(z) > Spawner.Limit || x == 0 && z == 0 ? null  // (0, 0) means no position to the client
-            : new(reserve, speciesId, rule.Gender ?? 0, coats.Length == 1 ? coats[0].Ids!.Single() : null, x, z);
+            : new(reserve, speciesId, rule.Gender ?? 0, coats.Length == 1 ? coats[0].Ids!.Single() : null, x, z, named[0].Count);
     }
 
     /// <summary>Give every objective that names an animal the server can place its population: the rule's named condition then holds for an animal of that population only. Called at the start,
@@ -52,7 +52,7 @@ public sealed partial class State
                     continue;
                 if (!namedPopulations.TryGetValue(animal, out var population))
                 {
-                    var key = FormattableString.Invariant($"{animal.Reserve}|{animal.Species}|{animal.Gender}|{animal.Coat}|{animal.X}|{animal.Z}");
+                    var key = FormattableString.Invariant($"{animal.Reserve}|{animal.Species}|{animal.Gender}|{animal.Coat}|{animal.X}|{animal.Z}") + (animal.Count > 1 ? FormattableString.Invariant($"|{animal.Count}") : "");
                     if (!given.TryGetValue(key, out population))
                     {
                         var free = Enumerable.Range(NamedFirst, NamedSlots).Select(n => (long?)((animal.Reserve - 1) * 100 + n)).FirstOrDefault(id => !given.ContainsValue(id!.Value));
@@ -99,7 +99,7 @@ public sealed partial class State
         foreach (var (id, (state, done)) in missionRows)
             if (state == 2 && missions.TryGetValue(id, out var m))
                 for (var i = 0; i < m.Objectives.Length; i++)
-                    if (m.Objectives[i] is var o && !done.Contains(o.Id) && !(o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id)))
+                    if (m.Objectives[i] is var o && !done.Contains(o.Id) && !(o.Rule.Ordered && Before(m, i).Any(p => !done.Contains(p.Id)))
                         && o.Rule.Tests?.FirstOrDefault(t => t.Check == Check.Named)?.Ids is { } population)
                         wanted.UnionWith(population);
         List<JsonObject> entries = [];
@@ -114,7 +114,7 @@ public sealed partial class State
             entries.Add(new JsonObject
             {
                 ["population_id"] = population, ["species"] = animal.Species, ["spawn_map_id"] = map,
-                ["group"] = new JsonArray(NamedGroup(0, 0, 0, 0, -1), NamedGroup(animal.Gender == 0 ? 1 : 0, animal.Gender == 1 ? 1 : 0, animal.X, animal.Z, animal.Coat ?? -1)),
+                ["group"] = new JsonArray(NamedGroup(0, 0, 0, 0, -1), NamedGroup(animal.Gender == 0 ? animal.Count : 0, animal.Gender == 1 ? animal.Count : 0, animal.X, animal.Z, animal.Coat ?? -1)),
             });
         }
         if (entries.Count == 0)

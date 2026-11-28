@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>domani</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Descrizione</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Obiettivi</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Armi valide:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Devi completare le seguenti missioni per sbloccare {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Riserve</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Ricompense</value></data>

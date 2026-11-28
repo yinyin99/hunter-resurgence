@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>holnap</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Leírás</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Feladatok</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Elfogadott fegyverek:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>A(z) {0} feloldásához teljesítened kell a következő küldetéseket:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Vadászterületek</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Jutalmak</value></data>

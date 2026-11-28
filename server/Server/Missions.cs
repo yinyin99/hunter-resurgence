@@ -18,23 +18,43 @@ public sealed partial class State
     /// name of some, or any animal but some, has a `Species` test instead), whether it counts only after the objectives before it, its title in
     /// <see cref="Normalise"/>d words (a place), and the conditions its title asks of the kill, the spot or the clue (<see cref="Reader"/>); `Unknown` when it
     /// has words the server does not understand: it is never met. `Zone` is an arrive objective's reserves and, when its title has coordinates, the point (the map's x and z).</summary>
-    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "", Zone? Zone = null);
+    sealed record Rule(Kind Kind, long? Species, long? Gender, bool Ordered, string Text, Test[]? Tests = null, bool Unknown = false, string Left = "", Zone? Zone = null, long? After = null, bool Together = false);
 
-    /// <summary>Where an arrive objective can be met: the point its title gives in metres (null: none) and the reserves of its mission (none listed: any).</summary>
-    sealed record Zone((double X, double Z)? Point, long[] Reserves);
+    /// <summary>Where an arrive objective can be met: the point its title gives in metres (null: none), the reserves of its mission (none listed: any) and the defines of the catalogue's places
+    /// the title names by their English name (<see cref="NamedPlaces"/>).</summary>
+    sealed record Zone((double X, double Z)? Point, long[] Reserves, string[] Places);
 
     sealed record Objective(long Id, string Title, Rule Rule);
 
-    /// <summary>The n-th `another <animal>` clue objective of a mission needs the n-th different animal: n is 1 and the `earlier` objectives of the mission that ask for the same species, gender and
-    /// kinds of clue, however they are worded (the reader leaves `another` as 1); the first one needs no other animal, so it has no test.</summary>
+    /// <summary>The n-th `another <animal>` clue or spot objective of a mission needs the n-th different animal: n is 1 and the `earlier` objectives of the mission of its kind that ask for the same species, gender
+    /// and kinds of clue, however they are worded (the reader leaves `another` as 1); the first one needs no other animal, so it has no test.</summary>
     static Rule Settle(Rule rule, IEnumerable<Rule> earlier)
     {
         if (rule.Tests?.FirstOrDefault(t => t.Check == Check.Different && t.Min < 2) is not { } another)
             return rule;
         static HashSet<long> Of(Rule r, Check c) => r.Tests?.FirstOrDefault(t => t.Check == c)?.Ids ?? [];
-        var n = 1 + earlier.Count(e => e.Kind == Kind.Track && e.Species == rule.Species && e.Gender == rule.Gender && Of(e, Check.Species).SetEquals(Of(rule, Check.Species)) && Of(e, Check.Clue).SetEquals(Of(rule, Check.Clue)));
+        var n = 1 + earlier.Count(e => e.Kind == rule.Kind && e.Species == rule.Species && e.Gender == rule.Gender && Of(e, Check.Species).SetEquals(Of(rule, Check.Species)) && Of(e, Check.Clue).SetEquals(Of(rule, Check.Clue)));
         return rule with { Tests = [.. rule.Tests.Where(t => t != another), .. n < 2 ? [] : new[] { another with { Min = n } }] };
     }
+
+    static readonly Regex FirstEnd = new(@"\bfirst\W*\z", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex AfterVisiting = new(@"\A\s*after\s+(?:visiting|arriving at|reaching)\s+(?<p>[^,:]+)[,:]", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    static readonly Regex SameHuntLead = new(@"\A\s*(?:(?:then|finally|first|lastly)\b[\s,:-]*)?at any (?:point|time)\s+during\s+(?:the\s+|a\s+)?(?:same|one|single)\s+hunt\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+    /// <summary>`Harvest a Puma first.` ends the objective before: the next one is ordered after it. `After visiting X, harvest ...` waits for the arrive objective before it that names X only, not for every objective
+    /// before it (<see cref="Rule.After"/>). `At any point during the same hunt, ...` in a travel mission waits for its `Start at ...` objective: the hunt that started at the lodge.</summary>
+    static Rule Order(Rule rule, string title, Objective[] before)
+    {
+        if (before.Length > 0 && FirstEnd.IsMatch(before[^1].Title))
+            rule = rule with { Ordered = true };
+        if (AfterVisiting.Match(title) is { Success: true } m && Normalise(m.Groups["p"].Value) is { Length: > 0 } place
+            && before.FirstOrDefault(p => p.Rule.Kind == Kind.Arrive && (" " + p.Rule.Text + " ").Contains(" " + place + " ", StringComparison.Ordinal)) is { } visit)
+            return rule with { After = visit.Id };
+        return SameHuntLead.IsMatch(title) && before.FirstOrDefault(p => p.Rule.Kind == Kind.Start) is { } start ? rule with { Ordered = true, After = start.Id } : rule;
+    }
+
+    /// <summary>The objectives an ordered objective waits for: every one before it, or the one its `After visiting ...` names.</summary>
+    static IEnumerable<Objective> Before(MissionDef m, int i) => m.Objectives[i].Rule.After is { } after ? m.Objectives.Where(o => o.Id == after) : m.Objectives[..i];
 
     /// <summary>`Gm` and `Em` are the sums of the `N gm$` and `N em$` entries of `rewards`; the other entries (items, a trophy) are not paid.</summary>
     sealed record MissionDef(long Id, string Title, bool SingleExpedition, long[] Dependencies, long Gm, long Em, Objective[] Objectives);
@@ -55,15 +75,27 @@ public sealed partial class State
 
     readonly Dictionary<long, MissionDef> missions = [];
     readonly Dictionary<long, long[]> missionGroups = [];  // group id → its mission ids
-    readonly Dictionary<long, string[]> lodgeNames = [];  // location id → its normalised name and define
+    /// <summary>A place of the catalogue (a lodge, a campsite, a tower, a point of interest): its reserve, its English name and the define the game sends when the player enters it (`Words`: that
+    /// define <see cref="Normalise"/>d, as an arrival carries it).</summary>
+    sealed record Location(long Reserve, string Name, string Define, string Words);
+
+    readonly Dictionary<long, Location> catalogueLocations = [];  // location id → the place; the name is <see cref="Normalise"/>d
+
+    // the base letter of each accented Latin letter: the server runs with invariant globalization, where string.Normalize leaves every letter as it is
+    static readonly Dictionary<char, char> Unaccented = new[]
+    {
+        "aàáâãäåāăą", "cçćĉċč", "dďđ", "eèéêëēĕėęě", "gĝğġģ", "hĥħ", "iìíîïĩīĭįı", "jĵ", "kķ", "lĺļľŀł", "nñńņň", "oòóôõöøōŏő", "rŕŗř", "sśŝşš", "tţťŧ", "uùúûüũūŭůűų", "wŵ", "yýÿŷ", "zźżž",
+    }.SelectMany(g => g[1..].Select(c => (Accented: c, Base: g[0]))).ToDictionary(x => x.Accented, x => x.Base);
+
+    /// <summary>The text in lower case, without accents and without combining marks.</summary>
+    static string Letters(string s) => new([.. s.Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).Select(char.ToLowerInvariant).Select(c => Unaccented.GetValueOrDefault(c, c))]);
 
     /// <summary>Lower case letters and digits in single-space words, accents removed: the form titles, names and defines are compared in.</summary>
     static string Normalise(string s)
     {
         var sb = new StringBuilder();
-        foreach (var c in s.Normalize(NormalizationForm.FormD))
-            if (char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
-                sb.Append(char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : ' ');
+        foreach (var c in Letters(s))
+            sb.Append(char.IsLetterOrDigit(c) ? c : ' ');
         return string.Join(' ', sb.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
@@ -117,17 +149,43 @@ public sealed partial class State
         Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && Py.IsStr(e["location_name"]) && Normalise((string)e["location_name"]!) is { Length: > 0 } place
             ? new(place, NumOf(e, "player_x"), NumOf(e, "player_z"), new(() => ReserveAt(con, eventId))) : null;
 
-    /// <summary>Does the arrival meet an arrive rule: the exact place of an operator's `arrive; place: NAME`; else the place the title names (<see cref="PlaceIn"/>); else, when the hunt is in
-    /// one of the mission's reserves (none listed: any), a point within 200 m of the title's coordinates, whatever the place's name, or, for a title without coordinates, the place the title names
-    /// less strictly (<see cref="PlaceLike"/>).</summary>
+    /// <summary>The defines of the catalogue's places of `reserves` (none: any) whose English name the title (<see cref="Normalise"/>d) holds as whole words, those with the longest name only: the
+    /// title of `the Inland Campsite` does not name `Campsite` too. The game sends a place's define when the player enters it (docs/server.md, "What the stored events show").</summary>
+    static string[] NamedPlaces(IEnumerable<Location> places, string title, long[] reserves)
+    {
+        var padded = " " + title + " ";
+        var named = places.Where(l => (reserves.Length == 0 || reserves.Contains(l.Reserve)) && padded.Contains(" " + l.Name + " ", StringComparison.Ordinal)).ToList();
+        var longest = named.Select(l => l.Name.Length).DefaultIfEmpty().Max();
+        return [.. named.Where(l => l.Name.Length == longest && l.Define.Length > 0).Select(l => l.Define).Distinct()];
+    }
+
+    /// <summary>Is the hunt of the arrival in one of the zone's reserves (none listed: any)?</summary>
+    static bool InReserves(Zone z, Arrival a) => z.Reserves.Length == 0 || a.Reserve.Value is { } here && z.Reserves.Contains(here);
+
+    /// <summary>Is the arrival within 200 m of the zone's point, in its reserves, whatever the place's name?</summary>
+    static bool NearPoint(Zone z, Arrival a) =>
+        z.Point is { } n && a.X is { } ax && a.Z is { } az && Math.Sqrt((ax - n.X) * (ax - n.X) + (az - n.Z) * (az - n.Z)) <= 200 && InReserves(z, a);
+
+    /// <summary>Does the arrival meet an arrive rule: the exact place of an operator's `arrive; place: NAME` (or, when the title has coordinates, a point near them); else the place the title names
+    /// (<see cref="PlaceIn"/>) or the catalogue place whose English name it holds (<see cref="NamedPlaces"/>); else, when the hunt is in one of the mission's reserves (none listed: any), a point within
+    /// 200 m of the title's coordinates, whatever the place's name, or, for a title without coordinates, the place the title names less strictly (<see cref="PlaceLike"/>).</summary>
     static bool ArrivesAt(Rule r, Arrival a) =>
-        r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? a.Place == Normalise(at.Place!)
-        : PlaceIn(r.Text, a.Place) || r.Zone is { } z && (z.Reserves.Length == 0 || a.Reserve.Value is { } here && z.Reserves.Contains(here))
-            && (z.Point is { } n ? a.X is { } ax && a.Z is { } az && Math.Sqrt((ax - n.X) * (ax - n.X) + (az - n.Z) * (az - n.Z)) <= 200 : PlaceLike(r.Text, a.Place));
+        r.Tests?.FirstOrDefault(t => t.Check == Check.Place) is { } at ? a.Place == Normalise(at.Place!) || r.Zone is { } w && NearPoint(w, a)
+        : PlaceIn(r.Text, a.Place) || r.Zone is { } z && (z.Places.Any(p => Normalise(p) == a.Place) || (z.Point is null ? InReserves(z, a) && PlaceLike(r.Text, a.Place) : NearPoint(z, a)));
+
+    /// <summary>Does an objective with this rule begin at the start place `lodge` (a catalogue location id)? Its name or its define is in the title.</summary>
+    bool StartsAt(Rule r, long? lodge) => lodge is { } l && catalogueLocations.TryGetValue(l, out var p) && (PlaceIn(r.Text, p.Name) || PlaceIn(r.Text, p.Words));
+
+    /// <summary>An arrive objective no place the server knows can meet: no operator's place, no coordinates, and no catalogue place whose English name or define (<see cref="PlaceLike"/>) the title
+    /// holds. The game names more places than the catalogue (its areas): an arrival at one of those is met by the title's words and is reported here all the same.</summary>
+    bool NoPlaceMeets(Rule r) => r is { Kind: Kind.Arrive, Zone: { Point: null, Places.Length: 0 } } && !(r.Tests ?? []).Any(t => t.Check == Check.Place) && !catalogueLocations.Values.Any(l => PlaceLike(r.Text, l.Words));
 
     /// <summary>Read the catalogue's missions and groups (a community server; none without a recorded catalogue).</summary>
     void LoadMissions()
     {
+        foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
+            if (Py.Str(G(loc, "name", "")) is var placeName && Py.Str(G(loc, "define", "")) is var define && Normalise(placeName + define).Length > 0)
+                catalogueLocations[Py.L(loc["id"])] = new(TryKey(loc["reserve"], out _) ? Py.L(loc["reserve"]) : -1, Normalise(placeName), define, Normalise(define));
         var names = species.Where(s => s.Key < 100 && Py.IsStr(s.Value["name"]))  // a variant (100 and up) is its species'
             .Select(s => (Id: s.Key, Name: Normalise(((string)s.Value["name"]!).Split(" (")[0]))).Where(s => s.Name.Length > 0)
             .OrderByDescending(s => s.Name.Length).ToList();  // the longest name wins: "mule deer" before "deer"
@@ -136,10 +194,13 @@ public sealed partial class State
             .Where(l => Py.IsStr(l["type"]) && (string)l["type"]! == "HUNTING_TOWER" && Py.IsStr(l["name"]) && Py.IsStr(l["define"]) && TryKey(l["reserve"], out _)
                         && l["pos"] is JsonObject pos && Py.IsNum(pos["x"]) && Py.IsNum(pos["z"]))
             .Select(l => (Py.L(l["reserve"]), Reader.Words((string)l["name"]!), (string)l["define"]!, Py.D(l["pos"]!["x"]), Py.D(l["pos"]!["z"])));
-        var reader = new Reader(names, items.Values, reserves, towers);
+        var reader = new Reader(names, items.Values, reserves, towers, Weapons);
         // a plural of a species name (`two Snowshoe Hares`, `two Red Foxes`) is read as the name
         var plural = names.Count == 0 ? null : new Regex(@"\b(" + string.Join('|', names.Select(n => Regex.Escape(n.Name))) + @")e?s\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
+        // the permitted ammunition of each species by its typical id: the catalogue's lists (the connect lists the game checks a kill with are read later)
+        var permits = Arr(G(application, "species", null)).OfType<JsonObject>().Where(s => Py.L(s["id"]) is >= 0 and < 100)
+            .ToDictionary(s => Py.L(s["id"]), s => Arr(G(s, "ethicalAmmo", null)).Select(Py.L).ToHashSet());
         Rule RuleOf(string title, long[]? own = null, long[]? named = null, bool singleHunt = false, long[]? places = null)
         {
             var ordered = OrderedWord.Match(title);
@@ -170,15 +231,25 @@ public sealed partial class State
             Test[] tests = [];
             var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)), places);  // a spot's ordinal says nothing, as before
+                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)), places, kind == Kind.Spot);  // a spot's ordinal says nothing, as before
             else if (kind == Kind.Track)
                 (tests, left) = reader.ReadClue(animals, own, singleHunt || OneHunt.IsMatch(title));
             if (tests.Any(t => t.Check == Check.Species))
                 species = null;  // several species, a short name or "any animal except ...": the test decides, not the first name found
+            else if (species is null && gender is not null && own is [var only] && kind is Kind.Harvest or Kind.Spot or Kind.Track)
+                species = only;  // `an airborne rooster` in the mission of one species: that species
             // a spot has no weapon, hit or harvest: only its stand, its reserve, its place, its species, its coat and its name can be checked
             if (kind == Kind.Spot)
-                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Place or Check.Named or Check.Species or Check.Coat or Check.NotCoat)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
-            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left, kind == Kind.Arrive ? new Zone(Reader.PointOf(body), places ?? []) : null);
+                left = string.Join(' ', tests.Where(t => t.Check is not (Check.Stand or Check.Reserve or Check.Place or Check.Named or Check.Species or Check.Coat or Check.NotCoat or Check.Different)).Select(t => t.Check.ToString().ToLowerInvariant()).Prepend(left)).Trim();
+            // a title that names ammunition accepts the animal's permitted rounds only, unless it names none the animal permits (the objective would be impossible: it stays as the title says)
+            if (kind == Kind.Harvest && tests.FirstOrDefault(t => t.Check == Check.Ammo) is { Ids: { } rounds } && !tests.Any(t => t.Check is Check.Permitted or Check.NotAmmo))
+            {
+                HashSet<long> animal = species is { } one ? [one] : tests.FirstOrDefault(t => t.Check == Check.Species)?.Ids ?? [.. own ?? []];
+                if ((animal.Count > 0 ? animal.Select(s => ((s % 100) + 100) % 100) : permits.Keys).Any(s => permits.TryGetValue(s, out var list) && list.Overlaps(rounds)))
+                    tests = [.. tests, new Test(Check.Permitted)];
+            }
+            var point = Reader.PointOf(body);  // a title with coordinates is met near them, not by the name of a place beside the one it means (`Fort Stillwater Watchtower`)
+            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left, kind == Kind.Arrive ? new Zone(point, places ?? [], point is null ? NamedPlaces(catalogueLocations.Values, text, places ?? []) : []) : null);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -200,12 +271,10 @@ public sealed partial class State
             var objectives = Arr(d["objectives"]).OfType<JsonObject>().Where(o => TryKey(o["id"], out _))
                 .Select(o => new Objective(Py.L(o["id"]), Py.Str(G(o, "title", "")), Build(Py.Str(G(o, "title", ""))))).ToArray();
             missions[id] = new MissionDef(id, Py.Str(G(d, "title", "")), Py.Truthy(d["singleExpedition"]), [.. Ids(d["dependencies"]).Except(Beginner)], gm, em,
-                [.. objectives.Select((o, i) => o with { Rule = Settle(o.Rule, objectives[..i].Select(p => p.Rule)) })]);
+                [.. objectives.Select((o, i) => o with { Rule = Settle(Order(o.Rule, o.Title, objectives[..i]), objectives[..i].Select(p => p.Rule)) })]);
         }
         foreach (var g in Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)))
             missionGroups[Py.L(g["id"])] = Ids(g["missions"]);
-        foreach (var loc in Arr(G(application, "locations", null)).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)))
-            lodgeNames[Py.L(loc["id"])] = [.. new[] { loc["name"], loc["define"] }.Where(Py.IsStr).Select(n => Normalise((string)n!)).Where(n => n.Length > 0)];
         LoadDailyMissions(title => Settle(RuleOf(title), []));
         LoadCommunity(title => Settle(RuleOf(title), []));
     }
@@ -367,7 +436,7 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles and `objectives_done` (one flag per objective: the account holds it, all for a completed one), `needs` (the titles of the missions it depends on that are not completed yet, `#<id>` for one with no definition: why a `locked` one is locked; a restored active or completed mission may carry some too), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// objective titles, `objectives_done` (one flag per objective: the account holds it, all for a completed one) and `objective_weapons` (one list per objective of the weapons it accepts, one name per weapon, empty for an objective that names none: <see cref="WeaponsOnPage"/>), `needs` (the titles of the missions it depends on that are not completed yet, `#<id>` for one with no definition: why a `locked` one is locked; a restored active or completed mission may carry some too), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
     /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
     public JsonObject? WebMissions(long account)
     {
@@ -393,6 +462,8 @@ public sealed partial class State
                 ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
                 // beside `objectives` (titles), not inside it: a launcher of an earlier release reads `objectives` as strings
                 ["objectives_done"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)(rows.TryGetValue(id, out var row) && (row.State == 3 || row.Done.Contains(o.Id))))]),
+                // the weapons each objective that names one accepts, one list per objective (empty for the others): beside `objectives`, as `objectives_done` is
+                ["objective_weapons"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)new JsonArray([.. WeaponsOnPage(o.Rule).Select(n => (JsonNode?)n)]))]),
                 ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)(missions.TryGetValue(n, out var dep) ? dep.Title : $"#{n}"))]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
                 ["reserve"] = First(d["reserves"], i => reserves.GetValueOrDefault(i)), ["species"] = First(d["species"], i => Named(species, i)),
@@ -482,8 +553,7 @@ public sealed partial class State
         foreach (var (id, (state, done)) in MissionRows(con))
             if (state == 2 && done.Count > 0 && missions.TryGetValue(id, out var m) && m.SingleExpedition)
                 con.Exec("UPDATE missions SET objectives = '[]', kept = '[]', earlier = '[]' WHERE account_id = $a AND mission_id = ?", id);
-        var names = lodge is { } l && lodgeNames.TryGetValue(l, out var n) ? n : [];
-        Advance(con, Kind.Start, (rule, _) => names.Any(name => PlaceIn(rule.Text, name)), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
+        Advance(con, Kind.Start, (rule, _) => StartsAt(rule, lodge), u => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u)), long.MaxValue);
     }
 
     /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (`credited`, a harvest of an animal another member shot: only one whose title asks for a harvest,
@@ -493,9 +563,11 @@ public sealed partial class State
         for (var i = 0; i < m.Objectives.Length; i++)
         {
             var o = m.Objectives[i];
-            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && m.Objectives[..i].Any(p => !done.Contains(p.Id))) || credited && !AsksHarvest(o.Title) || !meets(o.Rule, after))
+            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && Before(m, i).Any(p => !done.Contains(p.Id))) || credited && !AsksHarvest(o.Title) || !meets(o.Rule, after))
                 continue;
             done.Add(o.Id);
+            if (o.Rule.Together)  // one animal finishes every objective that asks the same (the operator's `together`)
+                done.AddRange(m.Objectives.Where(p => p.Id != o.Id && !done.Contains(p.Id) && p.Rule.Together && p.Rule.Text == o.Rule.Text).Select(p => p.Id));
             return o;
         }
         return null;
@@ -509,9 +581,12 @@ public sealed partial class State
         var marks = Marks(con);
         foreach (var (id, (state, done)) in MissionRows(con))
         {
-            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId || Meet(m, done, kind, meets, marks[id].Seen, credited) is not { } o)
+            if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId)
                 continue;
-            Stamp(con, m, [o]);
+            var had = done.ToArray();
+            if (Meet(m, done, kind, meets, marks[id].Seen, credited) is not { } o)
+                continue;
+            Stamp(con, m, m.Objectives.Where(x => done.Contains(x.Id) && !had.Contains(x.Id)));
             if (credited)
                 con.Exec("UPDATE missions SET kept = json_insert(kept, '$[#]', ?) WHERE account_id = $a AND mission_id = ?", o.Id, m.Id);
             if (m.Objectives.Any(x => !done.Contains(x.Id)))

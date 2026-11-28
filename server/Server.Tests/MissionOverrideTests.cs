@@ -7,7 +7,6 @@ namespace Resurgence.Server.Tests;
 /// <summary>The operator's `mission_rules.json`: an entry replaces the rule of one objective, in the words `coverage --rules` prints; a bad entry stops the start. Invented catalogue and events.</summary>
 public class MissionOverrideTests : MissionTestBase
 {
-    static JsonObject Rules(params (string Key, string Rule)[] entries) => new(entries.Select(e => KeyValuePair.Create(e.Key, (JsonNode?)e.Rule)));
 
     static List<string> RuleLines(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
 
@@ -256,5 +255,19 @@ public class MissionOverrideTests : MissionTestBase
         Assert.Contains($"mission 1 objective 0 (override): Harvest a Test Deer with a long beard => {Beard}", lines);
         Assert.Contains($"mission 2 objective 0 (override): Harvest a Test Deer with long spurs => {Spurs}", lines);
         Assert.Contains($"mission 3 objective 0 (override): Harvest a Test Deer with long tusks => {Tusks4}", lines);
+    }
+
+    [Fact]
+    public void TestObjectivesTheEntryMarksTogetherAreAllFinishedByOneKillAndOthersByOneEach()
+    {
+        var catalogue = "{\"missions\": [{\"id\": 1, \"title\": \"Three\", \"dependencies\": [], \"rewards\": [], \"species\": [1], \"reserves\": [2], \"objectives\": ["
+            + "{\"id\": 0, \"title\": \"Harvest a Test Deer\"}, {\"id\": 1, \"title\": \"Harvest a Test Deer\"}, {\"id\": 2, \"title\": \"Harvest a Test Deer\"}]}]}";
+        state = New("together.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; together"), ("1/1", "harvest; species: Test Deer; together")));
+        ActivateAll();
+        Hb(Shot(1));  // one deer finishes the two marked objectives
+        Assert.Equal("", Completed());  // the third, which is not marked, is open
+        Hb(Shot(2));
+        Assert.Equal("1", Completed());
+        Assert.Contains("mission 1 objective 0 (override): Harvest a Test Deer => harvest; species: Test Deer; together", state.MissionCoverage(rules: true));
     }
 }

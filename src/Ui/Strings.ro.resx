@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>mâine</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Descriere</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Obiective</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Armele care contează:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Trebuie să finalizezi următoarele misiuni pentru a debloca {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervații</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Recompense</value></data>

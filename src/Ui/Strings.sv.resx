@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>imorgon</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Beskrivning</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Mål</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Vapen som räknas:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Du måste slutföra följande uppdrag för att låsa upp {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Jaktområden</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Belöningar</value></data>

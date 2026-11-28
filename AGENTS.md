@@ -12,6 +12,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
   - `docs/website.md`: `src/Web` and `src/Ui`
   - `docs/restore.md`: `src/Restore`
   - `docs/server.md`: `server/Server` and `server/facts`
+    - `docs/mission-cases.md`: the mission objectives' cases (the runner in `server/Server.Tests`, an invented sample in `server/Server.Tests/mission-cases`), how to write and run them
   - `docs/deploy.md`: `deploy/`, `server/natpt` and the workflows
   - `docs/images.md`: the picture slots of `src/Ui` (`AssetSlot`)
   - `docs/guide.md`: the player guide, across the tools and the website

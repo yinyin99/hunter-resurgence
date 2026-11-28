@@ -362,7 +362,7 @@ public sealed partial class State
     long? FinishedBefore(Db con, MissionDef m, int i, long since, List<Recorded> events, List<(Objective Objective, long At)> judged)
     {
         var floor = since;
-        foreach (var p in m.Objectives[..i])
+        foreach (var p in Before(m, i))
         {
             var from = p.Rule.Ordered ? floor : since;  // one that is not ordered may have been finished before an earlier one
             long? at = p.Rule.Kind switch
@@ -373,7 +373,7 @@ public sealed partial class State
                     .Where(e => e.Arrival is { } a && ArrivesAt(p.Rule, a)).Select(e => (long?)e.Id).FirstOrDefault(),
                 Kind.Start => con.Rows("SELECT first_event, location_id FROM expeditions WHERE account_id = $a AND COALESCE(first_event, 0) >= ? ORDER BY id", from)
                     .Select(r => (At: r[0] as long? ?? 0, Lodge: r[1] as long?))
-                    .Where(x => x.Lodge is { } l && lodgeNames.TryGetValue(l, out var names) && names.Any(n => PlaceIn(p.Rule.Text, n))).Select(x => (long?)x.At).FirstOrDefault(),
+                    .Where(x => StartsAt(p.Rule, x.Lodge)).Select(x => (long?)x.At).FirstOrDefault(),
                 _ => null,
             };
             if (at is not { } last)
@@ -460,7 +460,7 @@ public sealed partial class State
                 for (var i = 0; i < m.Objectives.Length; i++)
                 {
                     var (o, rule) = (m.Objectives[i], m.Objectives[i].Rule);
-                    if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && m.Objectives[..i].Any(p => !held.Contains(p.Id)))
+                    if (held.Contains(o.Id) || rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot or Kind.Track) || (rule.Ordered && Before(m, i).Any(p => !held.Contains(p.Id)))
                         || m.Objectives[..i].Any(p => SameRule(p.Rule, rule) && !held.Contains(p.Id)))  // an equal one before it that is open takes the event first
                         continue;
                     var since = mark.Since ?? mark.Seen;  // a row of before schema 30 has no activation event: the last one its progress is not owed from
