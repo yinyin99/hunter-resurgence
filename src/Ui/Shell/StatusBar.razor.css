@@ -3,7 +3,6 @@
 .row { position: relative; display: flex; align-items: flex-start; height: var(--h-statusbar); }
 .web .row { width: var(--w-container); max-width: 100%; margin: 0 auto; }
 .web .left { margin-left: 11px; }
-.web { min-width: var(--w-container); }
 .logo { position: relative; flex: none; display: block; margin: 13px 0 0 8px; width: 173px; height: 44px; }
 .launcher-label { position: absolute; left: 177px; top: 27px; height: 25px; padding-left: 6px; border-left: 2px solid #575757; font-weight: 100; line-height: 25px; color: var(--fg-muted); white-space: nowrap; }
 .left { flex: 0 1 auto; min-width: 0; display: flex; align-items: flex-start; margin: 4px 0 0 89px; overflow-x: clip; }
@@ -33,8 +32,8 @@
 .user .name:hover { color: #fff; }
 .friends-pos { position: fixed; inset: auto; left: 271px; top: var(--h-statusbar); margin: 0; padding: 0; border: 0; background: none; overflow: visible; }
 .bar:has(#friends:popover-open) .friends { background: #111; border-bottom-color: var(--accent); color: #fff; }
-/* the narrower the window, the lower-value items go first: the words of the ammo and fuel badges (their tooltip names them), the player's name, the infinity signs and the sections' padding, at last the ammo and fuel badges; nothing overlaps, and the row never makes the page scroll sideways */
-@media (max-width: 1400px) { .service .lbl { display: none; } }
+/* the narrower the window (the website's bar too: its row is at most --w-container wide and shrinks with the window), the lower-value items go first: the words of the ammo and fuel badges (clipped, not removed, so screen readers keep them; the tooltip names them), the player's name, the infinity signs and the sections' padding, then the wallet icon (em$ and gm$ lead to the same pages). The badges with the days stay at every width: they are the only place the days are shown. Nothing overlaps and the row never makes the page scroll sideways */
+@media (max-width: 1400px) { .service .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } }
 @media (max-width: 1200px) { .user .name { display: none; } }
 @media (max-width: 1100px) { .service .inf { display: none; } .section { padding: 0 5px; } }
-@media (max-width: 1040px) { .service { display: none; } }
+@media (max-width: 1040px) { .section { padding: 0 3px; } .service { padding: 4px 3px 0; } .section.wallet-icon { display: none; } }

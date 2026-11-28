@@ -20,7 +20,10 @@
 .who { display: flex; gap: 16px; margin: 0 0 22px; }
 .who p, .detail li, .indent { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); font-weight: 400; color: var(--text-1); }
 .who p { max-inline-size: 75ch; }
-.detail ::deep .pic { position: absolute; right: 18px; top: 84px; width: clamp(160px, 25%, 250px) !important; height: auto !important; aspect-ratio: 250 / 360; }
+/* with a species picture the card is two columns: the text, and the picture in its own column, so text never runs under it */
+.detail:has(> .pic) { display: grid; grid-template-columns: minmax(0, 1fr) clamp(160px, 25%, 250px); column-gap: 18px; align-content: start; }
+.detail:has(> .pic) > :not(.pic):not(.ribbon) { grid-column: 1; }
+.detail ::deep .pic { grid-column: 2; grid-row: 2 / span 12; align-self: start; width: 100% !important; height: auto !important; aspect-ratio: 250 / 360; }
 .detail ol { margin: 0 0 30px; padding: 0 0 0 28px; }
 .detail ul { margin: 0 0 18px; padding: 0 0 0 28px; }
 .box { display: inline-block; width: 9px; height: 9px; margin: 0 4px 0 2px; border: 1px solid #ccc; border-radius: var(--r-1); }

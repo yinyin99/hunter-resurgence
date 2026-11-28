@@ -252,7 +252,7 @@ For a signed-in hunter who has not linked a Discord account (and a server with L
 
 ## Layout
 
-The launcher's shell is the website's (`ShellLayout`, [website.md](website.md)): `<main>` is the whole 1220 px container, with no empty right column (#1081), and every page fills it; grids add columns and a wide table or form has its own `max-width` (see the website's layout notes). The only right column is the news page's own (`.side`, inside `<main>`): the referral block (#929) above the Discord card.
+The launcher's shell is the website's (`ShellLayout`, [website.md](website.md)): `<main>` is at most the 1220 px container and shrinks with the window (the launcher can be resized to about 1000 px; the status bar drops its lower-value items step by step, see the website's layout notes), with no empty right column (#1081), and every page fills it; grids add columns. The only right column is the news page's own (`.side`, inside `<main>`): the referral block (#929) above the Discord card.
 
 ## Referral
 
