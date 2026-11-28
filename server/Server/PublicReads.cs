@@ -469,6 +469,14 @@ public sealed partial class State
 
     static bool NotHidden(JsonNode? row) => !Py.Truthy(row?["hidden"]);
 
+    /// <summary>The restored `Trophy/list` rows with the original's Halloween 2022 year mix-up corrected (<see cref="Facts.FixTrophyYear"/>).</summary>
+    List<JsonNode?> TrophyList(long account)
+    {
+        var rows = Restored(account, "trophies", "/v1/Trophy/list");
+        rows.ForEach(facts.FixTrophyYear);
+        return rows;
+    }
+
     /// <summary>`/game/user/trophies`: the restored rows, the animals mounted in the restored lodges and the harvests made here.</summary>
     public byte[] TrophiesReply(long account) => Py.DumpBytes(new JsonArray(TrophyRows(account).ToArray()));
 
@@ -486,7 +494,7 @@ public sealed partial class State
                 return null;
             account = other;
         }
-        var all = Restored(account, "trophies", "/v1/Trophy/list");
+        var all = TrophyList(account);
         if (!own)
             all = [.. all.Where(NotHidden)];
         var page = all.Skip((int)Math.Min(Number("offset"), int.MaxValue));
@@ -501,7 +509,7 @@ public sealed partial class State
     /// and name (null without them) and its picture's file name without the extension (null without a picture).</summary>
     public JsonObject PublicTrophies(long account, int page)
     {
-        var all = Newest(Restored(account, "trophies", "/v1/Trophy/list").Where(NotHidden), "ts");
+        var all = Newest(TrophyList(account).Where(NotHidden), "ts");
         var pages = Math.Max(1, (all.Count + TrophiesPageSize - 1) / TrophiesPageSize);
         page = Math.Clamp(page, 1, pages);
         static JsonNode? Text(JsonNode? n) => Py.IsStr(n) ? C(n) : null;

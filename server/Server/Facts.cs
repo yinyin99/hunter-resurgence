@@ -226,6 +226,25 @@ public sealed class Facts
         return (ammo, populations);
     }
 
+    /// <summary>The original's Halloween 2022 awards (`trophy_year_fixes.ids`) carry the 2026 name and picture: a `Trophy/list` row of such an id awarded in `year` (`ts`) gets `year` in place of `wrong_year`
+    /// in its name and in its picture's file name, the picture's URL form kept. The row is changed in place (a parsed copy; the stored one is not).</summary>
+    public void FixTrophyYear(JsonNode? row)
+    {
+        var fix = Obj("trophy_year_fixes");
+        if (row is not JsonObject r || !Py.IsNum(r["trophy_id"]) || !Py.IsNum(r["ts"]) || fix["ids"] is not JsonArray ids || !ids.Any(i => Py.L(i) == Py.L(r["trophy_id"])))
+            return;
+        string year = Py.Str(fix["year"]), wrong = Py.Str(fix["wrong_year"]);
+        if (DateTimeOffset.FromUnixTimeSeconds(Math.Clamp(Py.L(r["ts"]), 0, 253402300799)).Year.ToString(CultureInfo.InvariantCulture) != year)
+            return;
+        if (Py.IsStr(r["name"])) r["name"] = Py.Str(r["name"]).Replace(wrong, year);
+        if (Py.IsStr(r["image"]))
+        {
+            var image = Py.Str(r["image"]);
+            var slash = image.LastIndexOf('/') + 1;
+            r["image"] = string.Concat(image.AsSpan(0, slash), image[slash..].Replace(wrong, year));
+        }
+    }
+
     /// <summary>The facts of the event <paramref name="name"/> (`events.<name>`): `title`, `missions`, `community`, `items`, `reserves`; null for an event the file lacks.</summary>
     public JsonObject? EventOf(string name) => Obj("events")[name] as JsonObject;
 
