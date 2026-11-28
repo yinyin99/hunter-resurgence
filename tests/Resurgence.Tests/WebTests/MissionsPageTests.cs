@@ -104,11 +104,13 @@ public sealed class MissionsPageTests : UiContext
         var disclose = goals[1].QuerySelector(".weapons button.disclose")!;
         Assert.Equal("Weapons that count:", disclose.TextContent);
         Assert.Equal("false", disclose.GetAttribute("aria-expanded"));
+        Assert.Equal("weapons-active-1-1", disclose.GetAttribute("aria-controls"));  // names the list it opens, which is there only once opened
         Assert.Empty(goals[1].QuerySelectorAll(".weapons li"));  // collapsed by default
         disclose.Click();
         Assert.Equal("true", cut.FindAll("ol.goals > li")[1].QuerySelector("button.disclose")!.GetAttribute("aria-expanded"));
         goals = cut.FindAll("ol.goals > li");
         Assert.Equal(["Test Bow \"Falcon\"", "Test Rifle (Camo)"], goals[1].QuerySelectorAll(".weapons li").Select(l => l.TextContent));  // one line per weapon
+        Assert.Equal(goals[1].QuerySelector(".weapons ul")!.Id, goals[1].QuerySelector(".weapons button.disclose")!.GetAttribute("aria-controls"));
     }
 
     [Fact]

@@ -15,9 +15,9 @@ public class MissionWeaponTests : MissionTestBase
         """{"id": 302, "name": "Test Orion Rifle", "variationname": "Camo", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 303, "name": "Test Vega Carbine", "variationname": "Plain", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 310, "name": "Compound Test Bow \"Falcon\"", "variationname": "Camo", "cat": 1, "subcat": {"name": "Bows & Crossbows"}, "description": "This bow shares skill level and rank with the Compound Test Bow \"Ember\"."}""",
-        """{"id": 311, "name": "Compound Test Bow \"Ember\"", "variationname": "Oriental", "cat": 1, "subcat": {"name": "Bows & Crossbows"}, "description": "This bow shares skill level and rank with the Compound Test Bow \"Falcon\"."}""",
+        """{"id": 311, "name": "Compound Test Bow \"Ember\"", "variationname": "Dusk", "cat": 1, "subcat": {"name": "Bows & Crossbows"}, "description": "This bow shares skill level and rank with the Compound Test Bow \"Falcon\"."}""",
         """{"id": 320, "name": "Test Hollow Pistol", "variationname": "Plain", "cat": 1, "subcat": {"name": "Handguns"}}""",
-        """{"id": 321, "name": "Test Spook Pistol", "variationname": "Wolfsbane", "cat": 1, "subcat": {"name": "Halloween"}}""",
+        """{"id": 321, "name": "Test Spook Pistol", "variationname": "Dusk", "cat": 1, "subcat": {"name": "Test Event"}}""",
     ];
 
     const string Definitions = """
@@ -41,7 +41,7 @@ public class MissionWeaponTests : MissionTestBase
     public void TestTheFinishesOfOneNameAreOneWeapon()
     {
         state = Make("same-name.db", ["Harvest a Test Deer with the Test Twin Pistol"]);
-        Assert.Equal(("named weapon", "109,110"), Listed(state, 1));  // the Standard and the Wolfsbane one
+        Assert.Equal(("named weapon", "109,110"), Listed(state, 1));  // the Standard and the Dusk one
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class MissionWeaponTests : MissionTestBase
     public void TestAnOverrideNamingAWeaponTakesItsFamilyAndAnExplicitFinishStaysExact()
     {
         var rules = Rules(("1/0", "harvest; species: Test Deer; weapon: Test Orion Rifle"), ("2/0", "harvest; species: Test Deer; weapon: Test Orion Rifle (Camo)"),
-            ("3/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Compound Test Bow \"Falcon\""));
+            ("3/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk), Compound Test Bow \"Falcon\""));
         state = Make("override-family.db", ["Harvest a Test Deer while whistling", "Harvest a Test Deer while humming", "Harvest a Test Deer while singing"], rules);
         Assert.Equal(("named weapon", "301,302,303"), Listed(state, 1));  // a name is the whole family
         Assert.Equal(("named finish", "302"), Listed(state, 2));  // a finish is that item only: the other finish and the carbine are refused
@@ -157,7 +157,7 @@ public class MissionWeaponTests : MissionTestBase
         Assert.Equal(["| id | name | finish | family | accepted by (mission/objective) |", "|---|---|---|---|---|"], byWeapon[..2]);
         Assert.Contains("| 303 | Test Vega Carbine | Plain | 301 | 1/0 |", byWeapon);  // the family's representative is the base weapon
         Assert.Contains("| 320 | Test Hollow Pistol | Plain | 320 | 2/0 |", byWeapon);
-        Assert.Contains("| 321 | Test Spook Pistol | Wolfsbane | 320 | 2/0 |", byWeapon);  // an event finish of the class's handgun: the class takes it
+        Assert.Contains("| 321 | Test Spook Pistol | Dusk | 320 | 2/0 |", byWeapon);  // an event finish of the class's handgun: the class takes it
         Assert.Matches(@"^\d+ weapons, \d+ accepted by at least one objective, \d+ by none\.$", byWeapon[^1]);
     }
 
@@ -165,10 +165,10 @@ public class MissionWeaponTests : MissionTestBase
     public void TestTheMissionsPageHasTheWeaponsOfAnObjectiveThatNamesOneAndNothingForTheOthers()
     {
         state = Make("page.db", ["Harvest a Test Deer with the Test Orion Rifle", "Harvest a Test Deer with any handgun", "Harvest a Test Deer"],
-            Rules(("3/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Test Orion Rifle (Camo)")));
+            Rules(("3/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk), Test Orion Rifle (Camo)")));
         var page = state.WebMissions(ME)!["missions"]!.AsArray().OfType<JsonObject>().ToDictionary(m => (long)m["id"]!, m => string.Join("|", m["objective_weapons"]!.AsArray().Select(o => string.Join(",", o!.AsArray()))));
         Assert.Equal("Test Orion Rifle,Test Vega Carbine", page[1]);  // one line per weapon name, the finishes of a name grouped under it
         Assert.Equal("", page[2]);  // a class names no weapon
-        Assert.Equal("Test Orion Rifle (Camo),Test Twin Pistol (Wolfsbane)", page[3]);  // a finish named: that one only
+        Assert.Equal("Test Orion Rifle (Camo),Test Twin Pistol (Dusk)", page[3]);  // a finish named: that one only
     }
 }

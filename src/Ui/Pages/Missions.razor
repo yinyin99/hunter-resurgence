@@ -37,7 +37,7 @@
         <section class="box">
             <h4>@L["Mis.Favourite"] <span class="caret"></span><label class="aside"><input class="tick" type="checkbox" id="mission_favourite_hide" checked="@data.HideCompletedFavourite" @onchange="HideFavourite" /> @L["Mis.HideCompleted"]</label></h4>
             @if (favourites.Count == 0) { <p class="notice">@L["Mis.NoFavourites"]</p> }
-            else { @Packs(favourites) }
+            else { @Packs(favourites, "fav") }
         </section>
     }
     @if (Show("active"))
@@ -45,7 +45,7 @@
         <section class="box">
             <h4 @onclick="() => closed ^= 1">@L["Mis.Active"] (@active.Count) <span class="caret"></span></h4>
             @if (active.Count == 0) { <p class="notice">@L["Mis.NoActive"]</p> }
-            else if ((closed & 1) == 0) { @Rows(active) }
+            else if ((closed & 1) == 0) { @Rows(active, "active") }
         </section>
     }
     @if (Show("available"))
@@ -53,14 +53,14 @@
         <section class="box">
             <h4 @onclick="() => closed ^= 2">@L["Mis.Available"] (@available.Count) <span class="caret"></span></h4>
             @if (available.Count == 0) { <p class="notice">@L["Mis.NoAvailable"]</p> }
-            else if ((closed & 2) == 0) { @Rows(available) }
+            else if ((closed & 2) == 0) { @Rows(available, "available") }
         </section>
     }
     @if (Show("packs"))
     {
         <section class="box">
             <h4 @onclick="() => closed ^= 4">@L["Mis.Packs"] <span class="caret"></span></h4>
-            @if ((closed & 4) == 0) { @Packs(packs) }
+            @if ((closed & 4) == 0) { @Packs(packs, "packs") }
         </section>
     }
 }
@@ -152,7 +152,7 @@ else { <div class="skeleton skeleton-page"></div> }
     }
 
     // the game's mission row: a caret and the title; only a locked one (greyed) has an icon, the small closed padlock
-    RenderFragment Rows(IReadOnlyList<Mission> list) => @<ul class="rows">
+    RenderFragment Rows(IReadOnlyList<Mission> list, string scope) => @<ul class="rows">
         @foreach (var m in list)
         {
             <li class="@(open.Contains(m.Name) ? "open" : "") @(m.State == "locked" ? "locked" : "")">
@@ -167,7 +167,7 @@ else { <div class="skeleton skeleton-page"></div> }
                         else
                         {
                             <h5>@L["Mis.Description"]</h5><p>@m.Description</p>
-                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var (o, n) in m.Objectives.Select((o, n) => (o, n))) { <li>@if (o.Done) { <span class="done" aria-hidden="true">✔</span> } else { <span class="done empty" aria-hidden="true"></span> } @o.Title@if (o.Weapons is { Count: > 0 }) { var key = $"weapons:{m.Name}:{n}"; <div class="weapons"><button type="button" class="disclose" aria-expanded="@(open.Contains(key) ? "true" : "false")" @onclick="() => Toggle(key)"><span class="tri"></span>@L["Mis.WeaponsCount"]</button>@if (open.Contains(key)) { <ul>@foreach (var w in o.Weapons) { <li>@w</li> }</ul> }</div> }</li> }</ol>
+                            <h5>@L["Mis.Objectives"]</h5><ol class="goals">@foreach (var (o, n) in m.Objectives.Select((o, n) => (o, n))) { <li>@if (o.Done) { <span class="done" aria-hidden="true">✔</span> } else { <span class="done empty" aria-hidden="true"></span> } @o.Title@if (o.Weapons is { Count: > 0 }) { var key = $"weapons:{m.Name}:{n}"; var listId = $"weapons-{scope}-{m.Id}-{n}"; <div class="weapons"><button type="button" class="disclose" aria-expanded="@(open.Contains(key) ? "true" : "false")" aria-controls="@listId" @onclick="() => Toggle(key)"><span class="tri"></span>@L["Mis.WeaponsCount"]</button>@if (open.Contains(key)) { <ul id="@listId">@foreach (var w in o.Weapons) { <li>@w</li> }</ul> }</div> }</li> }</ol>
                             @if (m.Reward.Length > 0) { <h5>@L["Mis.Rewards"]</h5><ul class="reward"><li><Icon Name="circle" /> @m.Reward</li></ul> }
                         }
                         @if (m.State == "available") { <button type="button" class="btn btn-primary" @onclick="() => Activate(m.Id)">@L["Mis.Activate"]</button> }
@@ -177,7 +177,7 @@ else { <div class="skeleton skeleton-page"></div> }
         }
     </ul>;
 
-    RenderFragment Packs(IEnumerable<MissionPack> list) => @<ul class="rows packs">
+    RenderFragment Packs(IEnumerable<MissionPack> list, string scope) => @<ul class="rows packs">
         @foreach (var p in list)
         {
             var key = "pack:" + p.Id;
@@ -190,7 +190,7 @@ else { <div class="skeleton skeleton-page"></div> }
                 {
                     <div class="more">
                         <p>@p.Description</p>
-                        @Rows(p.Missions)
+                        @Rows(p.Missions, $"{scope}-{p.Id}")
                     </div>
                 }
             </li>

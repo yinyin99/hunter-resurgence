@@ -89,7 +89,7 @@
   {"mission": 10, "objective": 0, "hash": "48c640d2",
    "pass": [{"harvest": "Test Elk", "gender": "female", "weapon": "Test Magnum Revolver", "ammo": "Test Magnum Round", "sight": "Test Handgun Scope"}],
    "also": [
-    {"why": "the Test Revolver: the family of the Test Magnum Revolver", "set": {"weapon": "Test Revolver"}, "known": "weapon family (#1067): the title names the longer name, the server accepts that one only"}
+    {"why": "the Test Revolver: the family of the Test Magnum Revolver (the catalogue's description says they share one skill)", "set": {"weapon": "Test Revolver"}}
    ],
    "fail": [
     {"why": "no scope", "set": {"sight": null}},
@@ -142,17 +142,17 @@
     {"why": "in the other reserve", "set": {"hunt": "Second Reserve"}, "step": 0},
     {"why": "an ordinary blonde bear at the place while the server places the named one", "placed": true, "set": {}}
    ]},
-  {"mission": 15, "objective": 0, "hash": "89db4586",
-   "pass": [{"hunt": "Test Reserve"}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 1"}],
+  {"mission": 15, "objective": 0, "hash": "1ff17283",
+   "pass": [{"hunt": "Test Reserve"}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 91"}],
    "fail": [
-    {"why": "from Tower 2", "set": {"place": "Tower 2"}},
+    {"why": "from Tower 92", "set": {"place": "Tower 92"}},
     {"why": "at the tower on the ground", "set": {"stand": null}}
    ]},
-  {"mission": 15, "objective": 1, "hash": "c5fedd08",
-   "pass": [{"done": 0}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 2"}],
+  {"mission": 15, "objective": 1, "hash": "39441844",
+   "pass": [{"done": 0}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 92"}],
    "fail": [
-    {"why": "in another hunt", "steps": [{"done": 0}, {"hunt": "Test Reserve"}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 2"}]},
-    {"why": "from Tower 1 again", "set": {"place": "Tower 1"}}
+    {"why": "in another hunt", "steps": [{"done": 0}, {"hunt": "Test Reserve"}, {"harvest": "Test Deer", "stand": "hunting tower", "place": "Tower 92"}]},
+    {"why": "from Tower 91 again", "set": {"place": "Tower 91"}}
    ]},
   {"mission": 16, "objective": 0, "hash": "c63ac882",
    "pass": [{"harvest": "Test Fox", "weapon": "Test Revolver"}],
@@ -364,30 +364,30 @@
    "fail": [
     {"why": "9.144 m is not under 9.144 m", "set": {"distance": 9.144}}
    ]},
-  {"mission": 32, "objective": 0, "hash": "04630f88",
-   "pass": [{"hunt": "Test Reserve", "lodge": "Brauhütte"}],
+  {"mission": 32, "objective": 0, "hash": "859bd849",
+   "pass": [{"hunt": "Test Reserve", "lodge": "Zürnhütte"}],
    "fail": [
     {"why": "another lodge", "set": {"lodge": "North Lodge"}},
     {"why": "no lodge", "set": {"lodge": null}}
    ]},
-  {"mission": 32, "objective": 1, "hash": "9ffe60a7",
-   "pass": [{"done": 0}, {"enter": "Inland Campsite"}],
+  {"mission": 32, "objective": 1, "hash": "112d97f3",
+   "pass": [{"done": 0}, {"enter": "Upper Test Camp"}],
    "fail": [
-    {"why": "the Campsite, whose name the Inland Campsite's holds", "set": {"enter": "Campsite"}},
-    {"why": "no start first", "steps": [{"hunt": "Test Reserve"}, {"enter": "Inland Campsite"}]}
+    {"why": "the Test Camp, whose name the Upper Test Camp's holds", "set": {"enter": "Test Camp"}},
+    {"why": "no start first", "steps": [{"hunt": "Test Reserve"}, {"enter": "Upper Test Camp"}]}
    ]},
-  {"mission": 32, "objective": 2, "hash": "c458f7b3",
-   "pass": [{"done": 1}, {"enter": "Campsite"}],
+  {"mission": 32, "objective": 2, "hash": "aed6ccae",
+   "pass": [{"done": 1}, {"enter": "Test Camp"}],
    "fail": [
-    {"why": "the Inland Campsite", "set": {"enter": "Inland Campsite"}}
+    {"why": "the Upper Test Camp", "set": {"enter": "Upper Test Camp"}}
    ]},
-  {"mission": 32, "objective": 3, "hash": "bace6e2f",
-   "pass": [{"done": 2}, {"enter": "Grímulfr's Rune"}],
+  {"mission": 32, "objective": 3, "hash": "8bff596c",
+   "pass": [{"done": 2}, {"enter": "Zélan's Cairn"}],
    "fail": [
     {"why": "another place", "set": {"enter": "Old Mill"}}
    ]},
-  {"mission": 33, "objective": 0, "hash": "18f1da88",
-   "pass": [{"enter": "TEST_CHUTE_AREA", "at": [6000, 9000]}],
+  {"mission": 33, "objective": 0, "hash": "48b255fe",
+   "pass": [{"enter": "TEST_ZORBEL_AREA", "at": [6000, 9000]}],
    "also": [
     {"why": "a place with no name here 150 m from the point", "set": {"enter": "TEST_FIELD", "at": [7000, 8150]}}
    ],
@@ -400,8 +400,8 @@
    "fail": [{"why": "a revolver", "set": {"weapon": "Test Revolver", "ammo": "Test Magnum Round"}}]},
   {"mission": 35, "objective": 0, "hash": "b3bd24fc",
    "pass": [{"harvest": "Test Deer", "weapon": "12 GA Test Shotgun", "ammo": "12 GA Test Buckshot Shells"}],
-   "fail": [{"why": "a rifle", "set": {"weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}}, {"why": "the combination gun with its rifle round", "set": {"weapon": "Test Drilling Combination Gun", "ammo": "Test Drill Round"}}],
-   "also": [{"why": "the combination gun with a shotgun shell", "set": {"weapon": "Test Drilling Combination Gun", "ammo": "Test Drill Shell"}}, {"why": "the event finish of the shotgun", "set": {"weapon": "12 GA Test Shotgun (Festive)"}}]},
+   "fail": [{"why": "a rifle", "set": {"weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}}, {"why": "the combination gun with its rifle round", "set": {"weapon": "10GA/8x50R Test Combination Gun", "ammo": "8x50R Test Drill Round"}}],
+   "also": [{"why": "the combination gun with a shotgun shell", "set": {"weapon": "10GA/8x50R Test Combination Gun", "ammo": "10 GA Test Drill Shell"}}, {"why": "the event finish of the shotgun", "set": {"weapon": "12 GA Test Shotgun (Festive)"}}]},
   {"mission": 36, "objective": 0, "hash": "8eee7c4a",
    "pass": [{"harvest": "Test Deer", "stand": "tree stand"}],
    "also": [{"why": "a hunting tower", "set": {"stand": "hunting tower"}}, {"why": "no stand", "set": {"stand": null}}],
@@ -412,7 +412,7 @@
   {"mission": 38, "objective": 0, "hash": "4832ba6b",
    "pass": [{"harvest": "Test Deer", "ammo": ".30-30 Test Bullet"}],
    "fail": [{"why": ".30-06 is not .30-30", "set": {"ammo": ".30-06 Test Bullet"}}]},
-  {"mission": 39, "objective": 0, "hash": "d1feb95f",
+  {"mission": 39, "objective": 0, "hash": "6a9bd623",
    "pass": [{"harvest": "Test Deer", "weapon": "Test Muzzleloader", "ammo": "Test Muzzle Ball"}],
    "fail": [{"why": "a rifle round", "set": {"weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}}]},
   {"mission": 40, "objective": 0, "hash": "05a35baf",
@@ -434,13 +434,13 @@
   {"mission": 43, "objective": 1, "hash": "94a0160d",
    "pass": [{"clue": "Test Deer", "kind": "call", "animal": "a"}, {"clue": "Test Deer", "kind": "call", "animal": "b"}],
    "fail": [{"why": "the same deer's call again", "set": {"animal": "a"}}]},
-  {"mission": 44, "objective": 0, "hash": "b928a745",
-   "pass": [{"enter": "TEST_RUNE_2"}]},
+  {"mission": 44, "objective": 0, "hash": "6139a043",
+   "pass": [{"enter": "TEST_CAIRN_2"}]},
   {"mission": 44, "objective": 1, "hash": "3a98f584",
    "pass": [{"enter": "Old Mill"}]},
   {"mission": 44, "objective": 2, "hash": "24dd88ef",
    "pass": [{"enter": "Old Mill"}, {"harvest": "Test Deer"}],
-   "fail": [{"why": "no visit", "steps": [{"harvest": "Test Deer"}]}, {"why": "the other place", "set": {"enter": "TEST_RUNE_2"}, "step": 0}]},
+   "fail": [{"why": "no visit", "steps": [{"harvest": "Test Deer"}]}, {"why": "the other place", "set": {"enter": "TEST_CAIRN_2"}, "step": 0}]},
   {"mission": 45, "objective": 0, "hash": "32de1f91",
    "pass": [{"harvest": "Test Deer", "weapon": "Test Recurve Bow", "ammo": "Test Broadhead Arrows"}]},
   {"mission": 45, "objective": 1, "hash": "14fd4ee6",
@@ -454,8 +454,8 @@
    "fail": [{"why": "in a hunt that started elsewhere", "steps": [{"hunt": "Test Reserve", "lodge": "South Lodge"}, {"harvest": "Test Deer"}]}]},
   {"mission": 47, "objective": 0, "hash": "ba6f16bc",
    "pass": [{"harvest": "Test Deer", "weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}],
-   "also": [{"why": "the combination gun with its rifle round", "set": {"weapon": "Test Drilling Combination Gun", "ammo": "Test Drill Round"}}, {"why": "a muzzleloader", "set": {"weapon": "Test Muzzleloader", "ammo": "Test Muzzle Ball"}}],
-   "fail": [{"why": "the combination gun with a shotgun shell", "set": {"weapon": "Test Drilling Combination Gun", "ammo": "Test Drill Shell"}}, {"why": "a handgun", "set": {"weapon": "Test Revolver"}}]},
+   "also": [{"why": "the combination gun with its rifle round", "set": {"weapon": "10GA/8x50R Test Combination Gun", "ammo": "8x50R Test Drill Round"}}, {"why": "a muzzleloader", "set": {"weapon": "Test Muzzleloader", "ammo": "Test Muzzle Ball"}}],
+   "fail": [{"why": "the combination gun with a shotgun shell", "set": {"weapon": "10GA/8x50R Test Combination Gun", "ammo": "10 GA Test Drill Shell"}}, {"why": "a handgun", "set": {"weapon": "Test Revolver"}}]},
   {"mission": 48, "objective": 0, "hash": "9fe5c1f5",
    "pass": [{"harvest": "Test Deer", "weapon": "Test Revolver"}],
    "also": [{"why": "the muzzleloading pistol", "set": {"weapon": ".50 Test Muzzleloading Pistol", "ammo": "Test Muzzle Ball"}}, {"why": "the crossbow pistol", "set": {"weapon": "Test Crossbow Pistol", "ammo": "Test Broadhead Arrows"}}],
@@ -466,7 +466,7 @@
    "fail": [{"why": "a rifle", "set": {"weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}}]},
   {"mission": 50, "objective": 0, "hash": "5e19bbd2",
    "pass": [{"harvest": "Test Deer", "weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}],
-   "also": [{"why": "the combination gun with its rifle round", "set": {"weapon": "Test Drilling Combination Gun", "ammo": "Test Drill Round"}}],
+   "also": [{"why": "the combination gun with its rifle round", "set": {"weapon": "10GA/8x50R Test Combination Gun", "ammo": "8x50R Test Drill Round"}}],
    "fail": [{"why": "a muzzleloader", "set": {"weapon": "Test Muzzleloader", "ammo": "Test Muzzle Ball"}}]},
   {"mission": 51, "objective": 0, "hash": "71c580e0",
    "pass": [{"harvest": "Test Elk", "ammo": "Test Magnum Round"}],
@@ -487,12 +487,12 @@
   {"mission": 56, "objective": 0, "hash": "acb85ab0",
    "pass": [{"clue": "Test Deer", "kind": "other"}],
    "fail": [{"why": "no clue: a harvest", "steps": [{"harvest": "Test Deer"}]}]},
-  {"mission": 57, "objective": 0, "hash": "02a8a33d",
+  {"mission": 57, "objective": 0, "hash": "361a2ca0",
    "pass": [{"clue": "Test Deer", "at": [7000, 8100], "animal": "a"}, {"clue": "Test Fox", "at": [7000, 8200], "animal": "b"}],
    "fail": [
     {"why": "the deer alone", "steps": [{"clue": "Test Deer", "at": [7000, 8100], "animal": "a"}, {"clue": "Test Deer", "at": [7000, 8200], "animal": "b"}]},
     {"why": "the fox 500 m away", "set": {"at": [7000, 8500]}},
     {"why": "the fox's droppings", "set": {"kind": "droppings"}},
-    {"why": "arriving only", "steps": [{"enter": "TEST_CHUTE_AREA", "at": [7000, 8000]}]}
+    {"why": "arriving only", "steps": [{"enter": "TEST_ZORBEL_AREA", "at": [7000, 8000]}]}
    ]}
 ]

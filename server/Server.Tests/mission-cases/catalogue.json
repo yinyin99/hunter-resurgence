@@ -176,7 +176,8 @@
    "cat": 1,
    "subcat": {
     "name": "Handguns"
-   }
+   },
+   "description": "This revolver shares skill level and rank with the Test Magnum Revolver."
   },
   {
    "id": 916,
@@ -189,13 +190,13 @@
   {"id": 917, "name": "12 GA Test Shotgun", "cat": 1, "subcat": {"name": "Test Event"}, "variationname": "Festive"},
   {"id": 918, "name": ".30-30 Test Bullet", "cat": 3},
   {"id": 919, "name": ".30-06 Test Bullet", "cat": 3},
-  {"id": 921, "name": "Test Muzzle Ball", "cat": 3, "subcat": {"name": "Muzzleloader Ammo"}},
+  {"id": 921, "name": "Test Muzzle Ball", "cat": 3, "subcat": {"name": "Test Muzzle Ammo"}},
   {"id": 922, "name": "Test Muzzleloader", "cat": 1, "subcat": {"name": "Muzzleloaders"}},
-  {"id": 923, "name": "Test Drilling Combination Gun", "cat": 1, "subcat": {"name": "Advanced Firearms"}},
-  {"id": 924, "name": ".50 Test Muzzleloading Pistol", "cat": 1, "subcat": {"name": "Muzzleloading Pistols"}},
+  {"id": 923, "name": "10GA/8x50R Test Combination Gun", "cat": 1, "subcat": {"name": "Test Advanced"}},
+  {"id": 924, "name": ".50 Test Muzzleloading Pistol", "cat": 1, "subcat": {"name": "Test Muzzle Pistols"}},
   {"id": 925, "name": "Test Crossbow Pistol", "cat": 1, "subcat": {"name": "Bows & Crossbows"}},
-  {"id": 926, "name": "Test Drill Shell", "cat": 3, "subcat": {"name": "Shotgun Ammo"}},
-  {"id": 927, "name": "Test Drill Round", "cat": 3, "subcat": {"name": "Rifle Ammo"}},
+  {"id": 926, "name": "10 GA Test Drill Shell", "cat": 3, "subcat": {"name": "Test Shotgun Ammo"}},
+  {"id": 927, "name": "8x50R Test Drill Round", "cat": 3, "subcat": {"name": "Test Rifle Ammo"}},
   {
    "id": 902,
    "name": "Test Rifle Round",
@@ -231,7 +232,7 @@
    "name": "Test Handgun Scope",
    "cat": 2,
    "subcat": {
-    "name": "Handgun Sights"
+    "name": "Test Sights"
    }
   }
  ],
@@ -268,7 +269,7 @@
   },
   {
    "id": 120,
-   "name": "Tower 1",
+   "name": "Tower 91",
    "define": "TEST_HUNTING_TOWER_0",
    "type": "HUNTING_TOWER",
    "reserve": 2,
@@ -280,7 +281,7 @@
   },
   {
    "id": 121,
-   "name": "Tower 2",
+   "name": "Tower 92",
    "define": "TEST_HUNTING_TOWER_1",
    "type": "HUNTING_TOWER",
    "reserve": 2,
@@ -302,10 +303,10 @@
     "z": 4000
    }
   },
-  {"id": 140, "name": "Brauhütte", "define": "TEST_BRAUHUETTE", "type": "LODGE", "reserve": 2, "pos": {"x": -800, "y": 0, "z": 800}},
-  {"id": 141, "name": "Inland Campsite", "define": "TEST_CAMPSITE_0", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5000, "y": 0, "z": 5000}},
-  {"id": 142, "name": "Campsite", "define": "TEST_CAMPSITE_1", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5200, "y": 0, "z": 5200}},
-  {"id": 143, "name": "Grímulfr's Rune", "define": "TEST_RUNE_2", "type": "INTEREST", "reserve": 2, "pos": {"x": 6000, "y": 0, "z": 6000}}
+  {"id": 140, "name": "Zürnhütte", "define": "TEST_ZUERNHUETTE", "type": "LODGE", "reserve": 2, "pos": {"x": -800, "y": 0, "z": 800}},
+  {"id": 141, "name": "Upper Test Camp", "define": "TEST_CAMPSITE_0", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5000, "y": 0, "z": 5000}},
+  {"id": 142, "name": "Test Camp", "define": "TEST_CAMPSITE_1", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5200, "y": 0, "z": 5200}},
+  {"id": 143, "name": "Zélan's Cairn", "define": "TEST_CAIRN_2", "type": "INTEREST", "reserve": 2, "pos": {"x": 6000, "y": 0, "z": 6000}}
  ],
  "missions": [
   {
@@ -667,11 +668,11 @@
    "objectives": [
     {
      "id": 0,
-     "title": "Harvest a Test Deer from Tower 1 in Test Reserve"
+     "title": "Harvest a Test Deer from Tower 91 in Test Reserve"
     },
     {
      "id": 1,
-     "title": "Harvest a Test Deer from Tower 2 in Test Reserve during the same hunt."
+     "title": "Harvest a Test Deer from Tower 92 in Test Reserve during the same hunt."
     }
    ]
   },
@@ -1089,18 +1090,18 @@
    ]
   },
   {"id": 32, "title": "Sample 32", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": true, "objectives": [
-    {"id": 0, "title": "Start at Brauhutte."},
-    {"id": 1, "title": "Then arrive at the Inland Campsite."},
-    {"id": 2, "title": "Then arrive at the Campsite."},
-    {"id": 3, "title": "Then arrive at Grimulfr's Rune."}]},
+    {"id": 0, "title": "Start at Zurnhutte."},
+    {"id": 1, "title": "Then arrive at the Upper Test Camp."},
+    {"id": 2, "title": "Then arrive at the Test Camp."},
+    {"id": 3, "title": "Then arrive at Zelan's Cairn."}]},
   {"id": 33, "title": "Sample 33", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [
-    {"id": 0, "title": "Arrive in the vicinity of the Chute (x 7000, y 8000)."}]},
+    {"id": 0, "title": "Arrive in the vicinity of the Zorbel (x 7000, y 8000)."}]},
   {"id": 34, "title": "Sample 34", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any bow."}]},
   {"id": 35, "title": "Sample 35", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any shotgun."}]},
   {"id": 36, "title": "Sample 36", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a Waterfowl Blind."}]},
   {"id": 37, "title": "Sample 37", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a stand."}]},
   {"id": 38, "title": "Sample 38", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer using .30-30 ammunition."}]},
-  {"id": 39, "title": "Sample 39", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer using any Muzzleloader ammo."}]},
+  {"id": 39, "title": "Sample 39", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer using any Muzzleloader ammunition."}]},
   {"id": 40, "title": "Sample 40", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with one heart shot."}]},
   {"id": 41, "title": "Sample 41", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
     {"id": 0, "title": "Spot a Test Deer."},
@@ -1111,7 +1112,7 @@
     {"id": 0, "title": "ID the call of a Test Deer."},
     {"id": 1, "title": "ID the call of a unique Test Deer."}]},
   {"id": 44, "title": "Sample 44", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
-    {"id": 0, "title": "Visit Grimulfr's Rune."},
+    {"id": 0, "title": "Visit Zelan's Cairn."},
     {"id": 1, "title": "Visit the Old Mill."},
     {"id": 2, "title": "After visiting the Old Mill, harvest a Test Deer."}]},
   {"id": 45, "title": "Sample 45", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
@@ -1130,6 +1131,6 @@
   {"id": 54, "title": "Sample 54", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer killed while spooked."}]},
   {"id": 55, "title": "Sample 55", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a platform."}]},
   {"id": 56, "title": "Sample 56", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "ID any clue from a Test Deer."}]},
-  {"id": 57, "title": "Sample 57", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [{"id": 0, "title": "Look into the tracks near the Rune."}]}
+  {"id": 57, "title": "Sample 57", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [{"id": 0, "title": "Look into the tracks near the Cairn."}]}
  ]
 }

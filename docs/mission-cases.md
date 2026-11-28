@@ -6,7 +6,7 @@ Write the cases from the title, **never from the rule the server prints** (`cove
 
 ## Where things are
 
-- **The real cases are not in this repository.** They hold the missions' real wording and the catalogue's names, which are the operator's data ([CONTRIBUTING.md](../CONTRIBUTING.md#rules)), so they live in the operator's private repository, one file per block of about 50 missions, `missions-<first>-<last>.json` (the mission ids from `<first>` to `<last>`), so two authors never edit the same file. An objective is in one file only (the coverage test fails otherwise). The files hold ids, a hash of each title and the scenarios, never the titles.
+- **The real cases are not in this repository.** They hold the missions' real wording and the catalogue's names, which are the operator's data ([CONTRIBUTING.md](../CONTRIBUTING.md#rules)), so they live in the operator's private repository, one file per block of about 50 missions, `missions-<first>-<last>.json` (the mission ids from `<first>` to `<last>`), so two authors never edit the same file. An objective is in one file only and every objective of the catalogue has cases (the coverage test fails otherwise, for the real catalogue as for the sample's). The files hold ids, a hash of each title and the scenarios, never the titles.
 - **The runner, the format and a sample are here**: `server/Server.Tests/MissionCaseTests.cs`, and in `server/Server.Tests/mission-cases/` an invented catalogue (`catalogue.json`, missions, species, items and places over the test fixture's), its overrides (`mission_rules.json`) and its cases (`cases/`), which exercise every condition and objective kind so that CI proves the runner.
 - **The real run** takes three paths from the environment: `MISSION_CASES`, the folder of the real case files; `MISSION_CATALOGUE`, the catalogue the server loads (the `Application/application` reply of the operator's recording, as JSON); `MISSION_RULES`, the operator's `mission_rules.json`, which replaces the rules of single objectives as on the server ([server.md](server.md#missions), "Overridden rules"). Use the live server's file: a case judges the rule the players get. Without the first two the real cases are skipped with a message saying so; without `MISSION_RULES` the reader's rules are judged alone.
 
@@ -27,7 +27,7 @@ A file is a JSON list (`//` comments and trailing commas allowed) of one entry p
   {"mission": 10, "objective": 0, "hash": "48c640d2",
    "pass": [{"harvest": "Test Elk", "gender": "female", "weapon": "Test Magnum Revolver", "ammo": "Test Magnum Round", "sight": "Test Handgun Scope"}],
    "also": [
-    {"why": "the Test Revolver: the family of the Test Magnum Revolver", "set": {"weapon": "Test Revolver"}, "known": "weapon family (#1067): the title names the longer name, the server accepts that one only"}
+    {"why": "the Test Revolver: the family of the Test Magnum Revolver (the catalogue's description says they share one skill)", "set": {"weapon": "Test Revolver"}}
    ],
    "fail": [
     {"why": "no scope", "set": {"sight": null}},
@@ -59,7 +59,7 @@ A file is a JSON list (`//` comments and trailing commas allowed) of one entry p
 
 A variant (`also`, `fail`) has `why` (a short reason) and either `set`, the keys of one step of `pass` replaced (`null` removes one; `step` is the index of that step in `pass` as written, default the last), or `steps`, all its steps; `placed` runs it alone with the server's placement of named animals (below). Prefer `set`: it changes one thing by construction.
 
-**Known disagreements.** A case where the server disagrees with the wording today gets `known` (`passKnown` for the pass): the reason and, once filed, the issue number. The test reports it instead of failing; when the server agrees again the test fails until the mark is removed. Never mark a case known without saying why the server is wrong.
+**Known disagreements.** A case where the server disagrees with the wording today gets `known` (`passKnown` for the pass): the reason and, once filed, the issue number. The test reports it instead of failing; when the server agrees again the test fails until the mark is removed. Never mark a case known without saying why the server is wrong: a `known` mark is for a real disagreement only (the sample keeps one, mission 27 objective 1, to prove the path). A mark that is no text, and an objective written twice in one file, are problem lines of the file, not a crash.
 
 ### Steps
 
@@ -101,14 +101,14 @@ A harvest's keys, and what they are when left out:
 | `animal` | a new animal | a label: steps with the same label are the same animal (in one hunt) |
 | `shot` | a new shot | a shot number: harvests with the same one were killed by the same shot |
 
-**One hit differs.** An entry of `hits` that is an object changes that hit alone: `organs` (default both lungs) and any of `weapon`, `ammo`, `sight`, `distance`, `state`, `stand`, `pose`, `shot`; what it does not give is the step's. The conditions of the killing shot (weapon, ammunition, sight, distance, state, stand, stance) read the last hit; `spooked`/`unspooked` read the first; `one shot`, `organs only` and `without hitting` read every hit.
+**One hit differs.** An entry of `hits` that is an object changes that hit alone: `organs` (default both lungs) and any of `weapon`, `ammo`, `sight`, `distance`, `state`, `stand`, `pose`, `shot`; what it does not give is the step's. The conditions of the killing shot (weapon, ammunition, sight, distance, state, stand, stance) read the last hit, `spooked` and every other animal state with them; `unspooked` (unaware when first shot) reads the first; `one shot`, `organs only` and `without hitting` read every hit.
 
 ```json
 {"harvest": "Test Elk", "weapon": "Test Recurve Bow", "hits": [{"weapon": "Test Bolt Rifle", "ammo": "Test Rifle Round"}, {}]}
 {"harvest": "Test Fox", "hits": [{"state": "running"}, {"state": "standing"}]}
 ```
 
-The first: a rifle wounded the elk, the bow killed it. The second: the fox was running at the first hit (spooked) and standing at the killing one.
+The first: a rifle wounded the elk, the bow killed it. The second: the fox was running at the first hit (not unspooked) and standing at the killing one (not spooked).
 
 **Scores.** `score` makes the kill score what it asks by the server's own scoring (`Scoring`), for every species that has a score:
 
@@ -130,7 +130,7 @@ A doe, a cow or a hen has no antlers and no score in the game; the harness still
 
 **Multiplayer credit** (a harvest skinned by another member of the session, credited to the shooter) is not expressible yet: it needs a second account hosting or joining the case account's game and both sending heartbeats while it runs (as `MpHarvestTests` does), which the harness does not do.
 
-Names are the catalogue's English names (species without `(Typical)`; reserves; items; locations). A place is a catalogue location's name (a tower is `Tower 2`, looked up in the hunt's reserve first) or the name the game sends for it (capital letters, as the sample's `TEST_PASS`) when no location of the catalogue is that place.
+Names are the catalogue's English names (species without `(Typical)`; reserves; items; locations). A place is a catalogue location's name (a tower is `Tower 92`, looked up in the hunt's reserve first) or the name the game sends for it (capital letters, as the sample's `TEST_PASS`) when no location of the catalogue is that place.
 
 ## How to read a title
 
@@ -184,11 +184,11 @@ Units: metres, kilograms, minutes, millimetres, percent. A title's inches and po
 
 ## Weapon families
 
-A title that names a weapon accepts its whole family: every finish (skin) of it, and the differently named members the game gives one weapon skill (a revolver and its Magnum, both ways; the sawed-off and the semi-automatic shotgun of one maker; the twin of a compound bow). `admin weapon-families` prints the family table of the real catalogue. For such a title:
+A title that names a weapon accepts its whole family: every finish (skin) of it, and the differently named members the game gives one weapon skill (a revolver and its Magnum when the catalogue's descriptions say they share one skill, both ways; the sawed-off and the semi-automatic shotgun of one maker; the twin of a compound bow). `admin weapon-families` prints the family table of the real catalogue. For such a title:
 
 - write one `also` with another member of the family (a differently named one when the family has one, else another finish);
 - take the `fail` weapon from **outside** the family (another family of the same class is the best near miss);
-- the server does not accept the wide family yet: mark the `also` of a differently named member `"known": "weapon family (#1067)"`.
+- a name that only lies inside a longer name (`Test Revolver`, `Test Magnum Revolver`) is no family: the title naming the shorter accepts the longer, the title naming the longer stays exact, and the shorter is a near miss of it unless the catalogue relates them (name, definitions' chain or a description that shares the skill).
 
 An ammunition the title names, or `permitted`, is still needed whatever member fired.
 

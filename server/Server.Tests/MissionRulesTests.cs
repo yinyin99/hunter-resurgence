@@ -98,9 +98,9 @@ public class MissionRulesTests : MissionTestBase
         static string Rule(string line) => line[(line.IndexOf("=> ", StringComparison.Ordinal) + 3)..];
         var first = Print(New("variant1.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject
         {
-            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
+            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
         }));
-        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", first[0]);
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)", first[0]);
         Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol", first[1]);  // both variants: the name alone
         Assert.Equal(first, Print(New("variant2.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = Rule(first[0]), ["2/0"] = Rule(first[1]) })));
     }
@@ -110,8 +110,8 @@ public class MissionRulesTests : MissionTestBase
     {
         var catalogue = Missions(Mission(1, "Harvest a Test Deer"));
         List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
-        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Test Carbine" }));
-        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Wolfsbane)", first[0]);  // not the bare name: that would be both variants
+        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk), Test Carbine" }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Dusk)", first[0]);  // not the bare name: that would be both variants
         var again = New("variant4.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = first[0][(first[0].IndexOf("=> ", StringComparison.Ordinal) + 3)..] });
         Assert.Equal(first, Print(again));
     }

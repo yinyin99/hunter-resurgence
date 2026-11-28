@@ -156,9 +156,6 @@ public sealed class MissionCaseSources : IDisposable
 /// fresh account through the real engine against the catalogue's rules. A known disagreement is reported, not failed; one that agrees again fails until its mark is removed.</summary>
 public class MissionCaseTests(MissionCaseSources sources, ITestOutputHelper output) : MissionTestBase, IClassFixture<MissionCaseSources>
 {
-    /// <summary>Set once every objective of the real catalogue has cases: from then on an objective without cases (a new or changed mission) fails its coverage test. The sample's must always have.</summary>
-    static readonly bool AuditDone = false;
-
     static long accounts = 1_000_000;
     double now = 1_800_000_000;
     CaseSource c = null!;
@@ -184,17 +181,40 @@ public class MissionCaseTests(MissionCaseSources sources, ITestOutputHelper outp
 
     public static string Hash(string title) => Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(title)))[..8];
 
+    static (long Mission, long Objective) Key(JsonObject e) => ((long)e["mission"]!, (long)e["objective"]!);
+
+    /// <summary>The reason of a `known` or `passKnown` mark: a text. Anything else is a problem line of the file (the mark is then taken as none).</summary>
+    static string? Reason(JsonNode? mark, string where, List<string> problems)
+    {
+        if (mark is null)
+            return null;
+        if (mark is JsonValue v && v.TryGetValue<string>(out var reason))
+            return reason;
+        problems.Add($"{where}: a known mark is the reason as a text, not {mark.ToJsonString()}");
+        return null;
+    }
+
     [Theory, MemberData(nameof(Files))]
     public void TestEveryCaseOfTheFileGetsTheVerdictItsWordingAsks(string source, string file)
     {
         Use(source);
+        Check(file);
+    }
+
+    void Check(string file)
+    {
         var entries = Load(file).OfType<JsonObject>().ToList();
-        var passes = entries.Where(e => e["pass"] is JsonArray).ToDictionary(e => ((long)e["mission"]!, (long)e["objective"]!), e => e["pass"]!.AsArray());
+        var passes = entries.Where(e => e["pass"] is JsonArray).DistinctBy(Key).ToDictionary(Key, e => e["pass"]!.AsArray());
         var (problems, known, doubts) = (new List<string>(), new List<string>(), new List<string>());
-        var (cases, started) = (0, DateTime.UtcNow);
+        var (cases, started, seen) = (0, DateTime.UtcNow, new HashSet<(long, long)>());
         foreach (var e in entries)
         {
-            var key = ((long)e["mission"]!, (long)e["objective"]!);
+            var key = Key(e);
+            if (!seen.Add(key))
+            {
+                problems.Add($"mission {key.Mission} objective {key.Objective}: two entries in {file}, only the first is read");
+                continue;
+            }
             if (!c.Objectives.TryGetValue(key, out var objective))
             {
                 problems.Add($"mission {key.Item1} objective {key.Item2}: the catalogue has no such objective");
@@ -217,10 +237,10 @@ public class MissionCaseTests(MissionCaseSources sources, ITestOutputHelper outp
             var all = new List<(string Name, bool Done, JsonObject? Variant, string? Known)>();
             if (e["pass"] is JsonArray)
             {
-                all.Add(("pass", true, null, (string?)e["passKnown"]));
+                all.Add(("pass", true, null, Reason(e["passKnown"], $"{about}, pass", problems)));
                 foreach (var (list, done) in new[] { ("also", true), ("fail", false) })
                     foreach (var (variant, i) in (e[list] as JsonArray ?? []).OfType<JsonObject>().Select((f, i) => (f, i)))
-                        all.Add(($"{list} {i + 1} ({Py.Str(variant["why"])})", done, variant, (string?)variant["known"]));
+                        all.Add(($"{list} {i + 1} ({Py.Str(variant["why"])})", done, variant, Reason(variant["known"], $"{about}, {list} {i + 1}", problems)));
             }
             else if (e["doubt"] is null)
                 problems.Add($"{about}: no pass case and no doubt");
@@ -263,8 +283,22 @@ public class MissionCaseTests(MissionCaseSources sources, ITestOutputHelper outp
         var missing = c.Objectives.Keys.Where(k => !seen.ContainsKey(k)).OrderBy(k => k).ToList();
         output.WriteLine($"{c.Objectives.Count - missing.Count} of {c.Objectives.Count} objectives have cases; {missing.Select(k => k.Mission).Distinct().Count()} missions have an objective without");
         Assert.True(twice.Count == 0, string.Join("\n", twice));
-        if (AuditDone || source == "sample")
-            Assert.True(missing.Count == 0, "objectives without cases:\n" + string.Join("\n", missing.Select(k => $"mission {k.Mission} objective {k.Objective} \"{c.Objectives[k].Title}\" hash {Hash(c.Objectives[k].Title)}")));
+        Assert.True(missing.Count == 0, "objectives without cases:\n" + string.Join("\n", missing.Select(k => $"mission {k.Mission} objective {k.Objective} \"{c.Objectives[k].Title}\" hash {Hash(c.Objectives[k].Title)}")));
+    }
+
+    [Fact]
+    public void TestAnEntryTwiceInOneFileAndAKnownMarkThatIsNoTextAreProblemLinesOfTheFile()
+    {
+        var cases = Directory.CreateDirectory(Path.Combine(tmp, "bad-cases")).FullName;
+        var title = sources["sample"].Objectives[(2, 0)].Title;  // a spot of a deer
+        string Entry(string more = "") => $$"""{"mission": 2, "objective": 0, "hash": "{{Hash(title)}}", "pass": [{"spot": "Test Deer"}]{{more}}}""";
+        File.WriteAllText(Path.Combine(cases, "twice.json"), $"[{Entry()}, {Entry()}]");
+        File.WriteAllText(Path.Combine(cases, "known.json"), "[" + Entry(""", "passKnown": true, "also": [{"why": "the same", "set": {"spot": "Test Deer"}, "known": 5}]""") + "]");
+        c = new CaseSource(Path.Combine(tmp, "bad-source"), cases, sources["sample"].App, null);
+        Assert.Contains("mission 2 objective 0: two entries in twice.json, only the first is read", Assert.ThrowsAny<Exception>(() => Check("twice.json")).Message);
+        var known = Assert.ThrowsAny<Exception>(() => Check("known.json")).Message;
+        Assert.Contains("pass: a known mark is the reason as a text, not true", known);
+        Assert.Contains("also 1: a known mark is the reason as a text, not 5", known);
     }
 
     /// <summary>A variant's steps (`also`, `fail`): its own `steps`, or the pass's with the keys of `set` replaced (null removes one) in the step `step` (default: the last one).</summary>

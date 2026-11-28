@@ -155,7 +155,7 @@ public class MissionOverrideTests : MissionTestBase
     public void TestAWeaponNamedWithItsVariantIsThatItemAndTheNameAloneIsAllOfThem()
     {
         var catalogue = Catalogue(["Harvest a Test Deer while whistling", "Harvest a Test Deer while humming"]);
-        state = New("variant.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)"), ("2/0", "harvest; species: Test Deer; weapon: Test Twin Pistol")));
+        state = New("variant.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)"), ("2/0", "harvest; species: Test Deer; weapon: Test Twin Pistol")));
         ActivateAll();
         Hb(Shot(1, weapon: 109));
         Assert.Equal("2", Completed());
@@ -174,8 +174,8 @@ public class MissionOverrideTests : MissionTestBase
             ("1-0", "harvest", "a key is <mission id>/<objective id>"),
             ("1/0", 5, "a rule is a string of words"),
             ("1/0", "", "the rule is empty"),
-            ("1/0", "arrive", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
-            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
+            ("1/0", "arrive", "an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\""),
+            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\""),
             ("1/0", "start", "\"start\" is no kind of rule the file sets"),
             ("1/0", "harvest; whistling", "\"whistling\" is no condition the server knows"),
             ("1/0", "harvest; weapon: Test Blaster", "no weapon is named \"Test Blaster\""),
@@ -193,8 +193,8 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", "harvest; in the hunt: 3 different animals", "a harvest rule cannot check \"in the hunt: 3 different animals\""),
             ("2/0", "spot; in the hunt: 2", "a spot rule cannot check \"in the hunt: 2\""),
             ("2/0", "track; species: Test Deer", "a track rule has one clues condition"),
-            ("1/0", "harvest; male; female", "a gender, a species or \"ordered\" is given twice"),
-            ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"ordered\" is given twice"),
+            ("1/0", "harvest; male; female", "a gender, a species or \"together\" is given twice"),
+            ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"together\" is given twice"),
             ("1/0", "harvest; distance: >=100 >=200 m", "\">=100 >=200 m\" has two bounds of one side"),
             ("1/0", "harvest; place: east of the lodge", "\"east of the lodge\" is no name of a place"),
             ("1/0", "harvest; beard: >=76.2", "\">=76.2\" has no unit \"mm\""),
