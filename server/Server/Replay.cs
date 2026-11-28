@@ -310,7 +310,7 @@ public static class Replay
     /// labels, the texture names and the populations of every reserve. The avatar list and the player's skill list come from
     /// recordings only (without them: fresh skills). The recorded Application/discounts is not read: the store's sales are the operator's (`store_sales`). Null when there is neither a recorded connect nor a
     /// connect sample in the install.</summary>
-    public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
+    public static State? LoadState(JsonObject cfg, HarTable table, string workDir, TextWriter? log = null)
     {
         NewBuild.Alias(table, cfg);
         var e = table.Entries;
@@ -374,7 +374,7 @@ public static class Replay
             seasonal: SeasonalEvent.Parse(cfg["event"]), missionRules: File.Exists(missionRules) ? State.ReadMissionRules(missionRules) : null,
             spawnNamedAnimals: (bool?)cfg["spawn_named_animals"] ?? false)
         {
-            Texts = cfg["mission_texts_dir"] is JsonValue texts ? MissionTexts.Load((string)texts!) : MissionTexts.None,
+            Texts = cfg["mission_texts_dir"] is JsonValue texts ? MissionTexts.Load((string)texts!, log) : MissionTexts.None,
             CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
             UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, UnlimitedFuel = (bool?)cfg["unlimited_fuel"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
             Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],

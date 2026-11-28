@@ -285,9 +285,59 @@ public class MissionTextTests : StateTestBase, IAsyncLifetime
         File.WriteAllText(Path.Combine(dir, "de.original.json"), """{"m1.title": "Titel"}""");  // no de.mt.json, no other language
         File.WriteAllText(Path.Combine(dir, "fr.original.json"), "{ not json");
         File.WriteAllText(Path.Combine(dir, "es.original.json"), """{"m1.title": 3}""");
-        var texts = MissionTexts.Load(dir);
-        Assert.Equal(("Titel", "English", "English", "English"), (texts.Text("de", "m1.title", "English"), texts.Text("de", "m1.desc", "English"), texts.Text("fr", "m1.title", "English"), texts.Text("es", "m1.title", "English")));
+        File.WriteAllText(Path.Combine(dir, "it.original.json"), """{"m1.title": "a", "m1.title": "b"}""");  // a duplicate key: .NET refuses it with an ArgumentException
+        File.WriteAllText(Path.Combine(dir, "nl.mt.json"), """{"m1.title": "a", "m1.title": "b"}""");
+        var log = new StringWriter();
+        var texts = MissionTexts.Load(dir, log);
+        Assert.Equal(("Titel", "English", "English", "English", "English", "English"),
+            (texts.Text("de", "m1.title", "English"), texts.Text("de", "m1.desc", "English"), texts.Text("fr", "m1.title", "English"), texts.Text("es", "m1.title", "English"), texts.Text("it", "m1.title", "English"), texts.Text("nl", "m1.title", "English")));
+        Assert.Equal(4, log.ToString().Split("is not read").Length - 1);  // one line for each broken file, then what was loaded
+        Assert.EndsWith("de" + Environment.NewLine, log.ToString());
+        Assert.Throws<InvalidDataException>(() => MissionTexts.ReadFile(Path.Combine(dir, "it.original.json")));
+        MissionTexts.Load(dir);  // no log: no line
         Assert.Equal("English", MissionTexts.None.Text("de", "m1.title", "English"));
+    }
+
+    [Fact]
+    public void TestTheNameCheckReportsAFileItCannotReadAndGoesOn()
+    {
+        var dir = Path.Combine(tmp, "texts");
+        Directory.CreateDirectory(Path.Combine(dir, "names"));
+        File.WriteAllText(Path.Combine(dir, MissionTextsTool.English), """{"m1.o0": "Spot a Test Deer"}""");
+        File.WriteAllText(Path.Combine(dir, "names", "fr.json"), """{"Test Deer": "Cerf test"}""");
+        File.WriteAllText(Path.Combine(dir, "de.mt.json"), """{"m1.o0": "a", "m1.o0": "b"}""");
+        File.WriteAllText(Path.Combine(dir, "fr.mt.json"), """{"m1.o0": "Reperer un Cerf test"}""");
+        var problems = MissionTextsTool.Check(dir);
+        Assert.Equal(1, problems.Count);
+        Assert.StartsWith("de: ", problems[0]);
+        Assert.Contains("de.mt.json", problems[0]);
+        var output = new StringWriter();
+        Assert.Equal(1, MissionTextsTool.Run([dir, "check"], output, output));
+        Assert.Contains("1 problem", output.ToString());
+    }
+
+    [Fact]
+    public async Task TestTheCurrentBuildAsksForTheCatalogueWithTheGamesLangAndGetsGerman()
+    {
+        // the current build posts JSON `{lang}` to its own web host with `?locale=` its interface default: `lang` is the game's language
+        async Task<JsonNode> Ask(Loopback on, string method, string path, string lang)
+        {
+            var reply = method == "GET"
+                ? await on.SendAsync("GET", "game_web.test", $"{path}?lang={lang}")
+                : await on.SendAsync("POST", "game_web.test", $"{path}?locale=en_US", [("Content-Type", "application/json")], Encoding.ASCII.GetBytes($$"""{"lang": "{{lang.ToLowerInvariant()}}"}"""));
+            Assert.Equal(200, reply.Status);
+            return JsonNode.Parse(reply.Body)!;
+        }
+        var catalogueOnly = new Replay.HarTable();  // no recorded catalogue: the player state's own reply
+        catalogueOnly.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        await using var own = await Loopback.StartAsync(new Replay.Game(catalogueOnly, Cfg, state, tmp), tmp);
+        foreach (var (on, method, path) in new[] { (server, "POST", "/v1/application/client_application"), (server, "GET", "/v1/application/application"), (own, "POST", "/v1/application/client_application") })
+        {
+            var german = await Ask(on, method, path, "de_DE");
+            var english = await Ask(on, method, path, "en_US");
+            Assert.True("Erlege einen Testhirsch" == Py.Str(german["missions"]![0]!["title"]) && "Hirsch-Paket" == Py.Str(german["mission_groups"]![0]!["title"]), $"{method} {path}: {german}");
+            Assert.NotEqual("Erlege einen Testhirsch", Py.Str(english["missions"]![0]!["title"]));
+        }
     }
 
     [Fact]

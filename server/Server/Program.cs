@@ -787,7 +787,7 @@ async Task Serve()
     var table = Table(out var hars);
     Console.WriteLine($"table: {table.Entries.Keys.Count(k => k.Params is null)} keys from {hars.Count} recordings in {Py.Fixed((DateTime.UtcNow - t0).TotalSeconds, 1)}s");
     Console.WriteLine($"archives: {ArcList.ArchiveIndex((string)settings.Cfg["install_dir"]!).Count} entries");
-    var state = Replay.LoadState(settings.Cfg, table, settings.DataDir);
+    var state = Replay.LoadState(settings.Cfg, table, settings.DataDir, Console.Out);
     Console.WriteLine("player state: " + (state != null ? Path.Combine(settings.DataDir, "state.db") : "off (no recorded connect and no connect sample in the install)"));
     if (state is { Online: true })
     {

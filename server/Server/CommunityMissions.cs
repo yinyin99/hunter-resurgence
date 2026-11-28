@@ -76,6 +76,7 @@ public sealed partial class State
     {
         if (Seasonal is not { } e || !e.Running(Clock()) || !Store.PlaysEvents(account))
             return null;
+        lang = MissionTexts.Code(lang);  // the request's language, read once: each text asks for it again
         var content = facts.EventOf(e.Name);
         using var con = Con(account);
         con.Begin();

@@ -233,11 +233,21 @@ public static class MissionTextsTool
         List<string> problems = [];
         foreach (var lang in MissionTexts.Languages)
         {
-            var ours = ReadOrEmpty(FileOf(dir, lang, "mt"));
-            if (ours.Count == 0)
+            Dictionary<string, string> ours;
+            NameMatcher matcher;
+            try
+            {
+                ours = ReadOrEmpty(FileOf(dir, lang, "mt"));
+                if (ours.Count == 0)
+                    continue;
+                var namesFile = Path.Combine(dir, "names", $"{lang}.json");
+                matcher = new NameMatcher(File.Exists(namesFile) ? MissionTexts.ReadFile(namesFile) : throw new InvalidDataException($"{namesFile}: missing, but {lang}.mt.json has texts"));
+            }
+            catch (Exception e) when (e is InvalidDataException or IOException or UnauthorizedAccessException)
+            {
+                problems.Add($"{lang}: {e.Message}");  // a file that cannot be read (broken JSON, a duplicate key): the server would show English for the language
                 continue;
-            var namesFile = Path.Combine(dir, "names", $"{lang}.json");
-            var matcher = new NameMatcher(File.Exists(namesFile) ? MissionTexts.ReadFile(namesFile) : throw new InvalidDataException($"{namesFile}: missing, but {lang}.mt.json has texts"));
+            }
             foreach (var (key, text) in ours)
                 if (!english.TryGetValue(key, out var source)) problems.Add($"{lang} {key}: no such text");
                 else if (Blank(text)) problems.Add($"{lang} {key}: empty");

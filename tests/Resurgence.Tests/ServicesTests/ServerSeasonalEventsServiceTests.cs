@@ -25,6 +25,26 @@ public class ServerSeasonalEventsServiceTests
     static HttpResponseMessage Json(HttpStatusCode code, string body) => new(code) { Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json") };
 
     [Fact]
+    public async Task ThePanelIsAskedInTheReadersLanguage()
+    {
+        var asked = new List<string>();
+        var fake = new Fake(r => { asked.Add(r.RequestUri!.PathAndQuery); return Json(HttpStatusCode.OK, """{"name":"e","title":"E","start":1,"end":2,"community":[],"contributors":[],"missions":[],"items":[]}"""); });
+        var before = System.Globalization.CultureInfo.CurrentUICulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("de");
+            Assert.NotNull(await Make(fake).PanelAsync());
+            System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            Assert.NotNull(await Make(fake).PanelAsync());
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = before;
+        }
+        Assert.Equal(["/account/events/panel?lang=de", "/account/events/panel"], asked);  // no culture: no language, the server answers English
+    }
+
+    [Fact]
     public async Task TheRunningEventAndTheSettingAreTheServers()
     {
         var fake = new Fake(_ => Json(HttpStatusCode.OK, """{"play":false,"event":{"name":"halloween_2026","define":"HALLOWEEN_2026","reserves":[0,1,9]}}"""));

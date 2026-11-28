@@ -21,12 +21,13 @@ public sealed class MissionTexts
     public MissionTexts(Dictionary<string, Dictionary<string, string>> original, Dictionary<string, Dictionary<string, string>> ours) => (this.original, this.ours) = (original, ours);
 
     /// <summary>The texts of the files in <paramref name="dir"/> (setting `mission_texts_dir`, which is not in the repository: it is game text): per language `&lt;code&gt;.original.json` and `&lt;code&gt;.mt.json`.
-    /// A missing folder, a missing file or a file that is not a flat JSON object of texts means no texts for it (English), said once on the console, never an error.</summary>
-    public static MissionTexts Load(string dir)
+    /// A missing folder, a missing file or a file that cannot be read as a flat JSON object of texts (broken JSON, a duplicate key, a text that is not a string) means no texts for it (English), never an error;
+    /// <paramref name="log"/> (the server's start; none for the admin commands) gets one line for it and one for what was loaded.</summary>
+    public static MissionTexts Load(string dir, TextWriter? log = null)
     {
         if (!Directory.Exists(dir))
         {
-            Console.WriteLine($"mission texts: no folder {dir}: the missions stay English");
+            log?.WriteLine($"mission texts: no folder {dir}: the missions stay English");
             return None;
         }
         Dictionary<string, Dictionary<string, string>> Read(string suffix)
@@ -38,23 +39,33 @@ public sealed class MissionTexts
                 if (!File.Exists(path))
                     continue;
                 try { read[lang] = ReadFile(path); }
-                catch (Exception e) when (e is InvalidDataException or System.Text.Json.JsonException or IOException or UnauthorizedAccessException)
+                catch (Exception e)  // whatever is wrong with a file of ours: the language stays English, the server starts
                 {
-                    Console.WriteLine($"mission texts: {path} is not read ({e.Message}): English for it");
+                    log?.WriteLine($"mission texts: {path} is not read ({e.Message}): English for it");
                 }
             }
             return read;
         }
         var original = Read("original");
         var ours = Read("mt");
-        Console.WriteLine($"mission texts: {dir}: {string.Join(", ", original.Keys.Union(ours.Keys).Order())}");
+        log?.WriteLine($"mission texts: {dir}: {string.Join(", ", original.Keys.Union(ours.Keys).Order())}");
         return new(original, ours);
     }
 
-    /// <summary>A flat JSON object of texts by key.</summary>
-    public static Dictionary<string, string> ReadFile(string path) =>
-        JsonNode.Parse(File.ReadAllText(path)) is JsonObject o && o.All(p => p.Value is JsonValue v && v.TryGetValue<string>(out _))
-            ? o.ToDictionary(p => p.Key, p => (string)p.Value!) : throw new InvalidDataException($"{path}: not a flat JSON object of texts");
+    /// <summary>A flat JSON object of texts by key; <see cref="InvalidDataException"/> (with the file's name) for anything else: not JSON, not an object, a duplicate key, a value that is not a string.</summary>
+    public static Dictionary<string, string> ReadFile(string path)
+    {
+        try
+        {
+            if (JsonNode.Parse(File.ReadAllText(path)) is JsonObject o && o.All(p => p.Value is JsonValue v && v.TryGetValue<string>(out _)))
+                return o.ToDictionary(p => p.Key, p => (string)p.Value!);
+        }
+        catch (Exception e) when (e is System.Text.Json.JsonException or ArgumentException or InvalidOperationException or FormatException)
+        {
+            throw new InvalidDataException($"{path}: {e.Message}", e);
+        }
+        throw new InvalidDataException($"{path}: not a flat JSON object of texts");
+    }
 
     /// <summary>The code of the language a request names, one of <see cref="Languages"/>: the launcher's code (`pt-BR`, `fr`) or the game's (`fr_FR`, `pt_br`), a regional tag as its language (`de-AT`), `no` and `nn` as
     /// Norwegian bokmål; null for English and for anything else (a bare `pt` too: it names no one of the two).</summary>
@@ -62,6 +73,8 @@ public sealed class MissionTexts
     {
         if (string.IsNullOrWhiteSpace(tag))
             return null;
+        if (Array.IndexOf(Languages, tag) >= 0)  // already a code: a caller that read it once asks again for each text
+            return tag;
         tag = tag.Trim().Replace('_', '-');
         var code = Games.LanguageOf(tag);
         if (code.Length == 0)

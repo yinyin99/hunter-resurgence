@@ -376,6 +376,7 @@ public sealed partial class State
     {
         if (missions.Count == 0)
             return null;
+        lang = MissionTexts.Code(lang);  // the request's language, read once: each text asks for it again
         using var con = Con(account);
         con.Begin();
         EnsureMissions(con);
