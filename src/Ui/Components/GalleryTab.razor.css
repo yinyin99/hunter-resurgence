@@ -1,7 +1,7 @@
-.grid { display: flex; flex-wrap: wrap; gap: 16px 14px; margin: 0; padding: 0; list-style: none; }
-.grid li { position: relative; width: 210px; font-size: 13px; color: var(--text-2); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px 14px; margin: 0; padding: 0; list-style: none; }
+.grid li { position: relative; min-width: 0; font-size: 13px; color: var(--text-2); }
 .grid li span { display: block; margin-top: 4px; }
-.grid ::deep .asset-slot { display: block; object-fit: cover; }
+.grid ::deep .asset-slot { display: block; object-fit: cover; width: 100% !important; height: auto !important; aspect-ratio: 210 / 118; }
 .del { position: absolute; right: 4px; top: 4px; width: 24px; height: 24px; padding: 0; border: 0; border-radius: var(--r-1); background: rgba(0, 0, 0, .7); color: #fff; cursor: pointer; }
 .del ::deep .icon { width: 12px; height: 12px; }
 .dl { margin: 0 0 14px; text-align: right; }

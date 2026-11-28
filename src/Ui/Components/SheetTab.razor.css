@@ -1,13 +1,14 @@
-.sheet { width: 720px; background: #fff; color: #444; font-size: 12px; }
-.logo { position: relative; height: 108px; padding: 22px 0 0 76px; box-sizing: border-box; }
-.logo ::deep .medal { position: absolute; right: 20px; top: 10px; }
+.sheet { --u: calc(100cqw / 720); container-type: inline-size; width: 100%; background: #fff; color: #444; font-size: 12px; }
+.logo { position: relative; height: calc(108 * var(--u)); padding: calc(22 * var(--u)) 0 0 calc(76 * var(--u)); box-sizing: border-box; }
+.logo ::deep .asset-slot { width: calc(460 * var(--u)) !important; height: calc(64 * var(--u)) !important; }
+.logo ::deep .medal { position: absolute; right: calc(20 * var(--u)); top: calc(10 * var(--u)); width: calc(84 * var(--u)) !important; height: calc(84 * var(--u)) !important; }
 .sheet ::deep .asset-slot { display: block; }
-.guide { position: relative; height: 300px; background: #f0ebe3; }
-.guide.big { height: 552px; }
+.guide { position: relative; height: calc(300 * var(--u)); background: #f0ebe3; }
+.guide.big { height: calc(552 * var(--u)); }
 .species { position: absolute; left: 0; right: 0; top: 12px; text-align: center; font-size: 12px; color: #000; }
-.guide > ::deep .asset-slot { position: absolute; left: 20px; top: 60px; }
-.guide.big > ::deep .asset-slot { left: 60px; top: 56px; }
-.abn { position: absolute; right: 0; top: 52px; width: 114px; border-collapse: collapse; font-size: 12px; text-align: center; }
+.guide > ::deep .asset-slot { position: absolute; left: calc(20 * var(--u)); top: calc(60 * var(--u)); width: calc(380 * var(--u)) !important; height: calc(220 * var(--u)) !important; }
+.guide.big > ::deep .asset-slot { left: calc(60 * var(--u)); top: calc(56 * var(--u)); width: calc(560 * var(--u)) !important; height: calc(460 * var(--u)) !important; }
+.abn { position: absolute; right: 0; top: calc(52 * var(--u)); width: calc(114 * var(--u)); min-width: 100px; border-collapse: collapse; font-size: 12px; text-align: center; }
 .abn th { padding: 5px 2px; background: #d8c9b3; font-size: 12px; font-weight: 400; white-space: nowrap; color: #666; }
 .abn td { padding: 4px; height: 17px; border-bottom: 1px solid #e8dcc8; background: #f7f3ec; color: #555; }
 .abn .sub td { background: #f0ebe3; text-align: left; }
@@ -18,20 +19,20 @@ td { padding: 4px 10px; line-height: 16px; border: 1px solid #efe6d6; background
 .facts th { width: 30%; }
 .facts td { width: 20%; }
 .rows thead th { text-align: center; }
-.rows tbody th { width: 296px; }
-.rows td { width: 107px; }
-.sums { width: 260px; margin: 0 0 0 auto; }
+.rows tbody th { width: 41%; }
+.rows td { width: 15%; }
+.sums { width: 36%; margin: 0 0 0 auto; }
 .sums th { text-align: left; }
 .shot { width: 100%; margin: 6px 0 12px; font-size: 12px; }
 .shot th { background: none; padding: 4px 2px; text-align: center; color: #000; }
 .shot td { border: 0; padding: 4px 2px; text-align: center; background: none; }
 .shot a, .info a { color: var(--primary); }
 .info { display: flex; gap: 2px; padding: 0 8px 12px; }
-dl { display: grid; grid-template-columns: 1fr 1fr; width: 458px; margin: 0; }
+dl { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-width: 0; margin: 0; }
 dl div { margin: 0 0 6px; }
 dt { padding: 4px 2px 2px; color: #555; }
 dd { margin: 0; padding: 4px 8px; border: 1px solid #efe6d6; text-align: right; color: #555; }
-.aside { width: 246px; }
+.aside { flex: none; width: 34%; }
 .map-btn { display: block; width: 100%; height: 28px; margin: 0 0 80px; border: 0; border-radius: 4px; background: var(--primary-bg); font-size: 20px; line-height: 28px; color: #fff; cursor: pointer; }
 .final { height: 48px; background: #d8c9b3; text-align: center; font-weight: 700; line-height: 48px; color: #333; }
 .aside p { margin: 0; padding: 8px; border: 1px solid #efe6d6; text-align: center; }
