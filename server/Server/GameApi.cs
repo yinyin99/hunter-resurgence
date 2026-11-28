@@ -177,7 +177,7 @@ public static class GameApi
                .WithDescription("Like StartSinglePlayer, for the catalogue's tutorial `tutorial_id` (0 is 1; 400 for any other). Opens no expedition: the session's connect "
                                 + "carries the tutorial (`mode` 1) and, until the next hunt starts, Inventory/move_multiple2 is ignored.")
                .Body<StartTutorialForm>("application/json").Produces(200, contentType: "application/json");
-            api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(), "state"))
+            api.MapExactPost(game, CLIENT_APPLICATION, r => game.Recorded(r) is { Tier: >= 1 } ? null : new(200, JsonAnyOrigin(), s.ClientApplicationReply(MissionTexts.RequestLanguage(r)), "state"))
                .WithName("ClientApplication").WithSummary("The catalogue the in-game pages read")
                .WithDescription("The recorded reply when the operator has one, else the species, items, reserves and locations of the player state (missions only in a recording).")
                .Body<LangForm>("application/json").Produces(200, contentType: "application/json");
@@ -268,9 +268,9 @@ public static class GameApi
                                 + "and for a player the token's player cannot see (docs/server.md#who-sees-whom). Needs a player's token (else the expired-token reply). Community server only.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             // the season the original's pages read: the current one
-            api.MapExactPost(game, APPLICATION, r => !s.Online ? null : game.Recorded(r) is { Tier: >= 1 } hit ? new(hit.Status, hit.Headers, s.WithSeason(hit.Body), "patch") : null)
-               .WithName("Application").WithSummary("The application catalogue, with the current leaderboard season")
-               .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)); a local server replays it unchanged.")
+            api.MapExactPost(game, APPLICATION, r => !s.Online ? null : game.Recorded(r) is { Tier: >= 1 } hit ? new(hit.Status, hit.Headers, s.WithSeason(s.Texts.Localize(hit.Body, MissionTexts.RequestLanguage(r))), "patch") : null)
+               .WithName("Application").WithSummary("The application catalogue, with the current leaderboard season and the missions in the game's language")
+               .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)) and, for the request's `lang` (`de_DE`), the titles, descriptions and objectives of the missions and mission groups in that language ([docs/server.md](server.md#mission-texts)); a local server replays it unchanged.")
                .Produces(200, contentType: "application/json");
             api.MapExactPost(game, AVATARS, r => !s.Online || s.AvatarListReply(s.Authenticate(r.Tokens())) is not { } list ? null : new(200, JsonAnyOrigin(), list, "state"))
                .WithName("Avatars").WithSummary("The game's avatars, the store's included")
@@ -396,7 +396,7 @@ public static class GameApi
                    .WithName(name).WithSummary(summary).WithDescription(description)
                    .Body<TokenForm>(Form).Produces(200, contentType: "application/json");
             // daily missions (community server only; without them the empty replies of ReplayScope): the player's own streak
-            api.MapExactPost(game, DAILY_CALENDAR, r => !s.Online ? null : Own(game, r, a => s.DailyCalendarReply(a) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
+            api.MapExactPost(game, DAILY_CALENDAR, r => !s.Online ? null : Own(game, r, a => s.DailyCalendarReply(a, MissionTexts.RequestLanguage(r)) is { } reply ? new(200, JsonAnyOrigin(), reply, "state") : null))
                .WithName("DailyMissionCalendar").WithSummary("The player's daily mission calendar and streak")
                .WithDescription("`{is_frozen, mission_end, broken_streak_info: {has_broken_streak, streak_larger}, calendar}`: 7 days of the streak with their difficulty and reward, "
                                 + "today's holding the mission of the date (the same for every player) and the objectives finished; `is_frozen` until the player activates a streak.")

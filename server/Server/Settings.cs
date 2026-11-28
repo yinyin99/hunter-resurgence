@@ -175,6 +175,7 @@ public sealed class Settings
         cfg["archive_db"] = Path_("archive_db", Path.Combine(dataDir, "archive.db"));  // the operator's archive of public profiles (Archive.cs); a missing file turns claims off
         cfg["avatar_uploads_dir"] = Path_("avatar_uploads_dir", "avatar-uploads");  // the saved copies of the players' uploaded avatars, `242/<uid>.jpg`: a restore reads one before it asks `avatar_uploads` (PictureLinks.LocalAvatar)
         cfg["recordings_dir"] = Path_("recordings_dir", "recordings");  // the operator's recordings, and beside the catalogue's its `mission_rules.json` (Replay.LoadState)
+        cfg["mission_texts_dir"] = Path_("mission_texts_dir", Path.Combine(dataDir, "mission-texts"));  // the missions' texts per language: game text, so not in the repository (MissionTexts.Load); a missing folder or file means English
         cfg["images_dir"] = Path_("images_dir", "images");  // the operator's pictures: the game's avatars are `avatar-<id>.png` there (Replay.Game.AvatarPicture), the website's slots too (docs/images.md)
         return new Settings
         {
