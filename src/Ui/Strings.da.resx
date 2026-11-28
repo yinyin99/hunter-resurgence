@@ -1767,4 +1767,8 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="GM.Status.penalty" xml:space="preserve"><value>Straf</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Foderautomaten er tom den {0} kl. {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Din foderautomat er fuld</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Foder</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

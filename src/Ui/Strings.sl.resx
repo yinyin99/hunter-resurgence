@@ -1767,4 +1767,8 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="GM.Status.penalty" xml:space="preserve"><value>Kazen</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Krmilnica bo prazna {0} ob {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Vaša krmilnica je polna</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Vaba</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Stanje</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

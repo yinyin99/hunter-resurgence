@@ -1767,4 +1767,8 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="GM.Status.penalty" xml:space="preserve"><value>Penalty</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Feeder will be empty on {0} at {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Your feeder is full</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Bait</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

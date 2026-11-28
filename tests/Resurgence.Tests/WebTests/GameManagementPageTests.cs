@@ -62,9 +62,27 @@ public sealed class GameManagementPageTests : UiContext
     }
 
     [Fact]
+    public void FeedersAreGroupedByTypeWithTheirPictureReserveCoordinatesBaitAndStatus()
+    {
+        var fake = new Fake(new([Feeder("a", 16, 10), Feeder("b", 10, 5) with { ItemId = 2, Name = "Made-up Other", Status = "penalty" }], 0, new(1, 2)));
+        Services.AddSingleton<IGameManagementService>(fake);
+        var cut = Render<GameManagement>(p => p.Add(g => g.Tab, "bait-sites"));
+
+        Assert.Equal(["Made-up Feeder a", "Made-up Other"], cut.FindAll(".kind h5").Select(h => h.TextContent));
+        var card = cut.FindAll("article.feeder")[0];
+        Assert.Contains("item-1", card.InnerHtml);
+        Assert.Equal(["Made-up Reserve", "x: 1.5", "y: 2"], card.QuerySelectorAll(".where > *").Select(e => e.TextContent));
+        Assert.Equal(["Bait", "Status"], card.QuerySelectorAll("dt").Select(e => e.TextContent));
+        Assert.Equal("16/50", card.QuerySelector(".num")!.TextContent);
+        Assert.Equal("Active", card.QuerySelector(".status.active")!.TextContent);
+        Assert.Equal("Penalty", cut.FindAll("article.feeder")[1].QuerySelector(".status.penalty")!.TextContent);
+        Assert.Single(cut.FindAll("h4.bar input[type=number]"));
+    }
+
+    [Fact]
     public void TheMockShowsBothTabsWithTheirEmptyTextsAbsent()
     {
         Assert.Equal(2, Render<GameManagement>().FindAll("li.lodge").Count);
-        Assert.Equal(2, Render<GameManagement>(p => p.Add(g => g.Tab, "bait-sites")).FindAll("li.feeder").Count);
+        Assert.Equal(2, Render<GameManagement>(p => p.Add(g => g.Tab, "bait-sites")).FindAll("article.feeder").Count);
     }
 }

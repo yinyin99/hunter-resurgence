@@ -1,6 +1,7 @@
 @page "/settings/game-management/{Tab?}"
 @inject IGameManagementService Service
 @inject IJSRuntime JS
+@inject HostMode Mode
 
 <PageTitle>@L["Settings.GameManagement"]</PageTitle>
 
@@ -11,22 +12,27 @@
     else if (onBait)
     {
         <section class="panel">
-            <h4 class="bar">@L["GM.BaitTitle"]</h4>
+            <h4 class="bar"><span>@L["GM.BaitTitle"]</span><label class="topup">@L["GM.FillTo"] <input type="number" min="0" max="50" @bind="TopUp" @bind:event="onchange" /></label></h4>
             <div class="pane">
-                <label class="topup">@L["GM.FillTo"] <input type="number" min="0" max="50" @bind="TopUp" @bind:event="onchange" /></label>
                 <p class="info">@L["GM.Packs", feeders.Packs]</p>
                 @if (error is { } e) { <p class="error" role="alert">@L[e]</p> }
                 @if (feeders.Feeders.Length == 0) { <p class="empty">@L["GM.NoFeeders"]</p> }
-                else
+                @foreach (var kind in feeders.Feeders.OrderBy(f => f.Reserve).ThenBy(f => f.Id, StringComparer.Ordinal).GroupBy(f => f.ItemId))
                 {
-                    <ul class="list">
-                        @foreach (var f in feeders.Feeders.OrderBy(f => f.Reserve).ThenBy(f => f.Id, StringComparer.Ordinal))
+                    <section class="kind">
+                        <h5>@kind.First().Name</h5>
+                        @foreach (var f in kind)
                         {
                             var canFill = f.BaitAmount < topUp && f.BaitOwned > 0;
-                            <li class="feeder">
-                                <span class="what"><b>@f.Name</b> <span class="where">@f.ReserveName, @f.X.ToString("0.##", Inv) / @f.Y.ToString("0.##", Inv)</span></span>
-                                <span class="bar-wrap" title="@Tip(f)"><span class="fill" style="width:@(f.BaitMax > 0 ? f.BaitAmount * 100 / f.BaitMax : 0)%"></span><span class="num">@f.BaitAmount/@f.BaitMax</span></span>
-                                <span class="status @f.Status">@L["GM.Status." + f.Status]</span>
+                            <article class="feeder">
+                                <AssetSlot Name="@Mode.ItemSlot(f.ItemId)" Width="75" Height="110" Class="pic" />
+                                <div class="where"><b>@f.ReserveName</b><span>@L["GM.X"] @f.X.ToString("0.###", Inv)</span><span>@L["GM.Y"] @f.Y.ToString("0.###", Inv)</span></div>
+                                <dl class="facts">
+                                    <dt>@L["GM.Bait"]</dt>
+                                    <dd><span class="gauge" title="@Tip(f)"><span class="fill" style="width:@(f.BaitMax > 0 ? f.BaitAmount * 100 / f.BaitMax : 0)%"></span><span class="num">@f.BaitAmount/@f.BaitMax</span></span></dd>
+                                    <dt>@L["GM.Status"]</dt>
+                                    <dd><span class="status @f.Status">@L["GM.Status." + f.Status]</span></dd>
+                                </dl>
                                 <span class="buttons">
                                     @if (feeders.Packs > 0) { <button type="button" class="btn btn-inverse refill" disabled="@(!canFill)" @onclick='() => Refill(f, "pack")'>@L["GM.Refill"]</button> }
                                     else
@@ -35,9 +41,9 @@
                                         <button type="button" class="btn btn-inverse refill gm" disabled="@(!canFill)" @onclick='() => Refill(f, "gm")'>@L["GM.RefillGm", feeders.RefillPrice.Gm]</button>
                                     }
                                 </span>
-                            </li>
+                            </article>
                         }
-                    </ul>
+                    </section>
                 }
             </div>
         </section>

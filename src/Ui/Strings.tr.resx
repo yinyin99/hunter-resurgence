@@ -1767,4 +1767,8 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="GM.Status.penalty" xml:space="preserve"><value>Ceza</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Yemlik {0} tarihinde saat {1} itibarıyla boş olacak</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Yemliğiniz dolu</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Yem</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Durum</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

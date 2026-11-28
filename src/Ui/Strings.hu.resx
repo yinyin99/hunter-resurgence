@@ -1767,4 +1767,8 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="GM.Status.penalty" xml:space="preserve"><value>Büntetés</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Az etető ekkor ürül ki: {0}, {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Az etetőd tele van</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Csali</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Állapot</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

@@ -1767,4 +1767,8 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="GM.Status.penalty" xml:space="preserve"><value>Pénalité</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>L'agrainoir sera vide le {0} à {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Votre agrainoir est plein</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Appât</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Statut</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x :</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y :</value></data>
 </root>

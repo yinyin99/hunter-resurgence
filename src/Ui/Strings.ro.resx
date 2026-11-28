@@ -1767,4 +1767,8 @@ Numele:</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Penalizare</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Hrănitorul va fi gol pe {0} la {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Hrănitorul tău este plin</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Momeală</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Stare</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

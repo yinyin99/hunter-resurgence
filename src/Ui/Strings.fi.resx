@@ -1767,4 +1767,8 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="GM.Status.penalty" xml:space="preserve"><value>Rangaistus</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>Ruokintalaite tyhjenee {0} klo {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Ruokintalaitteesi on täynnä</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Syötti</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Tila</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

@@ -1767,4 +1767,8 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="GM.Status.penalty" xml:space="preserve"><value>Penalidade</value></data>
   <data name="GM.EmptyOn" xml:space="preserve"><value>O comedouro ficará vazio em {0} às {1}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Seu comedouro está cheio</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Isca</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
+  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>
