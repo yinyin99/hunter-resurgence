@@ -75,6 +75,7 @@ builder.Services.AddScoped<ICompetitionsService>(sp => new MockCompetitionsServi
 builder.Services.AddScoped<IAccountService>(sp => new MockAccountService());
 builder.Services.AddScoped<ISeasonalEventsService>(sp => new MockSeasonalEventsService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IDiscordInviteService, MockDiscordInviteService>();
+builder.Services.AddScoped<IReferralService>(sp => new MockReferralService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<IRestoreOfferService, MockRestoreOfferService>();
 builder.Services.AddScoped<ISignupService>(sp => new MockSignupService(sp.GetRequiredService<HostMode>().Mock));
 builder.Services.AddScoped<ISignInService>(sp => new MockSignInService(sp.GetRequiredService<HostMode>().Mock));
@@ -98,6 +99,8 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
         sp.GetRequiredService<ILogger<ServerMissionsService>>())));
     // the one-time Discord invitation is remembered with the account
     builder.Services.Replace(ServiceDescriptor.Scoped<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>())));
+    // the referral code, the recruits' progress and the entering of a code
+    builder.Services.Replace(ServiceDescriptor.Scoped<IReferralService>(sp => new ServerReferralService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerReferralService>>())));
     // the main page's online line: the server's public counts
     builder.Services.Replace(ServiceDescriptor.Scoped<IOnlineService>(sp => new ServerOnlineService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerOnlineService>>())));
     // the feed's posts: the server's (the pictures are on the site's own domain, which the proxy routes to the server)

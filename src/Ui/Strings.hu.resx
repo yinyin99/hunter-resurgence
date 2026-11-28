@@ -1696,4 +1696,58 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nem találom a játékot a Steamen</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>A Steamben nyisd meg a Fiók → Licencek és termékkulcs-aktiválások oldalt, és keresd ott a játékot. Ha ott van, használd az indító „Telepítés Steammel” gombját vagy a Steam-könyvtáradat. Ha nincs ott, a Steam már nem tudja megadni neked.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Steam-licenceid megnyitása</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Barátok toborzása</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>A te meghívókódod</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Meghívó link</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Másolás</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Átmásolva</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Küldd el a linket egy barátodnak. Ha regisztrált és beírta a kódodat, a haladását a meghívók oldalán látod.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Meghívottaid haladásának megtekintése</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Teljesítő meghívottak: {0} · következő jutalomszint: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Teljesítő meghívottak: {0} · minden jutalomszint elérve</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Teljesítő meghívottak: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Van egy barátod kódja?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Meghívókód</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Kód beírása</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Kódot eddig írhatsz be: {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Jutalom a kód beírásáért: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>A kód elfogadva: {0} hívott meg téged.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Ezt kaptad: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Beírtad {1} kódját: {0}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Már nem írhatsz be kódot.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>A(z) {0} kóddal hívtak meg. A beírásához jelentkezz be, vagy hozd létre a fiókodat.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>A(z) {0} meghívókód nem használható: kódot csak egyszer, a regisztráció után hamarosan lehet beírni.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>A meghívók oldala nem tölthető be.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Meghívottaid</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Egy meghívott akkor teljesít, ha {0} órát játszott ezen a szerveren és {1} HunterScore-t szerzett, mindkettőt a kód beírásától számítva.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Még senki sem írta be a kódodat.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Teljesítette</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord összekapcsolva</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Játékidő</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Szerzett HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} / {1} óra</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} / {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Jutalomszintek</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Utoljára elért szint: {0} (jutalom: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Következő szint: {0} (jutalom: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>Még nem értél el szintet.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Minden szint elérve.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Teljesítő meghívottak</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Jutalom</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Elérve</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>A jutalmat később közöljük</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord-mérföldkövek</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Meghívottak, akik összekapcsolták a Discord-fiókjukat: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Utoljára elért Discord-mérföldkő: {0} (jutalom: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Következő Discord-mérföldkő: {0} (jutalom: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>Még nem értél el Discord-mérföldkövet.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Minden Discord-mérföldkő elérve.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Meghívottak összekapcsolt Discorddal</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Ez a kód nem létezik. Ellenőrizd, és próbáld újra.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Ez a saját kódod.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Ez a kód egy általad meghívott játékosé.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Már beírtál egy kódot.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>A kód beírásának ideje lejárt.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Ez a kód nem használható.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>A szerver nem válaszolt. Próbáld újra később.</value></data>
 </root>

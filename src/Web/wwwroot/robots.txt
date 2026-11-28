@@ -27,6 +27,8 @@ Disallow: /launch-map
 Disallow: /servers
 Disallow: /tutorials
 Disallow: /invite-friends
+Disallow: /referral
+Disallow: /join/
 Disallow: /missions
 Disallow: /competitions
 Disallow: /community-league

@@ -1,0 +1,68 @@
+@inject IReferralService Service
+@inject IJSRuntime JS
+
+@* enters a friend's referral code (once, within the window the server gives): the result of the last entry, the form while a code can be entered, else (not Compact) what was entered or that the time is over *@
+@if (done is not null)
+{
+    <p class="ok" role="status">@L["Referral.Entered", done.Recruiter] @(done.Reward is { Any: true } ? L["Referral.EnteredReward", L.Reward(done.Reward)] : L["Referral.Tba"])</p>
+}
+else if (Data.CanEnter)
+{
+    <form class="enter" @onsubmit="Submit">
+        <h4>@L["Referral.EnterTitle"]</h4>
+        @if (until is not null) { <p class="note">@L["Referral.EnterUntil", until]</p> }
+        <div class="row">
+            <label class="sr" for="referral-enter">@L["Referral.EnterLabel"]</label>
+            <input id="referral-enter" class="field" type="text" @bind="code" @bind:event="oninput" maxlength="24" autocomplete="off" spellcheck="false" aria-invalid="@(error is not null ? "true" : null)" />
+            <button type="submit" class="btn btn-primary" disabled="@busy">@L["Referral.Enter"]</button>
+        </div>
+        @if (error is not null) { <p class="error" role="alert">@L[error]</p> }
+        <p class="note">@L["Referral.EnterReward", L.Reward(Data.RecruitReward)]</p>
+    </form>
+}
+else if (!Compact)
+{
+    <p class="note">@(Data.EnteredCode is not null ? L["Referral.EnteredBy", Data.EnteredCode, Data.Recruiter ?? ""] : L["Referral.Closed"])</p>
+}
+
+@code {
+    [Parameter, EditorRequired] public Referral Data { get; set; } = null!;
+    /// <summary>A code to fill in (the invitation link's).</summary>
+    [Parameter] public string? Prefill { get; set; }
+    /// <summary>The news block: no line about a code entered earlier or a window that closed.</summary>
+    [Parameter] public bool Compact { get; set; }
+    /// <summary>After a code was accepted: the page reads the referral page again.</summary>
+    [Parameter] public EventCallback Entered { get; set; }
+
+    string code = "", until = "";
+    string? error;
+    bool busy;
+    ReferralEntered? done;
+
+    protected override void OnInitialized()
+    {
+        code = Prefill ?? "";
+        // UTC until the browser has told its own time zone (OnAfterRenderAsync)
+        until = Data.EnterUntil is { } t ? Fmt.Utc(DateTimeOffset.FromUnixTimeSeconds(t).UtcDateTime) : "";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Data.EnterUntil is not { } t) return;
+        try
+        {
+            await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            if (await shell.InvokeAsync<string?>("localTime", t) is { Length: > 0 } local) { until = local; StateHasChanged(); }
+        }
+        catch (JSException) { } // no JS answer: the UTC time stays
+    }
+
+    async Task Submit()
+    {
+        busy = true;
+        error = null;
+        var r = await Service.EnterAsync(code.Trim());
+        busy = false;
+        if (r.Ok) { done = r.Value; await Entered.InvokeAsync(); } else error = r.Error;
+    }
+}

@@ -128,6 +128,11 @@ export function copy(text) {
     return navigator.clipboard.writeText(text);
 }
 
+// A time (unix seconds) as the browser's own date and time, for the deadline of the referral code: a server-side page does not know the visitor's time zone.
+export function localTime(seconds) {
+    return new Date(seconds * 1000).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+}
+
 // Pan and zoom of a map with the zoom buttons (MapPlaceholder): drag (mouse, pen, one finger), wheel around the cursor, arrow keys and +/- while the map has focus.
 // The view lives in map.dataset (s: scale 1..max, x/y: pan in percent of the map, applied before the scale; the picture's edge can't pass the map's edge)
 // and the plane is moved at once; ref.View(s, x, y) tells the component where a gesture ended (a round trip per pointer move would lag on the website).

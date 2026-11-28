@@ -131,4 +131,15 @@ public static class Fmt
 
     /// <summary>A number with a point, in every language.</summary>
     public static string Num(double v, string format) => v.ToString(format, English);
+
+    /// <summary>A referral reward in words ("2,500 gm$, 250 em$, 1× Item"); "reward to be announced" while the operator has set none.</summary>
+    public static string Reward(this IStringLocalizer l, ReferralReward? r)
+    {
+        if (r is not { Any: true }) return l["Referral.Tba"];
+        List<string> parts = [];
+        if (r.Gm > 0) parts.Add(Num(r.Gm, "#,##0") + " gm$");
+        if (r.Em > 0) parts.Add(Num(r.Em, "#,##0") + " em$");
+        parts.AddRange((r.Items ?? []).Select(i => $"{i.Count}× {i.Name}"));
+        return string.Join(", ", parts);
+    }
 }

@@ -1,0 +1,7 @@
+.card { box-sizing: border-box; width: 350px; max-width: 100%; padding: 16px 19px 19px; border: 1px solid var(--line-2); }
+h3 { margin: 0 0 12px; color: #fff; font-size: var(--fs-h3); line-height: 30px; text-transform: none; }
+p { margin: 0 0 8px; line-height: 20px; overflow-wrap: anywhere; }
+.summary { color: #fff; }
+a { color: var(--accent-text); }
+a:hover { color: #fff; }
+.card ::deep form { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-2); }

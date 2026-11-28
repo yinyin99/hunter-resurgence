@@ -8,11 +8,11 @@ public static class LauncherGuard
     // signed-in players only: the old "V" routes (the inventory lists missions, wallet, messages, settings, dashboard, welcome and more), the inventory, players' data, the store, the
     // open games (the launcher's servers page) and the competitions (the server refuses their reads signed out: docs/website.md#signed-in-players-only)
     static readonly string[] SignedIn = ["missions", "wallet", "bank", "messages", "new-message", "settings", "invite-friends", "welcome", "community-league", "community_league", "steam_callback", "restore",
-        "store", "profile", "competitions", "servers", "inventory"];
+        "store", "profile", "competitions", "servers", "inventory", "referral"];
     // the routes whose data is still the mock's: the website with a community server does not serve them (HostMode.Live). Competitions have no
     // source there: the only recorded ones ended weeks ago (docs/website.md#sign-in). The wallet, the messages and the missions (the daily ones too) are the server's
-    // (the wallet's bank tab is the page's to hide). The settings page is the server's for the avatar and the multiplayer bans, its two working items; the store, the inventory, the profiles and the games are the server's
-    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions", "settings", "store", "profile", "servers", "inventory"])];
+    // (the wallet's bank tab is the page's to hide). The settings page is the server's for the avatar and the multiplayer bans, its two working items; the store, the inventory, the profiles, the games and the referral page are the server's
+    static readonly string[] MockData = [.. SignedIn.Except(["restore", "wallet", "messages", "missions", "settings", "store", "profile", "servers", "inventory", "referral"])];
 
     public static bool Blocks(string path) => Starts(path, LauncherOnly);
 

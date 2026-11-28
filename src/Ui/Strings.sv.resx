@@ -1696,4 +1696,58 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Jag hittar inte spelet på Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Öppna Konto → Licenser och aktivering av produktnycklar i Steam och leta efter spelet där. Finns det där, använd knappen ”Installera med Steam” i startprogrammet eller ditt Steam-bibliotek. Finns det inte där, kan Steam inte längre ge dig det.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Öppna dina Steam-licenser</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Rekrytera vänner</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Din hänvisningskod</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Inbjudningslänk</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopiera</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Kopierad</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Skicka länken till en vän. När vännen har registrerat sig och angett din kod ser du hens framsteg på hänvisningssidan.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Se dina rekryters framsteg</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Kvalificerade rekryter: {0} · nästa belöningsnivå: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Kvalificerade rekryter: {0} · alla belöningsnivåer är nådda</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Kvalificerade rekryter: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Har du en väns kod?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Hänvisningskod</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Ange kod</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Du kan ange en kod till {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Belöning för att ange en kod: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Koden godkänd: {0} är din rekryterare.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Du fick: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Du angav koden {0} från {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Du kan inte längre ange en kod.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Du blev inbjuden med koden {0}. Logga in eller skapa ditt konto för att ange den.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Inbjudningskoden {0} kan inte användas: en kod kan bara anges en gång, kort efter registreringen.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Din hänvisningssida kunde inte laddas.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Dina rekryter</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>En rekryt kvalificerar sig efter {0} h spelade på den här servern och {1} intjänad HunterScore, båda räknade från det att koden angavs.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Ingen har angett din kod ännu.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Kvalificerad</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord länkad</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Speltid</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Intjänad HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} av {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} av {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Belöningsnivåer</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Senast nådda nivå: {0} (belöning: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Nästa nivå: {0} (belöning: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>Ingen nivå har nåtts ännu.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Alla nivåer är nådda.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Kvalificerade rekryter</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Belöning</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Nådd</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Belöning meddelas senare</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord-milstolpar</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Rekryter som har länkat sitt Discord-konto: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Senast nådda Discord-milstolpe: {0} (belöning: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Nästa Discord-milstolpe: {0} (belöning: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>Ingen Discord-milstolpe har nåtts ännu.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Alla Discord-milstolpar är nådda.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Rekryter med länkad Discord</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Den här koden finns inte. Kontrollera den och försök igen.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Det här är din egen kod.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Den här koden tillhör en spelare du har rekryterat.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Du har redan angett en kod.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Tiden för att ange en kod är slut.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Den här koden kan inte användas.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Servern svarade inte. Försök igen senare.</value></data>
 </root>

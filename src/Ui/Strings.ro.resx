@@ -1696,4 +1696,58 @@ Numele:</value></data>
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nu găsesc jocul pe Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>În Steam deschide Cont → Licențe și activări de chei de produs și caută acolo jocul. Dacă este acolo, folosește butonul „Instalează prin Steam” al launcherului sau biblioteca ta Steam. Dacă nu este, Steam nu ți-l mai poate da.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Deschide licențele tale Steam</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Recrutați prieteni</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Codul dumneavoastră de recomandare</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Link de invitație</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Copiază</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Copiat</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Trimiteți linkul unui prieten. După ce se înregistrează și introduce codul dumneavoastră, progresul lui apare pe pagina de recomandări.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Vedeți progresul recruților dumneavoastră</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Recruți calificați: {0} · următorul nivel de recompensă: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Recruți calificați: {0} · toate nivelurile de recompensă atinse</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Recruți calificați: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Aveți codul unui prieten?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Cod de recomandare</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Introduceți codul</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Puteți introduce un cod până la {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Recompensă pentru introducerea unui cod: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Cod acceptat: {0} este cel care v-a recrutat.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Ați primit: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Ați introdus codul {0} al lui {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Nu mai puteți introduce un cod.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Ați fost invitat cu codul {0}. Conectați-vă sau creați-vă contul pentru a-l introduce.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Codul de invitație {0} nu poate fi folosit: un cod se poate introduce o singură dată, la scurt timp după înregistrare.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Pagina dumneavoastră de recomandări nu a putut fi încărcată.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Recruții dumneavoastră</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Un recrut se califică după {0} h jucate pe acest server și {1} HunterScore câștigat, ambele numărate din momentul introducerii codului.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Nimeni nu a introdus încă codul dumneavoastră.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Calificat</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord asociat</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Timp jucat</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>HunterScore câștigat</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} din {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} din {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Niveluri de recompensă</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Ultimul nivel atins: {0} (recompensă: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Următorul nivel: {0} (recompensă: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>Niciun nivel atins încă.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Toate nivelurile au fost atinse.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Recruți calificați</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Recompensă</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Atins</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Recompensă care va fi anunțată</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Etape Discord</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Recruți care și-au asociat contul Discord: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Ultima etapă Discord atinsă: {0} (recompensă: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Următoarea etapă Discord: {0} (recompensă: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>Nicio etapă Discord atinsă încă.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Toate etapele Discord au fost atinse.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Recruți cu Discord asociat</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Acest cod nu există. Verificați-l și încercați din nou.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Acesta este propriul dumneavoastră cod.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Acest cod aparține unui jucător pe care l-ați recrutat.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Ați introdus deja un cod.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Timpul pentru introducerea unui cod a expirat.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Acest cod nu poate fi folosit.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Serverul nu a răspuns. Încercați din nou mai târziu.</value></data>
 </root>

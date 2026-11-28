@@ -1,0 +1,9 @@
+h4 { margin: 0 0 6px; color: #fff; font-size: var(--fs-h4); line-height: 24px; }
+p { margin: 0 0 8px; line-height: 20px; }
+.note { color: var(--text-3); font-size: 13px; }
+.row { display: flex; gap: 6px; margin: 0 0 8px; }
+.field { flex: 1; min-width: 0; height: 32px; padding: 0 8px; font-size: 14px; text-transform: uppercase; }
+.field::placeholder { text-transform: none; }
+.error { color: var(--su-error); }
+.ok { color: var(--success); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

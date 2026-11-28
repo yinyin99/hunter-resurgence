@@ -1696,4 +1696,58 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Igre ne najdem v Steamu</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>V Steamu odprite Račun → Licence in aktivacije ključev izdelkov ter tam poiščite igro. Če je tam, uporabite gumb „Namesti prek Steama“ v zaganjalniku ali svojo knjižnico Steam. Če je ni, vam je Steam ne more več dati.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Odpri vaše licence Steam</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Povabi prijatelje</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Tvoja koda za priporočilo</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Povezava z vabilom</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopiraj</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Kopirano</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Pošlji povezavo prijatelju. Ko se registrira in vnese tvojo kodo, boš njegov napredek videl na strani priporočil.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Poglej napredek svojih povabljencev</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Kvalificirani povabljenci: {0} · naslednja stopnja nagrade: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Kvalificirani povabljenci: {0} · vse stopnje nagrad so dosežene</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Kvalificirani povabljenci: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Imaš kodo prijatelja?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Koda za priporočilo</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Vnesi kodo</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Kodo lahko vneseš do {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Nagrada za vnos kode: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Koda je sprejeta: {0} te je povabil.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Prejel si: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Vnesel si kodo {0} igralca {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Kode ni več mogoče vnesti.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Povabljen si bil s kodo {0}. Prijavi se ali ustvari račun, da jo vneseš.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Kode vabila {0} ni mogoče uporabiti: kodo je mogoče vnesti samo enkrat, kmalu po registraciji.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Strani priporočil ni bilo mogoče naložiti.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Tvoji povabljenci</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Povabljenec se kvalificira po {0} h igranja na tem strežniku in {1} pridobljenih točkah HunterScore, oboje šteto od vnosa kode.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Tvoje kode še nihče ni vnesel.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Kvalificiran</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord povezan</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Čas igranja</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Pridobljeni HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} od {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} od {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Stopnje nagrad</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Zadnja dosežena stopnja: {0} (nagrada: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Naslednja stopnja: {0} (nagrada: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>Nobena stopnja še ni dosežena.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Vse stopnje so dosežene.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Kvalificirani povabljenci</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Nagrada</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Doseženo</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Nagrada bo objavljena</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Mejniki Discorda</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Povabljenci, ki so povezali račun Discord: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Zadnji dosežen mejnik Discorda: {0} (nagrada: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Naslednji mejnik Discorda: {0} (nagrada: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>Noben mejnik Discorda še ni dosežen.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Vsi mejniki Discorda so doseženi.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Povabljenci s povezanim Discordom</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Te kode ni. Preveri jo in poskusi znova.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>To je tvoja lastna koda.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Ta koda pripada igralcu, ki si ga povabil.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Kodo si že vnesel.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Čas za vnos kode je potekel.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Te kode ni mogoče uporabiti.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Strežnik ni odgovoril. Poskusi znova pozneje.</value></data>
 </root>

@@ -1,0 +1,27 @@
+@inject IJSRuntime JS
+
+@* a referral code or link in a read-only box with its Copy button (the news block and the referral page) *@
+<div class="copy">
+    <label for="@Id">@Label</label>
+    <input id="@Id" class="field" type="text" readonly value="@Value" />
+    <button type="button" class="btn btn-inverse" @onclick="Copy">@L[copied ? "Referral.Copied" : "Referral.Copy"]</button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+
+    bool copied;
+
+    async Task Copy()
+    {
+        try
+        {
+            await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            await shell.InvokeVoidAsync("copy", Value);
+            copied = true;
+        }
+        catch (JSException) { } // the clipboard refused: the value stays selectable in the box
+    }
+}

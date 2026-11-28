@@ -1696,4 +1696,58 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>I can't find the game on Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>In Steam, open Account → Licences and product key activations and look for the game there. If it is there, use the launcher's “Install with Steam” button or your Steam library. If it is not, Steam can no longer give it to you.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Open your Steam licences</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Recruit friends</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Your referral code</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Invitation link</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Send the link to a friend. When they have signed up and entered your code, their progress shows on the referral page.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>See your recruits' progress</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Qualified recruits: {0} · next reward level: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Qualified recruits: {0} · every reward level reached</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Qualified recruits: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Got a friend's code?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Referral code</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Enter code</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>You can enter a code until {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Reward for entering a code: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Code accepted: {0} is your recruiter.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>You received: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>You entered the code {0} of {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>You can no longer enter a code.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>You were invited with the code {0}. Sign in or create your account to enter it.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>The invitation code {0} can not be used: a code can only be entered once, soon after registering.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Your referral page could not be loaded.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Your recruits</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>A recruit qualifies after {0} h played on this server and {1} HunterScore gained, both counted from the moment the code was entered.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Nobody has entered your code yet.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Qualified</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord linked</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Time played</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>HunterScore gained</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} of {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} of {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Reward levels</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Last level reached: {0} (reward: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Next level: {0} (reward: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>No level reached yet.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Every level is reached.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Qualified recruits</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Reward</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Reached</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Reward to be announced</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord milestones</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Recruits who linked their Discord account: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Last Discord milestone reached: {0} (reward: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Next Discord milestone: {0} (reward: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>No Discord milestone reached yet.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Every Discord milestone is reached.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Recruits with Discord linked</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>This code does not exist. Check it and try again.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>This is your own code.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>This code belongs to a player you recruited.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>You have already entered a code.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>The time to enter a code is over.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>This code can not be used.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>The server did not answer. Try again later.</value></data>
 </root>

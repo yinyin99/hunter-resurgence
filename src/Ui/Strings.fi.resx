@@ -1696,4 +1696,58 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>En löydä peliä Steamista</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Avaa Steamissa Tili → Lisenssit ja tuoteavainten aktivoinnit ja etsi peli sieltä. Jos se on siellä, käytä käynnistimen painiketta ”Asenna Steamillä” tai Steam-kirjastoasi. Jos ei ole, Steam ei enää voi antaa sitä sinulle.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Avaa Steam-lisenssisi</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Kutsu kavereita</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Kutsukoodisi</value></data>
+  <data name="Referral.Link" xml:space="preserve"><value>Kutsulinkki</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopioi</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Kopioitu</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Lähetä linkki kaverille. Kun hän on rekisteröitynyt ja syöttänyt koodisi, näet hänen edistymisensä kutsusivulla.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Katso kutsumiesi kavereiden edistyminen</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Hyväksytyt kaverit: {0} · seuraava palkintotaso: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Hyväksytyt kaverit: {0} · kaikki palkintotasot saavutettu</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Hyväksytyt kaverit: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Onko sinulla kaverin koodi?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Kutsukoodi</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Syötä koodi</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Voit syöttää koodin {0} asti.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Palkinto koodin syöttämisestä: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Koodi hyväksytty: {0} kutsui sinut.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Sait: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Syötit pelaajan {1} koodin {0}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Et voi enää syöttää koodia.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Sinut kutsuttiin koodilla {0}. Kirjaudu sisään tai luo tili syöttääksesi sen.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Kutsukoodia {0} ei voi käyttää: koodin voi syöttää vain kerran, pian rekisteröitymisen jälkeen.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Kutsusivua ei voitu ladata.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Kutsumasi kaverit</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Kaveri hyväksytään, kun hän on pelannut tällä palvelimella {0} h ja ansainnut {1} HunterScorea, molemmat laskettuna koodin syöttämisestä.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Kukaan ei ole vielä syöttänyt koodiasi.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Hyväksytty</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord yhdistetty</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Peliaika</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Ansaittu HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} / {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} / {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Palkintotasot</value></data>
+  <data name="Referral.TierNow" xml:space="preserve"><value>Viimeksi saavutettu taso: {0} (palkinto: {1}).</value></data>
+  <data name="Referral.TierNext" xml:space="preserve"><value>Seuraava taso: {0} (palkinto: {1}).</value></data>
+  <data name="Referral.TierNone" xml:space="preserve"><value>Yhtään tasoa ei ole vielä saavutettu.</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Kaikki tasot on saavutettu.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Hyväksytyt kaverit</value></data>
+  <data name="Referral.Reward" xml:space="preserve"><value>Palkinto</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Saavutettu</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Palkinto julkistetaan myöhemmin</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord-välitavoitteet</value></data>
+  <data name="Referral.DiscordCount" xml:space="preserve"><value>Kaverit, jotka ovat yhdistäneet Discord-tilinsä: {0}</value></data>
+  <data name="Referral.DiscordNow" xml:space="preserve"><value>Viimeksi saavutettu Discord-välitavoite: {0} (palkinto: {1}).</value></data>
+  <data name="Referral.DiscordNext" xml:space="preserve"><value>Seuraava Discord-välitavoite: {0} (palkinto: {1}).</value></data>
+  <data name="Referral.DiscordNone" xml:space="preserve"><value>Yhtään Discord-välitavoitetta ei ole vielä saavutettu.</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Kaikki Discord-välitavoitteet on saavutettu.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Kaverit, joilla Discord on yhdistetty</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Tätä koodia ei ole olemassa. Tarkista se ja yritä uudelleen.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Tämä on oma koodisi.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Tämä koodi kuuluu pelaajalle, jonka kutsuit.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Olet jo syöttänyt koodin.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Koodin syöttämisen aika on päättynyt.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Tätä koodia ei voi käyttää.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Palvelin ei vastannut. Yritä myöhemmin uudelleen.</value></data>
 </root>

@@ -1,0 +1,132 @@
+@page "/referral"
+@page "/join/{Code}"
+@inject IReferralService Service
+@inject ISessionService Sessions
+@inject NavigationManager Nav
+
+<PageTitle>@L["Referral.Title"]</PageTitle>
+
+@* /referral: the player's code and invitation link, the recruits' progress and the reward levels. /join/<code> is the invitation link: signed in it is this page with the code filled in,
+   signed out it goes to the sign-in (the server brings the player back to this address) *@
+<div class="page-min">
+    <h2 class="page-title">@L["Referral.Title"]</h2>
+    @if (!loaded) { }
+    else if (signedOut)
+    {
+        @if (Code is not null) { <p class="note">@L["Referral.JoinSignIn", Code]</p> }
+        <SignInRequired />
+    }
+    else if (data is null)
+    {
+        <p class="error" role="alert">@L["Referral.LoadFailed"]</p>
+        <button type="button" class="btn btn-inverse" @onclick="Load">@L["Board.Retry"]</button>
+    }
+    else
+    {
+        <section class="panel share">
+            <ReferralCopy Id="referral-code" Label="@L["Referral.Code"].Value" Value="@data.Code" />
+            <ReferralCopy Id="referral-link" Label="@L["Referral.Link"].Value" Value="@data.Link" />
+            <p class="note">@L["Referral.Share"]</p>
+        </section>
+        @if (Code is not null && !data.CanEnter) { <p class="note" role="status">@L["Referral.JoinClosed", Code]</p> }
+        <section class="panel enter"><ReferralEnter Data="data" Prefill="@Code" Entered="Reload" /></section>
+
+        <h3>@L["Referral.Recruits"]</h3>
+        <p class="note">@L["Referral.Qualification", Fmt.Num(data.Qualification.Hours, "0.##"), data.Qualification.Score]</p>
+        @if (data.Recruits.Length == 0)
+        {
+            <p class="note">@L["Referral.NoRecruits"]</p>
+        }
+        else
+        {
+            <ol class="recruits">
+                @foreach (var r in data.Recruits)
+                {
+                    <li class="@(r.Qualified ? "qualified" : null)">
+                        <div class="who">
+                            <a href="/profile/@r.Handle">@r.Handle</a>
+                            @if (r.Qualified)
+                            {
+                                <span class="tag done">@L["Referral.Qualified"]</span>
+                                @if (r.QualifiedAt is { } at) { <span class="when">@Fmt.Purchase(DateTimeOffset.FromUnixTimeSeconds(at).UtcDateTime)</span> }
+                            }
+                            @if (r.DiscordLinked) { <span class="tag">@L["Referral.DiscordLinked"]</span> }
+                        </div>
+                        @Meter(L["Referral.Played"], r.Hours, data.Qualification.Hours, L["Referral.OfHours", Fmt.Num(r.Hours, "0.##"), Fmt.Num(data.Qualification.Hours, "0.##")])
+                        @Meter(L["Referral.Gained"], r.Score, data.Qualification.Score, L["Referral.OfScore", r.Score, data.Qualification.Score])
+                    </li>
+                }
+            </ol>
+        }
+
+        <h3>@L["Referral.Rewards"]</h3>
+        @if (data.Tiers.Length > 0)
+        {
+            <p class="note">@Level(data.Tiers, "Referral.TierNow", "Referral.TierNext", "Referral.TierNone", "Referral.TierAll")</p>
+            @Tiers(data.Tiers, L["Referral.TierHead"])
+        }
+
+        <h3>@L["Referral.Discord"]</h3>
+        <p class="note">@L["Referral.DiscordCount", data.Discord.LinkedCount]</p>
+        @if (data.Discord.Milestones.Length > 0)
+        {
+            <p class="note">@Level(data.Discord.Milestones, "Referral.DiscordNow", "Referral.DiscordNext", "Referral.DiscordNone", "Referral.DiscordAll")</p>
+            @Tiers(data.Discord.Milestones, L["Referral.DiscordHead"])
+        }
+    }
+</div>
+
+@code {
+    /// <summary>The code of the invitation link, <c>/join/&lt;code&gt;</c>.</summary>
+    [Parameter] public string? Code { get; set; }
+
+    Referral? data;
+    bool loaded, signedOut;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await Sessions.CurrentAsync() is null)
+        {
+            signedOut = loaded = true;
+            // the community server signs in with a page load and comes back to this address, which is then the page with the code filled in
+            if (Code is not null && Sessions.SignInUrl("/join/" + Uri.EscapeDataString(Code)) is { } url) Nav.NavigateTo(url, forceLoad: true);
+            return;
+        }
+        await Load();
+    }
+
+    async Task Load()
+    {
+        data = await Service.GetAsync();
+        loaded = true;
+    }
+
+    async Task Reload() => data = await Service.GetAsync() ?? data;
+
+    static int Percent(double value, double target) => target <= 0 ? 100 : (int)Math.Min(100, Math.Round(value * 100 / target));
+
+    RenderFragment Meter(string label, double value, double target, string text) => @<div class="meter">
+        <span>@label</span>
+        <div class="bar" role="progressbar" aria-label="@label" aria-valuemin="0" aria-valuemax="@Fmt.Num(target, "0.##")" aria-valuenow="@Fmt.Num(Math.Min(value, target), "0.##")"><i style="width:@(Percent(value, target))%"></i></div>
+        <b>@text</b>
+    </div>;
+
+    /// <summary>The level reached, and what the next one gives (<paramref name="now"/>, <paramref name="next"/>: "{0}" the recruits of the level, "{1}" its reward).</summary>
+    string Level(ReferralTier[] tiers, string now, string next, string none, string all)
+    {
+        var reached = tiers.LastOrDefault(t => t.Reached);
+        var coming = tiers.FirstOrDefault(t => !t.Reached);
+        return (reached is null ? L[none].Value : L[now, reached.Recruits, L.Reward(reached.Reward)].Value) + " "
+            + (coming is null ? L[all].Value : L[next, coming.Recruits, L.Reward(coming.Reward)].Value);
+    }
+
+    RenderFragment Tiers(ReferralTier[] tiers, string head) => @<table class="tbl tiers">
+        <thead><tr><th>@head</th><th>@L["Referral.Reward"]</th><th>@L["Referral.Reached"]</th></tr></thead>
+        <tbody>
+            @foreach (var t in tiers)
+            {
+                <tr class="@(t.Reached ? "reached" : null)"><td>@t.Recruits</td><td>@L.Reward(t.Reward)</td><td>@if (t.Reached) { <span role="img" aria-label="@L["Referral.Reached"]">✓</span> }</td></tr>
+            }
+        </tbody>
+    </table>;
+}
