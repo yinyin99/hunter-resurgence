@@ -8,7 +8,7 @@ h2 { margin: 0; font-size: clamp(22px, 3.67cqw, 48px); line-height: 1.22; color:
 .caption p { margin: 0; font-size: clamp(14px, 1.84cqw, 24px); line-height: 1.44; font-weight: 500; color: #fff; }
 .caption ::deep a, .caption ::deep span { color: var(--accent); }
 .caption .icon { color: var(--accent); width: 12px; }
-/* contain: size, so a post more than the slide has room for is cut off instead of making the row taller */
-.thumbs { min-width: 0; overflow: hidden; contain: size; }
-.thumb { display: block; width: 100%; aspect-ratio: 175 / 95; padding: 0; border: 0; background: none; cursor: pointer; }
+/* the previews are a column that shrinks: with five or more posts they share the slide's height (each picture is cut to its own button) instead of hanging below the slide; contain: size, so a post more than the slide has room for is cut off instead of making the row taller */
+.thumbs { display: flex; flex-direction: column; min-width: 0; overflow: hidden; contain: size; }
+.thumb { display: block; flex: 0 1 auto; min-height: 0; overflow: hidden; width: 100%; aspect-ratio: 175 / 95; padding: 0; border: 0; background: none; cursor: pointer; }
 .thumb ::deep .asset-slot { display: flex; width: 100% !important; height: 100% !important; object-fit: cover; }
