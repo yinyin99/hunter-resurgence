@@ -67,9 +67,9 @@ public class LodgeRestoreTests : StateTestBase
     }
 
     [Theory]
-    [InlineData("\"123\"", 123)]
-    [InlineData("123", 123)]
-    [InlineData("4294967295", 4294967295)]
+    [InlineData("\"123\"", 123L)]
+    [InlineData("123", 123L)]
+    [InlineData("4294967295", 4294967295L)]
     [InlineData("\"abc\"", null)]
     [InlineData("\"-1\"", null)]
     [InlineData("-1", null)]
