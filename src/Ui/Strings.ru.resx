@@ -1698,8 +1698,8 @@
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Открыть ваши лицензии Steam</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Пригласить друзей</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Ваш реферальный код</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Ссылка-приглашение</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Копировать</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Копировать ссылку-приглашение</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Скопировано</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Отправьте ссылку другу. Когда он зарегистрируется и введёт ваш код, его прогресс появится на странице приглашений.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Посмотреть прогресс приглашённых</value></data>
@@ -1728,19 +1728,13 @@
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} из {1} ч</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} из {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Уровни наград</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Последний достигнутый уровень: {0} (награда: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Следующий уровень: {0} (награда: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Ни один уровень пока не достигнут.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Все уровни достигнуты.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Приглашённых с выполненными условиями</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Награда</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Достигнуто</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Следующий</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Следующий уровень награды: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Награда будет объявлена позже</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Рубежи Discord</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Приглашённые, привязавшие аккаунт Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Последний достигнутый рубеж Discord: {0} (награда: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Следующий рубеж Discord: {0} (награда: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Ни один рубеж Discord пока не достигнут.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Все рубежи Discord достигнуты.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Приглашённых с привязанным Discord</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Такого кода не существует. Проверьте его и попробуйте снова.</value></data>

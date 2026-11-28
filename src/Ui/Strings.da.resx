@@ -1698,8 +1698,8 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Åbn dine Steam-licenser</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Rekrutter venner</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Din henvisningskode</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Invitationslink</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopiér</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopiér invitationslink</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Kopieret</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Send linket til en ven. Når vennen har oprettet sig og indtastet din kode, kan du følge fremskridtet på henvisningssiden.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Se dine rekrutters fremskridt</value></data>
@@ -1728,19 +1728,13 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} af {1} t</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} af {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Belønningsniveauer</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Seneste niveau nået: {0} (belønning: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Næste niveau: {0} (belønning: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Intet niveau nået endnu.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Alle niveauer er nået.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Kvalificerede rekrutter</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Belønning</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Nået</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Næste</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Næste belønningsniveau: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Belønning bliver offentliggjort senere</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Discord-milepæle</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Rekrutter, der har forbundet deres Discord-konto: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Seneste Discord-milepæl nået: {0} (belønning: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Næste Discord-milepæl: {0} (belønning: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Ingen Discord-milepæl nået endnu.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Alle Discord-milepæle er nået.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Rekrutter med forbundet Discord</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Denne kode findes ikke. Tjek den, og prøv igen.</value></data>

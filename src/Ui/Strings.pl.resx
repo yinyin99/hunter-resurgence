@@ -1698,8 +1698,8 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Otwórz swoje licencje Steam</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Zaproś znajomych</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Twój kod polecający</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Link z zaproszeniem</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopiuj</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopiuj link z zaproszeniem</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Skopiowano</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Wyślij link znajomemu. Gdy się zarejestruje i wpisze Twój kod, jego postępy zobaczysz na stronie poleceń.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Zobacz postępy swoich zaproszonych</value></data>
@@ -1728,19 +1728,13 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} z {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} z {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Poziomy nagród</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Ostatnio osiągnięty poziom: {0} (nagroda: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Następny poziom: {0} (nagroda: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Nie osiągnięto jeszcze żadnego poziomu.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Osiągnięto wszystkie poziomy.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Zaproszeni, którzy spełnili warunki</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Nagroda</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Osiągnięty</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Następny</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Następny poziom nagrody: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Nagroda zostanie ogłoszona</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Progi Discorda</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Zaproszeni, którzy połączyli konto Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Ostatnio osiągnięty próg Discorda: {0} (nagroda: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Następny próg Discorda: {0} (nagroda: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Nie osiągnięto jeszcze żadnego progu Discorda.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Osiągnięto wszystkie progi Discorda.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Zaproszeni z połączonym Discordem</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Taki kod nie istnieje. Sprawdź go i spróbuj ponownie.</value></data>

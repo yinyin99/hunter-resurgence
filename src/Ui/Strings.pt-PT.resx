@@ -1698,8 +1698,8 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Abrir as suas licenças Steam</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Recrutar amigos</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>O seu código de recomendação</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Ligação de convite</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Copiar</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Copiar ligação de convite</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Copiado</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Envie a ligação a um amigo. Quando ele se registar e introduzir o seu código, o progresso dele aparece na página de recomendações.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Ver o progresso dos seus recrutas</value></data>
@@ -1728,19 +1728,13 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} de {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} de {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Níveis de recompensa</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Último nível alcançado: {0} (recompensa: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Próximo nível: {0} (recompensa: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Ainda nenhum nível alcançado.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Todos os níveis foram alcançados.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Recrutas qualificados</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Recompensa</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Alcançado</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Próximo</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Próximo nível de recompensa: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Recompensa a anunciar</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Marcos do Discord</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Recrutas que associaram a conta Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Último marco do Discord alcançado: {0} (recompensa: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Próximo marco do Discord: {0} (recompensa: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Ainda nenhum marco do Discord alcançado.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Todos os marcos do Discord foram alcançados.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Recrutas com Discord associado</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Este código não existe. Verifique-o e tente novamente.</value></data>

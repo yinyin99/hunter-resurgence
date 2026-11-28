@@ -1698,8 +1698,8 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Steam lisanslarınızı açın</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Arkadaşlarını davet et</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Davet kodunuz</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Davet bağlantısı</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopyala</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Davet bağlantısını kopyala</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Kopyalandı</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Bağlantıyı bir arkadaşınıza gönderin. Kaydolup kodunuzu girdiğinde, ilerlemesini davet sayfasında görürsünüz.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Davet ettiklerinizin ilerlemesini görün</value></data>
@@ -1728,19 +1728,13 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} / {1} saat</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} / {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Ödül seviyeleri</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Ulaşılan son seviye: {0} (ödül: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Sonraki seviye: {0} (ödül: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Henüz hiçbir seviyeye ulaşılmadı.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Tüm seviyelere ulaşıldı.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Koşulu sağlayan davetliler</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Ödül</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Ulaşıldı</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Sonraki</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Sonraki ödül seviyesi: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Ödül daha sonra duyurulacak</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Discord kilometre taşları</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Discord hesabını bağlayan davetliler: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Ulaşılan son Discord kilometre taşı: {0} (ödül: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Sonraki Discord kilometre taşı: {0} (ödül: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Henüz hiçbir Discord kilometre taşına ulaşılmadı.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Tüm Discord kilometre taşlarına ulaşıldı.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Discord'u bağlı davetliler</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Böyle bir kod yok. Kodu kontrol edip tekrar deneyin.</value></data>

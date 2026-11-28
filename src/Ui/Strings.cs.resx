@@ -1698,8 +1698,8 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Otevřít vaše licence ve Steamu</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Naverbujte přátele</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Váš kód pro pozvání</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Odkaz s pozvánkou</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopírovat</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopírovat odkaz s pozvánkou</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Zkopírováno</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Pošlete odkaz příteli. Až se zaregistruje a zadá váš kód, uvidíte jeho postup na stránce pozvánek.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Zobrazit postup vašich rekrutů</value></data>
@@ -1728,19 +1728,13 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} z {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} z {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Úrovně odměn</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Poslední dosažená úroveň: {0} (odměna: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Další úroveň: {0} (odměna: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Zatím nebyla dosažena žádná úroveň.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Všechny úrovně jsou dosaženy.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Kvalifikovaní rekruti</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Odměna</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Dosaženo</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Další</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Další úroveň odměny: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Odměna bude oznámena</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Milníky Discordu</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Rekruti, kteří propojili svůj účet Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Poslední dosažený milník Discordu: {0} (odměna: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Další milník Discordu: {0} (odměna: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Zatím nebyl dosažen žádný milník Discordu.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Všechny milníky Discordu jsou dosaženy.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Rekruti s propojeným Discordem</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Tento kód neexistuje. Zkontrolujte ho a zkuste to znovu.</value></data>

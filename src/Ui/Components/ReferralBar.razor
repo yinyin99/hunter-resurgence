@@ -1,0 +1,14 @@
+@* a progress bar (0-100 %): the next reward level in the news block and on the referral page, the combined progress of a recruit *@
+<div class="bar @(Done ? "done" : null)" role="progressbar" aria-label="@Label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Percent" aria-valuetext="@Text"><i style="width:@(Percent)%"></i></div>
+
+@code {
+    [Parameter, EditorRequired] public int Percent { get; set; }
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    /// <summary>What the bar stands for in words (read instead of the percentage).</summary>
+    [Parameter] public string? Text { get; set; }
+    /// <summary>The goal is reached: the bar is green.</summary>
+    [Parameter] public bool Done { get; set; }
+
+    /// <summary>The share of <paramref name="target"/> that <paramref name="value"/> is, 0-100 (more than asked for fills the bar and no more).</summary>
+    public static int Of(double value, double target) => target <= 0 ? 100 : (int)Math.Min(100, Math.Round(value * 100 / target));
+}

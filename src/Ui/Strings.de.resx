@@ -1698,8 +1698,8 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Ihre Steam-Lizenzen öffnen</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Freunde werben</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Ihr Empfehlungscode</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Einladungslink</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopieren</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Einladungslink kopieren</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Kopiert</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Schicken Sie den Link an einen Freund. Sobald er sich angemeldet und Ihren Code eingegeben hat, sehen Sie seinen Fortschritt auf der Empfehlungsseite.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Fortschritt Ihrer Empfehlungen ansehen</value></data>
@@ -1728,19 +1728,13 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} von {1} Std.</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} von {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Belohnungsstufen</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Zuletzt erreichte Stufe: {0} (Belohnung: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Nächste Stufe: {0} (Belohnung: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Noch keine Stufe erreicht.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Alle Stufen sind erreicht.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Qualifizierte Empfehlungen</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Belohnung</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Erreicht</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Nächste</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Nächste Belohnungsstufe: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Belohnung wird noch bekannt gegeben</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Discord-Meilensteine</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Geworbene, die ihr Discord-Konto verknüpft haben: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Zuletzt erreichter Discord-Meilenstein: {0} (Belohnung: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Nächster Discord-Meilenstein: {0} (Belohnung: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Noch kein Discord-Meilenstein erreicht.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Alle Discord-Meilensteine sind erreicht.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Geworbene mit verknüpftem Discord</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Diesen Code gibt es nicht. Prüfen Sie ihn und versuchen Sie es erneut.</value></data>

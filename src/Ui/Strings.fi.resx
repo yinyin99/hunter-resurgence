@@ -1698,8 +1698,8 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Avaa Steam-lisenssisi</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Kutsu kavereita</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Kutsukoodisi</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Kutsulinkki</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopioi</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopioi kutsulinkki</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Kopioitu</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Lähetä linkki kaverille. Kun hän on rekisteröitynyt ja syöttänyt koodisi, näet hänen edistymisensä kutsusivulla.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Katso kutsumiesi kavereiden edistyminen</value></data>
@@ -1728,19 +1728,13 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} / {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} / {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Palkintotasot</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Viimeksi saavutettu taso: {0} (palkinto: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Seuraava taso: {0} (palkinto: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Yhtään tasoa ei ole vielä saavutettu.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Kaikki tasot on saavutettu.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Hyväksytyt kaverit</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Palkinto</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Saavutettu</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Seuraava</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Seuraava palkintotaso: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Palkinto julkistetaan myöhemmin</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Discord-välitavoitteet</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Kaverit, jotka ovat yhdistäneet Discord-tilinsä: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Viimeksi saavutettu Discord-välitavoite: {0} (palkinto: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Seuraava Discord-välitavoite: {0} (palkinto: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Yhtään Discord-välitavoitetta ei ole vielä saavutettu.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Kaikki Discord-välitavoitteet on saavutettu.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Kaverit, joilla Discord on yhdistetty</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Tätä koodia ei ole olemassa. Tarkista se ja yritä uudelleen.</value></data>

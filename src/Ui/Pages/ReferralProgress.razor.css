@@ -1,26 +1,47 @@
-h3 { margin: 28px 0 10px; color: #fff; font-size: var(--fs-h3); line-height: 32px; font-weight: 400; }
-p { margin: 0 0 10px; line-height: 20px; }
+/* spacing: 8px inside a group, 16px between the cards and the form, 32px between sections */
+h3 { margin: 32px 0 8px; color: #fff; font-size: var(--fs-h3); line-height: 32px; font-weight: 400; }
+h4 { margin: 24px 0 8px; color: var(--text-1); font-size: var(--fs-h4); line-height: 24px; font-weight: 400; }
+p { margin: 0 0 8px; line-height: 20px; }
 .note { color: var(--text-2); }
 .error { color: var(--su-error); }
-.panel { box-sizing: border-box; max-width: 520px; margin: 0 0 14px; padding: 16px 19px 12px; border: 1px solid var(--line-2); }
+.count { margin-inline-start: 4px; padding: 0 7px; border-radius: var(--r-pill); background: var(--surface-6); color: var(--text-2); font-size: 12px; line-height: 18px; }
+
+/* the three summary cards: they wrap when the page is narrow, nothing is clipped */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 16px; margin: 0 0 16px; }
+.card { box-sizing: border-box; min-width: 0; padding: 16px 19px; border: 1px solid var(--line-2); }
+.share { display: flex; flex-direction: column; gap: 8px; }
 .share .note { margin: 0; color: var(--text-3); font-size: 13px; }
-.recruits { margin: 0; padding: 0; list-style: none; }
-.recruits li { display: grid; grid-template-columns: 220px 1fr 1fr; gap: 8px 20px; align-items: center; padding: 10px 12px; border-top: 1px solid var(--line-2); }
+.stat { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+.stat p { margin: 0; }
+.label { color: var(--text-3); font-size: 12px; line-height: 16px; }
+.big { color: #fff; font-size: var(--fs-h2); line-height: 40px; }
+.stat .note { color: var(--text-3); font-size: 13px; }
+.enter-box { max-width: 520px; margin: 0 0 8px; }
+
+/* the recruits: one row each, who on the left, one bar and the two numbers on the right; the qualified are a group of their own */
+.recruits { margin: 0 0 8px; padding: 0; list-style: none; border: 1px solid var(--line-2); border-radius: var(--r-3); overflow: hidden; }
+.recruits li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; padding: 12px 16px; border-top: 1px solid var(--line-2); }
 .recruits li:first-child { border-top: 0; }
-.recruits li.qualified { background: var(--surface-2); }
-.who { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; overflow-wrap: anywhere; }
+.recruits li.qualified { padding-inline-start: 13px; border-inline-start: 3px solid var(--success); background: var(--surface-2); }
+.who { display: flex; flex: 1 1 200px; flex-wrap: wrap; align-items: center; gap: 2px 8px; min-width: 0; overflow-wrap: anywhere; }
 .who a { color: var(--accent-text); }
 .who a:hover { color: #fff; }
 .tag { padding: 0 7px; border-radius: var(--r-pill); background: var(--surface-6); color: var(--text-2); font-size: 12px; line-height: 18px; }
 .tag.done { background: var(--success); color: #111; }
 .when { color: var(--text-3); font-size: 12px; }
-.meter { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; font-size: 12px; color: var(--text-3); }
-.meter > span { grid-column: 1 / -1; }
-.meter b { font-weight: 400; color: var(--text-1); white-space: nowrap; }
-.bar { height: 10px; border-radius: var(--r-pill); background: var(--surface-6); overflow: hidden; }
-.bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); }
-.qualified .bar i { background: var(--success); }
-.tiers { max-width: 620px; }
-.tiers th:first-child { width: 140px; }
-.tiers tr.reached td { color: #fff; }
-.tiers td:last-child, .tiers th:last-child { width: 80px; text-align: center; color: var(--success); }
+.progress { display: grid; flex: 2 1 280px; gap: 4px; min-width: 0; }
+.nums { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 16px; margin: 0; color: var(--text-3); font-size: 12px; line-height: 16px; }
+.nums b { color: var(--text-1); font-weight: 400; white-space: nowrap; }
+
+/* a ladder: one step per level, a segment on top (green reached, orange the next), the reward under it; the steps wrap, nothing scrolls */
+.ladder-box .note { margin: 0 0 8px; color: var(--text-3); font-size: 13px; }
+.ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.ladder li { display: grid; align-content: start; gap: 4px; min-width: 0; padding: 10px 12px 12px; border-top: 4px solid var(--surface-6); border-radius: var(--r-2); background: var(--surface-2); }
+.ladder li.reached { border-top-color: var(--success); }
+.ladder li.next { border-top-color: var(--accent); background: var(--surface-3); }
+.step { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 24px; }
+.step b { color: var(--text-1); font-size: var(--fs-h4); font-weight: 500; line-height: 24px; }
+.ladder li.reached .step b { color: #fff; }
+.step .ok { color: var(--success); }
+.reward { color: var(--text-2); line-height: 20px; overflow-wrap: anywhere; }
+.reward.tba { color: var(--text-3); font-size: 13px; font-style: italic; }

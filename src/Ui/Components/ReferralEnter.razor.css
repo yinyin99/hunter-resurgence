@@ -1,7 +1,15 @@
-h4 { margin: 0 0 6px; color: #fff; font-size: var(--fs-h4); line-height: 24px; }
 p { margin: 0 0 8px; line-height: 20px; }
+/* the toggle is a control: its own surface and border, a chevron that turns when the form opens */
+summary { display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 10px; border: 1px solid var(--line-3); border-radius: var(--r-2); background: var(--surface-3); color: var(--text-1); cursor: pointer; list-style: none; }
+summary::-webkit-details-marker { display: none; }
+summary:focus-visible { outline: var(--focus); outline-offset: 2px; }
+.chev { display: inline-flex; color: var(--accent-text); transition: rotate var(--t-base) var(--ease); }
+details[open] > summary .chev { rotate: 90deg; }
+@media (hover: hover) { summary:hover { background: var(--surface-5); } }
+@media (prefers-reduced-motion: reduce) { .chev { transition: none; } }
+form { margin-top: 12px; }
 .note { color: var(--text-3); font-size: 13px; }
-.row { display: flex; gap: 6px; margin: 0 0 8px; }
+.row { display: flex; gap: 8px; margin: 0 0 8px; }
 .field { flex: 1; min-width: 0; height: 32px; padding: 0 8px; font-size: 14px; text-transform: uppercase; }
 .field::placeholder { text-transform: none; }
 .error { color: var(--su-error); }

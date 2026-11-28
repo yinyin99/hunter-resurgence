@@ -1698,8 +1698,8 @@ Numele:</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Deschide licențele tale Steam</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Recrutați prieteni</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Codul dumneavoastră de recomandare</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Link de invitație</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Copiază</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Copiază linkul de invitație</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Copiat</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Trimiteți linkul unui prieten. După ce se înregistrează și introduce codul dumneavoastră, progresul lui apare pe pagina de recomandări.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Vedeți progresul recruților dumneavoastră</value></data>
@@ -1728,19 +1728,13 @@ Numele:</value></data>
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} din {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} din {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Niveluri de recompensă</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Ultimul nivel atins: {0} (recompensă: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Următorul nivel: {0} (recompensă: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Niciun nivel atins încă.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Toate nivelurile au fost atinse.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Recruți calificați</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Recompensă</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Atins</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Următorul</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Următorul nivel de recompensă: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Recompensă care va fi anunțată</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Etape Discord</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Recruți care și-au asociat contul Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Ultima etapă Discord atinsă: {0} (recompensă: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Următoarea etapă Discord: {0} (recompensă: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Nicio etapă Discord atinsă încă.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Toate etapele Discord au fost atinse.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Recruți cu Discord asociat</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Acest cod nu există. Verificați-l și încercați din nou.</value></data>

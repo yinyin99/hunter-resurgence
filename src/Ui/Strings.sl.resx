@@ -1698,8 +1698,8 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Odpri vaše licence Steam</value></data>
   <data name="Referral.Title" xml:space="preserve"><value>Povabi prijatelje</value></data>
   <data name="Referral.Code" xml:space="preserve"><value>Tvoja koda za priporočilo</value></data>
-  <data name="Referral.Link" xml:space="preserve"><value>Povezava z vabilom</value></data>
   <data name="Referral.Copy" xml:space="preserve"><value>Kopiraj</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopiraj povezavo z vabilom</value></data>
   <data name="Referral.Copied" xml:space="preserve"><value>Kopirano</value></data>
   <data name="Referral.Share" xml:space="preserve"><value>Pošlji povezavo prijatelju. Ko se registrira in vnese tvojo kodo, boš njegov napredek videl na strani priporočil.</value></data>
   <data name="Referral.Progress" xml:space="preserve"><value>Poglej napredek svojih povabljencev</value></data>
@@ -1728,19 +1728,13 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Referral.OfHours" xml:space="preserve"><value>{0} od {1} h</value></data>
   <data name="Referral.OfScore" xml:space="preserve"><value>{0} od {1}</value></data>
   <data name="Referral.Rewards" xml:space="preserve"><value>Stopnje nagrad</value></data>
-  <data name="Referral.TierNow" xml:space="preserve"><value>Zadnja dosežena stopnja: {0} (nagrada: {1}).</value></data>
-  <data name="Referral.TierNext" xml:space="preserve"><value>Naslednja stopnja: {0} (nagrada: {1}).</value></data>
-  <data name="Referral.TierNone" xml:space="preserve"><value>Nobena stopnja še ni dosežena.</value></data>
   <data name="Referral.TierAll" xml:space="preserve"><value>Vse stopnje so dosežene.</value></data>
   <data name="Referral.TierHead" xml:space="preserve"><value>Kvalificirani povabljenci</value></data>
-  <data name="Referral.Reward" xml:space="preserve"><value>Nagrada</value></data>
   <data name="Referral.Reached" xml:space="preserve"><value>Doseženo</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Naslednja</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Naslednja stopnja nagrade: {0}</value></data>
   <data name="Referral.Tba" xml:space="preserve"><value>Nagrada bo objavljena</value></data>
   <data name="Referral.Discord" xml:space="preserve"><value>Mejniki Discorda</value></data>
-  <data name="Referral.DiscordCount" xml:space="preserve"><value>Povabljenci, ki so povezali račun Discord: {0}</value></data>
-  <data name="Referral.DiscordNow" xml:space="preserve"><value>Zadnji dosežen mejnik Discorda: {0} (nagrada: {1}).</value></data>
-  <data name="Referral.DiscordNext" xml:space="preserve"><value>Naslednji mejnik Discorda: {0} (nagrada: {1}).</value></data>
-  <data name="Referral.DiscordNone" xml:space="preserve"><value>Noben mejnik Discorda še ni dosežen.</value></data>
   <data name="Referral.DiscordAll" xml:space="preserve"><value>Vsi mejniki Discorda so doseženi.</value></data>
   <data name="Referral.DiscordHead" xml:space="preserve"><value>Povabljenci s povezanim Discordom</value></data>
   <data name="Referral.Error.unknown" xml:space="preserve"><value>Te kode ni. Preveri jo in poskusi znova.</value></data>
