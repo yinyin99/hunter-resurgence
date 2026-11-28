@@ -44,7 +44,7 @@ public static class AccountApi
     static bool OwnPost(HttpContext ctx)
     {
         var r = ctx.Request;
-        return r.Method == "POST" && (r.Headers.Origin.Count > 0 ? r.Headers.Origin[0] == $"https://{r.Host.Host.ToLowerInvariant()}" : r.Headers.ContainsKey("X-Requested-With"));
+        return r.Method is "POST" or "PUT" && (r.Headers.Origin.Count > 0 ? r.Headers.Origin[0] == $"https://{r.Host.Host.ToLowerInvariant()}" : r.Headers.ContainsKey("X-Requested-With"));
     }
 
     public static void MapAccount(this WebApplication app, Game game)
@@ -358,6 +358,49 @@ public static class AccountApi
             .WithDescription("`{items: [{id, reserve, kind, name, x, y}]}`: `id` is the item's guid (the number `POST /auth/launch` takes as `tent` for a tent), `reserve` the web's reserve number, `kind` one of "
                              + "`tent`, `caller`, `groundblind`, `treestand`, `tripod`, `deployabletower`, `climbing`, `name` the catalogue's, `x` and `y` percent of the reserve's map picture, as the starts of `GET /catalog/reserves`. "
                              + "Only items in slot 23 with a position and a reserve.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/lodges", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.AccountLodges(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountLodges").WithSummary("The player's own trophy lodges, for Settings, Game Management")
+            .WithDescription("`{lodges: [{id, name, locked, style_id, lodge_type, trophies, weapons}]}`: `id` is a string, `lodge_type` the lodge type's display name (null when unknown), `trophies` and `weapons` the mounted counts (docs/server.md#game-management).")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPut("/lodges/{id}/settings", async (HttpContext ctx, string id) =>
+            {
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Oversized(ctx)) return Refuse(413, "too_large", "Too large.");
+                using var body = new MemoryStream();
+                await ctx.Request.Body.CopyToAsync(body);
+                var status = long.TryParse(id, NumberStyles.None, CultureInfo.InvariantCulture, out var lodge) ? state.SaveLodgeSettings(account, lodge, body.ToArray()) : 404;
+                return status == 200 ? Json(200, new JsonObject { ["ok"] = true }) : Refuse(status, status == 404 ? "unknown" : "invalid", status == 404 ? "No such lodge." : "The name, lock or style is not valid.");
+            })
+            .WithName("AccountLodgeSettings").WithSummary("Rename, lock or unlock one of the player's lodges (JSON `{name, locked, style_id}`)")
+            .WithDescription("What `PUT /game/user/lodges/<id>/settings` does, for the signed-in player's own lodge, with the website's `X-Requested-With` header: `200` `{ok: true}`, `400` for a body or name that is not valid, `404` for a lodge the player does not own.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapGet("/feeders", (HttpContext ctx) => Account(ctx) is { } account
+                ? Json(200, state.AccountFeeders(account))
+                : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountFeeders").WithSummary("The player's placed bait feeders, for Settings, Game Management")
+            .WithDescription("`{feeders: [{id, item_id, name, reserve, reserve_name, x, y, bait_amount, bait_max, status, empty_at, bait_owned}], packs, refill_price: {em, gm}}` by reserve then id: `status` `active`, `inactive` or `penalty`, `empty_at` unix seconds (null for a feeder never filled), "
+                             + "`bait_owned` the units of its bait the player holds, `packs` the refill-pack uses held (docs/server.md#game-management).")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/feeders/{id}/refill", async (HttpContext ctx, string id) =>
+            {
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Oversized(ctx)) return Refuse(413, "too_large", "Too large.");
+                using var body = new MemoryStream();
+                await ctx.Request.Body.CopyToAsync(body);
+                var (status, reply) = long.TryParse(id, NumberStyles.None, CultureInfo.InvariantCulture, out var guid) ? state.AccountRefill(account, guid, body.ToArray()) : (404, null);
+                return reply is not null ? Json(200, reply) : Refuse(status, status == 404 ? "unknown" : "invalid", status == 404 ? "No such feeder." : "The currency or amount is not valid.");
+            })
+            .WithName("AccountFeederRefill").WithSummary("Refill one of the player's placed feeders (JSON `{currency: pack|em|gm, max_amount}`)")
+            .WithDescription("What `POST /game/Inventory/refillBarrel` does, with the website's `X-Requested-With` header: `200` `{success, price, bait_amount, empty_at}` (`success` false when there is no bait, room, pack or money), `400` for a currency or amount (0 to 50) that is not valid, `404` for a feeder the player does not have.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/events", (HttpContext ctx) => Account(ctx) is { } account

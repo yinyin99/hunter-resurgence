@@ -285,6 +285,29 @@ public sealed partial class State
         return lodges;
     }
 
+    /// <summary>`GET /account/lodges`: the account's lodges `{lodges: [{id, name, locked, style_id, lodge_type, trophies, weapons}]}`; `lodge_type` the display name of the lodge's type (null when the facts lack it),
+    /// the counts the mounted trophies and weapons of its slots (a plain id, as <see cref="NoticeBigLodge"/> counts).</summary>
+    public JsonObject AccountLodges(long account)
+    {
+        var contents = Restored(account, "lodges", LodgeOne).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)).ToLookup(l => Py.L(l["id"]));
+        static int Mounted(JsonObject lodge, string slots, string key) =>
+            (lodge[slots] as JsonArray ?? []).OfType<JsonObject>().Count(s => s[key] is { } id && (Py.IsNum(id) || Py.IsStr(id)) && !(Py.IsNum(id) && Py.L(id) == 0));
+        return new JsonObject
+        {
+            ["lodges"] = new JsonArray([.. Restored(account, "lodges", LodgeList).OfType<JsonObject>().Where(l => TryKey(l["id"], out _)).Select(l =>
+            {
+                var id = Py.L(l["id"]);
+                var full = contents[id].FirstOrDefault() ?? l;
+                return (JsonNode?)new JsonObject
+                {
+                    ["id"] = id.ToString(), ["name"] = Py.IsStr(l["name"]) ? (string)l["name"]! : "", ["locked"] = l["locked"] is JsonValue v && v.TryGetValue(out bool locked) && locked,
+                    ["style_id"] = Py.IsNum(l["style_id"]) ? Py.L(l["style_id"]) : 0, ["lodge_type"] = TryKey(l["lodge_type_id"], out var type) ? facts.LodgeOfItem(type)?.Name : null,
+                    ["trophies"] = Mounted(full, "animal_slots", "trophy_id"), ["weapons"] = Mounted(full, "weapon_slots", "weapon_id"),
+                };
+            })]),
+        };
+    }
+
     /// <summary>`PUT lodges/<id>`: the slots (and name) of the account's lodge. 200; 400 for a body that is not as sent; 404 for a lodge the account has not.</summary>
     public int SaveLodge(long account, long id, byte[] body) => EditLodge(account, id, body, SlotFields);
 
