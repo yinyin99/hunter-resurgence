@@ -39,6 +39,21 @@ public sealed class ShellLayoutTests : UiContext
         else cut.WaitForAssertion(() => shell.VerifyInvoke("watchLaunch"));
     }
 
+    // the page is the main column alone: the copy of the original site's empty right column is gone, on the website and in the launcher
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void TheShellHasNoRightColumn(bool launcher)
+    {
+        Services.GetRequiredService<HostMode>().Launcher = launcher;
+        var shell = JSInterop.SetupModule("./_content/Resurgence.Ui/shell.js");
+        shell.Mode = JSRuntimeMode.Loose;
+        var cut = Render<ShellLayout>(p => p.Add(l => l.Body, "<p id=\"page\">page</p>"));
+        Assert.NotNull(cut.Find(".body > main #page"));
+        Assert.Empty(cut.FindAll(".sidebar"));
+        Assert.Single(cut.Find(".body").Children);
+    }
+
     // a page for signed-in players (the store, a profile, the missions) is the sign-in prompt while signed out, on the website and in the launcher: the page is not built
     [Theory]
     [InlineData(false, "/store/item/7")]

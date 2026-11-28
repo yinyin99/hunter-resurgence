@@ -5,5 +5,4 @@
 .body { display: flex; align-items: stretch; margin-top: 10px; }
 
 /* isolation: a page's own z-indexes stay inside it and never compete with the shell's menus (--z-menu) */
-main { isolation: isolate; box-sizing: border-box; width: var(--w-main); min-height: 800px; padding: 20px; background: var(--bg-column); }
-.sidebar { width: var(--w-sidebar); min-height: 800px; background: var(--bg-sidebar); }
+main { isolation: isolate; box-sizing: border-box; flex: 1; min-width: 0; min-height: 800px; padding: 20px; background: var(--bg-column); }

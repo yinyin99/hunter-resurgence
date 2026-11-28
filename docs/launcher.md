@@ -250,6 +250,10 @@ While an event runs, the launch map and the tutorials page show a line with the 
 
 For a signed-in hunter who has not linked a Discord account (and a server with Linked Roles on) the launcher shows the same three entry points as the website, which see [website.md](website.md#discord-linked-roles): a card on the feed above the Discord widget, the same slim pill centred between the top bar and the menu bar, and a "Link Discord" Settings menu item. Its pages are local, so they open the community server's `/discord/link` in the player's browser (`ILauncherBridge.OpenExternal`, `LauncherSessionService.DiscordLinkUrl`); the server does the rest. Back in the launcher the entry points are gone at the next page (the shell asks for the session again while they show).
 
+## Layout
+
+The launcher's shell is the website's (`ShellLayout`, [website.md](website.md)): `<main>` is the whole 1220 px container, with no empty right column (#1081). Pages built for the old 940 px column stay that wide, centred; the pages that adapt (the hunting statistics, the referral progress) take the whole width. The only right column is the news page's own (`.side`, inside `<main>`): the referral block (#929) above the Discord card.
+
 ## Referral
 
 The news page's right column starts with the referral block (the player's code and invitation link with Copy buttons, one line of progress, the form that enters a friend's code), and the Settings menu's "Recruit friends" item opens the page `/referral` with the recruits' progress, the reward levels and the Discord milestones; both are the website's components, which see [website.md](website.md#referral). With `server_url` the launcher registers `ServerReferralService` (`GET /account/referral`, `POST /account/referral/code`), without it `MockReferralService`. The invitation link `/join/<code>` is for the browser: the launcher has the same page, which for a signed-out player offers the start screen's sign-in.
