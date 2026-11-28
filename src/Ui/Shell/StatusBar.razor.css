@@ -1,4 +1,4 @@
-.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; min-width: var(--w-container); background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: var(--shadow-bar); font-size: var(--fs-statusbar); color: var(--fg-muted); }
+.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: var(--shadow-bar); font-size: var(--fs-statusbar); color: var(--fg-muted); }
 .row { position: relative; height: var(--h-statusbar); }
 .web .row { width: var(--w-container); margin: 0 auto; }
 .web .left { left: 192px; }
