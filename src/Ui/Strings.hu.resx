@@ -1687,4 +1687,13 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Servers.Language" xml:space="preserve"><value>Nyelv</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Nyelv:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Csak a saját nyelvemen futó játékok</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Telepítés Steammel</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>A Steam nincs telepítve: Steam letöltése</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Újraellenőrzés</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>A Steam-fiókodban megvan a játék: telepítsd Steammel.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>A Steam-fiókodhoz nem tartozik licenc a játékhoz.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Mit tehetek?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nem találom a játékot a Steamen</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>A Steamben nyisd meg a Fiók → Licencek és termékkulcs-aktiválások oldalt, és keresd ott a játékot. Ha ott van, használd az indító „Telepítés Steammel” gombját vagy a Steam-könyvtáradat. Ha nincs ott, a Steam már nem tudja megadni neked.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Steam-licenceid megnyitása</value></data>
 </root>

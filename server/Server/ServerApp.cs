@@ -16,11 +16,11 @@ namespace Resurgence.Server;
 /// TrustedProxies: peers whose HostHeader names the game host the client asked for (a proxy between client and server).
 /// MaxBodyBytes: the request body limit of every endpoint but the admin API's. AdminListeners: the only listeners that
 /// serve the admin API (null: every listener). SteamHttp and DiscordHttp: how the sign-in asks Steam to confirm an assertion and how Linked Roles talk to
-/// Discord (default: a plain client; tests pass a fake one).</summary>
+/// Discord (default: a plain client; tests pass a fake one). LicenceHttp: how the licence check asks Steam's Web API (<see cref="SteamLicence"/>).</summary>
 public sealed record ServerOptions(Replay.Game Game, int HarCount, string? WorkDir, bool Console,
     IReadOnlyList<IPNetwork>? TrustedProxies = null, string HostHeader = Settings.DefaultHostHeader, long MaxBodyBytes = Settings.DefaultMaxBodyBytes,
     IReadOnlyList<(IPAddress Address, int Port)>? AdminListeners = null,
-    HttpClient? SteamHttp = null, HttpClient? DiscordHttp = null);
+    HttpClient? SteamHttp = null, HttpClient? DiscordHttp = null, HttpClient? LicenceHttp = null);
 
 public static class ServerApp
 {
@@ -86,6 +86,8 @@ public static class ServerApp
             CrashReports.TrimTelemetry(telemetryFile, crashHost, o.Game.State!.Store, Store.Now());
         builder.Services.AddSingleton(new RequestLog(o.Console, o.WorkDir is null ? null : Path.Combine(o.WorkDir, "misses.jsonl"), telemetryFile, crashHost));
         builder.Services.AddSingleton(new SteamOpenId(o.SteamHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(10) }));
+        if (o.Game.State is { Online: true } && SteamLicence.FromCfg(o.Game.Cfg, o.LicenceHttp ?? new HttpClient { Timeout = TimeSpan.FromSeconds(5), MaxResponseContentBufferSize = 1 << 20 }) is { } licence)
+            builder.Services.AddSingleton(licence);  // docs/server.md#steam-licence
         // Linked Roles (docs/server.md#discord-linked-roles): on only with the Discord application's id and secret in the settings; the role bot only with its token, the guild and both roles too
         var roleBot = LinkedRoles.RoleBot.From(o.Game.Cfg);
         if (o.Game.State is { Online: true } linking && (string?)o.Game.Cfg["discord_client_id"] is { } discordId && (string?)o.Game.Cfg["discord_client_secret"] is { } discordSecret)
@@ -319,9 +321,9 @@ public sealed class Loopback : IAsyncDisposable
     Loopback(WebApplication app, HttpClient http) => (this.app, Http) = (app, http);
 
     public static async Task<Loopback> StartAsync(Replay.Game game, string? workDir = null, IReadOnlyList<IPNetwork>? trustedProxies = null, long maxBodyBytes = Settings.DefaultMaxBodyBytes,
-        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null, HttpClient? steamHttp = null, HttpClient? discordHttp = null)
+        IReadOnlyList<(IPAddress Address, int Port)>? adminListeners = null, HttpClient? steamHttp = null, HttpClient? discordHttp = null, HttpClient? licenceHttp = null)
     {
-        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners, SteamHttp: steamHttp, DiscordHttp: discordHttp), k => k.Listen(IPAddress.Loopback, 0));
+        var app = ServerApp.Build(new ServerOptions(game, 0, workDir, Console: false, trustedProxies, MaxBodyBytes: maxBodyBytes, AdminListeners: adminListeners, SteamHttp: steamHttp, DiscordHttp: discordHttp, LicenceHttp: licenceHttp), k => k.Listen(IPAddress.Loopback, 0));
         await app.StartAsync();
         var port = new Uri(app.Urls.First()).Port;
         var http = new HttpClient(new SocketsHttpHandler

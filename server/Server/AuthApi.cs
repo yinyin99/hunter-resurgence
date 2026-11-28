@@ -25,6 +25,7 @@ public static class AuthApi
         var auth = new SignIn(state, steam, siteHost: game.Web, claims: app.Services.GetService<Claims>(), discord: (string?)game.Cfg["link_discord"], signupAlert: text => Alerts.Signup(game.Cfg, text))
         {
             DiscordVeteranAt = app.Services.GetService<LinkedRoles>() is null ? null : LinkedRoles.RoleBot.VeteranAtOf(game.Cfg),
+            Licence = app.Services.GetService<SteamLicence>(),
             BanAlert = text => Alerts.Review(game.Cfg, text),
         };
 
@@ -47,7 +48,7 @@ public static class AuthApi
              .QueryParams(("challenge", "base64url SHA-256 of the verifier"), ("port", "1024 to 65535"), ("state", "random value"));
         group.MapPost("/app/exchange", Do(game, auth.ExchangeApp)).WithName("AppExchange").WithSummary("The app trades the code and its verifier for the session cookie")
              .WithDescription("Form `code` and `verifier` (needs `X-Requested-With` or a same-origin `Origin`). The code is one-time and lives 3 minutes; a wrong verifier spends it. 200 `{status: ok}` with the cookie, else 400 `{status: invalid}`.");
-        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms, avatar, imperial, discordLinked, discordVeteranAt}` (`discordLinked`: whether the account has linked Discord; `discordVeteranAt`: the HunterScore of the Veteran role, `discord_veteran_at`; both null when Linked Roles are off) or 401");
+        group.MapGet("/me", Do(game, auth.Me)).WithName("AuthMe").WithSummary("Who the session cookie is: `{userId, handle, hunterscore, rank, ems, gms, avatar, imperial, steamLicence, discordLinked, discordVeteranAt}` (`steamLicence`: `owned`, `not_owned` or `unknown`, whether the player's Steam account owns the game, from the Steam licence check; `unknown` when it is off; `discordLinked`: whether the account has linked Discord; `discordVeteranAt`: the HunterScore of the Veteran role, `discord_veteran_at`; both null when Linked Roles are off) or 401");
         group.MapPost("/signout", Do(game, auth.SignOut)).WithName("AuthSignOut").WithSummary("End the session (needs `X-Requested-With` or a same-origin `Origin`)");
         group.MapPost("/launch", Do(game, r => auth.Launch(r, game.Tokens!))).WithName("AuthLaunch").WithSummary("A launch URL with fresh tokens, for the start page")
              .WithDescription("Optional form `lang`: the game's language, one of its 22 codes (`en_US`, `fr_FR`, …) for the launch URL's `lang` segment; `en_US` when missing or unknown.");

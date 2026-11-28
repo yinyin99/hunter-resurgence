@@ -175,7 +175,9 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
 
     protected override ValueTask StopServersAsync() => server.DisposeAsync();
 
-    async Task StartAsync(bool offline, params (string Method, string Host, string Path, string Body)[] recorded)
+    async Task StartAsync(bool offline, params (string Method, string Host, string Path, string Body)[] recorded) => await StartAsync(offline, Cfg, null, recorded);
+
+    async Task StartAsync(bool offline, JsonObject cfg, HttpClient? licenceHttp, params (string Method, string Host, string Path, string Body)[] recorded)
     {
         if (server is not null) await server.DisposeAsync();
         state = new State(Db, Py.DumpBytes(Fixtures.CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: offline, avatars: AvatarList());
@@ -183,7 +185,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Hit(2, "", 200, [], "{}"u8.ToArray());
         foreach (var (method, host, path, body) in recorded)
             table.Entries[new(method, host, path, null)] = new Hit(2, "", 200, [("Content-Type", "application/json")], Encoding.UTF8.GetBytes(body));
-        server = await Loopback.StartAsync(new Game(table, Cfg, state, tmp), tmp, steamHttp: new HttpClient(fake));
+        server = await Loopback.StartAsync(new Game(table, cfg, state, tmp), tmp, steamHttp: new HttpClient(fake), licenceHttp: licenceHttp);
     }
 
     // ---- helpers
@@ -267,6 +269,31 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     // ---- the Steam sign-in
+
+    [Fact]
+    public async Task TestMeSaysUnknownWithoutTheSteamKeyAndNeverCallsSteam()
+    {
+        var steamApi = new FakeSteamApi();
+        await StartAsync(false, Cfg, new HttpClient(steamApi));  // no steam_web_api_key in Cfg: the check is off
+        Assert.Equal("unknown", (string)(await Me(await SignIn()))!["steamLicence"]!);
+        Assert.Empty(steamApi.Asked);
+    }
+
+    [Fact]
+    public async Task TestMeSaysTheSteamLicenceOfTheSignedInAccountAndAsksSteamOncePerDay()
+    {
+        var steamApi = new FakeSteamApi();
+        var cfg = (JsonObject)Cfg.DeepClone();
+        (cfg["steam_web_api_key"], cfg["steam_app_id"]) = ("a-key", "12345");
+        await StartAsync(false, cfg, new HttpClient(steamApi));
+        var cookie = await SignIn("99999999999999991");
+
+        Assert.Equal("owned", (string)(await Me(cookie))!["steamLicence"]!);
+        steamApi.Body = FakeSteamApi.NotOwned;
+        Assert.Equal("owned", (string)(await Me(cookie))!["steamLicence"]!);  // today's answer is kept
+        var asked = Assert.Single(steamApi.Asked);
+        Assert.Equal("99999999999999991", HttpUtility.ParseQueryString(asked.Query)["steamid"]);  // the signed-in account's Steam id
+    }
 
     [Fact]
     public async Task TestTheFirstSignInCreatesOneAccountAndTheSecondReusesIt()
@@ -1030,7 +1057,7 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
         var http = new HttpClient(new Via(server.Http)) { BaseAddress = new Uri("http://web.test/") };
         var browser = new Resurgence.Services.ServerCookie { Value = cookie, Host = "web.test" };
         var sessions = new Resurgence.Services.ServerSessionService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerSessionService>.Instance);
-        Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served, Avatar: "avatar-1000000"), await sessions.CurrentAsync());
+        Assert.Equal(new Resurgence.Services.Session("Hunter_One", (int)served, Avatar: "avatar-1000000", SteamLicence: "unknown"), await sessions.CurrentAsync());
 
         var boards = new Resurgence.Services.ServerLeaderboardsService(http, browser, Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerLeaderboardsService>.Instance);
         var row = Assert.Single((await boards.RowsAsync("hunterscore", 0, 1, 0)).Rows);

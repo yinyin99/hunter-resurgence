@@ -1,0 +1,9 @@
+.steam-install { margin: 0 0 14px; font-size: 16px; line-height: 22px; color: var(--text-2); }
+.licence { margin: 0 0 8px; padding: 0; }
+.licence a { color: var(--primary); }
+.actions { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.btn { padding: 4px 12px; font-size: 15px; line-height: 20px; }
+.btn-inverse { background-color: var(--surface-5); }
+@media (hover: hover) {
+    .btn-inverse:hover { background-color: var(--surface-4); }
+}
