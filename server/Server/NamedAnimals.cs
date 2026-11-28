@@ -39,7 +39,7 @@ public sealed partial class State
     /// after the operator's rules are in. An animal takes the next free place of its reserve the first time it is placed and keeps it in `file` (`named_animals.json` in the data folder), so
     /// an id never moves when a rule or the catalogue changes: harvests already stored stay judged by it, and an animal that is no longer named still holds its place. A reserve has
     /// <see cref="NamedSlots"/> places; an objective past them keeps the guess.</summary>
-    void PlaceNamedAnimals(string file)
+    void PlaceNamedAnimals(string file, bool write = true)
     {
         var given = File.Exists(file) ? JsonSerializer.Deserialize<Dictionary<string, long>>(File.ReadAllText(file)) ?? [] : [];
         var changed = false;
@@ -65,7 +65,7 @@ public sealed partial class State
                 }
                 m.Objectives[i] = o with { Rule = o.Rule with { Tests = [.. o.Rule.Tests!.Select(t => t.Check == Check.Named ? t with { Ids = [population] } : t)] } };
             }
-        if (changed)
+        if (changed && write)  // a dry run (`admin missions-recheck`) gives the same ids in memory and keeps the file as it is
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(file))!);
             File.WriteAllText(file, JsonSerializer.Serialize(given));

@@ -876,14 +876,19 @@ public sealed partial class State
             if (noCrossbows)
                 refused.UnionWith(weapons.Where(w => w.Words.Contains("crossbow")).Select(w => w.Id));
             var weaponIds = new HashSet<long>();
+            var byNameIds = new HashSet<long>();  // the weapons the title names (with their families)
             bool byName = false, byClass = false, spelled = false;
             foreach (var (name, ids) in weaponNames)
                 if (ReplaceFirst(ref sn, " " + name + " "))
                 {
                     byName = true;
                     weaponIds.UnionWith(Family(ids));
+                    byNameIds.UnionWith(Family(ids));
                     if (longer[name].Length > 0)  // the longer names and the weapons the mission's own text names are accepted too
+                    {
                         weaponIds.UnionWith(Family(longer[name].Concat(named ?? [])));
+                        byNameIds.UnionWith(Family(longer[name].Concat(named ?? [])));
+                    }
                 }
             if (Take(ref sn, Traditional, out _))  // the bows without a compound's wheels or a crossbow's stock
             {
@@ -899,18 +904,24 @@ public sealed partial class State
                 while (Take(ref sn, classWords, out _))
                     classAmmo.UnionWith(ids);
             var asked = new HashSet<string>();  // the classes the nouns of the title name
+            var classIds = new HashSet<long>();  // the weapons the class nouns brought
             while (WeaponNoun.Match(sn) is { Success: true } noun)
+            {
+                var nounSpelled = false;
                 if (TakeWords(ref sn, noun, 6, (phrase, n) =>
                     {
                         var found = WeaponsOf(phrase, n).ToArray();
-                        spelled |= found.Length > 0 && Alternatives(phrase).Any(g => Spelled(g, n).Any());
+                        if (found.Length > 0)
+                            spelled |= nounSpelled = Alternatives(phrase).Any(g => Spelled(g, n).Any());
                         return found;
                     }) is { Length: > 0 } byNoun)
                 {
                     byClass = true;
                     weaponIds.UnionWith(byNoun);
-                    asked.Add(noun.Groups["c"].Value.StartsWith("shotgun", StringComparison.Ordinal) ? "Shotguns" : noun.Groups["c"].Value.StartsWith("rifle", StringComparison.Ordinal) ? "Rifles" : "");
+                    (nounSpelled ? byNameIds : classIds).UnionWith(byNoun);
+                    asked.UnionWith(ClassesIn(noun.Groups["c"].Value));
                 }
+            }
             var allBut = refused.Count > 0 && weaponIds.Count == 0;
             if (allBut)
                 weaponIds.UnionWith(weapons.Select(w => w.Id));  // `any weapon except a rifle`: every weapon but those
@@ -963,8 +974,8 @@ public sealed partial class State
             else if (Take(ref sn, OnStand, out var stand)) tests.Add(new(Check.Stand, Ids: [.. StandIds(stand.Groups["s"].Value)]));
             if (sightIds.Count > 0) tests.Add(new(Check.Scope, Ids: sightIds));
             Dictionary<long, HashSet<long>>? when = null;  // a combination gun is a shotgun when it fired a shotgun shell and a rifle when it fired its rifle round: only for a class named by its noun
-            if (!byName && !allBut)
-                foreach (var id in weaponIds)
+            if (!allBut)
+                foreach (var id in classIds.Except(byNameIds))  // only the weapons a class noun brought, not one the title names (`the Test Bolt Rifle or any shotgun`)
                     if (also.TryGetValue(id, out var more) && more.Where(c => asked.Contains(c.Key)).ToArray() is { Length: > 0 } hit && hit.All(c => c.Value is not null))
                         (when ??= [])[id] = [.. hit.SelectMany(c => c.Value!)];
             if (weaponIds.Count > 0) tests.Add(new(Check.Weapon, Ids: weaponIds, Basis: allBut ? WeaponBasis.AllBut : !(byName || spelled) ? WeaponBasis.Class : byClass && !spelled ? WeaponBasis.NameAndClass : WeaponBasis.Name, When: when));

@@ -157,16 +157,18 @@ public sealed partial class State
     /// The game sends a place's define when the player enters it (docs/server.md, "What the stored events show").</summary>
     static string[] NamedPlaces(IEnumerable<Location> places, string title, long[] reserves)
     {
+        // each word of the title with: whether its token has a capital, ends in punctuation (a comma, a full stop, a closing bracket) and, for its first word, starts with one (an opening bracket): the end of a place name
         var words = title.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
-            .SelectMany(t => Normalise(t).Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(w => (Word: w, Capital: t.Any(char.IsLetter) && char.IsUpper(t.First(char.IsLetter)), Ends: t.Length > 0 && !char.IsLetterOrDigit(t[^1]))))
+            .SelectMany(t => Normalise(t).Split(' ', StringSplitOptions.RemoveEmptyEntries).Select((w, k) => (Word: w, Capital: t.Any(char.IsLetter) && char.IsUpper(t.First(char.IsLetter)),
+                Ends: !char.IsLetterOrDigit(t[^1]), Starts: !char.IsLetterOrDigit(t[0]) && k == 0)))
             .ToArray();
         bool Named(string name)
         {
             var n = name.Split(' ');
             for (var i = 0; i + n.Length <= words.Length; i++)
                 if (words.Skip(i).Take(n.Length).Select(w => w.Word).SequenceEqual(n)
-                    && !(i > 0 && words[i - 1] is { Capital: true } before && i > 1 && !Joining.Contains(before.Word))  // `Fort <Name>`: the word before is part of the name
-                    && !(i + n.Length < words.Length && !words[i + n.Length - 1].Ends && words[i + n.Length] is { Capital: true } next && !Joining.Contains(next.Word)))  // `<Name> Watchtower`
+                    && !(i > 1 && words[i - 1] is { Capital: true, Ends: false } before && !words[i].Starts && !Joining.Contains(before.Word))  // `Fort <Name>`: the word before is part of the name (not one that ends a phrase: `Test Lake, <Name>`)
+                    && !(i + n.Length < words.Length && !words[i + n.Length - 1].Ends && words[i + n.Length] is { Capital: true, Starts: false } next && !Joining.Contains(next.Word)))  // `<Name> Watchtower` (not `<Name> (Test Reserve)`)
                     return true;
             return false;
         }

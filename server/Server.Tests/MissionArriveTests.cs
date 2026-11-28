@@ -157,6 +157,9 @@ public class MissionArriveTests : MissionTestBase
     [InlineData("Arrive at the Zürnhütte Lodge", "TEST_RESERVE_ZUERNHUETTE", true)]
     [InlineData("Arrive at the Cairn", "TEST_RESERVE_CAIRN_2", false)]  // only part of the name
     [InlineData("Visit the Test Camp Watchtower.", "TEST_RESERVE_CAMPSITE_1", false)]  // a place the catalogue lacks, whose name holds a catalogued one: not the neighbouring place
+    [InlineData("Visit the Test Lake, Test Camp.", "TEST_RESERVE_CAMPSITE_1", true)]  // a comma ends the word before: it is no part of the name
+    [InlineData("Arrive at Test Camp (Test Reserve)", "TEST_RESERVE_CAMPSITE_1", true)]  // a bracket after the name ends it
+    [InlineData("Arrive at Test Camp, Test Reserve", "TEST_RESERVE_CAMPSITE_1", true)]
     [InlineData("Arrive at the Upper Test Camp (x 5000, y 6000)", "TEST_RESERVE_CAMPSITE_0", false)]  // a title with coordinates is met near them, not by a name
     public void TestAPlaceTheTitleNamesByItsEnglishNameIsMetByTheDefineTheGameSends(string title, string define, bool met)
     {

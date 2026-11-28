@@ -56,7 +56,7 @@ const string AdminUsage = """
     off the harvester's lodge; the gm$ are NOT moved (what the harvester was paid stays his, the shooter gets none for it; the shooter's missions checked again may pay their own rewards); each move is one transaction (a failed one is undone and counted); the harvester's missions lose only the objectives that harvest finished (listed in the dry run), the shooter's are checked again, the hunterscore of both is made again, and a record per account and move is kept (table mission_rollbacks).
     It prints one line per moved harvest (kill, species, from, to, gm$) and a total; the first harvest of an animal moves, a second one stays. Without --apply it only prints and writes nothing. Run it once, with the server stopped, after `backup`.
     admin missions-recheck [--account <id or handle>] is the dry run of what the server does at every start: each active mission's open harvest, clue and arrive objectives are checked again against the stored harvests, clues and places under today's rules. It prints one line per account and mission
-    (the objectives that would be finished, and, when that completes the mission, the gm$ and em$ it pays), then a total. The start only finishes objectives (it never reopens one, and a finished one is never checked); the dry run changes nothing (each account's check is rolled back).
+    (the objectives that would be finished, and, when that completes the mission, the gm$ and em$ it pays), then a total. The start only finishes objectives (it never reopens one, and a finished one is never checked). The dry run writes nothing: each account's check is rolled back, and with spawn_named_animals on the ids the new rules give named animals are worked out in memory (named_animals.json is not written). It needs the data folder's state.db and does not create it.
     admin missions-audit [--hours N] [--account <id or handle>] [--discord] lists the mission objectives completed in the last N hours (default 24) that look suspicious, one line per objective
     (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, rule changed, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
     2000 characters, separated by a line ---8<---, for a webhook, with one line for the count of `rule changed` instead of one per objective.
@@ -456,8 +456,8 @@ void Admin(string[] a)
     if (a.Length > 0 && a[0] == "missions-recheck")
     {
         if (a[1..] is not ([] or ["--account", _])) Die(AdminUsage);
-        Directory.CreateDirectory(settings.DataDir);
-        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (!File.Exists(Path.Combine(settings.DataDir, "state.db"))) { Die($"no state.db in {settings.DataDir}: nothing to check"); return; }
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir, readOnly: true);  // the named animals' ids are worked out in memory: named_animals.json is not written
         if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
         long? only = null;
         if (a.Length == 3 && (only = AdminApi.ResolveAccount(loaded, a[2])) is null) Die($"no account {a[2]}");

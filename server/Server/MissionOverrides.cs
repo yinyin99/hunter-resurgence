@@ -72,13 +72,26 @@ public sealed partial class State
                     throw new InvalidDataException($"mission {mission} has no objective {objective}");
                 if (value is not JsonValue v || !v.TryGetValue<string>(out var words))
                     throw new InvalidDataException("a rule is a string of words, as coverage --rules prints them");
-                var stated = RuleIn(words);  // an arrive rule is met at its place, or near the title's coordinates when it has some (the game's area may be smaller or larger than 200 m)
+                var stated = RuleIn(words);
                 var title = m.Objectives[i].Rule;
                 var undone = words.Split(';', StringSplitOptions.TrimEntries).Contains("unordered");
-                var after = stated.After ?? (undone ? null : title.After);  // `At any point during the same hunt` and `After visiting X` order the objective unless the file says `unordered`
+                // the order: what the entry says, `after objective <n>`, `ordered` (every objective before it) or `unordered`; with none of the three the title's own order stays (`Then`, `After visiting X`, `At any point during the same hunt`)
+                var (after, ordered) = stated.After is not null ? (stated.After, true) : stated.Ordered ? (null, true) : undone ? (null, false) : (title.After, title.Ordered || title.After is not null);
                 if (after is { } waits && Array.FindIndex(m.Objectives, o => o.Id == waits) is var before && (before < 0 || before >= i))
                     throw new InvalidDataException($"after objective {waits}: an objective of the mission before this one");
-                m.Objectives[i] = m.Objectives[i] with { Rule = (stated.Kind == Kind.Arrive && stated.Zone is null && title.Zone is { Point: not null } zone ? stated with { Zone = zone with { Places = [] } } : stated) with { After = after, Ordered = !undone && (stated.Ordered || after is not null) } };
+                var rule = stated with { After = after, Ordered = ordered };
+                if (stated.Kind == Kind.Arrive)
+                {
+                    // an arrive entry keeps the title's reserves (a point or a place of the title is met only in the mission's reserves); a `place:` entry is met by that name in any reserve unless the title's point stays (the game's area may be
+                    // smaller or larger than 200 m); `places:`, a point or a bare `arrive` are still met by the title's words (the game's areas the catalogue lacks), so they keep the title's text
+                    var reserves = title.Zone?.Reserves ?? [];
+                    rule = rule with
+                    {
+                        Zone = stated.Zone is { } z ? new Zone(z.Point, reserves, z.Places) : stated.Tests is { Length: > 0 } ? title.Zone is { Point: not null } tz ? tz with { Places = [] } : null : title.Zone,
+                        Text = stated.Tests is { Length: > 0 } ? stated.Text : title.Text,
+                    };
+                }
+                m.Objectives[i] = m.Objectives[i] with { Rule = rule };
                 if (undone)
                     unordered.Add((mission, objective));
                 overridden.Add((mission, objective));
@@ -123,8 +136,8 @@ public sealed partial class State
                     point = (Coordinate(within.Groups["x"].Value), Coordinate(within.Groups["z"].Value));
                 else
                     throw new InvalidDataException("an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\", each once");
-            if (at is null && named.Count == 0 && point is null || at is not null && (named.Count > 0 || point is not null))
-                throw new InvalidDataException("an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\"");
+            if (at is not null && named.Count > 0)
+                throw new InvalidDataException("an arrive rule has \"place: <NAME>\" or \"places: <NAME>, <NAME>\", not both");
             return new Rule(Kind.Arrive, null, null, ordered, string.Join("; ", parts), at is null ? [] : [at], Zone: point is null && named.Count == 0 ? null : new Zone(point, [], [.. named]), After: after);
         }
         var kind = rest[0] switch
@@ -137,6 +150,7 @@ public sealed partial class State
         if (rest.Count(p => p is "male" or "female") > 1 || rest.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || rest.Count(p => p == "together") > 1)
             throw new InvalidDataException("a gender, a species or \"together\" is given twice");
         long? speciesId = null, gender = null;
+        string? barrels = null;
         var tests = new List<Test>();
         foreach (var part in rest[1..].OrderBy(p => !p.StartsWith("species: ", StringComparison.Ordinal)))  // the species first: a coat word may be the species' own
             if (part is "male" or "female") gender = part == "male" ? 0 : 1;
@@ -147,12 +161,32 @@ public sealed partial class State
                 if (ids.Length == 1) speciesId = ids[0];
                 else tests.Add(new(Check.Species, Ids: [.. ids]));
             }
+            else if (part.StartsWith("weapon barrels: ", StringComparison.Ordinal)) barrels = part["weapon barrels: ".Length..];
             else tests.Add(TestIn(part, speciesId is { } s ? [s] : tests.Where(t => t.Check == Check.Species).SelectMany(t => t.Ids!)));
+        if (barrels is not null)  // a weapon of two classes counts for a class only with the ammunition of that class: `<weapon> = <ammunition>, ... | <weapon> = ...`
+        {
+            var weapon = tests.FindIndex(t => t.Check == Check.Weapon);
+            if (weapon < 0)
+                throw new InvalidDataException("\"weapon barrels\" needs a \"weapon\" condition");
+            var when = new Dictionary<long, HashSet<long>>();
+            foreach (var barrel in barrels.Split(" | "))
+            {
+                var eq = barrel.IndexOf(" = ", StringComparison.Ordinal);
+                if (eq < 0)
+                    throw new InvalidDataException("a barrel is \"<weapon> = <ammunition>, ...\"");
+                var rounds = ItemsIn(barrel[(eq + 3)..], 3, "ammunition");
+                foreach (var id in items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == State.WeaponCategory && ItemName(i.Key).Equals(barrel[..eq], StringComparison.OrdinalIgnoreCase)).Select(i => i.Key))
+                    when[id] = [.. rounds];
+                if (!when.Keys.Any(k => ItemName(k).Equals(barrel[..eq], StringComparison.OrdinalIgnoreCase)))
+                    throw new InvalidDataException($"no weapon is named \"{barrel[..eq]}\"");
+            }
+            tests[weapon] = tests[weapon] with { When = when };
+        }
         // what an event of the kind carries: a spot has no weapon, hit or harvest; a clue has its kind and its animal
         Check[]? only = kind switch
         {
             Kind.Spot => [Check.Stand, Check.Reserve, Check.Place, Check.Named, Check.Species, Check.Coat, Check.NotCoat, Check.Different],
-            Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different, Check.EachSpecies],
+            Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different, Check.EachSpecies, Check.Within, Check.Each],  // `3 tracks from a <species>` counted over the hunt: `in the hunt: 3`
             _ => null,
         };
         if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different or Check.EachSpecies : !only.Contains(t.Check)) is { } wrong)
@@ -197,7 +231,7 @@ public sealed partial class State
             "tusks" => Bounded(Check.Tusks, value, " mm"),
             "place" => PlaceDefine.IsMatch(value) ? new(Check.Place, Place: value) : throw new InvalidDataException($"\"{value}\" is no name of a place: capital letters, digits and _"),
             "state" or "first state" => new(name == "state" ? Check.State : Check.FirstState,
-                Ids: Reader.States.FirstOrDefault(s => s.Label == value && (name != "first state" || s.First)) is { Label: not null } st ? [.. st.States]
+                Ids: Reader.States.FirstOrDefault(s => s.Label == value) is { Label: not null } st ? [.. st.States]  // `first state` takes every state word: the earlier files said `first state: spooked`
                     : throw new InvalidDataException($"\"{value}\" is no {name}")),
             "not state" => new(Check.NotState, Ids: [.. List(value).SelectMany(s => s switch
             {

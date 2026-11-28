@@ -11,7 +11,7 @@ public class NamedAnimalTests : MissionTestBase
     const string OnTest = ", \"species\": [1], \"reserves\": [2]";  // the mission's own species and reserve
 
     /// <summary>A server on `file` whose catalogue is these missions (the JSON of `missions`), whose reserve 2 has a deer population and whose reserve 3 a lodge; `on`: the setting.</summary>
-    State Make(string file, string missions, bool on = true, JsonObject? rules = null, Action<JsonObject>? connectOf = null)
+    State Make(string file, string missions, bool on = true, JsonObject? rules = null, Action<JsonObject>? connectOf = null, bool write = true)
     {
         var app = APP;
         app["missions"] = JsonNode.Parse(missions)!["missions"]!.DeepClone();
@@ -20,7 +20,7 @@ public class NamedAnimalTests : MissionTestBase
         connect["populations"] = JsonNode.Parse("""[{"index": 101, "animal": "mule_deer", "density_map": "mule_deer", "endangered": false, "spawn_license": 1, "reserve": 2, "groups": [], "random_groups": null}]""");
         connect["spawn"] = new JsonArray();
         connectOf?.Invoke(connect);
-        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, missionRules: rules, spawnNamedAnimals: on);
+        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, missionRules: rules, spawnNamedAnimals: on, writeNamedAnimals: write);
     }
 
     static JsonArray Spawn(byte[] connect) => Reply(connect)["spawn"]!.AsArray();
@@ -126,6 +126,23 @@ public class NamedAnimalTests : MissionTestBase
         Hunt(state);
         Hb(KillOf(3, population: null, x: -1000, z: 3400));  // 200 m from the point, in no place
         Assert.Equal("1", Completed());
+    }
+
+    [Fact]
+    public void TestTheDryRunWorksOutTheSameIdsInMemoryAndWritesNoFile()
+    {
+        var rule = O("""{"1/0": "harvest; species: Test Deer; reserve: Test Reserve; named animal near (-1200, 3400) m, 3 animals, otherwise place TEST_LAKE"}""");
+        var missions = Catalogue(["Harvest a Test Deer from the herd by the lake"], OnTest);
+        var dry = Make("dry-run.db", missions, rules: rule, write: false);
+        Assert.False(File.Exists(Path.Combine(tmp, "named_animals.json")));  // the animal is placed in memory only
+        dry.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
+        state = dry;
+        Hunt(dry);
+        Hb(KillOf(1, population: 160, x: 0, z: 0));  // the id a placing run gives it, 160
+        Assert.Equal("1", Completed());  // judged by the same population
+        Assert.False(File.Exists(Path.Combine(tmp, "named_animals.json")));
+        Make("written.db", missions, rules: rule);
+        Assert.True(File.Exists(Path.Combine(tmp, "named_animals.json")));  // a placing start keeps it
     }
 
     [Fact]

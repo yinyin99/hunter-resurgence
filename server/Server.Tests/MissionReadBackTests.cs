@@ -47,6 +47,29 @@ public class MissionReadBackTests : MissionTestBase
         Assert.Equal(line, RuleLines(New("rb-unordered-back.db", Ordered, rules: Rules(("1/3", line.Split(" => ")[1])))).Single(l => l.StartsWith("mission 1 objective 3", StringComparison.Ordinal)));
     }
 
+    [Fact]
+    public void TestAnEntryKeepsTheTitlesOrderUnlessItSaysOneAndOrderedIsNotReadAsAfterObjective()
+    {
+        // objective 3 is `After visiting Tower 2` (waits for objective 2), objective 4 is `Then harvest` (waits for every one before it)
+        var s = New("rb-keep.db", Ordered, rules: Rules(("1/3", "harvest; species: Test Fox; ordered"), ("1/4", "harvest; species: Test Fox")));
+        var lines = RuleLines(s);
+        Assert.Equal("harvest; species: Test Fox; ordered", Words(lines, 3));  // every objective before it, not the visit alone
+        Assert.Equal("harvest; species: Test Fox; ordered", Words(lines, 4));  // no order word: the title's `Then` stays
+        Assert.Equal(s.RuleShapes().Where(l => l.StartsWith("mission 1 objective 3", StringComparison.Ordinal) || l.StartsWith("mission 1 objective 4", StringComparison.Ordinal)).Select(l => l[(l.IndexOf(": ", StringComparison.Ordinal) + 2)..]).Distinct().Count(), 1);
+    }
+
+    [Theory]
+    [InlineData("first state: spooked")]  // an earlier operator file's word: every state word is read as the animal's state at the first hit
+    [InlineData("first state: unspooked")]
+    [InlineData("state: spooked")]
+    public void TestTheEarlierFirstStateWordsStillLoadAndReadBackAsThemselves(string condition)
+    {
+        var rule = $"harvest; species: Test Deer; {condition}";
+        var s = New("rb-first.db", Catalogue(["Harvest a Test Deer"]), rules: Rules(("1/0", rule)));
+        Assert.EndsWith($"=> {rule}", RuleLines(s).Single());
+        Assert.Equal(s.RuleShapes(), New("rb-first-back.db", Catalogue(["Harvest a Test Deer"]), rules: Rules(("1/0", rule))).RuleShapes());
+    }
+
     [Theory]
     [InlineData("harvest; species: Test Deer; ordered; unordered", "one of")]
     [InlineData("harvest; species: Test Deer; after objective 0; ordered", "one of")]
@@ -59,8 +82,8 @@ public class MissionReadBackTests : MissionTestBase
     [InlineData("track; species: Test Deer; clues: footprints x1; footprints of each of Test Deer, Test Fox within 0 m of (10, 20)", "a radius")]
     [InlineData("track; species: Test Deer; clues: footprints x1; footprints of each of Test Deer, Test Fox within 99999999999999999999 m of (10, 20)", "a radius")]
     [InlineData("harvest; species: Test Deer; footprints of each of Test Deer, Test Fox within 300 m of (10, 20)", "cannot check")]
-    [InlineData("arrive; places: TEST_A; place: TEST_B", "an arrive rule is")]
-    [InlineData("arrive", "an arrive rule is")]
+    [InlineData("arrive; places: TEST_A; place: TEST_B", "an arrive rule has")]
+    [InlineData("arrive; ordered; after objective 0", "one of")]
     public void TestBadInputStopsTheStartWithTheEntrysKey(string rule, string fragment)
     {
         var catalogue = "{\"missions\": [{\"id\": 1, \"title\": \"m\", \"dependencies\": [], \"rewards\": [], \"objectives\": [{\"id\": 0, \"title\": \"Harvest a Test Deer\"}, {\"id\": 1, \"title\": \"Harvest a Test Deer\"}]}]}";
@@ -93,5 +116,70 @@ public class MissionNarrowReadingTests : MissionTestBase
         var lines = Lines(New("nr-spot.db", "{\"missions\": [" + Mission(1, "Spot another Test Deer") + "," + Mission(2, "Spot another Test Deer in the same hunt") + "]}"));
         Assert.Contains("in the mission: 2 different animals", lines.Single(l => l.StartsWith("mission 1 objective 1", StringComparison.Ordinal)), StringComparison.Ordinal);
         Assert.Contains("in the hunt: 2 different animals", lines.Single(l => l.StartsWith("mission 2 objective 1", StringComparison.Ordinal)), StringComparison.Ordinal);
+    }
+}
+
+/// <summary>The contract of docs/server.md: a line `coverage --rules` prints, copied into `mission_rules.json`, is the same rule. Compared on the rules themselves (<see cref="State.RuleShapes"/>: kind, species,
+/// gender, order, zone, words, every condition with its ids and numbers), not on the printed words, for every objective of the catalogue the reader understands: the invented sample's, with and without its
+/// operator's rules, and, privately, the real catalogue's (MISSION_CATALOGUE and MISSION_RULES, as for the real cases).</summary>
+public class MissionReadBackShapeTests(MissionCaseSources sources, ITestOutputHelper output) : MissionTestBase, IClassFixture<MissionCaseSources>
+{
+    static readonly System.Text.RegularExpressions.Regex Line = new(@"\Amission (?<m>\d+) objective (?<o>\d+)(?: \(override\))?: .* => (?<rule>(?:harvest|spot|track|arrive)(?:;.*)?)\z");
+
+    [Theory]
+    [InlineData("sample", true)]
+    [InlineData("sample", false)]
+    [InlineData("real", true)]
+    [InlineData("real", false)]
+    public void TestEveryPrintedRuleReadsBackAsTheSameRule(string source, bool withTheOperatorsRules)
+    {
+        if (source == "real" && MissionCaseSources.RealMissing is { } why)
+            Assert.Skip(why);
+        var c = sources[source];
+        var first = withTheOperatorsRules ? c.Engine : c.Rebuild("plain", null);
+        var lines = first.RuleLines().ToList();
+        var read = lines.Select(l => Line.Match(l)).Where(m => m.Success && !m.Value.Contains("not understood", StringComparison.Ordinal)).ToList();
+        var back = c.Rebuild($"back-{withTheOperatorsRules}", Rules([.. read.Select(m => ($"{m.Groups["m"].Value}/{m.Groups["o"].Value}", m.Groups["rule"].Value))]));
+        var (was, now) = (first.RuleShapes().ToDictionary(s => s[..s.IndexOf(": ", StringComparison.Ordinal)]), back.RuleShapes().ToDictionary(s => s[..s.IndexOf(": ", StringComparison.Ordinal)]));
+        var different = read.Select(m => $"mission {m.Groups["m"].Value} objective {m.Groups["o"].Value}").Where(k => was[k] != now[k])
+            .Select(k => $"{k}\n   printed: {read.First(m => $"mission {m.Groups["m"].Value} objective {m.Groups["o"].Value}" == k).Groups["rule"].Value}\n   was:     {was[k][(k.Length + 2)..]}\n   read:    {now[k][(k.Length + 2)..]}").ToList();
+        output.WriteLine($"{source}, operator's rules {withTheOperatorsRules}: {read.Count} printed rules read back, {lines.Count - read.Count} not understood or not a rule (not loadable), {different.Count} different");
+        Assert.True(different.Count == 0, string.Join('\n', different.Take(60)));
+    }
+}
+
+/// <summary>A weapon of two classes (found by the cartridges its name joins and the ammunition they name) counts for a class only with that class's ammunition; the condition is printed and read back.</summary>
+public class MissionBarrelTests : MissionTestBase
+{
+    static readonly string[] GunItems =
+    [
+        """{"id": 950, "name": "10GA/8x50R Test Combination Gun", "cat": 1, "subcat": {"name": "Test Advanced"}}""",
+        """{"id": 951, "name": "10 GA Test Drill Shell", "cat": 3, "subcat": {"name": "Test Shotgun Ammo"}}""",
+        """{"id": 952, "name": "8x50R Test Drill Round", "cat": 3, "subcat": {"name": "Test Rifle Ammo"}}""",
+    ];
+
+    const string Gun = "10GA/8x50R Test Combination Gun";
+
+    [Theory]
+    [InlineData("Harvest a Test Deer with any shotgun")]
+    [InlineData("Harvest a Test Deer with the Test Carbine or any shotgun")]  // naming a weapon does not drop the barrel rule of the class
+    public void TestTheBarrelRuleIsPrintedAndReadsBackAsTheSameRule(string title)
+    {
+        var s = New("barrel.db", Catalogue([title]), items: GunItems);
+        var line = s.RuleLines().Single();
+        Assert.Contains($"weapon barrels: {Gun} = 10 GA Test Drill Shell", line, StringComparison.Ordinal);
+        var back = New("barrel-back.db", Catalogue([title]), items: GunItems, rules: Rules(("1/0", line[(line.IndexOf(" => ", StringComparison.Ordinal) + 4)..])));
+        Assert.Equal(s.RuleShapes(), back.RuleShapes());
+    }
+
+    [Fact]
+    public void TestTheCombinationGunCountsForAShotgunWithItsShellOnly()
+    {
+        state = New("barrel-kill.db", Catalogue(["Harvest a Test Deer with any shotgun", "Harvest a Test Deer with any rifle"]), items: GunItems);
+        ActivateAll();
+        Hb(Shot(1, weapon: 950, ammunition: 952));  // the rifle round: a rifle's kill
+        Assert.Equal("2", Completed());
+        Hb(Shot(2, weapon: 950, ammunition: 951));  // the shell: a shotgun's
+        Assert.Equal("1,2", Completed());
     }
 }

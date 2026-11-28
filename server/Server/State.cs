@@ -829,7 +829,7 @@ public sealed partial class State
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false, bool writeNamedAnimals = true)
     {
         this.facts = facts ?? Facts.Default;
         Seasonal = seasonal;
@@ -863,7 +863,7 @@ public sealed partial class State
             OverrideMissionRules(missionRules);
             placesNamedAnimals = spawnNamedAnimals;
             if (spawnNamedAnimals)
-                PlaceNamedAnimals(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "named_animals.json"));
+                PlaceNamedAnimals(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "named_animals.json"), writeNamedAnimals);
             LoadChallenges(challenges);
         }
         this.locale = locale;

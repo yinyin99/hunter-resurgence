@@ -36,6 +36,11 @@ public sealed class CaseSource
             return new State(Path.Combine(at, "state.db"), Py.DumpBytes(connect), BASE, ICON, App, LOCALE, TEXTURES, offline: false, missionRules: overrides, spawnNamedAnimals: place);
         }
         Engine = Build(dir, false);
+        rebuild = (at, rules) =>
+        {
+            Directory.CreateDirectory(at);
+            return new State(Path.Combine(at, "state.db"), Py.DumpBytes(connect), BASE, ICON, App, LOCALE, TEXTURES, offline: false, missionRules: rules);
+        };
         placed = new(() => Build(Path.Combine(dir, "placed"), true));
         var lines = Engine.RuleLines().Select(l => (Match: Regex.Match(l, @"\Amission (\d+) objective (\d+)"), Line: l)).ToDictionary(x => (long.Parse(x.Match.Groups[1].Value), long.Parse(x.Match.Groups[2].Value)), x => x.Line);
         foreach (var m in App["missions"]!.AsArray().OfType<JsonObject>())
@@ -44,6 +49,11 @@ public sealed class CaseSource
     }
 
     public State Placed => placed.Value;
+
+    readonly Func<string, JsonObject?, State> rebuild;
+
+    /// <summary>The catalogue's engine again under these operator's rules (none: the reader's alone), in a folder of its own beside the source's.</summary>
+    public State Rebuild(string name, JsonObject? rules) => rebuild(Path.Combine(dir, name), rules);
 
     /// <summary>The population the placing engine gave the named animal of `species` nearest `at` ([x, z]; none: (0, 0)), from the file it keeps them in (`named_animals.json`: keys
     /// `reserve|species|gender|coat|x|z`).</summary>
