@@ -38,7 +38,7 @@ public class ReferralTests : StateTestBase
         Sql("UPDATE referral_release SET ts = ?", (long)at - 10 * Day);  // the feature is ten days old: an account made now is a new one
     }
 
-    State Open() => new(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(Catalogue)!, LOCALE, TEXTURES, offline: false, facts: Ranks) { Clock = () => at, PlaytimeSince = 0 };
+    State Open(bool live = true) => new(Db, Py.DumpBytes(CONNECT), BASE, ICON, (JsonObject)JsonNode.Parse(Catalogue)!, LOCALE, TEXTURES, offline: false, facts: Ranks) { Clock = () => at, PlaytimeSince = 0, LiveReferrals = live };
 
     string SettingsFile => Path.Combine(tmp, "settings.json");
 
@@ -229,23 +229,6 @@ public class ReferralTests : StateTestBase
     }
 
     [Fact]
-    public void WhatARestoreBringsAfterTheEntryIsNotGained()
-    {
-        var (a, b) = (Account("alice"), Account("bob"));
-        Recruit(b, a);
-        Play(b, 3);
-        using (var con = state.Store.Open(b))
-        {
-            PlayerRows.SetStatistics(con, O("""{"animal": {"1": {"ethical_kills": 500}}}"""), 0, 0, null, null);
-            state.UpdateHunterscore(con, b, scoreBefore: 0);  // as the restore calls it: the 500 are the backup's
-        }
-        Assert.False((bool)Recruits(a)[0]!["qualified"]!);
-        Assert.Equal(0.0, (double)Recruits(a)[0]!["score"]!);
-        Score(b, 510);
-        Assert.True((bool)Recruits(a)[0]!["qualified"]!);
-    }
-
-    [Fact]
     public void ATierPaysOnceWhenItsRecruitsQualifyAndAnEmptyRewardPaysNothing()
     {
         Referral("""{"tiers": [{"recruits": 1, "reward": {"gm": 100}}, {"recruits": 2, "reward": null}, {"recruits": 3, "reward": {"items": [{"id": 2, "count": 1}]}}]}""");
@@ -310,7 +293,7 @@ public class ReferralTests : StateTestBase
         var week = Status(a);
         var dave = week["recruits"]!.AsArray().Single(r => (string)r!["handle"]! == "dave")!;
         Assert.Equal((true, false), ((bool)dave["qualified"]!, (bool)dave["paid"]!));  // qualified, over the cap
-        Assert.Equal(3, (int)week["qualifiedCount"]!);
+        Assert.Equal((3, 2), ((int)week["qualifiedCount"]!, (int)week["countedCount"]!));  // the bars follow the counted ones
         Assert.Equal([true, true, false], week["tiers"]!.AsArray().Select(t => (bool)t!["reached"]!));
 
         at += 8 * Day;
@@ -340,7 +323,7 @@ public class ReferralTests : StateTestBase
     }
 
     [Fact]
-    public void TheDiscordMilestoneCountsTheRecruitsWhoLinkedDiscord()
+    public void TheDiscordMilestoneCountsOnlyTheRecruitsWhoAreCountedAndLinkedDiscord()
     {
         Referral("""{"discord_milestones": [{"recruits": 1, "reward": {"gm": 50}}, {"recruits": 2, "reward": null}]}""");
         var (a, b, c) = (Account("alice"), Account("bob"), Account("carol"));
@@ -350,10 +333,18 @@ public class ReferralTests : StateTestBase
         Assert.Equal(0L, (long)Status(a)["discord"]!["linkedCount"]!);
 
         Sql("INSERT INTO discord_links (account_id, discord_id, linked_ts) VALUES (?, 'd-bob', 1)", b);
+        var linkedOnly = Status(a);  // linked, but not qualified: no milestone
+        Assert.Equal(0L, (long)linkedOnly["discord"]!["linkedCount"]!);
+        Assert.Equal([false, false], linkedOnly["discord"]!["milestones"]!.AsArray().Select(m => (bool)m!["reached"]!));
+        Assert.True((bool)linkedOnly["recruits"]!.AsArray().Single(r => (string)r!["handle"]! == "bob")!["discordLinked"]!);
+        Assert.Equal(gm, Gm(a));
+
+        Qualify(c);  // qualified, but not linked: no milestone either
+        Assert.Equal(0L, (long)Status(a)["discord"]!["linkedCount"]!);
+        Qualify(b);
         var one = Status(a);
         Assert.Equal(1L, (long)one["discord"]!["linkedCount"]!);
         Assert.Equal([true, false], one["discord"]!["milestones"]!.AsArray().Select(m => (bool)m!["reached"]!));
-        Assert.True((bool)one["recruits"]!.AsArray().Single(r => (string)r!["handle"]! == "bob")!["discordLinked"]!);
         Assert.Equal(gm + 50, Gm(a));
 
         Sql("INSERT INTO discord_links (account_id, discord_id, linked_ts) VALUES (?, 'd-carol', 1)", c);
@@ -376,7 +367,7 @@ public class ReferralTests : StateTestBase
         var list = Recruits(a);
         Assert.Equal(["cat", "bob", "dan", "fay", "eve"], list.Select(r => (string)r!["handle"]!));
         Assert.Equal([1.0, 0.0, 0.0, 2.0, 2.0], list.Select(r => (double)r!["hours"]!));
-        Assert.Equal([8.0, 5.0, 0.0, 10.0, 10.0], list.Select(r => (double)r!["score"]!));
+        Assert.Equal([8L, 5L, 0L, 10L, 10L], list.Select(r => (long)r!["score"]!));
         Assert.Equal(Hour, (long)list[3]!["qualifiedAt"]! - (long)list[4]!["qualifiedAt"]!);
     }
 
@@ -547,5 +538,249 @@ public class ReferralTests : StateTestBase
         Assert.Equal(("alice", code, false), ((string)theirs["recruiter"]!, (string)theirs["enteredCode"]!, (bool)theirs["canEnter"]!));
         var seen = JsonNode.Parse((await server.SendAsync("GET", "web.test", "/account/referral", [("Cookie", Cookie(a))])).Body)!["recruits"]!.AsArray();
         Assert.Equal(["bob"], seen.Select(r => (string)r!["handle"]!));
+    }
+
+    /// <summary>Sends a service's requests through the loopback server, whatever host they name.</summary>
+    sealed class Via(HttpClient server) : HttpMessageHandler
+    {
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var copy = new HttpRequestMessage(request.Method, request.RequestUri) { Content = request.Content };
+            foreach (var h in request.Headers) copy.Headers.TryAddWithoutValidation(h.Key, h.Value);
+            return server.SendAsync(copy, ct);
+        }
+    }
+
+    [Fact]
+    public async Task TheWebsitesServiceReadsTheServersOwnReplyIntoItsRecord()
+    {
+        var table = new Replay.HarTable();
+        table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        await using var server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+        Referral("""{"recruit_reward": {"em": 9}, "tiers": [{"recruits": 1, "reward": {"gm": 5, "items": [{"id": 3, "count": 2}]}}, {"recruits": 3, "reward": null}]}""");
+        var (a, b, c, d) = (Account("alice"), Account("bob"), Account("carol"), Account("dave"));
+        Recruit(b, a);
+        Recruit(c, a);
+        Qualify(b);
+        Play(c, 1.5);  // a fraction of an hour
+        Score(c, 7);
+        Sql("INSERT INTO discord_links (account_id, discord_id, linked_ts) VALUES (?, 'd-bob', 1)", b);
+        var http = new HttpClient(new Via(server.Http)) { BaseAddress = new Uri("http://web.test/") };
+        Resurgence.Services.ServerReferralService Service(long who) =>
+            new(http, new Resurgence.Services.ServerCookie { Value = state.Store.CreateWebSession(who, TimeSpan.FromHours(1)), Host = "web.test" },
+                Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerReferralService>.Instance);
+
+        var page = await Service(a).GetAsync();  // the reply as the server wrote it, read into the client's record: a number of the wrong kind would make it null
+        Assert.NotNull(page);
+        Assert.Equal((Code(a), $"{Site}/join/{Code(a)}", true, (long?)((long)at + 72 * Hour)), (page.Code, page.Link, page.CanEnter, page.EnterUntil));
+        Assert.Equal((2.0, 10), (page.Qualification.Hours, page.Qualification.Score));
+        Assert.Equal([("carol", 1.5, 7, false, false), ("bob", 2.0, 10, true, true)], page.Recruits.Select(r => (r.Handle, r.Hours, r.Score, r.Qualified, r.DiscordLinked)));
+        Assert.Equal((1, 1), (page.QualifiedCount, page.CountedCount));
+        Assert.Equal([1, 3], page.Tiers.Select(t => t.Recruits));
+        Assert.Equal([true, false], page.Tiers.Select(t => t.Reached));
+        Assert.Equal((5, 0), (page.Tiers[0].Reward!.Gm, page.Tiers[0].Reward!.Em));
+        Assert.Equal(("Test Loose", 3, 2), (page.Tiers[0].Reward!.Items![0].Name, page.Tiers[0].Reward!.Items![0].Id, page.Tiers[0].Reward!.Items![0].Count));
+        Assert.Null(page.Tiers[1].Reward);
+        Assert.Equal((1, 1), (page.Discord.LinkedCount, page.Discord.Milestones.Length));
+        Assert.Equal(9, page.RecruitReward!.Em);
+
+        var entered = await Service(d).EnterAsync(Code(a));
+        Assert.True(entered.Ok);
+        Assert.Equal("alice", entered.Value!.Recruiter);
+        Assert.Equal(9, entered.Value.Reward!.Em);
+        Assert.Equal("Referral.Error.already", (await Service(d).EnterAsync(Code(a))).Error);
+        var mine = await Service(d).GetAsync();
+        Assert.Equal(("alice", Code(a), false), (mine!.Recruiter, mine.EnteredCode, mine.CanEnter));
+    }
+
+    [Fact]
+    public void ASteamIdThatEnteredACodeCannotEnterAnotherAfterDeletingItsAccountAndSigningUpAgain()
+    {
+        var (a, b) = (Account("alice"), Account("bob"));
+        Recruit(b, a);
+        state.Store.DeleteAccount(b);
+        var again = state.Store.NextServerId();
+        state.CreateAccount(again, "bob2", "steam-bob");
+        Assert.False((bool)Status(again)["canEnter"]!);
+        Assert.Equal("already", state.EnterReferralCode(again, Code(a)).Status);
+        Assert.Empty(Recruits(a));
+
+        var other = Account("carol");  // another Steam id is free to enter
+        Assert.Equal("ok", state.EnterReferralCode(other, Code(a)).Status);
+    }
+
+    [Fact]
+    public void ABannedRecruiterIsPaidNothingNotEvenByPayQualified()
+    {
+        Referral("""{"tiers": [{"recruits": 1, "reward": {"gm": 100}}]}""");
+        var (a, b) = (Account("alice"), Account("bob"));
+        Recruit(b, a);
+        var gm = Gm(a);
+        Ban("alice");
+        Qualify(b);
+        Assert.Equal(gm, Gm(a));
+        Assert.True((bool)Status(a)["recruits"]![0]!["qualified"]!);  // his recruit is still brought up to date
+        Assert.Equal(["paid 0"], state.PayReferralMilestones(apply: true));
+        Assert.Equal(gm, Gm(a));
+    }
+
+    [Fact]
+    public void TheStartPassAndAnAdminProcessSettleNothingOnlyTheServingServerDoes()
+    {
+        Referral("""{"tiers": [{"recruits": 1, "reward": null}]}""");
+        var (a, b) = (Account("alice"), Account("bob"));
+        Recruit(b, a);
+        state = Open(live: false);  // the state an admin command (or the constructor's start pass) works with
+        Qualify(b);
+        long Payouts()
+        {
+            using var con = state.Store.Open();
+            return (long)con.Scalar("SELECT COUNT(*) FROM referral_payouts")! + (long)con.Scalar("SELECT COUNT(*) FROM referrals WHERE qualified_ts IS NOT NULL")!;
+        }
+        Assert.Equal(0L, Payouts());  // the recruit's hours and score changed, and nothing was written
+        Assert.NotEmpty(state.ReferralReport(null));  // listing writes nothing either
+        Assert.Equal(0L, Payouts());
+
+        state = Open(live: false);  // another start: its pass over every account's hunterscore settles nothing
+        Assert.Equal(0L, Payouts());
+        state = Open();  // serving: the next change of the recruit's progress settles
+        Score(b, 11);
+        Assert.Equal(2L, Payouts());
+    }
+}
+
+/// <summary>A backup restored onto a recruit (the zip, the operator's approve that moves the account to the backup's user id, an archive claim) never counts as hunterscore gained since his entry: the baseline moves in the restore's own transaction.</summary>
+public class ReferralRestoreTests : StateTestBase, IAsyncLifetime
+{
+    static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test")))) { ["upload_min_free_bytes"] = 0L };
+    static readonly Facts Ranks = Facts.Parse("""{"format": 1, "ranks": {"cap": 1000, "rows": [{"id": 1, "title": "One", "category": "animal", "species": 1}]}}""");
+    const long Hour = 3600;
+    const string Steam = "76561190000000000";  // the one TestZip.Own claims
+    const string Stats = """{"duration":3600,"distance":12.5,"data":{"collectables":{},"weapon":{},"animal":{"1":{"ethical_kills":500}},"daily_missions":{}}}""";
+    Loopback server = null!;
+    double at = Math.Floor(Py.Now());
+
+    public async ValueTask InitializeAsync()
+    {
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, APP, LOCALE, TEXTURES, offline: false, facts: Ranks) { Clock = () => at, PlaytimeSince = 0, LiveReferrals = true };
+        var table = new Replay.HarTable();
+        table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+    }
+
+    protected override ValueTask StopServersAsync() => server.DisposeAsync();
+
+    long Account(string handle, string? steam = null)
+    {
+        var id = state.Store.NextServerId();
+        state.CreateAccount(id, handle, steam ?? $"steam-{handle}");
+        return id;
+    }
+
+    string Code(long account) => (string)state.ReferralStatus(account, "https://web.test")["code"]!;
+
+    void Recruit(long recruiter, long recruit) => Assert.Equal("ok", state.EnterReferralCode(recruit, Code(recruiter)).Status);
+
+    JsonNode Only(long recruiter) => state.ReferralStatus(recruiter, "https://web.test")["recruits"]!.AsArray().Single()!;
+
+    void Play(long account, double hours)
+    {
+        using var con = state.Store.Open(account);
+        con.Exec("INSERT INTO expeditions (account_id, start_ts, end_ts, last_seen, stats) VALUES ($a, ?, ?, ?, ?)", at, at + hours * Hour, at + hours * Hour,
+                 """{"data": {"animal": {}, "weapon": {}, "collectables": {}}, "duration": 0, "distance": 0}""");
+    }
+
+    void Score(long account, int score)
+    {
+        using var con = state.Store.Open(account);
+        PlayerRows.SetStatistics(con, O("{\"animal\": {\"1\": {\"ethical_kills\": " + score + "}}}"), 0, 0, null, null);
+        state.UpdateHunterscore(con, account);
+    }
+
+    (double Baseline, double Stored) Scores(long recruit)
+    {
+        using var con = state.Store.Open();
+        return (Convert.ToDouble(con.Scalar("SELECT score_at_entry FROM referrals WHERE recruit_id = ?", recruit)), Convert.ToDouble(con.Scalar("SELECT json_extract(account, '$.hunterscore') FROM accounts WHERE id = ?", recruit)));
+    }
+
+    /// <summary>What the restore is not: the recruit's 500 hunterscore from the backup are not gained; 2 more hours and 10 more score after it are.</summary>
+    void AssertNotGainedThenGained(long recruiter, long recruit, double hoursBefore)
+    {
+        var row = Only(recruiter);
+        Assert.Equal((false, 0L, hoursBefore), ((bool)row["qualified"]!, (long)row["score"]!, (double)row["hours"]!));
+        Assert.Equal((500.0, 500.0), Scores(recruit));  // the baseline moved with the stored score
+        Play(recruit, 2);
+        Score(recruit, 510);
+        Assert.True((bool)Only(recruiter)["qualified"]!);
+    }
+
+    [Fact]
+    public void ARestoredZipIsNotHunterscoreGainedSinceTheEntry()
+    {
+        var (a, b) = (Account("alice"), Account("bob"));
+        Recruit(a, b);
+        Play(b, 3);  // the recruit has the hours and no score yet: the backup's 500 would qualify him if they counted
+        Restorer.Import(state, TestZip.Own().Replace("Statistics_total.json", Stats).Write(tmp), b, tmp);
+        Assert.Equal("sample", Only(a)["handle"]!.GetValue<string>());
+        AssertNotGainedThenGained(a, b, 3);
+    }
+
+    [Fact]
+    public async Task AnApprovedZipThatMovesTheAccountToTheBackupsUserIdKeepsTheEntryAndNotTheScore()
+    {
+        var (a, b) = (Account("alice"), Account("bob", Steam));
+        Recruit(a, b);
+        var cookie = state.Store.CreateWebSession(b, TimeSpan.FromDays(1));
+        var zip = File.ReadAllBytes(TestZip.Own().Replace("Statistics_total.json", Stats).Write(tmp, "mine.zip"));
+        var sent = await server.SendAsync("POST", "web.test", "/account/restore", [("Content-Type", "application/zip"), ("X-Requested-With", "XMLHttpRequest"), ("Cookie", "hr_session=" + cookie)], zip);
+        Assert.Equal("review", (string)JsonNode.Parse(sent.Body)!["status"]!);
+        long waiting;
+        using (var con = state.Store.Open(b)) waiting = (long)con.Scalar("SELECT MAX(id) FROM uploads WHERE account_id = $a")!;
+
+        Assert.Equal("restored", new Uploads(state, tmp).Approve(waiting).Kind);
+        Assert.False(state.Store.AccountExists(b));  // the account is 1001 now: the entry and the recruiter's list moved with it
+        Assert.Equal("sample", Only(a)["handle"]!.GetValue<string>());
+        using (var con = state.Store.Open())
+            Assert.Equal(1001L, con.Scalar("SELECT recruit_id FROM referrals WHERE recruiter_id = ?", a));
+        AssertNotGainedThenGained(a, 1001, 0);
+    }
+
+    [Fact]
+    public void AnArchiveClaimIsNotHunterscoreGainedSinceTheEntry()
+    {
+        var archive = Path.Combine(tmp, "archive.db");
+        using (var con = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={archive};Pooling=False"))
+        {
+            con.Open();
+            void Run(string sql, params (string, object)[] ps)
+            {
+                using var cmd = con.CreateCommand();
+                cmd.CommandText = sql;
+                foreach (var (k, v) in ps) cmd.Parameters.AddWithValue(k, v);
+                cmd.ExecuteNonQuery();
+            }
+            Run("CREATE TABLE meta(key TEXT PRIMARY KEY, value TEXT); INSERT INTO meta VALUES ('format', '1');"
+                + "CREATE TABLE player(uid INTEGER PRIMARY KEY, handle TEXT NOT NULL, hostname TEXT NOT NULL, hunterscore INTEGER NOT NULL);"
+                + "CREATE UNIQUE INDEX player_hostname ON player(hostname);"
+                + "CREATE TABLE reply(uid INTEGER NOT NULL, path TEXT NOT NULL, endpoint TEXT NOT NULL, params TEXT NOT NULL, status INTEGER NOT NULL, body BLOB NOT NULL, PRIMARY KEY(uid, path));"
+                + "INSERT INTO player VALUES (3001, 'Alpha', 'alpha', 500);");
+            void Reply(string path, string endpoint, string body, params (string K, string V)[] ps) =>
+                Run("INSERT INTO reply VALUES (3001, $p, $e, $q, 200, $b)", ("$p", path), ("$e", endpoint),
+                    ("$q", new JsonObject([.. ps.Select(p => KeyValuePair.Create(p.K, (JsonNode?)p.V))]).ToJsonString()), ("$b", Encoding.UTF8.GetBytes(body)));
+            var user = ("user_id", "3001");
+            Reply("Public_user_getByHostname__hostname=Alpha.json", "/v1/Public_user/getByHostname", """{"id":3001,"handle":"Alpha","hostname":"alpha","hunterscore":500}""", ("hostname", "Alpha"));
+            Reply("Inventory_dict__user_id=3001.json", "/v1/Inventory/dict", """{"500":[{"id":9001,"slot":1,"units":3,"metadata":{}}]}""", user);
+            Reply("Skill_list__user_id=3001.json", "/v1/Skill/list", $$"""{"weapon":{"200":10.2},"tracking":[{{TestZip.Zeros(59, "1.5")}}],"spotting":[{{TestZip.Zeros(59, "2")}}]}""", user);
+            Reply("Statistics_total__user_id=3001.json", "/v1/Statistics/total", Stats, user);
+            Reply("Achievement_stats__user_id=3001.json", "/v1/Achievement/stats", "[]", user);
+            Reply("Trophy_list__user_id=3001__offset=0__limit=100000.json", "/v1/Trophy/list", """{"total":0,"trophies":[]}""", user, ("offset", "0"), ("limit", "100000"));
+            Reply("game_user_3001_lodges.json", "/game/user/3001/lodges", "[]");
+        }
+        var (a, b) = (Account("alice"), Account("bob"));
+        Recruit(a, b);
+        Play(b, 3);
+        var done = new Claims(state, new Archive(archive), tmp).Claim(b, "ALPHA", useOldName: true, confirmOverwrite: true);
+        Assert.Equal((200, "restored"), (done.Status, done.Kind));
+        AssertNotGainedThenGained(a, b, 3);
     }
 }

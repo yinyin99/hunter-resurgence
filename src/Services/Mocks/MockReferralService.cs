@@ -37,7 +37,7 @@ public sealed class MockReferralService(string? mock = null) : IReferralService
         var qualified = recruits.Count(r => r.Qualified);
         var canEnter = entered is null;
         var discord = recruits.Count(r => r.DiscordLinked);
-        return Task.FromResult<Referral?>(new(Own, $"https://example.com/join/{Own}", canEnter, canEnter ? now + 2 * Day : null, entered, recruiter, Qualification, recruits, qualified, Tiers(set, qualified),
+        return Task.FromResult<Referral?>(new(Own, $"https://example.com/join/{Own}", canEnter, canEnter ? now + 2 * Day : null, entered, recruiter, Qualification, recruits, qualified, qualified, Tiers(set, qualified),
             new(discord, [new(1, set ? new(1000, 100, null) : null, discord >= 1), new(3, set ? new(0, 250, [new(384, "20 GA Semi-Automatic Shotgun", 1)]) : null, discord >= 3)]), set ? Welcome : null));
     }
 

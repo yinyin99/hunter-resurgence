@@ -26,7 +26,7 @@ public class ServerReferralServiceTests
          "qualification":{"hours":2.0,"score":10},
          "recruits":[{"handle":"Elk","hours":1.25,"score":4,"qualified":false,"qualifiedAt":null,"discordLinked":true,"paid":false},
                      {"handle":"Bear","hours":3,"score":12,"qualified":true,"qualifiedAt":1795000000,"discordLinked":false,"paid":true}],
-         "qualifiedCount":1,
+         "qualifiedCount":1,"countedCount":1,
          "tiers":[{"recruits":1,"reward":null,"reached":true},{"recruits":3,"reward":{"gm":0,"em":100,"items":[{"id":384,"name":"Shotgun","count":1}]},"reached":false}],
          "discord":{"linkedCount":1,"milestones":[{"recruits":1,"reward":null,"reached":true}]},
          "recruitReward":{"gm":0,"em":250,"items":[]}}
@@ -47,6 +47,7 @@ public class ServerReferralServiceTests
         Assert.Null(page.Tiers[0].Reward);
         Assert.Equal(100, page.Tiers[1].Reward!.Em);
         Assert.Equal("Shotgun", Assert.Single(page.Tiers[1].Reward!.Items!).Name);
+        Assert.Equal((1, 1), (page.QualifiedCount, page.CountedCount));
         Assert.Equal(1, page.Discord.LinkedCount);
         Assert.True(page.RecruitReward!.Any);
     }

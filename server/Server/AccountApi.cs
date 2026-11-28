@@ -420,7 +420,7 @@ public static class AccountApi
                              + "at sign-up or within `enter_hours` (72) of the account's making, and for an account made before the feature, `existing_days` (31) after its release; `enteredCode` and `recruiter` (his handle) once entered, else null; "
                              + "`qualification` `{hours, score}`: the hours played here and hunterscore gained since the code was entered that make a recruit count; `recruits` `[{handle, hours, score, qualified, qualifiedAt, discordLinked, paid}]` "
                              + "(`hours` and `score` since his entry; not qualified first, the closest to qualifying first, then the qualified, the latest first; `paid`: counted for the tiers, a recruit over the weekly cap stays qualified and unpaid until he fits); "
-                             + "`qualifiedCount`; `tiers` `[{recruits, reward, reached}]` (reached by the paid recruits); `discord` `{linkedCount, milestones: [{recruits, reward, reached}]}` (recruits who linked Discord); `recruitReward`: what a recruit gets when he enters a code. "
+                             + "`qualifiedCount` and `countedCount` (the qualified recruits, and those counted under the weekly cap: the tiers follow the latter); `tiers` `[{recruits, reward, reached}]` (reached by the counted recruits); `discord` `{linkedCount, milestones: [{recruits, reward, reached}]}` (counted recruits who linked Discord); `recruitReward`: what a recruit gets when he enters a code. "
                              + "A reward is `{gm, em, items: [{id, name, count}]}`, null while the operator has not set one (to be announced). The recruits are brought up to date first. 401 `signed_out`.")
             .Produces(200, contentType: "application/json");
 

@@ -256,6 +256,7 @@ public sealed class Store
     // schema 52 (#929, Referrals.cs, docs/server.md#referrals). referral_codes: the account's own code, made when first asked for (unique). referrals: one row per recruit ever (the code may be entered once, a revoked
     // entry stays so it is not entered again): who recruited him, when, and his hunterscore and server playtime then (`score_at_entry`, `seconds_at_entry`: the qualification counts what is gained after), when he
     // qualified, when the recruiter was paid for him (`paid_ts`: the recruit counts toward the tiers and the weekly cap from then) and `revoked` (the operator, or a ban before payment, dropped the unpaid entry).
+    // referral_steam: the Steam ids that entered a code, once for good (no foreign key: it outlives the account, so deleting it and signing up again gives no second entry).
     // referral_payouts: a tier or Discord milestone (`kind`) the recruiter reached, once each; `paid` 0 when it was reached while its reward was unset (`admin referral pay-qualified` pays it later). referral_release:
     // when the feature first started, once (the days the accounts that already existed have to enter a code run from it). Not in PlayerTables: they name two accounts; Restorer.Adopt moves the ids.
     const string ReferralTables = """
@@ -269,6 +270,7 @@ public sealed class Store
             recruiter_id INTEGER NOT NULL REFERENCES accounts (id) ON DELETE CASCADE, kind TEXT NOT NULL, recruits INTEGER NOT NULL, paid_ts INTEGER NOT NULL, paid INTEGER NOT NULL,
             PRIMARY KEY (recruiter_id, kind, recruits)) WITHOUT ROWID;
         CREATE TABLE IF NOT EXISTS referral_release (ts INTEGER NOT NULL);
+        CREATE TABLE IF NOT EXISTS referral_steam (steam_id64 TEXT PRIMARY KEY, ts INTEGER NOT NULL) WITHOUT ROWID;
         """;
 
     // the game's crash and error reports (CrashReports): one row per event id and account, kept 30 days; not in PlayerTables, because the purge

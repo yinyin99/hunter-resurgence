@@ -14,7 +14,7 @@
             <p class="summary">@Summary(data)</p>
             @if (data.Tiers.FirstOrDefault(t => !t.Reached) is { } next)
             {
-                <ReferralBar Percent="ReferralBar.Of(data.QualifiedCount, next.Recruits)" Label="@Summary(data)" />
+                <ReferralBar Percent="ReferralBar.Of(data.CountedCount, next.Recruits)" Label="@Summary(data)" />
             }
             <p><a href="/referral">@L["Referral.Progress"]</a></p>
         </div>

@@ -336,3 +336,28 @@ The antler points outside the typical shape, counted apart on the score sheet.
 **Reopen**:
 To set a finished objective back to not met because no harvest or clue recorded on the community server since the mission was activated meets it (for a single-hunt mission, only the one hunt that meets most of its finished objectives counts); the player keeps the reward already paid, and the mission pays again when finished again.
 _Avoid_: revert, reset
+
+## Referrals
+
+**Referral code**:
+The 8-character code (letters A-Z and digits 2-9, no look-alikes) every account has, with its `/join/<code>` invitation link. A player enters one friend's code once, at sign-up or within 72 hours after registering (31 days from the feature's release for an account made before it); never his own, and never the code of a player he recruited.
+_Avoid_: invite code, promo code
+
+**Recruit**:
+A player who entered another player's referral code. He gets the recruit reward at once; once he qualifies he counts toward the recruiter's reward levels.
+_Avoid_: referral (for the player), invitee
+
+**Recruiter**:
+The player whose referral code a recruit entered; rewarded step by step as his recruits qualify.
+_Avoid_: referrer, inviter
+
+**Qualification**:
+What a recruit has to do for the recruiter to count him: play at least 2 hours on this server and gain at least 10 hunterscore, both counted from the moment the code was entered (a restored profile's old hours and score do not count). Both numbers are server settings. A recruit whose account or Steam id is banned never qualifies.
+_Avoid_: validation, activation
+
+**Reward level**:
+A step of the recruiter's ladder: reaching its number of counted recruits (1, 3, 5, 10, 20 by default) pays its reward once. A reward is gm$, em$ and items, set by the operator; with none set the level is reached and the pages say the reward is to be announced. At most 5 recruits a week are counted (the weekly cap), and rewards are never taken back.
+_Avoid_: tier (in the pages), rank
+
+**Discord milestone**:
+A reward level of the same system counted on the recruits that are counted and also linked their Discord account (**Linked Roles**); its reward is a setting too.

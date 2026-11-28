@@ -382,7 +382,8 @@ public static class Replay
         };
         state.LoadHarvestGmBonuses(cfg["harvest_gm_bonus"]);
         foreach (var line in state.LoadStoreSales(cfg["store_sales"])) Console.WriteLine(line);
-        state.LoadReferral(cfg["referral"]);
+        try { state.LoadReferral(cfg["referral"]); }
+        catch (InvalidDataException bad) { Console.WriteLine($"referral: not applied, the defaults (no reward) are in force: {bad.Message}"); }  // an item the catalogue lacks; the file's shape was checked with the settings
         state.MigratePhotoNames();  // every server: a photo stored under its old, guessable name gets its token name
         if (!offline) { state.MigrateAvatars(); state.MigrateAvatarGenders(); state.MigrateListedAvatarUrls(); }  // a community server: the pictures its accounts imported before the avatars were served
         return state;

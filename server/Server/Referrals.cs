@@ -99,6 +99,10 @@ public sealed partial class State
 
     volatile ReferralConfig referral = ReferralConfig.Default;
 
+    /// <summary>True on the serving server only (Program, after the settings are loaded): a recruit's progress then settles his recruiter's rewards as it changes. Off for the start pass of the constructor, which runs before the settings are loaded
+    /// and with the default ones, and for the admin commands, so a command that only reads (or a start pass) never writes a milestone or pays.</summary>
+    public bool LiveReferrals { get; set; }
+
     /// <summary>Sets the referral settings from settings.json `referral` (Settings.cs checked its shape); an item id that is not in the catalogue is refused (InvalidDataException) and what is in force stays.</summary>
     public void LoadReferral(JsonNode? cfg)
     {
@@ -117,7 +121,7 @@ public sealed partial class State
 
     static bool IsBanned(Db con, long account) => con.Scalar($"SELECT 1 FROM accounts a WHERE a.id = ? AND {BannedAccount}", account) is not null;
 
-    static double ScoreOf(Db con, long account) => Convert.ToDouble(con.Scalar("SELECT COALESCE(json_extract(account, '$.hunterscore'), 0) FROM accounts WHERE id = ?", account) ?? 0);
+    internal static double ScoreOf(Db con, long account) => Convert.ToDouble(con.Scalar("SELECT COALESCE(json_extract(account, '$.hunterscore'), 0) FROM accounts WHERE id = ?", account) ?? 0);
 
     /// <summary>The account's code, made (random, unique) the first time it is asked for.</summary>
     string ReferralCodeOf(Db con, long account)
@@ -145,7 +149,7 @@ public sealed partial class State
     {
         using var con = Con(account);
         con.Begin();
-        if (con.Scalar("SELECT 1 FROM referrals WHERE recruit_id = ?", account) is not null) return ("already", null, null);
+        if (con.Scalar("SELECT 1 FROM referrals WHERE recruit_id = ?", account) is not null || EnteredBySteam(con, account)) return ("already", null, null);
         if (Clock() > ReferralEnterUntil(con, account)) return ("expired", null, null);
         if (con.Scalar("SELECT account_id FROM referral_codes WHERE code = ?", NormalizeCode(raw)) is not long owner) return ("unknown", null, null);
         if (owner == account) return ("own", null, null);
@@ -153,6 +157,7 @@ public sealed partial class State
         if (con.Scalar("SELECT 1 FROM referrals WHERE recruit_id = ? AND recruiter_id = ?", owner, account) is not null) return ("loop", null, null);
         con.Exec("INSERT INTO referrals (recruit_id, recruiter_id, entered_ts, score_at_entry, seconds_at_entry) VALUES (?, ?, ?, ?, ?)",
                  account, owner, (long)Clock(), ScoreOf(con, account), (double)HuntSecondsHere(con));
+        con.Exec("INSERT OR IGNORE INTO referral_steam (steam_id64, ts) SELECT steam_id64, ? FROM accounts WHERE id = ? AND steam_id64 IS NOT NULL", (long)Clock(), account);
         var reward = referral.RecruitReward;
         if (reward is not null) PayReferral(con, reward);
         con.Commit();
@@ -184,11 +189,14 @@ public sealed partial class State
         return (Math.Max(0, (HuntSecondsHere(mine) - seconds0) / 3600), Math.Max(0, ScoreOf(con, recruit) - score0));
     }
 
-    /// <summary>The recruits the recruiter's tiers count (paid ones: qualified and inside the weekly cap) and the Discord milestone's (entered, not dropped, not banned, linked).</summary>
+    /// <summary>The Steam id of the account entered a code once: that is for good, deleting the account and signing up again does not give another entry (`referral_steam` outlives the account).</summary>
+    static bool EnteredBySteam(Db con, long account) =>
+        con.Scalar("SELECT 1 FROM referral_steam WHERE steam_id64 = (SELECT steam_id64 FROM accounts WHERE id = ?)", account) is not null;
+
+    /// <summary>The recruits the recruiter's tiers count (counted: qualified and inside the weekly cap) and those the Discord milestone counts (counted and with Discord linked).</summary>
     static (long Counted, long Linked) ReferralCounts(Db con, long recruiter) =>
         ((long)con.Scalar("SELECT COUNT(*) FROM referrals WHERE recruiter_id = ? AND paid_ts IS NOT NULL", recruiter)!,
-         (long)con.Scalar($"SELECT COUNT(*) FROM referrals r JOIN accounts a ON a.id = r.recruit_id WHERE r.recruiter_id = ? AND r.revoked = 0 AND NOT {BannedAccount}"
-                          + " AND EXISTS (SELECT 1 FROM discord_links l WHERE l.account_id = r.recruit_id)", recruiter)!);
+         (long)con.Scalar("SELECT COUNT(*) FROM referrals r WHERE r.recruiter_id = ? AND r.paid_ts IS NOT NULL AND EXISTS (SELECT 1 FROM discord_links l WHERE l.account_id = r.recruit_id)", recruiter)!);
 
     /// <summary>Brings a recruiter's recruits up to date, inside the caller's transaction: an unpaid recruit who is banned is dropped; one who now has the hours and the score qualifies; a qualified one is paid (counted)
     /// while fewer than `weekly_cap` were in the last 7 days; then each tier and Discord milestone the counts reach for the first time is written down and its reward, when one is set, paid. A milestone reached while its reward
@@ -212,6 +220,7 @@ public sealed partial class State
             con.Exec("UPDATE referrals SET paid_ts = ? WHERE recruit_id = ?", now, recruit);
             paidThisWeek++;
         }
+        if (IsBanned(con, recruiter)) return;  // a banned recruiter is paid nothing (his recruits are still brought up to date above)
         var (counted, linked) = ReferralCounts(con, recruiter);
         foreach (var (kind, tiers, n) in new[] { ("tier", cfg.Tiers, counted), ("discord", cfg.DiscordMilestones, linked) })
         {
@@ -228,21 +237,15 @@ public sealed partial class State
     /// <summary>A recruit's hunterscore or hunt time changed (<see cref="HunterscoreIn"/>), or he linked Discord: his recruiter's recruits are brought up to date. Inside the caller's transaction.</summary>
     internal void SettleReferralOf(Db con, long recruit)
     {
-        if (con.Scalar("SELECT recruiter_id FROM referrals WHERE recruit_id = ? AND revoked = 0", recruit) is long recruiter)
+        if (LiveReferrals && con.Scalar("SELECT recruiter_id FROM referrals WHERE recruit_id = ? AND revoked = 0", recruit) is long recruiter)
             SettleReferrals(con, recruiter);
     }
 
     /// <summary>A restore or claim changed the account's hunterscore by what the backup held (<see cref="Restorer"/>): the same amount moves the score its entry counted from, so what the backup brought is not gained.</summary>
-    void RebaseReferral(Db con, long recruit, double scoreBefore, double score)
+    internal void RebaseReferral(Db con, long recruit, double scoreBefore, double score)
     {
         var delta = score - scoreBefore;
         if (delta != 0) con.Exec("UPDATE referrals SET score_at_entry = score_at_entry + ? WHERE recruit_id = ?", delta, recruit);
-    }
-
-    public double ReferralScore(long account)
-    {
-        using var con = Con(account);
-        return ScoreOf(con, account);
     }
 
     public JsonNode? RewardJson(Reward? reward) => reward is null ? null : new JsonObject
@@ -266,7 +269,7 @@ public sealed partial class State
         }
         var entry = con.Rows("SELECT a.handle, c.code FROM referrals r JOIN accounts a ON a.id = r.recruiter_id LEFT JOIN referral_codes c ON c.account_id = r.recruiter_id WHERE r.recruit_id = ?", account).FirstOrDefault();
         var until = ReferralEnterUntil(con, account);
-        var canEnter = entry is null && Clock() <= until;
+        var canEnter = entry is null && !EnteredBySteam(con, account) && Clock() <= until;
         double Ratio(double have, double need) => need <= 0 ? 1 : Math.Min(have / need, 1);
         var recruits = con.Rows("SELECT r.recruit_id, a.handle, r.score_at_entry, r.seconds_at_entry, r.qualified_ts, r.paid_ts, EXISTS (SELECT 1 FROM discord_links l WHERE l.account_id = r.recruit_id)"
                                 + " FROM referrals r JOIN accounts a ON a.id = r.recruit_id WHERE r.recruiter_id = ? AND r.revoked = 0", account)
@@ -290,10 +293,11 @@ public sealed partial class State
             ["qualification"] = new JsonObject { ["hours"] = cfg.QualifyHours, ["score"] = cfg.QualifyScore },
             ["recruits"] = new JsonArray([.. recruits.Select(r => (JsonNode?)new JsonObject
             {
-                ["handle"] = r.Handle, ["hours"] = Math.Round(r.Hours, 2), ["score"] = Math.Round(r.Score, 2), ["qualified"] = r.Qualified is not null, ["qualifiedAt"] = r.Qualified,
+                ["handle"] = r.Handle, ["hours"] = Math.Round(r.Hours, 2), ["score"] = (long)Math.Floor(r.Score), ["qualified"] = r.Qualified is not null, ["qualifiedAt"] = r.Qualified,
                 ["discordLinked"] = r.Linked, ["paid"] = r.Paid,
             })]),
             ["qualifiedCount"] = recruits.Count(r => r.Qualified is not null),
+            ["countedCount"] = (int)counted,
             ["tiers"] = Tiers(cfg.Tiers, counted),
             ["discord"] = new JsonObject { ["linkedCount"] = linked, ["milestones"] = Tiers(cfg.DiscordMilestones, linked) },
             ["recruitReward"] = RewardJson(cfg.RecruitReward),
@@ -356,6 +360,7 @@ public sealed partial class State
         {
             using var con = Con(recruiter);
             con.Begin();
+            if (IsBanned(con, recruiter)) continue;  // a banned recruiter is paid nothing
             var (counted, linked) = ReferralCounts(con, recruiter);
             foreach (var (kind, tiers, n) in new[] { ("tier", cfg.Tiers, counted), ("discord", cfg.DiscordMilestones, linked) })
                 foreach (var tier in tiers.Where(t => t.Recruits <= n && t.Reward is not null))

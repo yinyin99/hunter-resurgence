@@ -75,6 +75,19 @@ public sealed class ReferralTests : UiContext
     }
 
     [Fact]
+    public void TheBlockBarFollowsTheRecruitsCountedForTheLevelsNotTheQualifiedOnes()
+    {
+        // 3 qualified, but the weekly cap counts 1: the next level (3 recruits) is a third of the way
+        var page = new MockReferralService().GetAsync().Result! with { QualifiedCount = 3, CountedCount = 1 };
+        Services.AddSingleton<IReferralService>(new Fixed(page));
+        Shell();
+        var cut = Render<ReferralBlock>();
+
+        Assert.Equal(T("Referral.Summary", 3, 3), cut.Find(".summary").TextContent);
+        Assert.Equal("33", cut.Find("section [role=progressbar]").GetAttribute("aria-valuenow"));
+    }
+
+    [Fact]
     public async Task SignedOutThereIsNoBlock()
     {
         Use();
@@ -265,6 +278,18 @@ public sealed class ReferralTests : UiContext
         // 2 of the 3 recruits (or Discord links) the next level or milestone asks for
         Assert.Equal(["67", "67"], stats.Select(s => s.QuerySelector("[role=progressbar]")!.GetAttribute("aria-valuenow")));
         Assert.Equal([T("Referral.NextAt", 3), T("Referral.NextAt", 3)], stats.Select(s => s.QuerySelector(".note")!.TextContent));
+    }
+
+    [Fact]
+    public void TheQualifiedCardBarFollowsTheRecruitsCountedForTheLevels()
+    {
+        var page = new MockReferralService().GetAsync().Result! with { QualifiedCount = 3, CountedCount = 1 };
+        Services.AddSingleton<IReferralService>(new Fixed(page));
+        Shell();
+        var stat = Render<ReferralProgress>().FindAll(".stat")[0];
+
+        Assert.Equal("3", stat.QuerySelector(".big")!.TextContent);
+        Assert.Equal("33", stat.QuerySelector("[role=progressbar]")!.GetAttribute("aria-valuenow"));
     }
 
     [Fact]

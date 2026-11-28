@@ -27,9 +27,11 @@ public sealed record ReferralDiscord(int LinkedCount, ReferralTier[] Milestones)
 /// <param name="CanEnter">A code can still be entered; <see cref="EnterUntil"/> (unix seconds) ends the window, null when it cannot.</param>
 /// <param name="EnteredCode">The code the player entered and the handle of the recruiter it belongs to; null before.</param>
 /// <param name="Recruits">The server's order: not qualified first, closest to qualifying first, then the qualified, newest first.</param>
+/// <param name="QualifiedCount">Recruits that qualified.</param>
+/// <param name="CountedCount">Qualified recruits counted for the reward levels: the server counts at most its weekly cap of them per week, so this can be below <paramref name="QualifiedCount"/>; the levels and their bars follow it.</param>
 /// <param name="RecruitReward">What a player gets for entering a code (null: to be announced).</param>
 public sealed record Referral(string Code, string Link, bool CanEnter, long? EnterUntil, string? EnteredCode, string? Recruiter, ReferralQualification Qualification,
-    ReferralRecruit[] Recruits, int QualifiedCount, ReferralTier[] Tiers, ReferralDiscord Discord, ReferralReward? RecruitReward);
+    ReferralRecruit[] Recruits, int QualifiedCount, int CountedCount, ReferralTier[] Tiers, ReferralDiscord Discord, ReferralReward? RecruitReward);
 
 /// <param name="Recruiter">The handle of the code's owner.</param>
 /// <param name="Reward">What the player got at once; null: to be announced.</param>

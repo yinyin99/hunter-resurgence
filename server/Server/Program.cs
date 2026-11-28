@@ -898,6 +898,7 @@ async Task Serve()
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => state.KeepBoardsWarm(State.BoardRefresh, app.Lifetime.ApplicationStopping)));
         if (state is not null)
         {
+            state.LiveReferrals = true;  // the settings are loaded and the start pass is over: a recruit's progress now settles his recruiter's rewards (Referrals.cs)
             var bonuses = new GmBonusWatch(state, settingsFile, settings.Cfg["harvest_gm_bonus"], settings.Cfg["store_sales"], settings.Cfg["referral"]);
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => bonuses.Run(app.Lifetime.ApplicationStopping)));
         }

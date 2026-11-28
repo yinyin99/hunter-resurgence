@@ -36,7 +36,7 @@
             <section class="panel card stat">
                 <p class="label">@L["Referral.TierHead"]</p>
                 <p class="big">@data.QualifiedCount</p>
-                @if (nextTier is not null) { <ReferralBar Percent="ReferralBar.Of(data.QualifiedCount, nextTier.Recruits)" Label="@L["Referral.TierHead"].Value" Text="@tierNote" /> }
+                @if (nextTier is not null) { <ReferralBar Percent="ReferralBar.Of(data.CountedCount, nextTier.Recruits)" Label="@L["Referral.TierHead"].Value" Text="@tierNote" /> }
                 @if (tierNote is not null) { <p class="note">@tierNote</p> }
             </section>
             <section class="panel card stat">

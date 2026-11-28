@@ -171,16 +171,16 @@ public sealed partial class State
     /// (LocalAccount) keeps the recorded player's values. Always the computed value: what cannot be read counts 0, so a close, a
     /// restore or the start never fails and a backup's own value never stays.
     /// ponytail: sums every stored hunt of the account at every close and every heartbeat with hunt events; keep a running total if that gets slow.</summary>
-    public void UpdateHunterscore(Db con, long account, bool closing = true, double? scoreBefore = null)
+    public void UpdateHunterscore(Db con, long account, bool closing = true)
     {
         con.Begin();
-        HunterscoreIn(con, account, closing, scoreBefore);
+        HunterscoreIn(con, account, closing);
         con.Commit();
     }
 
     /// <summary><see cref="UpdateHunterscore"/> inside the caller's transaction (a view of another account's, <see cref="Db.Sharing"/>, works too). A restore or claim passes `scoreBefore`, the account's hunterscore before it: what the
     /// backup added moves the score a referral entry counts from (<see cref="RebaseReferral"/>), so it is never "gained".</summary>
-    void HunterscoreIn(Db con, long account, bool closing, double? scoreBefore = null)
+    internal void HunterscoreIn(Db con, long account, bool closing, double? scoreBefore = null)
     {
         // the hunts closed since the last time carry their close as the earn time, so a hunt's page lists what it earned (several closed at once share the latest)
         var closedAt = closing ? con.Scalar("SELECT MAX(end_ts) FROM expeditions WHERE account_id = $a AND " + ClosedUnstored) : null;
