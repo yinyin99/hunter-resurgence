@@ -1,5 +1,5 @@
 .cols { display: flex; gap: 10px; margin: 0 0 20px; }
-.menu { flex: none; width: 220px; align-self: flex-start; border-radius: var(--r-3); overflow: hidden; }
+.menu { flex: none; width: clamp(190px, 18%, 260px); align-self: flex-start; border-radius: var(--r-3); overflow: hidden; }
 .main { flex: 1; min-width: 0; }
 .page-title { margin-bottom: 18px; }
 .menu a { display: block; box-sizing: border-box; min-height: 42px; padding: 9px 10px; border-bottom: 1px solid var(--surface-1); background: var(--surface-2); font-size: 18px; line-height: 24px; color: var(--text-4); transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease); }
