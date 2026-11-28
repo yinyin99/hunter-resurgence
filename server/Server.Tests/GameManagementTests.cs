@@ -177,4 +177,47 @@ public class GameManagementTests : StateTestBase
         Assert.Equal(404, (await Call(server, "POST", $"/account/feeders/{Barrel}/refill", Cookie(other), """{"currency": "gm", "max_amount": 50}""")).Status);
         Assert.Empty(JsonNode.Parse((await Call(server, "GET", "/account/feeders", Cookie(other))).Text)!["feeders"]!.AsArray());
     }
+
+    /// <summary>Sends a service's requests through the loopback server, whatever host they name.</summary>
+    sealed class Via(HttpClient server) : HttpMessageHandler
+{
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+    {
+        var copy = new HttpRequestMessage(request.Method, request.RequestUri) { Content = request.Content };
+        foreach (var h in request.Headers) copy.Headers.TryAddWithoutValidation(h.Key, h.Value);
+        return server.SendAsync(copy, ct);
+    }
+    }
+
+    [Fact]
+    public async Task TheLauncherReadsTheGameManagementReplies()
+    {
+        await using var server = await Start_();
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 3, "name": "lodge 3", "locked": true, "style_id": 4, "animal_slots": [{"slot_id": 0, "trophy_id": 21}], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "3", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "3", lodge.DeepClone());
+            con.Commit();
+        }
+        Place();
+        Stock(pack: true);
+        var browser = new Resurgence.Services.ServerCookie { Value = state.Store.CreateWebSession(ME, TimeSpan.FromHours(1)), Host = "web.test" };
+        var service = new Resurgence.Services.ServerGameManagementService(new HttpClient(new Via(server.Http)) { BaseAddress = new Uri("http://web.test/") }, browser,
+            Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerGameManagementService>.Instance);
+
+        var lodgeRow = Assert.Single(await service.LodgesAsync());
+        Assert.Equal(new Resurgence.Services.LodgeRow("3", "lodge 3", true, 4, null, 1, 0), lodgeRow);
+        Assert.True((await service.SaveLodgeAsync(lodgeRow, "My Cabin", false)).Ok);
+        Assert.Equal(new Resurgence.Services.LodgeRow("3", "My Cabin", false, 4, null, 1, 0), Assert.Single(await service.LodgesAsync()));
+
+        var feeders = await service.FeedersAsync();
+        Assert.Equal((2, 5, 85), (feeders.Packs, feeders.RefillPrice.Em, feeders.RefillPrice.Gm));
+        Assert.Equal(new Resurgence.Services.FeederRow("300", 136, "Test Barrel", 77, "Test Reserve", 12.3, -2.5, 20, 50, "inactive", Start + 8640 * 20, 20), Assert.Single(feeders.Feeders));
+
+        var refill = await service.RefillAsync("300", "gm", 50);
+        Assert.True(refill.Ok);
+        Assert.Equal(new Resurgence.Services.RefillReply(true, 85, 40, Start + 8640 * 40), refill.Value);
+    }
 }
