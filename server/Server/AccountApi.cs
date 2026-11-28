@@ -244,7 +244,7 @@ public static class AccountApi
                     : Refuse(409, "refused", $"This is not for sale, you do not have enough {(gms.Value ? "gm$" : "em$")}, or you own as many as allowed.");
             })
             .WithName("AccountBuy").WithSummary("Buy from the store with em$ or gm$ (form `id`, `count`, `wallet`, `bundle=1` for a bundle)")
-            .WithDescription("The item or bundle of `GET /catalog/store` at its price (the sale price while a `store_sales` sale applies): `wallet` `GOLD` (the default) pays the em$ price, `SILVER` the gm$ price (items only). "
+            .WithDescription("The item or bundle of `GET /catalog/store` at its price (the sale price while a `store_sales` sale applies): `wallet` `GOLD` (the default) pays the em$ price, `SILVER` the gm$ price (an item or a bundle: docs/server.md#the-store-catalogue). "
                              + "Answers `{status: bought, ems}` or `{status: bought, gms}` (the new balance of the wallet paid), 400 `invalid` for another wallet, "
                              + "or 409 `refused` for something not for sale, a balance too low or an own limit reached. The game gets the items with its next heartbeat or connect.")
             .Produces(200, contentType: "application/json");
@@ -347,8 +347,8 @@ public static class AccountApi
                 ? Json(200, state.BundleOffers(account))
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountBundles").WithSummary("What each store bundle costs the player now")
-            .WithDescription("`{bundles: [{id, price, owned, of, buyable}]}` for the bundles `GET /catalog/store` lists: a bundle gives at most the limit of each item and not again an item the player owns up to its limit, and its price drops by the share of those items "
-                             + "(docs/server.md#ownership-limits). `price` is em$ as `POST /account/buy` charges it, `owned` of `of` items are not given again, `buyable` is false when the store does not sell the bundle or it would give nothing.")
+            .WithDescription("`{bundles: [{id, price, gms, owned, of, buyable}]}` for the bundles `GET /catalog/store` lists: a bundle gives at most the limit of each item and not again an item the player owns up to its limit, and its price drops by the share of those items "
+                             + "(docs/server.md#ownership-limits). `price` is em$ and `gms` gm$ as `POST /account/buy` charges them (`wallet` `GOLD`, `SILVER`), `owned` of `of` items are not given again, `buyable` is false when the store does not sell the bundle or it would give nothing.")
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/placed", (HttpContext ctx) => Account(ctx) is { } account

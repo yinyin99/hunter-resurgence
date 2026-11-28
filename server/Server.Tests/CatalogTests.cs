@@ -132,15 +132,42 @@ public class CatalogTests : StateTestBase
         Assert.Equal(("gm", -price, left, "In-game payment.", "[1]"), ((string)log[0]!, Convert.ToDouble(log[1]), Convert.ToDouble(log[2]), (string)log[3]!, (string)log[4]!));
     }
 
+    /// <summary>An item without a catalogue gm$ price costs 17 x its em$ price (website and game); the catalogue's gm$ price stays for one that has it.</summary>
+    [Fact]
+    public async Task AnItemWithoutASilverPriceIsSoldForSeventeenTimesItsEmPrice()
+    {
+        var (reply, items) = await Buy("id=6&wallet=SILVER", gms: 5000);
+        Assert.Equal(200, reply.Status);
+        Assert.Equal([6L], items);
+        Eq("4948.0", state.Wallet(ME)["gm"]);  // 5033 - 85
+        Eq("182.0", state.Wallet(ME)["em"]);
+
+        Eq("""{"price": 85.0, "success": true}""", Reply(state.BuyReply(ME, "item_id=6&amount=1&wallet=SILVER"u8.ToArray())));
+        Eq("4863.0", state.Wallet(ME)["gm"]);
+    }
+
+    /// <summary>A bundle is bought with gm$ at 17 x its em$ price, the share of what the player owns taken off like the em$ one, and gives the same items.</summary>
+    [Theory]
+    [InlineData(new long[0], 1530.0, new long[] { 1, 2, 3 })]
+    [InlineData(new long[] { 3 }, 1481.0, new long[] { 1, 2 })]  // 1,530 x 300 / 310 rounded up
+    public async Task ABundleIsBoughtWithGmAtSeventeenTimesItsEmPrice(long[] owned, double price, long[] got)
+    {
+        var (reply, items) = await Buy("id=9&bundle=1&wallet=SILVER", owned: owned, gms: 5000);
+        Assert.Equal(200, reply.Status);
+        Assert.Equal(5033 - price, JsonNode.Parse(reply.Body)!["gms"]!.GetValue<double>());
+        Assert.Equal(got, items);
+        Eq("182.0", state.Wallet(ME)["em"]);
+    }
+
     [Theory]
     [InlineData("id=1&wallet=SILVER", 0.0, 409)]              // 4000 gm$ for 33
     [InlineData("id=1&wallet=SILVER&count=2", 5000.0, 409)]   // 8000 for 5033
     [InlineData("id=2&wallet=SILVER", 5000.0, 409)]           // not buyable
     [InlineData("id=3&wallet=SILVER", 5000.0, 409)]           // hidden
     [InlineData("id=4&wallet=SILVER", 5000.0, 409)]           // a service
-    [InlineData("id=5&wallet=SILVER", 5000.0, 409)]           // a gm$ price of 0 would be free
-    [InlineData("id=6&wallet=SILVER", 5000.0, 409)]           // no gm$ price
-    [InlineData("id=9&bundle=1&wallet=SILVER", 5000.0, 409)]  // bundles are em$ only
+    [InlineData("id=5&wallet=SILVER", 5000.0, 409)]           // neither price: a gm$ price of 0 would be free
+    [InlineData("id=9&bundle=1&wallet=SILVER", 0.0, 409)]     // 1,530 gm$ for 33
+    [InlineData("id=13&bundle=1&wallet=SILVER", 5000.0, 409)] // an item the catalogue does not have
     [InlineData("id=1&wallet=PLATINUM", 5000.0, 400)]         // not a wallet
     public async Task WhatGmCannotPayChangesNothing(string form, double gms, int status)
     {
@@ -176,7 +203,6 @@ public class CatalogTests : StateTestBase
     // the game's call: an item with a gm$ price of 0 or none is not given away, whatever the balance
     [Theory]
     [InlineData("item_id=5&amount=1&wallet=SILVER")]
-    [InlineData("item_id=6&amount=1&wallet=SILVER")]
     public async Task TheGamesGmPurchaseOfAFreeItemChangesNothing(string form)
     {
         await using var server = await Start(Store);
@@ -184,6 +210,19 @@ public class CatalogTests : StateTestBase
         Eq("""{"success": false}""", Reply(state.BuyReply(ME, System.Text.Encoding.ASCII.GetBytes(form))));
         Assert.Equal(count, state.Inventory(ME).Count);
         Eq("33.0", state.Wallet(ME)["gm"]);
+    }
+
+    /// <summary>The game's catalogue carries 17 x the em$ price as `silver_price` for an item that has none; a catalogue price, a service, a free item and an unrelated reply stay as they are.</summary>
+    [Fact]
+    public void TheGamesCatalogueCarriesTheDerivedGmPrice()
+    {
+        var body = """{"items": [{"id": 1, "price": 5}, {"id": 2, "price": 5, "silver_price": 70}, {"id": 3, "price": 5, "type": 45}, {"id": 4, "price": 0, "silver_price": 0}], "season": 3}"""u8.ToArray();
+        var items = JsonNode.Parse(State.WithGmPrices(body))!["items"]!.AsArray();
+        Assert.Equal([85L, 70L, 0L, 0L], items.Select(i => i!["silver_price"] is { } p ? p.GetValue<long>() : 0L));
+        var array = "[1]"u8.ToArray();
+        Assert.Equal(array, State.WithGmPrices(array));
+        var priced = """{"items": [{"id": 1, "price": 5, "silver_price": 2000.5}]}"""u8.ToArray();
+        Assert.Same(priced, State.WithGmPrices(priced));  // a catalogue price is never rewritten (2000.5 stays, not 2001)
     }
 
     [Theory]
@@ -226,6 +265,9 @@ public class CatalogTests : StateTestBase
         var scope = items[1]!;
         Assert.Equal((200L, 0L, false), ((long)scope["ems"]!, (long)scope["gms"]!, (bool)scope["buyable"]!));
         Assert.Null(scope["was"]);
+        Assert.Equal(85L, (long)items[4]!["gms"]!);  // no silver_price: 17 x 5 em$
+        Assert.Equal(0L, (long)items[2]!["gms"]!);  // a service keeps no gm$ price
+        Assert.Equal(1530L, (long)JsonNode.Parse(reply.Body)!["bundles"]!.AsArray().Single(b => (long)b!["id"]! == 9)["gms"]!);  // 17 x 90 em$
     }
 
     [Fact]

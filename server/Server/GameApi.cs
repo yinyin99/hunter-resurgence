@@ -268,9 +268,9 @@ public static class GameApi
                                 + "and for a player the token's player cannot see (docs/server.md#who-sees-whom). Needs a player's token (else the expired-token reply). Community server only.")
                .Body<UserForm>(Form).Produces(200, contentType: "application/json");
             // the season the original's pages read: the current one
-            api.MapExactPost(game, APPLICATION, r => !s.Online ? null : game.Recorded(r) is { Tier: >= 1 } hit ? new(hit.Status, hit.Headers, s.WithSeason(s.Texts.Localize(hit.Body, MissionTexts.RequestLanguage(r))), "patch") : null)
+            api.MapExactPost(game, APPLICATION, r => !s.Online ? null : game.Recorded(r) is { Tier: >= 1 } hit ? new(hit.Status, hit.Headers, State.WithGmPrices(s.WithSeason(s.Texts.Localize(hit.Body, MissionTexts.RequestLanguage(r)))), "patch") : null)
                .WithName("Application").WithSummary("The application catalogue, with the current leaderboard season and the missions in the game's language")
-               .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)) and, for the request's `lang` (`de_DE`), the titles, descriptions and objectives of the missions and mission groups in that language ([docs/server.md](server.md#mission-texts)); a local server replays it unchanged.")
+               .WithDescription("The recorded reply with `season` the current leaderboard season ([docs/server.md](server.md#leaderboards-and-seasons)) and, for the request's `lang` (`de_DE`), the titles, descriptions and objectives of the missions and mission groups in that language ([docs/server.md](server.md#mission-texts)); items without a gm$ price carry 17 × their em$ price as `silver_price` (docs/server.md#the-store-catalogue); a local server replays it unchanged.")
                .Produces(200, contentType: "application/json");
             api.MapExactPost(game, AVATARS, r => !s.Online || s.AvatarListReply(s.Authenticate(r.Tokens())) is not { } list ? null : new(200, JsonAnyOrigin(), list, "state"))
                .WithName("Avatars").WithSummary("The game's avatars, the store's included")
@@ -833,7 +833,7 @@ public static class GameApi
 
     public sealed record BuyForm(long item_id,
         [property: Description("Count (usually 1)")] long amount,
-        [property: Description("`GOLD` (em, the store's price) or `SILVER` (gm, catalogue `silver_price`); a `store_sales` sale lowers the price of the currencies it names")] string wallet,
+        [property: Description("`GOLD` (em, the store's price) or `SILVER` (gm, catalogue `silver_price`, else 17 × `price`); a `store_sales` sale lowers the price of the currencies it names")] string wallet,
         string? oauth_access_token);
 
     public sealed record RefillBarrelReply([property: Description("Price charged: 0 for a refill pack, absent on failure")] double? price, bool success,

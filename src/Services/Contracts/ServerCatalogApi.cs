@@ -83,13 +83,13 @@ public sealed record ServerItem(int Id, string Name, string Variant, string Desc
 public sealed record ServerSale(string Name, int Percent, DateTimeOffset Until);
 
 /// <summary><see cref="Buyable"/>: the server sells it (a price of at least 1, only items of its catalogue). <see cref="Price"/> is today's price (a sale taken off), <see cref="Was"/> the price before the sale (null when not on sale), <see cref="Sale"/> the sale that applies (null without one).</summary>
-public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items, int? Was = null, ServerSale? Sale = null);
+public sealed record ServerBundle(int Id, string Name, string Description, int Price, bool Buyable, ServerBundleItem[] Items, int? Was = null, ServerSale? Sale = null, int Gms = 0, int? Gwas = null);
 
 public sealed record ServerBundleItem(int Id, string Name);
 
 /// <summary>A bundle of <see cref="ServerAccountApi.Bundles"/>, as it costs the signed-in player now: <see cref="Price"/> is the em$ the server charges (the list price less the share of the items the player already owns up to their limit),
 /// <see cref="Owned"/> of its <see cref="Of"/> items are not given again, <see cref="Buyable"/> is false when the store does not sell it or it would give nothing.</summary>
-public sealed record ServerBundleOffer(int Id, int Price, int Owned, int Of, bool Buyable);
+public sealed record ServerBundleOffer(int Id, int Price, int Owned, int Of, bool Buyable, int Gms = 0);
 
 public sealed record ServerBundleOffers(ServerBundleOffer[] Bundles);
 

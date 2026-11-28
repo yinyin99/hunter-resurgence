@@ -33,7 +33,8 @@ public sealed partial class State
         if ((long)p[2] == 1)
         {
             if (StartItems().Any(k => Py.L(k!["item_id"]) == itemId)) return (null, "start_kit");
-            if (!StoreSells(item, "silver_price")) return (null, "not_sold");
+            // only a catalogue gm$ price counts: the 17 x em$ one (Listed) is derived, and a restored copy was never paid for here
+            if (Whole(G(item, "silver_price", null)) < 1 || !StoreSells(item, "silver_price")) return (null, "not_sold");
             paid = Whole(item["silver_price"]);
         }
         if (con.Scalar("SELECT 1 FROM wallet WHERE account_id = $a AND currency = ?", currency) is null) return (null, "no_wallet");

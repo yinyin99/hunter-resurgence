@@ -217,6 +217,13 @@ public class SellBackTests : StateTestBase
         using (var con = state.Store.Open(ME))
             PlayerRows.MarkRestored(con, event11, 11);
         Refused(event11, "not_sold");
+
+        // an item the catalogue sells in em$ only has a derived gm$ price (17 x 7): a restored copy of it is never sold back for gm$
+        Assert.True(state.GrantItems(ME, 13));
+        var derived = LastGuid();
+        using (var con = state.Store.Open(ME))
+            PlayerRows.MarkRestored(con, derived, 13);
+        Refused(derived, "not_sold");
     }
 
     [Fact]

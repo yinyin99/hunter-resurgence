@@ -15,7 +15,7 @@ public sealed record RandomSale(int Count, double Min, double Max, long? Every, 
 
 /// <summary>One `store_sales` entry. Times are Unix seconds. A fixed sale has <paramref name="Items"/> and <paramref name="Bundles"/> (ids; either may be empty, not both) at <paramref name="Percent"/>, a random one <paramref name="Random"/> (items only).
 /// <paramref name="Event"/>: the name of the seasonal event or harvest bonus it runs with (only while that runs, inside its own From/Until when given). <paramref name="Em"/> and
-/// <paramref name="Gm"/>: which prices drop (a bundle has an em$ price only).</summary>
+/// <paramref name="Gm"/>: which prices drop (a bundle's gm$ price is 17 × its em$ one).</summary>
 public sealed record StoreSale(string Name, long? From, long? Until, string? Event, bool Em, bool Gm, double Percent, long[]? Items, long[] Bundles, RandomSale? Random)
 {
     /// <summary>A stretch of time with one pick: [Start, End).</summary>
@@ -166,11 +166,15 @@ public sealed partial class State
     /// <summary>The sale that applies to `item` at `now` for the price `key` (`price` em$, `silver_price` gm$; null: either): the larger discount when two do.</summary>
     SaleHit? SaleOn(JsonObject item, string? key, double now) => SaleFor(Py.L(item["id"]), false, key, now);
 
-    /// <summary>The sale that applies to the bundle `id` at `now` (em$ only): the larger discount when two do.</summary>
-    SaleHit? BundleSaleOn(JsonNode bundle, double now) => SaleFor(Py.L(bundle["id"]), true, "price", now);
+    /// <summary>The sale that applies to the bundle `id` at `now` for the price `key` (default em$; `silver_price` gm$): the larger discount when two do.</summary>
+    SaleHit? BundleSaleOn(JsonNode bundle, double now, string key = "price") => SaleFor(Py.L(bundle["id"]), true, key, now);
 
-    /// <summary>What the store asks for the bundle before the share of what the player owns is taken off (<see cref="Offer"/>): its list price at the sale's percentage while a sale lists it.</summary>
-    long BundlePrice(JsonNode bundle) => BundleSaleOn(bundle, Clock()) is { } sale ? Discounted(Whole(bundle["price"]), sale.Percent) : Whole(bundle["price"]);
+    /// <summary>What the store asks for the bundle before the share of what the player owns is taken off (<see cref="Offer"/>): its list price (gm$: <see cref="GmPerEm"/> × the em$ one) at the sale's percentage while a sale of that currency lists it.</summary>
+    long BundlePrice(JsonNode bundle, bool gm = false)
+    {
+        var list = Whole(bundle["price"]) * (gm ? GmPerEm : 1);
+        return BundleSaleOn(bundle, Clock(), gm ? "silver_price" : "price") is { } sale ? Discounted(list, sale.Percent) : list;
+    }
 
     SaleHit? SaleFor(long id, bool bundle, string? key, double now)
     {
@@ -212,7 +216,7 @@ public sealed partial class State
     bool Matches(StoreSale sale, RandomSale r, JsonObject item)
     {
         long id = Py.L(item["id"]);
-        bool Fits(string key, long? min, long? max) => StoreSells(item, key) && Whole(item[key]) >= (min ?? 0) && Whole(item[key]) <= (max ?? long.MaxValue);
+        bool Fits(string key, long? min, long? max) => StoreSells(item, key) && Listed(item, key) >= (min ?? 0) && Listed(item, key) <= (max ?? long.MaxValue);
         return !Py.Truthy(G(item, "hidden", null)) && !IsUnlimitedAmmo(item) && !IsUnlimitedFuel(id) && !r.Exclude.Contains(id)
             && (sale.Em && Fits("price", r.MinEm, r.MaxEm) || sale.Gm && Fits("silver_price", r.MinGm, r.MaxGm))
             && (r.Categories.Length == 0 || CategoryNames(item).Any(c => r.Categories.Contains(c, StringComparer.OrdinalIgnoreCase)));
@@ -276,13 +280,17 @@ public sealed partial class State
                 foreach (var (id, percent) in PicksOf(set, i, p).OrderBy(x => x.Key))
                 {
                     var item = items[id];
-                    var prices = new[] { s.Em ? ("em$", Whole(item["price"])) : default, s.Gm ? ("gm$", Whole(item["silver_price"])) : default }
+                    var prices = new[] { s.Em ? ("em$", Whole(item["price"])) : default, s.Gm ? ("gm$", Listed(item, "silver_price")) : default }
                         .Where(x => x.Item2 > 0).Select(x => $"{x.Item1} {x.Item2} -> {Discounted(x.Item2, percent)}");
                     lines.Add($"    {id} {Py.Str(item["name"])}: {P(percent)} %, {string.Join(", ", prices)}");
                 }
-                if (s.Em)
-                    foreach (var bundle in Arr(G(application, "bundles", null)).Where(b => s.Bundles.Contains(Py.L(b!["id"]))))
-                        lines.Add($"    bundle {Py.L(bundle!["id"])} {Py.Str(bundle["name"])}: {P(s.Percent)} %, em$ {Whole(bundle["price"])} -> {Discounted(Whole(bundle["price"]), s.Percent)}");
+                foreach (var bundle in Arr(G(application, "bundles", null)).Where(b => s.Bundles.Contains(Py.L(b!["id"]))))
+                {
+                    var list = Whole(bundle!["price"]);
+                    var prices = new[] { s.Em ? ("em$", list) : default, s.Gm ? ("gm$", list * GmPerEm) : default }
+                        .Where(x => x.Item2 > 0).Select(x => $"{x.Item1} {x.Item2} -> {Discounted(x.Item2, s.Percent)}");
+                    lines.Add($"    bundle {Py.L(bundle["id"])} {Py.Str(bundle["name"])}: {P(s.Percent)} %, {string.Join(", ", prices)}");
+                }
             }
         }
         return lines.Count > 0 ? lines : ["no store_sales"];

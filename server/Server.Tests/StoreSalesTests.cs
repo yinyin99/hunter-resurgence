@@ -46,9 +46,9 @@ public class StoreSalesTests : StateTestBase
     }
 
     /// <summary>A state on the catalogue with 100000 em$ and gm$ more for ME, whose clock is `at`.</summary>
-    State Open(string? db = null, SeasonalEvent? season = null)
+    State Open(string? db = null, SeasonalEvent? season = null, JsonObject? catalogue = null)
     {
-        var s = new State(db ?? Db, Py.DumpBytes(CONNECT), BASE, ICON, Catalogue(), LOCALE, TEXTURES, seasonal: season);
+        var s = new State(db ?? Db, Py.DumpBytes(CONNECT), BASE, ICON, catalogue ?? Catalogue(), LOCALE, TEXTURES, seasonal: season);
         s.Clock = () => at;
         using var con = s.Store.Open(ME);
         State.AddCurrency(con, "em", 100000, "test");
@@ -395,6 +395,47 @@ public class StoreSalesTests : StateTestBase
     }
 
     [Fact]
+    public void AGmSaleLowersTheGmPriceOfABundleAndOfAnItemWithoutASilverPriceAndAnEmSaleDoesNot()
+    {
+        at = Friday;
+        var catalogue = Catalogue();
+        catalogue["items"]![0]!["silver_price"] = null;  // item 9001: 110 em$, no gm$ price in the catalogue
+        state = Open(catalogue: catalogue);
+        Assert.Equal((110L, 1870L), Prices(1));  // 17 x 110
+        Assert.Equal((400L, 6800L), ((long)Bundle()["price"]!, (long)Bundle()["gms"]!));  // 17 x 400
+
+        string Sale(string currency) => $$"""[{"name": "Pack sale", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 25, "currencies": ["{{currency}}"], "items": [9001], "bundles": [9]}]""";
+        Sales(Sale("em"));
+        Assert.Equal((83L, 1870L), Prices(1));  // 110 less 25 %, rounded half up; gm$ not lowered
+        Assert.Equal((300L, 6800L, true), ((long)Bundle()["price"]!, (long)Bundle()["gms"]!, Bundle()["gwas"] is null));
+
+        Sales(Sale("gm"));
+        Assert.Equal((110L, 1403L), Prices(1));  // 1,870 less 25 %, rounded half up
+        var bundle = Bundle();
+        Assert.Equal((400L, 5100L, 6800L), ((long)bundle["price"]!, (long)bundle["gms"]!, (long)bundle["gwas"]!));
+        Assert.Equal(5100L, (long)state.BundleOffers(ME)["bundles"]![0]!["gms"]!);
+        var (em, gm) = (Em(), Gm());
+        Assert.NotNull(state.WebBuy(ME, 9, true, 1, gms: true));
+        Assert.Equal((em, gm - 5100), (Em(), Gm()));  // gm$ only, the sale price
+        Assert.Equal(3, state.Inventory(ME).Count(i => Py.L(i!["item_id"]) is >= 9001 and <= 9003));
+    }
+
+    [Fact]
+    public void AGmSaleComesBeforeTheOwnedShareOfTheGmPriceAndTheLargerSaleNamesTheBundle()
+    {
+        at = Friday;
+        state = Open();
+        Assert.True(state.GrantItems(ME, Id(1)));  // item 9001 may be owned once: 110 of the 360 em$ are owned
+        Sales("""[{"name": "Gm sale", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 25, "currencies": ["gm"], "bundles": [9]},""" +
+              """ {"name": "Em sale", "from": "2026-11-27T15:00:00Z", "until": "2026-11-30T07:00:00Z", "percent": 10, "currencies": ["em"], "bundles": [9]}]""");
+        Assert.Equal(("Gm sale", 25), ((string)Bundle()["sale"]!["name"]!, (int)Bundle()["sale"]!["percent"]!));  // 25 % beats 10 %, as for an item
+        Assert.Equal(3542L, (long)state.BundleOffers(ME)["bundles"]![0]!["gms"]!);  // 6,800 less 25 % = 5,100, x 250 / 360 rounded up
+        var gm = Gm();
+        Assert.NotNull(state.WebBuy(ME, 9, true, 1, gms: true));
+        Assert.Equal(gm - 3542, Gm());
+    }
+
+    [Fact]
     public void TheWebsiteAndTheLauncherReadTheStoreWhileASaleIsOn()
     {
         at = Friday;
@@ -418,7 +459,7 @@ public class StoreSalesTests : StateTestBase
         Assert.Equal("  now: none", report[1]);
         Assert.Equal("  next: 2026-11-27T15:00:00Z .. 2026-11-30T07:00:00Z", report[2]);
         Assert.Equal("    9003 Item 3: 25 %, em$ 130 -> 98, gm$ 1030 -> 773", report[3]);
-        Assert.Equal("    bundle 9 Test Pack: 25 %, em$ 400 -> 300", report[4]);
+        Assert.Equal("    bundle 9 Test Pack: 25 %, em$ 400 -> 300, gm$ 6800 -> 5100", report[4]);
         Assert.StartsWith("Daily deals: random 8 every 24 h, 10-40 %, em$", report[5]);
 
         var daily = report.SkipWhile(l => !l.StartsWith("Daily deals")).Skip(1).ToList();

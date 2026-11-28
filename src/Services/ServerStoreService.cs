@@ -137,8 +137,8 @@ public sealed class ServerStoreService(HttpClient http, ServerCookie cookie, Ser
             : new BundleLine(x.Id, x.Name, 1, 0, 0))];
         var sale = b.Sale is { } bs ? new StoreSale(bs.Name, bs.Percent, bs.Until) : null;
         return offers.TryGetValue(b.Id, out var o)
-            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of, b.Was, sale)
-            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines, PreSale: b.Was, Sale: sale);
+            ? new StoreBundle(b.Id, b.Name, b.Description, o.Price, b.Buyable && o.Buyable, lines, o.Price < b.Price ? b.Price : 0, o.Owned, o.Of, b.Was, sale, o.Gms, b.Gwas, o.Gms < b.Gms ? b.Gms : 0)
+            : new StoreBundle(b.Id, b.Name, b.Description, b.Price, b.Buyable, lines, PreSale: b.Was, Sale: sale, Gms: b.Gms, PreSaleGms: b.Gwas);
     }
 
     /// <summary>What each bundle costs the player now, by bundle id; none without a session or when the server does not answer (the list prices then stand).</summary>
