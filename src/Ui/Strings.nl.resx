@@ -1765,10 +1765,8 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="GM.Status.active" xml:space="preserve"><value>Actief</value></data>
   <data name="GM.Status.inactive" xml:space="preserve"><value>Inactief</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Straf</value></data>
-  <data name="GM.EmptyOn" xml:space="preserve"><value>De voerbak is leeg op {0} om {1}</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>De voerbak is leeg op {0}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Je voerbak is vol</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Aas</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
-  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

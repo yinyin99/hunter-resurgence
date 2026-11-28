@@ -1765,10 +1765,8 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="GM.Status.active" xml:space="preserve"><value>Activo</value></data>
   <data name="GM.Status.inactive" xml:space="preserve"><value>Inactivo</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Penalización</value></data>
-  <data name="GM.EmptyOn" xml:space="preserve"><value>El cebadero estará vacío el {0} a las {1}</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>El cebadero estará vacío el {0}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Tu cebadero está lleno</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Cebo</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Estado</value></data>
-  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
-  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

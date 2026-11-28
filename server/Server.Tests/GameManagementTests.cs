@@ -97,6 +97,25 @@ public class GameManagementTests : StateTestBase
         Assert.Equal("My Cabin", JsonNode.Parse((await Call(server, "GET", "/account/lodges", me)).Text)!["lodges"]![0]!["name"]!.GetValue<string>());
     }
 
+    [Fact]
+    public async Task SendingBackTheListedStyleOfALodgeWithoutOneKeepsItWithoutOne()
+    {
+        await using var server = await Start_();
+        using (var con = state.Store.Open(ME))
+        {
+            con.Begin();
+            var lodge = O("""{"id": 5, "name": "lodge 5", "locked": false, "style_id": null, "animal_slots": [], "weapon_slots": []}""");
+            PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
+            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
+            con.Commit();
+        }
+        var me = Cookie(ME);
+        Assert.Equal(200, (await Call(server, "PUT", "/account/lodges/5/settings", me, """{"name": "Renamed", "locked": true, "style_id": 0}""")).Status);
+        var game = JsonNode.Parse(Encoding.UTF8.GetString(state.LodgesReply(ME)))!.AsArray().Single(l => (long)l!["id"]! == 5)!;
+        Assert.Equal("Renamed true", $"{game["name"]} {game["locked"]}");
+        Assert.Null(game["style_id"]);
+    }
+
     void Place(long amount = 20)
     {
         var md = new JsonObject();

@@ -1765,10 +1765,8 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="GM.Status.active" xml:space="preserve"><value>Attiva</value></data>
   <data name="GM.Status.inactive" xml:space="preserve"><value>Inattiva</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Penalità</value></data>
-  <data name="GM.EmptyOn" xml:space="preserve"><value>La mangiatoia sarà vuota il {0} alle {1}</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>La mangiatoia sarà vuota il {0}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>La tua mangiatoia è piena</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Esca</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Stato</value></data>
-  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
-  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

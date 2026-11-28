@@ -7,6 +7,7 @@ namespace Resurgence.Services;
 /// <param name="http">Base address is the server, <c>UseCookies</c> off.</param>
 public sealed class ServerGameManagementService(HttpClient http, ServerCookie cookie, ILogger<ServerGameManagementService> log) : IGameManagementService
 {
+    static readonly System.Text.Json.JsonSerializerOptions Web = new(System.Text.Json.JsonSerializerDefaults.Web);
     static readonly FeederList NoFeeders = new([], 0, new(0, 0));
 
     public async Task<IReadOnlyList<LodgeRow>> LodgesAsync() => (await GetAsync<LodgeList>(ServerAccountApi.Lodges))?.Lodges ?? [];
@@ -14,11 +15,22 @@ public sealed class ServerGameManagementService(HttpClient http, ServerCookie co
     public async Task<FeederList> FeedersAsync() => await GetAsync<FeederList>(ServerAccountApi.Feeders) ?? NoFeeders;
 
     public async Task<Result> SaveLodgeAsync(LodgeRow lodge, string name, bool locked) =>
-        (await SendAsync<object>(HttpMethod.Put, $"{ServerAccountApi.Lodges}/{Uri.EscapeDataString(lodge.Id)}/settings", new { name, locked, style_id = lodge.StyleId }, "GM.SaveFailed")).Ok
-            ? Result.Success : Result.Fail("GM.SaveFailed");
+        await SendAsync(HttpMethod.Put, $"{ServerAccountApi.Lodges}/{Uri.EscapeDataString(lodge.Id)}/settings", new { name, locked, style_id = lodge.StyleId }) is not null ? Result.Success : Result.Fail("GM.SaveFailed");
 
-    public Task<Result<RefillReply>> RefillAsync(string id, string currency, int maxAmount) =>
-        SendAsync<RefillReply>(HttpMethod.Post, $"{ServerAccountApi.Feeders}/{Uri.EscapeDataString(id)}/refill", new { currency, max_amount = maxAmount }, "GM.RefillFailed");
+    public async Task<Result<RefillReply>> RefillAsync(string id, string currency, int maxAmount)
+    {
+        try
+        {
+            if (await SendAsync(HttpMethod.Post, $"{ServerAccountApi.Feeders}/{Uri.EscapeDataString(id)}/refill", new { currency, max_amount = maxAmount }) is { } json
+                && System.Text.Json.JsonSerializer.Deserialize<RefillReply>(json, Web) is { Success: true } reply)
+                return Result<RefillReply>.Success(reply);
+        }
+        catch (System.Text.Json.JsonException e)
+        {
+            log.LogWarning("The server's refill reply was not readable ({Reason})", e.Message);
+        }
+        return Result<RefillReply>.Fail("GM.RefillFailed");
+    }
 
     async Task<T?> GetAsync<T>(string path) where T : class
     {
@@ -38,22 +50,24 @@ public sealed class ServerGameManagementService(HttpClient http, ServerCookie co
         return null;
     }
 
-    async Task<Result<T>> SendAsync<T>(HttpMethod method, string path, object body, string failed) where T : class
+    /// <summary>A JSON change as the signed-in player: the reply's body when the server accepted it, else null (signed out, refused, no answer).</summary>
+    async Task<string?> SendAsync(HttpMethod method, string path, object body)
     {
-        if (cookie.Value is null) return Result<T>.Fail(failed);
+        if (cookie.Value is not { } sent) return null;
         try
         {
             using var request = cookie.Request(method, path);
             request.Headers.Add("X-Requested-With", "XMLHttpRequest");
             request.Content = JsonContent.Create(body);
             using var response = await http.SendAsync(request);
-            if (response.IsSuccessStatusCode) return Result<T>.Success(typeof(T) == typeof(object) ? null! : await response.Content.ReadFromJsonAsync<T>() ?? throw new System.Text.Json.JsonException("empty"));
+            if (response.IsSuccessStatusCode) return await response.Content.ReadAsStringAsync();
             log.LogWarning("The server refused {Path} ({Status})", path, (int)response.StatusCode);
+            cookie.Refused(response, sent);
         }
-        catch (Exception e) when (e is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException)
+        catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
         {
             log.LogWarning("The server did not answer {Path} ({Reason})", path, e.Message);
         }
-        return Result<T>.Fail(failed);
+        return null;
     }
 }

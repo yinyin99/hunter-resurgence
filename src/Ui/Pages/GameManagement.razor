@@ -17,7 +17,7 @@
                 <p class="info">@L["GM.Packs", feeders.Packs]</p>
                 @if (error is { } e) { <p class="error" role="alert">@L[e]</p> }
                 @if (feeders.Feeders.Length == 0) { <p class="empty">@L["GM.NoFeeders"]</p> }
-                @foreach (var kind in feeders.Feeders.OrderBy(f => f.Reserve).ThenBy(f => f.Id, StringComparer.Ordinal).GroupBy(f => f.ItemId))
+                @foreach (var kind in feeders.Feeders.OrderBy(f => f.Reserve).ThenBy(f => long.TryParse(f.Id, out var n) ? n : long.MaxValue).ThenBy(f => f.Id, StringComparer.Ordinal).GroupBy(f => f.ItemId))
                 {
                     <section class="kind">
                         <h5>@kind.First().Name</h5>
@@ -26,7 +26,7 @@
                             var canFill = f.BaitAmount < topUp && f.BaitOwned > 0;
                             <article class="feeder">
                                 <AssetSlot Name="@Mode.ItemSlot(f.ItemId)" Width="75" Height="110" Class="pic" />
-                                <div class="where"><b>@f.ReserveName</b><span>@L["GM.X"] @f.X.ToString("0.###", Inv)</span><span>@L["GM.Y"] @f.Y.ToString("0.###", Inv)</span></div>
+                                <div class="where"><b>@f.ReserveName</b><span>x: @f.X.ToString("0.###", Inv)</span><span>y: @f.Y.ToString("0.###", Inv)</span></div>
                                 <dl class="facts">
                                     <dt>@L["GM.Bait"]</dt>
                                     <dd><span class="gauge" title="@Tip(f)"><span class="fill" style="width:@(f.BaitMax > 0 ? f.BaitAmount * 100 / f.BaitMax : 0)%"></span><span class="num">@f.BaitAmount/@f.BaitMax</span></span></dd>
@@ -37,8 +37,8 @@
                                     @if (feeders.Packs > 0) { <button type="button" class="btn btn-inverse refill" disabled="@(!canFill)" @onclick='() => Refill(f, "pack")'>@L["GM.Refill"]</button> }
                                     else
                                     {
-                                        <button type="button" class="btn btn-inverse refill em" disabled="@(!canFill)" @onclick='() => Refill(f, "em")'>@L["GM.RefillEm", feeders.RefillPrice.Em]</button>
-                                        <button type="button" class="btn btn-inverse refill gm" disabled="@(!canFill)" @onclick='() => Refill(f, "gm")'>@L["GM.RefillGm", feeders.RefillPrice.Gm]</button>
+                                        <button type="button" class="btn btn-inverse refill em" disabled="@(!canFill || feeders.RefillPrice.Em <= 0)" @onclick='() => Refill(f, "em")'>@L["GM.RefillEm", feeders.RefillPrice.Em]</button>
+                                        <button type="button" class="btn btn-inverse refill gm" disabled="@(!canFill || feeders.RefillPrice.Gm <= 0)" @onclick='() => Refill(f, "gm")'>@L["GM.RefillGm", feeders.RefillPrice.Gm]</button>
                                     }
                                 </span>
                             </article>
@@ -64,7 +64,7 @@
                                 @if (renaming == l.Id)
                                 {
                                     <input class="name" maxlength="40" @bind="draft" @bind:event="oninput" @onkeydown="k => Key(l, k)" />
-                                    <button type="button" class="btn btn-inverse save" @onclick="() => Save(l, draft, l.Locked)">@L["GM.Save"]</button>
+                                    <button type="button" class="btn btn-inverse save" @onclick="() => Rename(l)">@L["GM.Save"]</button>
                                 }
                                 else
                                 {
@@ -119,22 +119,23 @@
         catch (JSException) { }  // storage blocked: the default stays
     }
 
-    string Tip(FeederRow f) => f.EmptyAt is { } t && f.BaitAmount > 0
-        ? L["GM.EmptyOn", DateTimeOffset.FromUnixTimeSeconds(t).ToString("d"), DateTimeOffset.FromUnixTimeSeconds(t).ToString("t")]
-        : L["GM.Full"];
+    // the deadline in UTC, as the other pages' times; a full feeder has none, an empty or never filled one has no deadline to name
+    string? Tip(FeederRow f) => f.BaitAmount >= f.BaitMax ? L["GM.Full"]
+        : f.EmptyAt is { } t && f.BaitAmount > 0 ? L["GM.EmptyOn", Fmt.UtcLong(DateTimeOffset.FromUnixTimeSeconds(t).UtcDateTime)] : null;
 
     async Task Save(LodgeRow l, string? name, bool locked)
     {
-        if (string.IsNullOrWhiteSpace(name)) return;
-        var r = await Service.SaveLodgeAsync(l, name.Trim(), locked);
+        var r = await Service.SaveLodgeAsync(l, name, locked);
         error = r.Error;
         if (r.Ok) { renaming = null; lodges = await Service.LodgesAsync(); }
     }
 
+    Task Rename(LodgeRow l) => string.IsNullOrWhiteSpace(draft) ? Task.CompletedTask : Save(l, draft.Trim(), l.Locked);
+
     Task Key(LodgeRow l, KeyboardEventArgs e)
     {
         if (e.Key == "Escape") renaming = null;
-        return e.Key == "Enter" ? Save(l, draft, l.Locked) : Task.CompletedTask;
+        return e.Key == "Enter" ? Rename(l) : Task.CompletedTask;
     }
 
     async Task Refill(FeederRow f, string currency)

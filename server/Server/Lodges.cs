@@ -339,6 +339,7 @@ public sealed partial class State
             {
                 foreach (var (key, value) in edits)
                 {
+                    if (key == "style_id" && value is not null && (Py.IsNum(node[key]) ? Py.L(node[key]) : 0) == Py.L(value)) continue;  // the list shows no style as 0: sending it back keeps it none
                     var fresh = value?.DeepClone();
                     if (fresh is JsonArray slots && node[key] is JsonArray stored)
                         Carry(slots, stored);

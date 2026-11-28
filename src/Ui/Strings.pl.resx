@@ -1765,10 +1765,8 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="GM.Status.active" xml:space="preserve"><value>Aktywny</value></data>
   <data name="GM.Status.inactive" xml:space="preserve"><value>Nieaktywny</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Kara</value></data>
-  <data name="GM.EmptyOn" xml:space="preserve"><value>Paśnik będzie pusty {0} o {1}</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Paśnik będzie pusty {0}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Twój paśnik jest pełny</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Przynęta</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
-  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
-  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>

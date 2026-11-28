@@ -1765,10 +1765,8 @@
   <data name="GM.Status.active" xml:space="preserve"><value>Активна</value></data>
   <data name="GM.Status.inactive" xml:space="preserve"><value>Неактивна</value></data>
   <data name="GM.Status.penalty" xml:space="preserve"><value>Штраф</value></data>
-  <data name="GM.EmptyOn" xml:space="preserve"><value>Кормушка опустеет {0} в {1}</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Кормушка опустеет {0}</value></data>
   <data name="GM.Full" xml:space="preserve"><value>Ваша кормушка полна</value></data>
   <data name="GM.Bait" xml:space="preserve"><value>Приманка</value></data>
   <data name="GM.Status" xml:space="preserve"><value>Статус</value></data>
-  <data name="GM.X" xml:space="preserve"><value>x:</value></data>
-  <data name="GM.Y" xml:space="preserve"><value>y:</value></data>
 </root>
