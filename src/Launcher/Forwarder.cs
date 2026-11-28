@@ -88,8 +88,8 @@ static class Forwarder
         return app;
     }
 
-    /// <summary>The game's connect call: the game server's path of the old build and of the current one (<c>/json/rgc-01-00/Hunter_GameClient/connect</c>, <c>/v1/json/hunter_gameclient/connect</c>).</summary>
-    static bool IsConnect(PathString path) => path.Value?.EndsWith("/hunter_gameclient/connect", StringComparison.OrdinalIgnoreCase) == true;
+    /// <summary>The game's connect call: no other call of the game ends in <c>/connect</c> (<c>/disconnect</c> does not match, the slash is part of the suffix).</summary>
+    static bool IsConnect(PathString path) => path.Value?.EndsWith("/connect", StringComparison.Ordinal) == true;
 
     /// <summary>The first 32 bytes of a body as one line of text: printable ASCII as it is, a backslash, CR, LF and tab as <c>\\ \r \n \t</c>, any other byte (a control character, a byte of a multi-byte character, a gzip header) as <c>\xNN</c>. Nothing of the rest.</summary>
     internal static string FirstBytes(byte[] body)

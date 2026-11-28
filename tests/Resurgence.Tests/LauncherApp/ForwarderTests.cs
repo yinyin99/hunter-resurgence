@@ -62,7 +62,7 @@ public class ForwarderTests
                     await ctx.Response.Body.WriteAsync(Gzipped);
                     return;
                 }
-                if (ctx.Request.Path.Value!.EndsWith("/hunter_gameclient/connect", StringComparison.OrdinalIgnoreCase))
+                if (ctx.Request.Path.Value!.EndsWith("/connect", StringComparison.Ordinal))
                 {
                     ctx.Response.ContentType = "application/json";
                     await ctx.Response.Body.WriteAsync(ConnectBody); // no length: chunked, as behind a proxy
@@ -94,17 +94,6 @@ public class ForwarderTests
     /// <summary>A connect reply that needs every escape of <see cref="Forwarder.FirstBytes"/> (CR, LF, tab, backslash, NUL, a byte over 0x7F, DEL), then 16 bytes that fill the first 32 and 48 that must not be logged.</summary>
     static readonly byte[] ConnectBody = Encoding.Latin1.GetBytes("{\"err\":0}\r\n\t\\\u0000\u00e9\u007f" + new string('A', 16) + new string('B', 48));
 
-    /// <summary>The launcher's log as the forwarder sees it: each entry's level and text.</summary>
-    sealed class Lines : ILogger
-    {
-        public List<(LogLevel Level, string Text)> Entries { get; } = [];
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
-        public bool IsEnabled(LogLevel level) => true;
-        public void Log<TState>(LogLevel level, EventId id, TState state, Exception? error, Func<TState, Exception?, string> formatter)
-        {
-            lock (Entries) Entries.Add((level, formatter(state, error)));
-        }
-    }
 
     static HttpClient Client(Action<SocketsHttpHandler>? tune = null)
     {
@@ -199,20 +188,19 @@ public class ForwarderTests
 
     // #1052: what the game got of its connect is in launcher.log, the length and the first bytes only
     [Theory]
-    [InlineData("/v1/json/hunter_gameclient/connect")]
-    [InlineData("/json/rgc-01-00/Hunter_GameClient/connect")]
+    [InlineData("/x/y/connect")]
+    [InlineData("/connect")]
     public async Task TheConnectReplyIsLoggedWithItsStatusLengthAndFirstBytesOnly(string path)
     {
         await using var origin = await Origin.Start();
-        var log = new Lines();
+        var log = new GooseCallTests.Lines();
         await using var fwd = await StartForwarder(origin.Url, log: log);
         using var http = Client();
-        using (await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/other")) { } // no other request is logged
+        foreach (var other in new[] { "/other", "/x/y/disconnect" })
+            using (await http.GetAsync(Forwarder.Addresses(fwd)[0] + other)) { } // no other request is logged
         using var resp = await http.PostAsync(Forwarder.Addresses(fwd)[0] + path, new StringContent("{}"));
         Assert.Equal(ConnectBody, await resp.Content.ReadAsByteArrayAsync());
-        var (level, text) = Assert.Single(log.Entries);
-        Assert.Equal(LogLevel.Information, level);
-        Assert.Equal("""connect reply to the game: status 200, 80 bytes, starts {"err":0}\r\n\t\\\x00\xe9\x7fAAAAAAAAAAAAAAAA""", text);
+        Assert.Equal("""connect reply to the game: status 200, 80 bytes, starts {"err":0}\r\n\t\\\x00\xe9\x7fAAAAAAAAAAAAAAAA""", Assert.Single(log.Seen));
     }
 
     [Theory]
@@ -246,14 +234,12 @@ public class ForwarderTests
         dead.Start();
         var url = new Uri($"http://127.0.0.1:{((IPEndPoint)dead.LocalEndpoint).Port}");
         dead.Stop();
-        var log = new Lines();
+        var log = new GooseCallTests.Lines();
         await using var fwd = await StartForwarder(url, log: log);
         using var http = Client();
         using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0]);
         Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
-        var (level, text) = Assert.Single(log.Entries); // the launcher's log is the only place a relay that failed shows
-        Assert.Equal(LogLevel.Warning, level);
-        Assert.Contains(" not relayed (502): ", text);
+        Assert.Contains(" not relayed (502): ", Assert.Single(log.Seen)); // the launcher's log is the only place a relay that failed shows
     }
 
     /// <summary>A started listener on `ip` (port 0: a free one).</summary>
