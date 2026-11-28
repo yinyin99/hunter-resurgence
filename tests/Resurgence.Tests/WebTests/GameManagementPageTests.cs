@@ -7,14 +7,14 @@ namespace Resurgence.Tests.WebTests;
 
 public sealed class GameManagementPageTests : UiContext
 {
-    sealed class Fake(FeederList feeders) : IGameManagementService
+    sealed class Fake(FeederList feeders, bool refuse = false) : IGameManagementService
     {
         public readonly List<(string Name, bool Locked)> Saved = [];
         public readonly List<(string Id, string Currency, int Max)> Refills = [];
-        public Task<IReadOnlyList<LodgeRow>> LodgesAsync() => Task.FromResult<IReadOnlyList<LodgeRow>>([new("1", "Made-up Lodge", false, 1, "Cabin", 2, 1), new("2", "Made-up Hideaway", true, 2, null, 0, 0)]);
+        public Task<IReadOnlyList<LodgeRow>> LodgesAsync() => Task.FromResult<IReadOnlyList<LodgeRow>>([new("1", "Made-up Lodge", false, "Cabin", 2, 1), new("2", "Made-up Hideaway", true, null, 0, 0)]);
         public Task<Result> SaveLodgeAsync(LodgeRow lodge, string name, bool locked) { Saved.Add((name, locked)); return Task.FromResult(Result.Success); }
         public Task<FeederList> FeedersAsync() => Task.FromResult(feeders);
-        public Task<Result<RefillReply>> RefillAsync(string id, string currency, int maxAmount) { Refills.Add((id, currency, maxAmount)); return Task.FromResult(Result<RefillReply>.Success(new(true, 0, maxAmount, null))); }
+        public Task<Result<RefillReply>> RefillAsync(string id, string currency, int maxAmount) { Refills.Add((id, currency, maxAmount)); return Task.FromResult(refuse ? Result<RefillReply>.Fail("GM.RefillFailed") : Result<RefillReply>.Success(new(true, 0, maxAmount, null))); }
     }
 
     static FeederRow Feeder(string id, int amount, int owned) => new(id, 1, "Made-up Feeder " + id, 1, "Made-up Reserve", 1.5, 2, amount, 50, "active", null, owned);
@@ -59,6 +59,38 @@ public sealed class GameManagementPageTests : UiContext
         Assert.Contains("1 em$", cut.Find("button.em").TextContent);
         cut.Find("button.gm").Click();
         Assert.Equal([("c", "gm", 50)], fake.Refills);
+    }
+
+    [Fact]
+    public void ARefusedRefillShowsTheErrorInline()
+    {
+        Services.AddSingleton<IGameManagementService>(new Fake(new([Feeder("c", 10, 5)], 1, new(1, 2)), refuse: true));
+        var cut = Render<GameManagement>(p => p.Add(g => g.Tab, "bait-sites"));
+        Assert.Empty(cut.FindAll("p.error"));
+
+        cut.Find("button.refill").Click();
+
+        Assert.Equal("The feeder could not be refilled. Try again.", cut.Find("p.error").TextContent);
+    }
+
+    [Fact]
+    public void ThePriceButtonsAreDisabledWhileThePriceIsZero()
+    {
+        Services.AddSingleton<IGameManagementService>(new Fake(new([Feeder("c", 10, 5)], 0, new(0, 2))));
+        var cut = Render<GameManagement>(p => p.Add(g => g.Tab, "bait-sites"));
+
+        Assert.True(cut.Find("button.em").HasAttribute("disabled"));
+        Assert.False(cut.Find("button.gm").HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void LockingWorksWhateverTheName()
+    {
+        var fake = new Fake(new([], 0, new(1, 2)));
+        Services.AddSingleton<IGameManagementService>(fake);
+        var cut = Render<GameManagement>();
+        cut.FindAll("button.lock")[0].Click();
+        Assert.Single(fake.Saved);
     }
 
     [Fact]

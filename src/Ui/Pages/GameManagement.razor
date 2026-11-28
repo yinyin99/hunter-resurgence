@@ -123,7 +123,7 @@
     string? Tip(FeederRow f) => f.BaitAmount >= f.BaitMax ? L["GM.Full"]
         : f.EmptyAt is { } t && f.BaitAmount > 0 ? L["GM.EmptyOn", Fmt.UtcLong(DateTimeOffset.FromUnixTimeSeconds(t).UtcDateTime)] : null;
 
-    async Task Save(LodgeRow l, string? name, bool locked)
+    async Task Save(LodgeRow l, string name, bool locked)
     {
         var r = await Service.SaveLodgeAsync(l, name, locked);
         error = r.Error;

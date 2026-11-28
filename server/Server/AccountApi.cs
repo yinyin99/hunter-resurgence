@@ -377,7 +377,7 @@ public static class AccountApi
                 var status = long.TryParse(id, NumberStyles.None, CultureInfo.InvariantCulture, out var lodge) ? state.SaveLodgeSettings(account, lodge, body.ToArray()) : 404;
                 return status == 200 ? Json(200, new JsonObject { ["ok"] = true }) : Refuse(status, status == 404 ? "unknown" : "invalid", status == 404 ? "No such lodge." : "The name, lock or style is not valid.");
             })
-            .WithName("AccountLodgeSettings").WithSummary("Rename, lock or unlock one of the player's lodges (JSON `{name, locked, style_id}`)")
+            .WithName("AccountLodgeSettings").WithSummary("Rename, lock or unlock one of the player's lodges (JSON `{name, locked}`)")
             .WithDescription("What `PUT /game/user/lodges/<id>/settings` does, for the signed-in player's own lodge, with the website's `X-Requested-With` header: `200` `{ok: true}`, `400` for a body or name that is not valid, `404` for a lodge the player does not own.")
             .Produces(200, contentType: "application/json");
 

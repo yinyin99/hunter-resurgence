@@ -15,7 +15,7 @@ public sealed class ServerGameManagementService(HttpClient http, ServerCookie co
     public async Task<FeederList> FeedersAsync() => await GetAsync<FeederList>(ServerAccountApi.Feeders) ?? NoFeeders;
 
     public async Task<Result> SaveLodgeAsync(LodgeRow lodge, string name, bool locked) =>
-        await SendAsync(HttpMethod.Put, $"{ServerAccountApi.Lodges}/{Uri.EscapeDataString(lodge.Id)}/settings", new { name, locked, style_id = lodge.StyleId }) is not null ? Result.Success : Result.Fail("GM.SaveFailed");
+        await SendAsync(HttpMethod.Put, $"{ServerAccountApi.Lodges}/{Uri.EscapeDataString(lodge.Id)}/settings", new { name, locked }) is not null ? Result.Success : Result.Fail("GM.SaveFailed");
 
     public async Task<Result<RefillReply>> RefillAsync(string id, string currency, int maxAmount)
     {

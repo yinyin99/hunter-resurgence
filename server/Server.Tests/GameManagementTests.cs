@@ -89,31 +89,16 @@ public class GameManagementTests : StateTestBase
         Assert.Equal((200, """{"ok": true}"""), await Call(server, "PUT", "/account/lodges/3/settings", me, """{"name": "My Cabin", "locked": true, "style_id": 2}"""));
         var game = JsonNode.Parse(Encoding.UTF8.GetString(state.LodgesReply(ME)))!.AsArray().Single(l => (long)l!["id"]! == 3)!;
         Assert.Equal("My Cabin true 2", $"{game["name"]} {game["locked"]} {game["style_id"]}");
+        Assert.Equal(200, (await Call(server, "PUT", "/account/lodges/3/settings", me, """{"name": "My Cabin", "locked": false}""")).Status);  // the website sends no style: it stays
+        game = JsonNode.Parse(Encoding.UTF8.GetString(state.LodgesReply(ME)))!.AsArray().Single(l => (long)l!["id"]! == 3)!;
+        Assert.Equal("false 2", $"{game["locked"]} {game["style_id"]}");
+        Assert.Equal(200, (await Call(server, "PUT", "/account/lodges/3/settings", me, """{"name": "My Cabin", "locked": true}""")).Status);
         Assert.Equal("My Cabin", JsonNode.Parse((await Call(server, "GET", "/account/lodges", me)).Text)!["lodges"]![0]!["name"]!.GetValue<string>());
 
         Assert.Equal(404, (await Call(server, "PUT", "/account/lodges/3/settings", theirs, """{"name": "x", "locked": false, "style_id": 0}""")).Status);  // not the other's lodge
         Assert.Equal(404, (await Call(server, "PUT", "/account/lodges/99/settings", me, """{"name": "x", "locked": false, "style_id": 0}""")).Status);
         Assert.Equal(400, (await Call(server, "PUT", "/account/lodges/3/settings", me, """{"name": 5}""")).Status);
         Assert.Equal("My Cabin", JsonNode.Parse((await Call(server, "GET", "/account/lodges", me)).Text)!["lodges"]![0]!["name"]!.GetValue<string>());
-    }
-
-    [Fact]
-    public async Task SendingBackTheListedStyleOfALodgeWithoutOneKeepsItWithoutOne()
-    {
-        await using var server = await Start_();
-        using (var con = state.Store.Open(ME))
-        {
-            con.Begin();
-            var lodge = O("""{"id": 5, "name": "lodge 5", "locked": false, "style_id": null, "animal_slots": [], "weapon_slots": []}""");
-            PlayerRows.AddLodge(con, "/game/user/lodges", "5", lodge);
-            PlayerRows.AddLodge(con, "/game/user/lodge", "5", lodge.DeepClone());
-            con.Commit();
-        }
-        var me = Cookie(ME);
-        Assert.Equal(200, (await Call(server, "PUT", "/account/lodges/5/settings", me, """{"name": "Renamed", "locked": true, "style_id": 0}""")).Status);
-        var game = JsonNode.Parse(Encoding.UTF8.GetString(state.LodgesReply(ME)))!.AsArray().Single(l => (long)l!["id"]! == 5)!;
-        Assert.Equal("Renamed true", $"{game["name"]} {game["locked"]}");
-        Assert.Null(game["style_id"]);
     }
 
     void Place(long amount = 20)
@@ -229,9 +214,9 @@ public class GameManagementTests : StateTestBase
             Microsoft.Extensions.Logging.Abstractions.NullLogger<Resurgence.Services.ServerGameManagementService>.Instance);
 
         var lodgeRow = Assert.Single(await service.LodgesAsync());
-        Assert.Equal(new Resurgence.Services.LodgeRow("3", "lodge 3", true, 4, null, 1, 0), lodgeRow);
+        Assert.Equal(new Resurgence.Services.LodgeRow("3", "lodge 3", true, null, 1, 0), lodgeRow);
         Assert.True((await service.SaveLodgeAsync(lodgeRow, "My Cabin", false)).Ok);
-        Assert.Equal(new Resurgence.Services.LodgeRow("3", "My Cabin", false, 4, null, 1, 0), Assert.Single(await service.LodgesAsync()));
+        Assert.Equal(new Resurgence.Services.LodgeRow("3", "My Cabin", false, null, 1, 0), Assert.Single(await service.LodgesAsync()));
 
         var feeders = await service.FeedersAsync();
         Assert.Equal((2, 5, 85), (feeders.Packs, feeders.RefillPrice.Em, feeders.RefillPrice.Gm));

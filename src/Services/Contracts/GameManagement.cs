@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace Resurgence.Services;
 
 /// <summary>A trophy lodge of the player (<c>GET /account/lodges</c>): <see cref="LodgeType"/> is the lodge type's display name, null when unknown.</summary>
-public sealed record LodgeRow(string Id, string Name, bool Locked, [property: JsonPropertyName("style_id")] int StyleId, [property: JsonPropertyName("lodge_type")] string? LodgeType, int Trophies, int Weapons);
+public sealed record LodgeRow(string Id, string Name, bool Locked, [property: JsonPropertyName("lodge_type")] string? LodgeType, int Trophies, int Weapons);
 public sealed record LodgeList(LodgeRow[] Lodges);
 
 /// <summary>A placed feeder (<c>GET /account/feeders</c>): <see cref="Status"/> is active, inactive or penalty; <see cref="EmptyAt"/> unix seconds, null when it is not running; <see cref="BaitOwned"/> the matching bait in the inventory.</summary>

@@ -68,7 +68,7 @@ public static class ServerAccountApi
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
     public const string Inventory = "/account/inventory";
-    /// <summary>GET with the cookie: 200 <see cref="LodgeList"/>; PUT with <c>X-Requested-With</c> and the JSON <c>{name, locked, style_id}</c> to <c>/&lt;id&gt;/settings</c>: 200 <c>{ok}</c>, 404 for a lodge that is not theirs, 400 for a bad name.</summary>
+    /// <summary>GET with the cookie: 200 <see cref="LodgeList"/>; PUT with <c>X-Requested-With</c> and the JSON <c>{name, locked}</c> to <c>/&lt;id&gt;/settings</c> (the lodge's style stays): 200 <c>{ok}</c>, 404 for a lodge that is not theirs, 400 for a bad name.</summary>
     public const string Lodges = "/account/lodges";
     /// <summary>GET with the cookie: 200 <see cref="FeederList"/>; POST with <c>X-Requested-With</c> and the JSON <c>{currency: pack|em|gm, max_amount}</c> to <c>/&lt;id&gt;/refill</c>: 200 <see cref="RefillReply"/>, 404 for an unknown feeder, 400 for a bad body.</summary>
     public const string Feeders = "/account/feeders";

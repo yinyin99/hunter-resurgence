@@ -3,7 +3,7 @@ namespace Resurgence.Services.Mocks;
 /// <summary>Fictional lodges (one locked) and feeders (one active and half full, one in penalty); a refill fills the feeder and uses a pack or pays.</summary>
 public sealed class MockGameManagementService : IGameManagementService
 {
-    readonly List<LodgeRow> lodges = [new("1", "Test Lodge", false, 1, "Hunting Cabin", 12, 3), new("2", "Test Hideaway", true, 2, "Mountain Lodge", 4, 1)];
+    readonly List<LodgeRow> lodges = [new("1", "Test Lodge", false, "Hunting Cabin", 12, 3), new("2", "Test Hideaway", true, "Mountain Lodge", 4, 1)];
     List<FeederRow> feeders = [new("a1", 101, "Test Feeder", 1, "Test Reserve", 41.5, 62.25, 25, 50, "active", DateTimeOffset.UtcNow.AddDays(2).ToUnixTimeSeconds(), 30),
                                new("a2", 102, "Test Corn Feeder", 3, "Test Plains", 10, 20, 0, 50, "penalty", null, 0)];
     int packs = 1;
@@ -13,8 +13,8 @@ public sealed class MockGameManagementService : IGameManagementService
     public Task<Result> SaveLodgeAsync(LodgeRow lodge, string name, bool locked)
     {
         var i = lodges.FindIndex(l => l.Id == lodge.Id);
-        if (i < 0 || name.Trim().Length == 0) return Task.FromResult(Result.Fail("GM.SaveFailed"));
-        lodges[i] = lodges[i] with { Name = name.Trim(), Locked = locked };
+        if (i < 0) return Task.FromResult(Result.Fail("GM.SaveFailed"));
+        lodges[i] = lodges[i] with { Name = name, Locked = locked };
         return Task.FromResult(Result.Success);
     }
 
