@@ -35,6 +35,6 @@ static class Kit
             p?.WaitForExit();
         }
         catch (Win32Exception) { } // the user said No
-        if (Hosts.Has(File.ReadAllText(path)) != on) throw new InvalidOperationException(S("Kit.HostsFailed"));
+        if (Hosts.Has(Hosts.Read(path)) != on) throw new InvalidOperationException(S("Kit.HostsFailed"));
     }
 }
