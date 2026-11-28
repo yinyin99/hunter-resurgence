@@ -12,8 +12,9 @@ h3 { margin: 3px 0 7px; font-size: 22px; line-height: 40px; font-weight: 300; te
 .friend { display: inline-block; margin-right: 6px; border-radius: var(--r-2); }
 .action { position: absolute; left: 0; right: 0; bottom: 0; }
 .group { display: flex; }
-.group .btn:first-child { flex: 1; box-sizing: border-box; border-radius: var(--r-2) 0 0 var(--r-2); text-align: center; }
-.group .btn:last-child { flex: 0 0 12%; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--btn-ui-bg); color: var(--text-3); opacity: 1; }
+.group .btn { box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; white-space: nowrap; }
+.group .btn:first-child { flex: 1; min-width: 0; border-radius: var(--r-2) 0 0 var(--r-2); text-align: center; }
+.group .btn:last-child { flex: none; border-radius: 0 var(--r-2) var(--r-2) 0; background: var(--btn-ui-bg); color: var(--text-3); opacity: 1; }
 .action.btn { box-sizing: border-box; }
 .who { display: flex; gap: 12px; margin: 10px 0 14px; }
 .who p { margin: 0; }
