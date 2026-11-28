@@ -323,7 +323,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             } while ((held is not null || isRunning(g.ClientExe)) && game?.ExitCode() is null && await Delay(step));
             if (game is not null) LogMemory(game, true);
             var (code, elapsed) = (game?.ExitCode(), ran.Elapsed);
-            // a short run that quit normally (the log shows a hunt or the main page, then WM_CLOSE) is not a failure
+            // a short run that quit normally (the log shows a hunt, then WM_CLOSE or the game's own exit) is not a failure
             var quit = code == 0 && window && elapsed < TimeSpan.FromSeconds(60) && Path.GetDirectoryName(g.ClientExe) is { } dir ? GameLog.QuitCleanly(dir, at) : null;
             var run = LastRun = new GameRun(at, elapsed, code, window, mode, quit);
             history?.Add(run);
