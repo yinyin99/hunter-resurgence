@@ -364,6 +364,59 @@ public class ProblemReportTests
     }
 
     [Fact]
+    public void AShortRunThatQuitAfterAHuntIsNormal()
+    {
+        var start = DateTimeOffset.UnixEpoch;
+        var shortRun = TimeSpan.FromSeconds(20);
+        Assert.Null(new GameRun(start, shortRun, 0, true, null, true).Trigger);
+        Assert.Equal("short", new GameRun(start, shortRun, 0, true, null, false).Trigger);
+        Assert.Equal("short", new GameRun(start, shortRun, 0, true, null, null).Trigger);
+        Assert.Equal("exitcode", new GameRun(start, shortRun, 3, true, null, true).Trigger);
+
+        using var temp = new TempDir("resurgence-test-");
+        var since = DateTimeOffset.UtcNow.AddMinutes(-1);
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // no log
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly("", since)); // no game folder
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(Path.Combine(temp.Path, "gone"), since));
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateRun::OnEnter()\nWM_CLOSE\n");
+        Assert.True(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since));
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGameStateLoad::OnEnter()\nWM_CLOSE\n");
+        Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // never reached a hunt
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateRun::OnEnter()\n");
+        Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // no WM_CLOSE
+        Assert.Null(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, DateTimeOffset.UtcNow.AddMinutes(1))); // log is older than the run
+        // the game's own Quit writes the exit event and no window message
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateRun::OnEnter()\nCGameStatePause::OnEnter()\nCGame::m_ExitGameEvent\n");
+        Assert.True(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since));
+        File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGame::m_ExitGameEvent\n");
+        Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // never reached a hunt
+        // an exit forced by a lost connection, a kick or a version mismatch is not a quit
+        foreach (var dropped in new[] { "CGameStateLostConnectionToHost::OnEnter()", "LOST CONNECTION DEBUG OnKickPlayer", "LOST CONNECTION DEBUG OnHostLostConnection", "Incompatible game versions!" })
+            foreach (var closing in new[] { "CGame::m_ExitGameEvent", "WM_CLOSE", "WM_DESTROY" })
+            {
+                File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), $"CGameStateRun::OnEnter()\n{dropped}\n{closing}\n");
+                Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since), $"{dropped} then {closing}");
+            }
+    }
+
+    [Theory]
+    [InlineData(0, true, true)]
+    [InlineData(3, true, null)] // an exit code is its own trigger: the log is not read
+    [InlineData(0, false, null)] // no window: not read
+    public async Task TheWatcherReadsTheGameLogOnlyForAShortCleanExit(int code, bool window, bool? expected)
+    {
+        using var temp = new TempDir("resurgence-test-");
+        var netlog = Path.Combine(temp.Path, "1.netlog");
+        File.WriteAllText(netlog, "CGameStateRun::OnEnter()\nWM_CLOSE\n");
+        File.SetLastWriteTimeUtc(netlog, DateTime.UtcNow.AddMinutes(1)); // the game writes its log while the run lasts: newer than the run's start
+        var rest = new MockLauncherBridge(NullLogger<MockLauncherBridge>.Instance);
+        var b = new LauncherBridge(() => new(temp.Path, Path.Combine(temp.Path, "client.exe")), rest, _ => true, LauncherFakes.Up, LauncherFakes.Signed, null, poll: TimeSpan.FromMilliseconds(1),
+            find: _ => new GameProcess(() => window, () => code));
+        await b.WhenGameExitsAsync().WaitAsync(TimeSpan.FromSeconds(10));
+        Assert.Equal(expected, b.LastRun!.QuitCleanly);
+    }
+
+    [Fact]
     public async Task TheWatcherRecordsTheRunAndKeepsTheLastTen()
     {
         using var temp = new TempDir("resurgence-test-");
