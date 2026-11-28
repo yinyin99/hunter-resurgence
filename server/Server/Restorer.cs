@@ -452,7 +452,8 @@ public static class Restorer
         }
         if (m.Skills is { } s)
         {
-            foreach (var (item, number) in s.Weapon) Skill("weapon", item, number);
+            // one weapon skill per weapon type: the variants a zip holds at different levels end with the highest, under the family's representative
+            foreach (var (key, number) in state.OneSkillPerWeaponType(s.Weapon.Select(w => ((long)w.Key, w.Value)))) Skill("weapon", key, number);
             for (var k = 0; k < s.Tracking.Length; k++) Skill("tracking", k, s.Tracking[k]);
             for (var k = 0; k < s.Spotting.Length; k++) Skill("spotting", k, s.Spotting[k]);
         }

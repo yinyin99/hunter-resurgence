@@ -216,6 +216,23 @@ A taxidermized or skull-mounted harvest, or one restored from the original; the 
 **Trophy lodge**:
 A building a player owns where they mount their trophies and weapons for other players to visit; the profile area "Lodges" lists them (the docs and the code often say lodge alone).
 
+## Weapons
+
+**Weapon family**:
+The weapon items that are one weapon type: the same name whatever the finish, items whose definitions derive from the same base, and items whose description names the weapon whose skill they share. Every weapon item is in exactly one; a weapon with none of these is its own family (docs/server.md, "Weapon families").
+_Avoid_: weapon group, weapon class
+
+**Weapon type**:
+What a player means by one weapon: a weapon family, with all its finishes. It has one shooting skill; achievements stay per variant.
+_Avoid_: weapon model
+
+**Finish**:
+A variant of a weapon type that differs in its look (skin, engraving, event or creator variant), whether or not it has a name of its own. A finish shares the weapon type's shooting skill.
+_Avoid_: skin (alone), texture
+
+**Representative**:
+The weapon item that stands for its weapon family: the member whose definition has no parent (the lowest id among them). The family's one shooting skill is stored under it and the Skills tab names the weapon type by it.
+
 ## Inventory and wallet
 
 **Loadout**:

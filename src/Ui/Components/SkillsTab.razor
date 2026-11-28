@@ -27,6 +27,13 @@ else
                     <div class="name">@s.Name</div>
                     <div class="variation">@s.Variation</div>
                     <div class="pic">@if (s.Id is { } id) { <AssetSlot Name="@Mode.ItemSlot((int)id)" Width="230" Height="50" /> }</div>
+                    @if (s.Finishes is { Count: > 0 } finishes)
+                    {
+                        <div class="finishes" tabindex="0">
+                            <span class="list">@string.Join(" · ", finishes)</span>
+                            <small role="presentation" aria-hidden="true" class="tip">@string.Join(", ", finishes)</small>
+                        </div>
+                    }
                     @foreach (var r in s.Rings) { @Ring(r) }
                 </div>
             }

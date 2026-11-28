@@ -66,9 +66,9 @@ public sealed class WeaponFamilies
             for (var n = 0; Parent(d) is { } up && n < byDefine.Count; n++) d = up;
             return Py.L(d["id"]);
         }
-        foreach (var i in ids.Where(byId.ContainsKey))
-            if (Root(byId[i]) is var root && weapons.ContainsKey(root))
-                Link(i, root, "chain");
+        foreach (var sharing in ids.Where(byId.ContainsKey).GroupBy(i => Root(byId[i])))  // the root need not be a weapon: an abstract base's variants share its skill too
+            foreach (var i in sharing)
+                Link(sharing.First(), i, "chain");
 
         // shares
         var named = ids.Where(i => Py.IsStr(weapons[i]["name"])).ToLookup(i => State.NameWords((string)weapons[i]["name"]!));

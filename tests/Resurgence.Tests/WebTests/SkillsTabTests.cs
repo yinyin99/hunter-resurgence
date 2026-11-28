@@ -44,4 +44,20 @@ public sealed class SkillsTabTests : UiContext
         Assert.Equal("store-item-5", card.QuerySelector(".pic .asset-slot")!.GetAttribute("aria-label"));
         Assert.Equal("3", card.QuerySelector(".dial b")!.TextContent);
     }
+
+    [Fact]
+    public void AWeaponTypeListsItsFinishesUnderItAndAWeaponAloneListsNone()
+    {
+        SkillsOnly.Skills = [new("Rifle X", "Rifles", [new("Shooting", 3, 40)], null, 5, "Blue", ["Camo", "Rifle Y (Gold)"]), new("Bow Z", "Bows", [new("Shooting", 1, 0)])];
+        Services.AddSingleton(DispatchProxy.Create<IProfileService, SkillsOnly>());
+
+        var cut = Render<SkillsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "weapons"));
+
+        var cards = cut.FindAll(".weapons > .weapon");
+        var finishes = cards[0].QuerySelector(".finishes")!;
+        Assert.Equal("Camo · Rifle Y (Gold)", finishes.QuerySelector(".list")!.TextContent);
+        Assert.Equal("Camo, Rifle Y (Gold)", finishes.QuerySelector(".tip")!.TextContent);  // the whole list opens on hover, keyboard focus and tap
+        Assert.Equal("0", finishes.GetAttribute("tabindex"));  // reachable by keyboard
+        Assert.Null(cards[1].QuerySelector(".finishes"));
+    }
 }
