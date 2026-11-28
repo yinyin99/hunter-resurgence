@@ -1,4 +1,4 @@
-.wizard { container-type: inline-size; max-width: 760px; color: var(--text-2); font-size: 14px; line-height: 20px; }
+.wizard { container-type: inline-size; color: var(--text-2); font-size: 14px; line-height: 20px; }
 [data-tone="ok"] { --tone: #7ece28; --tone-bg: rgba(126, 206, 40, .1); --tone-line: rgba(126, 206, 40, .35); }
 [data-tone="wait"] { --tone: #7aaffa; --tone-bg: rgba(122, 175, 250, .1); --tone-line: rgba(122, 175, 250, .35); }
 [data-tone="warn"] { --tone: #fbcb36; --tone-bg: rgba(251, 203, 54, .09); --tone-line: rgba(251, 203, 54, .35); }

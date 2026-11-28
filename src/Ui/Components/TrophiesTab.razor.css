@@ -1,5 +1,5 @@
-.grid { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.grid li { box-sizing: border-box; width: 157px; height: 280px; padding: 5px; background: #222; text-align: center; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(157px, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.grid li { box-sizing: border-box; height: 280px; padding: 5px; background: #222; text-align: center; }
 .grid h4 { height: 50px; margin: 0 0 10px; overflow: hidden; font-size: 14px; line-height: 20px; font-weight: 400; color: #ccc; }
 .grid a h4 { color: var(--accent-text); }
 .grid p { margin: 0; font-size: 12px; line-height: 18px; color: #fff; }

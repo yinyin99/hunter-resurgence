@@ -1,5 +1,5 @@
 .head { position: relative; height: 218px; margin: 0 0 4px; }
-.head ::deep .banner { position: absolute; left: 0; top: 0; display: block; }
+.head ::deep .banner { position: absolute; left: 0; top: 0; display: block; width: 100% !important; height: calc(100% - 18px) !important; object-fit: cover; }
 .polaroid { position: absolute; left: -20px; top: 20px; width: 239px; height: 288px; z-index: 2; }
 .polaroid ::deep .asset-slot { position: absolute; left: 0; top: 0; }
 .polaroid ::deep .avatar { left: 32px; top: 34px; transform: rotate(-5deg); }
@@ -12,8 +12,8 @@
 .sub ::deep .icon { width: 22px; height: 22px; vertical-align: -3px; }
 .online { color: #95d338; font-size: 18px; }
 .online i { display: inline-block; width: 12px; height: 12px; margin-right: 6px; border-radius: 50%; background: #95d338; }
-.body { margin-left: 220px; }
-.tabs { display: flex; margin: 0 0 16px; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
+.body { margin-left: 220px; min-width: 0; }
+.tabs { display: flex; flex-wrap: wrap; margin: 0 0 16px; padding: 0; list-style: none; border-bottom: 1px solid var(--line); }
 .tabs a { display: block; padding: 0 9px; font-size: 13px; line-height: 38px; white-space: nowrap; color: var(--text-3); }
 .tabs li.on { border: 1px solid #fff; border-bottom: 0; background: var(--surface-4); }
 .tabs li.on a { color: #fff; }

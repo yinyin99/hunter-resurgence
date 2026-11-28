@@ -1,5 +1,5 @@
 .item { position: relative; box-sizing: border-box; padding: 15px; background: var(--surface-3); min-height: 600px; }
-.item ::deep .pic { display: block; margin: 45px auto 0; }
+.item ::deep .pic { display: block; width: clamp(160px, 30%, 380px) !important; height: auto !important; aspect-ratio: 190 / 207; object-fit: contain; margin: 45px auto 0; }
 .buy { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin: -40px 0 12px; padding-right: 25px; font-size: 24px; line-height: 40px; }
 .ends { margin: -8px 25px 12px 0; font-size: 12px; line-height: 16px; text-align: right; color: #f4503d; }
 .buy b { font-weight: 400; color: var(--text-2); }

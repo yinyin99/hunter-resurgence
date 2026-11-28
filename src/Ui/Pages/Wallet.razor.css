@@ -1,14 +1,14 @@
-table { font-size: 13px; }
+table { width: 100%; font-size: 13px; }
 th, td { padding: 8px; }
-.bank th:nth-child(1) { width: 96px; }
-.bank th:nth-child(2) { width: 261px; }
-.bank th:nth-child(3) { width: 176px; }
-.bank th:nth-child(4) { width: 92px; }
-.bank th:nth-child(5) { width: 135px; }
-.entries th:nth-child(1) { width: 147px; }
-.entries th:nth-child(2) { width: 121px; }
-.entries th:nth-child(3) { width: 127px; }
-.entries th:nth-child(4) { width: 115px; }
+.bank th:nth-child(1) { width: 13%; }
+.bank th:nth-child(2) { width: 34%; }
+.bank th:nth-child(3) { width: 23%; }
+.bank th:nth-child(4) { width: 12%; }
+.bank th:nth-child(5) { width: 18%; }
+.entries th:nth-child(1) { width: 29%; }
+.entries th:nth-child(2) { width: 24%; }
+.entries th:nth-child(3) { width: 25%; }
+.entries th:nth-child(4) { width: 22%; }
 .sum { margin: 0 0 18px; font-size: 14px; }
 .sum th, .sum td { width: 50%; }
 .sum th { padding-top: 5px; }

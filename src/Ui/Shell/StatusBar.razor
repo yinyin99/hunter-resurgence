@@ -24,12 +24,12 @@
                 @* the messages are the account's too, read only: no unread count, which the website cannot clear *@
                 <a class="section" href="/messages" data-tip="@MessagesTip" aria-label="@MessagesTip"><Icon Name="envelope" />@if (unread > 0) { <span class="count">@unread</span> }</a>
                 @* the wallet is the account's on the live site too *@
-                <a class="section" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
+                <a class="section wallet-icon" href="/wallet" data-tip="@L["Tip.Wallet"]" aria-label="@L["Tip.Wallet"]"><Icon Name="credit-card" /></a>
                 <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
                 <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
                 <a class="section" href="/inventory">@L["Inv.Title"]</a>
-                @if (balances.AmmoDays is { } ammo) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", ammo]</span></span> }
-                @if (balances.FuelDays is { } fuel) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", fuel]</span></span> }
+                @if (balances.AmmoDays is { } ammo) { <span class="service" role="group" data-tip="@L["Statusbar.Ammo"]" title="@L["Statusbar.Ammo"]" aria-label="@L["Statusbar.Ammo"]: @L["Fmt.Days", ammo]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Ammo"]</span> <span class="pill">@L["Fmt.Days", ammo]</span></span> }
+                @if (balances.FuelDays is { } fuel) { <span class="service" role="group" data-tip="@L["Statusbar.Fuel"]" title="@L["Statusbar.Fuel"]" aria-label="@L["Statusbar.Fuel"]: @L["Fmt.Days", fuel]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Fuel"]</span> <span class="pill">@L["Fmt.Days", fuel]</span></span> }
             </div>
         }
         <div class="right">

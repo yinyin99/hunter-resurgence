@@ -5,12 +5,12 @@
 .box h4 { margin: 0 0 12px; font-size: var(--fs-h4); line-height: 30px; font-weight: 400; color: #fff; }
 .caret { display: inline-block; margin-left: 6px; border: 4px solid transparent; border-top-color: #ccc; vertical-align: -2px; }
 .aside { float: right; font-size: 14px; line-height: 30px; color: var(--text-2); }
-.grid { display: grid; grid-template-columns: 270px 270px; gap: 18px 182px; margin: 0 0 18px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 270px)); gap: 18px clamp(30px, 15%, 182px); margin: 0 0 18px; }
 .grid label, .search { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
 select { color-scheme: dark; display: block; width: 100%; height: 30px; margin-top: 4px; padding: 0 8px; border: 1px solid var(--surface-6); border-radius: var(--r-2); background-color: var(--surface-7); font-size: 14px; color: var(--text-1); }
 .grid ::deep .multi { margin-top: 4px; }
 .hide { display: block; margin: 0 0 16px; font-size: 14px; color: var(--text-2); }
-.search input { display: block; width: 224px; height: 38px; margin: 4px 0 24px; font-size: 14px; }
+.search input { display: block; width: min(224px, 100%); height: 38px; margin: 4px 0 24px; font-size: 14px; }
 form .btn { padding: 6px 12px; font-size: 14px; line-height: 20px; }
 .notice { margin: 0; padding: 10px; border-radius: var(--r-2); text-align: center; font-size: 14px; line-height: 20px; background: #d9edf7; color: #31708f; }
 .rows { margin: 0; padding: 0; list-style: none; }
