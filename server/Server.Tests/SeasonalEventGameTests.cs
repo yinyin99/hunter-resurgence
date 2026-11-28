@@ -346,6 +346,21 @@ public class SeasonalEventGameTests : StateTestBase
     }
 
     [Theory]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    public void TestAGameOnAReserveTheEventDoesNotCoverShowsNoEventAndNoDifference(bool hostPlays, bool callerPlays)
+    {
+        var elsewhere = new SeasonalEvent("halloween_2026", "HALLOWEEN_2026", [5], Opens, Opens.AddSeconds(3600 + 60));  // the game is on reserve 1
+        var s = Server(seasonal: elsewhere);
+        Game(s, hostPlays, guestPlays: !hostPlays);
+        s.Store.SetPlaysEvents(THIRD, callerPlays);
+        var listed = Reply(s.NetworkListReply(THIRD, website: true))[0]!;
+        Assert.Equal((null, false), ((string?)listed["event"], (bool)listed["event_differs"]!));
+    }
+
+    [Theory]
     [InlineData(true)]
     [InlineData(false)]
     public void TestAReserveWithoutEventContentGivesTheHostAndHisGuestsTheSameAnswerOnEveryConnect(bool hostPlays)

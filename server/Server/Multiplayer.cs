@@ -271,6 +271,9 @@ public sealed partial class State
     EventDecision Decide(bool plays, int reserve) =>
         plays && Seasonal is { } e && e.Running(Clock()) ? new(ContentOf(e, reserve) is null ? "" : e.Name, e.Name) : new("", "");
 
+    /// <summary>The event a decision shows for a game on the game's reserve number <paramref name="reserve"/> (the games list's `event`): the event the game sends (`Sent`, with or without content there) when the event lists that reserve, else '' (none).</summary>
+    string ListedEvent(EventDecision d, int reserve) => Seasonal is { } e && e.Covers(reserve) ? d.Sent : "";
+
     /// <summary>The decision of a multiplayer game (#996): the one its host's open hunt recorded at its first connect, and while the host has not connected, the one the server would make for him
     /// (<see cref="Decide"/>). A game has one decision whoever joins it: the host's.</summary>
     EventDecision HostDecision(long host, int reserve)
@@ -353,9 +356,9 @@ public sealed partial class State
             if (website)
             {
                 var gameReserve = (int)g.Reserve - 1;  // the game's own reserve number, as the lodge's / 100
-                var gameEvent = HostDecision(g.Host, gameReserve).Sent;  // the event the host's game sends: the event itself, with or without content on this reserve
+                var gameEvent = ListedEvent(HostDecision(g.Host, gameReserve), gameReserve);
                 list["event"] = gameEvent == "" ? null : gameEvent;
-                list["event_differs"] = caller is not null && Decide(callerPlays, gameReserve).Sent != gameEvent;
+                list["event_differs"] = caller is not null && ListedEvent(Decide(callerPlays, gameReserve), gameReserve) != gameEvent;
                 list["distance"] = caller is null || g.Host == caller || Places is null ? null : HostDistance.Bucket(viewerPlace.Value, Places.Locate(g.Members[0].Ip));
             }
             if (caller is not null)
