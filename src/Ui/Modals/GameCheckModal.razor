@@ -12,6 +12,7 @@
                 <span class="level">@Level(c)</span>
                 <b>@L["Check.Name." + c.Id]</b>
                 @if (c.Level != "ok") { <span class="text">@L.Text(c)</span> }
+                @if (c.Id == "game" && c.Level != "ok") { <SteamInstall /> }
                 @if (GameCheckText.FixLabel(c.Fix) is { } label) { <button type="button" class="btn btn-inverse fix" @onclick="() => Modal.FixAsync(c.Fix!, Bridge, Kit)">@L[label]</button> }
             </li>
         }

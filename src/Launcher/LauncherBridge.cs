@@ -28,7 +28,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     Func<string, GameProcess?>? find = null, RunHistory? history = null, ProblemReporter? reports = null, Action<string>? openFolder = null, Action<string>? showFile = null, string? appData = null, string? pictures = null, Func<Task>? clearBrowser = null,
     Func<GameInstallInfo>? gameInstall = null, Func<Result>? chooseFolder = null, Action? useAutomatic = null, InstallChecks? checks = null, TimeSpan? steamWait = null, TimeSpan? quitWithin = null,
     Settings? settings = null, ILogger? log = null, TimeSpan? earlyWithin = null, Func<string, string, Task>? runInstaller = null, ServerClock? clock = null,
-    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null, Func<bool>? startWithSteam = null, TimeSpan? memoryEvery = null) : ILauncherBridge
+    Func<string, IReadOnlyList<ClientProcess>>? processes = null, Action<nint>? bringToFront = null, Func<string?, TimeSpan, Task>? stopClient = null, Func<bool, (bool Borderless, string? Error)>? display = null, Func<bool>? startWithSteam = null, TimeSpan? memoryEvery = null, Action? detectGame = null) : ILauncherBridge
 {
     /// <param name="cookie">The community server's session; registered only with <c>server_url</c>.</param>
     public LauncherBridge(LauncherEnv env, ILogger<MockLauncherBridge> log, ILogger<LauncherBridge> bridgeLog, LauncherUpdater? updater = null, ServerCookie? cookie = null) : this(() => env.Install, new MockLauncherBridge(log),
@@ -37,7 +37,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
         pictures: Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), clearBrowser: MainWindow.ClearBrowserCache,
         gameInstall: () => env.GameInstallInfo, chooseFolder: () => env.ChooseGameFolder(env.PickFolder), useAutomatic: env.UseAutomaticGameFolder, checks: env.Checks, settings: env.Settings, log: bridgeLog, runInstaller: RunInstaller, clock: env.Clock,
         processes: GameFiles.ClientProcesses, bringToFront: GameProcess.BringToFront, stopClient: GameFiles.StopClientAsync,
-        display: new GameSettingsService(env.Settings, env.Prefs, GameFiles.AppData, env.Save).PrepareStart, startWithSteam: () => env.Prefs.StartWithSteam)
+        display: new GameSettingsService(env.Settings, env.Prefs, GameFiles.AppData, env.Save).PrepareStart, startWithSteam: () => env.Prefs.StartWithSteam, detectGame: env.Detect)
     { }
 
     static ProblemReporter Reporter(LauncherEnv env, ServerCookie? cookie)
@@ -58,6 +58,8 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
 
     public bool IsSteam => rest.IsSteam;
     public GameInstallInfo GameInstall => gameInstall?.Invoke() ?? rest.GameInstall;
+    public bool SteamInstalled => steam.Installed();
+    public void DetectGame() => detectGame?.Invoke();
     bool opened;
     /// <summary>All eleven checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()

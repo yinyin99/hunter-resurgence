@@ -3,7 +3,9 @@
 @inject IKitService Kit
 
 @* a refused start (docs/website.md#the-game-check): the text of the error key, with the values and the fix button of the install check that holds it *@
-<AlertDialog Text="@text" FixLabel="@(GameCheckText.FixLabel(fix) is { } label ? L[label].Value : null)" Fix="() => Modal.FixAsync(fix!, Bridge, Kit, Closed)" />
+<AlertDialog Text="@text" FixLabel="@(GameCheckText.FixLabel(fix) is { } label ? L[label].Value : null)" Fix="() => Modal.FixAsync(fix!, Bridge, Kit, Closed)">
+    @if (Error is "Launch.NoGame" or "Check.Game.NotFound") { <SteamInstall /> }
+</AlertDialog>
 
 @code {
     /// <summary>The key <see cref="ILauncherBridge.StartGame"/> and the servers' joins fail with: a Check.* or Launch.* key.</summary>

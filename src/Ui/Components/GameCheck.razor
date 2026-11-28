@@ -10,6 +10,7 @@
     <div id="game-check" class="check @(problem?.Level ?? "ok")" role="status">
         <span class="text">@(problem is null ? L["Check.Ok"] : L.Text(problem))</span>
         @if (problem is not null && GameCheckText.FixLabel(problem.Fix) is { } label) { <button type="button" class="btn btn-inverse fix" id="game-check-fix" @onclick="Fix">@L[label]</button> }
+        @if (problem?.Id == "game") { <SteamInstall OnCheckAgain="Run" /> }
         <button type="button" class="see-all" id="game-check-all" @onclick="SeeAll">@L["Check.SeeAll"]</button>
     </div>
 }

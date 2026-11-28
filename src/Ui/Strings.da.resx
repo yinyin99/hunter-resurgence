@@ -1687,4 +1687,13 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Servers.Language" xml:space="preserve"><value>Sprog</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprog:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Kun spil på mit sprog</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Installer med Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam er ikke installeret: hent Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Tjek igen</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Din Steam-konto har spillet: installer det med Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Din Steam-konto har ikke spillets licens.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Hvad kan jeg gøre?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Jeg kan ikke finde spillet på Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Åbn Konto → Licenser og aktivering af produktnøgler i Steam, og se efter spillet dér. Hvis det er der, så brug launcherens knap »Installer med Steam« eller dit Steam-bibliotek. Hvis ikke, kan Steam ikke længere give dig det.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Åbn dine Steam-licenser</value></data>
 </root>

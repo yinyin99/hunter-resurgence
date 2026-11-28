@@ -329,6 +329,18 @@ Tests: `InstallChecksTests` (temporary install folders, a fake manifest, fake ev
 
 Tests of the display check (`InstallChecksTests`, `GameExitTests`, `GameCheckTests`): fake mode lists and graphics files in a temporary folder (exclusive full screen at an offered mode, at an unoffered mode and windowed at an odd size; the fix writes the current mode and keeps every other value, writes only the file that needs it and refuses while the game runs), fake adapter rows (a primary adapter with an active monitor is ok whatever its name, also one named like a virtual adapter; not on the desktop, or without an active monitor, warns with the adapter named; an adapter that is not primary is not judged), the check in the problem report's install checks and in a start's results, the early exit that names the warning and the ones that do not.
 
+## Install with Steam
+
+Where the game is not found, the launcher offers a way forward instead of only saying so (`SteamInstall`): the install check's line on the dashboard (and its "See all" window) for the `game` check, the Game folder window while no game is found, and the dialog of a start that failed with `Launch.NoGame` (`Check.Game.NotFound`).
+
+- **"Install with Steam"** opens `steam://install/{steam_app_id}` (`ILauncherBridge.OpenExternal` puts the `steam_app_id` of `settings.json` in place of the placeholder, like the "verify files" fix): an account that holds the game's licence gets Steam's install dialog, one that does not gets Steam's "not available". When Steam is not installed on this PC (`ILauncherBridge.SteamInstalled`, the Steam probe of the start) the button says "Steam is not installed: get Steam" and opens Steam's download page, `https://store.steampowered.com/about/`.
+- **"Check again"** (the dashboard line and the Game folder window; the start's dialog has none, the player starts again from the page) looks for the game again (`ILauncherBridge.DetectGame`, `LauncherEnv.Detect`: `GameFinder` with the manual folder, the launch option and Steam's libraries) and shows the result, so the launcher finds the game after the install without a restart. The look is on this button, not on the window's focus: it is one place and nothing else in the launcher listens to the focus.
+- **The licence line**, from the community server's account reply (`Session.SteamLicence`, `steamLicence` of `GET /auth/me`, [server.md](server.md#steam-licence)): "Your Steam account has the game: install it with Steam." for `owned`; "Your Steam account doesn't have the game's licence." with a "What can I do?" link to the help page's "I can't find the game on Steam" entry ([website.md](website.md): Help) for `not_owned`; nothing extra for `unknown` (also signed out, an older server, no key on the server).
+
+Development states of the mock launcher: `?mock=licence:owned` (the button installs: "Check again" then finds the game), `licence:not_owned`, `licence:unknown` and `licence:nosteam` (no game; the licence the mock server reports, or no Steam).
+
+Tests: `SteamInstallTests` (the button opens the install address, the missing Steam, the three licence results, "Check again" finds a game installed meanwhile, the failed start's dialog), `SettingsTests` and `SteamLicenceTests` of the server.
+
 ## Settings: folders and caches
 
 The Settings menu's folder and cache entries are `ILauncherBridge.OpenFolder(kind)` and `ClearCache(kind)`, which return a `Result`: nothing is shown on success, and a failure is a text key the menu shows in a message. Nothing reaches the mock. The game folder is a window instead, opened from Game settings (see [website.md](website.md): the Settings menu): it also uses `ChooseGameFolder()` and `UseAutomaticGameFolder()`, and shows a failure in the window.
