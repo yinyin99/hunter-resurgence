@@ -62,7 +62,7 @@ public class ForwarderTests
                     await ctx.Response.Body.WriteAsync(Gzipped);
                     return;
                 }
-                if (ctx.Request.Path.Value!.EndsWith("/connect", StringComparison.Ordinal))
+                if (ctx.Request.Path.StartsWithSegments("/x") && ctx.Request.Path.Value!.EndsWith("/connect", StringComparison.Ordinal)) // the other tests' "/connect" keeps the default reply
                 {
                     ctx.Response.ContentType = "application/json";
                     await ctx.Response.Body.WriteAsync(ConnectBody); // no length: chunked, as behind a proxy
@@ -189,7 +189,7 @@ public class ForwarderTests
     // #1052: what the game got of its connect is in launcher.log, the length and the first bytes only
     [Theory]
     [InlineData("/x/y/connect")]
-    [InlineData("/connect")]
+    [InlineData("/x/z/connect")]
     public async Task TheConnectReplyIsLoggedWithItsStatusLengthAndFirstBytesOnly(string path)
     {
         await using var origin = await Origin.Start();
