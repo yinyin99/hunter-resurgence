@@ -15,6 +15,12 @@ h4 { margin: 0 0 8px; font-size: 16px; line-height: 22px; font-weight: 400; colo
 .weapon .name { grid-column: 1 / -1; padding: 5px 0; overflow: hidden; font-size: 18px; color: #aaa; white-space: nowrap; text-overflow: ellipsis; }
 .weapon .variation { grid-column: 1 / -1; min-height: 16px; font-size: 13px; color: var(--text-3); }
 .weapon .ring { grid-column: 2; grid-row: 3 / span 2; }
-.weapon .finishes { grid-column: 1; grid-row: 4; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--text-3); }
+.weapon .finishes { position: relative; grid-column: 1; grid-row: 4; min-width: 0; font-size: 13px; line-height: 15px; color: var(--text-3); }
+.weapon .finishes:focus-visible { outline: 2px solid var(--text-2); outline-offset: 2px; border-radius: var(--r-2); }
+.weapon .list { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+/* the whole list opens above the clamped one on hover, on keyboard focus and on a tap (a tap focuses it), as the ranks' tooltip does; the screen reader reads the list itself, so the copy is hidden from it */
+.weapon .tip { display: none; position: absolute; z-index: 5; bottom: 100%; inset-inline-start: 0; width: 100%; box-sizing: border-box; margin-bottom: 6px; padding: 8px 10px; border-radius: var(--r-2); background: var(--bg-tooltip); box-shadow: 0 2px 10px rgba(0, 0, 0, .7); color: #fff; font-size: var(--fs-tooltip); font-weight: 400; line-height: 18px; text-align: start; }
+.weapon .tip::before { content: ""; position: absolute; inset-inline: 0; top: 100%; height: 6px; }
+.weapon .finishes:is(:hover, :focus) .tip { display: block; }
 .weapon .pic { grid-column: 1; grid-row: 3; align-self: start; width: 230px; height: 50px; margin-top: 30px; }
 .weapon ::deep .asset-slot { display: block; }

@@ -54,8 +54,10 @@ public sealed class SkillsTabTests : UiContext
         var cut = Render<SkillsTab>(p => p.Add(t => t.Handle, "h").Add(t => t.Sub, "weapons"));
 
         var cards = cut.FindAll(".weapons > .weapon");
-        Assert.Equal("Camo · Rifle Y (Gold)", cards[0].QuerySelector(".finishes")!.TextContent);
-        Assert.Equal("Camo, Rifle Y (Gold)", cards[0].QuerySelector(".finishes")!.GetAttribute("title"));  // the pointer resting on it lists them whole
+        var finishes = cards[0].QuerySelector(".finishes")!;
+        Assert.Equal("Camo · Rifle Y (Gold)", finishes.QuerySelector(".list")!.TextContent);
+        Assert.Equal("Camo, Rifle Y (Gold)", finishes.QuerySelector(".tip")!.TextContent);  // the whole list opens on hover, keyboard focus and tap
+        Assert.Equal("0", finishes.GetAttribute("tabindex"));  // reachable by keyboard
         Assert.Null(cards[1].QuerySelector(".finishes"));
     }
 }

@@ -12,8 +12,8 @@ public class WeaponSkillTests : StateTestBase
     const long B = 8;
 
     // 5, 706 and 900 are one family (706: the definitions' chain under another name, 900: the name of 5 in another finish), the representative is 5; 391 is a weapon alone
-    // 950 and 951 exist only in the game's install data (no store item): 950 has the name of 5, 951 has none
-    const string InstallOnly = """[{"id": 950, "define": "TEST_INSTALL_NAMED", "name": "Test Rifle", "variationname": "Install", "cat": "WEAPON"}, {"id": 951, "define": "TEST_INSTALL_NONAME", "cat": "WEAPON"}]""";
+    // 950, 951 and 952 exist only in the game's install data (no store item): 950 has the name of 5, 951 has none, 952 a name of its own
+    const string InstallOnly = """[{"id": 950, "define": "TEST_INSTALL_NAMED", "name": "Test Rifle", "variationname": "Install", "cat": "WEAPON"}, {"id": 951, "define": "TEST_INSTALL_NONAME", "cat": "WEAPON"}, {"id": 952, "define": "TEST_INSTALL_LONE", "name": "Test Hidden Rifle", "cat": "WEAPON"}]""";
 
     State Make(bool online = false, Facts? facts = null, JsonObject? connect = null, bool installOnly = false)
     {
@@ -137,7 +137,7 @@ public class WeaponSkillTests : StateTestBase
         }
         var (spotsMe, spotsB) = (Spots(ME), Spots(B));
 
-        var dry = state.MergeWeaponSkills(false);
+        var dry = state.MergeWeaponSkills(false).ToList();
         Assert.Equal(["5=4.1", "391=3.1", "706=12.1"], Rows());  // nothing written
         Assert.Equal(["706=7.1", "900=7.1"], Rows(B));
         Assert.Equal(
@@ -148,15 +148,15 @@ public class WeaponSkillTests : StateTestBase
             "2 account(s) to change, 1 family(ies): dry run, nothing written; add --apply to write",
         ], dry);
 
-        var applied = state.MergeWeaponSkills(true);
+        var applied = state.MergeWeaponSkills(true).ToList();
         Assert.Equal(dry.Take(3), applied.Take(3));
         Assert.Equal("2 account(s) changed, 1 family(ies)", applied[3]);
         Assert.Equal(["5=12.1", "391=3.1"], Rows());  // the highest, nothing lowered, the weapon alone untouched
         Assert.Equal(["5=7.1"], Rows(B));
         Assert.Equal(spotsMe, Spots(ME));  // the species skills are not touched
         Assert.Equal(spotsB, Spots(B));
-        Assert.Equal(["0 account(s) changed, 0 family(ies)"], state.MergeWeaponSkills(true));  // idempotent
-        Assert.Equal(["0 account(s) to change, 0 family(ies): dry run, nothing written; add --apply to write"], state.MergeWeaponSkills(false));
+        Assert.Equal(["0 account(s) changed, 0 family(ies)"], state.MergeWeaponSkills(true).ToList());  // idempotent
+        Assert.Equal(["0 account(s) to change, 0 family(ies): dry run, nothing written; add --apply to write"], state.MergeWeaponSkills(false).ToList());
         Assert.Equal(["5=12.1", "391=3.1"], Rows());
         Assert.Equal(["1.807", "1.807", "1.807", "1.207"], Numbers(Numbers()["weapon"]!, "5", "706", "900", "391"));  // what the player read before the merge too
     }
@@ -168,7 +168,7 @@ public class WeaponSkillTests : StateTestBase
         state.CreateAccount(B, "second");
         Put(ME, (5, 4.1), (706, 12.1));
         Put(B, (5, 4.1), (706, 12.1));
-        state.MergeWeaponSkills(true, B);
+        state.MergeWeaponSkills(true, B).ToList();
         Assert.Equal(["5=4.1", "706=12.1"], Rows());
         Assert.Equal(["5=12.1"], Rows(B));
     }
@@ -222,15 +222,54 @@ public class WeaponSkillTests : StateTestBase
     }
 
     [Fact]
-    public void TestAFamilyWhoseOnlyRowsAreOnHiddenItemsIsNotListedAndANamelessInstallOnlyItemNamesNoRow()
+    public void TestAnInstallOnlyWeaponAloneAndANamelessOneAreNotListedWhateverTheStorage()
     {
         Make(installOnly: true);
-        Put(ME, (950, 1.1), (951, 1.1), (391, 1.1));
-        Assert.Equal(["Test Shotgun"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!));  // 950: a row on a hidden member only; 951: alone, no name
-        Assert.Equal(["1.073", "1.073", "1.073", "1.073"], Numbers(Numbers()["weapon"]!, "5", "706", "900", "950"));  // Skill/list still gives the family's value, hidden item or not
+        Put(ME, (951, 1.1), (952, 1.1), (391, 1.1));
+        Assert.Equal(["Test Shotgun"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!));  // 951: alone and nameless; 952: alone; neither is in the catalogue nor owned
         using (var con = state.Store.Open(ME))
             PlayerRows.AddItem(con, 701, 951, 0, null, new JsonObject());
         Assert.Equal(["#951", "Test Shotgun"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!).Order());  // owned: shown, named by its id
+    }
+
+    [Fact]
+    public void TestAFamilyIsListedByItsShownMembersWhereverItsRowIsStored()
+    {
+        Make(installOnly: true);
+        Put(ME, (950, 1.1));  // the only row is on an install-only member the account does not own; 5, 706 and 900 are in the catalogue
+        var before = state.PublicSkills(ME)["weapons"]!.ToJsonString();
+        Assert.Equal(["Test Rifle"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!));
+        Assert.Equal(["Test Rifle Variant (Winter)", "Camo"], state.PublicSkills(ME)["weapons"]![0]!["finishes"]!.AsArray().Select(f => (string)f!));  // 950 is not a finish: nobody owns it
+        state.MergeWeaponSkills(true).ToList();  // the row moves to the representative
+        Assert.Equal(["5=1.1"], Rows());
+        Assert.Equal(before, state.PublicSkills(ME)["weapons"]!.ToJsonString());  // the same card, before and after the merge
+        Hit(950);  // and after a hit
+        Assert.Equal(["Test Rifle"], state.PublicSkills(ME)["weapons"]!.AsArray().Select(w => (string)w!["name"]!));
+    }
+
+    [Fact]
+    public void TestAFinishWrittenWithAnotherCaseOrGaugeSpellingShowsAsItsFinishAlone()
+    {
+        var app = APP;
+        app["items"]!.AsArray().Add(O("""{"id": 60, "name": "Test 12GA Rifle", "variationname": "Plain", "cat": 1}"""));
+        app["items"]!.AsArray().Add(O("""{"id": 61, "name": "test 12 ga rifle", "variationname": "Camo", "cat": 1}"""));
+        state = new State(Db, Py.DumpBytes(CONNECT), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: ITEM_DEFS);
+        Put(ME, (60, 1.1));
+        Assert.Equal(["Camo"], state.PublicSkills(ME)["weapons"]![0]!["finishes"]!.AsArray().Select(f => (string)f!));  // the families compare names the same way
+    }
+
+    [Fact]
+    public void TestTheMergeOutputLeavesAccountByAccountSoAnInterruptedApplyShowsWhereItStopped()
+    {
+        Make(online: true);
+        state.CreateAccount(B, "second");
+        Put(ME, (5, 4.1), (706, 12.1));
+        Put(B, (5, 4.1), (706, 12.1));
+        using var lines = state.MergeWeaponSkills(true).GetEnumerator();
+        Assert.True(lines.MoveNext());
+        Assert.StartsWith("account 7 family 5", lines.Current);
+        Assert.Equal(["5=12.1"], Rows());  // account 7 is committed and its line is out
+        Assert.Equal(["5=4.1", "706=12.1"], Rows(B));  // account 8 is not yet
     }
 
     [Fact]
@@ -244,7 +283,7 @@ public class WeaponSkillTests : StateTestBase
         Put(9, (5, 5.1), (950, 1.1));
         using (var con = state.Store.Open(9))
             PlayerRows.AddItem(con, 702, 950, 0, null, new JsonObject());  // owned: shown
-        var lines = state.MergeWeaponSkills(false);
+        var lines = state.MergeWeaponSkills(false).ToList();
         Assert.Contains("family 5 (Test Rifle): 3 account(s) change, 3 with a row that rises, 2 of them on an item the Skills tab shows, largest rise 4.0 xp, total 12.0 xp", lines);
     }
 }

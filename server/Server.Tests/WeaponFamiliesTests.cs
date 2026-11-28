@@ -165,4 +165,20 @@ public class WeaponFamiliesTests : StateTestBase
         Assert.Equal([5L, 706L, 900L], state.Weapons.Of(900)!.Members);  // 5 and 706: the definitions' chain; 900: the name of 5
         Assert.Null(state.Weapons.Of(2));  // a scope
     }
+
+    [Fact]
+    public void TestWeaponsDerivedFromABaseThatIsNoCatalogueWeaponShareOneFamily()
+    {
+        // 300 and 301 derive from TEST_ABSTRACT_BASE (a definition that is no catalogue weapon: 399 is ammunition, 298 has no item at all); 302 derives from another such base
+        var families = WeaponFamilies.Build(JsonNode.Parse("""
+            [{"id": 300, "name": "Test Ridge Rifle", "cat": 1}, {"id": 301, "name": "Test Ridge Carbine", "cat": 1}, {"id": 302, "name": "Test Plain Rifle", "cat": 1}, {"id": 399, "name": "Test Round", "cat": 3}]
+            """)!.AsArray().OfType<JsonObject>(), JsonNode.Parse("""
+            [{"id": 298, "define": "TEST_ABSTRACT_BASE"}, {"id": 300, "define": "TEST_RIDGE", "parent": "TEST_ABSTRACT_BASE"}, {"id": 301, "define": "TEST_RIDGE_CARBINE", "parent": "TEST_RIDGE"},
+             {"id": 302, "define": "TEST_PLAIN", "parent": "TEST_AMMO_BASE"}, {"id": 399, "define": "TEST_AMMO_BASE"}]
+            """)!.AsArray());
+        Assert.Equal([300L, 301L], families.Of(301)!.Members);
+        Assert.Equal(300, families.Of(301)!.Representative);  // every member has a parent: the lowest id
+        Assert.Equal([302L], families.Of(302)!.Members);  // a lone derived weapon is its own family
+        Assert.Contains("| 301 | Test Ridge Carbine |  | 300 | chain |", families.Table());
+    }
 }
