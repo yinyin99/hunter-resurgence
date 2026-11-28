@@ -391,11 +391,12 @@ public class ProblemReportTests
         File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), "CGameStateInit::OnEnter()\nCGame::m_ExitGameEvent\n");
         Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since)); // never reached a hunt
         // an exit forced by a lost connection, a kick or a version mismatch is not a quit
-        foreach (var dropped in new[] { "CGameStateLostConnectionToHost::OnEnter()", "LOST CONNECTION DEBUG OnKickPlayer", "LOST CONNECTION DEBUG OnHostLostConnection" })
-        {
-            File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), $"CGameStateRun::OnEnter()\n{dropped}\nCGame::m_ExitGameEvent\n");
-            Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since), dropped);
-        }
+        foreach (var dropped in new[] { "CGameStateLostConnectionToHost::OnEnter()", "LOST CONNECTION DEBUG OnKickPlayer", "LOST CONNECTION DEBUG OnHostLostConnection", "Incompatible game versions!" })
+            foreach (var closing in new[] { "CGame::m_ExitGameEvent", "WM_CLOSE", "WM_DESTROY" })
+            {
+                File.WriteAllText(Path.Combine(temp.Path, "1.netlog"), $"CGameStateRun::OnEnter()\n{dropped}\n{closing}\n");
+                Assert.False(Resurgence.Launcher.GameLog.QuitCleanly(temp.Path, since), $"{dropped} then {closing}");
+            }
     }
 
     [Theory]
