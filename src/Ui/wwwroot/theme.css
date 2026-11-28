@@ -120,7 +120,6 @@
 
     /* layout */
     --w-container: 1220px;
-    --w-page: 940px; /* the width the pages' fixed layouts were drawn for; main is as wide as the container, a page that is not fluid sits centred at this width */
     --h-statusbar: 70px;
     --h-patchbar: 115px; /* the patch bar's whole height, border included; the overlay stops above it */
 
@@ -321,8 +320,6 @@ a { transition: color var(--t-fast) var(--ease); }
 
 /* the old list pages are at least this tall */
 .page-min { min-height: 960px; }
-/* every page is the container wide (the shell has no right column); a page built for the old 940 px column stays that wide and centred, a .fluid page (the hunting statistics, the referral progress) takes it all */
-main > :not(.fluid) { max-width: var(--w-page); margin-inline: auto; }
 /* the 3D bar of the achievements overview and the hunting statistics: a dark track and a light-blue fill, each with a darker edge on the bottom and on the end side; --bevel alone is also the edge of an overview step row */
 .bar3d { position: relative; display: block; height: 18px; overflow: hidden; border-radius: var(--r-2); background: var(--surface-5); box-shadow: var(--bevel); }
 .bar3d > i { position: absolute; inset: 0 auto 0 0; background: #a9d4ff; box-shadow: var(--bevel); }

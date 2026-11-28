@@ -3,7 +3,7 @@ input[type=checkbox] { width: 18px; height: 18px; margin: 0 8px 0 0; vertical-al
 .new { display: inline-block; margin: 0 0 6px; padding: 5px 12px; font-size: 14px; line-height: 20px; }
 .cols { display: flex; gap: 20px; }
 aside { flex: none; width: 300px; }
-section { flex: 1; min-width: 0; }
+section { flex: 1; min-width: 0; max-width: 640px; }
 h3, h4 { margin: 0 0 10px; font-size: 17.5px; line-height: 24px; font-weight: 400; color: #fff; }
 h3 { margin-top: 8px; font-size: 22px; }
 ul { margin: 0; padding: 0; list-style: none; }

@@ -1,4 +1,4 @@
-table { font-size: 13px; }
+table { max-width: 900px; font-size: 13px; }
 th, td { padding: 8px; }
 .bank th:nth-child(1) { width: 96px; }
 .bank th:nth-child(2) { width: 261px; }

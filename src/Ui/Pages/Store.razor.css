@@ -1,6 +1,6 @@
 #store-category-search { display: block; box-sizing: border-box; width: 222px; height: 36px; margin: 0 0 12px; padding: 0 10px; border: 0; border-radius: var(--r-2); background: var(--surface-4); font-size: 14px; color: var(--text-2); }
 #store-category-search::placeholder { color: var(--text-3); }
-.grid { display: grid; grid-template-columns: 350px 350px; gap: 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
 .card { position: relative; height: 280px; padding: 10px; box-sizing: border-box; background: var(--surface-3); }
 .card ::deep .pic { display: block; margin: 0 auto 32px; }
 .name { display: block; font-size: 14px; line-height: 20px; color: var(--text-2); }
