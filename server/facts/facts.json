@@ -588,7 +588,7 @@
    }
   }}
  },
- "trophy_year_fixes": {"year": 2022, "wrong_year": 2026, "ids": [1756, 1757, 1758, 1759, 1760, 1761]},
+ "trophy_year_fixes": {"year": 2022, "wrong_year": 2026, "image_path": "/static/img/trophies/", "ids": [1756, 1757, 1758, 1759, 1760, 1761]},
  "start": {
   "version": 4,
   "items": [257,5,14,10,69,113,1,1049,39,59,188,497,498,499,512,525,513],

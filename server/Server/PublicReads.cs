@@ -473,7 +473,7 @@ public sealed partial class State
     List<JsonNode?> TrophyList(long account)
     {
         var rows = Restored(account, "trophies", "/v1/Trophy/list");
-        rows.ForEach(facts.FixTrophyYear);
+        rows.ForEach(r => facts.FixTrophyYear(r, StaticHost));
         return rows;
     }
 

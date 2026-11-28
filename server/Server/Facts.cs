@@ -228,7 +228,7 @@ public sealed class Facts
 
     /// <summary>The original's Halloween 2022 awards (`trophy_year_fixes.ids`) carry the 2026 name and picture: a `Trophy/list` row of such an id awarded in `year` (`ts`) gets `year` in place of `wrong_year`
     /// in its name and in its picture's file name, the picture's URL form kept. The row is changed in place (a parsed copy; the stored one is not).</summary>
-    public void FixTrophyYear(JsonNode? row)
+    public void FixTrophyYear(JsonNode? row, string staticHost)
     {
         var fix = Obj("trophy_year_fixes");
         if (row is not JsonObject r || !Py.IsNum(r["trophy_id"]) || !Py.IsNum(r["ts"]) || fix["ids"] is not JsonArray ids || !ids.Any(i => Py.L(i) == Py.L(r["trophy_id"])))
@@ -241,7 +241,11 @@ public sealed class Facts
         {
             var image = Py.Str(r["image"]);
             var slash = image.LastIndexOf('/') + 1;
-            r["image"] = string.Concat(image.AsSpan(0, slash), image[slash..].Replace(wrong, year));
+            var file = image[slash..].Replace(wrong, year);
+            // the wrong rows' URL is the game web host's /content/trophies/, which no mirror folder or archive resolves; the right rows' is the static host's folder: use that form
+            r["image"] = staticHost.Length > 0 && Uri.TryCreate(image, UriKind.Absolute, out var u) && Py.Str(fix["image_path"]) is { Length: > 0 } dir && u.AbsolutePath != dir + file
+                ? $"{u.Scheme}://{staticHost}{dir}{file}"
+                : string.Concat(image.AsSpan(0, slash), file);
         }
     }
 
