@@ -290,17 +290,17 @@ public class InstallChecksTests
     {
         using var t = new TempDir("checks-");
         var g = Game(t); // an empty file
-        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+        Assert.Equal("ok", (await Check(Make(g, Manifest(CleanDlls.Build)), "exe")).Level);
         File.WriteAllBytes(g.ClientExe, "MZ"u8.ToArray()); // cut inside the DOS header
-        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+        Assert.Equal("ok", (await Check(Make(g, Manifest(CleanDlls.Build)), "exe")).Level);
         var cut = new byte[0x40];
         (cut[0], cut[1]) = ((byte)'M', (byte)'Z');
         BitConverter.GetBytes(int.MaxValue).CopyTo(cut, 0x3c); // the PE header lies behind the end
         File.WriteAllBytes(g.ClientExe, cut);
-        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+        Assert.Equal("ok", (await Check(Make(g, Manifest(CleanDlls.Build)), "exe")).Level);
 
         File.Delete(g.ClientExe);
-        var all = await Make(g).RunAsync(true);
+        var all = await Make(g, Manifest(CleanDlls.Build)).RunAsync(true);
         Assert.Equal(("block", "Check.Game.NotFound"), (all[0].Level, all[0].Text));
         Assert.Equal("ok", all.Single(r => r.Id == "exe").Level);
     }

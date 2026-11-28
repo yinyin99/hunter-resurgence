@@ -200,7 +200,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
 
     // 12, listed after files: the exe is the game's own program of the supported build. A program of another make put in its place (the one a launcher fix or a mod leaves) has another PE time stamp; the file version is a resource anybody can set (the .NET program that
     // replaced the exe in #1051 was 1.0.0.0, the game's own is 1.0.0.1), so the stamp is what is judged; the version and size go to the report. A file that is not a PE file tells nothing (a probe never blocks a start);
-    // a game of another build, or of an unknown one (no Steam manifest: a folder chosen by hand), is not judged (the version check tells of it).
+    // a game of another build, or of an unknown one (no Steam manifest: a folder chosen by hand), is not judged (the version check tells of another build; an unknown one has nothing to compare).
     InstallCheck Exe(GameInstall g, string? build)
     {
         if (build is null || !CleanDlls.Judges(build) || ExeStamp(g.ClientExe) is not { } stamp) return Ok("exe");
