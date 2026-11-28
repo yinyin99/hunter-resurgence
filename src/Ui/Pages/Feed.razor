@@ -13,7 +13,7 @@
 @if (signedIn == false)
 {
     <section class="hero">
-        <AssetSlot Name="bg-hero" Width="980" Height="550" />
+        <AssetSlot Name="bg-hero" Width="980" Height="550" Class="hero-bg" />
         <AssetSlot Name="logo-hero" Width="485" Height="120" Class="hero-logo" />
         @* a friend's invitation (?ref=<handle>) and the trailer link: texts hard-coded in English in the old page; the trailer is shown when settings.json has link_trailer *@
         @if (!string.IsNullOrWhiteSpace(Ref))
