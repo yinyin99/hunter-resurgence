@@ -113,6 +113,7 @@ if (builder.Configuration["SERVER_URL"] is { Length: > 0 })
         new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>())));
     // the inventory is the account's, read again on every open of its page
     builder.Services.Replace(ServiceDescriptor.Scoped<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>())));
+    builder.Services.Replace(ServiceDescriptor.Scoped<IGameManagementService>(sp => new ServerGameManagementService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerGameManagementService>>())));
     // the store (items, prices, sales, bundles) is the server's catalogue, shared by every visitor and read again every 5 minutes; buying is the server's, with em$ or gm$
     builder.Services.AddSingleton<ServerCache<ServerStore>>();
     builder.Services.Replace(ServiceDescriptor.Scoped<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<IHttpClientFactory>().CreateClient("server"), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<IInventoryService>(), sp.GetRequiredService<ILogger<ServerStoreService>>())));

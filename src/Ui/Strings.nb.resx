@@ -1746,4 +1746,28 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Referral.Error.expired" xml:space="preserve"><value>Tiden for å skrive inn en kode er ute.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Denne koden kan ikke brukes.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Serveren svarte ikke. Prøv igjen senere.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trofèhytte</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Fôringsplasser</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Valg av trofèhytte</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Administrasjon av fôringsplasser</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Du eier for øyeblikket ingen hytter.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Lås</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Lås opp</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Gi nytt navn</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Lagre</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Endringen kunne ikke lagres. Prøv igjen.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Du har for øyeblikket ingen fôrautomater i verden</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Fyll fôrautomaten opp til:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Du har {0} påfyllinger igjen i inventaret</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Fyll på</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Fyll på for {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Fyll på for {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Fôrautomaten kunne ikke fylles på. Prøv igjen.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktiv</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inaktiv</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Straff</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Fôrautomaten er tom {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Fôrautomaten din er full</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Fôr</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
 </root>

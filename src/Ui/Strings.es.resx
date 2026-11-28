@@ -1746,4 +1746,28 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Referral.Error.expired" xml:space="preserve"><value>Se acabó el plazo para introducir un código.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Este código no se puede usar.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>El servidor no ha respondido. Inténtalo más tarde.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Refugio de trofeos</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Cebaderos</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Selección de refugio de trofeos</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Gestión de cebaderos</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Actualmente no tienes ningún refugio.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Bloquear</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Desbloquear</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Renombrar</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>No se pudo guardar el cambio. Inténtalo de nuevo.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Actualmente no tienes cebaderos en el mundo</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Rellenar el cebadero hasta:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Te quedan {0} recargas de cebadero en tu inventario</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Rellenar</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Rellenar por {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Rellenar por {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>No se pudo rellenar el cebadero. Inténtalo de nuevo.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Activo</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inactivo</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Penalización</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>El cebadero estará vacío el {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Tu cebadero está lleno</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Cebo</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Estado</value></data>
 </root>

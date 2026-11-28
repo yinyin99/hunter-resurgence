@@ -1746,4 +1746,28 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Referral.Error.expired" xml:space="preserve"><value>Koodin syöttämisen aika on päättynyt.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Tätä koodia ei voi käyttää.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Palvelin ei vastannut. Yritä myöhemmin uudelleen.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trofeemaja</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Ruokintapaikat</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Trofeemajan valinta</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Ruokintapaikkojen hallinta</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Sinulla ei ole tällä hetkellä majoja.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Lukitse</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Avaa lukitus</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Nimeä uudelleen</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Tallenna</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Muutosta ei voitu tallentaa. Yritä uudelleen.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Sinulla ei ole tällä hetkellä ruokintalaitteita maailmassa</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Täytä ruokintalaite tasolle:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Varastossasi on {0} ruokintalaitteen täyttöä jäljellä</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Täytä</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Täytä hintaan {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Täytä hintaan {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Ruokintalaitetta ei voitu täyttää. Yritä uudelleen.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktiivinen</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Ei aktiivinen</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Rangaistus</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Ruokintalaite tyhjenee {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Ruokintalaitteesi on täynnä</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Syötti</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Tila</value></data>
 </root>

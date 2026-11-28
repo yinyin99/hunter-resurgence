@@ -1746,4 +1746,28 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Referral.Error.expired" xml:space="preserve"><value>Čas za vnos kode je potekel.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Te kode ni mogoče uporabiti.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Strežnik ni odgovoril. Poskusi znova pozneje.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Lovska koča s trofejami</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Mesta za vabo</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Izbira lovske koče s trofejami</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Upravljanje mest za vabo</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Trenutno nimate nobene koče.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Zakleni</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Odkleni</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Preimenuj</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Shrani</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Spremembe ni bilo mogoče shraniti. Poskusite znova.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Trenutno nimate nobene krmilnice v svetu</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Napolni krmilnico do:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>V inventarju imate še {0} polnitev krmilnic</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Napolni</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Napolni za {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Napolni za {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Krmilnice ni bilo mogoče napolniti. Poskusite znova.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktivna</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Neaktivna</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Kazen</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Krmilnica bo prazna {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Vaša krmilnica je polna</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Vaba</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Stanje</value></data>
 </root>

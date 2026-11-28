@@ -1746,4 +1746,28 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Referral.Error.expired" xml:space="preserve"><value>Czas na wpisanie kodu minął.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Tego kodu nie można użyć.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Serwer nie odpowiedział. Spróbuj ponownie później.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Chata trofeów</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Miejsca nęcenia</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Wybór chaty trofeów</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Zarządzanie miejscami nęcenia</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Obecnie nie posiadasz żadnych chat.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Zablokuj</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Odblokuj</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Zmień nazwę</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Zapisz</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Nie udało się zapisać zmiany. Spróbuj ponownie.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Obecnie nie masz w świecie żadnych paśników</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Napełnij paśnik do:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Masz {0} napełnień paśnika w ekwipunku</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Napełnij</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Napełnij za {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Napełnij za {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Nie udało się napełnić paśnika. Spróbuj ponownie.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktywny</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Nieaktywny</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Kara</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Paśnik będzie pusty {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Twój paśnik jest pełny</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Przynęta</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
 </root>

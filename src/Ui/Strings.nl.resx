@@ -1746,4 +1746,28 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Referral.Error.expired" xml:space="preserve"><value>De tijd om een code in te voeren is voorbij.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Deze code kan niet worden gebruikt.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>De server antwoordde niet. Probeer het later opnieuw.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trofeeënhut</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Voerplaatsen</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Selectie van trofeeënhut</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Beheer van voerplaatsen</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Je bezit momenteel geen hutten.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Vergrendelen</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Ontgrendelen</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Hernoemen</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>De wijziging kon niet worden opgeslagen. Probeer het opnieuw.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Je hebt momenteel geen voerbakken in de wereld</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Vul voerbak tot:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Je hebt nog {0} voerbakvullingen in je inventaris</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Vullen</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Vullen voor {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Vullen voor {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>De voerbak kon niet worden gevuld. Probeer het opnieuw.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Actief</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inactief</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Straf</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>De voerbak is leeg op {0}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Je voerbak is vol</value></data>
+  <data name="GM.Bait" xml:space="preserve"><value>Aas</value></data>
+  <data name="GM.Status" xml:space="preserve"><value>Status</value></data>
 </root>

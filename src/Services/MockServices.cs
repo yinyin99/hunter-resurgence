@@ -21,6 +21,7 @@ public static class MockServices
         .AddSingleton<IFriendsService, MockFriendsService>()
         .AddSingleton<IMessagesService, MockMessagesService>()
         .AddSingleton<IInventoryService, MockInventoryService>()
+        .AddSingleton<IGameManagementService, MockGameManagementService>()
         .AddSingleton<IAccountService, MockAccountService>()
         .AddSingleton<ISeasonalEventsService, MockSeasonalEventsService>()
         .AddSingleton<IDiscordInviteService, MockDiscordInviteService>()

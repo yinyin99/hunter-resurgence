@@ -98,8 +98,8 @@ public static class AssetSlots
     static readonly Pattern[] Patterns =
     [
         // the store: one picture per item and bundle, scaled to each slot that shows it; HostMode says which names the site uses
-        new("item-", "store", "150x110", "Store, ItemDetail, BundleDetail, Inventory", s => s.Mode.Live ? None : ItemKeys(s)),
-        new("store-item-", "store", "150x110", "Store, ItemDetail, BundleDetail, Inventory, the dogs of DogsTab", s => s.Mode.Live ? ItemKeys(s) : None),
+        new("item-", "store", "150x110", "Store, ItemDetail, BundleDetail, Inventory, the feeders of GameManagement", s => s.Mode.Live ? None : ItemKeys(s)),
+        new("store-item-", "store", "150x110", "Store, ItemDetail, BundleDetail, Inventory, the dogs of DogsTab, the feeders of GameManagement", s => s.Mode.Live ? ItemKeys(s) : None),
         new("bundle-", "store", "150x110", "Store, BundleDetail", async s => s.Mode.Live ? [] : (await s.Store.BundlesAsync()).Select(b => s.Mode.BundleSlot(b.Id))),
         new("store-bundle-", "store", "150x110", "Store, BundleDetail", async s => s.Mode.Live ? (await s.Store.BundlesAsync()).Select(b => s.Mode.BundleSlot(b.Id)) : []),
         new("logo-rating-", "decoration", "62x82", "Footer", Values("logo-rating-", "1", "2", "3", "4")),

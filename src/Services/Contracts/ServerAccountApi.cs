@@ -68,6 +68,10 @@ public static class ServerAccountApi
     public const string EventPanel = "/account/events/panel";
     /// <summary>GET with the cookie: 200 <see cref="ServerInventory"/>, the player's own items, one row per owned copy.</summary>
     public const string Inventory = "/account/inventory";
+    /// <summary>GET with the cookie: 200 <see cref="LodgeList"/>; PUT with <c>X-Requested-With</c> and the JSON <c>{name, locked}</c> to <c>/&lt;id&gt;/settings</c> (the lodge's style stays): 200 <c>{ok}</c>, 404 for a lodge that is not theirs, 400 for a bad name.</summary>
+    public const string Lodges = "/account/lodges";
+    /// <summary>GET with the cookie: 200 <see cref="FeederList"/>; POST with <c>X-Requested-With</c> and the JSON <c>{currency: pack|em|gm, max_amount}</c> to <c>/&lt;id&gt;/refill</c>: 200 <see cref="RefillReply"/>, 404 for an unknown feeder, 400 for a bad body.</summary>
+    public const string Feeders = "/account/feeders";
     /// <summary>GET with the cookie: 200 <see cref="ServerBundleOffers"/>, what each bundle the store lists costs the player now (the list price less the share of the items already owned up to their limit).</summary>
     public const string Bundles = "/account/bundles";
     /// <summary>GET with the cookie: 200 <see cref="ServerPlaced"/>, the player's own placed tents, callers, blinds, stands, tripods, towers and climbing ropes.</summary>
