@@ -48,13 +48,19 @@ public class LodgeRestoreTests : StateTestBase
     {
         var player = state.Store.NextServerId();
         state.CreateAccount(player, "odd", "76561190000000999");
+        const string odd = """{"id": 5, "name": "odd", "animal_slots": [{"slot_id": 1, "trophy_id": {"x": 1}}, {"slot_id": 2, "trophy_id": [3]}, {"slot_id": 3, "trophy_id": 77}]}""";
         using (var con = state.Store.Open(player))
-            con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, '/game/user/lodges', '5', ?)",
-                """{"id": 5, "name": "odd", "animal_slots": [{"slot_id": 1, "trophy_id": {"x": 1}}, {"slot_id": 2, "trophy_id": [3]}, {"slot_id": 3, "trophy_id": 77}]}""");
-        var slots = Reply(state.LodgesReply(player))[0]!["animal_slots"]!.AsArray();
-        Assert.Equal(3, slots.Count);
-        Assert.Equal(77, (int)slots[2]!["trophy_id"]!);
-        Assert.NotNull(state.LodgeReply(player, 5));
+            foreach (var source in new[] { "/game/user/lodges", "/game/user/lodge" })  // a lodge has two rows: the list entry and the single entry; both reach the game and the website
+                con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, '5', ?)", source, odd);
+        foreach (var slots in new[] { Reply(state.LodgesReply(player))[0]!["animal_slots"]!.AsArray(), Reply(state.LodgeReply(player, 5)!)["animal_slots"]!.AsArray() })
+        {
+            Assert.Equal(3, slots.Count);
+            Assert.Equal(77, (int)slots[2]!["trophy_id"]!);
+            Assert.Equal(1, (int)slots[0]!["slot_id"]!);
+            Assert.Equal(2, (int)slots[1]!["slot_id"]!);
+            Assert.Null(slots[0]!["trophy_details"]);  // an odd id mounts nothing
+            Assert.Null(slots[1]!["trophy_details"]);
+        }
         Assert.NotNull(state.TrophiesReply(player));
     }
 }
