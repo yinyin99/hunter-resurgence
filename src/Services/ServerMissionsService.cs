@@ -84,7 +84,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
         if (cookie.Value is not { } sent) return null;
         try
         {
-            using var request = cookie.Request(HttpMethod.Get, path);
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.InLanguage(path));
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<T>() is { } s) return s;
             log.LogWarning("The server answered {Path} with {Status}: no missions", path, (int)response.StatusCode);

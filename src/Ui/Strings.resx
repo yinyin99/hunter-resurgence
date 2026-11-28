@@ -1678,7 +1678,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus events in this period:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>This game is played with the seasonal event.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>This game is played without the seasonal event.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer, the host's setting applies.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer, the game follows its host's hunt, whatever your own setting or the event's dates.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Banned by the host</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>You cannot join this game: the host banned you from their games.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Players you ban with the Ban button of the in-game players page cannot join your multiplayer games until you unban them.</value></data>

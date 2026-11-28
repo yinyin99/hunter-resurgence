@@ -1678,7 +1678,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonushändelser under perioden:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Det här spelet spelas med säsongshändelsen.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Det här spelet spelas utan säsongshändelsen.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>I flerspelarläge gäller värdens inställning.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>I flerspelarläge följer spelet värdens jakt, oavsett din egen inställning eller händelsens datum.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannlyst av värden</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du kan inte gå med i det här spelet: värden har bannlyst dig från sina spel.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spelare du bannlyser med knappen Bannlys på spelarsidan i spelet kan inte gå med i dina flerspelarspel förrän du hävt bannlysningen.</value></data>

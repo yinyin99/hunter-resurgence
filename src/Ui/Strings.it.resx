@@ -1678,7 +1678,7 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Eventi bonus del periodo:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Questa partita si gioca con l'evento stagionale.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Questa partita si gioca senza l'evento stagionale.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer vale l'impostazione dell'host.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>In multiplayer la partita segue la caccia dell'host, a prescindere dalla tua impostazione o dalle date dell'evento.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Bannato dall'host</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Non puoi unirti a questa partita: l'host ti ha bannato dalle sue partite.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>I giocatori che banni con il pulsante Banna nella pagina dei giocatori del gioco non possono unirsi alle tue partite multiplayer finché non rimuovi il ban.</value></data>

@@ -1678,7 +1678,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>W tę grę gra się z wydarzeniem sezonowym.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>W tę grę gra się bez wydarzenia sezonowego.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej gra podąża za polowaniem gospodarza, niezależnie od twojego ustawienia i terminów wydarzenia.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Zbanowany przez gospodarza</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: gospodarz zbanował cię w swoich grach.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Gracze, których zbanujesz przyciskiem Zbanuj na stronie graczy w grze, nie mogą dołączać do twoich gier wieloosobowych, dopóki nie zdejmiesz bana.</value></data>

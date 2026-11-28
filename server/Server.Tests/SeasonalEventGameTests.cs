@@ -21,14 +21,14 @@ public class SeasonalEventGameTests : StateTestBase
     double at = Opens.ToUnixTimeSeconds() + 3600;
     string guestSession = "";
 
-    State Server(string? db = null)
+    State Server(string? db = null, SeasonalEvent? seasonal = null)
     {
         var connect = CONNECT;
         connect["populations"] = new JsonArray(O("""{"index": 100, "animal": "mule_deer", "reserve": 1}"""));
         connect["species_ammo"] = new JsonArray(O("""{"species_id": "17", "ammo": [999]}"""));
         var app = APP;
         app["locations"] = new JsonArray(O("""{"id": 100, "pos": {"y": 150, "x": -6420, "z": 3310}, "type": "LODGE", "reserve": 2}"""));
-        var s = new State(db ?? Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: Facts.Default, seasonal: Event) { Clock = () => at };
+        var s = new State(db ?? Db, Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: Facts.Default, seasonal: seasonal ?? Event) { Clock = () => at };
         if (db is null)
             foreach (var (id, handle) in new[] { (HOST, "host"), (GUEST, "guest"), (THIRD, "third") })
                 s.CreateAccount(id, handle);
@@ -289,5 +289,101 @@ public class SeasonalEventGameTests : StateTestBase
         s.HeartbeatReply(HOST, Events());
         var listed = Reply(s.NetworkListReply(THIRD, website: true))[0]!;
         Assert.Equal(("halloween_2026", true), ((string?)listed["event"], (bool)listed["event_differs"]!));  // the host's hunt's decision stays; the caller's own event is over
+    }
+
+    /// <summary>What a connect sends of the event: the event itself, its animal groups, the ammunition of the species and the permitted lists.</summary>
+    static string Content(JsonNode reply) => string.Join("|", new[] { "ingame_event", "populations", "species_ammo", "ethical" }.Select(k => reply[k]?.ToJsonString()));
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestAHostsReconnectInsideHisHuntSendsTheContentOfHisFirstConnectAfterTheWindowAndTheSettingChange(bool hostPlays)
+    {
+        var s = Server();
+        var first = Game(s, hostPlays, guestPlays: !hostPlays);
+        Assert.Equal(hostPlays, first["ingame_event"] is not null);
+        at += 90;  // the event's window is over
+        s.Store.SetPlaysEvents(HOST, !hostPlays);
+        s.HeartbeatReply(HOST, Events());
+        Assert.Equal(Content(first), Content(Reply(s.ConnectReply(HOST, "host-session", "203.0.113.1"))));
+        Assert.Equal(hostPlays ? "halloween_2026" : "", Recorded(s, HOST));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestASinglePlayerReconnectInsideTheHuntSendsTheContentOfTheFirstConnect(bool plays)
+    {
+        var s = Server();
+        s.Store.SetPlaysEvents(HOST, plays);
+        s.NoteLaunch(HOST, "start=100&reserve=2"u8.ToArray());
+        var first = Reply(s.ConnectReply(HOST));
+        Assert.Equal(plays, first["ingame_event"] is not null);
+        at += 90;
+        s.Store.SetPlaysEvents(HOST, !plays);
+        Assert.Equal(Content(first), Content(Reply(s.ConnectReply(HOST))));
+        Assert.Equal(Content(first), Content(Reply(Server(Db).ConnectReply(HOST))));  // also after a restart
+    }
+
+    [Theory]
+    [InlineData(true, false)]  // after the session ended
+    [InlineData(true, true)]   // after a server restart
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    public void TestAGuestsReconnectAfterTheSessionEndedOrTheServerRestartedSendsTheContentOfHisFirstConnect(bool hostPlays, bool restart)
+    {
+        var s = Server();
+        Game(s, hostPlays, guestPlays: !hostPlays);
+        var first = GuestConnects(s);
+        Assert.Equal(hostPlays, first["ingame_event"] is not null);
+        at += 130;  // the window is over and 120 s of silence end the session
+        var later = restart ? Server(Db) : s;
+        later.Store.SetPlaysEvents(GUEST, hostPlays);  // the other setting than at his first connect
+        later.Store.SetPlaysEvents(HOST, !hostPlays);
+        Assert.Empty(Reply(later.NetworkListReply()).AsArray());  // no game is left
+        Assert.Equal(Content(first), Content(Reply(later.ConnectReply(GUEST, guestSession, "203.0.113.2"))));
+        Assert.Equal(hostPlays ? "halloween_2026" : "", Recorded(later, GUEST));
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    public void TestAGameOnAReserveTheEventDoesNotCoverShowsNoEventAndNoDifference(bool hostPlays, bool callerPlays)
+    {
+        var elsewhere = new SeasonalEvent("halloween_2026", "HALLOWEEN_2026", [5], Opens, Opens.AddSeconds(3600 + 60));  // the game is on reserve 1
+        var s = Server(seasonal: elsewhere);
+        Game(s, hostPlays, guestPlays: !hostPlays);
+        s.Store.SetPlaysEvents(THIRD, callerPlays);
+        var listed = Reply(s.NetworkListReply(THIRD, website: true))[0]!;
+        Assert.Equal((null, false), ((string?)listed["event"], (bool)listed["event_differs"]!));
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TestAReserveWithoutEventContentGivesTheHostAndHisGuestsTheSameAnswerOnEveryConnect(bool hostPlays)
+    {
+        // the event runs on every reserve but the facts have no content for it: the answer is the event itself, no animal groups, no silver
+        var future = new SeasonalEvent("future_2031", "FUTURE_2031", [], Opens, Opens.AddSeconds(3600 + 60));
+        var s = Server(seasonal: future);
+        var host = Game(s, hostPlays, guestPlays: !hostPlays);
+        var guest = GuestConnects(s);
+        Assert.Equal(hostPlays, host["ingame_event"] is not null);
+        Assert.Equal("100", Indexes(host));
+        Assert.Equal(Content(host), Content(guest));
+        Eq("[241, 14]", guest["ethical"]![17]);
+        Assert.Equal(("", ""), (Recorded(s, HOST), Recorded(s, GUEST)));  // no content was sent
+        at += 90;
+        s.Store.SetPlaysEvents(HOST, !hostPlays);
+        s.Store.SetPlaysEvents(GUEST, hostPlays);
+        s.HeartbeatReply(HOST, Events());
+        Assert.Equal(Content(host), Content(Reply(s.ConnectReply(HOST, "host-session", "203.0.113.1"))));
+        Assert.Equal(Content(host), Content(GuestConnects(s)));
+        var restarted = Server(Db, future);
+        Assert.Equal(Content(host), Content(Reply(restarted.ConnectReply(GUEST))));
+        var listed = Reply(s.NetworkListReply(THIRD, website: true))[0]!;  // the list says what the guests get: the event itself
+        Assert.Equal(hostPlays ? "future_2031" : null, (string?)listed["event"]);
     }
 }

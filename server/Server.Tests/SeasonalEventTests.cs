@@ -39,6 +39,13 @@ public class SeasonalEventTests : StateTestBase
 
     static JsonNode Connect(State s) => Reply(s.ConnectReply(ME));
 
+    /// <summary>The first connect of a new hunt: a hunt's event is decided once, by it, so what a setting or a window changes shows in a hunt that starts after it.</summary>
+    static JsonNode NewHunt(State s)
+    {
+        s.NoteLaunch(ME, "start=100&reserve=2"u8.ToArray());
+        return Connect(s);
+    }
+
     static string Indexes(JsonNode reply) => string.Join(",", reply["populations"]!.AsArray().Select(p => (long)p!["index"]!));
 
     [Fact]
@@ -86,7 +93,7 @@ public class SeasonalEventTests : StateTestBase
         bool Runs(double at)
         {
             s.Clock = () => at;
-            return Connect(s)["ingame_event"] is not null;
+            return NewHunt(s)["ingame_event"] is not null;
         }
         Assert.False(Runs(Start.ToUnixTimeSeconds() - 1));
         Assert.True(Runs(Start.ToUnixTimeSeconds()));
@@ -107,7 +114,8 @@ public class SeasonalEventTests : StateTestBase
         Assert.Equal("100", Indexes(reply));
         Eq("[241, 14]", reply["species_ammo"]![0]!["ammo"]);
         s.Store.SetPlaysEvents(ME, true);
-        Assert.NotNull(Connect(s)["ingame_event"]);
+        Assert.Null(Connect(s)["ingame_event"]);  // the hunt decided none, and keeps it
+        Assert.NotNull(NewHunt(s)["ingame_event"]);
     }
 
     [Fact]
@@ -146,7 +154,7 @@ public class SeasonalEventTests : StateTestBase
         Eq("""{"play": false, "event": {"name": "season", "define": "SEASON", "reserves": [1]}}""", JsonNode.Parse(off.Body));
         Assert.Null(Connect(s)["ingame_event"]);
         Assert.Equal(200, (await Post("play=1", cookie, own)).Status);
-        Assert.NotNull(Connect(s)["ingame_event"]);
+        Assert.NotNull(NewHunt(s)["ingame_event"]);
     }
 
     [Fact]
@@ -325,7 +333,7 @@ public class SeasonalEventTests : StateTestBase
         Assert.False(Disqualified(Harvest(s, 401, 14)));
         s.Store.SetPlaysEvents(ME, true);
         var again = Connect(s);  // the game started again inside the same hunt
-        Assert.NotNull(again["ingame_event"]);
+        Assert.Null(again["ingame_event"]);  // and the same event content as its first connect: none (#1032)
         Eq("[241, 14]", again["ethical"]![17]);  // still the hunt's list: the game's hints agree with how its animals whose coat proves nothing are judged
         Assert.False(Disqualified(Harvest(s, 402, 14)));  // an animal whose coat proves nothing follows the hunt's event: none
         Assert.False(Disqualified(Kill(s, 17, 54, 403, 962)));  // a possessed coat proves it: silver

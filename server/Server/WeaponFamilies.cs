@@ -14,7 +14,7 @@ public sealed record WeaponFamily(long Representative, IReadOnlyList<long> Membe
 /// <item><c>shares</c>: a description names the weapon whose skill it shares: "shares skill level and rank with the X", "shares the same skill of the X (Finish)", "All variations of the X share the same weapon skill".
 /// X must be a whole name of a weapon item (compared as <see cref="State.NameWords"/>), and `(Finish)` narrows it to that finish; a name that matches none adds nothing.</item>
 /// </list>
-/// A weapon with none is its own family. The representative is a member whose definition has no parent (the weapon the others derive from; every member when no definitions were given), the lowest id among those.</summary>
+/// A weapon with none is its own family. The representative is the lowest id among the members whose definition has no parent, or among every member when none qualifies (no definitions, or every member derives from a base that is no weapon).</summary>
 public sealed class WeaponFamilies
 {
     static readonly Regex Shares = new(

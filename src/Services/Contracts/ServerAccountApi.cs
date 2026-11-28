@@ -71,6 +71,11 @@ public static class ServerAccountApi
     public const long MaxZipBytes = 1L << 30;
     /// <summary>One request's body at most, under a proxy's 100 MB.</summary>
     public const int PartBytes = 90 << 20;
+
+    /// <summary>The path of a page whose mission texts the server translates (<see cref="Missions"/>, <see cref="DailyMissions"/>, <see cref="EventPanel"/>) with <c>?lang=</c> the reader's language, as the news feed
+    /// gets it (<c>de</c>, <c>pt-BR</c>; the server falls back to English where it has no text); the path as it is without a culture.</summary>
+    public static string InLanguage(string path) =>
+        System.Globalization.CultureInfo.CurrentUICulture.Name is { Length: > 0 } language ? $"{path}?lang={Uri.EscapeDataString(language)}" : path;
 }
 
 /// <summary>A conversation of <see cref="ServerAccountApi.Messages"/>: <c>Ts</c> is unix seconds.</summary>

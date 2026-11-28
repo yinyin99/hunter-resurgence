@@ -1678,7 +1678,7 @@
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>В эту игру играют с сезонным событием.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>В эту игру играют без сезонного события.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере действует настройка хозяина.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере игра следует охоте хозяина, независимо от вашей настройки и сроков события.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Заблокирован хостом</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: хост заблокировал вас в своих играх.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Игроки, которых вы блокируете кнопкой «Заблокировать» на странице игроков в игре, не смогут присоединяться к вашим многопользовательским играм, пока вы не снимете блокировку.</value></data>

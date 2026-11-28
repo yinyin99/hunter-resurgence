@@ -90,6 +90,9 @@ public sealed partial class State
     /// <summary>The text in lower case, without accents and without combining marks.</summary>
     static string Letters(string s) => new([.. s.Where(c => char.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark).Select(char.ToLowerInvariant).Select(c => Unaccented.GetValueOrDefault(c, c))]);
 
+    /// <summary>The mission texts per language (display only: the rules read the English titles of the catalogue). Loaded from `mission_texts_dir` (Replay.LoadState); none (English) unless given.</summary>
+    public MissionTexts Texts { get; init; } = MissionTexts.None;
+
     /// <summary>Lower case letters and digits in single-space words, accents removed: the form titles, names and defines are compared in.</summary>
     static string Normalise(string s)
     {
@@ -452,12 +455,13 @@ public sealed partial class State
     static string Unmarked(string html) => WebUtility.HtmlDecode(Spaces.Replace(Tag.Replace(html, " "), " ").Trim());
 
     /// <summary>The website's missions page (GET /account/missions): `missions` (every definition: id, title, desc without its tags, state `active`, `available`, `completed` or `locked`,
-    /// objective titles, `objectives_done` (one flag per objective: the account holds it, all for a completed one) and `objective_weapons` (one list per objective of the weapons it accepts, one name per weapon, empty for an objective that names none: <see cref="WeaponsOnPage"/>), `needs` (the titles of the missions it depends on that are not completed yet, `#<id>` for one with no definition: why a `locked` one is locked; a restored active or completed mission may carry some too), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
-    /// `completed`, and the three switches. Null when the catalogue has no missions.</summary>
-    public JsonObject? WebMissions(long account)
+    /// objective titles and `objectives_done` (one flag per objective: the account holds it, all for a completed one), `objective_weapons` (one list per objective of the weapons it accepts, one name per weapon, empty for an objective that names none: <see cref="WeaponsOnPage"/>), `needs` (the titles of the missions it depends on that are not completed yet, `#<id>` for one with no definition: why a `locked` one is locked; a restored active or completed mission may carry some too), reward text, and the first reserve, species and weapon name its filter lists name, "" for none), `groups` (id, title, desc, favourite, mission ids in order),
+    /// `completed`, and the three switches. The titles, descriptions and objectives are in the language `lang` names (<see cref="MissionTexts"/>; English for none or one without texts); the rules never read them. Null when the catalogue has no missions.</summary>
+    public JsonObject? WebMissions(long account, string? lang = null)
     {
         if (missions.Count == 0)
             return null;
+        lang = MissionTexts.Code(lang);  // the request's language, read once: each text asks for it again
         using var con = Con(account);
         con.Begin();
         EnsureMissions(con);
@@ -465,6 +469,7 @@ public sealed partial class State
         var prefs = PrefsOf(con);
         con.Commit();
         var available = Available(rows).Select(m => m.Id).ToHashSet();
+        string T(string key, string english) => Texts.Text(lang, key, english);
         string First(JsonNode? ids, Func<long, string?> name) => Ids(ids).Select(name).FirstOrDefault(n => !string.IsNullOrEmpty(n)) ?? "";
         string Named(Dictionary<long, JsonObject> from, long id) => from.GetValueOrDefault(id) is { } o ? Py.Str(G(o, "name", "")).Split(" (")[0] : "";
         var favourites = Ids(prefs["favourites"]);
@@ -473,14 +478,14 @@ public sealed partial class State
             var id = Py.L(d["id"]);
             return (JsonNode?)new JsonObject
             {
-                ["id"] = id, ["title"] = Py.Str(G(d, "title", "")), ["desc"] = Unmarked(Py.Str(G(d, "desc", ""))),
+                ["id"] = id, ["title"] = T($"m{id}.title", Py.Str(G(d, "title", ""))), ["desc"] = Unmarked(T($"m{id}.desc", Py.Str(G(d, "desc", "")))),
                 ["state"] = rows.TryGetValue(id, out var r) ? r.State == 3 ? "completed" : "active" : available.Contains(id) ? "available" : "locked",
-                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)o.Title)]),
+                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)T($"m{id}.o{o.Id}", o.Title))]),
                 // beside `objectives` (titles), not inside it: a launcher of an earlier release reads `objectives` as strings
                 ["objectives_done"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)(rows.TryGetValue(id, out var row) && (row.State == 3 || row.Done.Contains(o.Id))))]),
                 // the weapons each objective that names one accepts, one list per objective (empty for the others): beside `objectives`, as `objectives_done` is
                 ["objective_weapons"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)new JsonArray([.. WeaponsOnPage(o.Rule).Select(n => (JsonNode?)n)]))]),
-                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)(missions.TryGetValue(n, out var dep) ? dep.Title : $"#{n}"))]),
+                ["needs"] = new JsonArray([.. missions[id].Dependencies.Where(n => !(rows.TryGetValue(n, out var done) && done.State == 3)).Select(n => (JsonNode?)(missions.TryGetValue(n, out var dep) ? T($"m{n}.title", dep.Title) : $"#{n}"))]),
                 ["reward"] = string.Join(", ", Arr(d["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
                 ["reserve"] = First(d["reserves"], i => reserves.GetValueOrDefault(i)), ["species"] = First(d["species"], i => Named(species, i)),
                 ["weapon"] = First(d["weapons"], i => Named(items, i)),
@@ -488,7 +493,7 @@ public sealed partial class State
         })]);
         var groups = new JsonArray([.. Arr(G(application, "mission_groups", null)).OfType<JsonObject>().Where(g => TryKey(g["id"], out _)).Select(g => (JsonNode?)new JsonObject
         {
-            ["id"] = Py.L(g["id"]), ["title"] = Py.Str(G(g, "title", "")), ["desc"] = Unmarked(Py.Str(G(g, "desc", ""))),
+            ["id"] = Py.L(g["id"]), ["title"] = T($"g{Py.L(g["id"])}.title", Py.Str(G(g, "title", ""))), ["desc"] = Unmarked(T($"g{Py.L(g["id"])}.desc", Py.Str(G(g, "desc", "")))),
             ["favourite"] = favourites.Contains(Py.L(g["id"])), ["missions"] = List(Ids(g["missions"])),
         })]);
         var reply = new JsonObject { ["missions"] = list, ["groups"] = groups, ["completed"] = rows.Count(r => r.Value.State == 3 && missions.ContainsKey(r.Key)) };
@@ -625,7 +630,7 @@ public sealed partial class State
         if (credited)
             return;
         DailyAdvance(con, kind, meets, now);
-        CommunityCount(con, kind, rule => meets(rule, 0));
+        CommunityCount(con, kind, rule => meets(rule, 0), eventId);
     }
 
     /// <summary>The rule the objectives are finished under is kept with the row (`missions.rules`: objective id to <see cref="Fingerprint"/>), for the audit.</summary>

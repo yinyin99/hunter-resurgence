@@ -34,11 +34,14 @@ public sealed partial class State
         (long)con.Scalar("SELECT COALESCE(SUM(count), 0) FROM community_progress WHERE event = ? AND mission_id = ?", eventName, c.Id)!;
 
     /// <summary>A hunt's event (from <see cref="MissionEvent"/>, inside the heartbeat's transaction) counts 1 for each community mission of the running event it meets
-    /// that is not done yet, for a player who plays events only.</summary>
-    void CommunityCount(Db con, Kind kind, Func<Rule, bool> meets)
+    /// that is not done yet, when the hunt of the event row <paramref name="eventId"/> recorded that the event ran for it (`Sent` of its <see cref="EventDecision"/>: the host's for a multiplayer hunt, whatever the player's own setting is; <see cref="State.HuntEventSent"/>, so a tutorial's events, which the hunt's event does not judge, count nothing); a hunt with no
+    /// record (no connect) counts for a player who plays events.</summary>
+    void CommunityCount(Db con, Kind kind, Func<Rule, bool> meets, long eventId)
     {
-        if (community.Count == 0 || Seasonal is not { } e || !e.Running(Clock())
-            || con.Scalar("SELECT seasonal_events FROM accounts WHERE id = ?", con.Account) is 0L)
+        if (community.Count == 0 || Seasonal is not { } e || !e.Running(Clock()))
+            return;
+        if (HuntEventSent(con, eventId) is { } recorded
+                ? recorded != e.Name : con.Scalar("SELECT seasonal_events FROM accounts WHERE id = ?", con.Account) is 0L)
             return;
         foreach (var c in community.Where(c => c.Rule.Kind == kind && meets(c.Rule)).ToList())
             if (Progress(con, e.Name, c) < Needed(c))
@@ -72,10 +75,11 @@ public sealed partial class State
     /// <summary>GET /account/events/panel: the running event for a player who plays events (null otherwise): `name`, `title`, `start` and `end` (unix seconds),
     /// `community` (id, title, progress, the divided target, gm, em), the top 10 `contributors` (handle, count), the player's personal event `missions`
     /// (id, title, state `active`, `available`, `completed` or `locked`, objectives with `done`, reward text) and the event's store `items` (id, name).</summary>
-    public JsonObject? EventPanel(long account)
+    public JsonObject? EventPanel(long account, string? lang = null)
     {
         if (Seasonal is not { } e || !e.Running(Clock()) || !Store.PlaysEvents(account))
             return null;
+        lang = MissionTexts.Code(lang);  // the request's language, read once: each text asks for it again
         var content = facts.EventOf(e.Name);
         using var con = Con(account);
         con.Begin();
@@ -83,7 +87,7 @@ public sealed partial class State
         var rows = MissionRows(con);
         var shared = community.Select(c => new JsonObject
         {
-            ["id"] = c.Id, ["title"] = c.Title, ["progress"] = Math.Min(Progress(con, e.Name, c), Needed(c)), ["target"] = Needed(c), ["gm"] = c.Gm, ["em"] = c.Em,
+            ["id"] = c.Id, ["title"] = Texts.Text(lang, $"c{e.Name}.{c.Id}.title", c.Title), ["progress"] = Math.Min(Progress(con, e.Name, c), Needed(c)), ["target"] = Needed(c), ["gm"] = c.Gm, ["em"] = c.Em,
         }).ToList();
         var contributors = con.Rows("SELECT a.handle, SUM(p.count) AS n FROM community_progress p JOIN accounts a ON a.id = p.account_id"
                                     + " WHERE p.event = ? AND a.banned = 0 GROUP BY p.account_id ORDER BY n DESC, a.handle LIMIT 10", e.Name)
@@ -96,9 +100,9 @@ public sealed partial class State
             var done = rows.TryGetValue(id, out var r) ? r : (State: 0L, Done: []);
             return new JsonObject
             {
-                ["id"] = id, ["title"] = missions[id].Title,
+                ["id"] = id, ["title"] = Texts.Text(lang, $"m{id}.title", missions[id].Title),
                 ["state"] = done.State == 3 ? "completed" : done.State == 2 ? "active" : available.Contains(id) ? "available" : "locked",
-                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)new JsonObject { ["title"] = o.Title, ["done"] = done.State == 3 || done.Done.Contains(o.Id) })]),
+                ["objectives"] = new JsonArray([.. missions[id].Objectives.Select(o => (JsonNode?)new JsonObject { ["title"] = Texts.Text(lang, $"m{id}.o{o.Id}", o.Title), ["done"] = done.State == 3 || done.Done.Contains(o.Id) })]),
                 ["reward"] = string.Join(", ", Arr(defs.GetValueOrDefault(id)?["rewards"]).OfType<JsonObject>().Select(x => Py.Str(G(x, "text", "")))),
             };
         }).ToList();
