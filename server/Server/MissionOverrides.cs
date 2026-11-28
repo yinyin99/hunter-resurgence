@@ -80,6 +80,8 @@ public sealed partial class State
                 if (after is { } waits && Array.FindIndex(m.Objectives, o => o.Id == waits) is var before && (before < 0 || before >= i))
                     throw new InvalidDataException($"after objective {waits}: an objective of the mission before this one");
                 var rule = stated with { After = after, Ordered = ordered };
+                if (stated.Kind == Kind.Arrive && stated.Tests is { Length: 0 } && stated.Zone is null && title.Kind != Kind.Arrive)  // a bare `arrive` keeps the title's own arrival: with no title that is one it would be an arrival nothing can meet
+                    throw new InvalidDataException("a bare \"arrive\" is for an objective whose title is an arrival: give \"place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\"");
                 if (stated.Kind == Kind.Arrive)
                 {
                     // an arrive entry keeps the title's reserves (a point or a place of the title is met only in the mission's reserves); a `place:` entry is met by that name in any reserve unless the title's point stays (the game's area may be
@@ -161,7 +163,7 @@ public sealed partial class State
                 if (ids.Length == 1) speciesId = ids[0];
                 else tests.Add(new(Check.Species, Ids: [.. ids]));
             }
-            else if (part.StartsWith("weapon barrels: ", StringComparison.Ordinal)) barrels = part["weapon barrels: ".Length..];
+            else if (part.StartsWith("weapon barrels: ", StringComparison.Ordinal)) barrels = barrels is null ? part["weapon barrels: ".Length..] : throw new InvalidDataException("\"weapon barrels\" is given twice");
             else tests.Add(TestIn(part, speciesId is { } s ? [s] : tests.Where(t => t.Check == Check.Species).SelectMany(t => t.Ids!)));
         if (barrels is not null)  // a weapon of two classes counts for a class only with the ammunition of that class: `<weapon> = <ammunition>, ... | <weapon> = ...`
         {
@@ -175,10 +177,13 @@ public sealed partial class State
                 if (eq < 0)
                     throw new InvalidDataException("a barrel is \"<weapon> = <ammunition>, ...\"");
                 var rounds = ItemsIn(barrel[(eq + 3)..], 3, "ammunition");
-                foreach (var id in items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == State.WeaponCategory && ItemName(i.Key).Equals(barrel[..eq], StringComparison.OrdinalIgnoreCase)).Select(i => i.Key))
-                    when[id] = [.. rounds];
-                if (!when.Keys.Any(k => ItemName(k).Equals(barrel[..eq], StringComparison.OrdinalIgnoreCase)))
+                var named = items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == State.WeaponCategory && ItemName(i.Key).Equals(barrel[..eq], StringComparison.OrdinalIgnoreCase)).Select(i => i.Key).ToList();
+                if (named.Count == 0)
                     throw new InvalidDataException($"no weapon is named \"{barrel[..eq]}\"");
+                if (!named.Any(tests[weapon].Ids!.Contains))
+                    throw new InvalidDataException($"the weapon \"{barrel[..eq]}\" of a barrel is not one of the \"weapon\" condition's");
+                foreach (var id in named.Where(tests[weapon].Ids!.Contains))
+                    when[id] = [.. rounds];
             }
             tests[weapon] = tests[weapon] with { When = when };
         }

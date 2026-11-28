@@ -84,6 +84,8 @@ public class MissionReadBackTests : MissionTestBase
     [InlineData("harvest; species: Test Deer; footprints of each of Test Deer, Test Fox within 300 m of (10, 20)", "cannot check")]
     [InlineData("arrive; places: TEST_A; place: TEST_B", "an arrive rule has")]
     [InlineData("arrive; ordered; after objective 0", "one of")]
+    [InlineData("arrive", "a bare \"arrive\" is for an objective whose title is an arrival")]
+    [InlineData("arrive; ordered", "a bare \"arrive\"")]
     public void TestBadInputStopsTheStartWithTheEntrysKey(string rule, string fragment)
     {
         var catalogue = "{\"missions\": [{\"id\": 1, \"title\": \"m\", \"dependencies\": [], \"rewards\": [], \"objectives\": [{\"id\": 0, \"title\": \"Harvest a Test Deer\"}, {\"id\": 1, \"title\": \"Harvest a Test Deer\"}]}]}";
@@ -181,5 +183,17 @@ public class MissionBarrelTests : MissionTestBase
         Assert.Equal("2", Completed());
         Hb(Shot(2, weapon: 950, ammunition: 951));  // the shell: a shotgun's
         Assert.Equal("1,2", Completed());
+    }
+
+    [Theory]
+    [InlineData("harvest; weapon: 10GA/8x50R Test Combination Gun; weapon barrels: 10GA/8x50R Test Combination Gun = 10 GA Test Drill Shell; weapon barrels: 10GA/8x50R Test Combination Gun = 8x50R Test Drill Round", "given twice")]
+    [InlineData("harvest; weapon: Test Carbine; weapon barrels: 10GA/8x50R Test Combination Gun = 10 GA Test Drill Shell", "not one of the \"weapon\" condition's")]
+    [InlineData("harvest; weapon: Test Carbine; weapon barrels: Test Blaster = 10 GA Test Drill Shell", "no weapon is named")]
+    [InlineData("harvest; weapon barrels: 10GA/8x50R Test Combination Gun = 10 GA Test Drill Shell", "needs a \"weapon\" condition")]
+    public void TestABadBarrelStopsTheStartWithTheEntrysKey(string rule, string fragment)
+    {
+        var e = Assert.Throws<InvalidDataException>(() => New("barrel-bad.db", Catalogue(["Harvest a Test Deer"]), items: GunItems, rules: Rules(("1/0", rule))));
+        Assert.Contains("\"1/0\"", e.Message);
+        Assert.Contains(fragment, e.Message);
     }
 }

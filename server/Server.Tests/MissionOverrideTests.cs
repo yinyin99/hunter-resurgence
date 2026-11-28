@@ -175,6 +175,7 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", 5, "a rule is a string of words"),
             ("1/0", "", "the rule is empty"),
             ("1/0", "arrive; places: TEST_A; place: TEST_B", "an arrive rule has \"place: <NAME>\" or \"places: <NAME>, <NAME>\", not both"),
+            ("1/0", "arrive", "a bare \"arrive\" is for an objective whose title is an arrival"),  // the title is a harvest: an arrival with no place nothing could meet
             ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\""),
             ("1/0", "start", "\"start\" is no kind of rule the file sets"),
             ("1/0", "harvest; whistling", "\"whistling\" is no condition the server knows"),
