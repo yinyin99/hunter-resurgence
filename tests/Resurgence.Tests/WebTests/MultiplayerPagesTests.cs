@@ -131,7 +131,7 @@ public sealed class MultiplayerPagesTests : UiContext
         Assert.Equal(["on", "on", "off", "off", "off", "off", "off", "off"], Enumerable.Range(0, 8).Select(Join));  // a password game asks for its password: its Join stays on
         cut.Find("aside.preview .refusal");  // the details say it too
 
-        cut.Find(".tools input.tick").Change(true);
+        cut.Find(".filters input.tick").Change(true);
         cut.WaitForAssertion(() => Assert.Equal(["Test game"], cut.FindAll("table.tbl tbody tr td.name").Select(td => td.TextContent.Trim())));
     }
 
