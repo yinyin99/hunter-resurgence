@@ -5,14 +5,15 @@ namespace Resurgence.Tests.LauncherApp;
 
 public class CoatTableTests
 {
-    // a synthetic exe: the six places below, beside the other patches' places (all below 3000); the first two end with the call; the rest is zero
+    // a synthetic exe: the seven places below, beside the other patches' places (all below 3000); the first two end with the call; the rest is zero
     static readonly CoatTable Coat = new("synthetic", Lookup: 3000, Layer: 3100, Import: 3400, Checks: [
         (2993, CoatTable.Known.Checks[0].Expected),
-        (3093, CoatTable.Known.Checks[1].Expected),
-        (3200, CoatTable.Known.Checks[2].Expected),
-        (3300, CoatTable.Known.Checks[3].Expected),
-        (3400, CoatTable.Known.Checks[4].Expected),
-        (3500, CoatTable.Known.Checks[5].Expected),
+        (3091, CoatTable.Known.Checks[1].Expected),
+        (3150, CoatTable.Known.Checks[2].Expected),
+        (3200, CoatTable.Known.Checks[3].Expected),
+        (3300, CoatTable.Known.Checks[4].Expected),
+        (3400, CoatTable.Known.Checks[5].Expected),
+        (3500, CoatTable.Known.Checks[6].Expected),
     ]);
 
     static FakeGame Game(uint image = Image)
@@ -24,7 +25,7 @@ public class CoatTableTests
 
     static byte[] Call(uint image, uint at) => [.. Convert.FromHexString("E8"), .. Le(unchecked(Page - (image + at + 5)))];
 
-    public static IEnumerable<object[]> CheckNumbers => Enumerable.Range(1, 6).Select(n => new object[] { n });
+    public static IEnumerable<object[]> CheckNumbers => Enumerable.Range(1, 7).Select(n => new object[] { n });
     public static IEnumerable<object[]> EveryCheckFirstAndLastByte => CheckNumbers.SelectMany(n => new[] { false, true }.Select(last => new[] { n[0], last }));
 
     [Fact]
@@ -36,11 +37,11 @@ public class CoatTableTests
         Assert.Equal(CoatTable.Size, CoatTable.Known.Code(0).Length);
         Assert.Equal(16, CoatTable.Size);
         Assert.Equal(LogLock.Known.ExeSha256, CoatTable.Known.ExeSha256);
-        Assert.Equal(6, CoatTable.Known.Checks.Length);
-        // the two checked calls end where the calls are, and the import is checked
+        Assert.Equal(7, CoatTable.Known.Checks.Length);
+        // the two checked calls end where the calls are (the game has a second lookup of the same shape, so the first lookup's start is checked too), and the import is checked
         Assert.Equal(CoatTable.Known.Lookup, CoatTable.Known.Checks[0].At + 7);
-        Assert.Equal(CoatTable.Known.Layer, CoatTable.Known.Checks[1].At + 7);
-        Assert.Equal(CoatTable.Known.Import, CoatTable.Known.Checks[4].At);
+        Assert.Equal(CoatTable.Known.Layer, CoatTable.Known.Checks[1].At + 9);
+        Assert.Equal(CoatTable.Known.Import, CoatTable.Known.Checks[5].At);
     }
 
     [Fact]
@@ -151,11 +152,11 @@ public class CoatTableTests
         Coat.ApplyAndLog(refused, log);
         Assert.True(Synthetic.ApplyAndResume(refused, log));
         Assert.Equal([Page, Image + 68], refused.Writes.Select(w => w.Address));
-        Assert.Equal(["The game's coat table patch is not applied, the game starts without it: check 3 holds other values", "The game's log lock is applied"], log.Seen);
+        Assert.Equal(["The game's coat table patch is not applied, the game starts without it: check 4 holds other values", "The game's log lock is applied"], log.Seen);
     }
 
-    // The coat choice. This proves the reasoning of the patch (what the game picks when its two compares ignore letter case, and that the other species keep their choice), not the patch's bytes:
-    // it is a port of the game's choice for one model slot (a seed, the uniform index, the weighted pick when the species' table has a group for the slot, the layer match) over a reduced fixture of the shipped tables.
+    // The coat choice. This proves the reasoning of the patch (what the game picks when its compares ignore letter case, why the group lookup alone is not enough, and that the other species keep their choice), not the patch's bytes:
+    // it is a port of the game's choice for one model slot (the weighted pick when the species' table has a group for the slot, the layer match, and a random pick among the slot's layers when either finds nothing) over a reduced fixture of the shipped tables.
     // The names are invented; what is kept is their letter cases and the weights.
     record Species(string Slot, (string Layer, int Coat)[] Model, (string Texture, (string Layer, int Weight)[] Layers)[] Groups);
 
@@ -175,11 +176,11 @@ public class CoatTableTests
     static uint Lcg(uint x) => unchecked(x * 214013 + 2531011);
     static uint R15(uint x) => (x >> 16) & 32767;
 
-    static int CoatOf(Species s, uint seed, bool ignoreCase)
+    static int CoatOf(Species s, uint seed, bool lookupIgnoresCase, bool layerIgnoresCase)
     {
-        bool Same(string a, string b) => string.Equals(a, b, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
-        var index = (int)(R15(Lcg(seed)) % (uint)s.Model.Length); // uniform, every layer of the model with the same chance
-        var group = s.Groups.Where(g => Same(g.Texture, s.Slot)).Select(g => g.Layers).FirstOrDefault();
+        static bool Same(string a, string b, bool ignoreCase) => string.Equals(a, b, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+        var index = -1;
+        var group = s.Groups.Where(g => Same(g.Texture, s.Slot, lookupIgnoresCase)).Select(g => g.Layers).FirstOrDefault();
         if (group is { } layers && layers.Sum(l => l.Weight) is var total and > 0)
         {
             var r = (int)(R15(Lcg(seed)) % (uint)total);
@@ -189,18 +190,19 @@ public class CoatTableTests
                 picked = layer;
                 if (r < (acc += weight)) break;
             }
-            index = Array.FindIndex(s.Model, m => Same(m.Layer, picked));
+            index = Array.FindIndex(s.Model, m => Same(m.Layer, picked, layerIgnoresCase));
         }
-        return index >= 0 ? s.Model[index].Coat : 0; // no layer applied: the game keeps coat 0
+        if (index < 0) index = (int)(R15(Lcg(seed)) % (uint)s.Model.Length); // no group, or no layer of that name: any layer of the slot, with the same chance each
+        return s.Model[index].Coat;
     }
 
-    static Dictionary<int, int> Counts(Species s, bool ignoreCase, int seeds = 30000)
+    static Dictionary<int, int> Counts(Species s, bool lookupIgnoresCase, bool layerIgnoresCase, int seeds = 30000)
     {
         var random = new Random(1);
         var counts = new Dictionary<int, int>();
         for (var i = 0; i < seeds; i++)
         {
-            var coat = CoatOf(s, (uint)random.Next(), ignoreCase);
+            var coat = CoatOf(s, (uint)random.Next(), lookupIgnoresCase, layerIgnoresCase);
             counts[coat] = counts.GetValueOrDefault(coat) + 1;
         }
         return counts;
@@ -209,7 +211,7 @@ public class CoatTableTests
     [Fact]
     public void WithTheExactCompareTheHaresThreeSkinsComeOutAboutAThirdEach()
     {
-        var counts = Counts(HareAsShipped, ignoreCase: false);
+        var counts = Counts(HareAsShipped, lookupIgnoresCase: false, layerIgnoresCase: false);
         Assert.Equal([0, 2, 73], counts.Keys.Order());
         Assert.All(counts.Values, n => Assert.InRange(n, 30000 * 0.31, 30000 * 0.36));
     }
@@ -217,18 +219,28 @@ public class CoatTableTests
     [Fact]
     public void WithTheCaseBlindCompareTheNormalSkinComesOutAbout9999InTenThousandTheAlbinoAboutOneAndTheEventSkinNever()
     {
-        var counts = Counts(HareAsShipped, ignoreCase: true);
+        var counts = Counts(HareAsShipped, lookupIgnoresCase: true, layerIgnoresCase: true);
         Assert.DoesNotContain(73, counts.Keys);
         Assert.InRange(counts[0], 29_990, 30_000);
         Assert.InRange(counts.GetValueOrDefault(2), 0, 10);
         Assert.Equal(30000, counts.Values.Sum());
     }
 
+    [Theory]
+    [InlineData(true, false)] // the group is found, but the picked name is not found among the model's layers: the random pick stands
+    [InlineData(false, true)] // no group is found: the layer match is never reached
+    public void EitherCompareAloneLeavesTheHaresThreeSkinsAboutAThirdEach(bool lookupIgnoresCase, bool layerIgnoresCase)
+    {
+        var counts = Counts(HareAsShipped, lookupIgnoresCase, layerIgnoresCase);
+        Assert.Equal([0, 2, 73], counts.Keys.Order());
+        Assert.All(counts.Values, n => Assert.InRange(n, 30000 * 0.31, 30000 * 0.36));
+    }
+
     [Fact]
     public void TheEventsOwnTableGivesTheEventSkinWithEitherCompare()
     {
-        Assert.Equal(new Dictionary<int, int> { [73] = 30000 }, Counts(HareEvent, ignoreCase: false));
-        Assert.Equal(new Dictionary<int, int> { [73] = 30000 }, Counts(HareEvent, ignoreCase: true));
+        Assert.Equal(new Dictionary<int, int> { [73] = 30000 }, Counts(HareEvent, lookupIgnoresCase: false, layerIgnoresCase: false));
+        Assert.Equal(new Dictionary<int, int> { [73] = 30000 }, Counts(HareEvent, lookupIgnoresCase: true, layerIgnoresCase: true));
     }
 
     [Fact]
@@ -240,10 +252,10 @@ public class CoatTableTests
             for (var i = 0; i < 30000; i++)
             {
                 var seed = (uint)random.Next();
-                Assert.Equal(CoatOf(species, seed, ignoreCase: false), CoatOf(species, seed, ignoreCase: true));
+                Assert.Equal(CoatOf(species, seed, lookupIgnoresCase: false, layerIgnoresCase: false), CoatOf(species, seed, lookupIgnoresCase: true, layerIgnoresCase: true));
             }
-            Assert.DoesNotContain(eventCoat, Counts(species, ignoreCase: true).Keys);
+            Assert.DoesNotContain(eventCoat, Counts(species, lookupIgnoresCase: true, layerIgnoresCase: true).Keys);
         }
-        Assert.InRange(Counts(Cottontail, ignoreCase: true)[1], 30000 * 0.23, 30000 * 0.27);
+        Assert.InRange(Counts(Cottontail, lookupIgnoresCase: true, layerIgnoresCase: true)[1], 30000 * 0.23, 30000 * 0.27);
     }
 }

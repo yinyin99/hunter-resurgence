@@ -241,9 +241,10 @@ public sealed record RabbitSound(string ExeSha256, uint Site, uint Profile, (uin
 }
 
 /// <summary>
-/// The game looks up an animal's coat table by the name of the texture it replaces, and picks the coat's layer by its name, with an exact comparison of the letters. Since the game update of late October the snowshoe hare's coat tables
-/// are filed under a name whose letter case differs from the one the hare's model uses, so the game finds no table and picks one of the model's three skins at random, each with the same chance: the normal one, the albino one and the seasonal event's.
-/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the two calls of the game's exact comparison of two names (the table lookup and the layer match after the weighted pick)
+/// The game picks an animal's coat from its species' coat table: for each texture slot of the animal's model it finds the table's group by the slot's name, picks one of the group's layers by weight, and finds that layer among the model's by name,
+/// each time with an exact comparison of the letters; when the group or the layer is not found, it picks one of the slot's layers at random with the same chance each. Since the game update of late October the snowshoe hare's coat tables
+/// are filed under a name whose letter case differs from the one the hare's model uses, so the game finds no group and picks one of the model's three skins at random, each with the same chance: the normal one, the albino one and the seasonal event's.
+/// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the two calls of the game's exact comparison of two names (the group lookup and the layer match after the weighted pick)
 /// at one small function in a page of the game's memory. The function takes the same arguments the same way (two addresses in ecx and edx, the length on the stack, the caller removes it) and calls the compare the game already imports,
 /// <c>_memicmp</c>, which ignores letter case, on the same bytes in the same order; it returns that function's result, which like the original is zero for equal names, negative or positive otherwise, and the callers only test it against zero.
 /// The game's third comparison, which groups the tables when the file is loaded, is not touched: it must stay exact. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is.
@@ -257,10 +258,12 @@ public sealed record RabbitSound(string ExeSha256, uint Site, uint Profile, (uin
 public sealed record CoatTable(string ExeSha256, uint Lookup, uint Layer, uint Import, (uint At, string Expected)[] Checks)
 {
     /// <summary>The same exe as the log lock.</summary>
-    public static readonly CoatTable Known = new(LogLock.Known.ExeSha256, Lookup: 4459452, Layer: 4468103, Import: 9806852, Checks: [
+    public static readonly CoatTable Known = new(LogLock.Known.ExeSha256, Lookup: 4458892, Layer: 4470959, Import: 9806852, Checks: [
         // the two calls, with the instructions that show how they are used: the name's address in edx and the length pushed before, the length removed and the result tested against zero after
-        (4459445, "8B 17 EB 02 8B D7 50 E8 8F 04 BC FF 83 C4 04 85 C0"),
-        (4468096, "8B 17 EB 02 8B D7 50 E8 C4 E2 BB FF 83 C4 04 85 C0"),
+        (4458885, "8B 17 EB 02 8B D7 50 E8 BF 06 BC FF 83 C4 04 85 C0"),
+        (4470950, "8B 57 F0 EB 03 8D 57 F0 50 E8 9C D7 BB FF 83 C4 04 85 C0"),
+        // the group lookup's first instructions: it reads the table's groups of materials; the game has a second, identical-looking lookup for another kind of group, which is not this one
+        (4458816, "53 55 8B 6C 24 0C 56 57 8B 78 20 8B 40 24"),
         // the game's compare: its first instructions (the length from the stack, the addresses from edx and ecx), and its two ends (the result in eax, the stack left to the caller)
         (4176, "56 8B 74 24 08 57 83 FE 04 72 19 EB 03"),
         (4275, "C1 F8 1F 5F 83 C8 01 5E C3 5F 33 C0 5E C3"),
@@ -297,7 +300,7 @@ public sealed record CoatTable(string ExeSha256, uint Lookup, uint Layer, uint I
         var page = game.Allocate(Size);
         if (page == 0) return "no memory could be allocated in the game";
         if (!game.Write(page, Code(image))) return "the compare function could not be written";
-        // the layer match first: a lookup that finds the table followed by an exact layer match would leave a hare without a skin, so a failure between the two writes must leave the game as it was
+        // the layer match first: a group found followed by an exact layer match falls back to the random pick, as before, so a failure between the two writes leaves the game as it was
         return game.Write(image + Layer, Call(image, Layer, page)) && game.Write(image + Lookup, Call(image, Lookup, page)) ? null : "the calls could not be written";
     }
 
