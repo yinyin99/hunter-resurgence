@@ -344,6 +344,7 @@ public class ReplayTests : IAsyncLifetime
         Assert.Contains("['updateKeybinding','overrideKeybinding']", page);
         Assert.Contains("body#client_missions_page .set-row.hr-open .state-icon-container i,html body#client_missions_page .mission-row.hr-open .state-icon-container i{display:inline-block;transform:rotate(90deg)}", page);  // the arrow of an open pack or mission turns
         Assert.Contains("#lodge-main-view .inventory-item{content-visibility:auto}", page);  // the lodge's items out of view are not painted
+        Assert.Contains(".inventory-bottom .backpack-view-container>.backpack-view{overflow-y:auto}", page);  // a full backpack scrolls (#1039)
         var style = page[page.IndexOf("<style>", StringComparison.Ordinal)..];
         Assert.DoesNotContain("px", style);  // nothing in it is a fixed size
         Assert.Contains(("Cache-Control", "no-cache"), reply.Headers);

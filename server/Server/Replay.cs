@@ -505,7 +505,9 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
 
         /// <summary>Less to paint on the in-game page (issue #829): `content-visibility:auto` on the lodge's items (`#lodge-main-view .inventory-item`) skips painting the ones scrolled out of view. The rule is on the item itself, not on its tile: the page empties and refills the view's container, so the tiles end up under another element and are smaller than their content, but the item has its own size, and the hover info and the drag picture are clones appended to `body`, so the rule's clipping does not reach them.</summary>
         const string PaintFix = "<style>#lodge-main-view .inventory-item{content-visibility:auto}</style>";
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + PaintFix + ClientStyle)];
+        /// <summary>The lodge inventory's carry grids (the player's backpack, the dog's, the vehicle's: `.backpack-view` in `.inventory-bottom`) are as high as the panel's bottom strip, and the strip clips (`overflow:hidden`), so a full backpack's last rows could not be reached (#1039); each grid now scrolls vertically when it has more rows than fit.</summary>
+        const string CarryFix = "<style>.inventory-bottom .backpack-view-container>.backpack-view{overflow-y:auto}</style>";
+        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + PaintFix + CarryFix + ClientStyle)];
         public static Reply Apply(Req r, Reply reply)
         {
             if (reply.Status != 200 || r.Method != "GET") return reply;
