@@ -1516,6 +1516,7 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam oppdaterer fortsatt spillet.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Denne spillversjonen er nyere enn serveren kjenner til; den fungerer kanskje ikke ennå.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Noen spillfiler mangler: i Steam, Egenskaper, Installerte filer, Verifiser integriteten til spillfilene.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Spillets programfil er ikke originalen: i Steam, Egenskaper, Installerte filer, Verifiser integriteten til spillfilene.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Stien til spillmappen har spesialtegn ({0}); en vanlig mappe som C:\Games fungerer best.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Stien til spillmappen er veldig lang; en vanlig mappe som C:\Games fungerer best.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spillet ligger i en OneDrive-mappe; en vanlig mappe som C:\Games fungerer best.</value></data>

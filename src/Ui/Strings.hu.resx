@@ -1516,6 +1516,7 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Check.Version.Updating" xml:space="preserve"><value>A Steam még frissíti a játékot.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Ez a játékverzió újabb, mint amit a szerver ismer; lehet, hogy még nem működik.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Néhány játékfájl hiányzik: a Steamben Tulajdonságok, Telepített fájlok, Játékfájlok épségének ellenőrzése.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>A játék programfájlja nem az eredeti: a Steamben Tulajdonságok, Telepített fájlok, Játékfájlok épségének ellenőrzése.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>A játékmappa elérési útja különleges karaktereket tartalmaz ({0}); egy egyszerű mappa, például a C:\Games működik a legjobban.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>A játékmappa elérési útja nagyon hosszú; egy egyszerű mappa, például a C:\Games működik a legjobban.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>A játék egy OneDrive-mappában van; egy egyszerű mappa, például a C:\Games működik a legjobban.</value></data>

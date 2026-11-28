@@ -61,7 +61,7 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
     public bool SteamInstalled => steam.Installed();
     public void DetectGame() => detectGame?.Invoke();
     bool opened;
-    /// <summary>All eleven checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
+    /// <summary>All twelve checks; the game-running check only on the first call (the launcher's own start is what runs the game afterwards).</summary>
     public Task<IReadOnlyList<InstallCheck>> CheckInstallAsync()
     {
         if (checks is null) return rest.CheckInstallAsync();
@@ -230,9 +230,9 @@ public sealed class LauncherBridge(Func<GameInstall?> install, ILauncherBridge r
             }
             return Result.Fail("Launch.LeftOver");
         }
-        // version, files and setup block a start with the dashboard's text; display is probed too: when the game then closes right away, its warning is named (WhenGameExitsAsync); ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
+        // version, files, exe and setup block a start with the dashboard's text; display is probed too: when the game then closes right away, its warning is named (WhenGameExitsAsync); ponytail: the first start after a cold cache waits for the server's answer (5 s at most) on this thread
         var results = checks?.RunAsync(false, true).GetAwaiter().GetResult();
-        if (results?.FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "setup") is { } blocked) return Result.Fail(blocked.Text);
+        if (results?.FirstOrDefault(r => r.Level == "block" && r.Id is "version" or "files" or "exe" or "setup") is { } blocked) return Result.Fail(blocked.Text);
         displayWarning = results?.FirstOrDefault(r => r is { Id: "display", Level: "warn" });
         var param = Random.Shared.Next();
         // this start has no mode yet: the last one's must not show while it waits for Steam or if it fails

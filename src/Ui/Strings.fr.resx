@@ -1516,6 +1516,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam met encore le jeu à jour.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Cette version du jeu est plus récente que celle connue du serveur ; elle peut ne pas encore fonctionner.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Des fichiers du jeu manquent : dans Steam, Propriétés, Fichiers installés, Vérifier l'intégrité des fichiers du jeu.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Le fichier exécutable du jeu n'est pas l'original : dans Steam, Propriétés, Fichiers installés, Vérifier l'intégrité des fichiers du jeu.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Le chemin du dossier du jeu contient des caractères spéciaux ({0}) ; un dossier simple comme C:\Games fonctionne mieux.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Le chemin du dossier du jeu est très long ; un dossier simple comme C:\Games fonctionne mieux.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Le jeu est dans un dossier OneDrive ; un dossier simple comme C:\Games fonctionne mieux.</value></data>

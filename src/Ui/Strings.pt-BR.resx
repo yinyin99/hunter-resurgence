@@ -1516,6 +1516,7 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Check.Version.Updating" xml:space="preserve"><value>O Steam ainda está atualizando o jogo.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Esta versão do jogo é mais nova do que o servidor conhece; ela pode ainda não funcionar.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Faltam alguns arquivos do jogo: no Steam, Propriedades, Arquivos instalados, Verificar integridade dos arquivos de jogo.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>O arquivo executável do jogo não é o original: no Steam, Propriedades, Arquivos instalados, Verificar integridade dos arquivos de jogo.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>O caminho da pasta do jogo tem caracteres especiais ({0}); uma pasta simples como C:\Games funciona melhor.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>O caminho da pasta do jogo é muito longo; uma pasta simples como C:\Games funciona melhor.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>O jogo está em uma pasta do OneDrive; uma pasta simples como C:\Games funciona melhor.</value></data>

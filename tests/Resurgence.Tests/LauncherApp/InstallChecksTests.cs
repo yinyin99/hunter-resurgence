@@ -14,7 +14,7 @@ public class InstallChecksTests
 {
     const long Gb = 1L << 30;
 
-    static readonly string[] Ids = ["game", "version", "files", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"];
+    static readonly string[] Ids = ["game", "version", "files", "exe", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"];
 
     /// <summary>A fictional install: the exe in a subfolder and the archive set under game\archives.</summary>
     static GameInstall Game(TempDir t, bool archives = true)
@@ -253,6 +253,58 @@ public class InstallChecksTests
         Assert.Equal("Check.Dlls.Extra", all.Single(r => r.Id == "dlls").Text);
     }
 
+    /// <summary>The game's exe made into a PE file with just the header fields the check reads: the DOS header's pointer, the PE signature and the time stamp.</summary>
+    static GameInstall Exe(GameInstall g, uint stamp)
+    {
+        var pe = new byte[0x100];
+        (pe[0], pe[1], pe[0x80], pe[0x81]) = ((byte)'M', (byte)'Z', (byte)'P', (byte)'E');
+        BitConverter.GetBytes(0x80).CopyTo(pe, 0x3c);
+        BitConverter.GetBytes(stamp).CopyTo(pe, 0x88);
+        File.WriteAllBytes(g.ClientExe, pe);
+        return g;
+    }
+
+    [Fact]
+    public async Task TheExeOfTheSupportedBuildPassesAndItsVersionAndSizeGoToTheReport()
+    {
+        using var t = new TempDir("checks-");
+        var r = await Check(Make(Exe(Game(t), CleanDlls.ExeStamp), Manifest(CleanDlls.Build), server: CleanDlls.Build), "exe");
+        Assert.Equal(("ok", "Check.Ok", null, "256", "1793705969"), (r.Level, r.Text, r.Fix, r.Args!["size"], r.Args["stamp"]));
+        Assert.Equal("none", r.Args["version"]); // the made-up file has no version resource
+    }
+
+    [Fact]
+    public async Task AnotherProgramInPlaceOfTheExeBlocksWithTheSteamVerifyFix()
+    {
+        using var t = new TempDir("checks-");
+        var g = Exe(Game(t), 2275921254); // the stamp of the .NET program that replaced the game's exe in #1051
+        var r = await Check(Make(g, Manifest(CleanDlls.Build)), "exe");
+        Assert.Equal(("block", "Check.Exe.Other", "open-steam", "2275921254"), (r.Level, r.Text, r.Fix, r.Args!["stamp"]));
+        Assert.Equal("Check.Exe.Other", (await Make(g, Manifest(CleanDlls.Build)).RunAsync(false, blocksOnly: true)).Single(x => x.Id == "exe").Text); // a start probes it too
+        Assert.Equal("ok", (await Check(Make(g, Manifest(CleanDlls.Build + 1)), "exe")).Level); // a game of another build has another exe: the version check tells of it
+        Assert.Equal("ok", (await Check(Make(g), "exe")).Level); // no manifest: the build is unknown, not judged
+    }
+
+    [Fact]
+    public async Task AFileThatIsNoPeFileOrACutOneIsNotJudgedAndAMissingExeIsTheMissingGame()
+    {
+        using var t = new TempDir("checks-");
+        var g = Game(t); // an empty file
+        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+        File.WriteAllBytes(g.ClientExe, "MZ"u8.ToArray()); // cut inside the DOS header
+        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+        var cut = new byte[0x40];
+        (cut[0], cut[1]) = ((byte)'M', (byte)'Z');
+        BitConverter.GetBytes(int.MaxValue).CopyTo(cut, 0x3c); // the PE header lies behind the end
+        File.WriteAllBytes(g.ClientExe, cut);
+        Assert.Equal("ok", (await Check(Make(g), "exe")).Level);
+
+        File.Delete(g.ClientExe);
+        var all = await Make(g).RunAsync(true);
+        Assert.Equal(("block", "Check.Game.NotFound"), (all[0].Level, all[0].Text));
+        Assert.Equal("ok", all.Single(r => r.Id == "exe").Level);
+    }
+
     [Fact]
     public async Task AMissingOrEmptyArchiveBlocksAndNamesTheFirst()
     {
@@ -451,6 +503,7 @@ public class InstallChecksTests
     [InlineData("old", "Check.Version.Old")]
     [InlineData("updating", "Check.Version.Updating")]
     [InlineData("files", "Check.Files.Missing")]
+    [InlineData("exe", "Check.Exe.Other")]
     [InlineData("setup", "Kit.NoHosts")]
     [InlineData("port", "Check.Setup.Port")]
     [InlineData("path", null)] // a warning only
@@ -465,6 +518,7 @@ public class InstallChecksTests
         {
             "old" => Make(g, Manifest(100), server: 101),
             "updating" => Make(g, Manifest(100, 1026), server: 100),
+            "exe" => Make(Exe(g, 2275921254), Manifest(CleanDlls.Build)),
             "setup" => Make(g, setup: "Kit.NoHosts"),
             "port" => Make(g, ports: _ => "webserver"),
             "path" => Make(g, network: _ => true),

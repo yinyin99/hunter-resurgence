@@ -1516,6 +1516,7 @@ Stäng programmet som använder den (en annan server eller en andra kopia av lau
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam uppdaterar fortfarande spelet.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Den här spelversionen är nyare än servern känner till; den kanske inte fungerar ännu.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Vissa spelfiler saknas: i Steam, Egenskaper, Installerade filer, Verifiera spelfilernas integritet.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Spelets programfil är inte originalet: i Steam, Egenskaper, Installerade filer, Verifiera spelfilernas integritet.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Sökvägen till spelmappen har specialtecken ({0}); en vanlig mapp som C:\Games fungerar bäst.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Sökvägen till spelmappen är mycket lång; en vanlig mapp som C:\Games fungerar bäst.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Spelet ligger i en OneDrive-mapp; en vanlig mapp som C:\Games fungerar bäst.</value></data>

@@ -1516,6 +1516,7 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam oyunu hâlâ güncelliyor.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Bu oyun sürümü sunucunun bildiğinden daha yeni; henüz çalışmayabilir.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Bazı oyun dosyaları eksik: Steam'de Özellikler, Yüklü dosyalar, Oyun dosyalarının bütünlüğünü doğrula.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Oyunun program dosyası orijinal değil: Steam'de Özellikler, Yüklü dosyalar, Oyun dosyalarının bütünlüğünü doğrula.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Oyun klasörünün yolunda özel karakterler var ({0}); C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Oyun klasörünün yolu çok uzun; C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Oyun bir OneDrive klasöründe; C:\Games gibi sade bir klasör en iyi sonucu verir.</value></data>

@@ -1516,6 +1516,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam wciąż aktualizuje grę.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Ta wersja gry jest nowsza, niż zna serwer; może jeszcze nie działać.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Brakuje niektórych plików gry: w Steam, Właściwości, Zainstalowane pliki, Sprawdź spójność plików gry.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Plik wykonywalny gry nie jest oryginalny: w Steam, Właściwości, Zainstalowane pliki, Sprawdź spójność plików gry.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Ścieżka folderu gry zawiera znaki specjalne ({0}); najlepiej działa zwykły folder, np. C:\Games.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Ścieżka folderu gry jest bardzo długa; najlepiej działa zwykły folder, np. C:\Games.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Gra znajduje się w folderze OneDrive; najlepiej działa zwykły folder, np. C:\Games.</value></data>

@@ -1516,6 +1516,7 @@ Numele:</value></data>
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam încă actualizează jocul.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Această versiune a jocului este mai nouă decât cea cunoscută de server; este posibil să nu funcționeze încă.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Lipsesc unele fișiere ale jocului: în Steam, Proprietăți, Fișiere instalate, Verifică integritatea fișierelor jocului.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Fișierul executabil al jocului nu este cel original: în Steam, Proprietăți, Fișiere instalate, Verifică integritatea fișierelor jocului.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Calea folderului jocului conține caractere speciale ({0}); un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Calea folderului jocului este foarte lungă; un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Jocul se află într-un folder OneDrive; un folder simplu, precum C:\Games, funcționează cel mai bine.</value></data>

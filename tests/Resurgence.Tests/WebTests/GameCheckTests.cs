@@ -153,8 +153,8 @@ public sealed class GameCheckTests : UiContext
         Assert.Equal(typeof(GameCheckModal), modal.Type);
 
         var all = Render<GameCheckModal>(p => p.Add(a => a.Results, (IReadOnlyList<InstallCheck>)modal.Parameters![nameof(GameCheckModal.Results)]!));
-        Assert.Equal(["game", "version", "files", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
-        Assert.Equal(["OK", "Blocks the start", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK", "OK", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
+        Assert.Equal(["game", "version", "files", "exe", "path", "steam", "setup", "windows", "disk", "display", "running", "dlls"], all.FindAll("li").Select(li => li.GetAttribute("data-check")));
+        Assert.Equal(["OK", "Blocks the start", "OK", "OK", "Warning", "OK", "OK", "OK", "Warning", "OK", "OK", "OK"], all.FindAll("li .level").Select(l => l.TextContent));
         Assert.Contains("Low disk space on C:", all.Find("li[data-check=disk] .text").TextContent);
         Assert.Empty(all.FindAll("li.ok .text"));
         Assert.Equal(["Open Steam", "Choose folder…"], all.FindAll("li .fix").Select(b => b.TextContent)); // the old game and the odd path
@@ -191,6 +191,7 @@ public sealed class GameCheckTests : UiContext
     [Theory]
     [InlineData("check:old", "Check.Version.Old", "The game is not up to date: update it in Steam.", "Open Steam")]
     [InlineData("check:files", "Check.Files.Missing", "Some game files are missing: in Steam, Properties, Installed files, Verify integrity.", "Open Steam")]
+    [InlineData("check:exe", "Check.Exe.Other", "The game's program file is not the original one: in Steam, Properties, Installed files, Verify integrity of game files.", "Open Steam")]
     [InlineData("check:setup", "Kit.NoHosts", "The hosts file has no block from setup (not run, or removed), so the game still talks to its own servers.", "Set up")]
     [InlineData("check:running", "Launch.AlreadyRunning", "The game is already running.", "Close the game")]
     [InlineData("check:running", "Launch.LeftOver", "A copy of the game is still running in the background without a window, probably after a crash. Close it and start again.", "Close the game")]

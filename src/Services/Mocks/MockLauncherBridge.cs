@@ -35,6 +35,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
                 _ => Ok("version"),
             },
             check == "files" ? Problem("files", "block", "Check.Files.Missing", "verify-files", ("file", "pc3.arc")) : Ok("files"),
+            check == "exe" ? Problem("exe", "block", "Check.Exe.Other", "open-steam", ("version", "1.0.0.0")) : Ok("exe"),
             check is "path" or "many" ? path : Ok("path"),
             check == "steam" ? steam : check == "steam-none" ? noSteam : Ok("steam"),
             check == "setup" ? Problem("setup", "block", "Kit.NoHosts", "setup") : Ok("setup"),

@@ -12,6 +12,9 @@ public static class CleanDlls
 
     public const long Build = 26432499;
 
+    /// <summary>The PE time stamp of the game's own exe of <see cref="Build"/> (file version 1.0.0.1, 14463552 bytes). The <c>exe</c> check (docs/launcher.md#the-install-check) compares it; a new supported build is a new stamp, changed together with <see cref="Build"/>.</summary>
+    public const uint ExeStamp = 1793705969;
+
     public static readonly IReadOnlyDictionary<string, (long Size, string Sha256)> Files = new Dictionary<string, (long Size, string Sha256)>(StringComparer.OrdinalIgnoreCase)
     {
         ["cefproxy.dll"] = (698368, "db49c521 5262bed7 f36dad05 ff988bf1 53998b26 d5d905b7 5602b8fb 16735e6f"),

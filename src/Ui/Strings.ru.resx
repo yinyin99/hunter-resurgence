@@ -1516,6 +1516,7 @@
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam всё ещё обновляет игру.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Эта версия игры новее, чем известно серверу; возможно, она ещё не работает.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Не хватает некоторых файлов игры: в Steam откройте Свойства, Установленные файлы, Проверить целостность файлов игры.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Исполняемый файл игры не оригинальный: в Steam откройте Свойства, Установленные файлы, Проверить целостность файлов игры.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>В пути к папке игры есть специальные символы ({0}); лучше всего работает простая папка, например C:\Games.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Путь к папке игры очень длинный; лучше всего работает простая папка, например C:\Games.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Игра находится в папке OneDrive; лучше всего работает простая папка, например C:\Games.</value></data>

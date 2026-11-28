@@ -11,7 +11,7 @@ using Resurgence.Services;
 namespace Resurgence.Launcher;
 
 /// <summary>
-/// The install check (#631, docs/launcher.md#the-install-check): eleven read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, path, steam,
+/// The install check (#631, docs/launcher.md#the-install-check): twelve read-only checks of the game's install, one <see cref="InstallCheck"/> each, in the order game, version, files, exe, path, steam,
 /// setup, windows, disk, display, running, dlls. Nothing is ever written into the game folder (the one fix, <see cref="FixDisplay"/>, writes the graphics file in %APPDATA%). A check whose probe fails (no rights, a vanished file, no network) reports ok: a probe never blocks a start.
 /// The probes after <paramref name="isRunning"/> are what this PC says; a test passes fakes.
 /// </summary>
@@ -71,6 +71,7 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
             g is null ? new("game", "block", "Check.Game.NotFound", null, "choose-folder") : Ok("game"),
             version,
             Run("files", Files),
+            Run("exe", x => Exe(x, version.Args?.GetValueOrDefault("build"))),
             Info("path", PathCheck),
             // the game starts without Steam when it is not installed or not signed in: a warning, a block only when there is no game to start
             Safe("steam", () => startWithSteam?.Invoke() == false || steamSignedIn() ? Ok("steam")
@@ -195,6 +196,32 @@ public sealed class InstallChecks(Func<GameInstall?> install, string? appId, Fun
                     return new("files", "block", "Check.Files.Missing", new Dictionary<string, string> { ["file"] = file }, "verify-files");
             }
         return Ok("files", new() { ["archives"] = $"pc0..pc{Archives - 1} present" });
+    }
+
+    // 12, listed after files: the exe is the game's own program of the supported build. A program of another make put in its place (the one a launcher fix or a mod leaves) has another PE time stamp; the file version is a resource anybody can set (the .NET program that
+    // replaced the exe in #1051 was 1.0.0.0, the game's own is 1.0.0.1), so the stamp is what is judged; the version and size go to the report. A file that is not a PE file tells nothing (a probe never blocks a start);
+    // a game of another build, or of an unknown one (no Steam manifest: a folder chosen by hand), is not judged (the version check tells of it).
+    InstallCheck Exe(GameInstall g, string? build)
+    {
+        if (build is null || !CleanDlls.Judges(build) || ExeStamp(g.ClientExe) is not { } stamp) return Ok("exe");
+        var info = FileVersionInfo.GetVersionInfo(g.ClientExe);
+        var facts = new Dictionary<string, string>
+        {
+            ["version"] = info.FileVersion is null ? "none" : $"{info.FileMajorPart}.{info.FileMinorPart}.{info.FileBuildPart}.{info.FilePrivatePart}",
+            ["size"] = new FileInfo(g.ClientExe).Length.ToString(CultureInfo.InvariantCulture),
+            ["stamp"] = stamp.ToString(CultureInfo.InvariantCulture),
+        };
+        return stamp == CleanDlls.ExeStamp ? Ok("exe", facts) : new("exe", "block", "Check.Exe.Other", facts, "open-steam");
+    }
+
+    /// <summary>The TimeDateStamp of the PE header of <paramref name="path"/>; null when it is not a PE file.</summary>
+    internal static uint? ExeStamp(string path)
+    {
+        using var s = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+        Span<byte> dos = stackalloc byte[0x40], pe = stackalloc byte[12];
+        if (s.ReadAtLeast(dos, dos.Length, false) < dos.Length || dos[0] != 'M' || dos[1] != 'Z') return null;
+        s.Position = BitConverter.ToUInt32(dos[0x3c..]);
+        return s.ReadAtLeast(pe, pe.Length, false) == pe.Length && pe[0] == 'P' && pe[1] == 'E' && pe[2] == 0 && pe[3] == 0 ? BitConverter.ToUInt32(pe[8..]) : null;
     }
 
     // 4: a path the game or Steam handles badly; a warning only
