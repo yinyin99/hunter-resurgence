@@ -58,6 +58,10 @@ public static class ServerAccountApi
     public const string Settings = "/account/settings";
     /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerDiscordInvite"/>, <c>First</c> true only the first time for the account.</summary>
     public const string Discord = "/account/discord";
+    /// <summary>GET with the cookie: 200 <see cref="Resurgence.Services.Referral"/>, the player's referral code, recruits and tiers (camelCase JSON); 401 <c>signed_out</c> without a session.</summary>
+    public const string Referral = "/account/referral";
+    /// <summary>POST with <c>X-Requested-With</c> and the JSON <c>{"code": "..."}</c>: 200 <see cref="ReferralEntered"/> (<c>status: ok</c>), or 409 <c>{"status": reason}</c> with the reason <c>unknown</c>, <c>own</c>, <c>loop</c>, <c>already</c>, <c>expired</c> or <c>banned</c>.</summary>
+    public const string ReferralCode = "/account/referral/code";
     /// <summary>POST with <c>X-Requested-With</c>: 200 <see cref="ServerRestoreOffer"/>, <c>First</c> true only the first time for the account, and never for one that restored a backup zip or has an upload (an archive claim does not count).</summary>
     public const string RestoreOffer = "/account/restore-offer";
     /// <summary>GET with the cookie: 200 <see cref="ServerEventPanel"/> for a player who plays the running event, else <c>{"event": null}</c> (no <c>Name</c>).</summary>

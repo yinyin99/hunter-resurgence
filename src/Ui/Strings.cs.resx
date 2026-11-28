@@ -1697,4 +1697,52 @@ Zavřete program, který jej používá (jiný server nebo druhá kopie launcher
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nemohu najít hru ve Steamu</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Ve Steamu otevřete Účet → Licence a aktivace produktových klíčů a hru tam vyhledejte. Pokud tam je, použijte tlačítko „Nainstalovat přes Steam“ v launcheru nebo svou knihovnu Steamu. Pokud tam není, Steam vám ji už dát nemůže.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Otevřít vaše licence ve Steamu</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Naverbujte přátele</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Váš kód pro pozvání</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopírovat</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopírovat odkaz s pozvánkou</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Zkopírováno</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Pošlete odkaz příteli. Až se zaregistruje a zadá váš kód, uvidíte jeho postup na stránce pozvánek.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Zobrazit postup vašich rekrutů</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Kvalifikovaní rekruti: {0} · další úroveň odměny: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Kvalifikovaní rekruti: {0} · všechny úrovně odměn dosaženy</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Kvalifikovaní rekruti: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Máte kód od přítele?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Kód pozvánky</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Zadat kód</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Kód můžete zadat do {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Odměna za zadání kódu: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Kód přijat: naverboval vás {0}.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Získali jste: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Zadali jste kód {0} hráče {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Kód už zadat nelze.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Byli jste pozváni kódem {0}. Přihlaste se nebo si vytvořte účet a zadejte jej.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Kód pozvánky {0} nelze použít: kód lze zadat jen jednou, brzy po registraci.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Stránku pozvánek se nepodařilo načíst.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Vaši rekruti</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Rekrut se kvalifikuje po {0} h odehraných na tomto serveru a {1} získaných bodech HunterScore, obojí počítáno od zadání kódu.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Váš kód zatím nikdo nezadal.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Kvalifikován</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord propojen</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Odehraný čas</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Získané HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} z {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} z {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Úrovně odměn</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Všechny úrovně jsou dosaženy.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Kvalifikovaní rekruti</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Dosaženo</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Další</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Další úroveň odměny: {0}</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Odměna bude oznámena</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Milníky Discordu</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Všechny milníky Discordu jsou dosaženy.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Rekruti s propojeným Discordem</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Tento kód neexistuje. Zkontrolujte ho a zkuste to znovu.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Toto je váš vlastní kód.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Tento kód patří hráči, kterého jste naverbovali.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Kód jste již zadali.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Doba pro zadání kódu skončila.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Tento kód nelze použít.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Server neodpověděl. Zkuste to později.</value></data>
 </root>

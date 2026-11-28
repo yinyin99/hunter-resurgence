@@ -1697,4 +1697,52 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nie mogę znaleźć gry na Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>W Steam otwórz Konto → Licencje i aktywacje kluczy produktu i poszukaj tam gry. Jeśli jest, użyj przycisku „Zainstaluj przez Steam” w launcherze albo swojej biblioteki Steam. Jeśli jej nie ma, Steam nie może już jej Tobie dać.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Otwórz swoje licencje Steam</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Zaproś znajomych</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Twój kod polecający</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopiuj</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopiuj link z zaproszeniem</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Skopiowano</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Wyślij link znajomemu. Gdy się zarejestruje i wpisze Twój kod, jego postępy zobaczysz na stronie poleceń.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Zobacz postępy swoich zaproszonych</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Zaproszeni, którzy spełnili warunki: {0} · następny poziom nagrody: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Zaproszeni, którzy spełnili warunki: {0} · osiągnięto wszystkie poziomy nagród</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Zaproszeni, którzy spełnili warunki: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Masz kod od znajomego?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Kod polecający</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Wpisz kod</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Kod możesz wpisać do {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Nagroda za wpisanie kodu: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Kod przyjęty: {0} to Twój zapraszający.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Otrzymano: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Wpisano kod {0} gracza {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Nie możesz już wpisać kodu.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Zaproszono Cię kodem {0}. Zaloguj się lub załóż konto, aby go wpisać.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Kodu zaproszenia {0} nie można użyć: kod można wpisać tylko raz, wkrótce po rejestracji.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Nie udało się wczytać strony poleceń.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Twoi zaproszeni</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Zaproszony spełnia warunki po {0} h gry na tym serwerze i zdobyciu {1} HunterScore, oba liczone od chwili wpisania kodu.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Nikt jeszcze nie wpisał Twojego kodu.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Warunki spełnione</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord połączony</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Czas gry</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Zdobyty HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} z {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} z {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Poziomy nagród</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Osiągnięto wszystkie poziomy.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Zaproszeni, którzy spełnili warunki</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Osiągnięty</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Następny</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Następny poziom nagrody: {0}</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Nagroda zostanie ogłoszona</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Progi Discorda</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Osiągnięto wszystkie progi Discorda.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Zaproszeni z połączonym Discordem</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Taki kod nie istnieje. Sprawdź go i spróbuj ponownie.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>To Twój własny kod.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Ten kod należy do gracza, którego zaprosiłeś.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Kod został już wpisany.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Czas na wpisanie kodu minął.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Tego kodu nie można użyć.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Serwer nie odpowiedział. Spróbuj ponownie później.</value></data>
 </root>

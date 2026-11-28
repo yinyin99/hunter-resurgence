@@ -1,0 +1,8 @@
+/* groups are 16px apart, what belongs together 8px */
+.card { box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; width: 350px; max-width: 100%; padding: 16px 19px 19px; border: 1px solid var(--line-2); }
+h3 { margin: 0; color: #fff; font-size: var(--fs-h3); line-height: 30px; text-transform: none; }
+.group { display: grid; gap: 8px; }
+p { margin: 0; line-height: 20px; overflow-wrap: anywhere; }
+.summary { color: #fff; font-size: 13px; }
+a { color: var(--accent-text); }
+a:hover { color: #fff; }

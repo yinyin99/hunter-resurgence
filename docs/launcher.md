@@ -75,6 +75,8 @@ Social and content: `friends:requests` (three friend requests), `friends:incomin
 
 Seasonal events: `events:running` (a Halloween 2026 event runs on the game's reserves 0, 1, 2, 8 and 9, so the launch map asks for the event's badges).
 
+Referral: `referral:none` (no recruit yet), `referral:entered` (a code was entered already), `referral:rewards` (every reward is set; without a state they are "to be announced").
+
 Store, wallet and bank: `store:fail` (every purchase fails), `store:nosales` (nothing is on sale, so no Sales entry), `wallet:many` (more than one page of wallet rows), `bank:steam206` and `bank:steamerror` (the two Steam errors of a bank purchase). Buying in the store or the bank changes one mock wallet that the status bar and the wallet show (per website session, or per launcher run). The bank codes are `SAVE20` (20 % off) and `GIFT` (500 em$, once); a payment reference with `fail` in it, as in `/steam_callback/fail-1`, is a failed payment.
 
 The same states work on the website with `?mock=<state>`; see [website.md](website.md#development-switches), which also lists the states that exist only there.
@@ -247,6 +249,10 @@ While an event runs, the launch map and the tutorials page show a line with the 
 ## Linking Discord
 
 For a signed-in hunter who has not linked a Discord account (and a server with Linked Roles on) the launcher shows the same three entry points as the website, which see [website.md](website.md#discord-linked-roles): a card on the feed above the Discord widget, the same slim pill centred between the top bar and the menu bar, and a "Link Discord" Settings menu item. Its pages are local, so they open the community server's `/discord/link` in the player's browser (`ILauncherBridge.OpenExternal`, `LauncherSessionService.DiscordLinkUrl`); the server does the rest. Back in the launcher the entry points are gone at the next page (the shell asks for the session again while they show).
+
+## Referral
+
+The news page's right column starts with the referral block (the player's code and invitation link with Copy buttons, one line of progress, the form that enters a friend's code), and the Settings menu's "Recruit friends" item opens the page `/referral` with the recruits' progress, the reward levels and the Discord milestones; both are the website's components, which see [website.md](website.md#referral). With `server_url` the launcher registers `ServerReferralService` (`GET /account/referral`, `POST /account/referral/code`), without it `MockReferralService`. The invitation link `/join/<code>` is for the browser: the launcher has the same page, which for a signed-out player offers the start screen's sign-in.
 
 ## The Discord invitation
 

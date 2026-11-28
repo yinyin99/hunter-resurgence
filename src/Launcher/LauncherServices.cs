@@ -47,6 +47,7 @@ static class LauncherServices
         services.AddSingleton<IAccountService>(new MockAccountService());
         services.AddSingleton<ISeasonalEventsService>(new MockSeasonalEventsService(mock));
         services.AddSingleton<IDiscordInviteService>(new MockDiscordInviteService());
+        services.AddSingleton<IReferralService>(new MockReferralService(mock));
         services.AddSingleton<IRestoreOfferService>(new MockRestoreOfferService());
         // the feed's Discord frame for link_discord, as on the website (docs/website.md); without the link there is none
         var discord = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
@@ -88,6 +89,7 @@ static class LauncherServices
         services.AddSingleton<IMissionsService>(sp => new ServerMissionsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerMissionsService>>()));
         services.AddSingleton<ISeasonalEventsService>(sp => new ServerSeasonalEventsService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerSeasonalEventsService>>()));
         services.AddSingleton<IDiscordInviteService>(sp => new ServerDiscordInviteService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerDiscordInviteService>>()));
+        services.AddSingleton<IReferralService>(sp => new ServerReferralService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerReferralService>>()));
         // the main page's online line: the server's public counts
         services.AddSingleton<IOnlineService>(sp => new ServerOnlineService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerOnlineService>>()));
         // the feed's posts are the server's, which the launcher shows without a release; their pictures are on the server's address

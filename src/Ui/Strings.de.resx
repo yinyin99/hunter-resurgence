@@ -1697,4 +1697,52 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Ich finde das Spiel in Steam nicht</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Öffnen Sie in Steam Konto → Lizenzen und Produktschlüsselaktivierungen und suchen Sie dort das Spiel. Steht es dort, nutzen Sie den Button „Über Steam installieren“ des Launchers oder Ihre Steam-Bibliothek. Steht es nicht dort, kann Steam es Ihnen nicht mehr geben.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Ihre Steam-Lizenzen öffnen</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Freunde werben</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Ihr Empfehlungscode</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopieren</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Einladungslink kopieren</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Kopiert</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Schicken Sie den Link an einen Freund. Sobald er sich angemeldet und Ihren Code eingegeben hat, sehen Sie seinen Fortschritt auf der Empfehlungsseite.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Fortschritt Ihrer Empfehlungen ansehen</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Qualifizierte Empfehlungen: {0} · nächste Belohnungsstufe: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Qualifizierte Empfehlungen: {0} · alle Belohnungsstufen erreicht</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Qualifizierte Empfehlungen: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Sie haben den Code eines Freundes?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Empfehlungscode</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Code eingeben</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Sie können einen Code bis {0} eingeben.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Belohnung für die Eingabe eines Codes: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Code akzeptiert: {0} hat Sie geworben.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Sie haben erhalten: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Sie haben den Code {0} von {1} eingegeben.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Sie können keinen Code mehr eingeben.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Sie wurden mit dem Code {0} eingeladen. Melden Sie sich an oder erstellen Sie Ihr Konto, um ihn einzugeben.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Der Einladungscode {0} kann nicht verwendet werden: Ein Code kann nur einmal und kurz nach der Registrierung eingegeben werden.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Ihre Empfehlungsseite konnte nicht geladen werden.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Ihre Empfehlungen</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Ein Geworbener qualifiziert sich nach {0} Std. Spielzeit auf diesem Server und {1} gewonnenem HunterScore, beides ab dem Moment gezählt, in dem der Code eingegeben wurde.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Noch niemand hat Ihren Code eingegeben.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Qualifiziert</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord verknüpft</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Spielzeit</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Gewonnener HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} von {1} Std.</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} von {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Belohnungsstufen</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Alle Stufen sind erreicht.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Qualifizierte Empfehlungen</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Erreicht</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Nächste</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Nächste Belohnungsstufe: {0}</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Belohnung wird noch bekannt gegeben</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord-Meilensteine</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Alle Discord-Meilensteine sind erreicht.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Geworbene mit verknüpftem Discord</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Diesen Code gibt es nicht. Prüfen Sie ihn und versuchen Sie es erneut.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Das ist Ihr eigener Code.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Dieser Code gehört einem Spieler, den Sie geworben haben.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Sie haben bereits einen Code eingegeben.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Die Zeit zur Eingabe eines Codes ist abgelaufen.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Dieser Code kann nicht verwendet werden.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Der Server hat nicht geantwortet. Versuchen Sie es später erneut.</value></data>
 </root>

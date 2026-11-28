@@ -37,6 +37,7 @@ public class LauncherServicesTests
         Assert.IsType<Resurgence.Services.ServerProfileService>(live.GetRequiredService<Resurgence.Services.IProfileService>());
         Assert.IsType<Resurgence.Services.ServerFriendsService>(live.GetRequiredService<Resurgence.Services.IFriendsService>());
         Assert.IsType<Resurgence.Services.ServerMessagesService>(live.GetRequiredService<Resurgence.Services.IMessagesService>());
+        Assert.IsType<Resurgence.Services.ServerReferralService>(live.GetRequiredService<Resurgence.Services.IReferralService>());
         Assert.IsType<Resurgence.Services.ServerWalletService>(live.GetRequiredService<Resurgence.Services.IWalletService>());
         Assert.IsType<Resurgence.Services.ServerMissionsService>(live.GetRequiredService<Resurgence.Services.IMissionsService>());
         Assert.IsType<Resurgence.Services.ServerLeaderboardsService>(live.GetRequiredService<Resurgence.Services.ILeaderboardsService>());

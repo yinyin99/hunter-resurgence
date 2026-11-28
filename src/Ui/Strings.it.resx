@@ -1697,4 +1697,52 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Non trovo il gioco su Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>In Steam apri Account → Licenze e attivazioni dei codici prodotto e cerca lì il gioco. Se c'è, usa il pulsante «Installa con Steam» del launcher o la tua libreria Steam. Se non c'è, Steam non può più dartelo.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Apri le tue licenze Steam</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Recluta amici</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Il tuo codice di invito</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Copia</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Copia il link di invito</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Copiato</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Invia il link a un amico. Quando si sarà registrato e avrà inserito il tuo codice, vedrai i suoi progressi nella pagina degli inviti.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Vedi i progressi delle tue reclute</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Reclute qualificate: {0} · prossimo livello di ricompensa: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Reclute qualificate: {0} · tutti i livelli di ricompensa raggiunti</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Reclute qualificate: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Hai il codice di un amico?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Codice di invito</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Inserisci il codice</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Puoi inserire un codice fino al {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Ricompensa per l'inserimento di un codice: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Codice accettato: {0} è il tuo reclutatore.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Hai ricevuto: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Hai inserito il codice {0} di {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Non puoi più inserire un codice.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Sei stato invitato con il codice {0}. Accedi o crea il tuo account per inserirlo.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Il codice di invito {0} non può essere usato: un codice si inserisce una sola volta, poco dopo la registrazione.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Non è stato possibile caricare la tua pagina degli inviti.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Le tue reclute</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>Una recluta si qualifica dopo {0} h giocate su questo server e {1} HunterScore guadagnati, entrambi contati da quando ha inserito il codice.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Nessuno ha ancora inserito il tuo codice.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Qualificato</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord collegato</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Tempo di gioco</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>HunterScore guadagnato</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} di {1} h</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} di {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Livelli di ricompensa</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Tutti i livelli sono raggiunti.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Reclute qualificate</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Raggiunto</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Prossimo</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Prossimo livello di ricompensa: {0}</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Ricompensa da annunciare</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Traguardi Discord</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Tutti i traguardi Discord sono raggiunti.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Reclute con Discord collegato</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Questo codice non esiste. Controllalo e riprova.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Questo è il tuo codice.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Questo codice appartiene a un giocatore che hai reclutato.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Hai già inserito un codice.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Il tempo per inserire un codice è scaduto.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Questo codice non può essere usato.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Il server non ha risposto. Riprova più tardi.</value></data>
 </root>

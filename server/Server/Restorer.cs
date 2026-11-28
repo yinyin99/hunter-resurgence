@@ -159,6 +159,7 @@ public static class Restorer
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
         var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), model.Profile.Gender);  // a 3D face of the body's gender, whatever the archive's face and gender were
         model = model with { Profile = model.Profile with { Gender = (int)gender }, Account = model.Account with { Face = (int)face } };
+        double? scoreBefore = null;  // the account's hunterscore before the restore, read in its transaction: a referral entry counts what is gained after it, not what the backup brings
         var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl, picture);
         var report = "";
         State.Unpacking? pictures = null;
@@ -168,10 +169,14 @@ public static class Restorer
             report = merge ? Merge(con, model, read.Report, sha, pictures.Report) : Rows(con, model, avatarUrl.EndsWith("/" + State.ImportedAvatar, StringComparison.Ordinal) ? read.Report with { Warnings = [.. read.Report.Warnings.Where(w => !w.StartsWith("the avatar picture address matches no avatar", StringComparison.Ordinal))] } : read.Report,
                           finalId, handle, exists, sha, backup, pictures.Report, avatarUrl, state.StartItems(), fill, state);  // the importer warns of an address that is no stock avatar; a stored picture is no default
             within?.Invoke(con);
-            if (merge) return;
-            if (finalId != current) Adopt(con, current, finalId);
-            Friends(con, finalId, fill is null ? model.Extras : model.Extras.Where(e => fill.Contains(e.Key)).ToDictionary());
-            if (long.TryParse(model.Identity.Uid, out var oldId)) Store.ReconnectFriends(con, oldId);  // the edges other restores saved to this profile's old user id now name the account that holds it
+            if (!merge)
+            {
+                if (finalId != current) Adopt(con, current, finalId);
+                Friends(con, finalId, fill is null ? model.Extras : model.Extras.Where(e => fill.Contains(e.Key)).ToDictionary());
+                if (long.TryParse(model.Identity.Uid, out var oldId)) Store.ReconnectFriends(con, oldId);  // the edges other restores saved to this profile's old user id now name the account that holds it
+            }
+            // the hunterscore the written rows give is stored and the referral baseline moves by what the backup added, in this transaction: no heartbeat or page sees the backup's score before the baseline has it
+            if (scoreBefore is not null) state.HunterscoreIn(con.Sharing(finalId), finalId, true, scoreBefore);
         }
         try
         {
@@ -181,6 +186,7 @@ public static class Restorer
             {
                 using var con = store.Open(current);
                 con.Begin();
+                scoreBefore = State.ScoreOf(con, current);
                 if (checkFill && (con.Scalar("SELECT 1 FROM restore_audit WHERE account_id = $a AND mode = 'my-account'") is not null) != (fill is not null))
                     throw new FillChangedException();  // the account's own backup was restored since the caller looked: nothing is written, the caller decides again
                 if (fill is null && !merge) con.Exec("UPDATE accounts SET handle = ?, account = ? WHERE id = ?", handle, Py.Dumps(account), current);
@@ -284,6 +290,8 @@ public static class Restorer
         foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress", "crash_reports", "admin_messages", "discord_links", "discord_rewards" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
+        foreach (var (table, column) in new[] { ("referral_codes", "account_id"), ("referrals", "recruit_id"), ("referrals", "recruiter_id"), ("referral_payouts", "recruiter_id") })  // referrals (#929): the code, the entry and the recruits move with the account
+            con.Exec($"UPDATE {table} SET {column} = ? WHERE {column} = ?", to, from);
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
             con.Exec($"UPDATE OR IGNORE friends SET {column} = ? WHERE {column} = ?", to, from);
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", from);

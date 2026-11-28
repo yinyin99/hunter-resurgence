@@ -30,6 +30,8 @@ public class LauncherGuardTests
     [InlineData("inventory", true)]
     [InlineData("/Inventory?x=1", true)]
     [InlineData("inventoryx", false)]
+    [InlineData("referral", true)]                   // the player's own page; /join/<code> is the page's to send to the sign-in, with the code kept
+    [InlineData("join/K7M2QX9P", false)]
     [InlineData("feed", false)]
     [InlineData("download", false)]
     [InlineData("help/support", false)]
@@ -47,6 +49,7 @@ public class LauncherGuardTests
     [InlineData("new-message", true)]
     [InlineData("bank/ems", true)]
     [InlineData("inventory", false)]                 // the server's: the owner's items, and the sale of those it buys back
+    [InlineData("referral", false)]                  // the server's: the owner's code, recruits and levels
     [InlineData("missions", false)]                  // the server's: the owner's missions
     [InlineData("/Missions/group/3", false)]
     [InlineData("missions/daily", false)]            // the server's: the owner's streak

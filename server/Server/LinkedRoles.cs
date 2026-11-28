@@ -201,6 +201,7 @@ public sealed class LinkedRoles(State state, HttpClient http, string clientId, s
             }
             Uploads.Notify(con, $"Thank you for linking your Discord account: {RewardGm} gm$ and {RewardEm} em$ were added to your wallet.");
         }
+        state.SettleReferralOf(con, account);  // a recruit who links Discord counts toward his recruiter's Discord milestone (Referrals.cs)
         con.Commit();
         return paid ? LinkResult.Paid : LinkResult.Linked;
     }

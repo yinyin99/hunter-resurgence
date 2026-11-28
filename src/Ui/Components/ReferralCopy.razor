@@ -1,0 +1,45 @@
+@inject IJSRuntime JS
+
+@* copies a referral value (the news block and the referral page): with a Label, the value in a read-only chip with a copy icon button; with a Text, one button that carries the Text and shows no value *@
+<div class="copy">
+    @if (Text is null)
+    {
+        <label for="@Id">@Label</label>
+        <div class="chip">
+            <input id="@Id" class="code" type="text" readonly value="@Value" />
+            <button type="button" class="btn btn-inverse" aria-label="@L[copied ? "Referral.Copied" : "Referral.Copy"]" title="@L[copied ? "Referral.Copied" : "Referral.Copy"]" @onclick="Copy">
+                <span class="swap @(copied ? "on" : null)">
+                    <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5" /><path d="M10.5 5.5V3.5A1.5 1.5 0 0 0 9 2H3.5A1.5 1.5 0 0 0 2 3.5V9a1.5 1.5 0 0 0 1.5 1.5h2" /></svg>
+                    <span class="ck"><Icon Name="check" /></span>
+                </span>
+            </button>
+        </div>
+    }
+    else
+    {
+        <button type="button" class="btn btn-inverse" @onclick="Copy">@(copied ? L["Referral.Copied"] : Text)</button>
+    }
+</div>
+
+@code {
+    /// <summary>The id of the value's box (with a <see cref="Label"/>).</summary>
+    [Parameter] public string Id { get; set; } = "";
+    /// <summary>The name of the value above its chip.</summary>
+    [Parameter] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+    /// <summary>The text of the single button that copies the value, without showing it.</summary>
+    [Parameter] public string? Text { get; set; }
+
+    bool copied;
+
+    async Task Copy()
+    {
+        try
+        {
+            await using var shell = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Resurgence.Ui/shell.js");
+            await shell.InvokeVoidAsync("copy", Value);
+            copied = true;
+        }
+        catch (JSException) { } // the clipboard refused: a code stays selectable in its chip
+    }
+}

@@ -413,6 +413,35 @@ public static class AccountApi
             .WithDescription("`{first}`: true the first time for the account, false every time after (stored with the account). The website and the launcher show their one-time Discord dialog when it is true.")
             .Produces(200, contentType: "application/json");
 
+        group.MapGet("/referral", (HttpContext ctx) =>
+                Account(ctx) is { } account ? Json(200, state.ReferralStatus(account, site)) : Refuse(401, "signed_out", "Sign in first."))
+            .WithName("AccountReferral").WithSummary("The account's referral code and its recruits' progress")
+            .WithDescription("`code` (8 characters of A-Z and 2-9, stable) and `link` (`/join/<code>` on the website); `canEnter` and `enterUntil` (unix seconds; null when `canEnter` is false): whether a code may still be entered, once, "
+                             + "at sign-up or within `enter_hours` (72) of the account's making, and for an account made before the feature, `existing_days` (31) after its release; `enteredCode` and `recruiter` (his handle) once entered, else null; "
+                             + "`qualification` `{hours, score}`: the hours played here and hunterscore gained since the code was entered that make a recruit count; `recruits` `[{handle, hours, score, qualified, qualifiedAt, discordLinked, paid}]` "
+                             + "(`hours` and `score` since his entry; not qualified first, the closest to qualifying first, then the qualified, the latest first; `paid`: counted for the tiers, a recruit over the weekly cap stays qualified and unpaid until he fits); "
+                             + "`qualifiedCount` and `countedCount` (the qualified recruits, and those counted under the weekly cap: the tiers follow the latter); `tiers` `[{recruits, reward, reached}]` (reached by the counted recruits); `discord` `{linkedCount, milestones: [{recruits, reward, reached}]}` (counted recruits who linked Discord); `recruitReward`: what a recruit gets when he enters a code. "
+                             + "A reward is `{gm, em, items: [{id, name, count}]}`, null while the operator has not set one (to be announced). The recruits are brought up to date first. 401 `signed_out`.")
+            .Produces(200, contentType: "application/json");
+
+        group.MapPost("/referral/code", async (HttpContext ctx) =>
+            {
+                if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");
+                if (Account(ctx) is not { } account) return Refuse(401, "signed_out", "Sign in first.");
+                string? code;
+                try { code = (JsonNode.Parse(await new StreamReader(ctx.Request.Body, Encoding.UTF8).ReadToEndAsync()) as JsonObject)?["code"]?.GetValue<string>(); }
+                catch (Exception e) when (e is System.Text.Json.JsonException or InvalidOperationException) { code = null; }
+                if (code is null) return Refuse(400, "invalid", "This needs a JSON body {\"code\": \"ABCD2345\"}.");
+                var (status, recruiter, reward) = state.EnterReferralCode(account, code);
+                return status == "ok"
+                    ? Json(200, new JsonObject { ["status"] = "ok", ["recruiter"] = recruiter, ["reward"] = state.RewardJson(reward) })
+                    : Json(409, new JsonObject { ["status"] = status });
+            })
+            .WithName("AccountReferralCode").WithSummary("Enter a referral code (JSON `{code}`)")
+            .WithDescription("Once per account, never changed. The code is read without case, spaces and dashes. Answers `{status: ok, recruiter, reward}` (the recruiter's handle; `reward` the recruit reward paid at once, null when none is set; the game gets it with its next heartbeat or connect), "
+                             + "or 409 `{status}` with `unknown` (no such code), `own` (his own), `loop` (the code's owner is his recruit), `already` (he entered one), `expired` (the window closed) or `banned` (the code's owner is banned); 400 `invalid` for another body; 401 `signed_out`.")
+            .Produces(200, contentType: "application/json");
+
         group.MapPost("/restore-offer", (HttpContext ctx) =>
             {
                 if (!OwnPost(ctx)) return Refuse(400, "invalid", "This request is not from a page of this server.");

@@ -1,0 +1,42 @@
+@inject IReferralService Service
+@inject ISessionService Sessions
+
+@* the news page's right column (website and launcher): the player's code in a chip, one button for the invitation link, a bar to the next reward level, the way to the referral page and the form for a friend's code folded away; nothing signed out *@
+@if (data is not null)
+{
+    <section class="card panel" aria-labelledby="referral-block-title">
+        <h3 id="referral-block-title">@L["Referral.Title"]</h3>
+        <div class="group">
+            <ReferralCopy Id="referral-code" Label="@L["Referral.Code"].Value" Value="@data.Code" />
+            <ReferralCopy Value="@data.Link" Text="@L["Referral.CopyLink"].Value" />
+        </div>
+        <div class="group">
+            <p class="summary">@Summary(data)</p>
+            @if (data.Tiers.FirstOrDefault(t => !t.Reached) is { } next)
+            {
+                <ReferralBar Percent="ReferralBar.Of(data.CountedCount, next.Recruits)" Label="@Summary(data)" />
+            }
+            <p><a href="/referral">@L["Referral.Progress"]</a></p>
+        </div>
+        <ReferralEnter Data="data" Compact Entered="Reload" />
+    </section>
+}
+
+@code {
+    Referral? data;
+
+    string Summary(Referral r) => r.Tiers.FirstOrDefault(t => !t.Reached) switch
+    {
+        { } next => L["Referral.Summary", r.QualifiedCount, next.Recruits].Value,
+        null when r.Tiers.Length > 0 => L["Referral.SummaryAll", r.QualifiedCount].Value,
+        _ => L["Referral.SummaryNone", r.QualifiedCount].Value,
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // a session without a username (the sign-up in progress) has no code yet
+        if (await Sessions.CurrentAsync() is { Handle.Length: > 0 }) data = await Service.GetAsync();
+    }
+
+    async Task Reload() => data = await Service.GetAsync() ?? data;
+}

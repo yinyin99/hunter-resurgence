@@ -1697,4 +1697,52 @@ Lukk programmet som bruker den (en annen server eller en andre kopi av launchere
   <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Jeg finner ikke spillet på Steam</value></data>
   <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Åpne Konto → Lisenser og aktivering av produktnøkler i Steam og se etter spillet der. Hvis det står der, bruk knappen «Installer med Steam» i starteren eller Steam-biblioteket ditt. Hvis ikke, kan Steam ikke lenger gi deg det.</value></data>
   <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Åpne Steam-lisensene dine</value></data>
+  <data name="Referral.Title" xml:space="preserve"><value>Rekrutter venner</value></data>
+  <data name="Referral.Code" xml:space="preserve"><value>Din henvisningskode</value></data>
+  <data name="Referral.Copy" xml:space="preserve"><value>Kopier</value></data>
+  <data name="Referral.CopyLink" xml:space="preserve"><value>Kopier invitasjonslenke</value></data>
+  <data name="Referral.Copied" xml:space="preserve"><value>Kopiert</value></data>
+  <data name="Referral.Share" xml:space="preserve"><value>Send lenken til en venn. Når vennen har registrert seg og skrevet inn koden din, ser du fremgangen på henvisningssiden.</value></data>
+  <data name="Referral.Progress" xml:space="preserve"><value>Se fremgangen til rekruttene dine</value></data>
+  <data name="Referral.Summary" xml:space="preserve"><value>Kvalifiserte rekrutter: {0} · neste belønningsnivå: {1}</value></data>
+  <data name="Referral.SummaryAll" xml:space="preserve"><value>Kvalifiserte rekrutter: {0} · alle belønningsnivåer er nådd</value></data>
+  <data name="Referral.SummaryNone" xml:space="preserve"><value>Kvalifiserte rekrutter: {0}</value></data>
+  <data name="Referral.EnterTitle" xml:space="preserve"><value>Har du en venns kode?</value></data>
+  <data name="Referral.EnterLabel" xml:space="preserve"><value>Henvisningskode</value></data>
+  <data name="Referral.Enter" xml:space="preserve"><value>Skriv inn kode</value></data>
+  <data name="Referral.EnterUntil" xml:space="preserve"><value>Du kan skrive inn en kode til {0}.</value></data>
+  <data name="Referral.EnterReward" xml:space="preserve"><value>Belønning for å skrive inn en kode: {0}</value></data>
+  <data name="Referral.Entered" xml:space="preserve"><value>Koden er godtatt: {0} er rekruttereren din.</value></data>
+  <data name="Referral.EnteredReward" xml:space="preserve"><value>Du fikk: {0}</value></data>
+  <data name="Referral.EnteredBy" xml:space="preserve"><value>Du skrev inn koden {0} fra {1}.</value></data>
+  <data name="Referral.Closed" xml:space="preserve"><value>Du kan ikke lenger skrive inn en kode.</value></data>
+  <data name="Referral.JoinSignIn" xml:space="preserve"><value>Du er invitert med koden {0}. Logg inn eller opprett kontoen din for å skrive den inn.</value></data>
+  <data name="Referral.JoinClosed" xml:space="preserve"><value>Invitasjonskoden {0} kan ikke brukes: en kode kan bare skrives inn én gang, kort tid etter registreringen.</value></data>
+  <data name="Referral.LoadFailed" xml:space="preserve"><value>Henvisningssiden din kunne ikke lastes.</value></data>
+  <data name="Referral.Recruits" xml:space="preserve"><value>Rekruttene dine</value></data>
+  <data name="Referral.Qualification" xml:space="preserve"><value>En rekrutt kvalifiserer seg etter {0} t spilt på denne serveren og {1} HunterScore opptjent, begge regnet fra koden ble skrevet inn.</value></data>
+  <data name="Referral.NoRecruits" xml:space="preserve"><value>Ingen har skrevet inn koden din ennå.</value></data>
+  <data name="Referral.Qualified" xml:space="preserve"><value>Kvalifisert</value></data>
+  <data name="Referral.DiscordLinked" xml:space="preserve"><value>Discord koblet</value></data>
+  <data name="Referral.Played" xml:space="preserve"><value>Spilletid</value></data>
+  <data name="Referral.Gained" xml:space="preserve"><value>Opptjent HunterScore</value></data>
+  <data name="Referral.OfHours" xml:space="preserve"><value>{0} av {1} t</value></data>
+  <data name="Referral.OfScore" xml:space="preserve"><value>{0} av {1}</value></data>
+  <data name="Referral.Rewards" xml:space="preserve"><value>Belønningsnivåer</value></data>
+  <data name="Referral.TierAll" xml:space="preserve"><value>Alle nivåer er nådd.</value></data>
+  <data name="Referral.TierHead" xml:space="preserve"><value>Kvalifiserte rekrutter</value></data>
+  <data name="Referral.Reached" xml:space="preserve"><value>Nådd</value></data>
+  <data name="Referral.Next" xml:space="preserve"><value>Neste</value></data>
+  <data name="Referral.NextAt" xml:space="preserve"><value>Neste belønningsnivå: {0}</value></data>
+  <data name="Referral.Tba" xml:space="preserve"><value>Belønning kunngjøres senere</value></data>
+  <data name="Referral.Discord" xml:space="preserve"><value>Discord-milepæler</value></data>
+  <data name="Referral.DiscordAll" xml:space="preserve"><value>Alle Discord-milepæler er nådd.</value></data>
+  <data name="Referral.DiscordHead" xml:space="preserve"><value>Rekrutter med Discord koblet</value></data>
+  <data name="Referral.Error.unknown" xml:space="preserve"><value>Denne koden finnes ikke. Sjekk den og prøv igjen.</value></data>
+  <data name="Referral.Error.own" xml:space="preserve"><value>Dette er din egen kode.</value></data>
+  <data name="Referral.Error.loop" xml:space="preserve"><value>Denne koden tilhører en spiller du har rekruttert.</value></data>
+  <data name="Referral.Error.already" xml:space="preserve"><value>Du har allerede skrevet inn en kode.</value></data>
+  <data name="Referral.Error.expired" xml:space="preserve"><value>Tiden for å skrive inn en kode er ute.</value></data>
+  <data name="Referral.Error.banned" xml:space="preserve"><value>Denne koden kan ikke brukes.</value></data>
+  <data name="Referral.Error.failed" xml:space="preserve"><value>Serveren svarte ikke. Prøv igjen senere.</value></data>
 </root>
