@@ -1,4 +1,4 @@
-// Entry point: serve (default), admin, import, review, claim, coverage, backup. Every command reads settings.json: --settings <file>, else the
+// Entry point: serve (default), admin, import, review, claim, coverage, backup, mission-texts. Every command but mission-texts reads settings.json: --settings <file>, else the
 // SERVER_SETTINGS environment variable, else settings.json in the current folder (docs/server.md).
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
@@ -105,6 +105,9 @@ const string ClaimUsage = """
     --keep-handle leaves the account its own name instead of the archived one. An earlier claim row of the account is replaced.
     """;
 
+if (args.Length > 0 && args[0] == "mission-texts")  // the files of the mission texts: no settings needed
+    return MissionTextsTool.Run(args[1..], Console.Out, Console.Error);
+
 var words = args.ToList();
 string? settingsFile = null;
 if (words.IndexOf("--settings") is var at and >= 0)
@@ -132,7 +135,7 @@ switch (cmd)
         if (words.Count is not (2 or 3)) Die("usage: backup <folder> [keep, default 7]");
         DbBackup.Run(settings.DataDir, words[1], words.Count == 3 ? int.Parse(words[2], CultureInfo.InvariantCulture) : 7);
         break;
-    default: Die($"unknown command {cmd}: serve | admin | import | review | claim | coverage | backup"); break;
+    default: Die($"unknown command {cmd}: serve | admin | import | review | claim | coverage | backup | mission-texts"); break;
 }
 return 0;
 

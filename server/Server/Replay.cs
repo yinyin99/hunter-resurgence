@@ -374,6 +374,7 @@ public static class Replay
             seasonal: SeasonalEvent.Parse(cfg["event"]), missionRules: File.Exists(missionRules) ? State.ReadMissionRules(missionRules) : null,
             spawnNamedAnimals: (bool?)cfg["spawn_named_animals"] ?? false)
         {
+            Texts = cfg["mission_texts_dir"] is JsonValue texts ? MissionTexts.Load((string)texts!) : MissionTexts.None,
             CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
             UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, UnlimitedFuel = (bool?)cfg["unlimited_fuel"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
             Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],
@@ -658,7 +659,8 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             var hit = denied ? null : Recorded(r);
             if (hit is { Tier: >= 1 })
             {
-                var bodyOut = hit.Body;
+                var bodyOut = State is { Online: true } && (r.Path.Equals(APPLICATION, StringComparison.OrdinalIgnoreCase) || r.Path.Equals(CLIENT_APPLICATION, StringComparison.OrdinalIgnoreCase))
+                    ? State.Texts.Localize(hit.Body, MissionTexts.RequestLanguage(r)) : hit.Body;  // the missions' texts in the game's language
                 var cb = Py.ParseQs(r.Query).TryGetValue("callback", out var cbs) ? cbs[0] : "";
                 if (cb.Length > 0 && Callback.IsMatch(cb))
                     bodyOut = Encoding.Latin1.GetBytes(Jsonp.Replace(Encoding.Latin1.GetString(bodyOut), _ => cb + "(", 1));

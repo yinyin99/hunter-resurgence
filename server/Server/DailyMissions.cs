@@ -175,9 +175,9 @@ public sealed partial class State
 
     static string EventType(Kind kind) => kind switch { Kind.Harvest => "CONFIRMKILL", Kind.Spot => "SPOT", Kind.Track => "CLUE", _ => "" };
 
-    /// <summary>The page's objective entry: its title and the condition the rule stands for. The rule checks the clue's kind as a catalogue mission does; the page's condition names
-    /// droppings when the title does, else footsteps (a call or a blood trail is shown as footsteps: for the page only).</summary>
-    JsonObject DailyObjective(Objective o, bool finished)
+    /// <summary>The page's objective entry: its title (<paramref name="title"/>, in the player's language) and the condition the rule stands for. The rule checks the clue's kind as a catalogue mission does; the page's condition names
+    /// droppings when the English title does, else footsteps (a call or a blood trail is shown as footsteps: for the page only).</summary>
+    JsonObject DailyObjective(Objective o, bool finished, string title)
     {
         var rule = o.Rule;
         var parts = new List<string>();
@@ -189,7 +189,7 @@ public sealed partial class State
             parts.Add($"e.trackType() == c.clue.{(o.Title.Contains("droppings", StringComparison.OrdinalIgnoreCase) ? "DROPPINGS" : "FOOTSTEPS")}");
         if (rule.Gender is { } gender)  // a harvest's is written without the space before `==`, as the original does
             parts.Add($"a.gender(){(rule.Kind == Kind.Harvest ? "" : " ")}== c.gender.{(gender == 0 ? "MALE" : "FEMALE")}");
-        var data = new JsonObject { ["id"] = o.Id, ["title"] = o.Title, ["update_message"] = "", ["conditions"] = string.Join(" and ", parts) };
+        var data = new JsonObject { ["id"] = o.Id, ["title"] = title, ["update_message"] = "", ["conditions"] = string.Join(" and ", parts) };
         if (finished)
             data["completed"] = true;
         return new JsonObject { ["objective_data"] = data, ["event_type"] = EventType(rule.Kind) };
@@ -198,9 +198,9 @@ public sealed partial class State
     /// <summary>Daily_Mission/get_daily_missions_calendar: `{is_frozen, mission_end, broken_streak_info, calendar}`. The calendar is the 7 days of the streak's
     /// block (day 1 to 7, the block after the 7th day and so on) with each day's difficulty and reward; only today's entry holds a mission. Null when the server
     /// has no daily missions (the empty reply of ReplayScope stands).</summary>
-    public byte[]? DailyCalendarReply(long account) => Calendar(account) is { } calendar ? Py.DumpBytes(calendar) : null;
+    public byte[]? DailyCalendarReply(long account, string? lang = null) => Calendar(account, lang) is { } calendar ? Py.DumpBytes(calendar) : null;
 
-    JsonObject? Calendar(long account)
+    JsonObject? Calendar(long account, string? lang = null)
     {
         if (dailies.Count == 0)
             return null;
@@ -231,7 +231,8 @@ public sealed partial class State
             };
             if (index == day && MissionOf(s) is { } d)
             {
-                var objectives = Py.Dumps(new JsonArray([.. d.Def.Objectives.Select(o => (JsonNode?)DailyObjective(o, finished.Contains(o.Id)))]), compact: true);
+                var title = Texts.Text(lang, $"d{d.Template.Id}.title", d.Template.Title);
+                var objectives = Py.Dumps(new JsonArray([.. d.Def.Objectives.Select(o => (JsonNode?)DailyObjective(o, finished.Contains(o.Id), Texts.Text(lang, $"d{d.Template.Id}.o{o.Id}", o.Title)))]), compact: true);
                 var animal = d.Def.Objectives[0].Rule.Species is { } id ? species.GetValueOrDefault(id) : null;
                 var name = d.Template.GiverName ?? string.Join(' ', d.Template.GiverAlias.Split('_').Select(w => w[..1] + w[1..].ToLowerInvariant()));
                 entry["date"] = s["date"]!.DeepClone();
@@ -243,7 +244,7 @@ public sealed partial class State
                 };
                 entry["mission"] = new JsonObject
                 {
-                    ["id"] = d.Template.Id, ["title"] = d.Template.Title, ["description"] = d.Template.Title + ".", ["gender"] = d.Def.Objectives[0].Rule.Gender is null or 0 ? 0 : 1, ["species"] = entry["species"]?.DeepClone(),
+                    ["id"] = d.Template.Id, ["title"] = title, ["description"] = title + ".", ["gender"] = d.Def.Objectives[0].Rule.Gender is null or 0 ? 0 : 1, ["species"] = entry["species"]?.DeepClone(),
                     ["image"] = null, ["update_message"] = "", ["reserves"] = d.Def.Objectives[0].Rule.Species is { } sp ? facts.ReserveNames(sp) : "", ["objectives"] = objectives,
                 };
                 entry["objectives"] = objectives;
@@ -262,9 +263,9 @@ public sealed partial class State
     /// <summary>The website's daily missions page (GET /account/missions/daily): `today` (the day number), `ends_in` (seconds until the UTC day ends), `frozen`, `broken` (the frozen streak was broken), `days`
     /// (`number`, `stars` the difficulty id, `gms`) and `missions` in the order of the days (`title`, `desc`, `objectives` titles, `reserve`, `rewards` texts, `species` the species define or null, `gender` 0 male or 1 female, `giver` the alias of the giver in lower case or null, `done`; empty
     /// for a day without a mission). Null when the server has no daily missions.</summary>
-    public JsonObject? WebDaily(long account)
+    public JsonObject? WebDaily(long account, string? lang = null)
     {
-        if (Calendar(account) is not { } c)
+        if (Calendar(account, lang) is not { } c)
             return null;
         var days = c["calendar"]!.AsArray().OfType<JsonObject>().ToList();
         var today = days.Single(d => (bool)d["today"]!);

@@ -86,6 +86,27 @@ public class ServerMissionsServiceTests
         Assert.Equal(("POST", "/account/missions/daily/activate", "", true), (fake.Seen[2].Method.Method, fake.Seen[2].Path, fake.Seen[2].Body, fake.Seen[2].Ajax));
     }
 
+    [Fact]
+    public async Task TheMissionsAndTheDailyPageAreAskedInTheReadersLanguage()
+    {
+        var asked = new List<string>();
+        var fake = new Fake(r => { asked.Add(r.RequestUri!.PathAndQuery); return Json(HttpStatusCode.OK, r.RequestUri.AbsolutePath.EndsWith("daily", StringComparison.Ordinal) ? Daily : Page); });
+        var before = System.Globalization.CultureInfo.CurrentUICulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
+            await Make(fake).RegularAsync();
+            await Make(fake).DailyAsync();
+            System.Globalization.CultureInfo.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            await Make(fake).RegularAsync();
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentUICulture = before;
+        }
+        Assert.Equal(["/account/missions?lang=pt-BR", "/account/missions/daily?lang=pt-BR", "/account/missions"], asked);  // no culture: no language, the server answers English
+    }
+
     // made-up: day 2 is today, frozen, and holds the only mission; the other days have none
     const string Daily = """
         {"today": 2, "ends_in": 4000, "frozen": true,
