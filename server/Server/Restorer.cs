@@ -159,6 +159,7 @@ public static class Restorer
         var avatarUrl = state.RestoredAvatarUrl(read, finalId, state.AvatarFetched(read, hashes));
         var (face, picture, gender) = state.AvatarFace(state.ListedAvatarOf(read), model.Profile.Gender);  // a 3D face of the body's gender, whatever the archive's face and gender were
         model = model with { Profile = model.Profile with { Gender = (int)gender }, Account = model.Account with { Face = (int)face } };
+        var scoreBefore = exists ? state.ReferralScore(current) : 0;  // a referral entry counts the hunterscore gained after it, not what the backup brings
         var account = AccountObject(exists ? store.AccountJson(current) : state.NewAccount(current, handle), model, finalId, handle, avatarUrl, picture);
         var report = "";
         State.Unpacking? pictures = null;
@@ -194,7 +195,7 @@ public static class Restorer
             throw;
         }
         using (var con = store.Open(finalId))  // a community server's value is computed from the restored statistics
-            state.UpdateHunterscore(con, finalId);
+            state.UpdateHunterscore(con, finalId, scoreBefore: scoreBefore);
         if (state.Online) state.BackfillLodges(finalId);  // a community server: the restore brings lodge items, not the lodges
         var before = Path.Combine(dataDir, "restores", current.ToString());
         if (finalId != current && Directory.Exists(before))  // zips kept for review under the old id follow the account
@@ -284,6 +285,8 @@ public static class Restorer
         foreach (var table in new[] { "tokens", "web_sessions", "restored_ids", "claims", "claim_lookups", "community_progress", "crash_reports", "admin_messages", "discord_links", "discord_rewards" })
             con.Exec($"UPDATE {table} SET account_id = ? WHERE account_id = ?", to, from);
         con.Exec("UPDATE accounts SET id = ? WHERE id = ?", to, from);
+        foreach (var (table, column) in new[] { ("referral_codes", "account_id"), ("referrals", "recruit_id"), ("referrals", "recruiter_id"), ("referral_payouts", "recruiter_id") })  // referrals (#929): the code, the entry and the recruits move with the account
+            con.Exec($"UPDATE {table} SET {column} = ? WHERE {column} = ?", to, from);
         foreach (var column in new[] { "account_id", "other_id" })  // the friend edges (no foreign keys); one the new id has already stays
             con.Exec($"UPDATE OR IGNORE friends SET {column} = ? WHERE {column} = ?", to, from);
         con.Exec("DELETE FROM friends WHERE account_id = ?1 OR other_id = ?1", from);

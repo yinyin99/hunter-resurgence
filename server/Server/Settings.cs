@@ -87,6 +87,7 @@ public sealed class Settings
         // scheduled gm$ multipliers for harvests (docs/server.md#harvest-gm-bonus): a list of periods, stored as Unix seconds
         cfg["harvest_gm_bonus"] = ParseHarvestGmBonus(root["harvest_gm_bonus"], DateTimeOffset.UtcNow.ToUnixTimeSeconds());
         cfg["store_sales"] = ParseStoreSales(root["store_sales"]);  // the store's sales (docs/server.md#store-sales), read again by State.LoadStoreSales and when the file changes
+        cfg["referral"] = ParseReferral(root["referral"]);  // the referral codes' rules and rewards (docs/server.md#referrals), read again by State.LoadReferral and when the file changes
         // a seasonal event (docs/server.md#seasonal-events): checked here, read again from cfg by Replay.LoadState
         cfg["event"] = SeasonalEvent.Parse(root["event"]) is null ? null : root["event"]!.DeepClone();
         cfg["event_community_divisor"] = root["event_community_divisor"] switch
@@ -202,6 +203,13 @@ public sealed class Settings
             throw new InvalidDataException($"{path}: {e.Message}", e);  // the cause stays: GmBonusWatch retries a read that failed (an IOException), not a file that is wrong
         }
         return parsed as JsonObject ?? throw new InvalidDataException($"{path}: not a JSON object");  // valid JSON that is no object (`[]`, `2`, `null`) is a wrong file too
+    }
+
+    /// <summary>`referral`: checked as <see cref="ReferralConfig.Parse"/> does (InvalidDataException says what is wrong; the item ids are checked by <see cref="State.LoadReferral"/>); returns the setting as it is, absent: null.</summary>
+    public static JsonNode? ParseReferral(JsonNode? node)
+    {
+        ReferralConfig.Parse(node);
+        return node?.DeepClone();
     }
 
     /// <summary>`store_sales`: checked as <see cref="StoreSale.Parse"/> does (InvalidDataException says what is wrong); returns the setting as it is, absent: null.</summary>

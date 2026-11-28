@@ -18,6 +18,9 @@ const string AdminUsage = """
     admin event list | admin event add <name> <start> <end> [--kind seasonal] writes the events log (the periods that changed what a hunt paid or how it was played): a gm$ or mission bonus is written by the server when its setting starts, add a period without a money bonus (a seasonal event) with add;
     <start> and <end> are ISO times, no zone means UTC; list prints one line per event.
     admin sales lists the store sales of settings.json (docs/server.md#store-sales): each sale, then its current and its next period with the items (and bundles) on sale in it and what each costs then, so the picks of a random sale can be read before it starts. Nothing is written.
+    admin referral list [--account <id or handle>] lists the recruiters with their code, their recruits (hours and hunterscore since the entry of 'referral' in settings.json, and the state: waiting, qualified over the weekly cap, paid, dropped) and the tiers and Discord milestones reached (docs/server.md#referrals); with --account, that account as recruiter and as recruit. Nothing is written.
+    admin referral revoke <recruit: id or handle> drops his entry while the recruiter has not been paid for him (the entry stays on record: he cannot enter another code; paid rewards stay).
+    admin referral pay-qualified [--apply] pays the tier and Discord milestone rewards that are set now to the recruiters who already reached them while the reward was unset, once each. Without --apply it only lists them.
     admin backfill-rewards --events <file> [--apply] gives every payment made before the events log existed its base: the file is a JSON array of {"name", "start", "end", "multiplier", "applies_to": "harvest_gm"} bonuses (and name/start/end periods, no multiplier, for events with no bonus);
     a harvest payment inside a bonus's period gets base = paid / multiplier and that event, every other payment base = amount, and the events are written. Without --apply nothing is written (a line per event and the counts); a second run changes nothing. Run it with the server stopped, after `backup`.
     admin backfill-lodges [--apply] [--account <id or handle>] gives a lodge that is listed but has no contents the contents its account's restored lodge_contents save holds:
@@ -305,6 +308,36 @@ void Admin(string[] a)
         long? only = null;
         if (rest.Length == 2 && (only = AdminApi.ResolveAccount(loaded, rest[1])) is null) Die($"no account {rest[1]}");
         foreach (var line in loaded.SweepAvatars(PictureLinks.FromCfg(settings.Cfg), only, dry).GetAwaiter().GetResult()) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "referral")
+    {
+        Directory.CreateDirectory(settings.DataDir);
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? Resolve(string name) => AdminApi.ResolveAccount(loaded, name) is { } id && loaded.Store.AccountExists(id) ? id : null;
+        switch (a[1..])
+        {
+            case ["list"]:
+                foreach (var line in loaded.ReferralReport(null)) Console.WriteLine(line);
+                break;
+            case ["list", "--account", var name]:
+                if (Resolve(name) is not { } listed) { Die($"no account {name}"); return; }
+                foreach (var line in loaded.ReferralReport(listed)) Console.WriteLine(line);
+                break;
+            case ["revoke", var recruit]:
+                if (Resolve(recruit) is not { } revoked) { Die($"no account {recruit}"); return; }
+                var (done, message) = loaded.RevokeReferral(revoked);
+                if (!done) Die(message);
+                Console.WriteLine(message);
+                break;
+            case ["pay-qualified"] or ["pay-qualified", "--apply"]:
+                foreach (var line in loaded.PayReferralMilestones(a.Contains("--apply"))) Console.WriteLine(line);
+                break;
+            default:
+                Die(AdminUsage);
+                break;
+        }
         return;
     }
     if (a is ["sales"])
@@ -865,7 +898,7 @@ async Task Serve()
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => state.KeepBoardsWarm(State.BoardRefresh, app.Lifetime.ApplicationStopping)));
         if (state is not null)
         {
-            var bonuses = new GmBonusWatch(state, settingsFile, settings.Cfg["harvest_gm_bonus"], settings.Cfg["store_sales"]);
+            var bonuses = new GmBonusWatch(state, settingsFile, settings.Cfg["harvest_gm_bonus"], settings.Cfg["store_sales"], settings.Cfg["referral"]);
             app.Lifetime.ApplicationStarted.Register(() => _ = Task.Run(() => bonuses.Run(app.Lifetime.ApplicationStopping)));
         }
         await app.RunAsync();

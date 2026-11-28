@@ -1,4 +1,4 @@
-// Applies `harvest_gm_bonus` and `store_sales` of settings.json again when the file changes, so the operator schedules a bonus or a sale without a restart (docs/server.md#harvest-gm-bonus, docs/server.md#store-sales).
+// Applies `harvest_gm_bonus`, `store_sales` and `referral` of settings.json again when the file changes, so the operator schedules a bonus or a sale, or sets a referral reward, without a restart (docs/server.md#harvest-gm-bonus, docs/server.md#store-sales, docs/server.md#referrals).
 // It polls the file's time and size instead of a FileSystemWatcher: the server's container has the folder bind-mounted, and an editor that replaces the file (a new inode)
 // or a mount that does not carry change notifications would leave a watcher blind, where a stat every few seconds cannot miss it.
 using System.Text.Json;
@@ -6,14 +6,14 @@ using System.Text.Json.Nodes;
 
 namespace Resurgence.Server;
 
-public sealed class GmBonusWatch(State state, string file, JsonNode? loaded, JsonNode? loadedSales = null)
+public sealed class GmBonusWatch(State state, string file, JsonNode? loaded, JsonNode? loadedSales = null, JsonNode? loadedReferral = null)
 {
     public static readonly TimeSpan Every = TimeSpan.FromSeconds(5);
 
     public Action<string> Log { get; set; } = Console.WriteLine;
 
     (DateTime Time, long Length)? seen;  // none yet: the first look reads the file, so an edit made during the start is not missed
-    string? applied = loaded?.ToJsonString(), appliedSales = loadedSales?.ToJsonString();
+    string? applied = loaded?.ToJsonString(), appliedSales = loadedSales?.ToJsonString(), appliedReferral = loadedReferral?.ToJsonString();
     string? lastError;
 
     static (DateTime, long)? Stamp(string file) => new FileInfo(file) is { Exists: true } f ? (f.LastWriteTimeUtc, f.Length) : null;
@@ -29,6 +29,7 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded, Jso
             var root = Settings.Read(file);
             Apply("harvest_gm_bonus", "bonuses", () => Settings.ParseHarvestGmBonus(root["harvest_gm_bonus"], (long)state.Clock()), state.LoadHarvestGmBonuses, ref applied);
             Apply("store_sales", "sales", () => Settings.ParseStoreSales(root["store_sales"]), n => { foreach (var line in state.LoadStoreSales(n)) Log(line); }, ref appliedSales);
+            Apply("referral", "referral settings", () => Settings.ParseReferral(root["referral"]), state.LoadReferral, ref appliedReferral);
             lastError = null;
         }
         catch (InvalidDataException e) when (e.InnerException is null or JsonException)
@@ -52,7 +53,7 @@ public sealed class GmBonusWatch(State state, string file, JsonNode? loaded, Jso
             if (node?.ToJsonString() == inForce) return;  // else another setting changed
             load(node);
             inForce = node?.ToJsonString();
-            Log($"{key}: {(node as JsonArray)?.Count ?? 0} read from {file}");
+            Log($"{key}: {(node as JsonArray)?.Count ?? (node is null ? 0 : 1)} read from {file}");
         }
         catch (InvalidDataException e) when (e.InnerException is null or JsonException)
         {
