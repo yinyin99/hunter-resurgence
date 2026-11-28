@@ -12,13 +12,26 @@ public sealed partial class State
 {
     public const string MissionRulesFile = "mission_rules.json";
 
-    readonly HashSet<(long Mission, long Objective)> overridden = [];
+    readonly HashSet<(long Mission, long Objective)> overridden = [], unordered = [];  // `unordered`: the file undid the order the title implies (printed back as `unordered`)
 
     /// <summary>How many objectives have their rule from the operator's file.</summary>
     public int OverriddenObjectives => overridden.Count;
 
+    // `, N animals` and a radius are bounded: a herd of 0 never exists, one of a thousand would be spawned
+    const long MaxHerd = 20, MaxRadius = 5000;
     static readonly Regex NamedNear = new(@"\Anamed animal near \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\) m(?:, (?<n>\d+) animals)?(?:, otherwise place (?<p>[A-Z0-9_]+))?\z", RegexOptions.CultureInvariant);
     static readonly Regex EachFootprint = new(@"\Afootprints of each of (?<s>.+) within (?<r>\d+) m of \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\)\z", RegexOptions.CultureInvariant);
+    static readonly Regex AfterObjective = new(@"\Aafter objective (?<n>\d+)\z", RegexOptions.CultureInvariant);
+    static readonly Regex ArriveWithin = new(@"\Awithin 200 m of \((?<x>-?\d+(?:\.\d+)?), (?<z>-?\d+(?:\.\d+)?)\)\z", RegexOptions.CultureInvariant);
+
+    /// <summary>A whole number of the bounds, or the start stops with the word it was for (a number too big for a long is no exception of its own).</summary>
+    static long Whole(string digits, long min, long max, string what) =>
+        long.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out var n) && n >= min && n <= max ? n : throw new InvalidDataException($"{what} is a whole number from {min} to {max}, not {digits}");
+
+    /// <summary>A coordinate in metres: a finite number.</summary>
+    static double Coordinate(string digits) =>
+        double.TryParse(digits, NumberStyles.Float, CultureInfo.InvariantCulture, out var n) && double.IsFinite(n) ? n : throw new InvalidDataException($"{digits} is no coordinate");
+
     // a place the game names when the player enters it (event 101 `location_name`): no catalogue lists them all, so only its form is checked
     static readonly Regex PlaceDefine = new(@"\A[A-Z0-9_]+\z", RegexOptions.CultureInvariant);
     // `in the hunt: <n>[ within <m> min]`, `<n>, each within <m> min of the one before`, `<n> killed by one shot`, `<n> different animals[ within <m> min]` (<see cref="Describe"/>)
@@ -60,45 +73,73 @@ public sealed partial class State
                 if (value is not JsonValue v || !v.TryGetValue<string>(out var words))
                     throw new InvalidDataException("a rule is a string of words, as coverage --rules prints them");
                 var stated = RuleIn(words);  // an arrive rule is met at its place, or near the title's coordinates when it has some (the game's area may be smaller or larger than 200 m)
-                var kept = m.Objectives[i].Rule.After;  // `At any point during the same hunt` and `After visiting X` order the objective whatever the file says of the rest
-                m.Objectives[i] = m.Objectives[i] with { Rule = (stated.Kind == Kind.Arrive && m.Objectives[i].Rule.Zone is { Point: not null } zone ? stated with { Zone = zone with { Places = [] } } : stated) with { After = kept, Ordered = stated.Ordered || kept is not null } };
+                var title = m.Objectives[i].Rule;
+                var undone = words.Split(';', StringSplitOptions.TrimEntries).Contains("unordered");
+                var after = stated.After ?? (undone ? null : title.After);  // `At any point during the same hunt` and `After visiting X` order the objective unless the file says `unordered`
+                if (after is { } waits && Array.FindIndex(m.Objectives, o => o.Id == waits) is var before && (before < 0 || before >= i))
+                    throw new InvalidDataException($"after objective {waits}: an objective of the mission before this one");
+                m.Objectives[i] = m.Objectives[i] with { Rule = (stated.Kind == Kind.Arrive && stated.Zone is null && title.Zone is { Point: not null } zone ? stated with { Zone = zone with { Places = [] } } : stated) with { After = after, Ordered = !undone && (stated.Ordered || after is not null) } };
+                if (undone)
+                    unordered.Add((mission, objective));
                 overridden.Add((mission, objective));
             }
             catch (InvalidDataException e)
             {
                 throw new InvalidDataException($"{MissionRulesFile} \"{key}\": {e.Message}");
             }
+        foreach (var (mission, objective) in overridden)  // `together` finishes the objectives of the mission with the same words: it needs a twin
+            if (missions[mission].Objectives.Single(o => o.Id == objective).Rule is { Together: true } rule && !missions[mission].Objectives.Any(o => o.Id != objective && o.Rule.Together && o.Rule.Text == rule.Text))
+                throw new InvalidDataException($"{MissionRulesFile} \"{mission}/{objective}\": together needs another objective of the mission with the same rule and \"together\"");
     }
 
-    /// <summary>A rule written as <see cref="RuleLines"/> prints it after `=>`: `<kind>; species: <names>; male|female; ordered; <conditions>`, separated by `;`. Its `Text` is these
-    /// words, so <see cref="StuckMissions"/> takes two objectives for equal when their rules are, not their titles. A gender, a species or `ordered` given twice stops the start.</summary>
+    /// <summary>A rule written as <see cref="RuleLines"/> prints it after `=>`: `<kind>; species: <names>; male|female; ordered|after objective <n>|unordered; together; <conditions>`, separated by `;`; an arrive rule is
+    /// `arrive; [order]; place: <NAME>`, `places: <NAME>, <NAME>` or `within 200 m of (<x>, <z>)`. Its `Text` is these words, so <see cref="StuckMissions"/> takes two objectives for equal when their rules are, not
+    /// their titles. A gender, a species, an order word or `together` given twice stops the start.</summary>
     Rule RuleIn(string words)
     {
         var parts = words.Split(';', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
             throw new InvalidDataException("the rule is empty");
-        if (parts[0] == "arrive")  // an arrival the title cannot name: the file gives the place's game name, met by that place only
+        // the order: `ordered` (after every objective before), `after objective <n>` (after that one only), `unordered` (none: the file undoes the order the title implies)
+        var orders = parts.Where(p => p is "ordered" or "unordered" || AfterObjective.IsMatch(p)).ToArray();
+        if (orders.Length > 1)
+            throw new InvalidDataException("one of \"ordered\", \"unordered\" and \"after objective <n>\" at most, once");
+        long? after = orders.Length == 1 && AfterObjective.Match(orders[0]) is { Success: true } a ? Whole(a.Groups["n"].Value, 0, long.MaxValue, "an objective id") : null;
+        var ordered = orders is ["ordered"] || after is not null;
+        var rest = parts.Where(p => !orders.Contains(p)).ToArray();
+        if (rest.Length == 0)
+            throw new InvalidDataException("the rule has no kind");
+        if (rest[0] == "arrive")  // an arrival the title cannot name: the file gives the place's game name, met by that place only, or the places or the point of a title
         {
-            var rest = parts[1..].Where(p => p != "ordered").ToArray();
-            return rest.Length == 1 && parts.Length - rest.Length <= 2 && TestIn(rest[0], []) is { Check: Check.Place } at
-                ? new Rule(Kind.Arrive, null, null, parts.Contains("ordered"), string.Join("; ", parts), [at])
-                : throw new InvalidDataException("an arrive rule is \"arrive[; ordered]; place: <NAME>\"");
+            Test? at = null;
+            var named = new List<string>();
+            (double X, double Z)? point = null;
+            foreach (var p in rest[1..])
+                if (p.StartsWith("place: ", StringComparison.Ordinal) && at is null)
+                    at = TestIn(p, []);
+                else if (p.StartsWith("places: ", StringComparison.Ordinal) && named.Count == 0)
+                    named.AddRange(List(p["places: ".Length..]).Select(d => PlaceDefine.IsMatch(d) ? d : throw new InvalidDataException($"\"{d}\" is no name of a place: capital letters, digits and _")));
+                else if (ArriveWithin.Match(p) is { Success: true } within && point is null)
+                    point = (Coordinate(within.Groups["x"].Value), Coordinate(within.Groups["z"].Value));
+                else
+                    throw new InvalidDataException("an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\", each once");
+            if (at is null && named.Count == 0 && point is null || at is not null && (named.Count > 0 || point is not null))
+                throw new InvalidDataException("an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\"");
+            return new Rule(Kind.Arrive, null, null, ordered, string.Join("; ", parts), at is null ? [] : [at], Zone: point is null && named.Count == 0 ? null : new Zone(point, [], [.. named]), After: after);
         }
-        var kind = parts[0] switch
+        var kind = rest[0] switch
         {
             "harvest" => Kind.Harvest,
             "spot" => Kind.Spot,
             "track" => Kind.Track,
-            _ => throw new InvalidDataException($"\"{parts[0]}\" is no kind of rule the file sets: harvest, spot, track or arrive"),
+            _ => throw new InvalidDataException($"\"{rest[0]}\" is no kind of rule the file sets: harvest, spot, track or arrive"),
         };
-        if (parts.Count(p => p is "male" or "female") > 1 || parts.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || parts.Count(p => p == "ordered") > 1)
-            throw new InvalidDataException("a gender, a species or \"ordered\" is given twice");
+        if (rest.Count(p => p is "male" or "female") > 1 || rest.Count(p => p.StartsWith("species: ", StringComparison.Ordinal)) > 1 || rest.Count(p => p == "together") > 1)
+            throw new InvalidDataException("a gender, a species or \"together\" is given twice");
         long? speciesId = null, gender = null;
-        var ordered = false;
         var tests = new List<Test>();
-        foreach (var part in parts[1..].OrderBy(p => !p.StartsWith("species: ", StringComparison.Ordinal)))  // the species first: a coat word may be the species' own
+        foreach (var part in rest[1..].OrderBy(p => !p.StartsWith("species: ", StringComparison.Ordinal)))  // the species first: a coat word may be the species' own
             if (part is "male" or "female") gender = part == "male" ? 0 : 1;
-            else if (part == "ordered") ordered = true;
             else if (part == "together") { }  // one kill finishes every objective of the mission with this rule (read below)
             else if (part.StartsWith("species: ", StringComparison.Ordinal))
             {
@@ -114,11 +155,11 @@ public sealed partial class State
             Kind.Track => [Check.Clue, Check.Reserve, Check.Place, Check.Species, Check.Coat, Check.NotCoat, Check.Different, Check.EachSpecies],
             _ => null,
         };
-        if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different : !only.Contains(t.Check)) is { } wrong)
-            throw new InvalidDataException($"a {parts[0]} rule cannot check \"{Describe(wrong)}\"");
+        if (tests.FirstOrDefault(t => only is null ? t.Check is Check.Clue or Check.Different or Check.EachSpecies : !only.Contains(t.Check)) is { } wrong)
+            throw new InvalidDataException($"a {rest[0]} rule cannot check \"{Describe(wrong)}\"");
         if (kind == Kind.Track && tests.Count(t => t.Check == Check.Clue) != 1)
             throw new InvalidDataException("a track rule has one clues condition");
-        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests.OrderBy(t => IsSequence(t.Check))], Together: parts.Contains("together"));  // a sequence last, as the reader puts it
+        return new Rule(kind, speciesId, gender, ordered, string.Join("; ", parts), [.. tests.OrderBy(t => IsSequence(t.Check))], After: after, Together: rest.Contains("together"));  // a sequence last, as the reader puts it
     }
 
     /// <summary>One condition in the words of <see cref="Describe"/>.</summary>
@@ -134,11 +175,11 @@ public sealed partial class State
             "any sight" when value == "" => new(Check.Scope),
             "named animal, no place" when value == "" => new(Check.Named),
             _ when NamedNear.Match(part) is { Success: true } near =>
-                new(Check.Named, double.Parse(near.Groups["x"].Value, CultureInfo.InvariantCulture), double.Parse(near.Groups["z"].Value, CultureInfo.InvariantCulture),
-                    Place: near.Groups["p"].Success ? near.Groups["p"].Value : null, Count: near.Groups["n"].Success ? long.Parse(near.Groups["n"].Value, CultureInfo.InvariantCulture) : 1),
+                new(Check.Named, Coordinate(near.Groups["x"].Value), Coordinate(near.Groups["z"].Value),
+                    Place: near.Groups["p"].Success ? near.Groups["p"].Value : null, Count: near.Groups["n"].Success ? Whole(near.Groups["n"].Value, 1, MaxHerd, "a herd size") : 1),
             _ when EachFootprint.Match(part) is { Success: true } each =>
-                new(Check.EachSpecies, double.Parse(each.Groups["x"].Value, CultureInfo.InvariantCulture), double.Parse(each.Groups["z"].Value, CultureInfo.InvariantCulture),
-                    Ids: [.. SpeciesIn(each.Groups["s"].Value)], Count: long.Parse(each.Groups["r"].Value, CultureInfo.InvariantCulture)),
+                new(Check.EachSpecies, Coordinate(each.Groups["x"].Value), Coordinate(each.Groups["z"].Value),
+                    Ids: [.. SpeciesIn(each.Groups["s"].Value)], Count: Whole(each.Groups["r"].Value, 1, MaxRadius, "a radius in metres")),
             "weapon" => WeaponsIn(value),
             "ammunition" => new(Check.Ammo, Ids: ItemsIn(value, 3, "ammunition")),
             "not ammunition" => new(Check.NotAmmo, Ids: ItemsIn(value, 3, "ammunition")),
@@ -190,7 +231,7 @@ public sealed partial class State
     }
 
     // the catalogue's items of a `cat` (2 sights, 3 ammunition) by name: items of one name (skins, variants) are all of them
-    // `Crossbow Pistol (Wolfsbane)` is the one variant of items that share a name; the name alone is all of them (a weapon is <see cref="WeaponsIn"/>)
+    // `Test Pistol (Festive)` is the one variant of items that share a name; the name alone is all of them (a weapon is <see cref="WeaponsIn"/>)
     HashSet<long> ItemsIn(string value, long cat, string what) =>
         NamesIn(value, items.Where(i => Py.IsNum(i.Value["cat"]) && Py.L(i.Value["cat"]) == cat)
             .SelectMany(i => Py.IsStr(i.Value["variationname"]) ? new[] { (i.Key, ItemName(i.Key)), (i.Key, $"{ItemName(i.Key)} ({(string)i.Value["variationname"]!})") } : [(i.Key, ItemName(i.Key))]), what);

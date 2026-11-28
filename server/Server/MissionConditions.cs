@@ -23,10 +23,19 @@ public sealed partial class State
     /// kinds in `Ids` (none: any clue) when the animal has `Min` clues of those kinds in its hunt. `Within`, `Each`, `SameShot` and `Different` are met when the event is the `Min`-th of its hunt
     /// that meets the rule's other conditions, `Max` the seconds they may span (<see cref="Sequenced"/>). `Across` (`Different` only) counts the animals of every hunt since the mission was activated,
     /// not of one hunt: an animal's number is reused by the next hunt, so the same number in two hunts is two animals. `Place` is met when the player was in the place the game names `Place`.</summary>
-    sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null, string? Place = null, bool Across = false, string? Basis = null, Dictionary<long, HashSet<long>>? When = null, long Count = 1);
+    sealed record Test(Check Check, double Min = double.NegativeInfinity, double Max = double.PositiveInfinity, HashSet<long>? Ids = null, string? Place = null, bool Across = false, string? Basis = null, Dictionary<long, HashSet<long>>? When = null, long Count = 1)
+    {
+        // `Named` and `EachSpecies` carry a point in `Min` and `Max` and a number in `Count`: these name them (`Min` is infinite for a named animal with no place)
+        public double X => Min;
+        public double Z => Max;
+        /// <summary>`Named`: the animals of the group the server places (1: one animal).</summary>
+        public long Herd => Count;
+        /// <summary>`EachSpecies`: the metres around the point a footprint is found within.</summary>
+        public long Radius => Count;
+    }
 
     /// <summary>How the weapons of a `Weapon` test (its `Basis`) were chosen, as the weapon tables print it: a class (`any bow`), the weapons the title names (each with its whole weapon family),
-    /// both, every weapon but the ones the title refuses, or, from the operator's file only, a finish named exactly (`Crossbow Pistol (Wolfsbane)`).</summary>
+    /// both, every weapon but the ones the title refuses, or, from the operator's file only, a finish named exactly (`Test Pistol (Festive)`).</summary>
     static class WeaponBasis
     {
         public const string Class = "class", Name = "named weapon", NameAndClass = "named weapon + class", AllBut = "any weapon but", Finish = "named finish";
@@ -116,7 +125,7 @@ public sealed partial class State
             Check.Reserve => k.Reserve is { } r && t.Ids!.Contains(r),
             Check.Place => k.In(t.Place!),
             // an animal the server placed (<see cref="PlaceNamedAnimals"/>) is met by an animal of its population; else the player's place when the test has one (the operator's `otherwise place`), a title with a place is met by its species (and gender) there, one without a place by an animal that carries `special`
-            Check.Named => t.Ids is not null ? NumOf(k.E7, "population") is { } population && t.Ids.Contains((long)population) : t.Place is not null ? k.In(t.Place) || Near(k, t.Min, t.Max, 500) : double.IsInfinity(t.Min) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.Min, t.Max),
+            Check.Named => t.Ids is not null ? NumOf(k.E7, "population") is { } population && t.Ids.Contains((long)population) : t.Place is not null ? k.In(t.Place) || Near(k, t.X, t.Z, 500) : double.IsInfinity(t.X) ? NumOf(k.E7, "special") is { } special && special != 0 : Near(k, t.X, t.Z),
             Check.Species => AnimalOf(k.E7, Py.IsNum(k.E3["extended_species"]) ? k.E3["extended_species"] : k.E7["species"]).Species is { } species && t.Ids!.Contains(species),
             Check.Clue => ClueIs(t, k.E12, k.E7) && (t.Min <= 1 || k.Clues.Value.Count(c => c.Id > after && ClueIs(t, c.Body, k.E7)) >= t.Min),
             Check.Coat => Has(NumOf(k.E7, "texture")),
@@ -128,10 +137,10 @@ public sealed partial class State
         };
     }
 
-    /// <summary>Is `k` a clue of footprints of the species `species` found within `t.Count` metres of the point (`t.Min`, `t.Max`: x, z)?</summary>
+    /// <summary>Is `k` a clue of footprints of the species `species` found within the test's radius of its point?</summary>
     static bool FootprintNear(Kill k, long species, Test t) =>
         AnimalOf(k.E7, k.E7["species"]).Species == species && ClueKindOf(k.E12, species) == ClueKind.Footprints
-        && NumOf(k.E12, "x") is { } x && NumOf(k.E12, "z") is { } z && Math.Sqrt((x - t.Min) * (x - t.Min) + (z - t.Max) * (z - t.Max)) <= t.Count;
+        && NumOf(k.E12, "x") is { } x && NumOf(k.E12, "z") is { } z && Math.Sqrt((x - t.X) * (x - t.X) + (z - t.Z) * (z - t.Z)) <= t.Radius;
 
     /// <summary>Does the kill meet every condition of the rule (an unknown one never)? `after` is the last event the mission's progress is not owed from: the clues a count adds up and the
     /// harvests a sequence counts are later. The sequences come last in the tests, so they are counted only for a kill that meets the rest.</summary>
@@ -368,6 +377,21 @@ public sealed partial class State
             NoStands = new(@"\s(?:an?\s+|the\s+)?(?<s>" + StandList + @")\s+(?:is|are)\s+not\s+allowed(?=\s)", Rx);
 
         static readonly string[] Classes = ["Rifles", "Shotguns", "Handguns", "Muzzleloaders", "Bows & Crossbows"];  // the sub-categories a title's class noun is made of
+        /// <summary>The weapon classes a sub-category's name spells in its words (`<x> Rifle Ammo`: rifles; `Muzzle... Pistols`: muzzleloaders and handguns); none for a name that spells no class.</summary>
+        static List<string> ClassesIn(string subcategory)
+        {
+            var words = Words(subcategory).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            List<string> classes = [];
+            if (words.Any(w => w.StartsWith("muzzle", StringComparison.Ordinal)))
+                classes.Add("Muzzleloaders");
+            if (words.Any(w => w is "pistol" or "pistols" or "handgun" or "handguns" or "revolver" or "revolvers"))
+                classes.Add("Handguns");
+            if (words.Any(w => w.StartsWith("rifle", StringComparison.Ordinal)))
+                classes.Add("Rifles");
+            if (words.Any(w => w.StartsWith("shotgun", StringComparison.Ordinal)))
+                classes.Add("Shotguns");
+            return classes;
+        }
 
         static readonly string[] Stops = "a an the another any one final in with using from at and or of to while by during same hunt then finally first harvest spot killed shot taken kill take it its that is are be on when only just either each also second third fourth last more ammo ammunition rounds shells loaded bullet bullets s weapon weapons but animal animals fine dandy anywhere".Split(' ');
 
@@ -475,7 +499,7 @@ public sealed partial class State
         readonly Dictionary<string, long[]> longer;
         readonly List<(long Id, string Name, string Class, HashSet<string> Words)> weapons = [], sights = [];
         readonly (long Id, string Core, string[] Words)[] ammo;
-        readonly List<(Regex In, long[] Ids)> ammoClasses;  // `rifle ammunition`, `Muzzleloader ammo`: the rounds of that class
+        readonly List<(Regex In, long[] Ids)> ammoClasses;  // `rifle ammunition`, `<class> ammo`: the rounds of that class
         readonly List<(Regex In, long[] Ids)> ammoNames;
         readonly (long Id, Regex In)[] reserves;
         readonly (long Reserve, string Name, string Define, double X, double Z)[] towers;
@@ -500,21 +524,26 @@ public sealed partial class State
             var ammoItems = new List<(long Id, string Core, string Note)>();
             var ammoWords = new Dictionary<long, string[]>();
             var ammoSubcat = new Dictionary<long, string>();
+            var cartridges = new Dictionary<long, string[]>();  // a weapon whose name starts with cartridges joined by slashes
             foreach (var i in items.Where(i => Py.IsNum(i["id"]) && Py.IsStr(i["name"])))
             {
                 var (id, cat, full) = (Py.L(i["id"]), Py.IsNum(i["cat"]) ? Py.L(i["cat"]) : -1, (string)i["name"]!);
                 var name = Words(full);
                 if (cat is 1 or 2)
+                {
                     (cat == 1 ? weapons : sights).Add((id, name, Py.Str(G(i, "subcat", null) is JsonObject sub ? G(sub, "name", "") : ""), [.. name.Split(' ')]));
+                    if (cat == 1 && full.Split(' ')[0].Split('/') is { Length: > 1 } joined)
+                        cartridges[id] = joined;
+                }
                 else if (cat == 3)
                 {
                     ammoItems.Add((id, Core(full), Regex.Match(full, @"\(([^)]*)\)") is { Success: true } note ? Words(note.Groups[1].Value) : ""));
-                    ammoWords[id] = [.. name.Split(' '), .. Words(Py.Str(G(i, "variationname", ""))).Split(' ', StringSplitOptions.RemoveEmptyEntries)];  // the variation too: a tracer arrow is `Red Tracer Flare`
+                    ammoWords[id] = [.. name.Split(' '), .. Words(Py.Str(G(i, "variationname", ""))).Split(' ', StringSplitOptions.RemoveEmptyEntries)];  // the variation too: a tracer arrow is `Test Arrow` with the variation `Red Tracer`
                     ammoSubcat[id] = Py.Str(G(i, "subcat", null) is JsonObject sub ? G(sub, "name", "") : "");
                 }
             }
-            // a weapon filed under an event's sub-category (a finish of the Summer Fiesta, Halloween or Holidays) is of the class of the rest of its weapon family; one with no such mate (the Scout) is a rifle or
-            // a shotgun by the last word of its name; the others (a combination gun, a muzzleloading pistol) keep the sub-category they have
+            // a weapon filed under an event's sub-category (a finish of a seasonal event) is of the class of the rest of its weapon family; one with no such mate is a rifle or a shotgun by the last word of its name;
+            // the others keep the sub-category they have
             for (var w = 0; w < weapons.Count; w++)
                 if (!Classes.Contains(weapons[w].Class))
                 {
@@ -524,23 +553,36 @@ public sealed partial class State
                     if (of is not null)
                         weapons[w] = (weapons[w].Id, weapons[w].Name, of, weapons[w].Words);
                 }
-            // a weapon of two classes: the .50 muzzleloader rifles are rifles too and the muzzleloading pistol a handgun; the crossbow pistol a handgun; the combination gun a shotgun (with a shotgun shell) and a rifle (with its rifle round)
+            // a weapon of two classes, from the catalogue's data: a sub-category whose name spells two classes (a muzzleloading pistol: muzzleloaders and handguns; it keeps its own sub-category, so a name with words
+            // does not take it for the muzzleloader of that name), the muzzleloaders (rifles too), a crossbow whose name is a pistol (a handgun too), and a weapon whose name joins two cartridges with a slash
+            // (`<cartridge>/<cartridge> ...`) that ammunition of two classes fits: it is of both classes, each with the ammunition of that class
             for (var w = 0; w < weapons.Count; w++)
             {
-                var (wid, words) = (weapons[w].Id, weapons[w].Words);
-                if (weapons[w].Class == "Muzzleloading Pistols")  // keeps its own sub-category (a name with words does not take it for the muzzleloader of that name): a muzzleloader and a handgun for the bare nouns
-                    also[wid] = new() { ["Muzzleloaders"] = null, ["Handguns"] = null };
+                var (wid, words, own) = (weapons[w].Id, weapons[w].Words, ClassesIn(weapons[w].Class));
+                if (!Classes.Contains(weapons[w].Class) && own.Count > 1)
+                    also[wid] = own.ToDictionary(c => c, _ => (HashSet<long>?)null);
                 else if (weapons[w].Class == "Muzzleloaders")
                     also[wid] = new() { ["Rifles"] = null };
                 else if (weapons[w].Class == "Bows & Crossbows" && words.Contains("crossbow") && words.Contains("pistol"))
                     also[wid] = new() { ["Handguns"] = null };
-                else if (words.Contains("drilling"))
-                    also[wid] = new() { ["Shotguns"] = [.. ammoSubcat.Where(a => a.Value == "Shotgun Ammo").Select(a => a.Key)], ["Rifles"] = [.. ammoSubcat.Where(a => a.Value == "Rifle Ammo").Select(a => a.Key)] };
+                else if (!Classes.Contains(weapons[w].Class) && cartridges.TryGetValue(wid, out var parts))
+                {
+                    Dictionary<string, HashSet<long>?> byClass = [];
+                    foreach (var part in parts)
+                    {
+                        var spelt = Words(part).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var aid in ammoWords.Where(a => spelt.All(s => a.Value.Contains(s))).Select(a => a.Key))
+                            foreach (var c in ClassesIn(ammoSubcat[aid]))
+                                (byClass.TryGetValue(c, out var set) ? set : byClass[c] = [])!.Add(aid);
+                    }
+                    if (byClass.Count > 1)
+                        also[wid] = byClass;
+                }
             }
             catalogued = [.. weapons.Select(w => w.Id)];
             weaponNames = ByName(weapons);
-            // a name whose words all lie, in order, in a longer name (`.44 Revolver`, `.44 Magnum Revolver`): the title naming the shorter one also accepts the longer. A weapon with a family of its own (more than
-            // one item) takes no other family's weapon whose name only has its words in between (`6.5x55 Blaser R8 Bolt Action Rifle` for `6.5x55 Bolt Action Rifle`); a name that holds it whole (`Heavy Recurve Bow`) stays
+            // a name whose words all lie, in order, in a longer name (`.30 Revolver`, `.30 Magnum Revolver`): the title naming the shorter one also accepts the longer. A weapon with a family of its own (more than
+            // one item) takes no other family's weapon whose name only has its words in between (`6.5x55 Maker Z9 Bolt Action Rifle` for `6.5x55 Bolt Action Rifle`); a name that holds it whole (`Heavy Test Bow`) stays
             longer = weaponNames.ToDictionary(n => n.Name, n =>
             {
                 var ownFamily = n.Ids.Any(i => families?.Of(i) is { Members.Count: > 1 });
@@ -548,7 +590,7 @@ public sealed partial class State
             });
             sightNames = ByName(sights);
             ammo = [.. ammoItems.Where(a => a.Core.Length > 0).Select(a => (a.Id, a.Core, ammoWords[a.Id])).OrderByDescending(a => a.Core.Length)];
-            ammoClasses = [.. new[] { ("rifle", "Rifle Ammo"), ("muzzleloader", "Muzzleloader Ammo") }.Select(c => (c.Item1, Ids: ammoSubcat.Where(a => a.Value == c.Item2 || c.Item1 == "rifle" && a.Value == "Muzzleloader Ammo").Select(a => a.Key).ToArray())).Where(c => c.Ids.Length > 0)  // the muzzleloader rifles are rifles: rifle ammunition holds their rounds
+            ammoClasses = [.. new[] { ("rifle", "Rifles"), ("muzzleloader", "Muzzleloaders") }.Select(c => (c.Item1, Ids: ammoSubcat.Where(a => ClassesIn(a.Value) is var of && (of.Contains(c.Item2) || c.Item2 == "Rifles" && of.Contains("Muzzleloaders"))).Select(a => a.Key).ToArray())).Where(c => c.Ids.Length > 0)  // the muzzleloader rifles are rifles: rifle ammunition holds their rounds
                 .Select(c => (new Regex(@"\s" + c.Item1 + @"s?\s+(?:ammo|ammunition)(?=\s)", Rx), c.Ids))];
             // an ammunition is named by its core and, when the title gives it, the bracketed note after it (`7mm-08 Ammunition (HV)`); by the core alone it is every item of that core
             ammoNames = [.. ammoItems.Where(a => a.Core.Length > 0)
@@ -743,7 +785,7 @@ public sealed partial class State
             var any = Take(ref sn, ClueWord, out _) || tracks;
             if (kinds.Count == 0 && !any)
                 sn += " clue_type ";  // a clue word that names no kind this reader knows (`feeding`): the objective is not understood
-            var anyAnimals = count >= 2 && different is null && other is null && !Regex.IsMatch(folded, @"\bsame\s+(?!hunt|expedition|session|outing)\w", Rx);  // `3 tracks from a Wood Grouse`: three clues of any animals of the species in the hunt; `the same Red Fox`: one animal
+            var anyAnimals = count >= 2 && different is null && other is null && !Regex.IsMatch(folded, @"\bsame\s+(?!hunt|expedition|session|outing)\w", Rx);  // `3 tracks from a Test Deer`: three clues of any animals of the species in the hunt; `the same Test Deer`: one animal
             tests.Add(new(Check.Clue, anyAnimals ? 1 : count, Ids: kinds));
             if (anyAnimals) tests.Add(new(Check.Within, count, double.PositiveInfinity));
             if (different is not null && (different.Min >= 2 || pending))  // one animal is no sequence, and the operator's file refuses it too: the clue alone (`another`'s 1 waits for Settle)
@@ -802,7 +844,7 @@ public sealed partial class State
             TakeReserve(ref sn, tests);
             if (tower.Success) TakeTower(ref sn, tower, tests, places);
             if (spot && anotherAnimal?.Match(sn) is { Success: true } another)
-                tests.Add(new(Check.Different, another.Groups["w"].Value is "another" or "last" or "final" or "unique" ? 1 : Array.IndexOf(OrdinalWords, another.Groups["w"].Value), Across: true));
+                tests.Add(new(Check.Different, another.Groups["w"].Value is "another" or "last" or "final" or "unique" ? 1 : Array.IndexOf(OrdinalWords, another.Groups["w"].Value), Across: !hunt));  // across the hunts, unless the title or its mission keeps to one hunt
             TakeCoat(ref sn, tests);  // before the species: a bare coat word is one right before it
             TakeSpecies(ref sn, own, tests);
             // several harvests of the hunt: `two ... within 5 minutes (of each harvest)`, `an Elk 5 minutes after another`, `two ... with a single shot` (below), `a fifth ...` when the title or
@@ -811,7 +853,7 @@ public sealed partial class State
             Test? sequence = null;
             if (Take(ref sn, Minutes, out var span)) sequence = new(span.Groups["each"].Success ? Check.Each : Check.Within, many, AmountOf(span, "m") * 60);
             else if (Take(ref sn, AfterAnother, out span)) sequence = new(Check.Within, Math.Max(many, 2), AmountOf(span, "m") * 60);
-            else if (Take(ref sn, Ordinal, out var nth) && hunt) sequence = new(Check.Within, Array.IndexOf(OrdinalWords, nth.Groups["o"].Value));
+            else if (Take(ref sn, Ordinal, out var nth) && hunt && !spot) sequence = new(Check.Within, Array.IndexOf(OrdinalWords, nth.Groups["o"].Value));  // a spot's ordinal says nothing, as before
             if (sequence is { Min: < 2 })
             {
                 sequence = null;
@@ -848,11 +890,11 @@ public sealed partial class State
                 byClass = true;
                 weaponIds.UnionWith(weapons.Where(w => w.Class == "Bows & Crossbows" && !w.Words.Contains("compound") && !w.Words.Contains("crossbow")).Select(w => w.Id));
             }
-            if (Take(ref sn, OneShot, out _))  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
-                if (many > 1 && sequence is null) sequence = new(Check.SameShot, many);  // `two Rusa Deer (at the same time) with a single shot`: one shot killed them all
+            if (Take(ref sn, OneShot, out var oneShot))  // after the names (a "Single Shot Shotgun" is a weapon), before the nouns (`a single arrow`)
+                if (many > 1 && sequence is null && Regex.IsMatch(oneShot.Value, @"shots?\b|arrows?\b|bolts?\b", Rx)) sequence = new(Check.SameShot, many);  // `two Test Deer (at the same time) with a single shot`: one shot killed them all; `two ... each with one heart shot` (the match is `one `) is one shot each, a count nothing here reads
                 else tests.Add(new(Check.OneShot));
             sn = PistolOrRevolver.Replace(sn, " handgun ");  // `any ethical pistol or revolver`: the handgun class, the .308 single-shot handguns too
-            var classAmmo = new HashSet<long>();  // `any ethical rifle ammunition`, `Muzzleloader ammo`: the rounds of that class, whatever weapon fired them
+            var classAmmo = new HashSet<long>();  // `any ethical rifle ammunition`, `<class> ammo`: the rounds of that class, whatever weapon fired them
             foreach (var (classWords, ids) in ammoClasses)
                 while (Take(ref sn, classWords, out _))
                     classAmmo.UnionWith(ids);
@@ -976,7 +1018,7 @@ public sealed partial class State
             return found.All(f => f.Length > 0) ? found.SelectMany(f => f) : [];
         }
 
-        /// <summary>The weapons whose whole name the words and the noun spell, in any order (`a Parker Python Compound Bow` is the `Compound Bow "Parker Python"`): the title names them, so it names their weapon family too.
+        /// <summary>The weapons whose whole name the words and the noun spell, in any order (`a Maker Model Compound Bow` is the `Compound Bow "Maker Model"`): the title names them, so it names their weapon family too.
         /// A name only some of whose words are there (`any .243 rifle`, `any semi-auto shotgun`) is a class.</summary>
         IEnumerable<long> Spelled(string[] words, Match noun) =>
             words.Length == 0 ? [] : weapons.Where(w => WeaponOf(w, noun, words) && w.Words.All(x => words.Contains(x) || x == noun.Groups["c"].Value.Split(' ')[0].TrimEnd('s'))).Select(w => w.Id);

@@ -149,15 +149,31 @@ public sealed partial class State
         Py.IsStr(e["direction"]) && (string)e["direction"]! == "enter" && Py.IsStr(e["location_name"]) && Normalise((string)e["location_name"]!) is { Length: > 0 } place
             ? new(place, NumOf(e, "player_x"), NumOf(e, "player_z"), new(() => ReserveAt(con, eventId))) : null;
 
-    /// <summary>The defines of the catalogue's places of `reserves` (none: any) whose English name the title (<see cref="Normalise"/>d) holds as whole words, those with the longest name only: the
-    /// title of `the Inland Campsite` does not name `Campsite` too. The game sends a place's define when the player enters it (docs/server.md, "What the stored events show").</summary>
+    /// <summary>The defines of the catalogue's places of `reserves` (none: any) whose English name the title holds as the whole of a place name, those with the longest name only: the title of `the Upper Test
+    /// Camp` does not name `Test Camp` too. A name that a capitalised word of the title continues (`Test Hill Watchtower` where the catalogue lists `Test Hill` only) is not the place the title means.
+    /// The game sends a place's define when the player enters it (docs/server.md, "What the stored events show").</summary>
     static string[] NamedPlaces(IEnumerable<Location> places, string title, long[] reserves)
     {
-        var padded = " " + title + " ";
-        var named = places.Where(l => (reserves.Length == 0 || reserves.Contains(l.Reserve)) && padded.Contains(" " + l.Name + " ", StringComparison.Ordinal)).ToList();
+        var words = title.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+            .SelectMany(t => Normalise(t).Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(w => (Word: w, Capital: t.Any(char.IsLetter) && char.IsUpper(t.First(char.IsLetter)), Ends: t.Length > 0 && !char.IsLetterOrDigit(t[^1]))))
+            .ToArray();
+        bool Named(string name)
+        {
+            var n = name.Split(' ');
+            for (var i = 0; i + n.Length <= words.Length; i++)
+                if (words.Skip(i).Take(n.Length).Select(w => w.Word).SequenceEqual(n)
+                    && !(i > 0 && words[i - 1] is { Capital: true } before && i > 1 && !Joining.Contains(before.Word))  // `Fort <Name>`: the word before is part of the name
+                    && !(i + n.Length < words.Length && !words[i + n.Length - 1].Ends && words[i + n.Length] is { Capital: true } next && !Joining.Contains(next.Word)))  // `<Name> Watchtower`
+                    return true;
+            return false;
+        }
+        var named = places.Where(l => (reserves.Length == 0 || reserves.Contains(l.Reserve)) && Named(l.Name)).ToList();
         var longest = named.Select(l => l.Name.Length).DefaultIfEmpty().Max();
         return [.. named.Where(l => l.Name.Length == longest && l.Define.Length > 0).Select(l => l.Define).Distinct()];
     }
+
+    /// <summary>The words a title writes with a capital that do not continue a place's name: the first word of a sentence, the connectives and the word `reserve`.</summary>
+    static readonly HashSet<string> Joining = ["the", "a", "an", "and", "or", "then", "at", "in", "to", "of", "from", "after", "before", "on", "with", "while", "by", "for", "reserve", "lodge", "arrive", "visit", "reach", "enter", "go", "harvest", "spot", "track", "start"];
 
     /// <summary>Is the hunt of the arrival in one of the zone's reserves (none listed: any)?</summary>
     static bool InReserves(Zone z, Arrival a) => z.Reserves.Length == 0 || a.Reserve.Value is { } here && z.Reserves.Contains(here);
@@ -231,7 +247,7 @@ public sealed partial class State
             Test[] tests = [];
             var left = "";
             if (kind is Kind.Harvest or Kind.Spot)
-                (tests, left) = reader.Read(animals, own, named, kind == Kind.Harvest && (singleHunt || OneHunt.IsMatch(title)), places, kind == Kind.Spot);  // a spot's ordinal says nothing, as before
+                (tests, left) = reader.Read(animals, own, named, singleHunt || OneHunt.IsMatch(title), places, kind == Kind.Spot);  // a spot's ordinal says nothing, as before; its `another` is counted in the hunt when the title or mission says one hunt
             else if (kind == Kind.Track)
                 (tests, left) = reader.ReadClue(animals, own, singleHunt || OneHunt.IsMatch(title));
             if (tests.Any(t => t.Check == Check.Species))
@@ -248,8 +264,8 @@ public sealed partial class State
                 if ((animal.Count > 0 ? animal.Select(s => ((s % 100) + 100) % 100) : permits.Keys).Any(s => permits.TryGetValue(s, out var list) && list.Overlaps(rounds)))
                     tests = [.. tests, new Test(Check.Permitted)];
             }
-            var point = Reader.PointOf(body);  // a title with coordinates is met near them, not by the name of a place beside the one it means (`Fort Stillwater Watchtower`)
-            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left, kind == Kind.Arrive ? new Zone(point, places ?? [], point is null ? NamedPlaces(catalogueLocations.Values, text, places ?? []) : []) : null);
+            var point = Reader.PointOf(body);  // a title with coordinates is met near them, not by the name of a place beside the one it means (`Test Hill Watchtower` is not `Test Hill`)
+            return new Rule(kind, species, gender, ordered.Success, text, tests, left.Length > 0, left, kind == Kind.Arrive ? new Zone(point, places ?? [], point is null ? NamedPlaces(catalogueLocations.Values, title, places ?? []) : []) : null);
         }
 
         foreach (var d in Arr(G(application, "missions", null)).OfType<JsonObject>())
@@ -557,23 +573,31 @@ public sealed partial class State
     }
 
     /// <summary>Finish the first unfinished objective of this kind that `meets` accepts (`credited`, a harvest of an animal another member shot: only one whose title asks for a harvest,
-    /// <see cref="AsksHarvest"/>); an ordered objective only once every one before it is finished; `after` is the last event the progress is not owed from: its id is added to `done`, and it is returned; null when none is met.</summary>
-    static Objective? Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, long, bool> meets, long after = 0, bool credited = false)
+    /// <see cref="AsksHarvest"/>); an ordered objective only once every one before it is finished; `after` is the last event the progress is not owed from. The ids of what it finishes are added to
+    /// `done` and the objectives are returned, the first one first: more than one when the rule says `together` (the other objectives with the same rule, each in its own order, kind and credit); empty when none is met.</summary>
+    static List<Objective> Meet(MissionDef m, List<long> done, Kind kind, Func<Rule, long, bool> meets, long after = 0, bool credited = false)
     {
+        bool Open(int i) => m.Objectives[i] is var o && o.Rule.Kind == kind && !done.Contains(o.Id) && (!o.Rule.Ordered || Before(m, i).All(p => done.Contains(p.Id))) && (!credited || AsksHarvest(o.Title));
         for (var i = 0; i < m.Objectives.Length; i++)
         {
             var o = m.Objectives[i];
-            if (o.Rule.Kind != kind || done.Contains(o.Id) || (o.Rule.Ordered && Before(m, i).Any(p => !done.Contains(p.Id))) || credited && !AsksHarvest(o.Title) || !meets(o.Rule, after))
+            if (!Open(i) || !meets(o.Rule, after))
                 continue;
             done.Add(o.Id);
-            if (o.Rule.Together)  // one animal finishes every objective that asks the same (the operator's `together`)
-                done.AddRange(m.Objectives.Where(p => p.Id != o.Id && !done.Contains(p.Id) && p.Rule.Together && p.Rule.Text == o.Rule.Text).Select(p => p.Id));
-            return o;
+            List<Objective> finished = [o];
+            if (o.Rule.Together)  // one animal finishes every objective that asks the same (the operator's `together`): the same rule meets the same event
+                for (var j = 0; j < m.Objectives.Length; j++)
+                    if (m.Objectives[j] is var p && p.Rule.Together && p.Rule.Text == o.Rule.Text && Open(j))
+                    {
+                        done.Add(p.Id);
+                        finished.Add(p);
+                    }
+            return finished;
         }
-        return null;
+        return [];
     }
 
-    /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts; then the same
+    /// <summary>For each active mission that was activated before the event `eventId`, finish its first unfinished objective of this kind that `meets` accepts (and the ones it finishes together with it); then the same
     /// for today's daily mission, and the community missions count it. `credited`: a harvest of an animal another member shot (<see cref="HarvesterEvent"/>): only the missions, only objectives whose title
     /// asks for a harvest, each kept (<see cref="Mark"/>).</summary>
     void Advance(Db con, Kind kind, Func<Rule, long, bool> meets, Action<JsonObject> now, long eventId, bool credited = false)
@@ -583,16 +607,17 @@ public sealed partial class State
         {
             if (state != 2 || !missions.TryGetValue(id, out var m) || marks[id].Seen >= eventId)
                 continue;
-            var had = done.ToArray();
-            if (Meet(m, done, kind, meets, marks[id].Seen, credited) is not { } o)
+            if (Meet(m, done, kind, meets, marks[id].Seen, credited) is not { Count: > 0 } finished)
                 continue;
-            Stamp(con, m, m.Objectives.Where(x => done.Contains(x.Id) && !had.Contains(x.Id)));
+            Stamp(con, m, finished);
             if (credited)
-                con.Exec("UPDATE missions SET kept = json_insert(kept, '$[#]', ?) WHERE account_id = $a AND mission_id = ?", o.Id, m.Id);
+                foreach (var o in finished)
+                    con.Exec("UPDATE missions SET kept = json_insert(kept, '$[#]', ?) WHERE account_id = $a AND mission_id = ?", o.Id, m.Id);
             if (m.Objectives.Any(x => !done.Contains(x.Id)))
             {
                 con.Exec("UPDATE missions SET objectives = ? WHERE account_id = $a AND mission_id = ?", Py.Dumps(List(done)), m.Id);
-                Toast(con, $"Mission \"{m.Title}\", objective \"{o.Title}\" completed.");
+                foreach (var o in finished)
+                    Toast(con, $"Mission \"{m.Title}\", objective \"{o.Title}\" completed.");
             }
             else
                 Complete(con, m, now);

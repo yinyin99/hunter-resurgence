@@ -96,8 +96,8 @@ public sealed partial class State
         Check.Pose => "pose: " + Names(t.Ids!.Select(i => i is >= 0 and < 3 ? PoseNames[i] : "pose " + i)),
         Check.Stand => "stand: " + Names(t.Ids!.Select(i => i is >= 0 and < 7 ? StandNames[i] : "stand " + i)),
         Check.Reserve => "reserve: " + Names(t.Ids!.Select(i => reserves.GetValueOrDefault(i) ?? "reserve " + i)),
-        Check.Named => double.IsInfinity(t.Min) ? "named animal, no place" : $"named animal near ({Num(t.Min)}, {Num(t.Max)}) m" + (t.Count > 1 ? $", {t.Count} animals" : "") + (t.Place is not null ? ", otherwise place " + t.Place : ""),
-        Check.EachSpecies => $"footprints of each of {SpeciesNames(t.Ids!)} within {t.Count} m of ({Num(t.Min)}, {Num(t.Max)})",
+        Check.Named => double.IsInfinity(t.X) ? "named animal, no place" : $"named animal near ({Num(t.X)}, {Num(t.Z)}) m" + (t.Herd > 1 ? $", {t.Herd} animals" : "") + (t.Place is not null ? ", otherwise place " + t.Place : ""),
+        Check.EachSpecies => $"footprints of each of {SpeciesNames(t.Ids!)} within {t.Radius} m of ({Num(t.X)}, {Num(t.Z)})",
         Check.Species => "species: " + SpeciesNames(t.Ids!),
         Check.Clue => "clues: " + (t.Ids!.Count == 0 ? "any" : Names(t.Ids.Select(i => ((ClueKind)i).ToString().ToLowerInvariant()))) + " x" + Num(Math.Max(t.Min, 1)),
         Check.Coat => "coat: " + Names(t.Ids!.Select(CoatName)),
@@ -126,6 +126,7 @@ public sealed partial class State
         if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
         if (r.After is { } after) parts.Add($"after objective {after}");
         else if (r.Ordered) parts.Add("ordered");
+        else if (unordered.Contains((m.Id, o.Id))) parts.Add("unordered");
         if (r.Together) parts.Add("together");
         parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
         if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");

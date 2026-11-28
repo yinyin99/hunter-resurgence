@@ -77,6 +77,13 @@ public sealed class Db : IDisposable
         inTx = false;
     }
 
+    public void Rollback()
+    {
+        if (!owns) throw new InvalidOperationException("a shared view takes part in its owner's transaction");
+        Script("ROLLBACK");
+        inTx = false;
+    }
+
     SqliteCommand Cmd(string sql, object?[] args)
     {
         var tables = PlayerTable.Count(sql);

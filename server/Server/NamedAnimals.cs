@@ -27,12 +27,12 @@ public sealed partial class State
         var reservesNamed = tests.Where(t => t.Check == Check.Reserve).ToArray();
         var coats = tests.Where(t => t.Check == Check.Coat).ToArray();
         var reserve = reservesNamed.Length == 1 && reservesNamed[0].Ids!.Count == 1 ? reservesNamed[0].Ids!.Single() : reservesNamed.Length == 0 && missionReserves.Length == 1 ? missionReserves[0] : -1;
-        if (rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot) || named.Length != 1 || double.IsInfinity(named[0].Min) || reserve < 1 || coats.Length > 1 || tests.Any(t => t.Check == Check.NotCoat)
+        if (rule.Unknown || rule.Kind is not (Kind.Harvest or Kind.Spot) || named.Length != 1 || double.IsInfinity(named[0].X) || reserve < 1 || coats.Length > 1 || tests.Any(t => t.Check == Check.NotCoat)
             || rule.Species is not { } speciesId || speciesId >= facts.Animals.Length || coats.Length == 1 && coats[0].Ids!.Count != 1)
             return null;
-        var (x, z) = (Math.Round(named[0].Min), Math.Round(named[0].Max));
+        var (x, z) = (Math.Round(named[0].X), Math.Round(named[0].Z));
         return Math.Abs(x) > Spawner.Limit || Math.Abs(z) > Spawner.Limit || x == 0 && z == 0 ? null  // (0, 0) means no position to the client
-            : new(reserve, speciesId, rule.Gender ?? 0, coats.Length == 1 ? coats[0].Ids!.Single() : null, x, z, named[0].Count);
+            : new(reserve, speciesId, rule.Gender ?? 0, coats.Length == 1 ? coats[0].Ids!.Single() : null, x, z, named[0].Herd);
     }
 
     /// <summary>Give every objective that names an animal the server can place its population: the rule's named condition then holds for an animal of that population only. Called at the start,

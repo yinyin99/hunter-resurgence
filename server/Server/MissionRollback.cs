@@ -50,7 +50,7 @@ public sealed partial class State
     {
         var (done, met) = (start.Distinct().ToList(), new List<(Objective, long)>());
         foreach (var h in events)
-            if (Meet(m, done, h.Kind, (r, last) => h.Meets(r, last), after) is { } o)
+            foreach (var o in Meet(m, done, h.Kind, (r, last) => h.Meets(r, last), after))  // every objective the event finishes (`together`), each with it
                 met.Add((o, h.Id));
         return met;
     }
@@ -87,9 +87,44 @@ public sealed partial class State
         return confirmed;
     }
 
+    /// <summary>The dry run of <see cref="ConfirmMissions"/> (`admin missions-recheck`): what the start would finish for every account (or `only`), one line per account and mission, with the pay of a mission it completes,
+    /// then a total. The start only ever finishes objectives (a stored event that meets an open one under today's rules): it never reopens an objective or a mission, and a finished objective is never checked. Nothing is
+    /// written: the account's changes are made in a transaction that is rolled back.</summary>
+    public IEnumerable<string> RecheckMissions(long? only = null)
+    {
+        if (missions.Count == 0)
+        {
+            yield return "no missions: no recorded catalogue, or a local server";
+            yield break;
+        }
+        List<long> accounts;
+        using (var all = Store.Open())
+            accounts = (only is { } one ? all.Rows("SELECT id FROM accounts WHERE id = ?", one) : all.Rows("SELECT id FROM accounts ORDER BY id")).Select(r => (long)r[0]).ToList();
+        long objectives = 0, completed = 0, gm = 0, em = 0, touched = 0;
+        foreach (var account in accounts)
+        {
+            using var con = Con(account);
+            con.Begin();
+            var report = new List<(long Mission, List<long> Objectives, bool Completes)>();
+            ConfirmAccount(con, report);
+            con.Rollback();
+            if (report.Count == 0)
+                continue;
+            touched++;
+            foreach (var (mission, finished, completes) in report)
+            {
+                var m = missions[mission];
+                (objectives, completed, gm, em) = (objectives + finished.Count, completed + (completes ? 1 : 0), gm + (completes ? m.Gm : 0), em + (completes ? m.Em : 0));
+            }
+            yield return $"account {account}: " + string.Join("; ", report.Select(r => $"mission {r.Mission} finishes objectives {string.Join(", ", r.Objectives)}"
+                + (r.Completes ? $" and completes (pays {missions[r.Mission].Gm} gm$, {missions[r.Mission].Em} em$)" : "")));
+        }
+        yield return $"would finish {objectives} objectives in {touched} accounts, complete {completed} missions and pay {gm} gm$ and {em} em$; would reopen 0 (the start never reopens); dry run: nothing written";
+    }
+
     // ponytail: every start checks every open harvest, clue and arrive objective of every active mission again, whether an event met it earlier or not; a per-mission checked mark
     // if the starts get slow; an ordered arrive objective also counts a place entered before the objective before it was finished (the row keeps no event for it)
-    int ConfirmAccount(Db con)
+    int ConfirmAccount(Db con, List<(long Mission, List<long> Objectives, bool Completes)>? report = null)
     {
         if (con.Scalar("SELECT 1 FROM mission_prefs WHERE account_id = $a") is null)
             return 0;
@@ -111,6 +146,7 @@ public sealed partial class State
                     continue;
                 (confirmed, again) = (confirmed + met.Count, true);
                 var finished = done.Concat(met.Select(x => x.Objective.Id)).ToList();
+                report?.Add((id, [.. met.Select(x => x.Objective.Id)], m.Objectives.All(o => finished.Contains(o.Id))));
                 Stamp(con, m, met.Select(x => x.Objective));
                 void Pending(JsonObject u) => con.Exec("INSERT INTO pending (account_id, body) VALUES ($a, ?)", Py.Dumps(u));
                 if (m.Objectives.Any(o => !finished.Contains(o.Id)))

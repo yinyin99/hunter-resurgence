@@ -109,6 +109,26 @@ public class NamedAnimalTests : MissionTestBase
     }
 
     [Fact]
+    public void TestWithPlacementOffAnObjectiveWithOtherwisePlaceIsMetNearItsPointOrByAHunterInTheirPlace()
+    {
+        var rule = O("""{"1/0": "harvest; species: Test Deer; reserve: Test Reserve; named animal near (-1200, 3400) m, 3 animals, otherwise place TEST_LAKE"}""");
+        var missions = Catalogue(["Harvest a Test Deer from the herd by the lake"], OnTest);
+        state = Make("off-far.db", missions, on: false, rules: rule);
+        state.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
+        Hunt(state);
+        Hb(KillOf(1, population: null, x: 0, z: 0));  // 3.6 km from the point, in no place
+        Assert.Equal("", Completed());
+        Hb(Enter("TEST_LAKE"));
+        Hb(KillOf(2, population: null, x: 0, z: 0));  // in the place the rule names
+        Assert.Equal("1", Completed());
+        state = Make("off-near.db", missions, on: false, rules: rule);
+        state.MissionCall(ME, "activate", "mission_id=1"u8.ToArray());
+        Hunt(state);
+        Hb(KillOf(3, population: null, x: -1000, z: 3400));  // 200 m from the point, in no place
+        Assert.Equal("1", Completed());
+    }
+
+    [Fact]
     public void TestAnObjectiveThatFinishedGetsNoEntryAndAnOrderedOneOnlyOnceTheOnesBeforeItAre()
     {
         var two = "{\"missions\": [{\"id\": 1, \"title\": \"Two\", \"dependencies\": [], \"rewards\": [], \"species\": [1], \"reserves\": [2], \"objectives\": ["
