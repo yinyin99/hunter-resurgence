@@ -74,8 +74,7 @@ public static class PlayerRows
 
     public static void AddLodge(Db con, string source, string id, JsonNode? node)
     {
-        foreach (var slot in (node?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-            if (slot["trophy_id"] is { } t) slot["trophy_id"] = Py.TrophyId(t);  // only an id the game can read (see Py.TrophyId), else an empty slot
+        State.ReadableTrophyIds(node);  // only an id the game can read, else an empty slot
         con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
     }
 

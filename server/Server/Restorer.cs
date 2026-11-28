@@ -262,6 +262,7 @@ public static class Restorer
                 {
                     var id = held[same].Id;
                     if (l.Node is JsonObject o) o["id"] = long.TryParse(id, out var number) ? number : id;
+                    State.ReadableTrophyIds(l.Node);  // as PlayerRows.AddLodge stores it
                     if (con.Exec("UPDATE lodges SET node = ? WHERE account_id = $a AND source = ? AND id = ?", Py.Dumps(l.Node), l.Source, id) == 0) PlayerRows.AddLodge(con, l.Source, id, l.Node);
                 }
                 lodges++;

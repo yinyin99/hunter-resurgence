@@ -36,6 +36,20 @@ public sealed partial class State
         PlayerRows.AddLodge(con, LodgeOne, id.ToString(), row);
     }
 
+    /// <summary>A lodge slot's `trophy_id` as the game can read it, else null (an empty slot). The game reads it with jsoncpp `asUInt`, which throws (uncaught: the game crashes while loading the lodge)
+    /// on text, an array, an object, a negative and a number above 4294967295 (an in-range decimal or boolean is read without a crash; null is sent for those too, to stay simple): an integer 0..4294967295
+    /// stays, a string of digits holding one becomes that integer.</summary>
+    internal static JsonNode? TrophyId(JsonNode? n) =>
+        n is JsonValue v && (Py.IsStr(v) ? (string)v! : Py.IsInt(v) ? v.ToJsonString() : null) is { } text
+        && uint.TryParse(text, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var id) ? JsonValue.Create((long)id) : null;
+
+    /// <summary>Every animal slot of a lodge row keeps only a <see cref="TrophyId"/>: what a restore stores and a lodge reply sends.</summary>
+    internal static void ReadableTrophyIds(JsonNode? lodge)
+    {
+        foreach (var slot in (lodge?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+            if (slot["trophy_id"] is { } sent) slot["trophy_id"] = TrophyId(sent);
+    }
+
     /// <summary>At start (community servers): <see cref="BackfillLodges(long)"/> for every account.</summary>
     public void BackfillLodges()
     {
@@ -113,7 +127,7 @@ public sealed partial class State
                 if (Py.IsStr(node["name"])) names.TryAdd(id, ((string)node["name"]!).Trim());
                 if (!mounted.TryGetValue(id, out var held)) mounted[id] = held = [];
                 foreach (var slot in (node["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-                    if (Py.Plain(slot["trophy_id"]) is { } trophy) held.Add(Py.Str(trophy));  // only a plain id: an object or an array in a restored slot is no trophy
+                    if (TrophyId(slot["trophy_id"]) is { } trophy) held.Add(Py.Str(trophy));  // only an id the game can read: another value in a stored slot is no trophy
             }
             var (largest, count) = mounted.OrderByDescending(m => m.Value.Count).ThenBy(m => m.Key).Select(m => (m.Key, m.Value.Count)).FirstOrDefault();
             if (count < BigLodge) return;
@@ -250,7 +264,7 @@ public sealed partial class State
         var mounts = new Dictionary<string, JsonObject>();
         foreach (var lodge in lodges)
             foreach (var slot in (lodge["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-                if (Py.Plain(slot["trophy_id"]) is { } id)
+                if (TrophyId(slot["trophy_id"]) is { } id)
                     mounts.TryAdd(Py.Str(id), new JsonObject { ["lodge_id"] = C(lodge["id"]), ["slot_id"] = C(slot["slot_id"]), ["pose_id"] = C(slot["pose_id"]) });
         var known = lodges.Select(l => Py.Str(l["id"])).ToHashSet();
         foreach (var row in trophies.OfType<JsonObject>())
@@ -271,9 +285,8 @@ public sealed partial class State
     List<JsonNode?> WithTrophies(long account, List<JsonNode?> lodges)
     {
         Dictionary<string, JsonNode?>? trophies = null;
+        foreach (var lodge in lodges) ReadableTrophyIds(lodge);  // the sent ids only: the stored rows stay as they are
         foreach (var slot in lodges.SelectMany(l => l?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-        {
-            if (slot["trophy_id"] is { } sent) slot["trophy_id"] = Py.TrophyId(sent);  // what the game can read, else an empty slot (the stored row stays)
             if (slot["trophy_id"] is { } id && slot["trophy_details"] is null)
             {
                 if (trophies is null)
@@ -284,7 +297,6 @@ public sealed partial class State
                 }
                 slot["trophy_details"] = trophies.GetValueOrDefault(Py.Str(id))?.DeepClone();
             }
-        }
         return lodges;
     }
 

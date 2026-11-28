@@ -236,18 +236,6 @@ public static class Py
     /// <summary>str.isdigit() for ASCII input.</summary>
     public static bool IsDigit(string s) => s.Length > 0 && s.All(char.IsAsciiDigit);
 
-    /// <summary>The value when it is a plain number or string, else null: an object or an array is no id.</summary>
-    public static JsonNode? Plain(JsonNode? n) => IsNum(n) || IsStr(n) ? n : null;
-
-    /// <summary>A lodge slot's `trophy_id` as the game can read it, else null (an empty slot). The game reads it with jsoncpp `asUInt`, which throws (uncaught: the game crashes while
-    /// loading the lodge) on a string, an array, an object, a negative or a real number and a number above 4294967295: so an integer 0..4294967295 stays, a string of digits holding one becomes that integer.</summary>
-    public static JsonNode? TrophyId(JsonNode? n) => n is JsonValue v ? Raw(v) switch
-    {
-        string s => uint.TryParse(s, System.Globalization.NumberStyles.None, System.Globalization.CultureInfo.InvariantCulture, out var id) ? JsonValue.Create((long)id) : null,
-        string[] or double or bool => null,
-        var o => Convert.ToInt64(o) is var l && l >= 0 && l <= uint.MaxValue ? JsonValue.Create(l) : null,
-    } : null;
-
     public static bool IsStr(JsonNode? n) => n is JsonValue v && Raw(v) is string;
     public static bool IsBool(JsonNode? n) => n is JsonValue v && Raw(v) is bool;
     public static bool IsFloat(JsonNode? n) => n is JsonValue v && Raw(v) is double;

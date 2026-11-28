@@ -416,10 +416,10 @@ public sealed partial class State
     static List<JsonObject> MountedRows(Db con) =>
         [.. Restored(con, "lodges", LodgeOne).Concat(Restored(con, "lodges", LodgeList)).OfType<JsonObject>()
             .SelectMany(l => (l["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-            .Where(s => Py.Plain(s["trophy_id"]) is not null && s["trophy_details"] is JsonObject)
+            .Where(s => TrophyId(s["trophy_id"]) is not null && s["trophy_details"] is JsonObject)
             .Select(s =>
             {
-                var row = new JsonObject { ["id"] = C(s["trophy_id"]), ["hidden"] = false };
+                var row = new JsonObject { ["id"] = TrophyId(s["trophy_id"]), ["hidden"] = false };
                 foreach (var field in TrophyFields)
                     row[field] = C(s["trophy_details"]![field]);
                 return row;
