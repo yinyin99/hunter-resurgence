@@ -16,9 +16,11 @@
         </div>
         <div class="tools">
             <span>@L["Servers.Showing", shown.Count]</span>
-            <label>@L["Servers.OnlyAllowed"] <input class="tick" type="checkbox" @bind="allowedOnly" /></label>
-            <label>@L["Servers.OnlyMyLanguage"] <input class="tick" type="checkbox" id="onlyMyLanguage" @bind="languageOnly" /></label>
             <button id="serverListRefresh" class="btn btn-primary" @onclick="Load">@L["Servers.Refresh"]</button>
+        </div>
+        <div class="filters">
+            <label><input class="tick" type="checkbox" @bind="allowedOnly" /> @L["Servers.OnlyAllowed"]</label>
+            <label><input class="tick" type="checkbox" id="onlyMyLanguage" @bind="languageOnly" /> @L["Servers.OnlyMyLanguage"]</label>
         </div>
         @if (shown.Count > 0)
         {

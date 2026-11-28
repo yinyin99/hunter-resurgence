@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 namespace Resurgence.Services.Mocks;
 
 /// <param name="mock">Development states of the "Game folder" window: "folder:two" (a second install seen), "folder:manual" (chosen by the player), "folder:gone" (the chosen folder lost the game), "folder:none" (no game; a start says so),
-/// "folder:refuse" (the picker refuses the folder). States of the game check (docs/website.md#the-game-check): "check:old", "check:updating", "check:newer", "check:files", "check:path", "check:steam",
+/// "folder:refuse" (the picker refuses the folder). "licence:owned", "licence:not_owned" and "licence:unknown" (no game, and the Steam licence the server reports for the account), "licence:nosteam" (no game, no Steam). States of the game check (docs/website.md#the-game-check): "check:old", "check:updating", "check:newer", "check:files", "check:path", "check:steam",
 /// "check:setup", "check:windows", "check:disk", "check:running", "check:dlls" (one problem each) and "check:many" (an old game, a path and a disk warning). Opening Steam "fixes" the problem, as the player would in Steam.
 /// Steam states of a start (docs/website.md#starting-without-steam): "steam:none" (Steam is not installed: the start goes on without it at once) and "steam:wait" (Steam is not signed in: the start waits for it 20 seconds or until "Start without Steam"); "check:steam" is the first one.</param>
 public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? mock = null) : ILauncherBridge
@@ -48,12 +48,15 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     }
 
     public bool IsSteam => true;
+    bool installed;
+    public void DetectGame() { if (installed) GameInstall = new(Steam, "steam-library", []); }
+    public bool SteamInstalled => mock is not ("steam:none" or "licence:nosteam");
     public GameInstallInfo GameInstall { get; private set; } = mock switch
     {
         "folder:two" => new(Steam, "steam-library", [@"E:\SteamLibrary\steamapps\common\Hunter"]),
         "folder:manual" => new(Chosen, "manual", []),
         "folder:gone" => new(Steam, "steam-library", [], @"D:\Games\Old"),
-        "folder:none" => new(null, null, []),
+        "folder:none" or "licence:owned" or "licence:not_owned" or "licence:unknown" or "licence:nosteam" => new(null, null, []),
         _ => new(Steam, "steam-library", []),
     };
     public Result ChooseGameFolder()
@@ -70,6 +73,7 @@ public sealed class MockLauncherBridge(ILogger<MockLauncherBridge> log, string? 
     {
         log.LogInformation("open {Url}", url);
         if (url.StartsWith("steam://")) check = null; // the player fixes it in Steam
+        if (url.StartsWith("steam://install/") && mock == "licence:owned") installed = true; // Steam installs the game; the next look for it finds it
     }
     public Result StartGame(string url)
     {

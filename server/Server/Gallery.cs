@@ -104,7 +104,7 @@ public sealed partial class State
             })];
     }
 
-    /// <summary>Gallery/list of the form's user_id (the player's own without one): one page (`offset`, `limit`) of the gallery, `{total, photos}`; any other
+    /// <summary>Gallery/list of the form's user_id (the player's own without one): nothing current calls it (the website and the launcher read `GET /hunters/<handle>/gallery`); one page (`offset`, `limit`) of the gallery, `{total, photos}`; any other
     /// account the player may see is listed too (<see cref="SeenAccount"/>); null for anyone else.</summary>
     public byte[]? GalleryListReply(long account, byte[] formBody)
     {

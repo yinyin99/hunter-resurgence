@@ -1,6 +1,6 @@
 namespace Resurgence.Services.Mocks;
 
-/// <param name="mock">The development state, read when asked (the page reads it after this service is made): "membership" gives the signed-in player a membership, "discord:linked" a linked Discord account with 7080 hunterscore, "discord:veteran" one with 25000.
+/// <param name="mock">The development state, read when asked (the page reads it after this service is made): "membership" gives the signed-in player a membership, "discord:linked" a linked Discord account with 7080 hunterscore, "discord:veteran" one with 25000, "licence:owned", "licence:not_owned" and "licence:unknown" the server's Steam licence check result (<see cref="Session.SteamLicence"/>; the mock launcher has no game then).
 /// The mock server has Linked Roles on, with the default Veteran threshold of 20000.</param>
 public sealed class MockSessionService(Func<string?>? mock = null) : ISessionService
 {
@@ -10,7 +10,7 @@ public sealed class MockSessionService(Func<string?>? mock = null) : ISessionSer
 
     public string? DiscordLinkUrl => "/discord/link";
 
-    public Task<Session?> CurrentAsync() => Task.FromResult(session is { Handle.Length: > 0 } ? session with { Membership = mock?.Invoke() == "membership" } with { DiscordLinked = mock?.Invoke() is "discord:linked" or "discord:veteran", DiscordVeteranAt = 20000 } with { HunterScore = mock?.Invoke() switch { "discord:linked" => 7080, "discord:veteran" => 25000, _ => session.HunterScore } } : session);
+    public Task<Session?> CurrentAsync() => Task.FromResult(session is { Handle.Length: > 0 } ? session with { Membership = mock?.Invoke() == "membership", SteamLicence = mock?.Invoke() is { } m && m.StartsWith("licence:") ? m[8..] : null } with { DiscordLinked = mock?.Invoke() is "discord:linked" or "discord:veteran", DiscordVeteranAt = 20000 } with { HunterScore = mock?.Invoke() switch { "discord:linked" => 7080, "discord:veteran" => 25000, _ => session.HunterScore } } : session);
 
     // the mock account has accepted; development hook ?mock=eula (HostMode) takes the acceptance back
     bool licenseAccepted = true;

@@ -1688,4 +1688,13 @@ Onu kullanan programı kapat (başka bir sunucu ya da launcher'ın ikinci bir ko
   <data name="Servers.Language" xml:space="preserve"><value>Dil</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Dil:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Yalnızca benim dilimdeki oyunlar</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Steam ile yükle</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam yüklü değil: Steam'i indirin</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Yeniden denetle</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Steam hesabınızda oyun var: Steam ile yükleyin.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Steam hesabınızda oyunun lisansı yok.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Ne yapabilirim?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Oyunu Steam'de bulamıyorum</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Steam'de Hesap → Lisanslar ve ürün anahtarı etkinleştirmeleri sayfasını açın ve oyunu orada arayın. Oradaysa başlatıcının “Steam ile yükle” düğmesini ya da Steam kütüphanenizi kullanın. Orada değilse Steam artık size veremez.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Steam lisanslarınızı açın</value></data>
 </root>

@@ -1,0 +1,31 @@
+@inject ILauncherBridge Bridge
+@inject ISessionService Sessions
+@inject ModalService Modal
+
+@* where the game is not found (docs/launcher.md#install-with-steam): Steam's install dialog (only an account with the licence gets the game from it), what the server knows of the licence, and a new look for the game *@
+<div class="steam-install">
+    @if (licence == "owned") { <p class="licence" id="steam-licence">@L["SteamInstall.Owned"]</p> }
+    else if (licence == "not_owned") { <p class="licence" id="steam-licence">@L["SteamInstall.NotOwned"] <a href="/help#steam-licence" id="steam-faq" @onclick="Modal.Close">@L["SteamInstall.Faq"]</a></p> }
+    <div class="actions">
+        <button type="button" class="btn btn-inverse" id="steam-install" @onclick="Install">@L[Bridge.SteamInstalled ? "SteamInstall.Button" : "SteamInstall.NoSteam"]</button>
+        @if (OnCheckAgain.HasDelegate) { <button type="button" class="btn btn-inverse" id="steam-again" @onclick="Again">@L["SteamInstall.Again"]</button> }
+    </div>
+</div>
+
+@code {
+    /// <summary>Set where the page shows the result of the search itself: its "Check again" button looks for the game again and then runs this to show what was found. Without it there is no such button (the window is closed and opened again).</summary>
+    [Parameter] public EventCallback OnCheckAgain { get; set; }
+
+    string? licence;
+
+    protected override async Task OnInitializedAsync() => licence = (await Sessions.CurrentAsync())?.SteamLicence;
+
+    // the launcher puts its steam_app_id (settings.json) in place of the placeholder; Steam missing: Steam's own download page
+    void Install() => Bridge.OpenExternal(Bridge.SteamInstalled ? "steam://install/{steam_app_id}" : "https://store.steampowered.com/about/");
+
+    async Task Again()
+    {
+        Bridge.DetectGame();
+        await OnCheckAgain.InvokeAsync();
+    }
+}

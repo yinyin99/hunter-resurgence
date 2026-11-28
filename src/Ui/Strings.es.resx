@@ -1688,4 +1688,13 @@ Cierra el programa que lo usa (otro servidor o una segunda copia del launcher) y
   <data name="Servers.Language" xml:space="preserve"><value>Idioma</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Idioma:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Solo partidas en mi idioma</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Instalar con Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam no está instalado: descargar Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Comprobar de nuevo</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Tu cuenta de Steam tiene el juego: instálalo con Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Tu cuenta de Steam no tiene la licencia del juego.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>¿Qué puedo hacer?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>No encuentro el juego en Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>En Steam, abre Cuenta → Licencias y activaciones de claves de producto y busca allí el juego. Si aparece, usa el botón «Instalar con Steam» del lanzador o tu biblioteca de Steam. Si no aparece, Steam ya no puede dártelo.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Abrir tus licencias de Steam</value></data>
 </root>
