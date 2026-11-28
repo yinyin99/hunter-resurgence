@@ -273,8 +273,8 @@ public sealed partial class State
         Dictionary<string, JsonNode?>? trophies = null;
         foreach (var slot in lodges.SelectMany(l => l?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
         {
-            if (slot["trophy_id"] is not null && Py.Plain(slot["trophy_id"]) is null) slot["trophy_id"] = null;  // an object or an array is no trophy: sent as an empty slot (the stored row stays)
-            if (Py.Plain(slot["trophy_id"]) is { } id && slot["trophy_details"] is null)
+            if (slot["trophy_id"] is { } sent) slot["trophy_id"] = Py.TrophyId(sent);  // what the game can read, else an empty slot (the stored row stays)
+            if (slot["trophy_id"] is { } id && slot["trophy_details"] is null)
             {
                 if (trophies is null)
                 {

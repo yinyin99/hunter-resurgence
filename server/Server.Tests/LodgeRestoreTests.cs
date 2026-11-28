@@ -65,4 +65,30 @@ public class LodgeRestoreTests : StateTestBase
         }
         Assert.NotNull(state.TrophiesReply(player));
     }
+
+    [Theory]
+    [InlineData("\"123\"", 123)]
+    [InlineData("123", 123)]
+    [InlineData("4294967295", 4294967295)]
+    [InlineData("\"abc\"", null)]
+    [InlineData("\"-1\"", null)]
+    [InlineData("-1", null)]
+    [InlineData("4294967296", null)]
+    [InlineData("99999999999999999999", null)]
+    [InlineData("1.5", null)]
+    [InlineData("true", null)]
+    public void ALodgeSlotsTrophyIdIsSentAsTheGameCanReadItElseEmpty(string stored, long? sent)
+    {
+        var player = state.Store.NextServerId();
+        state.CreateAccount(player, "ids", "76561190000000998");
+        var node = $$"""{"id": 6, "name": "ids", "animal_slots": [{"slot_id": 1, "trophy_id": {{stored}}}]}""";
+        using (var con = state.Store.Open(player))
+            foreach (var source in new[] { "/game/user/lodges", "/game/user/lodge" })
+                con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, '6', ?)", source, node);
+        foreach (var slot in new[] { Reply(state.LodgesReply(player))[0]!["animal_slots"]![0]!, Reply(state.LodgeReply(player, 6)!)["animal_slots"]![0]! })
+        {
+            Assert.Equal(sent, (long?)slot["trophy_id"]);
+            Assert.Equal(1, (int)slot["slot_id"]!);
+        }
+    }
 }
