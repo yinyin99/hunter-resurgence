@@ -1,7 +1,7 @@
 .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: var(--shadow-bar); font-size: var(--fs-statusbar); color: var(--fg-muted); }
 /* the row is a flex line, the logo, the left group (it shrinks, clipped sideways, never into the right group), a flexible gap and the right group; the narrower the window, the less the groups show (the media queries at the end) */
 .row { position: relative; display: flex; align-items: flex-start; height: var(--h-statusbar); }
-.web .row { width: var(--w-container); max-width: 100%; margin: 0 auto; }
+.web .row { box-sizing: border-box; width: var(--w-container); max-width: 100%; margin: 0 auto; }
 .web .left { margin-left: 11px; }
 .logo { position: relative; flex: none; display: block; margin: 13px 0 0 8px; width: 173px; height: 44px; }
 .launcher-label { position: absolute; left: 177px; top: 27px; height: 25px; padding-left: 6px; border-left: 2px solid #575757; font-weight: 100; line-height: 25px; color: var(--fg-muted); white-space: nowrap; }
@@ -20,6 +20,8 @@
 .settings:hover .menu, .settings:focus-within .menu { visibility: visible; opacity: 1; transform: none; transition: opacity var(--t-base) var(--ease), transform var(--t-base) var(--ease), visibility 0s; }
 .settings.shut .menu, .settings.shut:hover .menu, .settings.shut:focus-within .menu { visibility: hidden; opacity: 0; transform: translateY(-4px); transition: none; }
 .qn .quick-nav { position: absolute; left: -27px; top: 4px; width: 25px; height: 52px; color: var(--accent); font-size: 22px; line-height: 40px; text-align: center; }
+/* below 1274px the row touches the window's left edge: the strip moves inside the row instead of hanging off-screen */
+@media (max-width: 1274px) { .web .row:has(> .qn) { padding-left: 27px; } .qn .quick-nav { left: 0; } }
 .qn ::deep .in-bar { position: absolute; left: 0; top: 100%; width: 100%; z-index: 4; visibility: hidden; transition: visibility 0s linear 150ms; box-shadow: 0 0 5px rgba(0, 0, 0, .9); }
 .qn:hover ::deep .in-bar { visibility: visible; transition-delay: 0s; }
 .settings:hover, .settings:focus-within { color: #fff; }

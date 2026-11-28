@@ -22,6 +22,27 @@ public sealed class StatusBarTests : UiContext
         finally { CultureInfo.CurrentUICulture = ui; }
     }
 
+    // the words are only clipped on narrow windows: a screen reader reads "ammo: 150d", with the language's own colon, and one tooltip shows
+    [Theory]
+    [InlineData("en", "ammo: 150d", "fuel: 0d")]
+    [InlineData("fr", "munitions\u00a0: 150\u00a0j", "carburant\u00a0: 0\u00a0j")]
+    public void AmmoAndFuelBadgesNameThemselvesInTheirLanguageWithOneTooltip(string lang, string ammo, string fuel)
+    {
+        var ui = CultureInfo.CurrentUICulture;
+        try
+        {
+            CultureInfo.CurrentUICulture = new(lang);
+            var cut = Render<StatusBar>(p => p.Add(b => b.Session, new Resurgence.Services.Session("Fox", 5)));
+            var badges = cut.FindAll(".service");
+            Assert.Equal(2, badges.Count);
+            Assert.Equal(ammo, badges[0].GetAttribute("aria-label"));
+            Assert.Equal(fuel, badges[1].GetAttribute("aria-label"));
+            Assert.All(badges, b => Assert.Null(b.GetAttribute("title")));
+            Assert.All(badges, b => Assert.False(string.IsNullOrEmpty(b.GetAttribute("data-tip"))));
+        }
+        finally { CultureInfo.CurrentUICulture = ui; }
+    }
+
     [Theory]
     [InlineData(false, 1, 3)]
     [InlineData(true, 1, 3)]

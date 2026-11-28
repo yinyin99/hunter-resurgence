@@ -28,8 +28,9 @@
                 <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
                 <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
                 <a class="section" href="/inventory">@L["Inv.Title"]</a>
-                @if (balances.AmmoDays is { } ammo) { <span class="service" role="group" data-tip="@L["Statusbar.Ammo"]" title="@L["Statusbar.Ammo"]" aria-label="@L["Statusbar.Ammo"]: @L["Fmt.Days", ammo]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Ammo"]</span> <span class="pill">@L["Fmt.Days", ammo]</span></span> }
-                @if (balances.FuelDays is { } fuel) { <span class="service" role="group" data-tip="@L["Statusbar.Fuel"]" title="@L["Statusbar.Fuel"]" aria-label="@L["Statusbar.Fuel"]: @L["Fmt.Days", fuel]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Fuel"]</span> <span class="pill">@L["Fmt.Days", fuel]</span></span> }
+                @* the label carries its language's colon ("ammo:", "munitions :"), so the aria-label adds none *@
+                @if (balances.AmmoDays is { } ammo) { <span class="service" role="group" data-tip="@L["Statusbar.Ammo"]" aria-label="@L["Statusbar.Ammo"] @L["Fmt.Days", ammo]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Ammo"]</span> <span class="pill">@L["Fmt.Days", ammo]</span></span> }
+                @if (balances.FuelDays is { } fuel) { <span class="service" role="group" data-tip="@L["Statusbar.Fuel"]" aria-label="@L["Statusbar.Fuel"] @L["Fmt.Days", fuel]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Fuel"]</span> <span class="pill">@L["Fmt.Days", fuel]</span></span> }
             </div>
         }
         <div class="right">
