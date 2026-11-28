@@ -97,4 +97,15 @@ public class HostsTests
         Assert.True(Hosts.Apply(path, null));
         Assert.Equal(original, File.ReadAllBytes(path));
     }
+
+    [Fact]
+    public void MissingFileReadsEmptyAndApplyCreatesItWithTheBlock()
+    {
+        using var dir = new TempDir("play-hosts-");
+        var path = Path.Combine(dir.Path, "hosts");
+        Assert.Equal("", Hosts.Read(path));
+        Assert.True(Hosts.Apply(path, Names));
+        Assert.True(Hosts.Matches(Hosts.Read(path), Names));
+        Assert.False(Hosts.Apply(path, Names));
+    }
 }
