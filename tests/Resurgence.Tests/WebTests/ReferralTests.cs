@@ -245,6 +245,14 @@ public sealed class ReferralTests : UiContext
     }
 
     [Fact]
+    public void ThePageTakesTheShellsEmptyRightColumnToo()
+    {
+        Use();
+        Shell();
+        Assert.NotNull(Render<ReferralProgress>().Find(".page-min.wide-main"));
+    }
+
+    [Fact]
     public void ThePageHasThreeSummaryCardsWithABarToTheNextLevelAndTheNextMilestone()
     {
         Use();
