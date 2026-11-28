@@ -8,6 +8,7 @@ namespace Resurgence.Server.Tests;
 /// <summary>Referral codes (docs/server.md#referrals): who may enter a code and until when, the recruit's reward, the qualification (hours and hunterscore since the entry), the tiers, the weekly cap, the Discord milestone,
 /// bans, the settings' reload and validation, the operator's commands and the two endpoints. The recruits' hunterscore is set through restored statistics (species 1 is the one rank row: n kills are a hunterscore of n)
 /// and their hours through closed hunts; the clock is `at`. The catalogue has items 0, 2 and 3, rewards give those.</summary>
+[Collection("ProcessState")]  // one test captures the console
 public class ReferralTests : StateTestBase
 {
     static readonly JsonObject Cfg = new(Replay.HostKeys.Select(k => KeyValuePair.Create(k, (JsonNode?)(k[..^"_host".Length] + ".test"))));
@@ -489,6 +490,24 @@ public class ReferralTests : StateTestBase
         Assert.Equal(1L, check.Scalar("SELECT COUNT(*) FROM referral_release"));
         Assert.Equal(0L, check.Scalar("SELECT COUNT(*) FROM referral_payouts"));
         Assert.Equal((long)Store.Version, check.Scalar("PRAGMA user_version"));
+    }
+
+    [Fact]
+    public async Task ARefusedCodeIsLoggedWithTheReasonTheAccountAndTheCodeAsEntered()
+    {
+        var table = new Replay.HarTable();
+        table.Entries[new("POST", "gameserver.test", Replay.CONNECT, null)] = new Replay.Hit(2, "", 200, [], "{}"u8.ToArray());
+        await using var server = await Loopback.StartAsync(new Replay.Game(table, Cfg, state, tmp), tmp);
+        var b = Account("bob");
+        var headers = new List<(string, string)> { ("Content-Type", "application/json"), ("X-Requested-With", "XMLHttpRequest"), ("Cookie", $"{SignIn.SessionCookie}={state.Store.CreateWebSession(b, TimeSpan.FromHours(1))}") };
+        var (old, output) = (Console.Out, new StringWriter());
+        Console.SetOut(output);
+        Reply reply;
+        try { reply = await server.SendAsync("POST", "web.test", "/account/referral/code", headers, Encoding.UTF8.GetBytes($$"""{"code": "ab\n\u0007cd{{new string('z', 40)}}"}""")); }
+        finally { Console.SetOut(old); }
+        Assert.Equal(409, reply.Status);
+        var line = Assert.Single(output.ToString().Split('\n', StringSplitOptions.RemoveEmptyEntries).Where(l => l.Contains("referral code refused")));
+        Assert.Equal($"referral code refused: account {b}: unknown, entered \"abcd{new string('z', 28)}\"", line.TrimEnd('\r'));
     }
 
     [Fact]

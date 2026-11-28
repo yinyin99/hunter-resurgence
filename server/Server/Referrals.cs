@@ -144,8 +144,18 @@ public sealed partial class State
     }
 
     /// <summary>The player enters a code (POST /account/referral/code): `ok` with the recruiter's handle and the reward paid at once (null: none is set), or why not: `already`, `expired`, `unknown`, `own`,
-    /// `banned` (the code's owner) or `loop` (the code's owner is a recruit of his). His hunterscore and server playtime now are the start of what the qualification counts.</summary>
+    /// `banned` (the code's owner) or `loop` (the code's owner is a recruit of his); a refusal is written to the log. His hunterscore and server playtime now are the start of what the qualification counts.</summary>
     public (string Status, string? Recruiter, Reward? Reward) EnterReferralCode(long account, string? raw)
+    {
+        var result = Enter(account, raw);
+        if (result.Status != "ok") Console.WriteLine($"referral code refused: account {account}: {result.Status}, entered \"{Printable(raw)}\"");
+        return result;
+    }
+
+    /// <summary>The code as entered, for the log: control and line-break characters dropped, at most 32 characters (it is user input).</summary>
+    static string Printable(string? raw) => new((raw ?? "").Where(c => !char.IsControl(c) && char.GetUnicodeCategory(c) is not (UnicodeCategory.Format or UnicodeCategory.LineSeparator or UnicodeCategory.ParagraphSeparator)).Take(32).ToArray());
+
+    (string Status, string? Recruiter, Reward? Reward) Enter(long account, string? raw)
     {
         using var con = Con(account);
         con.Begin();
