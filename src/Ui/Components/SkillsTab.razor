@@ -31,7 +31,7 @@ else
                     {
                         <div class="finishes" tabindex="0">
                             <span class="list">@string.Join(" · ", finishes)</span>
-                            <small role="presentation" aria-hidden="true" class="tip">@string.Join(", ", finishes)</small>
+                            <small aria-hidden="true" class="tip">@string.Join(", ", finishes)</small>
                         </div>
                     }
                     @foreach (var r in s.Rings) { @Ring(r) }

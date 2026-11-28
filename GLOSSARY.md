@@ -231,7 +231,7 @@ A variant of a weapon type that differs in its look (skin, engraving, event or c
 _Avoid_: skin (alone), texture
 
 **Representative**:
-The weapon item that stands for its weapon family: the member whose definition has no parent (the lowest id among them). The family's one shooting skill is stored under it and the Skills tab names the weapon type by it.
+The weapon item that stands for its weapon family: the lowest id among the members whose definition has no parent, or among every member when none qualifies. The family's one shooting skill is stored under it and the Skills tab names the weapon type by it.
 
 ## Inventory and wallet
 
