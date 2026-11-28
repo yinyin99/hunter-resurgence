@@ -12,6 +12,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
   - `docs/website.md`: `src/Web` and `src/Ui`
   - `docs/restore.md`: `src/Restore`
   - `docs/server.md`: `server/Server` and `server/facts`
+    - `docs/mission-cases.md`: the mission objectives' cases (the runner in `server/Server.Tests`, an invented sample in `server/Server.Tests/mission-cases`), how to write and run them
   - `docs/deploy.md`: `deploy/`, `server/natpt` and the workflows
   - `docs/images.md`: the picture slots of `src/Ui` (`AssetSlot`)
   - `docs/guide.md`: the player guide, across the tools and the website
@@ -40,7 +41,7 @@ This is a public repo. The rules in [CONTRIBUTING.md](CONTRIBUTING.md#rules) app
 - The backup tool's "What isn't saved?" dialog (resx keys `NotCovered_<n>`) mirrors the "What is not saved" section of `docs/backup.md`. Change both together.
 - The website's backup tool dialog (`src/Ui` resx keys `Backup.Step<n>` and `Backup.SmartScreen`; the dialog itself is offered only until the official servers closed) mirrors the backup tool's steps and quotes its `Public_Radio` and `Start` labels; `Backup.SmartScreen` is also the Download page's note for the launcher's Setup and matches README's "Windows protected your PC" step. `Restore.Rule1` quotes the backup tool's `Own_Radio` label ("My account", in English where the backup tool has no translation). Change them together.
 - The footer's credit "Hunter Resurgence © yinyin99" (`src/Ui/Shell/Footer.razor`) is the attribution README's AGPL-3.0 section 7(b) term requires. Never remove or reword it; a change to it changes README too.
-- A change to the mission reader (`server/Server/MissionConditions.cs`) puts the before/after diff of `coverage --rules` in its PR body: [docs/agents/mission-reader.md](docs/agents/mission-reader.md).
+- A change to the mission reader (`server/Server/MissionConditions.cs`) puts the counts of changed rules, the warnings that appeared or went and the rows on the invented catalogue in its PR body, never the real before/after diff of `coverage --rules`: [docs/agents/mission-reader.md](docs/agents/mission-reader.md).
 
 ## Agent skills
 

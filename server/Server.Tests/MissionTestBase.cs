@@ -33,26 +33,40 @@ public abstract class MissionTestBase : StateTestBase
         """{"id": 107, "name": "Test 30 30 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 108, "name": "Test 30 06 Lever Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 105, "name": "Test Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""", """{"id": 106, "name": "Test Maker Bolt Rifle", "cat": 1, "subcat": {"name": "Rifles"}}""",
         """{"id": 66, "name": "Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""", """{"id": 67, "name": "Heavy Test Bow", "cat": 1, "subcat": {"name": "Bows & Crossbows"}}""",
-        """{"id": 109, "name": "Test Twin Pistol", "variationname": "Standard", "cat": 1, "subcat": {"name": "Handguns"}}""", """{"id": 110, "name": "Test Twin Pistol", "variationname": "Wolfsbane", "cat": 1, "subcat": {"name": "Handguns"}}""",
-        """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Rifle Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Rifle Sights"}}""",
+        """{"id": 109, "name": "Test Twin Pistol", "variationname": "Standard", "cat": 1, "subcat": {"name": "Handguns"}}""", """{"id": 110, "name": "Test Twin Pistol", "variationname": "Dusk", "cat": 1, "subcat": {"name": "Handguns"}}""",
+        """{"id": 80, "name": "Test Dot", "cat": 2, "subcat": {"name": "Test Sights"}}""", """{"id": 81, "name": "Test Rifle Scope", "cat": 2, "subcat": {"name": "Test Sights"}}""",
+    ];
+
+    // places by their English name (docs/server.md, "Missions"): the tower; a lodge with an umlaut; two campsites of Test Reserve, one's name inside the other's, and one of the second reserve; an
+    // interest point with an accent and an apostrophe
+    static readonly string[] ExtraPlaces =
+    [
+        """{"id": 102, "define": "TEST_HUNTING_TOWER_1", "name": "Tower 2", "type": "HUNTING_TOWER", "reserve": 2, "pos": {"x": 100, "y": 0, "z": 200}}""",
+        """{"id": 103, "define": "TEST_RESERVE_ZUERNHUETTE", "name": "Zürnhütte", "type": "LODGE", "reserve": 2, "pos": {"x": 10, "y": 0, "z": 20}}""",
+        """{"id": 104, "define": "TEST_RESERVE_CAMPSITE_0", "name": "Upper Test Camp", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 30, "y": 0, "z": 40}}""",
+        """{"id": 105, "define": "TEST_RESERVE_CAMPSITE_1", "name": "Test Camp", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 50, "y": 0, "z": 60}}""",
+        """{"id": 106, "define": "TEST_SECOND_CAMPSITE_0", "name": "Test Camp", "type": "CAMPSITE", "reserve": 3, "pos": {"x": 70, "y": 0, "z": 80}}""",
+        """{"id": 107, "define": "TEST_RESERVE_CAIRN_2", "name": "Zélan's Cairn", "type": "INTEREST", "reserve": 2, "pos": {"x": 90, "y": 0, "z": 100}}""",
     ];
 
     /// <summary>A state on `file` whose catalogue is made of these missions (the JSON of the catalogue's `missions`) and the species and items above. `permitted`: no ammunition rule
-    /// (every kill is permitted), or these ammunition ids only for species 1. `rules`: the operator's `mission_rules.json`; `facts`: the facts file (its daily missions).</summary>
-    protected State New(string file, string missions, int[]? permitted = null, JsonObject? rules = null, Facts? facts = null)
+    /// (every kill is permitted), or these ammunition ids only for species 1. `rules`: the operator's `mission_rules.json`; `facts`: the facts file (its daily missions); `items`: more items (JSON); `itemDefs`: the install's item definitions (JSON).</summary>
+    protected State New(string file, string missions, int[]? permitted = null, JsonObject? rules = null, Facts? facts = null, string[]? items = null, string? itemDefs = null)
     {
         var app = APP;
         app["missions"] = JsonNode.Parse(missions)!["missions"]!.DeepClone();
         foreach (var species in ExtraSpecies)
             app["species"]!.AsArray().Add(JsonNode.Parse(species));
-        foreach (var item in ExtraItems)
+        foreach (var item in ExtraItems.Concat(items ?? []))
             app["items"]!.AsArray().Add(JsonNode.Parse(item));
         app["locations"]![0]!["name"] = "Test Lodge";
-        app["locations"]!.AsArray().Add(JsonNode.Parse("""{"id": 102, "define": "TEST_HUNTING_TOWER_1", "name": "Tower 2", "type": "HUNTING_TOWER", "reserve": 2, "pos": {"x": 100, "y": 0, "z": 200}}"""));
+        app["locations"]![0]!["define"] = "TEST_RESERVE_LODGE";
+        foreach (var place in ExtraPlaces)
+            app["locations"]!.AsArray().Add(JsonNode.Parse(place));
         var connect = CONNECT;
         connect["ethical"] = permitted is null ? new JsonArray() : new JsonArray([.. Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonArray([.. permitted.Where(_ => i == 1).Select(a => (JsonNode?)a)]))]);
         connect["species"] = new JsonArray(Enumerable.Range(0, 59).Select(i => (JsonNode?)new JsonObject { ["scale_factor"] = 1.0, ["variant_id"] = i }).ToArray());
-        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, offline: false, facts: facts, missionRules: rules);
+        return new State(Path.Combine(tmp, file), Py.DumpBytes(connect), BASE, ICON, app, LOCALE, TEXTURES, itemDefs: itemDefs is null ? null : JsonNode.Parse(itemDefs)!.AsArray(), offline: false, facts: facts, missionRules: rules);
     }
 
     /// <summary>One kill of a deer (species 1): the spawn, `hits` shots of the same settings (or one for each of `organs`) and the harvest. `pose` is the player's stance with the shot's flag;
@@ -90,6 +104,9 @@ public abstract class MissionTestBase : StateTestBase
         O($$"""{"event": 101, "location_name": "{{place}}", "direction": "{{direction}}", "player_x": 1, "player_y": 2, "player_z": 3}""");
 
     protected void Launch(int reserve = 2) => state.NoteLaunch(ME, System.Text.Encoding.ASCII.GetBytes($"start=101&reserve={reserve}"));
+
+    /// <summary>The operator's `mission_rules.json` of these `"<mission>/<objective>": rule` entries.</summary>
+    protected static JsonObject Rules(params (string Key, string Rule)[] entries) => new(entries.Select(e => KeyValuePair.Create(e.Key, (JsonNode?)e.Rule)));
 
     protected string Completed(long account = ME, State? of = null) => string.Join(",", Reply((of ?? state).MissionsReply(account)!)["completed"]!.AsArray().Select(i => (long)i!));
 

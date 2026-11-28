@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <None Include="score-vectors.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="mission-cases\**\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

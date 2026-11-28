@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>jutri</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Opis</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Naloge</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Orožje, ki šteje:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Za odklenitev misije {0} morate dokončati naslednje misije:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Rezervati</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Nagrade</value></data>

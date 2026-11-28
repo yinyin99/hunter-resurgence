@@ -51,6 +51,21 @@ public class ServerMissionsServiceTests
         Assert.Equal(["Test One"], (await Make(fake).ActiveAsync()).Select(m => m.Name));
     }
 
+    [Fact]
+    public async Task TheWeaponsThatCountForAnObjectiveAreTheServersAndAnEarlierServerHasNone()
+    {
+        const string page = """
+            {"missions": [
+              {"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": ["Harvest a Test Deer with the Test Bow", "Harvest a Test Fox"], "objective_weapons": [["Test Bow", "Test Bow Twin"], []], "reward": "", "reserve": "", "species": "", "weapon": ""},
+              {"id": 2, "title": "Test Two", "desc": "", "state": "available", "objectives": ["Spot a Test Deer"], "reward": "", "reserve": "", "species": "", "weapon": ""}],
+             "groups": [], "completed": 0, "auto_mission_activate": false, "activate_only_favourite": false, "hide_completed_favourite": false}
+            """;
+        var data = await Make(new Fake(_ => Json(HttpStatusCode.OK, page))).RegularAsync();
+        Assert.Equal(["Test Bow", "Test Bow Twin"], data.Missions[0].Objectives[0].Weapons);
+        Assert.Empty(data.Missions[0].Objectives[1].Weapons!);
+        Assert.Null(data.Missions[1].Objectives[0].Weapons);
+    }
+
     [Theory]
     [InlineData(HttpStatusCode.Unauthorized, """{"status":"signed_out"}""")]
     [InlineData(HttpStatusCode.NotFound, """{"status":"invalid"}""")]

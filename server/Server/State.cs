@@ -829,7 +829,7 @@ public sealed partial class State
     public State(string dbPath, byte[] connectBody, string baseUrl, string iconUrl, JsonObject application, JsonObject locale,
                  Dictionary<long, string> textures, JsonArray? sampleInfos = null,
                  Dictionary<int, byte[]>? reserveConnects = null, JsonNode? skillList = null, JsonArray? itemDefs = null, bool offline = true,
-                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false)
+                 byte[]? startBody = null, Facts? facts = null, JsonArray? avatars = null, JsonArray? challenges = null, SeasonalEvent? seasonal = null, JsonObject? missionRules = null, bool spawnNamedAnimals = false, bool writeNamedAnimals = true)
     {
         this.facts = facts ?? Facts.Default;
         Seasonal = seasonal;
@@ -853,13 +853,17 @@ public sealed partial class State
             reserves[Py.L(r!["id"])] = (string?)r["name"];
         foreach (var loc in Arr(G(application, "locations", null)))
             locations[Py.L(loc!["id"])] = loc["pos"];
+        foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
+            if (!items.ContainsKey(Py.L(i!["id"])))
+                installItems[Py.L(i["id"])] = i.AsObject();
+        Weapons = WeaponFamilies.Build(items.Values.Concat(installItems.Values), itemDefs);  // before the missions: an objective that names a weapon accepts its family
         if (!offline)
         {
             LoadMissions();
             OverrideMissionRules(missionRules);
             placesNamedAnimals = spawnNamedAnimals;
             if (spawnNamedAnimals)
-                PlaceNamedAnimals(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "named_animals.json"));
+                PlaceNamedAnimals(Path.Combine(Path.GetDirectoryName(dbPath) ?? "", "named_animals.json"), writeNamedAnimals);
             LoadChallenges(challenges);
         }
         this.locale = locale;
@@ -905,10 +909,6 @@ public sealed partial class State
             if (d["extra"]?["weapon"]?["attachments"] is JsonArray att)
                 installFit[Py.L(d["id"])] = [.. att.Where(Py.IsStr).Select(a => (string)a!).Where(itemIds.ContainsKey).Select(a => itemIds[a])];
         }
-        foreach (var i in this.facts.ApplicationItems(itemDefs ?? []))
-            if (!items.ContainsKey(Py.L(i!["id"])))
-                installItems[Py.L(i["id"])] = i.AsObject();
-        Weapons = WeaponFamilies.Build(items.Values.Concat(installItems.Values), itemDefs);
         // The game looks an item's name up in `items_locale` when it creates a placed item and closes when the id is missing: a placed
         // event tent closes the game on entering its reserve. The sample (and a recording from before an event) lists no item newer than itself, so every catalogue item is added.
         if (connect["items_locale"] is JsonArray names)

@@ -132,9 +132,10 @@ public sealed record ServerPlaced(ServerPlacedItem[] Items);
 public sealed record ServerLoadout(int Id, string Name);
 
 /// <summary>A mission of <see cref="ServerAccountApi.Missions"/>: <c>State</c> is active, available, completed or locked; <c>Reserve</c>, <c>Species</c> and <c>Weapon</c> are "" for none;
-/// <c>ObjectivesDone</c> holds one flag per objective (absent from an earlier server: none done).</summary>
+/// <c>ObjectivesDone</c> holds one flag per objective (absent from an earlier server: none done), <c>ObjectiveWeapons</c> one list per objective of the weapons it accepts, one name per weapon (empty for an objective that names none; absent from an earlier server: none shown).</summary>
 public sealed record ServerMission(int Id, string Title, string Desc, string State, string[] Objectives, string Reward, string Reserve, string Species, string Weapon, string[]? Needs = null,
-    [property: System.Text.Json.Serialization.JsonPropertyName("objectives_done")] bool[]? ObjectivesDone = null);
+    [property: System.Text.Json.Serialization.JsonPropertyName("objectives_done")] bool[]? ObjectivesDone = null,
+    [property: System.Text.Json.Serialization.JsonPropertyName("objective_weapons")] string[][]? ObjectiveWeapons = null);
 
 /// <summary>A pack of <see cref="ServerAccountApi.Missions"/>: <c>Missions</c> are mission ids in display order.</summary>
 public sealed record ServerMissionGroup(int Id, string Title, string Desc, bool Favourite, int[] Missions);

@@ -7,12 +7,12 @@ namespace Resurgence.Server;
 
 public sealed partial class State
 {
-    // the bit of a hit's `organ2` and the name of the organ it stands for (see Reader.Bits)
-    static readonly (int Bit, string Name)[] OrganBits =
+    // the bit of a hit's `organ2` and the name of the organ it stands for (see Reader.Bits); public, with the stand, pose and coat names, for the mission cases' harness (docs/mission-cases.md)
+    public static readonly (int Bit, string Name)[] OrganBits =
         [(0, "heart"), (1, "right lung"), (2, "left lung"), (3, "liver"), (4, "brain"), (5, "intestines"), (10, "spine"), (21, "spine"), (22, "spine"), (23, "shoulder blade"),
          (24, "neck bones"), (25, "neck bones"), (26, "neck bones"), (28, "skull"), (29, "hip bone")];
 
-    static readonly string[] StandNames = ["no stand", "hunting tower", "tree stand", "ground blind", "tripod", "waterfowl blind", "tripod rifle rest"], PoseNames = ["standing", "crouching", "prone"];
+    public static readonly string[] StandNames = ["no stand", "hunting tower", "tree stand", "ground blind", "tripod", "waterfowl blind", "tripod rifle rest"], PoseNames = ["standing", "crouching", "prone"];
 
     static string Num(double d) => Math.Round(d, 9).ToString("0.#########", CultureInfo.InvariantCulture);
 
@@ -26,7 +26,10 @@ public sealed partial class State
     static string Mask(long mask) => mask == Reader.Organs ? "soft organs" : mask == Reader.Bits(10, 21, 22, 23, 24, 25, 26, 28, 29) ? "bones"
         : string.Join('+', OrganBits.Where(o => (mask & 1L << o.Bit) != 0).Select(o => o.Name).Distinct().Concat(Enumerable.Range(0, 63).Where(b => (mask & 1L << b) != 0 && OrganBits.All(o => o.Bit != b)).Select(b => "bit " + b)));
 
-    string ItemName(long id) => items.TryGetValue(id, out var item) && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
+    /// <summary>An item of the catalogue, else of the install's definitions the catalogue lacks.</summary>
+    JsonObject? ItemOf(long id) => items.TryGetValue(id, out var item) ? item : installItems.GetValueOrDefault(id);
+
+    string ItemName(long id) => ItemOf(id) is { } item && Py.IsStr(item["name"]) ? (string)item["name"]! : "item " + id;
 
     /// <summary>The items of a condition by name. A name is printed bare only when the set holds every item of that name and category; otherwise each held item that has a variant is
     /// `Name (Variant)`, as the operator's file picks it (<see cref="ItemsIn"/>), so the printed words read back to the same set.</summary>
@@ -63,13 +66,28 @@ public sealed partial class State
         var ids = t.Ids!;
         if (t.Check == Check.NotState)
             return Names((ids.Contains(9) ? new[] { "charging" } : []).Concat(ids.Contains(5) ? new[] { "running away" } : []).Concat(ids.Except([9, .. Reader.RunningAway]).Select(i => "state " + i)));
-        return Reader.States.FirstOrDefault(s => s.First == (t.Check == Check.FirstState) && ids.SetEquals(s.States)).Label ?? "states " + string.Join(',', ids.Order());
+        return Reader.States.Where(s => ids.SetEquals(s.States)).OrderByDescending(s => t.Check == Check.FirstState && s.First).FirstOrDefault().Label ?? "states " + string.Join(',', ids.Order());
     }
 
-    /// <summary>One condition in words, with names instead of ids.</summary>
-    string Describe(Test t) => t.Check switch
+    /// <summary>A set of coat ids in words that read back as that set: a coat name when the reader reads that name (for the rule's species) as ids all in the set, else `coat <id>` (the game's names are shared by
+    /// several ids, and a species may use a name for others).</summary>
+    static string CoatWords(IEnumerable<long> ids, IEnumerable<long> animals)
     {
-        Check.Weapon => "weapon: " + ItemNames(t.Ids!),
+        var held = ids.ToHashSet();
+        var words = new List<string>();
+        foreach (var name in held.Select(CoatName).Distinct())
+            if (Reader.CoatIds(name.ToLowerInvariant(), animals) is { Length: > 0 } of && of.All(held.Contains))
+                words.Add(name);
+        held.ExceptWith(words.SelectMany(w => Reader.CoatIds(w.ToLowerInvariant(), animals)));
+        words.AddRange(held.Order().Select(i => "coat " + i));
+        return Names(words);
+    }
+
+    /// <summary>One condition in words, with names instead of ids; `animals` are the species a coat word is read for.</summary>
+    string Describe(Test t, IEnumerable<long>? animals = null) => t.Check switch
+    {
+        Check.Weapon => "weapon: " + WeaponNames(t.Ids!) + (t.When is { Count: > 0 } when
+            ? "; weapon barrels: " + string.Join(" | ", when.GroupBy(w => ItemName(w.Key)).OrderBy(g => g.Key, StringComparer.Ordinal).Select(g => $"{g.Key} = {ItemNames(g.SelectMany(w => w.Value).Distinct())}")) : ""),
         Check.Ammo => "ammunition: " + ItemNames(t.Ids!),
         Check.NotAmmo => "not ammunition: " + ItemNames(t.Ids!),
         Check.Scope => t.Ids is null ? "any sight" : "sight: " + ItemNames(t.Ids),
@@ -93,11 +111,12 @@ public sealed partial class State
         Check.Pose => "pose: " + Names(t.Ids!.Select(i => i is >= 0 and < 3 ? PoseNames[i] : "pose " + i)),
         Check.Stand => "stand: " + Names(t.Ids!.Select(i => i is >= 0 and < 7 ? StandNames[i] : "stand " + i)),
         Check.Reserve => "reserve: " + Names(t.Ids!.Select(i => reserves.GetValueOrDefault(i) ?? "reserve " + i)),
-        Check.Named => double.IsInfinity(t.Min) ? "named animal, no place" : $"named animal near ({Num(t.Min)}, {Num(t.Max)}) m",
+        Check.Named => double.IsInfinity(t.X) ? "named animal, no place" : $"named animal near ({Num(t.X)}, {Num(t.Z)}) m" + (t.Herd > 1 ? $", {t.Herd} animals" : "") + (t.Place is not null ? ", otherwise place " + t.Place : ""),
+        Check.EachSpecies => $"footprints of each of {SpeciesNames(t.Ids!)} within {t.Radius} m of ({Num(t.X)}, {Num(t.Z)})",
         Check.Species => "species: " + SpeciesNames(t.Ids!),
         Check.Clue => "clues: " + (t.Ids!.Count == 0 ? "any" : Names(t.Ids.Select(i => ((ClueKind)i).ToString().ToLowerInvariant()))) + " x" + Num(Math.Max(t.Min, 1)),
-        Check.Coat => "coat: " + Names(t.Ids!.Select(CoatName)),
-        Check.NotCoat => "not coat: " + Names(t.Ids!.Select(CoatName)),
+        Check.Coat => "coat: " + CoatWords(t.Ids!, animals ?? []),
+        Check.NotCoat => "not coat: " + CoatWords(t.Ids!, animals ?? []),
         Check.Within => $"in the hunt: {Num(t.Min)}" + (double.IsPositiveInfinity(t.Max) ? "" : $" within {Num(t.Max / 60)} min"),
         Check.Each => $"in the hunt: {Num(t.Min)}, each within {Num(t.Max / 60)} min of the one before",
         Check.SameShot => $"in the hunt: {Num(t.Min)} killed by one shot",
@@ -105,24 +124,48 @@ public sealed partial class State
         _ => t.Check.ToString().ToLowerInvariant(),
     };
 
-    static string CoatName(long id) => id >= 0 && id < Reader.CoatNames.Length ? Reader.CoatNames[id] : "coat " + id;
+    public static string CoatName(long id) => id >= 0 && id < Reader.CoatNames.Length ? Reader.CoatNames[id] : "coat " + id;
 
     /// <summary>The rule of every objective in words, one line each, sorted by mission and objective: `mission 1 objective 0: <title> => <kind>; <species>; <gender>; ordered; <conditions>`, the
     /// conditions sorted; an objective not understood has `not understood, left over: <words>` before the conditions it did read; an overridden one (`mission_rules.json`, whose entries are
     /// written in these words) has `(override)` after its id.</summary>
     public IEnumerable<string> RuleLines() => missions.Values.OrderBy(m => m.Id).SelectMany(m => m.Objectives.OrderBy(o => o.Id).Select(o => RuleLine(m, o)));
 
+    /// <summary>What every objective's rule judges by, one line each in the order of <see cref="RuleLines"/>, written from the rule itself and not from its printed words: the kind, species, gender, order, `together`, the zone
+    /// (point, reserves, places), the words an arrival is also met by (only a rule with no `place` condition has them) and every condition with its numbers, ids and, for a weapon of two classes, the ammunition it counts with.
+    /// Two rules with equal lines give every event the same verdict: the check that a printed rule reads back as the same rule compares these.</summary>
+    public IEnumerable<string> RuleShapes() => missions.Values.OrderBy(m => m.Id).SelectMany(m => m.Objectives.OrderBy(o => o.Id).Select(o => $"mission {m.Id} objective {o.Id}: {Shape(o.Rule)}"));
+
+    static string Shape(Rule r)
+    {
+        static string Ids(IEnumerable<long>? ids) => ids is null ? "-" : string.Join(',', ids.Order());
+        static string Num(double d) => d.ToString("R", CultureInfo.InvariantCulture);
+        static string Of(Test t) => string.Join(':', t.Check, Num(t.Min), Num(t.Max), t.Check == Check.OrganOnly ? Ids([t.Ids!.Aggregate(0L, (a, m) => a | m)]) : Ids(t.Ids), t.Place ?? "-", t.Across, t.Count,  // organs only: the masks are one together
+            t.When is null ? "-" : string.Join(';', t.When.OrderBy(w => w.Key).Select(w => $"{w.Key}={Ids(w.Value)}")));
+        var species = r.Species ?? (r.Tests ?? []).Where(t => t.Check == Check.Species && t.Ids is { Count: 1 }).Select(t => (long?)t.Ids!.Single()).FirstOrDefault();  // one species is the rule's whatever way it was made
+        var tests = (r.Tests ?? []).Where(t => !(t.Check == Check.Species && t.Ids is { Count: 1 } && species is not null)).ToArray();
+        var zone = r.Zone is { } z ? $"{(z.Point is { } p ? $"{Num(Math.Round(p.X, 3))},{Num(Math.Round(p.Z, 3))}" : "-")}/{Ids(z.Reserves)}/{string.Join(',', z.Places.Order(StringComparer.Ordinal))}" : "-";  // a point from a title in thousands of metres carries float noise below a millimetre: printed rounded
+        var arrive = r.Kind == Kind.Arrive;  // an arrival is met by its place: no species or gender
+        return string.Join('|', r.Kind, !arrive ? species?.ToString(CultureInfo.InvariantCulture) ?? "-" : "-", !arrive ? r.Gender?.ToString(CultureInfo.InvariantCulture) ?? "-" : "-", r.Ordered, r.After?.ToString(CultureInfo.InvariantCulture) ?? "-", r.Together, r.Unknown, zone,
+            r.Kind == Kind.Arrive && !tests.Any(t => t.Check == Check.Place) ? r.Text : "-", string.Join(';', tests.Select(Of).Order(StringComparer.Ordinal)));
+    }
+
     string RuleLine(MissionDef m, Objective o)
     {
         var r = o.Rule;
         var parts = new List<string> { r.Kind.ToString().ToLowerInvariant() };
-        if (r.Unknown || r.Kind == Kind.Other)
-            parts.Add("not understood, left over: " + (r.Kind == Kind.Other ? r.Text : r.Left));
+        if (r.Unknown || r.Kind == Kind.Other || NoPlaceMeets(r))
+            parts.Add("not understood, left over: " + (r.Kind is Kind.Other or Kind.Arrive ? r.Text : r.Left));
         if (r.Species is { } s && r.Kind is Kind.Harvest or Kind.Spot or Kind.Track) parts.Add("species: " + SpeciesName(s));
         if (r.Gender is { } g) parts.Add(g == 1 ? "female" : "male");
-        if (r.Ordered) parts.Add("ordered");
-        parts.AddRange((r.Tests ?? []).Select(Describe).Order(StringComparer.Ordinal));
+        if (r.After is { } after) parts.Add($"after objective {after}");
+        else if (r.Ordered) parts.Add("ordered");
+        else if (unordered.Contains((m.Id, o.Id))) parts.Add("unordered");
+        if (r.Together) parts.Add("together");
+        var animals = r.Species is { } own ? new[] { own } : (r.Tests ?? []).Where(t => t.Check == Check.Species).SelectMany(t => t.Ids!).ToArray();  // the species a coat word is read for, as the file's entry does
+        parts.AddRange((r.Tests ?? []).Select(t => Describe(t, animals)).Order(StringComparer.Ordinal));
         if (r.Zone?.Point is { } p) parts.Add($"within 200 m of ({Num(p.X)}, {Num(p.Z)})");
+        if (r.Zone is { Places.Length: > 0 } zone) parts.Add("places: " + string.Join(", ", zone.Places.Order(StringComparer.Ordinal)));
         return $"mission {m.Id} objective {o.Id}{(overridden.Contains((m.Id, o.Id)) ? " (override)" : "")}: {o.Title} => {string.Join("; ", parts)}";
     }
 

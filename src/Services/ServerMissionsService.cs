@@ -14,7 +14,7 @@ public sealed class ServerMissionsService(HttpClient http, ServerCookie cookie, 
     {
         if (await GetAsync() is not { } s) return new([], [], 0, 0, 0, 0, false, false, false);
         var all = s.Missions.ToDictionary(m => m.Id, m => new Mission(m.Id, m.Title, m.State, m.Desc,
-            [.. m.Objectives.Select((o, i) => new MissionObjective(o, m.State == "completed" || m.ObjectivesDone is { } d && i < d.Length && d[i]))], m.Reward, m.Reserve, m.Species, m.Weapon, m.Needs));
+            [.. m.Objectives.Select((o, i) => new MissionObjective(o, m.State == "completed" || m.ObjectivesDone is { } d && i < d.Length && d[i], m.ObjectiveWeapons is { } w && i < w.Length ? w[i] : null))], m.Reward, m.Reserve, m.Species, m.Weapon, m.Needs));
         var packs = s.Groups.Select(g =>
         {
             var list = g.Missions.Where(all.ContainsKey).Select(i => all[i]).ToList();

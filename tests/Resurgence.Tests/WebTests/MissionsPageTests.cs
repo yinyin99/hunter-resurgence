@@ -88,6 +88,46 @@ public sealed class MissionsPageTests : UiContext
     }
 
     [Fact]
+    public void AnObjectiveThatNamesWeaponsListsThemUnderWeaponsThatCountAndTheOthersListNothing()
+    {
+        var body = Server.Replace("""{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": []""",
+            """{"id": 1, "title": "Test One", "desc": "", "state": "active", "objectives": ["A", "B"], "objective_weapons": [[], ["Test Bow \"Falcon\"", "Test Rifle (Camo)"]]""");
+        Services.AddSingleton(new HostMode { Live = true });
+        Services.AddSingleton<IMissionsService>(new ServerMissionsService(new HttpClient(new Answer(body)) { BaseAddress = new Uri("http://server.test") },
+            new ServerCookie { Value = "abc" }, NullLogger<ServerMissionsService>.Instance));
+
+        var cut = Render<Missions>();
+        cut.Find("section.box > ul.rows button.row").Click();
+
+        var goals = cut.FindAll("ol.goals > li");
+        Assert.Empty(goals[0].QuerySelectorAll(".weapons"));
+        var disclose = goals[1].QuerySelector(".weapons button.disclose")!;
+        Assert.Equal("Weapons that count:", disclose.TextContent);
+        Assert.Equal("false", disclose.GetAttribute("aria-expanded"));
+        Assert.Null(disclose.GetAttribute("aria-controls"));  // the list is there only once opened: nothing to point at while collapsed
+        Assert.Empty(goals[1].QuerySelectorAll(".weapons li"));  // collapsed by default
+        disclose.Click();
+        Assert.Equal("true", cut.FindAll("ol.goals > li")[1].QuerySelector("button.disclose")!.GetAttribute("aria-expanded"));
+        goals = cut.FindAll("ol.goals > li");
+        Assert.Equal(["Test Bow \"Falcon\"", "Test Rifle (Camo)"], goals[1].QuerySelectorAll(".weapons li").Select(l => l.TextContent));  // one line per weapon
+        Assert.Equal("weapons-active-1-1", goals[1].QuerySelector(".weapons ul")!.Id);
+        Assert.Equal("weapons-active-1-1", goals[1].QuerySelector(".weapons button.disclose")!.GetAttribute("aria-controls"));  // points at the list that exists now
+    }
+
+    [Fact]
+    public void TheMockHasAnObjectiveWithAWeaponOfSeveralMembers()
+    {
+        var cut = Render<Missions>();
+        cut.Find("section.box > ul.rows button.row").Click();
+
+        Assert.Empty(cut.FindAll("ol.goals .weapons li"));
+        cut.Find("ol.goals button.disclose").Click();
+        Assert.Equal(10, cut.FindAll("ol.goals .weapons li").Count);
+        cut.Find("ol.goals button.disclose").Click();
+        Assert.Empty(cut.FindAll("ol.goals .weapons li"));
+    }
+
+    [Fact]
     public void TheLiveSiteHasTheDailyTabAndHelpAndNoFilterOptionForNone()
     {
         Services.AddSingleton(new HostMode { Live = true });

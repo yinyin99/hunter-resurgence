@@ -29,17 +29,16 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
-    public void TestAShortSpeciesNameMeansTheSpeciesOfItAndThreeCluesMeanThreeOfOneAnimal()
+    public void TestAShortSpeciesNameMeansTheSpeciesOfItAndThreeCluesMeanThreeOfAnyAnimalOfIt()
     {
         state = New("elk.db", Catalogue(["Locate 3 Elk tracks"]));
         ActivateAll();
         for (var i = 0; i < 3; i++)
             Hb(Clue(1, 2));  // three footprints of a deer
         Hb(Clue(2, 8, species: 3));
-        Hb(Clue(2, 8, species: 3));
-        Hb(Clue(3, 8, species: 3));  // two of one elk, one of another
+        Hb(Clue(3, 8, species: 3));  // two clues of two elk
         Assert.Equal("", Completed());
-        Hb(Clue(2, 9, species: 3));  // a call of the first one: the third clue of its trail
+        Hb(Clue(4, 9, species: 3));  // a call of a third: the third clue of an elk in the hunt
         Assert.Equal("1", Completed());
     }
 
@@ -123,16 +122,14 @@ public class MissionClueTests : MissionTestBase
     }
 
     [Fact]
-    public void TestAnyClueIsMetByAKnownKindAndNeverByAClueNoKindIsKnownFor()
+    public void TestAnyClueIsMetByAKnownKindRootingIncludedAndNeverByAClueNoKindIsKnownFor()
     {
         state = New("any.db", Catalogue(["ID any clue from a Test Fox", "ID tracks or droppings from a Test Fox", "ID the call of a Test Fox"]));
         ActivateAll();
-        Hb(Clue(1, 31, species: 5));  // water bubbles
-        Hb(Clue(2, 20, species: 5));  // rooting
         Hb([Clue(3, 0, species: 5)[0], O("""{"event": 12, "individual": 3, "track_type": 9.5}""")]);  // a type that is no whole number
         Hb([O("""{"event": 12, "individual": 3}""")]);  // none
         Assert.Equal("", Completed());
-        Hb(Clue(4, 0, species: 5));  // a blood trail
+        Hb(Clue(2, 20, species: 5));  // rooting: a bare `any clue` takes it (the maintainer's reading)
         Assert.Equal("1", Completed());
         Hb(Clue(5, 1, species: 5));  // droppings
         Assert.Equal("1,2", Completed());
@@ -315,5 +312,25 @@ public class MissionClueTests : MissionTestBase
         Assert.Contains("mission 1 objective 2: ID the call of another Test Deer => track; species: Test Deer; clues: call x1", lines);  // another animal's call, the first one: no other animal
         Assert.Contains("mission 1 objective 4: ID tracks of another male Test Deer in the same hunt => track; species: Test Deer; male; clues: footprints x1; in the hunt: 2 different animals", lines);
         Assert.Contains("mission 1 objective 5: ID another track => track; clues: footprints x1", lines);
+    }
+
+    [Fact]
+    public void TestFootprintsOfEachSpeciesNearThePointFinishTheObjectiveAndOneSpeciesOrOnesFarAwayDoNot()
+    {
+        static JsonNode[] Print(int individual, int species, int x, int z) =>
+        [
+            O($$"""{"event": 7, "individual": {{individual}}, "species": {{species}}, "gender": 0, "weight_grams": 90000, "texture": 0, "special": 0}"""),
+            O($$"""{"event": 12, "individual": {{individual}}, "track_type": 2, "x": {{x}}, "z": {{z}}}"""),
+        ];
+        state = New("each.db", Catalogue(["Look for the tracks near the pond"]), rules: Rules(("1/0", "track; clues: footprints x1; footprints of each of Test Deer, Test Fox within 300 m of (1000, 2000)")));
+        ActivateAll();
+        Hb(Print(1, 1, 1100, 2000));  // a deer
+        Hb(Print(2, 1, 1000, 2100));  // another deer
+        Assert.Equal("", Completed());  // one species alone is not enough
+        Hb(Print(3, 5, 1000, 2400));  // a fox 400 m away
+        Assert.Equal("", Completed());
+        Hb(Print(4, 5, 900, 1900));  // a fox 141 m away: both species near
+        Assert.Equal("1", Completed());
+        Assert.Contains("mission 1 objective 0 (override): Look for the tracks near the pond => track; clues: footprints x1; footprints of each of Test Deer, Test Fox within 300 m of (1000, 2000)", state.MissionCoverage(rules: true));
     }
 }

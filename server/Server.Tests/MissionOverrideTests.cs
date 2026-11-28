@@ -7,7 +7,6 @@ namespace Resurgence.Server.Tests;
 /// <summary>The operator's `mission_rules.json`: an entry replaces the rule of one objective, in the words `coverage --rules` prints; a bad entry stops the start. Invented catalogue and events.</summary>
 public class MissionOverrideTests : MissionTestBase
 {
-    static JsonObject Rules(params (string Key, string Rule)[] entries) => new(entries.Select(e => KeyValuePair.Create(e.Key, (JsonNode?)e.Rule)));
 
     static List<string> RuleLines(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
 
@@ -156,7 +155,7 @@ public class MissionOverrideTests : MissionTestBase
     public void TestAWeaponNamedWithItsVariantIsThatItemAndTheNameAloneIsAllOfThem()
     {
         var catalogue = Catalogue(["Harvest a Test Deer while whistling", "Harvest a Test Deer while humming"]);
-        state = New("variant.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)"), ("2/0", "harvest; species: Test Deer; weapon: Test Twin Pistol")));
+        state = New("variant.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)"), ("2/0", "harvest; species: Test Deer; weapon: Test Twin Pistol")));
         ActivateAll();
         Hb(Shot(1, weapon: 109));
         Assert.Equal("2", Completed());
@@ -175,8 +174,9 @@ public class MissionOverrideTests : MissionTestBase
             ("1-0", "harvest", "a key is <mission id>/<objective id>"),
             ("1/0", 5, "a rule is a string of words"),
             ("1/0", "", "the rule is empty"),
-            ("1/0", "arrive", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
-            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered]; place: <NAME>\""),
+            ("1/0", "arrive; places: TEST_A; place: TEST_B", "an arrive rule has \"place: <NAME>\" or \"places: <NAME>, <NAME>\", not both"),
+            ("1/0", "arrive", "a bare \"arrive\" is for an objective whose title is an arrival"),  // the title is a harvest: an arrival with no place nothing could meet
+            ("1/0", "arrive; place: TEST_RESERVE_POND; species: Test Deer", "an arrive rule is \"arrive[; ordered|unordered|after objective <n>]; place: <NAME>\", \"places: <NAME>, <NAME>\" or \"within 200 m of (<x>, <z>)\""),
             ("1/0", "start", "\"start\" is no kind of rule the file sets"),
             ("1/0", "harvest; whistling", "\"whistling\" is no condition the server knows"),
             ("1/0", "harvest; weapon: Test Blaster", "no weapon is named \"Test Blaster\""),
@@ -194,8 +194,8 @@ public class MissionOverrideTests : MissionTestBase
             ("1/0", "harvest; in the hunt: 3 different animals", "a harvest rule cannot check \"in the hunt: 3 different animals\""),
             ("2/0", "spot; in the hunt: 2", "a spot rule cannot check \"in the hunt: 2\""),
             ("2/0", "track; species: Test Deer", "a track rule has one clues condition"),
-            ("1/0", "harvest; male; female", "a gender, a species or \"ordered\" is given twice"),
-            ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"ordered\" is given twice"),
+            ("1/0", "harvest; male; female", "a gender, a species or \"together\" is given twice"),
+            ("1/0", "harvest; species: Test Deer; species: Test Fox", "a gender, a species or \"together\" is given twice"),
             ("1/0", "harvest; distance: >=100 >=200 m", "\">=100 >=200 m\" has two bounds of one side"),
             ("1/0", "harvest; place: east of the lodge", "\"east of the lodge\" is no name of a place"),
             ("1/0", "harvest; beard: >=76.2", "\">=76.2\" has no unit \"mm\""),
@@ -256,5 +256,19 @@ public class MissionOverrideTests : MissionTestBase
         Assert.Contains($"mission 1 objective 0 (override): Harvest a Test Deer with a long beard => {Beard}", lines);
         Assert.Contains($"mission 2 objective 0 (override): Harvest a Test Deer with long spurs => {Spurs}", lines);
         Assert.Contains($"mission 3 objective 0 (override): Harvest a Test Deer with long tusks => {Tusks4}", lines);
+    }
+
+    [Fact]
+    public void TestObjectivesTheEntryMarksTogetherAreAllFinishedByOneKillAndOthersByOneEach()
+    {
+        var catalogue = "{\"missions\": [{\"id\": 1, \"title\": \"Three\", \"dependencies\": [], \"rewards\": [], \"species\": [1], \"reserves\": [2], \"objectives\": ["
+            + "{\"id\": 0, \"title\": \"Harvest a Test Deer\"}, {\"id\": 1, \"title\": \"Harvest a Test Deer\"}, {\"id\": 2, \"title\": \"Harvest a Test Deer\"}]}]}";
+        state = New("together.db", catalogue, rules: Rules(("1/0", "harvest; species: Test Deer; together"), ("1/1", "harvest; species: Test Deer; together")));
+        ActivateAll();
+        Hb(Shot(1));  // one deer finishes the two marked objectives
+        Assert.Equal("", Completed());  // the third, which is not marked, is open
+        Hb(Shot(2));
+        Assert.Equal("1", Completed());
+        Assert.Contains("mission 1 objective 0 (override): Harvest a Test Deer => harvest; species: Test Deer; together", state.MissionCoverage(rules: true));
     }
 }

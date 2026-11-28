@@ -618,6 +618,7 @@
   <data name="Mis.Tomorrow" xml:space="preserve"><value>huomenna</value></data>
   <data name="Mis.Description" xml:space="preserve"><value>Kuvaus</value></data>
   <data name="Mis.Objectives" xml:space="preserve"><value>Tavoitteet</value></data>
+  <data name="Mis.WeaponsCount" xml:space="preserve"><value>Aseet, jotka kelpaavat:</value></data>
   <data name="Mis.LockedBy" xml:space="preserve"><value>Sinun on suoritettava seuraavat tehtävät avataksesi tehtävän {0}:</value></data>
   <data name="Mis.Reserves" xml:space="preserve"><value>Alueet</value></data>
   <data name="Mis.Rewards" xml:space="preserve"><value>Palkinnot</value></data>

@@ -28,6 +28,7 @@ const string AdminUsage = """
     It prints one line per account and family that changes (the rows before and after, ascending by account, then family), one line per family (accounts that change, accounts with a row that rises, how many of them on an item the Skills tab shows, the largest and total rise in XP) and a total line. Without --apply nothing is written; --apply
     changes each account in one transaction; a second run changes nothing. It never runs at start. Run it once, with the server stopped, after `backup` (docs/server.md#one-shooting-skill-per-weapon-type).
     admin weapon-families prints the table of every weapon item of the catalogue (Markdown, ascending by id): id, name, finish, the family (its representative's id) and why the item is in it (name, chain, shares, alone), then a count line. It writes nothing and the same catalogue prints the same bytes (docs/server.md#weapon-families).
+    admin mission-weapons <folder> writes the two audit tables of the weapons the mission objectives accept into the folder: mission-objectives.md (every objective, its weapon condition and the accepted weapons) and weapon-missions.md (every weapon and the objectives that accept it). A community server's catalogue only; the same catalogue gives the same bytes (docs/server.md#weapons-of-a-mission).
     admin ban <account: user id or handle | Steam id (17 digits)> [reason] bans the Steam id for good (no sign-in with it, deleting the account does not lift it) and sets banned on its current account, if any. The player reads the reason on the sign-in page: write it for him.
     admin unban <Steam id> lifts the ban of the Steam id and of its account; the ban stays on record, the review list shows it on a claim of that Steam id.
     admin avatars [--account <id or handle>] [--dry-run] sets the uploaded avatar of every account (or one) whose avatar is the default or a dead upload link, from the avatar host (it must be in picture_link_hosts);
@@ -54,6 +55,8 @@ const string AdminUsage = """
     same individual and species, in the ten minutes before the harvest, in a hunt that overlapped and was still running; both hunts must hold a network event, 29, and both players' records of the animal must agree) newer than the harvester's own last hit. A moved harvest takes its page (a taxidermy or skull bought with it too), kill row and events to the shooter, and a mounted trophy is taken
     off the harvester's lodge; the gm$ are NOT moved (what the harvester was paid stays his, the shooter gets none for it; the shooter's missions checked again may pay their own rewards); each move is one transaction (a failed one is undone and counted); the harvester's missions lose only the objectives that harvest finished (listed in the dry run), the shooter's are checked again, the hunterscore of both is made again, and a record per account and move is kept (table mission_rollbacks).
     It prints one line per moved harvest (kill, species, from, to, gm$) and a total; the first harvest of an animal moves, a second one stays. Without --apply it only prints and writes nothing. Run it once, with the server stopped, after `backup`.
+    admin missions-recheck [--account <id or handle>] is the dry run of what the server does at every start: each active mission's open harvest, clue and arrive objectives are checked again against the stored harvests, clues and places under today's rules. It prints one line per account and mission
+    (the objectives that would be finished, and, when that completes the mission, the gm$ and em$ it pays), then a total. The start only finishes objectives (it never reopens one, and a finished one is never checked). The dry run writes nothing of its own: each account's check is rolled back, and with spawn_named_animals on the ids the new rules give named animals are worked out in memory (named_animals.json is not written). Loading the state still does the start's normal upkeep on state.db (purge of expired items, the start kit, hunterscore, the migrations), so run it on a copy of the data, with the server stopped. It needs the data folder's state.db and does not create it.
     admin missions-audit [--hours N] [--account <id or handle>] [--discord] lists the mission objectives completed in the last N hours (default 24) that look suspicious, one line per objective
     (flag | mission | objective | handle | what met it), grouped by flag (borderline, unmet, rule changed, fast, shared, spike), then the counts. It writes nothing. --discord prints Markdown messages of at most
     2000 characters, separated by a line ---8<---, for a webhook, with one line for the count of `rule changed` instead of one per objective.
@@ -409,6 +412,25 @@ void Admin(string[] a)
         }
         return;
     }
+    if (a.Length > 0 && a[0] == "mission-weapons")
+    {
+        if (a.Length != 2) Die(AdminUsage);
+        var scratch = Directory.CreateTempSubdirectory("mission-weapons").FullName;
+        try
+        {
+            var loaded = Replay.LoadState(settings.Cfg, Table(out _), scratch);
+            if (loaded == null || !loaded.HasMissions) { Die("no missions: they need a recorded catalogue and offline_mode false"); return; }
+            Directory.CreateDirectory(a[1]);
+            foreach (var (file, lines) in loaded.MissionWeaponTables())
+                File.WriteAllText(Path.Combine(a[1], file), string.Join('\n', lines) + "\n");
+        }
+        finally
+        {
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            Directory.Delete(scratch, true);
+        }
+        return;
+    }
     if (a.Length > 0 && a[0] == "missions-rollback")
     {
         var apply = a.Contains("--apply");
@@ -429,6 +451,17 @@ void Admin(string[] a)
         var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir);
         if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
         foreach (var line in loaded.MoveMpHarvests(a.Contains("--apply"))) Console.WriteLine(line);
+        return;
+    }
+    if (a.Length > 0 && a[0] == "missions-recheck")
+    {
+        if (a[1..] is not ([] or ["--account", _])) Die(AdminUsage);
+        if (!File.Exists(Path.Combine(settings.DataDir, "state.db"))) { Die($"no state.db in {settings.DataDir}: nothing to check"); return; }
+        var loaded = Replay.LoadState(settings.Cfg, Table(out _), settings.DataDir, readOnly: true);  // the named animals' ids are worked out in memory: named_animals.json is not written
+        if (loaded == null) { Die("no recorded connect: nothing to seed the accounts from"); return; }
+        long? only = null;
+        if (a.Length == 3 && (only = AdminApi.ResolveAccount(loaded, a[2])) is null) Die($"no account {a[2]}");
+        foreach (var line in loaded.RecheckMissions(only)) Console.WriteLine(line);
         return;
     }
     if (a.Length > 0 && a[0] == "missions-audit")

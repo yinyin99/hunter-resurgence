@@ -1,0 +1,1136 @@
+{
+ "species": [
+  {
+   "id": 1,
+   "name": "Test Deer (Typical)",
+   "define": "MULE_DEER",
+   "ethicalAmmo": [
+    902,
+    905,
+    904,
+    910
+   ]
+  },
+  {
+   "id": 2,
+   "name": "Test Turkey",
+   "define": "TURKEY",
+   "ethicalAmmo": [
+    906,
+    902
+   ]
+  },
+  {
+   "id": 3,
+   "name": "Test Elk",
+   "define": "ELK",
+   "ethicalAmmo": [
+    902,
+    910,
+    913
+   ]
+  },
+  {
+   "id": 7,
+   "name": "Test Pheasant",
+   "define": "PHEASANT",
+   "ethicalAmmo": [
+    906
+   ]
+  },
+  {
+   "id": 9,
+   "name": "Test Bear",
+   "define": "BEAR",
+   "ethicalAmmo": [
+    902,
+    910
+   ]
+  },
+  {
+   "id": 10,
+   "name": "Test Boar",
+   "define": "BOAR",
+   "ethicalAmmo": [
+    902
+   ]
+  },
+  {
+   "id": 14,
+   "name": "Test Fox",
+   "define": "FOX",
+   "ethicalAmmo": [
+    902,
+    905,
+    906,
+    904,
+    910,
+    913
+   ]
+  },
+  {
+   "id": 17,
+   "name": "Test Rabbit",
+   "define": "COTTONTAIL_RABBIT",
+   "ethicalAmmo": [
+    906,
+    902
+   ]
+  },
+  {
+   "id": 49,
+   "name": "Test Lynx",
+   "define": "LYNX",
+   "ethicalAmmo": [
+    902
+   ]
+  },
+  {
+   "id": 52,
+   "name": "Test Puma",
+   "define": "PUMA",
+   "ethicalAmmo": [
+    902,
+    910
+   ]
+  },
+  {
+   "id": 56,
+   "name": "Test Wolf",
+   "define": "WOLF",
+   "ethicalAmmo": [
+    902
+   ]
+  }
+ ],
+ "items": [
+  {
+   "id": 901,
+   "name": "Test Bolt Rifle",
+   "cat": 1,
+   "subcat": {
+    "name": "Rifles"
+   }
+  },
+  {
+   "id": 911,
+   "name": "Test Lever Rifle",
+   "cat": 1,
+   "subcat": {
+    "name": "Rifles"
+   },
+   "variationname": "Wood"
+  },
+  {
+   "id": 912,
+   "name": "Test Lever Rifle",
+   "cat": 1,
+   "subcat": {
+    "name": "Rifles"
+   },
+   "variationname": "Engraved"
+  },
+  {
+   "id": 903,
+   "name": "12 GA Test Shotgun",
+   "cat": 1,
+   "subcat": {
+    "name": "Shotguns"
+   }
+  },
+  {
+   "id": 907,
+   "name": "Test Recurve Bow",
+   "cat": 1,
+   "subcat": {
+    "name": "Bows & Crossbows"
+   }
+  },
+  {
+   "id": 908,
+   "name": "Heavy Test Recurve Bow",
+   "cat": 1,
+   "subcat": {
+    "name": "Bows & Crossbows"
+   }
+  },
+  {
+   "id": 909,
+   "name": "Test Longbow",
+   "cat": 1,
+   "subcat": {
+    "name": "Bows & Crossbows"
+   }
+  },
+  {
+   "id": 914,
+   "name": "Test Crossbow",
+   "cat": 1,
+   "subcat": {
+    "name": "Bows & Crossbows"
+   }
+  },
+  {
+   "id": 915,
+   "name": "Test Revolver",
+   "cat": 1,
+   "subcat": {
+    "name": "Handguns"
+   },
+   "description": "This revolver shares skill level and rank with the Test Magnum Revolver."
+  },
+  {
+   "id": 916,
+   "name": "Test Magnum Revolver",
+   "cat": 1,
+   "subcat": {
+    "name": "Handguns"
+   }
+  },
+  {"id": 917, "name": "12 GA Test Shotgun", "cat": 1, "subcat": {"name": "Test Event"}, "variationname": "Festive"},
+  {"id": 918, "name": ".30-30 Test Bullet", "cat": 3},
+  {"id": 919, "name": ".30-06 Test Bullet", "cat": 3},
+  {"id": 921, "name": "Test Muzzle Ball", "cat": 3, "subcat": {"name": "Test Muzzle Ammo"}},
+  {"id": 922, "name": "Test Muzzleloader", "cat": 1, "subcat": {"name": "Muzzleloaders"}},
+  {"id": 923, "name": "10GA/8x50R Test Combination Gun", "cat": 1, "subcat": {"name": "Test Advanced"}},
+  {"id": 924, "name": ".50 Test Muzzleloading Pistol", "cat": 1, "subcat": {"name": "Test Muzzle Pistols"}},
+  {"id": 925, "name": "Test Crossbow Pistol", "cat": 1, "subcat": {"name": "Bows & Crossbows"}},
+  {"id": 926, "name": "10 GA Test Drill Shell", "cat": 3, "subcat": {"name": "Test Shotgun Ammo"}},
+  {"id": 927, "name": "8x50R Test Drill Round", "cat": 3, "subcat": {"name": "Test Rifle Ammo"}},
+  {
+   "id": 902,
+   "name": "Test Rifle Round",
+   "cat": 3
+  },
+  {
+   "id": 904,
+   "name": "12 GA Test Buckshot Shells",
+   "cat": 3
+  },
+  {
+   "id": 905,
+   "name": "12 GA Test Slug Shells",
+   "cat": 3
+  },
+  {
+   "id": 906,
+   "name": "12 GA Test Birdshot Shells",
+   "cat": 3
+  },
+  {
+   "id": 910,
+   "name": "Test Broadhead Arrows",
+   "cat": 3
+  },
+  {
+   "id": 913,
+   "name": "Test Magnum Round",
+   "cat": 3
+  },
+  {
+   "id": 920,
+   "name": "Test Handgun Scope",
+   "cat": 2,
+   "subcat": {
+    "name": "Test Sights"
+   }
+  }
+ ],
+ "reserves": [
+  {
+   "id": 3,
+   "name": "Second Reserve"
+  }
+ ],
+ "locations": [
+  {
+   "id": 110,
+   "name": "North Lodge",
+   "define": "TEST_NORTH_LODGE",
+   "type": "LODGE",
+   "reserve": 2,
+   "pos": {
+    "x": -500,
+    "y": 0,
+    "z": 500
+   }
+  },
+  {
+   "id": 111,
+   "name": "South Lodge",
+   "define": "TEST_SOUTH_LODGE",
+   "type": "LODGE",
+   "reserve": 2,
+   "pos": {
+    "x": -500,
+    "y": 0,
+    "z": -500
+   }
+  },
+  {
+   "id": 120,
+   "name": "Tower 91",
+   "define": "TEST_HUNTING_TOWER_0",
+   "type": "HUNTING_TOWER",
+   "reserve": 2,
+   "pos": {
+    "x": 1000,
+    "y": 0,
+    "z": 1000
+   }
+  },
+  {
+   "id": 121,
+   "name": "Tower 92",
+   "define": "TEST_HUNTING_TOWER_1",
+   "type": "HUNTING_TOWER",
+   "reserve": 2,
+   "pos": {
+    "x": 2000,
+    "y": 0,
+    "z": 2000
+   }
+  },
+  {
+   "id": 130,
+   "name": "Old Mill",
+   "define": "TEST_OLD_MILL",
+   "type": "INTEREST",
+   "reserve": 2,
+   "pos": {
+    "x": 3000,
+    "y": 0,
+    "z": 4000
+   }
+  },
+  {"id": 140, "name": "Zürnhütte", "define": "TEST_ZUERNHUETTE", "type": "LODGE", "reserve": 2, "pos": {"x": -800, "y": 0, "z": 800}},
+  {"id": 141, "name": "Upper Test Camp", "define": "TEST_CAMPSITE_0", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5000, "y": 0, "z": 5000}},
+  {"id": 142, "name": "Test Camp", "define": "TEST_CAMPSITE_1", "type": "CAMPSITE", "reserve": 2, "pos": {"x": 5200, "y": 0, "z": 5200}},
+  {"id": 143, "name": "Zélan's Cairn", "define": "TEST_CAIRN_2", "type": "INTEREST", "reserve": 2, "pos": {"x": 6000, "y": 0, "z": 6000}}
+ ],
+ "missions": [
+  {
+   "id": 1,
+   "title": "Sample 1",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Locate 3 Test Deer tracks from the same animal."
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Sample 2",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Spot a Test Deer."
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Sample 3",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer buck with at least 8 typical points."
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Sample 4",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer buck with a weight of at least 68kg (approx. 150lbs)"
+    },
+    {
+     "id": 1,
+     "title": "Harvest a Test Deer buck with a weight of at least 68kg (approx. 150lbs)"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Sample 5",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer from under 46m (approx. 150 ft.)"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Sample 6",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    2
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Turkey with a beard length of at least 3 inches."
+    },
+    {
+     "id": 1,
+     "title": "Harvest a male Test Turkey with a set of 1/2 inch spurs or more."
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Sample 7",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Identify the tracks from three different Test Elk within a span of 5 min."
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Sample 8",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk from a Hunting Tower"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Sample 9",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer doe using a Shotgun loaded with Buckshot ammo."
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Sample 10",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk cow with a scoped Test Magnum Revolver."
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Sample 11",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    14
+   ],
+   "singleExpedition": true,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest two Test Foxes within 5 minutes of the first harvest."
+    },
+    {
+     "id": 1,
+     "title": "Harvest two Test Foxes within 5 minutes of each harvest."
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Sample 12",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [],
+   "singleExpedition": true,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Walk through Test Pass."
+    },
+    {
+     "id": 1,
+     "title": "Visit the Old Mill."
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Sample 13",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    9
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Spot a Common colored Test Bear in Test Reserve."
+    },
+    {
+     "id": 1,
+     "title": "Spot a Chocolate colored Test Bear in Test Reserve."
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Sample 14",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    9
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest the angry blonde Test Bear near the corner (X: -1.000, Y: -2.000) of Test Reserve."
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Sample 15",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": true,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer from Tower 91 in Test Reserve"
+    },
+    {
+     "id": 1,
+     "title": "Harvest a Test Deer from Tower 92 in Test Reserve during the same hunt."
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Sample 16",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    14,
+    9
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Fox using a Test Revolver without using a scope."
+    },
+    {
+     "id": 1,
+     "title": "Harvest a Test Bear through a shot to the heart using any recurve bow."
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Sample 17",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    10
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Boar with both tusks at least 4 inches in length using the Test Bolt Rifle."
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Sample 18",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": true,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk using any Test Lever rifle without hitting it in the intestines."
+    },
+    {
+     "id": 1,
+     "title": "Harvest another Test Elk using any Test Lever rifle without hitting it in the intestines in the same hunt."
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Sample 19",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    14
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest an unspooked male Test Fox without using any type of buckshot at 100% Harvest Value in Test Reserve."
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Sample 20",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "First, harvest an unspooked male Test Deer with any Recurve Bow at over 40 meters."
+    },
+    {
+     "id": 1,
+     "title": "Then, harvest a male Test Deer with one shot while standing at under 20 meters."
+    }
+   ]
+  },
+  {
+   "id": 21,
+   "title": "Sample 21",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    49
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest an unspooked male Test Lynx at 100% Harvest Value with a score of 9 or higher without penetrating any bones. Only organs may be hit."
+    }
+   ]
+  },
+  {
+   "id": 22,
+   "title": "Sample 22",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    3
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Kill two Test Deer in Second Reserve with a single shot using any permitted shotgun ammo."
+    }
+   ]
+  },
+  {
+   "id": 23,
+   "title": "Sample 23",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    52
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Puma using any bow or crossbow. The Test Puma should not be running away or charging you."
+    }
+   ]
+  },
+  {
+   "id": 24,
+   "title": "Sample 24",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    14,
+    17
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Start at North Lodge."
+    },
+    {
+     "id": 1,
+     "title": "Then arrive at Old Mill (x: 3000, y: 4000)."
+    },
+    {
+     "id": 2,
+     "title": "Harvest a male Test Fox with a color other than Common"
+    },
+    {
+     "id": 3,
+     "title": "Harvest a male Test Rabbit with birdshot."
+    }
+   ]
+  },
+  {
+   "id": 25,
+   "title": "Sample 25",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    7,
+    1,
+    56,
+    14
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest an airborne Test Pheasant."
+    },
+    {
+     "id": 1,
+     "title": "Harvest a male Halloween Test Deer."
+    },
+    {
+     "id": 2,
+     "title": "Harvest an idle Test Wolf or a Test Fox with a single shot to the brain."
+    },
+    {
+     "id": 3,
+     "title": "Harvest a Test Fox scoring more than 30 with a single shot to the brain and/or heart."
+    }
+   ]
+  },
+  {
+   "id": 26,
+   "title": "Sample 26",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk 5 minutes after another."
+    }
+   ]
+  },
+  {
+   "id": 27,
+   "title": "Sample 27",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "First, harvest a charging Test Elk from under 15 meters."
+    },
+    {
+     "id": 1,
+     "title": "Then, harvest another charging Test Elk from under 15 meters in the same hunt."
+    }
+   ]
+  },
+  {
+   "id": 28,
+   "title": "Sample 28",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer buck with a score of 150 or more."
+    }
+   ]
+  },
+  {
+   "id": 29,
+   "title": "Sample 29",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk scoring more than 250."
+    }
+   ]
+  },
+  {
+   "id": 30,
+   "title": "Sample 30",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    3
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Elk with the Test Recurve Bow."
+    }
+   ]
+  },
+  {
+   "id": 31,
+   "title": "Sample 31",
+   "dependencies": [],
+   "rewards": [
+    {
+     "text": "10 gm$"
+    }
+   ],
+   "reserves": [
+    2
+   ],
+   "species": [
+    1
+   ],
+   "singleExpedition": false,
+   "objectives": [
+    {
+     "id": 0,
+     "title": "Harvest a Test Deer from under 9.144 meters."
+    }
+   ]
+  },
+  {"id": 32, "title": "Sample 32", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": true, "objectives": [
+    {"id": 0, "title": "Start at Zurnhutte."},
+    {"id": 1, "title": "Then arrive at the Upper Test Camp."},
+    {"id": 2, "title": "Then arrive at the Test Camp."},
+    {"id": 3, "title": "Then arrive at Zelan's Cairn."}]},
+  {"id": 33, "title": "Sample 33", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [
+    {"id": 0, "title": "Arrive in the vicinity of the Zorbel (x 7000, y 8000)."}]},
+  {"id": 34, "title": "Sample 34", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any bow."}]},
+  {"id": 35, "title": "Sample 35", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any shotgun."}]},
+  {"id": 36, "title": "Sample 36", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a Waterfowl Blind."}]},
+  {"id": 37, "title": "Sample 37", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a stand."}]},
+  {"id": 38, "title": "Sample 38", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer using .30-30 ammunition."}]},
+  {"id": 39, "title": "Sample 39", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer using any Muzzleloader ammunition."}]},
+  {"id": 40, "title": "Sample 40", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with one heart shot."}]},
+  {"id": 41, "title": "Sample 41", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
+    {"id": 0, "title": "Spot a Test Deer."},
+    {"id": 1, "title": "Spot another Test Deer."},
+    {"id": 2, "title": "Spot one last Test Deer."}]},
+  {"id": 42, "title": "Sample 42", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [7], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a rooster."}]},
+  {"id": 43, "title": "Sample 43", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
+    {"id": 0, "title": "ID the call of a Test Deer."},
+    {"id": 1, "title": "ID the call of a unique Test Deer."}]},
+  {"id": 44, "title": "Sample 44", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
+    {"id": 0, "title": "Visit Zelan's Cairn."},
+    {"id": 1, "title": "Visit the Old Mill."},
+    {"id": 2, "title": "After visiting the Old Mill, harvest a Test Deer."}]},
+  {"id": 45, "title": "Sample 45", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [
+    {"id": 0, "title": "Harvest a Test Deer with the Test Recurve Bow first."},
+    {"id": 1, "title": "Harvest another Test Deer with the Test Bolt Rifle."}]},
+  {"id": 46, "title": "Sample 46", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": true, "objectives": [
+    {"id": 0, "title": "Start at North Lodge."},
+    {"id": 1, "title": "At any point during the same hunt, harvest a Test Deer."}]},
+  {"id": 47, "title": "Sample 47", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any rifle."}]},
+  {"id": 48, "title": "Sample 48", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any handgun."}]},
+  {"id": 49, "title": "Sample 49", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any Muzzleloader."}]},
+  {"id": 50, "title": "Sample 50", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with any rifle except a Muzzleloader."}]},
+  {"id": 51, "title": "Sample 51", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest any animal using Test Magnum Round."}]},
+  {"id": 52, "title": "Sample 52", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer with more than 8 typical points."}]},
+  {"id": 53, "title": "Sample 53", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "ID 3 tracks from a Test Deer."}]},
+  {"id": 54, "title": "Sample 54", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer killed while spooked."}]},
+  {"id": 55, "title": "Sample 55", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "Harvest a Test Deer without using a platform."}]},
+  {"id": 56, "title": "Sample 56", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [1], "singleExpedition": false, "objectives": [{"id": 0, "title": "ID any clue from a Test Deer."}]},
+  {"id": 57, "title": "Sample 57", "dependencies": [], "rewards": [{"text": "10 gm$"}], "reserves": [2], "species": [], "singleExpedition": false, "objectives": [{"id": 0, "title": "Look into the tracks near the Cairn."}]}
+ ]
+}

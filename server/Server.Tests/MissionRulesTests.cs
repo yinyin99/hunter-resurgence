@@ -31,7 +31,7 @@ public class MissionRulesTests : MissionTestBase
             "mission 1 objective 0: Harvest a Test Deer using Test Round ammunition in Test Reserve with one shot => harvest; species: Test Deer; ammunition: Test Round; one shot; reserve: Test Reserve",
             "mission 2 objective 0: Then harvest a male Test Deer with the Test Carbine from over 100 meters => harvest; species: Test Deer; male; ordered; distance: >100 m; weapon: Test Carbine",
             "mission 3 objective 0: Harvest a Test Deer while whistling => harvest; not understood, left over: whistling; species: Test Deer",
-            "mission 4 objective 0: Arrive at the Test Lodge => arrive",
+            "mission 4 objective 0: Arrive at the Test Lodge => arrive; places: TEST_RESERVE_LODGE",
         ], lines);
         Assert.Equal(lines, New("rules2.db", missions).MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1));
         Assert.DoesNotContain("rules:", New("norules.db", missions).MissionCoverage());
@@ -98,9 +98,9 @@ public class MissionRulesTests : MissionTestBase
         static string Rule(string line) => line[(line.IndexOf("=> ", StringComparison.Ordinal) + 3)..];
         var first = Print(New("variant1.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject
         {
-            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
+            ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)", ["2/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol",
         }));
-        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane)", first[0]);
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk)", first[0]);
         Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Twin Pistol", first[1]);  // both variants: the name alone
         Assert.Equal(first, Print(New("variant2.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = Rule(first[0]), ["2/0"] = Rule(first[1]) })));
     }
@@ -110,8 +110,8 @@ public class MissionRulesTests : MissionTestBase
     {
         var catalogue = Missions(Mission(1, "Harvest a Test Deer"));
         List<string> Print(State s) => [.. s.MissionCoverage(rules: true).SkipWhile(l => l != "rules:").Skip(1).TakeWhile(l => l != "warnings:")];
-        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Wolfsbane), Test Carbine" }));
-        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Wolfsbane)", first[0]);  // not the bare name: that would be both variants
+        var first = Print(New("variant3.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = "harvest; species: Test Deer; weapon: Test Twin Pistol (Dusk), Test Carbine" }));
+        Assert.EndsWith("=> harvest; species: Test Deer; weapon: Test Carbine, Test Twin Pistol (Dusk)", first[0]);  // not the bare name: that would be both variants
         var again = New("variant4.db", catalogue, rules: new System.Text.Json.Nodes.JsonObject { ["1/0"] = first[0][(first[0].IndexOf("=> ", StringComparison.Ordinal) + 3)..] });
         Assert.Equal(first, Print(again));
     }

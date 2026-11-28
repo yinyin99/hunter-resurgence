@@ -31,6 +31,11 @@ form .btn { padding: 6px 12px; font-size: 14px; line-height: 20px; }
 .goals { list-style: decimal; }
 .goals .done { display: inline-block; width: 13px; margin-right: 5px; font-size: 12px; line-height: 1; text-align: center; color: #fff; }
 .goals .empty { box-sizing: border-box; height: 13px; margin: 0 5px 0 0; padding: 0; border: 1px solid #ccc; vertical-align: -2px; }
+.goals .weapons { margin: 2px 0 6px; padding-left: 18px; font-size: 13px; color: var(--text-4); }
+.goals .weapons ul { margin: 0; }
+.goals .disclose { display: inline-flex; align-items: center; padding: 0; border: 0; background: none; font: inherit; color: inherit; cursor: pointer; }
+.goals .disclose .tri { margin-right: 6px; border-width: 3px 0 3px 5px; }
+.goals .disclose[aria-expanded="true"] .tri { transform: rotate(90deg); }
 .reward { margin: 0 0 6px; padding: 0 0 0 28px; list-style: none; }
 .reward ::deep .icon { width: 8px; height: 8px; margin-right: 2px; }
 .more p, .more li { margin: 0; font-size: 14px; line-height: 20px; color: var(--text-3); }

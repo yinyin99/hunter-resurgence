@@ -42,9 +42,9 @@ public class MissionAntlerTests : MissionTestBase
             "Harvest a Test Deer buck with at least ten typical points.", "Harvest a male 12-point Test Deer."]));
         ActivateAll();
         Hb(Rack(Shot(1), 1, 4, 4));
-        Assert.Equal("", Completed());  // exactly 8 is neither more nor less
+        Assert.Equal("1", Completed());  // exactly 8 is "more than 8" (the maintainer's reading of typical points), not "less than 8"
         Hb(Rack(Shot(2), 2, 4, 3));
-        Assert.Equal("2", Completed());
+        Assert.Equal("1,2", Completed());
         Hb(Rack(Shot(3), 3, 5, 5));
         Assert.Equal("1,2,3", Completed());
         Hb(Rack(Shot(4), 4, 6, 6));
