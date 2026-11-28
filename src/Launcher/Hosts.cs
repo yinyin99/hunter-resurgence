@@ -48,7 +48,7 @@ static class Hosts
     }
 
     /// <summary>The file as text. Latin1 maps every byte to one char and back (File.ReadAllText would drop a BOM), so the player's own lines survive byte for byte.</summary>
-    public static string Read(string path) => Encoding.Latin1.GetString(File.ReadAllBytes(path));
+    public static string Read(string path) => File.Exists(path) ? Encoding.Latin1.GetString(File.ReadAllBytes(path)) : ""; // a missing file reads as empty; Apply then creates it
 
     /// <summary>True when the text holds a complete block with exactly the names <paramref name="hosts"/> (in any order). Lines before and after the block do not matter.</summary>
     public static bool Matches(string text, IEnumerable<string> hosts)
