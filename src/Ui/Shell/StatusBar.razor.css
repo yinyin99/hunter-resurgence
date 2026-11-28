@@ -1,7 +1,7 @@
 .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 1001; background: linear-gradient(var(--bg-bar-top), var(--bg-bar-bottom)); box-shadow: var(--shadow-bar); font-size: var(--fs-statusbar); color: var(--fg-muted); }
 /* the row is a flex line, the logo, the left group (it shrinks, clipped sideways, never into the right group), a flexible gap and the right group; the narrower the window, the less the groups show (the media queries at the end) */
 .row { position: relative; display: flex; align-items: flex-start; height: var(--h-statusbar); }
-.web .row { width: var(--w-container); max-width: 100%; margin: 0 auto; }
+.web .row { box-sizing: border-box; width: var(--w-container); max-width: 100%; margin: 0 auto; }
 .web .left { margin-left: 11px; }
 .logo { position: relative; flex: none; display: block; margin: 13px 0 0 8px; width: 173px; height: 44px; }
 .launcher-label { position: absolute; left: 177px; top: 27px; height: 25px; padding-left: 6px; border-left: 2px solid #575757; font-weight: 100; line-height: 25px; color: var(--fg-muted); white-space: nowrap; }
