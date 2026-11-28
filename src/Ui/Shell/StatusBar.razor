@@ -28,8 +28,8 @@
                 <a class="section" href="/wallet/ems">em$ <span class="pill ems">@balances.Ems</span></a>
                 <a class="section" href="/wallet/gms">gm$ <span class="pill">@balances.Gms</span></a>
                 <a class="section" href="/inventory">@L["Inv.Title"]</a>
-                @if (balances.AmmoDays is { } ammo) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Ammo"] <span class="pill">@L["Fmt.Days", ammo]</span></span> }
-                @if (balances.FuelDays is { } fuel) { <span class="service"><span class="inf">&infin;</span> @L["Statusbar.Fuel"] <span class="pill">@L["Fmt.Days", fuel]</span></span> }
+                @if (balances.AmmoDays is { } ammo) { <span class="service" data-tip="@L["Statusbar.Ammo"]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Ammo"]</span> <span class="pill">@L["Fmt.Days", ammo]</span></span> }
+                @if (balances.FuelDays is { } fuel) { <span class="service" data-tip="@L["Statusbar.Fuel"]"><span class="inf">&infin;</span> <span class="lbl">@L["Statusbar.Fuel"]</span> <span class="pill">@L["Fmt.Days", fuel]</span></span> }
             </div>
         }
         <div class="right">
