@@ -1516,6 +1516,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam še posodablja igro.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Ta različica igre je novejša, kot jo pozna strežnik; morda še ne deluje.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Nekaj datotek igre manjka: v Steamu Lastnosti, Nameščene datoteke, Preveri celovitost datotek igre.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Izvršljiva datoteka igre ni izvirna: v Steamu Lastnosti, Nameščene datoteke, Preveri celovitost datotek igre.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Pot do mape igre vsebuje posebne znake ({0}); najbolje deluje navadna mapa, kot je C:\Games.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Pot do mape igre je zelo dolga; najbolje deluje navadna mapa, kot je C:\Games.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Igra je v mapi OneDrive; najbolje deluje navadna mapa, kot je C:\Games.</value></data>

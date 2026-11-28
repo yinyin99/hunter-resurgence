@@ -1516,6 +1516,7 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam is still updating the game.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>This game version is newer than the server knows; it may not work yet.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Some game files are missing: in Steam, Properties, Installed files, Verify integrity.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>The game's program file is not the original one: in Steam, Properties, Installed files, Verify integrity of game files.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>The game folder's path has special characters ({0}); a plain folder like C:\Games works best.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>The game folder's path is very long; a plain folder like C:\Games works best.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>The game is in a OneDrive folder; a plain folder like C:\Games works best.</value></data>

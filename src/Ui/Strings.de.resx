@@ -1516,6 +1516,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam aktualisiert das Spiel noch.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Diese Spielversion ist neuer, als der Server kennt; sie funktioniert vielleicht noch nicht.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Einige Spieldateien fehlen: in Steam Eigenschaften, Installierte Dateien, Integrität der Spieldateien überprüfen.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Die Programmdatei des Spiels ist nicht das Original: in Steam Eigenschaften, Installierte Dateien, Integrität der Spieldateien überprüfen.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Der Pfad des Spielordners enthält Sonderzeichen ({0}); ein einfacher Ordner wie C:\Games funktioniert am besten.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Der Pfad des Spielordners ist sehr lang; ein einfacher Ordner wie C:\Games funktioniert am besten.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Das Spiel liegt in einem OneDrive-Ordner; ein einfacher Ordner wie C:\Games funktioniert am besten.</value></data>

@@ -1516,6 +1516,7 @@ Sluit het programma dat de poort gebruikt (een andere server of een tweede kopie
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam is het spel nog aan het bijwerken.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Deze spelversie is nieuwer dan de server kent; hij werkt misschien nog niet.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Sommige spelbestanden ontbreken: in Steam, Eigenschappen, Geïnstalleerde bestanden, Integriteit van gamebestanden verifiëren.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Het programmabestand van het spel is niet het origineel: in Steam, Eigenschappen, Geïnstalleerde bestanden, Integriteit van gamebestanden verifiëren.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Het pad van de spelmap bevat speciale tekens ({0}); een gewone map zoals C:\Games werkt het best.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Het pad van de spelmap is erg lang; een gewone map zoals C:\Games werkt het best.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Het spel staat in een OneDrive-map; een gewone map zoals C:\Games werkt het best.</value></data>

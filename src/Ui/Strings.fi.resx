@@ -1516,6 +1516,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Check.Version.Updating" xml:space="preserve"><value>Steam päivittää peliä vielä.</value></data>
   <data name="Check.Version.Newer" xml:space="preserve"><value>Tämä pelin versio on uudempi kuin palvelin tuntee; se ei välttämättä toimi vielä.</value></data>
   <data name="Check.Files.Missing" xml:space="preserve"><value>Joitakin pelin tiedostoja puuttuu: Steamissä Ominaisuudet, Asennetut tiedostot, Tarkista pelitiedostojen eheys.</value></data>
+  <data name="Check.Exe.Other" xml:space="preserve"><value>Pelin ohjelmatiedosto ei ole alkuperäinen: Steamissä Ominaisuudet, Asennetut tiedostot, Tarkista pelitiedostojen eheys.</value></data>
   <data name="Check.Path.NonAscii" xml:space="preserve"><value>Pelikansion polussa on erikoismerkkejä ({0}); tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
   <data name="Check.Path.Long" xml:space="preserve"><value>Pelikansion polku on hyvin pitkä; tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
   <data name="Check.Path.OneDrive" xml:space="preserve"><value>Peli on OneDrive-kansiossa; tavallinen kansio, kuten C:\Games, toimii parhaiten.</value></data>
