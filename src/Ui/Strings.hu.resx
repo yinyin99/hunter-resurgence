@@ -1745,4 +1745,26 @@ Zárd be a programot, amely használja (másik szerver vagy az indító második
   <data name="Referral.Error.expired" xml:space="preserve"><value>A kód beírásának ideje lejárt.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Ez a kód nem használható.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>A szerver nem válaszolt. Próbáld újra később.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trófeaház</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Etetőhelyek</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Trófeaház kiválasztása</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Etetőhelyek kezelése</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Jelenleg nincs egyetlen házad sem.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Zárolás</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Feloldás</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Átnevezés</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Mentés</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>A módosítást nem sikerült menteni. Próbáld újra.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Jelenleg nincs etetőd a világban</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Etető feltöltése eddig:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>{0} etető-újratöltés maradt a készletedben</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Feltöltés</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Feltöltés {0} em$-ért</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Feltöltés {0} gm$-ért</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Az etetőt nem sikerült feltölteni. Próbáld újra.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktív</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inaktív</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Büntetés</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Az etető ekkor ürül ki: {0}, {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Az etetőd tele van</value></data>
 </root>

@@ -1745,4 +1745,26 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Referral.Error.expired" xml:space="preserve"><value>Le délai pour saisir un code est dépassé.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Ce code ne peut pas être utilisé.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Le serveur n'a pas répondu. Réessayez plus tard.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Pavillon de trophées</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Sites d'appâtage</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Sélection du pavillon de trophées</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Gestion des sites d'appâtage</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Vous ne possédez actuellement aucun pavillon.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Verrouiller</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Déverrouiller</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Renommer</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>La modification n'a pas pu être enregistrée. Réessayez.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Vous n'avez actuellement aucun agrainoir dans le monde</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Remplir l'agrainoir jusqu'à :</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Il vous reste {0} recharges d'agrainoir dans votre inventaire</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Remplir</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Remplir pour {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Remplir pour {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>L'agrainoir n'a pas pu être rempli. Réessayez.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Actif</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inactif</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Pénalité</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>L'agrainoir sera vide le {0} à {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Votre agrainoir est plein</value></data>
 </root>

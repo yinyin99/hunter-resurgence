@@ -1,0 +1,140 @@
+@page "/settings/game-management/{Tab?}"
+@inject IGameManagementService Service
+@inject IJSRuntime JS
+
+<PageTitle>@L["Settings.GameManagement"]</PageTitle>
+
+<div class="page-min">
+    <h2 class="page-title">@(L["Settings.GameManagement"].Value.ToUpper(System.Globalization.CultureInfo.CurrentCulture))</h2>
+    <Tabs Kind="sub" Items="tabs" Active="@(onBait ? "/settings/game-management/bait-sites" : "/settings/game-management")" />
+    @if (!loaded) { <div class="skeleton wait"></div> }
+    else if (onBait)
+    {
+        <section class="panel">
+            <h4 class="bar">@L["GM.BaitTitle"]</h4>
+            <div class="pane">
+                <label class="topup">@L["GM.FillTo"] <input type="number" min="0" max="50" @bind="TopUp" @bind:event="onchange" /></label>
+                <p class="info">@L["GM.Packs", feeders.Packs]</p>
+                @if (error is { } e) { <p class="error" role="alert">@L[e]</p> }
+                @if (feeders.Feeders.Length == 0) { <p class="empty">@L["GM.NoFeeders"]</p> }
+                else
+                {
+                    <ul class="list">
+                        @foreach (var f in feeders.Feeders.OrderBy(f => f.Reserve).ThenBy(f => f.Id, StringComparer.Ordinal))
+                        {
+                            var canFill = f.BaitAmount < topUp && f.BaitOwned > 0;
+                            <li class="feeder">
+                                <span class="what"><b>@f.Name</b> <span class="where">@f.ReserveName, @f.X.ToString("0.##", Inv) / @f.Y.ToString("0.##", Inv)</span></span>
+                                <span class="bar-wrap" title="@Tip(f)"><span class="fill" style="width:@(f.BaitMax > 0 ? f.BaitAmount * 100 / f.BaitMax : 0)%"></span><span class="num">@f.BaitAmount/@f.BaitMax</span></span>
+                                <span class="status @f.Status">@L["GM.Status." + f.Status]</span>
+                                <span class="buttons">
+                                    @if (feeders.Packs > 0) { <button type="button" class="btn btn-inverse refill" disabled="@(!canFill)" @onclick='() => Refill(f, "pack")'>@L["GM.Refill"]</button> }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-inverse refill em" disabled="@(!canFill)" @onclick='() => Refill(f, "em")'>@L["GM.RefillEm", feeders.RefillPrice.Em]</button>
+                                        <button type="button" class="btn btn-inverse refill gm" disabled="@(!canFill)" @onclick='() => Refill(f, "gm")'>@L["GM.RefillGm", feeders.RefillPrice.Gm]</button>
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="panel">
+            <h4 class="bar">@L["GM.LodgeTitle"]</h4>
+            <div class="pane">
+                @if (error is { } e) { <p class="error" role="alert">@L[e]</p> }
+                @if (lodges.Count == 0) { <p class="empty">@L["GM.NoLodges"]</p> }
+                else
+                {
+                    <ul class="list">
+                        @foreach (var l in lodges)
+                        {
+                            <li class="lodge">
+                                @if (renaming == l.Id)
+                                {
+                                    <input class="name" maxlength="40" @bind="draft" @bind:event="oninput" @onkeydown="k => Key(l, k)" />
+                                    <button type="button" class="btn btn-inverse save" @onclick="() => Save(l, draft, l.Locked)">@L["GM.Save"]</button>
+                                }
+                                else
+                                {
+                                    <span class="name">@l.Name</span>
+                                    <span class="kind">@l.LodgeType</span>
+                                    <span class="buttons">
+                                        <button type="button" class="btn btn-inverse rename" @onclick="() => (renaming, draft) = (l.Id, l.Name)">@L["GM.Rename"]</button>
+                                        <button type="button" class="btn btn-inverse lock" aria-pressed="@(l.Locked ? "true" : "false")" @onclick="() => Save(l, l.Name, !l.Locked)">@L[l.Locked ? "GM.Unlock" : "GM.Lock"]</button>
+                                    </span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    static readonly System.Globalization.CultureInfo Inv = System.Globalization.CultureInfo.InvariantCulture;
+    const string TopUpKey = "feederTopUp";
+
+    /// <summary>"bait-sites" shows the feeders; anything else, the trophy lodges.</summary>
+    [Parameter] public string? Tab { get; set; }
+
+    IReadOnlyList<(string Label, string Href)> tabs = [];
+    IReadOnlyList<LodgeRow> lodges = [];
+    FeederList feeders = new([], 0, new(0, 0));
+    bool loaded, topUpRead;
+    int topUp = 50;
+    string? error, renaming, draft;
+
+    bool onBait => Tab == "bait-sites";
+
+    // the top-up the player chose last time (the browser's own storage; none in a server-side run before the first render, so it is read after it)
+    int TopUp { get => topUp; set { topUp = Math.Clamp(value, 0, 50); _ = JS.InvokeVoidAsync("localStorage.setItem", TopUpKey, $"{topUp}"); } }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        tabs = [(L["GM.TabLodge"], "/settings/game-management"), (L["GM.TabBait"], "/settings/game-management/bait-sites")];
+        (loaded, error, renaming) = (false, null, null);
+        if (onBait) feeders = await Service.FeedersAsync(); else lodges = await Service.LodgesAsync();
+        loaded = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!onBait || topUpRead) return;
+        topUpRead = true;
+        try { if (int.TryParse(await JS.InvokeAsync<string?>("localStorage.getItem", TopUpKey), out var saved)) { topUp = Math.Clamp(saved, 0, 50); StateHasChanged(); } }
+        catch (JSException) { }  // storage blocked: the default stays
+    }
+
+    string Tip(FeederRow f) => f.EmptyAt is { } t && f.BaitAmount > 0
+        ? L["GM.EmptyOn", DateTimeOffset.FromUnixTimeSeconds(t).ToString("d"), DateTimeOffset.FromUnixTimeSeconds(t).ToString("t")]
+        : L["GM.Full"];
+
+    async Task Save(LodgeRow l, string? name, bool locked)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return;
+        var r = await Service.SaveLodgeAsync(l, name.Trim(), locked);
+        error = r.Error;
+        if (r.Ok) { renaming = null; lodges = await Service.LodgesAsync(); }
+    }
+
+    Task Key(LodgeRow l, KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape") renaming = null;
+        return e.Key == "Enter" ? Save(l, draft, l.Locked) : Task.CompletedTask;
+    }
+
+    async Task Refill(FeederRow f, string currency)
+    {
+        var r = await Service.RefillAsync(f.Id, currency, topUp);
+        error = r.Error;
+        if (r.Ok) feeders = await Service.FeedersAsync();
+    }
+}

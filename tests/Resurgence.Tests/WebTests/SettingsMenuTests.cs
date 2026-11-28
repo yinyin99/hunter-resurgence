@@ -65,12 +65,4 @@ public sealed class SettingsMenuTests : UiContext
         Services.GetRequiredService<HostMode>().Launcher = true;
         Assert.Empty(Render<SettingsMenu>().FindAll("#game-folder"));
     }
-
-    [Fact]
-    public void TheDisabledEntryTellsAScreenReaderItIsComingLater()
-    {
-        var item = Render<SettingsMenu>().Find("li[aria-disabled=true]");
-        Assert.Contains("Coming later", item.QuerySelector(".sr")!.TextContent);
-        Assert.Null(item.QuerySelector("a"));
-    }
 }

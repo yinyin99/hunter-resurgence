@@ -1745,4 +1745,26 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Referral.Error.expired" xml:space="preserve"><value>Die Zeit zur Eingabe eines Codes ist abgelaufen.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Dieser Code kann nicht verwendet werden.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Der Server hat nicht geantwortet. Versuchen Sie es später erneut.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trophäenhütte</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Futterstellen</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Auswahl der Trophäenhütte</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Verwaltung der Futterstellen</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Du besitzt derzeit keine Hütten.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Sperren</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Entsperren</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Umbenennen</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Die Änderung konnte nicht gespeichert werden. Versuche es erneut.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Du hast derzeit keine Futterstellen in der Welt</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Futterstelle auffüllen bis:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Du hast noch {0} Futter-Nachfüllungen in deinem Inventar</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Auffüllen</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Auffüllen für {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Auffüllen für {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Die Futterstelle konnte nicht aufgefüllt werden. Versuche es erneut.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktiv</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inaktiv</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Strafe</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Die Futterstelle ist am {0} um {1} leer</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Deine Futterstelle ist voll</value></data>
 </root>

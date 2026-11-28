@@ -1745,4 +1745,26 @@ Close the program that uses it (another server, or a second copy of the launcher
   <data name="Referral.Error.expired" xml:space="preserve"><value>The time to enter a code is over.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>This code can not be used.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>The server did not answer. Try again later.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trophy Lodge</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Bait Sites</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Trophy Lodge Selection</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Bait Site Management</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>You currently don't own any lodges.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Lock</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Unlock</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>The change could not be saved. Try again.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>You currently have no feeders in the world</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Fill feeder up to:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>You have {0} feeder refills left in your inventory</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Refill</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Refill for {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Refill for {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>The feeder could not be refilled. Try again.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Active</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inactive</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Penalty</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Feeder will be empty on {0} at {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Your feeder is full</value></data>
 </root>

@@ -1745,4 +1745,26 @@ Feche o programa que a usa (outro servidor ou uma segunda cópia do launcher) e 
   <data name="Referral.Error.expired" xml:space="preserve"><value>O prazo para digitar um código acabou.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Este código não pode ser usado.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>O servidor não respondeu. Tente novamente mais tarde.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Cabana de Troféus</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Locais de Isca</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Seleção da Cabana de Troféus</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Gerenciamento de Locais de Isca</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Você não possui nenhuma cabana no momento.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Bloquear</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Desbloquear</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Renomear</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Salvar</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Não foi possível salvar a alteração. Tente novamente.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Você não tem nenhum comedouro no mundo no momento</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Encher comedouro até:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Você tem {0} recargas de comedouro no inventário</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Reabastecer</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Reabastecer por {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Reabastecer por {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Não foi possível reabastecer o comedouro. Tente novamente.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Ativo</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inativo</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Penalidade</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>O comedouro ficará vazio em {0} às {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Seu comedouro está cheio</value></data>
 </root>

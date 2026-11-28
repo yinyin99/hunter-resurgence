@@ -1745,4 +1745,26 @@ Chiudi il programma che la usa (un altro server o una seconda copia del launcher
   <data name="Referral.Error.expired" xml:space="preserve"><value>Il tempo per inserire un codice è scaduto.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Questo codice non può essere usato.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Il server non ha risposto. Riprova più tardi.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Casa dei trofei</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Siti di esca</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Selezione della casa dei trofei</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Gestione dei siti di esca</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Al momento non possiedi nessuna casa.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Blocca</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Sblocca</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Rinomina</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Salva</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Impossibile salvare la modifica. Riprova.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Al momento non hai mangiatoie nel mondo</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Riempi la mangiatoia fino a:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Hai {0} ricariche di mangiatoia nell'inventario</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Riempi</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Riempi per {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Riempi per {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Impossibile riempire la mangiatoia. Riprova.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Attiva</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inattiva</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Penalità</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>La mangiatoia sarà vuota il {0} alle {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>La tua mangiatoia è piena</value></data>
 </root>

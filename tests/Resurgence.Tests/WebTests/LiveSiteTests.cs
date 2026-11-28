@@ -92,7 +92,7 @@ public sealed class LiveSiteTests : UiContext
         Assert.Equal("Weapons", cut.Find("nav.menu a.top.open").TextContent.Trim());  // the top-level label is the translated one
     }
 
-    /// <summary>The website's Settings menu has the three entries that work there and Game Management disabled (the launcher's folders, caches and dialogs are not on it); the settings page links the avatar only and shows six items disabled, none for Facebook.</summary>
+    /// <summary>The website's Settings menu has the four entries that work there (the launcher's folders, caches and dialogs are not on it); the settings page links the avatar only and shows six items disabled, none for Facebook.</summary>
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -101,11 +101,9 @@ public sealed class LiveSiteTests : UiContext
         Live(live);
         var cut = Render<SettingsMenu>();
         Assert.Equal(5, cut.FindAll("li").Count);
-        Assert.Equal(["/settings", "/referral", "/restore"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
+        Assert.Equal(["/settings", "/referral", "/settings/game-management", "/restore"], cut.FindAll("a[href^='/']").Select(a => a.GetAttribute("href")));
         Assert.Empty(cut.FindAll("#seasonal-events"));  // the website cannot start a hunt: the setting is in the launcher
-        Assert.Equal(["Game Management"], cut.FindAll("li[aria-disabled=true] > span:not(.sr)").Select(s => s.TextContent.Trim()));  // shown, not clickable
-        Assert.Equal("Coming later", cut.Find("li[aria-disabled=true]").GetAttribute("title"));
-        Assert.Empty(cut.FindAll("a[href='/game-management']"));
+        Assert.Empty(cut.FindAll("li[aria-disabled=true]"));  // every entry works
 
         var page = Render<Settings>();
         Assert.Equal(["Avatar", "Multiplayer bans"], page.FindAll("nav.menu li a").Select(a => a.TextContent.Trim()));  // the two that work

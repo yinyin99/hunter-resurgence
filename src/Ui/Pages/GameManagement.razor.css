@@ -1,0 +1,23 @@
+.panel { overflow: hidden; }
+.bar { margin: 0; padding: 0 8px; background: linear-gradient(#262626, #1e1e1e); font-size: 17.5px; line-height: 40px; font-weight: 400; color: #fff; }
+.pane { padding: 16px; min-height: 240px; }
+.info { margin: 2px 0 8px; font-size: 15px; line-height: 20px; color: var(--text-2); }
+.topup { display: block; margin: 0 0 6px; font-size: 15px; color: var(--text-1); }
+.topup input { width: 64px; margin-left: 8px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.list li { display: flex; align-items: center; gap: 12px; padding: 8px 10px; font-size: 14px; color: var(--text-2); }
+.list li:nth-child(even) { background: var(--surface-2); }
+.name { color: #fff; }
+.name:is(input) { flex: 1; max-width: 320px; }
+.buttons { margin-left: auto; display: flex; gap: 6px; }
+.buttons .btn-inverse, .save { background: #3a3a3a; color: #fff; }
+.what { flex: 1; min-width: 0; }
+.where { color: var(--text-2); }
+.bar-wrap { position: relative; flex: none; width: 140px; height: 18px; background: #1e1e1e; border: 1px solid #555; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--primary); }
+.num { position: relative; display: block; font-size: 12px; line-height: 18px; text-align: center; color: #fff; }
+.status { flex: none; width: 72px; }
+.status.active { color: var(--success); }
+.status.penalty { color: #e55; }
+.error { margin: 0 0 8px; color: #e55; }
+.empty { margin: 60px 0; text-align: center; font-size: 1.8em; font-weight: 100; color: #ccc; }

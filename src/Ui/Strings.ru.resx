@@ -1745,4 +1745,26 @@
   <data name="Referral.Error.expired" xml:space="preserve"><value>Время для ввода кода истекло.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Этот код нельзя использовать.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Сервер не ответил. Повторите попытку позже.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Охотничий домик</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Места прикормки</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Выбор охотничьего домика</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Управление местами прикормки</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>У вас пока нет домиков.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Заблокировать</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Разблокировать</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Переименовать</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Сохранить</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Не удалось сохранить изменение. Попробуйте ещё раз.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>У вас пока нет кормушек в мире</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Заполнить кормушку до:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>В вашем инвентаре осталось пополнений кормушек: {0}</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Пополнить</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Пополнить за {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Пополнить за {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Не удалось пополнить кормушку. Попробуйте ещё раз.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Активна</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Неактивна</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Штраф</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Кормушка опустеет {0} в {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Ваша кормушка полна</value></data>
 </root>

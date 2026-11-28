@@ -101,6 +101,7 @@ static class LauncherServices
         services.AddSingleton<ISignupService>(sp => new ServerSignupService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(),
             new MockSignupService(sp.GetRequiredService<HostMode>().Mock), sp.GetRequiredService<ILogger<ServerSignupService>>()));
         services.AddSingleton<IInventoryService>(sp => new ServerInventoryService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerInventoryService>>()));
+        services.AddSingleton<IGameManagementService>(sp => new ServerGameManagementService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ILogger<ServerGameManagementService>>()));
         services.AddSingleton<IStoreService>(sp => new ServerStoreService(sp.GetRequiredService<HttpClient>(), sp.GetRequiredService<ServerCookie>(), sp.GetRequiredService<ServerCache<ServerStore>>(), sp.GetRequiredService<IInventoryService>(), sp.GetRequiredService<ILogger<ServerStoreService>>()));
         // the launch map: the server's reserves and starts, the player's loadouts; a start opens the hunt there and gives the game its launch URL
         services.AddSingleton<ServerCache<ServerLaunchCatalogue>>();

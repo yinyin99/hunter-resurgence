@@ -1745,4 +1745,26 @@ Luk programmet, der bruger den (en anden server eller en anden kopi af launchere
   <data name="Referral.Error.expired" xml:space="preserve"><value>Tiden til at indtaste en kode er gået.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Denne kode kan ikke bruges.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Serveren svarede ikke. Prøv igen senere.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Trofæhytte</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Foderpladser</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Valg af trofæhytte</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Administration af foderpladser</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>Du ejer i øjeblikket ingen hytter.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Lås</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Lås op</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Omdøb</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Gem</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Ændringen kunne ikke gemmes. Prøv igen.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>Du har i øjeblikket ingen foderautomater i verden</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Fyld foderautomat op til:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Du har {0} påfyldninger tilbage i dit lager</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Fyld op</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Fyld op for {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Fyld op for {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Foderautomaten kunne ikke fyldes op. Prøv igen.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Aktiv</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inaktiv</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Straf</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Foderautomaten er tom den {0} kl. {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Din foderautomat er fuld</value></data>
 </root>

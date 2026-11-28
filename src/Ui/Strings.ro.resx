@@ -1745,4 +1745,26 @@ Numele:</value></data>
   <data name="Referral.Error.expired" xml:space="preserve"><value>Timpul pentru introducerea unui cod a expirat.</value></data>
   <data name="Referral.Error.banned" xml:space="preserve"><value>Acest cod nu poate fi folosit.</value></data>
   <data name="Referral.Error.failed" xml:space="preserve"><value>Serverul nu a răspuns. Încercați din nou mai târziu.</value></data>
+  <data name="GM.TabLodge" xml:space="preserve"><value>Cabana de trofee</value></data>
+  <data name="GM.TabBait" xml:space="preserve"><value>Locuri de momeală</value></data>
+  <data name="GM.LodgeTitle" xml:space="preserve"><value>Selectarea cabanei de trofee</value></data>
+  <data name="GM.BaitTitle" xml:space="preserve"><value>Gestionarea locurilor de momeală</value></data>
+  <data name="GM.NoLodges" xml:space="preserve"><value>În prezent nu deții nicio cabană.</value></data>
+  <data name="GM.Lock" xml:space="preserve"><value>Blochează</value></data>
+  <data name="GM.Unlock" xml:space="preserve"><value>Deblochează</value></data>
+  <data name="GM.Rename" xml:space="preserve"><value>Redenumește</value></data>
+  <data name="GM.Save" xml:space="preserve"><value>Salvează</value></data>
+  <data name="GM.SaveFailed" xml:space="preserve"><value>Modificarea nu a putut fi salvată. Încearcă din nou.</value></data>
+  <data name="GM.NoFeeders" xml:space="preserve"><value>În prezent nu ai niciun hrănitor în lume</value></data>
+  <data name="GM.FillTo" xml:space="preserve"><value>Umple hrănitorul până la:</value></data>
+  <data name="GM.Packs" xml:space="preserve"><value>Mai ai {0} reumpleri de hrănitor în inventar</value></data>
+  <data name="GM.Refill" xml:space="preserve"><value>Reumple</value></data>
+  <data name="GM.RefillEm" xml:space="preserve"><value>Reumple pentru {0} em$</value></data>
+  <data name="GM.RefillGm" xml:space="preserve"><value>Reumple pentru {0} gm$</value></data>
+  <data name="GM.RefillFailed" xml:space="preserve"><value>Hrănitorul nu a putut fi reumplut. Încearcă din nou.</value></data>
+  <data name="GM.Status.active" xml:space="preserve"><value>Activ</value></data>
+  <data name="GM.Status.inactive" xml:space="preserve"><value>Inactiv</value></data>
+  <data name="GM.Status.penalty" xml:space="preserve"><value>Penalizare</value></data>
+  <data name="GM.EmptyOn" xml:space="preserve"><value>Hrănitorul va fi gol pe {0} la {1}</value></data>
+  <data name="GM.Full" xml:space="preserve"><value>Hrănitorul tău este plin</value></data>
 </root>
