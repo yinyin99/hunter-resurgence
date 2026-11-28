@@ -72,8 +72,12 @@ public static class PlayerRows
     public static void AddTrophy(Db con, string source, string id, JsonNode? node) =>
         con.Exec("INSERT INTO trophies (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
 
-    public static void AddLodge(Db con, string source, string id, JsonNode? node) =>
+    public static void AddLodge(Db con, string source, string id, JsonNode? node)
+    {
+        foreach (var slot in (node?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
+            if (slot["trophy_id"] is { } t && Py.Plain(t) is null) slot["trophy_id"] = null;  // an object or an array is no trophy id: an empty slot
         con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, ?, ?, ?)", source, id, Py.Dumps(node));
+    }
 
     /// <summary>A saved reply with no typed home, keyed by its path in the zip.</summary>
     public static void SetExtra(Db con, string path, JsonNode? body) =>

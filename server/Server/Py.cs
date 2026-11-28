@@ -236,6 +236,9 @@ public static class Py
     /// <summary>str.isdigit() for ASCII input.</summary>
     public static bool IsDigit(string s) => s.Length > 0 && s.All(char.IsAsciiDigit);
 
+    /// <summary>The value when it is a plain number or string, else null: an object or an array is no id.</summary>
+    public static JsonNode? Plain(JsonNode? n) => IsNum(n) || IsStr(n) ? n : null;
+
     public static bool IsStr(JsonNode? n) => n is JsonValue v && Raw(v) is string;
     public static bool IsBool(JsonNode? n) => n is JsonValue v && Raw(v) is bool;
     public static bool IsFloat(JsonNode? n) => n is JsonValue v && Raw(v) is double;

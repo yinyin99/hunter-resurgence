@@ -42,4 +42,19 @@ public class LodgeRestoreTests : StateTestBase
         Assert.Equal(1, Lodges(1002));  // its own, no second
         Assert.Equal("mine", (string)Reply(state.LodgesReply(1002))[0]!["name"]!);
     }
+
+    [Fact]
+    public void ALodgeWithAnObjectOrArrayTrophyIdIsReadWithTheOtherTrophiesInPlace()
+    {
+        var player = state.Store.NextServerId();
+        state.CreateAccount(player, "odd", "76561190000000999");
+        using (var con = state.Store.Open(player))
+            con.Exec("INSERT INTO lodges (account_id, source, id, node) VALUES ($a, '/game/user/lodges', '5', ?)",
+                """{"id": 5, "name": "odd", "animal_slots": [{"slot_id": 1, "trophy_id": {"x": 1}}, {"slot_id": 2, "trophy_id": [3]}, {"slot_id": 3, "trophy_id": 77}]}""");
+        var slots = Reply(state.LodgesReply(player))[0]!["animal_slots"]!.AsArray();
+        Assert.Equal(3, slots.Count);
+        Assert.Equal(77, (int)slots[2]!["trophy_id"]!);
+        Assert.NotNull(state.LodgeReply(player, 5));
+        Assert.NotNull(state.TrophiesReply(player));
+    }
 }

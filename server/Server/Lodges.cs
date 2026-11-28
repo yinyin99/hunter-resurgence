@@ -113,7 +113,7 @@ public sealed partial class State
                 if (Py.IsStr(node["name"])) names.TryAdd(id, ((string)node["name"]!).Trim());
                 if (!mounted.TryGetValue(id, out var held)) mounted[id] = held = [];
                 foreach (var slot in (node["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-                    if (slot["trophy_id"] is { } trophy && (Py.IsNum(trophy) || Py.IsStr(trophy))) held.Add(Py.Str(trophy));  // only a plain id: an object or an array in a restored slot is no trophy
+                    if (Py.Plain(slot["trophy_id"]) is { } trophy) held.Add(Py.Str(trophy));  // only a plain id: an object or an array in a restored slot is no trophy
             }
             var (largest, count) = mounted.OrderByDescending(m => m.Value.Count).ThenBy(m => m.Key).Select(m => (m.Key, m.Value.Count)).FirstOrDefault();
             if (count < BigLodge) return;
@@ -250,7 +250,7 @@ public sealed partial class State
         var mounts = new Dictionary<string, JsonObject>();
         foreach (var lodge in lodges)
             foreach (var slot in (lodge["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-                if (slot["trophy_id"] is { } id)
+                if (Py.Plain(slot["trophy_id"]) is { } id)
                     mounts.TryAdd(Py.Str(id), new JsonObject { ["lodge_id"] = C(lodge["id"]), ["slot_id"] = C(slot["slot_id"]), ["pose_id"] = C(slot["pose_id"]) });
         var known = lodges.Select(l => Py.Str(l["id"])).ToHashSet();
         foreach (var row in trophies.OfType<JsonObject>())
@@ -272,7 +272,7 @@ public sealed partial class State
     {
         Dictionary<string, JsonNode?>? trophies = null;
         foreach (var slot in lodges.SelectMany(l => l?["animal_slots"] as JsonArray ?? []).OfType<JsonObject>())
-            if (slot["trophy_id"] is { } id && slot["trophy_details"] is null)
+            if (Py.Plain(slot["trophy_id"]) is { } id && slot["trophy_details"] is null)
             {
                 if (trophies is null)
                 {
