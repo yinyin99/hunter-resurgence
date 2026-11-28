@@ -609,9 +609,13 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             return ReplayScope.Find(this, r) is { Global: false } rule ? new Hit(2, "", rule.Status, JsonAnyOrigin(), Encoding.UTF8.GetBytes(rule.Empty!)) : null;
         }
 
-        /// <summary>The kill screen's organ pictures and the lodge pictures (the lodge editor's own too), when the archive lacks one: the static host's folder of the mirror.</summary>
-        string? PictureMirror(Req r) => r.Host == GameWeb && PictureUrl.Match(r.Path) is { Success: true } m
-            ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value) : null;
+        /// <summary>A corrected trophy picture's address on the game web host (<see cref="Facts.FixTrophyYear"/>): the static host's folder of the mirror holds the file.</summary>
+        static readonly Regex TrophyPictureUrl = new(@"\A/static/img/trophies/[a-z0-9][a-z0-9_]{0,79}\.png\z", RegexOptions.ECMAScript);
+
+        /// <summary>The kill screen's organ pictures and the lodge pictures (the lodge editor's own too), when the archive lacks one, and the corrected trophy pictures: the static host's folder of the mirror.</summary>
+        string? PictureMirror(Req r) => r.Host != GameWeb ? null
+            : PictureUrl.Match(r.Path) is { Success: true } m ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), "/static/img/" + m.Groups[1].Value)
+            : TrophyPictureUrl.IsMatch(r.Path) ? MirrorPath(MirrorDir, S(Cfg, "static_host").ToLowerInvariant(), r.Path) : null;
 
         static readonly Regex TileUrl = new(@"\A/content/map/(v7/tiles/([1-5])/(\d{1,4})/(\d{1,4})\.jpg)\z", RegexOptions.ECMAScript);
 

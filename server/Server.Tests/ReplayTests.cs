@@ -471,7 +471,7 @@ public class ReplayTests : IAsyncLifetime
             }
         }
         File.WriteAllBytes(Path.Combine(d, "pc0.arc"), arc.ToArray());
-        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png"), ("static.test", "/static/img/lodge/lodges/rustic.png"), ("static.test", "/static/img/lodge/skulls/skull_x.png"), ("static.test", "/static/img/lodge/other/z.png") })
+        foreach (var (host, path) in new[] { ("static.test", "/static/img/items/256/x.png"), ("map.test", "/v7/tiles/1/0/0.jpg"), ("map.test", "/v7/tiles/2/0/0.jpg"), ("static.test", "/static/img/animal_organs/26/female.png"), ("static.test", "/static/img/lodge/lodges/rustic.png"), ("static.test", "/static/img/lodge/skulls/skull_x.png"), ("static.test", "/static/img/lodge/other/z.png"), ("static.test", "/static/img/trophies/halloween_2022_mission.png") })
         {
             var f = Path.Combine(mirror, host, path.TrimStart('/'));
             Directory.CreateDirectory(Path.GetDirectoryName(f)!);
@@ -497,6 +497,9 @@ public class ReplayTests : IAsyncLifetime
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/unknown.png")).Source);
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/lodges/..%2Fx.png")).Source);  // a name outside the pattern
         Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/content/lodge/skulls/skull_x.png"));  // the editor's own pictures: the static host's folder
+        Same(("mirror"u8.ToArray(), "mirror"), await Get("game_web.test", "/static/img/trophies/halloween_2022_mission.png"));  // a corrected trophy picture (trophy_year_fixes): the static host's folder
+        Assert.Equal("miss", (await Get("game_web.test", "/static/img/trophies/halloween_2022_x.png")).Source);
+        Assert.Equal("miss", (await Get("game_web.test", "/content/trophies/halloween_2022_mission.png")).Source);  // the original's own address of these pictures is served by nothing
         Assert.Equal("miss", (await Get("game_web.test", "/content/lodge/other/z.png")).Source);
         Same(("app page"u8.ToArray(), "archive"), await Get("game_web.test", "/static/app/3.0.81/webgui/index.html"));  // the lodge editor frame: the app's page, not the other index.html
         Same(("bundle"u8.ToArray(), "archive"), await Get("game_web.test", "/dist/main.js"));

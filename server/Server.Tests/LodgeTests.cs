@@ -348,6 +348,40 @@ public class LodgeTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestHalloween2022AwardsOfTheOriginalShowTheirOwnYear()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "51", O("""{"id": 51, "trophy_id": 1756, "name": "Halloween 2026 Run", "image": "https://www.test/content/trophies/halloween_2026_mission.png", "hidden": false, "ts": 1666000000}"""));  // 2022-10
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "52", O("""{"id": 52, "trophy_id": 1756, "name": "Halloween 2026 Run", "image": "halloween_2026_mission", "hidden": false, "ts": 1790000000}"""));  // 2026
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "53", O("""{"id": 53, "trophy_id": 2044, "name": "Halloween 2026 Run", "image": "halloween_2026_mission", "hidden": false, "ts": 1666000000}"""));  // another id
+            con.Commit();
+        }
+        var rows = ((JsonArray)state.PublicTrophies(OWNER, 1)["rows"]!).OfType<JsonObject>().Take(3).ToList();  // newest first: 2026, then the two of 2022
+        Eq("""["Halloween 2026 Run", "Halloween 2022 Run", "Halloween 2026 Run"]""", new JsonArray(rows.Select(t => (JsonNode?)t["name"]!.DeepClone()).ToArray()));
+        Eq("""["halloween_2026_mission", "halloween_2022_mission", "halloween_2026_mission"]""", new JsonArray(rows.Select(t => (JsonNode?)t["image"]!.DeepClone()).ToArray()));
+        var list = Reply(state.TrophyListReply(OWNER, [])!)["trophies"]!.AsArray().Where(t => (long)t!["id"]! >= 51).ToList();
+        Eq("""["https://gameserver.test/static/img/trophies/halloween_2022_mission.png", "halloween_2026_mission", "halloween_2026_mission"]""", new JsonArray(list.Select(t => (JsonNode?)t!["image"]!.DeepClone()).ToArray()));
+        Eq("""["Halloween 2022 Run", "Halloween 2026 Run", "Halloween 2026 Run"]""", new JsonArray(list.Select(t => (JsonNode?)t!["name"]!.DeepClone()).ToArray()));
+    }
+
+    [Fact]
+    public async Task TestHalloween2022AwardsKeepAnAlreadyCorrectPictureAndABareFileName()
+    {
+        using (var con = state.Store.Open(OWNER))
+        {
+            con.Begin();
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "61", O("""{"id": 61, "trophy_id": 1761, "name": "Halloween 2022 Campaign Gold", "image": "https://static.test/static/img/trophies/halloween_2022_campaign_gold.png", "hidden": false, "ts": 1666000000}"""));
+            PlayerRows.AddTrophy(con, "/v1/Trophy/list", "62", O("""{"id": 62, "trophy_id": 1761, "name": "Halloween 2026 Campaign Gold", "image": "halloween_2026_campaign_gold.png", "hidden": false, "ts": 1666000001}"""));
+            con.Commit();
+        }
+        var list = Reply(state.TrophyListReply(OWNER, [])!)["trophies"]!.AsArray().Where(t => (long)t!["id"]! >= 61).ToList();
+        Eq("""["https://static.test/static/img/trophies/halloween_2022_campaign_gold.png", "halloween_2022_campaign_gold.png"]""", new JsonArray(list.Select(t => (JsonNode?)t!["image"]!.DeepClone()).ToArray()));
+        Eq("""["Halloween 2022 Campaign Gold", "Halloween 2022 Campaign Gold"]""", new JsonArray(list.Select(t => (JsonNode?)t!["name"]!.DeepClone()).ToArray()));
+    }
+
+    [Fact]
     public async Task TestTrophyRowsSayWhereTheyAreMountedNow()
     {
         using (var con = state.Store.Open(OWNER))
