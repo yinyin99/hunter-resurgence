@@ -192,7 +192,7 @@ public class CoatTableTests
             }
             index = Array.FindIndex(s.Model, m => Same(m.Layer, picked, layerIgnoresCase));
         }
-        if (index < 0) index = (int)(R15(Lcg(seed)) % (uint)s.Model.Length); // no group, or no layer of that name: any layer of the slot, with the same chance each
+        if (index < 0) index = (int)(R15(Lcg(seed)) % (uint)s.Model.Length); // no group, or no layer of that name: any layer of the slot, with about the same chance each (the game scales the draw instead of taking a modulo)
         return s.Model[index].Coat;
     }
 
@@ -226,14 +226,14 @@ public class CoatTableTests
         Assert.Equal(30000, counts.Values.Sum());
     }
 
-    [Theory]
-    [InlineData(true, false)] // the group is found, but the picked name is not found among the model's layers: the random pick stands
-    [InlineData(false, true)] // no group is found: the layer match is never reached
-    public void EitherCompareAloneLeavesTheHaresThreeSkinsAboutAThirdEach(bool lookupIgnoresCase, bool layerIgnoresCase)
+    [Fact]
+    public void TheLookupAloneLeavesTheHaresThreeSkinsAboutAThirdEachBecauseTheLayerMatchIsExactToo()
     {
-        var counts = Counts(HareAsShipped, lookupIgnoresCase, layerIgnoresCase);
+        // the group is found ("hare_DIF" is picked) but is not found among the model's layers ("hare_dif") when only the lookup ignores the letter case: the random pick stands
+        var counts = Counts(HareAsShipped, lookupIgnoresCase: true, layerIgnoresCase: false);
         Assert.Equal([0, 2, 73], counts.Keys.Order());
         Assert.All(counts.Values, n => Assert.InRange(n, 30000 * 0.31, 30000 * 0.36));
+        // and the layer match alone cannot help: with no group it is never reached, which the exact-compare case above already shows
     }
 
     [Fact]

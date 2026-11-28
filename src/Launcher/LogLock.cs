@@ -242,12 +242,12 @@ public sealed record RabbitSound(string ExeSha256, uint Site, uint Profile, (uin
 
 /// <summary>
 /// The game picks an animal's coat from its species' coat table: for each texture slot of the animal's model it finds the table's group by the slot's name, picks one of the group's layers by weight, and finds that layer among the model's by name,
-/// each time with an exact comparison of the letters; when the group or the layer is not found, it picks one of the slot's layers at random with the same chance each. Since the game update of late October the snowshoe hare's coat tables
-/// are filed under a name whose letter case differs from the one the hare's model uses, so the game finds no group and picks one of the model's three skins at random, each with the same chance: the normal one, the albino one and the seasonal event's.
+/// each time with an exact comparison of the letters; when the group or the layer is not found, it picks one of the slot's layers at random with about the same chance each. Since the game update of late October the snowshoe hare's coat tables
+/// are filed under a name whose letter case differs from the one the hare's model uses, so the game finds no group and picks one of the model's three skins at random, each with about the same chance: the normal one, the albino one and the seasonal event's.
 /// At each start of the known exe (the one of <see cref="LogLock.Known"/>), while the game is suspended, the launcher points the two calls of the game's exact comparison of two names (the group lookup and the layer match after the weighted pick)
 /// at one small function in a page of the game's memory. The function takes the same arguments the same way (two addresses in ecx and edx, the length on the stack, the caller removes it) and calls the compare the game already imports,
 /// <c>_memicmp</c>, which ignores letter case, on the same bytes in the same order; it returns that function's result, which like the original is zero for equal names, negative or positive otherwise, and the callers only test it against zero.
-/// The game's third comparison, which groups the tables when the file is loaded, is not touched: it must stay exact. Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is.
+/// The comparison that groups the tables when the file is loaded is not touched: it must stay exact (so are the game's other comparisons of names, such as the props lookup's, which the hare's coat does not go through). Every value is checked before anything is written; on any other exe or any other value nothing is written and the game starts as it is.
 /// Nothing on disk changes.
 /// </summary>
 /// <param name="ExeSha256">The SHA-256 of the exe this applies to (lowercase hex).</param>
