@@ -17,12 +17,14 @@ sealed class FakeSteamApi : HttpMessageHandler
     public HttpStatusCode Status = HttpStatusCode.OK;
     public bool Down;
     public readonly List<Uri> Asked = [];
+    public Task? Gate;  // when set, the answer waits for it (a slow Steam, or callers that must all be waiting first)
 
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         lock (Asked) Asked.Add(request.RequestUri!);
+        if (Gate is not null) await Gate;
         if (Down) throw new HttpRequestException("down: https://api.steampowered.com/?key=secret-key");
-        return Task.FromResult(new HttpResponseMessage(Status) { Content = new StringContent(Body, Encoding.UTF8, "application/json") });
+        return new HttpResponseMessage(Status) { Content = new StringContent(Body, Encoding.UTF8, "application/json") };
     }
 }
 
@@ -96,9 +98,35 @@ public class SteamLicenceTests
     [Fact]
     public async Task RequestsThatArriveTogetherMakeOneCall()
     {
-        var answers = await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => licence.OfAsync(1, Steam64)));
-        Assert.All(answers, a => Assert.Equal("owned", a));
+        var gate = new TaskCompletionSource();
+        api.Gate = gate.Task;  // Steam answers only once every caller is waiting
+        var calls = Enumerable.Range(0, 20).Select(_ => Task.Run(() => licence.OfAsync(1, Steam64))).ToList();
+        await Task.Delay(300);
+        Assert.All(calls, c => Assert.False(c.IsCompleted));
+        gate.SetResult();
+        Assert.All(await Task.WhenAll(calls), a => Assert.Equal("owned", a));
         Assert.Single(api.Asked);
+    }
+
+    [Fact]
+    public async Task ASlowSteamMakesTheCallerGiveUpWithUnknownAndTheLateAnswerFillsTheCache()
+    {
+        var slow = new SteamLicence(new HttpClient(api), "secret-key", "12345", () => clock, TimeSpan.FromMilliseconds(100));
+        var gate = new TaskCompletionSource();
+        api.Gate = gate.Task;
+        Assert.Equal("unknown", await slow.OfAsync(1, Steam64));
+        gate.SetResult();
+        await Task.Delay(300);  // the call that went on finishes
+        Assert.Equal("owned", await slow.OfAsync(1, Steam64));
+        Assert.Single(api.Asked);
+    }
+
+    [Fact]
+    public async Task AnyFailureReadsUnknownAndIsNotACachedFailedTask()
+    {
+        api.Gate = Task.FromException(new ArgumentException("not an HTTP or JSON error: " + "secret-key"));
+        Assert.Equal("unknown", await licence.OfAsync(1, Steam64));
+        Assert.Equal("unknown", await licence.OfAsync(1, Steam64));  // the kept answer is a plain unknown, not a failed task
     }
 
     [Fact]

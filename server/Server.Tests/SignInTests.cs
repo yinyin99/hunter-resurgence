@@ -296,6 +296,31 @@ public class SignInFlowTests : StateTestBase, IAsyncLifetime
     }
 
     [Fact]
+    public async Task TestMeDoesNotWaitLongForASlowSteamAndNeverShowsTheKey()
+    {
+        var gate = new TaskCompletionSource();
+        var steamApi = new FakeSteamApi { Gate = gate.Task };
+        var cfg = (JsonObject)Cfg.DeepClone();
+        (cfg["steam_web_api_key"], cfg["steam_app_id"]) = ("a-secret-key", "12345");
+        await StartAsync(false, cfg, new HttpClient(steamApi));
+        var cookie = await SignIn("99999999999999991");
+
+        var started = DateTime.UtcNow;
+        var me = await Get("web.test", "/auth/me", Ck("hr_session", cookie));
+        Assert.True(DateTime.UtcNow - started < TimeSpan.FromSeconds(4), "the website and the launcher give up on /auth/me after 5 seconds");
+        Assert.Equal(200, me.Status);
+        Assert.Equal("unknown", (string)JsonNode.Parse(me.Body)!["steamLicence"]!);
+        Assert.DoesNotContain("a-secret-key", Body(me));
+
+        gate.SetResult();  // Steam answers late: the next read has it
+        await Task.Delay(300);
+        var later = await Get("web.test", "/auth/me", Ck("hr_session", cookie));
+        Assert.Equal("owned", (string)JsonNode.Parse(later.Body)!["steamLicence"]!);
+        Assert.DoesNotContain("a-secret-key", Body(later));
+        Assert.Single(steamApi.Asked);
+    }
+
+    [Fact]
     public async Task TestTheFirstSignInCreatesOneAccountAndTheSecondReusesIt()
     {
         var first = await SignIn();
