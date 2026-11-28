@@ -549,8 +549,8 @@ public sealed partial class State
     }
 
     /// <summary>The in-game pages' catalogue: the keys they read of the application catalogue (species with the permitted ammo of
-    /// each, items, reserves, locations; the missions only when the catalogue has them).</summary>
-    public byte[] ClientApplicationReply()
+    /// each, items, reserves, locations; the missions only when the catalogue has them, their texts in the language `lang` names).</summary>
+    public byte[] ClientApplicationReply(string? lang = null)
     {
         var reply = new JsonObject();
         foreach (var key in (string[])["items", "locale", "locations", "mission_groups", "missions", "reserves", "season", "species"])
@@ -563,6 +563,7 @@ public sealed partial class State
             for (var i = dependencies.Count - 1; i >= 0; i--)
                 if (TryKey(dependencies[i], out _) && Beginner.Contains(Py.L(dependencies[i])))
                     dependencies.RemoveAt(i);
+        Texts.Apply(reply, lang);  // the missions' texts in the game's language
         return Py.DumpBytes(reply);
     }
 

@@ -7,6 +7,7 @@
     @if (info.Folder is null)
     {
         <p id="folder-none">@L["GameFolder.None"]</p>
+        <SteamInstall OnCheckAgain="Again" />
     }
     else
     {
@@ -41,6 +42,9 @@
         Bridge.UseAutomaticGameFolder();
         Done(Result.Success);
     }
+
+    // the player installed the game with Steam: it is looked for again
+    void Again() => info = Bridge.GameInstall;
 
     void Open() => Done(Bridge.OpenFolder("game"), keep: true);
 

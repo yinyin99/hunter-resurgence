@@ -62,6 +62,23 @@ public class SettingsTests : IDisposable
     }
 
     [Fact]
+    public void TheSteamLicenceCheckIsTheKeyAndTheAppIdTogetherAndTheAppIdIsDigits()
+    {
+        Assert.Null(Load(Minimal()).Cfg["steam_web_api_key"]);
+        var ok = Minimal();
+        (ok["steam_web_api_key"], ok["steam_app_id"]) = ("a-key", "12345");
+        var cfg = Load(ok).Cfg;
+        Assert.Equal(("a-key", "12345"), ((string?)cfg["steam_web_api_key"], (string?)cfg["steam_app_id"]));
+        foreach (var (key, app) in new (string? Key, string? App)[] { ("a-key", null), (null, "12345"), ("a-key", "12a45"), ("a-key", "../1") })
+        {
+            var o = Minimal();
+            if (key is not null) o["steam_web_api_key"] = key;
+            if (app is not null) o["steam_app_id"] = app;
+            Assert.Throws<InvalidDataException>(() => Load(o));
+        }
+    }
+
+    [Fact]
     public void TheRoleBotSettingsAreOptionalTheIdsDigitsAndVeteranStartsAt20000()
     {
         var none = Load(Minimal()).Cfg;

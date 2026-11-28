@@ -1677,7 +1677,7 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus-Ereignisse in diesem Zeitraum:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Dieses Spiel wird mit dem saisonalen Event gespielt.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Dieses Spiel wird ohne das saisonale Event gespielt.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>Im Multiplayer gilt die Einstellung des Gastgebers.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Im Multiplayer richtet sich das Spiel nach der Jagd des Gastgebers, unabhängig von deiner eigenen Einstellung oder dem Zeitraum des Events.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Vom Gastgeber gebannt</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Du darfst diesem Spiel nicht beitreten: Der Gastgeber hat dich von seinen Spielen gebannt.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Spieler, die du mit der Schaltfläche „Bannen“ auf der Spielerseite im Spiel bannst, können deinen Multiplayer-Spielen nicht beitreten, bis du den Bann aufhebst.</value></data>
@@ -1687,4 +1687,13 @@ Schließe das Programm, das ihn nutzt (ein anderer Server oder eine zweite Kopie
   <data name="Servers.Language" xml:space="preserve"><value>Sprache</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Sprache:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Nur Spiele in meiner Sprache</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Über Steam installieren</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam ist nicht installiert: Steam herunterladen</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Erneut prüfen</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Ihr Steam-Konto besitzt das Spiel: Installieren Sie es über Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Ihr Steam-Konto besitzt keine Lizenz für das Spiel.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Was kann ich tun?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Ich finde das Spiel in Steam nicht</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Öffnen Sie in Steam Konto → Lizenzen und Produktschlüsselaktivierungen und suchen Sie dort das Spiel. Steht es dort, nutzen Sie den Button „Über Steam installieren“ des Launchers oder Ihre Steam-Bibliothek. Steht es nicht dort, kann Steam es Ihnen nicht mehr geben.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Ihre Steam-Lizenzen öffnen</value></data>
 </root>

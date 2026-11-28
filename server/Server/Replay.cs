@@ -310,7 +310,7 @@ public static class Replay
     /// labels, the texture names and the populations of every reserve. The avatar list and the player's skill list come from
     /// recordings only (without them: fresh skills). The recorded Application/discounts is not read: the store's sales are the operator's (`store_sales`). Null when there is neither a recorded connect nor a
     /// connect sample in the install.</summary>
-    public static State? LoadState(JsonObject cfg, HarTable table, string workDir)
+    public static State? LoadState(JsonObject cfg, HarTable table, string workDir, TextWriter? log = null)
     {
         NewBuild.Alias(table, cfg);
         var e = table.Entries;
@@ -374,6 +374,7 @@ public static class Replay
             seasonal: SeasonalEvent.Parse(cfg["event"]), missionRules: File.Exists(missionRules) ? State.ReadMissionRules(missionRules) : null,
             spawnNamedAnimals: (bool?)cfg["spawn_named_animals"] ?? false)
         {
+            Texts = cfg["mission_texts_dir"] is JsonValue texts ? MissionTexts.Load((string)texts!, log) : MissionTexts.None,
             CommunityDivisor = cfg["event_community_divisor"] is { } divisor ? (int)Py.L(divisor) : 20, AllLicenses = (bool?)cfg["all_licenses"] ?? false,
             UnlimitedAmmo = (bool?)cfg["unlimited_ammo"] ?? false, UnlimitedFuel = (bool?)cfg["unlimited_fuel"] ?? false, InventoryCapacity = cfg["default_inventory_capacity"] is { } capacity ? Py.L(capacity) : State.DefaultInventoryCapacity,
             Collectables = Install.CollectableDefinitions(S(cfg, "install_dir")), AvatarUploads = (string?)cfg["avatar_uploads"],
@@ -505,7 +506,9 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
 
         /// <summary>Less to paint on the in-game page (issue #829): `content-visibility:auto` on the lodge's items (`#lodge-main-view .inventory-item`) skips painting the ones scrolled out of view. The rule is on the item itself, not on its tile: the page empties and refills the view's container, so the tiles end up under another element and are smaller than their content, but the item has its own size, and the hover info and the drag picture are clones appended to `body`, so the rule's clipping does not reach them.</summary>
         const string PaintFix = "<style>#lodge-main-view .inventory-item{content-visibility:auto}</style>";
-        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + PaintFix + ClientStyle)];
+        /// <summary>The lodge inventory's carry grids (the player's backpack, the dog's, the vehicle's: `.backpack-view` in `.inventory-bottom`) grow with their rows, and the strip's container (`.backpack-view-container`, `overflow:hidden`, as high as the strip) clips them, so a full backpack's last rows could not be reached (#1039). Each grid now scrolls vertically when it has more rows than fit, and its drop target (`.backpack-slot`, the box inside it) is as tall as its rows, so a drop on the lower rows still lands.</summary>
+        const string CarryFix = "<style>.inventory-bottom .backpack-view-container>.backpack-view{overflow-y:auto}.inventory-bottom .backpack-view-container>.backpack-view>.backpack-slot{align-self:flex-start;min-height:100%}</style>";
+        static readonly (string From, string To)[] ClientPageSrc = [("</head>", KeybindingScript + PaintFix + CarryFix + ClientStyle)];
         public static Reply Apply(Req r, Reply reply)
         {
             if (reply.Status != 200 || r.Method != "GET") return reply;
@@ -656,7 +659,8 @@ w();}).then(go,go);})();</script><script>(function(){var q=0,cs=getComputedStyle
             var hit = denied ? null : Recorded(r);
             if (hit is { Tier: >= 1 })
             {
-                var bodyOut = hit.Body;
+                var bodyOut = State is { Online: true } && (r.Path.Equals(APPLICATION, StringComparison.OrdinalIgnoreCase) || r.Path.Equals(CLIENT_APPLICATION, StringComparison.OrdinalIgnoreCase))
+                    ? State.Texts.Localize(hit.Body, MissionTexts.RequestLanguage(r)) : hit.Body;  // the missions' texts in the game's language
                 var cb = Py.ParseQs(r.Query).TryGetValue("callback", out var cbs) ? cbs[0] : "";
                 if (cb.Length > 0 && Callback.IsMatch(cb))
                     bodyOut = Encoding.Latin1.GetBytes(Jsonp.Replace(Encoding.Latin1.GetString(bodyOut), _ => cb + "(", 1));

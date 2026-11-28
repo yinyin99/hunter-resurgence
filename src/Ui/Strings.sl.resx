@@ -1677,7 +1677,7 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonus dogodki v obdobju:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Ta igra poteka s sezonskim dogodkom.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Ta igra poteka brez sezonskega dogodka.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>V skupinskem lovu velja nastavitev gostitelja.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>V skupinskem lovu igra sledi lovu gostitelja, ne glede na vašo nastavitev ali datume dogodka.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Prepovedano s strani gostitelja</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Tej igri se ne moreš pridružiti: gostitelj ti je prepovedal dostop do svojih iger.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Igralci, ki jim prepoveš dostop z gumbom Prepoved na strani igralcev v igri, se ne morejo pridružiti tvojim večigralskim igram, dokler prepovedi ne odpraviš.</value></data>
@@ -1687,4 +1687,13 @@ Zaprite program, ki jih uporablja (drug strežnik ali druga kopija launcherja), 
   <data name="Servers.Language" xml:space="preserve"><value>Jezik</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Jezik:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Samo igre v mojem jeziku</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Namesti prek Steama</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam ni nameščen: prenesite Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Preveri znova</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Vaš račun Steam ima igro: namestite jo prek Steama.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Vaš račun Steam nima licence za igro.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Kaj lahko storim?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Igre ne najdem v Steamu</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>V Steamu odprite Račun → Licence in aktivacije ključev izdelkov ter tam poiščite igro. Če je tam, uporabite gumb „Namesti prek Steama“ v zaganjalniku ali svojo knjižnico Steam. Če je ni, vam je Steam ne more več dati.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Odpri vaše licence Steam</value></data>
 </root>

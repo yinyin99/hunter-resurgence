@@ -1677,7 +1677,7 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Événements bonus de la période :</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Cette partie se joue avec l'événement saisonnier.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Cette partie se joue sans l'événement saisonnier.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, le paramètre de l'hôte s'applique.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>En multijoueur, la partie suit la chasse de l'hôte, quels que soient votre paramètre ou les dates de l'événement.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Banni par l'hôte</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Vous ne pouvez pas rejoindre cette partie : l'hôte vous a banni de ses parties.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Les joueurs que vous bannissez avec le bouton Bannir de la page des joueurs du jeu ne peuvent pas rejoindre vos parties multijoueur tant que vous ne levez pas le bannissement.</value></data>
@@ -1687,4 +1687,13 @@ Fermez le programme qui l'utilise (un autre serveur, ou une seconde copie du lau
   <data name="Servers.Language" xml:space="preserve"><value>Langue</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Langue :</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Uniquement les parties dans ma langue</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Installer avec Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam n'est pas installé : télécharger Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Vérifier à nouveau</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Votre compte Steam possède le jeu : installez-le avec Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Votre compte Steam n'a pas la licence du jeu.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Que faire ?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Je ne trouve pas le jeu sur Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Dans Steam, ouvrez Compte → Licences et activations de clés de produit et cherchez-y le jeu. S'il y figure, utilisez le bouton « Installer avec Steam » du launcher ou votre bibliothèque Steam. Sinon, Steam ne peut plus vous le donner.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Ouvrir vos licences Steam</value></data>
 </root>

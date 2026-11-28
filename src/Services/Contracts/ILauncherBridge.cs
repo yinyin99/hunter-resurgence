@@ -15,6 +15,10 @@ public interface ILauncherBridge
     Result ChooseGameFolder();
     /// <summary>Forgets the manual folder; detection goes back to Steam.</summary>
     void UseAutomaticGameFolder();
+    /// <summary>Steam is installed on this PC: the "Install with Steam" button then opens Steam's install dialog, else it sends the player to Steam's download page.</summary>
+    bool SteamInstalled => true;
+    /// <summary>Looks for the game again, so that <see cref="GameInstall"/> and the install check see an install made meanwhile (the player installed it with Steam).</summary>
+    void DetectGame() { }
     /// <summary>Clears a cache; a failure is a <see cref="Result"/> whose Error is a text key (<c>Settings.NoFolder</c>, <c>Settings.CacheGameRunning</c>, <c>Settings.CacheFailed</c>).</summary>
     /// <param name="kind">launcher or game</param>
     Result ClearCache(string kind);

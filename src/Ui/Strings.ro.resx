@@ -1677,7 +1677,7 @@ Numele:</value></data>
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Evenimente bonus în această perioadă:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Acest joc se joacă cu evenimentul sezonier.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Acest joc se joacă fără evenimentul sezonier.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>În multiplayer se aplică setarea gazdei.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>În multiplayer, jocul urmează vânătoarea gazdei, indiferent de setarea ta sau de datele evenimentului.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Blocat de gazdă</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Nu te poți alătura acestui joc: gazda te-a blocat din jocurile sale.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Jucătorii pe care îi blochezi cu butonul Blochează din pagina jucătorilor din joc nu se pot alătura jocurilor tale multiplayer până când nu le ridici blocarea.</value></data>
@@ -1687,4 +1687,13 @@ Numele:</value></data>
   <data name="Servers.Language" xml:space="preserve"><value>Limba</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Limba:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Doar jocurile în limba mea</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Instalează prin Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam nu este instalat: descarcă Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Verifică din nou</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Contul tău Steam are jocul: instalează-l prin Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Contul tău Steam nu are licența jocului.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Ce pot face?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nu găsesc jocul pe Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>În Steam deschide Cont → Licențe și activări de chei de produs și caută acolo jocul. Dacă este acolo, folosește butonul „Instalează prin Steam” al launcherului sau biblioteca ta Steam. Dacă nu este, Steam nu ți-l mai poate da.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Deschide licențele tale Steam</value></data>
 </root>

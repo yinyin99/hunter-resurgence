@@ -142,6 +142,9 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
     /// <c>/auth/me</c> says null for both, and the pages offer no link.</summary>
     public long? DiscordVeteranAt { get; init; }
 
+    /// <summary>The Steam licence check (null: the settings have no `steam_web_api_key`): <c>/auth/me</c> says its answer, `unknown` without it.</summary>
+    public SteamLicence? Licence { get; init; }
+
     /// <summary>The server log (a test swaps it): one line per sign-in attempt of a banned Steam id.</summary>
     public Action<string> Log { get; init; } = Console.WriteLine;
 
@@ -540,8 +543,8 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
 
     // ---- the session
 
-    /// <summary>GET /auth/me: who the cookie is, with the hunterscore, the place on the board and the wallet (em, gm).</summary>
-    public Reply Me(Req r)
+    /// <summary>GET /auth/me: who the cookie is, with the hunterscore, the place on the board, the wallet (em, gm) and <c>steamLicence</c> (<see cref="SteamLicence"/>).</summary>
+    public async Task<Reply> Me(Req r)
     {
         if (Account(r) is not { } account) return Json(401, new JsonObject { ["error"] = "signed out" });
         var wallet = state.Wallet(account);
@@ -550,6 +553,7 @@ public sealed class SignIn(State state, SteamOpenId steam, Func<DateTimeOffset>?
             ["userId"] = account, ["handle"] = Store.HandleOf(account),
             ["hunterscore"] = Store.AccountJson(account)["hunterscore"] is { } hs && Py.IsNum(hs) ? Py.L(hs) : 0,
             ["rank"] = Store.Rank(account, state.LocalAccount), ["avatar"] = state.AvatarUrl(account, siteHost is not null ? "https://" + siteHost : Origin(r)),
+            ["steamLicence"] = Licence is null ? SteamLicence.Unknown : await Licence.OfAsync(account, Store.SteamId64(account)),
             ["ems"] = wallet["em"] is { } em && Py.IsNum(em) ? Py.L(em) : 0, ["gms"] = wallet["gm"] is { } gm && Py.IsNum(gm) ? Py.L(gm) : 0,
             ["imperial"] = Store.UsesImperial(account), ["discordLinked"] = DiscordVeteranAt is null ? null : Store.DiscordLinked(account), ["discordVeteranAt"] = DiscordVeteranAt,
         });

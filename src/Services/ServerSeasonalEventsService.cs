@@ -31,7 +31,7 @@ public sealed class ServerSeasonalEventsService(HttpClient http, ServerCookie co
         if (cookie.Value is null) return null;
         try
         {
-            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.EventPanel);
+            using var request = cookie.Request(HttpMethod.Get, ServerAccountApi.InLanguage(ServerAccountApi.EventPanel));
             using var response = await http.SendAsync(request);
             if (response.IsSuccessStatusCode && await response.Content.ReadFromJsonAsync<ServerEventPanel>() is { Name: not null } p)
                 return new(p.Title ?? p.Name, DateTimeOffset.FromUnixTimeSeconds(p.Start), DateTimeOffset.FromUnixTimeSeconds(p.End),

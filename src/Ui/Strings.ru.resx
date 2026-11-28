@@ -1677,7 +1677,7 @@
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Бонусные события за этот период:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>В эту игру играют с сезонным событием.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>В эту игру играют без сезонного события.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере действует настройка хозяина.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>В мультиплеере игра следует охоте хозяина, независимо от вашей настройки и сроков события.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Заблокирован хостом</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Вы не можете присоединиться к этой игре: хост заблокировал вас в своих играх.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Игроки, которых вы блокируете кнопкой «Заблокировать» на странице игроков в игре, не смогут присоединяться к вашим многопользовательским играм, пока вы не снимете блокировку.</value></data>
@@ -1687,4 +1687,13 @@
   <data name="Servers.Language" xml:space="preserve"><value>Язык</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Язык:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Только игры на моём языке</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Установить через Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam не установлен: скачать Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Проверить снова</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>В вашем аккаунте Steam есть игра: установите её через Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>В вашем аккаунте Steam нет лицензии на игру.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Что делать?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Я не нахожу игру в Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>В Steam откройте «Аккаунт» → «Лицензии и активация ключей» и поищите там игру. Если она там есть, нажмите кнопку «Установить через Steam» в лаунчере или используйте библиотеку Steam. Если её там нет, Steam больше не может её выдать.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Открыть ваши лицензии Steam</value></data>
 </root>

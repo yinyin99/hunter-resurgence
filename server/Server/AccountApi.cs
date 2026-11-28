@@ -37,6 +37,9 @@ public static class AccountApi
         return false;
     }
 
+    /// <summary>The query's `lang`, the language of the texts a page asks for (the launcher's code: `fr`, `pt-BR`); null for none.</summary>
+    static string? Lang(HttpContext ctx) => ctx.Request.Query["lang"].FirstOrDefault();
+
     /// <summary>A state-changing request comes from our own page: a same-origin Origin, or the header a cross-site form cannot set.</summary>
     static bool OwnPost(HttpContext ctx)
     {
@@ -366,11 +369,11 @@ public static class AccountApi
             .Produces(200, contentType: "application/json");
 
         group.MapGet("/events/panel", (HttpContext ctx) => Account(ctx) is { } account
-                ? Json(200, state.EventPanel(account) ?? new JsonObject { ["event"] = null })
+                ? Json(200, state.EventPanel(account, Lang(ctx)) ?? new JsonObject { ["event"] = null })
                 : Refuse(401, "signed_out", "Sign in first."))
             .WithName("AccountEventPanel").WithSummary("The running event's panel: community missions, the player's event missions, store items")
             .WithDescription("For a player who plays seasonal events while an event runs: `{name, title, start, end, community, contributors, missions, items}` (`start` and `end` unix seconds; `community` `[{id, title, progress, target, gm, em}]` "
-                             + "with the divided target, `contributors` the top 10 `[{handle, count}]`, `missions` the player's `[{id, title, state, objectives: [{title, done}], reward}]`, `items` `[{id, name}]`). Otherwise `{event: null}`.")
+                             + "with the divided target, `contributors` the top 10 `[{handle, count}]`, `missions` the player's `[{id, title, state, objectives: [{title, done}], reward}]`, `items` `[{id, name}]`). Otherwise `{event: null}`. Optional query `lang`: the mission texts in that language (`fr`, `pt-BR`), English where it has none.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/events", async (HttpContext ctx) =>
@@ -518,10 +521,10 @@ public static class AccountApi
 
         group.MapGet("/missions", (HttpContext ctx) => Account(ctx) is not { } account
                 ? Refuse(401, "signed_out", "Sign in first.")
-                : state.WebMissions(account) is { } missions ? Json(200, missions) : Refuse(404, "invalid", "This server has no missions."))
+                : state.WebMissions(account, Lang(ctx)) is { } missions ? Json(200, missions) : Refuse(404, "invalid", "This server has no missions."))
             .WithName("AccountMissions").WithSummary("The player's own missions page")
             .WithDescription("`{missions: [{id, title, desc, state: active|available|completed|locked, objectives, objectives_done, reward, reserve, species, weapon}], groups: [{id, title, desc, favourite, missions}], completed, "
-                             + "auto_mission_activate, activate_only_favourite, hide_completed_favourite}`; 404 `invalid` when the catalogue has no missions.")
+                             + "auto_mission_activate, activate_only_favourite, hide_completed_favourite}`; 404 `invalid` when the catalogue has no missions. Optional query `lang` (`fr`, `pt-BR`): the titles, descriptions and objectives in that language, English where it has none (docs/server.md, Mission texts).")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/missions/{call}", async (HttpContext ctx, string call) =>
@@ -544,10 +547,10 @@ public static class AccountApi
 
         group.MapGet("/missions/daily", (HttpContext ctx) => Account(ctx) is not { } account
                 ? Refuse(401, "signed_out", "Sign in first.")
-                : state.WebDaily(account) is { } daily ? Json(200, daily) : Refuse(404, "invalid", "This server has no daily missions."))
+                : state.WebDaily(account, Lang(ctx)) is { } daily ? Json(200, daily) : Refuse(404, "invalid", "This server has no daily missions."))
             .WithName("AccountDailyMissions").WithSummary("The player's own daily missions page")
             .WithDescription("`{today, ends_in, frozen, broken, days: [{number, stars, gms}], missions: [{title, desc, objectives, reserve, rewards, done}]}`: the 7 days of the streak's block and the mission of each (empty for a day "
-                             + "without one); 404 `invalid` when the server has no daily missions.")
+                             + "without one); 404 `invalid` when the server has no daily missions. Optional query `lang`: the texts in that language (`fr`, `pt-BR`), English where it has none.")
             .Produces(200, contentType: "application/json");
 
         group.MapPost("/missions/daily/activate", (HttpContext ctx) => !OwnPost(ctx) ? Refuse(400, "invalid", "This request is not from a page of this server.")

@@ -124,6 +124,14 @@ public sealed class Settings
         // at most 10 million: the website reads it as an int, and its progress bar multiplies a score below it by 100
         cfg["discord_veteran_at"] = Whole(root, "discord_veteran_at", LinkedRoles.RoleBot.DefaultVeteranAt, 0) is var veteranAt && veteranAt <= 10_000_000 ? veteranAt
             : throw new InvalidDataException("discord_veteran_at: a whole number from 0 to 10000000");
+        // the Steam licence check (SteamLicence.cs): the operator's Steam Web API key and the game's Steam app id, both or neither; the key is never committed. Unset: /auth/me says unknown and Steam is never called
+        string? steamKey = Text(root, "steam_web_api_key"), steamApp = Text(root, "steam_app_id");
+        if ((steamKey is null) != (steamApp is null))
+            throw new InvalidDataException("steam_web_api_key and steam_app_id go together");
+        if (steamApp is not null && !steamApp.All(char.IsAsciiDigit))
+            throw new InvalidDataException("steam_app_id: the game's Steam app id, digits only");
+        cfg["steam_web_api_key"] = steamKey;
+        cfg["steam_app_id"] = steamApp;
         // what the server stores for the operator (Uploads.cs): zips and bytes an account may have waiting or refused, bytes on the whole server, and the data disk's free bytes below which uploads stop
         cfg["upload_account_files"] = Whole(root, "upload_account_files", Uploads.AccountFilesDefault, 1);
         cfg["upload_account_bytes"] = Whole(root, "upload_account_bytes", Uploads.AccountBytesDefault, 1);
@@ -167,6 +175,7 @@ public sealed class Settings
         cfg["archive_db"] = Path_("archive_db", Path.Combine(dataDir, "archive.db"));  // the operator's archive of public profiles (Archive.cs); a missing file turns claims off
         cfg["avatar_uploads_dir"] = Path_("avatar_uploads_dir", "avatar-uploads");  // the saved copies of the players' uploaded avatars, `242/<uid>.jpg`: a restore reads one before it asks `avatar_uploads` (PictureLinks.LocalAvatar)
         cfg["recordings_dir"] = Path_("recordings_dir", "recordings");  // the operator's recordings, and beside the catalogue's its `mission_rules.json` (Replay.LoadState)
+        cfg["mission_texts_dir"] = Path_("mission_texts_dir", Path.Combine(dataDir, "mission-texts"));  // the missions' texts per language: game text, so not in the repository (MissionTexts.Load); a missing folder or file means English
         cfg["images_dir"] = Path_("images_dir", "images");  // the operator's pictures: the game's avatars are `avatar-<id>.png` there (Replay.Game.AvatarPicture), the website's slots too (docs/images.md)
         return new Settings
         {

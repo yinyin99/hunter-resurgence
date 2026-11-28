@@ -1677,7 +1677,7 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Bonustapahtumat jaksolla:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>Tätä peliä pelataan kausitapahtuman kanssa.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>Tätä peliä pelataan ilman kausitapahtumaa.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä isännän asetus on voimassa.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>Moninpelissä peli seuraa isännän metsästystä riippumatta omasta asetuksestasi tai tapahtuman päivämääristä.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Isäntä on estänyt</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Et voi liittyä tähän peliin: isäntä on estänyt sinut peleistään.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Pelaajat, jotka estät pelin pelaajasivun Estä-painikkeella, eivät voi liittyä moninpelipeleihisi, ennen kuin poistat eston.</value></data>
@@ -1687,4 +1687,13 @@ Sulje ohjelma, joka käyttää sitä (toinen palvelin tai launcherin toinen kopi
   <data name="Servers.Language" xml:space="preserve"><value>Kieli</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Kieli:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Vain pelit omalla kielelläni</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Asenna Steamillä</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam ei ole asennettu: hae Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Tarkista uudelleen</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Steam-tililläsi on peli: asenna se Steamillä.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Steam-tililläsi ei ole pelin lisenssiä.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Mitä voin tehdä?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>En löydä peliä Steamista</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>Avaa Steamissa Tili → Lisenssit ja tuoteavainten aktivoinnit ja etsi peli sieltä. Jos se on siellä, käytä käynnistimen painiketta ”Asenna Steamillä” tai Steam-kirjastoasi. Jos ei ole, Steam ei enää voi antaa sitä sinulle.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Avaa Steam-lisenssisi</value></data>
 </root>

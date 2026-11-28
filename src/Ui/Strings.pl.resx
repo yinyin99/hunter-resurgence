@@ -1677,7 +1677,7 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Board.HuntingEvents" xml:space="preserve"><value>Wydarzenia z premią w tym okresie:</value></data>
   <data name="Join.EventWith" xml:space="preserve"><value>W tę grę gra się z wydarzeniem sezonowym.</value></data>
   <data name="Join.EventWithout" xml:space="preserve"><value>W tę grę gra się bez wydarzenia sezonowego.</value></data>
-  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej obowiązuje ustawienie gospodarza.</value></data>
+  <data name="Join.EventHost" xml:space="preserve"><value>W grze wieloosobowej gra podąża za polowaniem gospodarza, niezależnie od twojego ustawienia i terminów wydarzenia.</value></data>
   <data name="Servers.WhyBanned" xml:space="preserve"><value>Zbanowany przez gospodarza</value></data>
   <data name="Join.Banned" xml:space="preserve"><value>Nie możesz dołączyć do tej gry: gospodarz zbanował cię w swoich grach.</value></data>
   <data name="Set.BansInfo" xml:space="preserve"><value>Gracze, których zbanujesz przyciskiem Zbanuj na stronie graczy w grze, nie mogą dołączać do twoich gier wieloosobowych, dopóki nie zdejmiesz bana.</value></data>
@@ -1687,4 +1687,13 @@ Zamknij program, który go używa (inny serwer lub druga kopia launchera), i uru
   <data name="Servers.Language" xml:space="preserve"><value>Język</value></data>
   <data name="Servers.LanguageLabel" xml:space="preserve"><value>Język:</value></data>
   <data name="Servers.OnlyMyLanguage" xml:space="preserve"><value>Tylko gry w moim języku</value></data>
+  <data name="SteamInstall.Button" xml:space="preserve"><value>Zainstaluj przez Steam</value></data>
+  <data name="SteamInstall.NoSteam" xml:space="preserve"><value>Steam nie jest zainstalowany: pobierz Steam</value></data>
+  <data name="SteamInstall.Again" xml:space="preserve"><value>Sprawdź ponownie</value></data>
+  <data name="SteamInstall.Owned" xml:space="preserve"><value>Twoje konto Steam ma tę grę: zainstaluj ją przez Steam.</value></data>
+  <data name="SteamInstall.NotOwned" xml:space="preserve"><value>Twoje konto Steam nie ma licencji na tę grę.</value></data>
+  <data name="SteamInstall.Faq" xml:space="preserve"><value>Co mogę zrobić?</value></data>
+  <data name="Help.Faq.Steam.Title" xml:space="preserve"><value>Nie mogę znaleźć gry na Steam</value></data>
+  <data name="Help.Faq.Steam.Text" xml:space="preserve"><value>W Steam otwórz Konto → Licencje i aktywacje kluczy produktu i poszukaj tam gry. Jeśli jest, użyj przycisku „Zainstaluj przez Steam” w launcherze albo swojej biblioteki Steam. Jeśli jej nie ma, Steam nie może już jej Tobie dać.</value></data>
+  <data name="Help.Faq.Steam.Link" xml:space="preserve"><value>Otwórz swoje licencje Steam</value></data>
 </root>
