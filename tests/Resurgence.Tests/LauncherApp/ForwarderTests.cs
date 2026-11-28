@@ -62,6 +62,12 @@ public class ForwarderTests
                     await ctx.Response.Body.WriteAsync(Gzipped);
                     return;
                 }
+                if (ctx.Request.Path.Value!.EndsWith("/hunter_gameclient/connect", StringComparison.OrdinalIgnoreCase))
+                {
+                    ctx.Response.ContentType = "application/json";
+                    await ctx.Response.Body.WriteAsync(ConnectBody); // no length: chunked, as behind a proxy
+                    return;
+                }
                 ctx.Response.StatusCode = 207;
                 ctx.Response.Headers["X-Reply"] = "r\u00E9ponse";
                 ctx.Response.ContentType = "application/octet-stream";
@@ -85,6 +91,21 @@ public class ForwarderTests
 
     static readonly byte[] Reply = Enumerable.Range(0, 70_000).Select(i => (byte)(i * 7)).ToArray();
 
+    /// <summary>A connect reply that needs every escape of <see cref="Forwarder.FirstBytes"/> (CR, LF, tab, backslash, NUL, a byte over 0x7F, DEL), then 16 bytes that fill the first 32 and 48 that must not be logged.</summary>
+    static readonly byte[] ConnectBody = Encoding.Latin1.GetBytes("{\"err\":0}\r\n\t\\\u0000\u00e9\u007f" + new string('A', 16) + new string('B', 48));
+
+    /// <summary>The launcher's log as the forwarder sees it: each entry's level and text.</summary>
+    sealed class Lines : ILogger
+    {
+        public List<(LogLevel Level, string Text)> Entries { get; } = [];
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+        public bool IsEnabled(LogLevel level) => true;
+        public void Log<TState>(LogLevel level, EventId id, TState state, Exception? error, Func<TState, Exception?, string> formatter)
+        {
+            lock (Entries) Entries.Add((level, formatter(state, error)));
+        }
+    }
+
     static HttpClient Client(Action<SocketsHttpHandler>? tune = null)
     {
         var h = new SocketsHttpHandler { AllowAutoRedirect = false, UseCookies = false, UseProxy = false, RequestHeaderEncodingSelector = (_, _) => Encoding.Latin1, ResponseHeaderEncodingSelector = (_, _) => Encoding.Latin1 };
@@ -92,9 +113,9 @@ public class ForwarderTests
         return new HttpClient(h);
     }
 
-    static async Task<WebApplication> StartForwarder(Uri origin, X509Certificate2? tls = null)
+    static async Task<WebApplication> StartForwarder(Uri origin, X509Certificate2? tls = null, ILogger? log = null)
     {
-        var app = Forwarder.Build(origin, tls, 0, 0);
+        var app = Forwarder.Build(origin, tls, 0, 0, log);
         await app.StartAsync();
         return app;
     }
@@ -176,6 +197,24 @@ public class ForwarderTests
         Assert.False(resp.Headers.Contains("Alt-Svc"));
     }
 
+    // #1052: what the game got of its connect is in launcher.log, the length and the first bytes only
+    [Theory]
+    [InlineData("/v1/json/hunter_gameclient/connect")]
+    [InlineData("/json/rgc-01-00/Hunter_GameClient/connect")]
+    public async Task TheConnectReplyIsLoggedWithItsStatusLengthAndFirstBytesOnly(string path)
+    {
+        await using var origin = await Origin.Start();
+        var log = new Lines();
+        await using var fwd = await StartForwarder(origin.Url, log: log);
+        using var http = Client();
+        using (await http.GetAsync(Forwarder.Addresses(fwd)[0] + "/other")) { } // no other request is logged
+        using var resp = await http.PostAsync(Forwarder.Addresses(fwd)[0] + path, new StringContent("{}"));
+        Assert.Equal(ConnectBody, await resp.Content.ReadAsByteArrayAsync());
+        var (level, text) = Assert.Single(log.Entries);
+        Assert.Equal(LogLevel.Information, level);
+        Assert.Equal("""connect reply to the game: status 200, 80 bytes, starts {"err":0}\r\n\t\\\x00\xe9\x7fAAAAAAAAAAAAAAAA""", text);
+    }
+
     [Theory]
     [InlineData("/nocontent", "204")]
     [InlineData("/notmodified", "304")]
@@ -207,10 +246,14 @@ public class ForwarderTests
         dead.Start();
         var url = new Uri($"http://127.0.0.1:{((IPEndPoint)dead.LocalEndpoint).Port}");
         dead.Stop();
-        await using var fwd = await StartForwarder(url);
+        var log = new Lines();
+        await using var fwd = await StartForwarder(url, log: log);
         using var http = Client();
         using var resp = await http.GetAsync(Forwarder.Addresses(fwd)[0]);
         Assert.Equal(HttpStatusCode.BadGateway, resp.StatusCode);
+        var (level, text) = Assert.Single(log.Entries); // the launcher's log is the only place a relay that failed shows
+        Assert.Equal(LogLevel.Warning, level);
+        Assert.Contains(" not relayed (502): ", text);
     }
 
     /// <summary>A started listener on `ip` (port 0: a free one).</summary>
