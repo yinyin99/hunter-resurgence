@@ -58,7 +58,9 @@ public class LodgeRestoreTests : StateTestBase
             Assert.Equal(77, (int)slots[2]!["trophy_id"]!);
             Assert.Equal(1, (int)slots[0]!["slot_id"]!);
             Assert.Equal(2, (int)slots[1]!["slot_id"]!);
-            Assert.Null(slots[0]!["trophy_details"]);  // an odd id mounts nothing
+            Assert.Null(slots[0]!["trophy_id"]);  // an odd id is sent as an empty slot
+            Assert.Null(slots[1]!["trophy_id"]);
+            Assert.Null(slots[0]!["trophy_details"]);
             Assert.Null(slots[1]!["trophy_details"]);
         }
         Assert.NotNull(state.TrophiesReply(player));
