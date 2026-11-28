@@ -10,6 +10,8 @@ public sealed partial class State
 {
     // a reserve's population ids are `index * 100 + n`: the game's rows use 0 to 14 (the events' too), the dog templates are 996, 998 and 999, the admin spawner takes 80 and up (<see cref="Spawner"/>)
     const int NamedFirst = 60, NamedSlots = 20;
+    // ponytail: a fixed spread for a placed group; an operator's word for it (`within N m`) when one group needs another
+    const int GroupRadius = 10;
 
     /// <summary>What a named animal is: the reserve (the catalogue's number), its species, gender (0 male, 1 female), the coat to force (null: any) and where it is (x, z in metres).</summary>
     sealed record NamedAnimal(long Reserve, long Species, long Gender, long? Coat, double X, double Z, long Count = 1);
@@ -72,10 +74,11 @@ public sealed partial class State
         }
     }
 
-    /// <summary>The client's group record of an animal: `x` and `z` 0 mean no position, a `texture_id` of -1 and features of -1 a random one (a missing key reads as 0).</summary>
+    /// <summary>The client's group record of an animal: `x` and `z` 0 mean no position, a `texture_id` of -1 and features of -1 a random one (a missing key reads as 0). A group of several
+    /// animals spreads up to <see cref="GroupRadius"/> m from the point (the client puts the first on it, each other at a random distance up to `radius`; with 0 they would share the point).</summary>
     static JsonObject NamedGroup(long males, long females, double x, double z, long coat) => new()
     {
-        ["radius"] = 0, ["male_count"] = males, ["female_count"] = females, ["min_weight"] = 0, ["max_weight"] = 0, ["min_feature"] = -1, ["max_feature"] = -1,
+        ["radius"] = males + females > 1 ? GroupRadius : 0, ["male_count"] = males, ["female_count"] = females, ["min_weight"] = 0, ["max_weight"] = 0, ["min_feature"] = -1, ["max_feature"] = -1,
         ["x"] = (long)x, ["z"] = (long)z, ["interest_x"] = 0, ["interest_z"] = 0, ["interest_time"] = 0, ["wounded_state"] = 0, ["texture_id"] = coat, ["active"] = 1,
     };
 

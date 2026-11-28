@@ -101,6 +101,7 @@ public class NamedAnimalTests : MissionTestBase
         Hunt(state);
         var entry = Assert.Single(Spawn(state.ConnectReply(ME)))!;
         Assert.Equal(3, (long)entry["group"]![1]!["male_count"]!);  // the herd: three animals in one population
+        Assert.Equal(10, (long)entry["group"]![1]!["radius"]!);  // spread around the point, not stacked on it (one animal keeps 0)
         Hb(KillOf(1, population: null));  // an ordinary deer at the lake
         Assert.Equal("", Completed());
         Hb(KillOf(2, population: 160, x: 0, z: 0));  // one of the herd, 3.6 km away
