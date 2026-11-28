@@ -61,32 +61,34 @@ public class GameManagementTests : StateTestBase
         using (var con = state.Store.Open(ME))
         {
             con.Begin();
-            var three = O("""{"id": 3, "name": "lodge 3", "locked": false, "style_id": 1, "lodge_type_id": 780,
-                "animal_slots": [{ "slot_id": 0, "trophy_id": 21}, { "slot_id": 1, "trophy_id": null}, { "slot_id": 2, "trophy_id": 22}], "weapon_slots": [{ "slot_id": 0, "weapon_id": 5}, { "slot_id": 1, "weapon_id": null}]}
-        """);
+            var three = O("""
+                {"id": 3, "name": "lodge 3", "locked": false, "style_id": 1, "lodge_type_id": 780,
+                 "animal_slots": [{"slot_id": 0, "trophy_id": 21}, {"slot_id": 1, "trophy_id": null}, {"slot_id": 2, "trophy_id": 22}],
+                 "weapon_slots": [{"slot_id": 0, "weapon_id": 5}, {"slot_id": 1, "weapon_id": null}]}
+                """);
             var four = O("""{"id": 4, "name": "lodge 4", "locked": true, "style_id": 0, "animal_slots": [], "weapon_slots": []}""");
-        foreach (var (id, lodge) in new[] { ("3", three), ("4", four) })
-        {
-            PlayerRows.AddLodge(con, "/game/user/lodges", id, lodge);
-            PlayerRows.AddLodge(con, "/game/user/lodge", id, lodge.DeepClone());
+            foreach (var (id, lodge) in new[] { ("3", three), ("4", four) })
+            {
+                PlayerRows.AddLodge(con, "/game/user/lodges", id, lodge);
+                PlayerRows.AddLodge(con, "/game/user/lodge", id, lodge.DeepClone());
+            }
+            con.Commit();
         }
-        con.Commit();
-    }
-    var other = state.Store.NextServerId();
-    state.CreateAccount(other, "Other", "76561190000001000");
-        var(me, theirs) = (Cookie(ME), Cookie(other));
+        var other = state.Store.NextServerId();
+        state.CreateAccount(other, "Other", "76561190000001000");
+        var (me, theirs) = (Cookie(ME), Cookie(other));
 
         Assert.Equal(401, (await Call(server, "GET", "/account/lodges", null)).Status);
         Assert.Equal(401, (await Call(server, "PUT", "/account/lodges/3/settings", null, "{}")).Status);
-        var(status, text) = await Call(server, "GET", "/account/lodges", me);
-    Assert.Equal(200, status);
+        var (status, text) = await Call(server, "GET", "/account/lodges", me);
+        Assert.Equal(200, status);
         AssertIntegers(text);
-    Assert.Equal(["3 lodge 3 false 1 2 1", "4 lodge 4 true 0 0 0"],
-        JsonNode.Parse(text)!["lodges"]!.AsArray().Select(l => $"{l!["id"]} {l["name"]} {l["locked"]} {l["style_id"]} {l["trophies"]} {l["weapons"]}"));
+        Assert.Equal(["3 lodge 3 false 1 2 1", "4 lodge 4 true 0 0 0"],
+            JsonNode.Parse(text)!["lodges"]!.AsArray().Select(l => $"{l!["id"]} {l["name"]} {l["locked"]} {l["style_id"]} {l["trophies"]} {l["weapons"]}"));
 
         Assert.Equal((200, """{"ok": true}"""), await Call(server, "PUT", "/account/lodges/3/settings", me, """{"name": "My Cabin", "locked": true, "style_id": 2}"""));
         var game = JsonNode.Parse(Encoding.UTF8.GetString(state.LodgesReply(ME)))!.AsArray().Single(l => (long)l!["id"]! == 3)!;
-    Assert.Equal("My Cabin true 2", $"{game["name"]} {game["locked"]} {game["style_id"]}");
+        Assert.Equal("My Cabin true 2", $"{game["name"]} {game["locked"]} {game["style_id"]}");
         Assert.Equal("My Cabin", JsonNode.Parse((await Call(server, "GET", "/account/lodges", me)).Text)!["lodges"]![0]!["name"]!.GetValue<string>());
 
         Assert.Equal(404, (await Call(server, "PUT", "/account/lodges/3/settings", theirs, """{"name": "x", "locked": false, "style_id": 0}""")).Status);  // not the other's lodge
@@ -180,13 +182,13 @@ public class GameManagementTests : StateTestBase
 
     /// <summary>Sends a service's requests through the loopback server, whatever host they name.</summary>
     sealed class Via(HttpClient server) : HttpMessageHandler
-{
-    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
     {
-        var copy = new HttpRequestMessage(request.Method, request.RequestUri) { Content = request.Content };
-        foreach (var h in request.Headers) copy.Headers.TryAddWithoutValidation(h.Key, h.Value);
-        return server.SendAsync(copy, ct);
-    }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            var copy = new HttpRequestMessage(request.Method, request.RequestUri) { Content = request.Content };
+            foreach (var h in request.Headers) copy.Headers.TryAddWithoutValidation(h.Key, h.Value);
+            return server.SendAsync(copy, ct);
+        }
     }
 
     [Fact]
